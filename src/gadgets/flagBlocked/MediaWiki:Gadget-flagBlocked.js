@@ -21,7 +21,7 @@ $(() => {
                 autoHide: false,
                 tag: "lr-flagBlocked",
             });
-            let data = (await api.get({
+            const data = (await api.get({
                 action: "query",
                 list: "logevents",
                 letype: "block",

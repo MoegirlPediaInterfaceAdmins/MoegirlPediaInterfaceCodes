@@ -6,11 +6,11 @@
     if (!mw.libs.commons) {
         mw.libs.commons = {};
     }
-    var lc = mw.libs.commons;
+    const lc = mw.libs.commons;
     $.extend(mw.libs.commons, {
         guessUser: function () {
-            var user = mw.config.get("wgRelevantUserName");
-            var title, target;
+            const user = mw.config.get("wgRelevantUserName");
+            let title, target;
             if (user) {
                 return user;
             }
@@ -52,12 +52,12 @@
         },
         monthNamesInSiteLang: ["", "一月", "二月", "三月", "四月", "五月", "六月", "七月", "八月", "九月", "十月", "十一月", "十二月"],
         formatDate: function (fmt, _date, fallbackDate) {
-            var pad0 = function (s) {
-                return s > 9 ? s : "0" + s;
+            const pad0 = function (s) {
+                return s > 9 ? s : `0${ s}`;
             }; // zero-pad to two digits
-            var date = _date || fallbackDate || new Date();
-            var month = date.getUTCMonth() + 1;
-            var str = fmt.replace(/YYYY/g, date.getUTCFullYear());
+            let date = _date || fallbackDate || new Date();
+            const month = date.getUTCMonth() + 1;
+            let str = fmt.replace(/YYYY/g, date.getUTCFullYear());
             str = str.replace(/MM/g, pad0(month));
             date = date.getUTCDate();
             str = str.replace(/DD/g, pad0(date));
@@ -66,9 +66,9 @@
             return str;
         },
         getTalkPageFromTitle: function (_title) {
-            var rens = /^(.+):/;
-            var pref = _title.match(rens), nsid = -1;
-            var title = _title;
+            const rens = /^(.+):/;
+            let pref = _title.match(rens), nsid = -1;
+            let title = _title;
             if (pref) {
                 pref = pref[1].toLowerCase().replace(/ /g, "_");
             }
@@ -80,7 +80,7 @@
             if (0 === nsid % 2) {
                 nsid++;
             }
-            var newPref = mw.config.get("wgFormattedNamespaces")[nsid] + ":";
+            const newPref = `${mw.config.get("wgFormattedNamespaces")[nsid] }:`;
             if (pref) {
                 title = title.replace(/^.+:/, newPref);
             }

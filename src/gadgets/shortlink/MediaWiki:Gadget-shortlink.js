@@ -77,7 +77,7 @@ $(function () {
     }
     $mwPanel.append('<div class="portal" role="navigation" id="p-sl" aria-labelledby="p-sl-label" style="position: sticky; top: 0;"><h3 lang="zh-CN" dir="ltr" id="p-sl-label">'+ wgULS("短链接","短網址") +'</h3><div class="body"><ul>' +
         links.map(function (l) {
-            return '<li id="sl-' + l.id + '"><a href="' + mw.config.get("wgServer") + mw.config.get("wgScriptPath") + "/_?" + l.href + '" title="' + l.title + '">' + l.text + '</a><br><span>（<a data-wikitext="' + l.wikitext + '" href="javascript:void(0);">'+ wgULS("复制对应wikitext","複製對應wikitext") + '</a>）</span></li>';
+            return '<li id="sl-' + l.id + '"><a href="' + mw.config.get("wgServer") + mw.config.get("wgScriptPath") + "/_?" + l.href + '" title="' + l.title + '">' + l.text + '</a><br><span>（<a data-wikitext="' + l.wikitext + '" href="javascript:void(0);">'+ wgULS("复制对应wikitext","複製對應wikitext") + "</a>）</span></li>";
         }).join("\n") +
         "</ul></div></div>");
     var valueNode = $("<pre/>", {

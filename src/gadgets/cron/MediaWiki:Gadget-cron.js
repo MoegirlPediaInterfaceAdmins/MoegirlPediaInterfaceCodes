@@ -1,38 +1,38 @@
 // https://cdn.jsdelivr.net/npm/cron@1.8.2/lib/cron.js
 "use strict";
 (function (root, factory) {
-    if (typeof define === 'function' && define.amd) {
-        define(['moment-timezone'], factory);
+    if (typeof define === "function" && define.amd) {
+        define(["moment-timezone"], factory);
     }
-    else if (typeof exports === 'object') {
-        module.exports = factory(require('moment-timezone'), require('child_process'));
+    else if (typeof exports === "object") {
+        module.exports = factory(require("moment-timezone"), require("child_process"));
     }
     else {
         root.Cron = factory(root.moment);
     }
-})(window, function (moment, childProcess) {
-    var exports = {};
-    var timeUnits = [
-        'second',
-        'minute',
-        'hour',
-        'dayOfMonth',
-        'month',
-        'dayOfWeek'
+})(window, (moment, childProcess) => {
+    const exports = {};
+    const timeUnits = [
+        "second",
+        "minute",
+        "hour",
+        "dayOfMonth",
+        "month",
+        "dayOfWeek",
     ];
-    var spawn = childProcess && childProcess.spawn;
+    const spawn = childProcess && childProcess.spawn;
     function CronTime(source, zone, utcOffset) {
         this.source = source;
         if (zone) {
             if (moment.tz.names().indexOf(zone) === -1) {
-                throw new Error('Invalid timezone.');
+                throw new Error("Invalid timezone.");
             }
             this.zone = zone;
         }
-        if (typeof utcOffset !== 'undefined')
-            this.utcOffset = utcOffset;
-        var that = this;
-        timeUnits.map(function (timeUnit) {
+        if (typeof utcOffset !== "undefined")
+        {this.utcOffset = utcOffset;}
+        const that = this;
+        timeUnits.map((timeUnit) => {
             that[timeUnit] = {};
         });
         if (this.source instanceof Date || this.source._isAMomentObject) {
@@ -57,9 +57,9 @@
         30,
         31,
         30,
-        31
+        31,
     ];
-    CronTime.parseDefaults = ['0', '*', '*', '*', '*', '*'];
+    CronTime.parseDefaults = ["0", "*", "*", "*", "*", "*"];
     CronTime.aliases = {
         jan: 0,
         feb: 1,
@@ -79,20 +79,20 @@
         wed: 3,
         thu: 4,
         fri: 5,
-        sat: 6
+        sat: 6,
     };
     CronTime.prototype = {
         _verifyParse: function () {
-            var months = Object.keys(this.month);
-            var ok = false;
+            const months = Object.keys(this.month);
+            let ok = false;
             /* if a dayOfMonth is not found in all months, we only need to fix the last
              wrong month  to prevent infinite loop */
-            var lastWrongMonth = NaN;
-            for (var i = 0; i < months.length; i++) {
-                var m = months[i];
+            let lastWrongMonth = NaN;
+            for (let i = 0; i < months.length; i++) {
+                const m = months[i];
                 var con = CronTime.monthConstraints[parseInt(m, 10)];
                 var dsom = Object.keys(this.dayOfMonth);
-                for (var j = 0; j < dsom.length; j++) {
+                for (let j = 0; j < dsom.length; j++) {
                     var dom = dsom[j];
                     if (dom <= con) {
                         ok = true;
@@ -101,18 +101,18 @@
                 if (!ok) {
                     // save the month in order to be fixed if all months fails (infinite loop)
                     lastWrongMonth = m;
-                    console.warn("Month '" + m + "' is limited to '" + con + "' days.");
+                    console.warn(`Month '${ m }' is limited to '${ con }' days.`);
                 }
             }
             // infinite loop detected (dayOfMonth is not found in all months)
             if (!ok) {
                 var con = CronTime.monthConstraints[parseInt(lastWrongMonth, 10)];
                 var dsom = Object.keys(this.dayOfMonth);
-                for (var k = 0; k < dsom.length; k++) {
+                for (let k = 0; k < dsom.length; k++) {
                     var dom = dsom[k];
                     if (dom > con) {
                         delete this.dayOfMonth[dom];
-                        var fixedDay = Number(dom) % con;
+                        const fixedDay = Number(dom) % con;
                         this.dayOfMonth[fixedDay] = true;
                     }
                 }
@@ -122,18 +122,18 @@
          * calculates the next send time
          */
         sendAt: function (i) {
-            var date = this.realDate ? this.source : moment();
+            let date = this.realDate ? this.source : moment();
             // Set the timezone if given (http://momentjs.com/timezone/docs/#/using-timezones/parsing-in-zone/)
             if (this.zone) {
                 date = date.tz(this.zone);
             }
-            if (typeof this.utcOffset !== 'undefined') {
+            if (typeof this.utcOffset !== "undefined") {
                 date = date.utcOffset(this.utcOffset);
             }
             if (this.realDate) {
-                var diff = moment().diff(date, 's');
+                const diff = moment().diff(date, "s");
                 if (diff > 0) {
-                    throw new Error('WARNING: Date in past. Will never be fired.');
+                    throw new Error("WARNING: Date in past. Will never be fired.");
                 }
                 return date;
             }
@@ -142,15 +142,15 @@
                 date = this._getNextDateFrom(date);
                 return date;
             }
-            else {
-                // Else return the next i send times
-                var dates = [];
-                for (; i > 0; i--) {
-                    date = this._getNextDateFrom(date);
-                    dates.push(moment(date));
-                }
-                return dates;
+            
+            // Else return the next i send times
+            const dates = [];
+            for (; i > 0; i--) {
+                date = this._getNextDateFrom(date);
+                dates.push(moment(date));
             }
+            return dates;
+            
         },
         /**
          * Get the number of milliseconds in the future at which to fire our callbacks.
@@ -162,14 +162,14 @@
          * writes out a cron string
          */
         toString: function () {
-            return this.toJSON().join(' ');
+            return this.toJSON().join(" ");
         },
         /**
          * Json representation of the parsed cron syntax.
          */
         toJSON: function () {
-            var self = this;
-            return timeUnits.map(function (timeName) {
+            const self = this;
+            return timeUnits.map((timeName) => {
                 return self._wcOrAll(timeName);
             });
         },
@@ -177,8 +177,8 @@
          * get next date that matches parsed cron time
          */
         _getNextDateFrom: function (start, zone) {
-            var date;
-            var firstDate = moment(start).valueOf();
+            let date;
+            const firstDate = moment(start).valueOf();
             if (zone) {
                 date = moment(start).tz(zone);
             }
@@ -186,37 +186,37 @@
                 date = moment(start);
             }
             if (!this.realDate) {
-                var milliseconds = (start.milliseconds && start.milliseconds()) ||
-                    (start.getMilliseconds && start.getMilliseconds()) ||
+                const milliseconds = start.milliseconds && start.milliseconds() ||
+                    start.getMilliseconds && start.getMilliseconds() ||
                     0;
                 if (milliseconds > 0) {
                     date.milliseconds(0);
                     date.seconds(date.seconds() + 1);
                 }
             }
-            if (date.toString() === 'Invalid date') {
-                throw new Error('ERROR: You specified an invalid date.');
+            if (date.toString() === "Invalid date") {
+                throw new Error("ERROR: You specified an invalid date.");
             }
             // it shouldn't take more than 5 seconds to find the next execution time
             // being very generous with this. Throw error if it takes too long to find the next time to protect from
             // infinite loop.
-            var timeout = Date.now() + 5000;
+            const timeout = Date.now() + 5000;
             // determine next date
             while (true) {
-                var diff = date - start;
-                var prevMonth = date.month();
-                var prevDay = date.days();
-                var prevMinute = date.minutes();
-                var prevSeconds = date.seconds();
-                var origDate = new Date(date);
+                const diff = date - start;
+                const prevMonth = date.month();
+                const prevDay = date.days();
+                const prevMinute = date.minutes();
+                const prevSeconds = date.seconds();
+                let origDate = new Date(date);
                 if (Date.now() > timeout) {
-                    throw new Error("Something went wrong. cron reached maximum iterations.\n\t\t\t\t\t\tPlease open an  issue (https://github.com/kelektiv/node-cron/issues/new) and provide the following string\n\t\t\t\t\t\tTime Zone: " + (zone || '""') + " - Cron String: " + this + " - UTC offset: " + date.format('Z') + " - current Date: " + moment().toString());
+                    throw new Error(`Something went wrong. cron reached maximum iterations.\n\t\t\t\t\t\tPlease open an  issue (https://github.com/kelektiv/node-cron/issues/new) and provide the following string\n\t\t\t\t\t\tTime Zone: ${ zone || '""' } - Cron String: ${ this } - UTC offset: ${ date.format("Z") } - current Date: ${ moment().toString()}`);
                 }
                 if (!(date.month() in this.month) &&
                     Object.keys(this.month).length !== 12) {
-                    date.add(1, 'M');
+                    date.add(1, "M");
                     if (date.month() === prevMonth) {
-                        date.add(1, 'M');
+                        date.add(1, "M");
                     }
                     date.date(1);
                     date.hours(0);
@@ -228,9 +228,9 @@
                     Object.keys(this.dayOfMonth).length !== 31 &&
                     !(date.day() in this.dayOfWeek &&
                         Object.keys(this.dayOfWeek).length !== 7)) {
-                    date.add(1, 'd');
+                    date.add(1, "d");
                     if (date.days() === prevDay) {
-                        date.add(1, 'd');
+                        date.add(1, "d");
                     }
                     date.hours(0);
                     date.minutes(0);
@@ -241,9 +241,9 @@
                     Object.keys(this.dayOfWeek).length !== 7 &&
                     !(date.date() in this.dayOfMonth &&
                         Object.keys(this.dayOfMonth).length !== 31)) {
-                    date.add(1, 'd');
+                    date.add(1, "d");
                     if (date.days() === prevDay) {
-                        date.add(1, 'd');
+                        date.add(1, "d");
                     }
                     date.hours(0);
                     date.minutes(0);
@@ -256,7 +256,7 @@
                 if (!(date.hours() in this.hour) &&
                     Object.keys(this.hour).length !== 24) {
                     origDate = moment(date);
-                    var curHour = date.hours();
+                    const curHour = date.hours();
                     date.hours(date.hours() === 23 && diff > 86400000 ? 0 : date.hours() + 1);
                     /*
                      * Moment Date will not allow you to set the time to 2 AM if there is no 2 AM (on the day we change the clock)
@@ -305,10 +305,10 @@
          * get next date that is a valid DST date
          */
         _findDST: function (date) {
-            var newDate = moment(date);
+            const newDate = moment(date);
             while (newDate <= date) {
                 // eslint seems to trigger here, it is wrong
-                newDate.add(1, 's');
+                newDate.add(1, "s");
             }
             return newDate;
         },
@@ -317,40 +317,40 @@
          */
         _wcOrAll: function (type) {
             if (this._hasAll(type))
-                return '*';
-            var all = [];
-            for (var time in this[type]) {
+            {return "*";}
+            const all = [];
+            for (const time in this[type]) {
                 all.push(time);
             }
-            return all.join(',');
+            return all.join(",");
         },
         _hasAll: function (type) {
-            var constrain = CronTime.constraints[timeUnits.indexOf(type)];
-            for (var i = constrain[0], n = constrain[1]; i < n; i++) {
+            const constrain = CronTime.constraints[timeUnits.indexOf(type)];
+            for (let i = constrain[0], n = constrain[1]; i < n; i++) {
                 if (!(i in this[type]))
-                    return false;
+                {return false;}
             }
             return true;
         },
         _parse: function () {
-            var aliases = CronTime.aliases;
-            var source = this.source.replace(/[a-z]{1,3}/gi, function (alias) {
+            const aliases = CronTime.aliases;
+            const source = this.source.replace(/[a-z]{1,3}/gi, (alias) => {
                 alias = alias.toLowerCase();
                 if (alias in aliases) {
                     return aliases[alias];
                 }
-                throw new Error('Unknown alias: ' + alias);
+                throw new Error(`Unknown alias: ${ alias}`);
             });
-            var split = source.replace(/^\s\s*|\s\s*$/g, '').split(/\s+/);
-            var cur;
-            var i = 0;
-            var len = timeUnits.length;
+            const split = source.replace(/^\s\s*|\s\s*$/g, "").split(/\s+/);
+            let cur;
+            let i = 0;
+            const len = timeUnits.length;
             // seconds are optional
             if (split.length < timeUnits.length - 1) {
-                throw new Error('Too few fields');
+                throw new Error("Too few fields");
             }
             if (split.length > timeUnits.length) {
-                throw new Error('Too many fields');
+                throw new Error("Too many fields");
             }
             for (; i < timeUnits.length; i++) {
                 // If the split source string doesn't contain all digits,
@@ -361,40 +361,40 @@
             }
         },
         _parseField: function (field, type, constraints) {
-            var rangePattern = /^(\d+)(?:-(\d+))?(?:\/(\d+))?$/g;
-            var typeObj = this[type];
-            var pointer;
-            var low = constraints[0];
-            var high = constraints[1];
-            var fields = field.split(',');
-            fields.forEach(function (field) {
-                var wildcardIndex = field.indexOf('*');
+            const rangePattern = /^(\d+)(?:-(\d+))?(?:\/(\d+))?$/g;
+            const typeObj = this[type];
+            let pointer;
+            const low = constraints[0];
+            const high = constraints[1];
+            const fields = field.split(",");
+            fields.forEach((field) => {
+                const wildcardIndex = field.indexOf("*");
                 if (wildcardIndex !== -1 && wildcardIndex !== 0) {
-                    throw new Error('Field (' + field + ') has an invalid wildcard expression');
+                    throw new Error(`Field (${ field }) has an invalid wildcard expression`);
                 }
             });
             // * is a shortcut to [lower-upper] range
-            field = field.replace(/\*/g, low + '-' + high);
+            field = field.replace(/\*/g, `${low }-${ high}`);
             // commas separate information, so split based on those
-            var allRanges = field.split(',');
-            for (var i = 0; i < allRanges.length; i++) {
+            const allRanges = field.split(",");
+            for (let i = 0; i < allRanges.length; i++) {
                 if (allRanges[i].match(rangePattern)) {
-                    allRanges[i].replace(rangePattern, function ($0, lower, upper, step) {
+                    allRanges[i].replace(rangePattern, ($0, lower, upper, step) => {
                         lower = parseInt(lower, 10);
                         upper = parseInt(upper, 10) || undefined;
-                        var wasStepDefined = !isNaN(parseInt(step, 10));
-                        if (step === '0') {
-                            throw new Error('Field (' + field + ') has a step of zero');
+                        const wasStepDefined = !isNaN(parseInt(step, 10));
+                        if (step === "0") {
+                            throw new Error(`Field (${ field }) has a step of zero`);
                         }
                         step = parseInt(step, 10) || 1;
                         if (upper && lower > upper) {
-                            throw new Error('Field (' + field + ') has an invalid range');
+                            throw new Error(`Field (${ field }) has an invalid range`);
                         }
-                        var outOfRangeError = lower < low ||
-                            (upper && upper > high) ||
-                            (!upper && lower > high);
+                        const outOfRangeError = lower < low ||
+                            upper && upper > high ||
+                            !upper && lower > high;
                         if (outOfRangeError) {
-                            throw new Error('Field (' + field + ') value is out of range');
+                            throw new Error(`Field (${ field }) value is out of range`);
                         }
                         // Positive integer higher than constraints[0]
                         lower = Math.min(Math.max(low, ~~Math.abs(lower)), high);
@@ -415,25 +415,25 @@
                     });
                 }
                 else {
-                    throw new Error('Field (' + field + ') cannot be parsed');
+                    throw new Error(`Field (${ field }) cannot be parsed`);
                 }
             }
-        }
+        },
     };
     function command2function(cmd) {
-        var command;
-        var args;
+        let command;
+        let args;
         switch (typeof cmd) {
-            case 'string':
-                args = cmd.split(' ');
+            case "string":
+                args = cmd.split(" ");
                 command = args.shift();
                 cmd = spawn.bind(undefined, command, args);
                 break;
-            case 'object':
+            case "object":
                 command = cmd && cmd.command;
                 if (command) {
                     args = cmd.args;
-                    var options = cmd.options;
+                    const options = cmd.options;
                     cmd = spawn.bind(undefined, command, args, options);
                 }
                 break;
@@ -441,14 +441,14 @@
         return cmd;
     }
     function CronJob(cronTime, onTick, onComplete, startNow, timeZone, context, runOnInit, utcOffset, unrefTimeout) {
-        var _cronTime = cronTime;
-        var argCount = 0;
-        for (var i = 0; i < arguments.length; i++) {
+        let _cronTime = cronTime;
+        let argCount = 0;
+        for (let i = 0; i < arguments.length; i++) {
             if (arguments[i] !== undefined) {
                 argCount++;
             }
         }
-        if (typeof cronTime !== 'string' && argCount === 1) {
+        if (typeof cronTime !== "string" && argCount === 1) {
             // crontime is an object...
             onTick = cronTime.onTick;
             onComplete = cronTime.onComplete;
@@ -476,13 +476,13 @@
         return this;
     }
     var addCallback = function (callback) {
-        if (typeof callback === 'function')
-            this._callbacks.push(callback);
+        if (typeof callback === "function")
+        {this._callbacks.push(callback);}
     };
     CronJob.prototype.addCallback = addCallback;
     CronJob.prototype.setTime = function (time) {
         if (!(time instanceof CronTime))
-            throw new Error('time must be an instance of CronTime.');
+        {throw new Error("time must be an instance of CronTime.");}
         this.stop();
         this.cronTime = time;
     };
@@ -490,8 +490,8 @@
         return this.cronTime.sendAt();
     };
     var fireOnTick = function () {
-        for (var i = this._callbacks.length - 1; i >= 0; i--)
-            this._callbacks[i].call(this.context, this.onComplete);
+        for (let i = this._callbacks.length - 1; i >= 0; i--)
+        {this._callbacks[i].call(this.context, this.onComplete);}
     };
     CronJob.prototype.fireOnTick = fireOnTick;
     CronJob.prototype.nextDates = function (i) {
@@ -499,27 +499,27 @@
     };
     var start = function () {
         if (this.running)
-            return;
-        var MAXDELAY = 2147483647; // The maximum number of milliseconds setTimeout will wait.
-        var self = this;
-        var timeout = this.cronTime.getTimeout();
-        var remaining = 0;
-        var startTime;
+        {return;}
+        const MAXDELAY = 2147483647; // The maximum number of milliseconds setTimeout will wait.
+        const self = this;
+        let timeout = this.cronTime.getTimeout();
+        let remaining = 0;
+        let startTime;
         if (this.cronTime.realDate)
-            this.runOnce = true;
+        {this.runOnce = true;}
         function _setTimeout(timeout) {
             startTime = Date.now();
             self._timeout = setTimeout(callbackWrapper, timeout);
-            if (self.unrefTimeout && typeof self._timeout.unref === 'function') {
+            if (self.unrefTimeout && typeof self._timeout.unref === "function") {
                 self._timeout.unref();
             }
         }
         // The callback wrapper checks if it needs to sleep another period or not
         // and does the real callback logic when it's time.
         function callbackWrapper() {
-            var diff = startTime + timeout - Date.now();
+            const diff = startTime + timeout - Date.now();
             if (diff > 0) {
-                var newTimeout = self.cronTime.getTimeout();
+                let newTimeout = self.cronTime.getTimeout();
                 if (newTimeout > diff) {
                     newTimeout = diff;
                 }
@@ -546,7 +546,7 @@
                 self.running = false;
                 // start before calling back so the callbacks have the ability to stop the cron job
                 if (!self.runOnce)
-                    self.start();
+                {self.start();}
                 self.fireOnTick();
             }
         }
@@ -572,10 +572,10 @@
      */
     CronJob.prototype.stop = function () {
         if (this._timeout)
-            clearTimeout(this._timeout);
+        {clearTimeout(this._timeout);}
         this.running = false;
-        if (typeof this.onComplete === 'function')
-            this.onComplete();
+        if (typeof this.onComplete === "function")
+        {this.onComplete();}
     };
     exports.job = function (cronTime, onTick, onComplete, startNow, timeZone, context, runOnInit, utcOffset, unrefTimeout) {
         return new CronJob(cronTime, onTick, onComplete, startNow, timeZone, context, runOnInit, utcOffset, unrefTimeout);

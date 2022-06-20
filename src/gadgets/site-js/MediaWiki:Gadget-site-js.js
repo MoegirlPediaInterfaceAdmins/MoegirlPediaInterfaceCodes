@@ -433,7 +433,7 @@
             }, 200);
         });
         // 修复错误嵌套模板
-        mw.hook('wikipage.content').add(templateFix);
+        mw.hook("wikipage.content").add(templateFix);
         // 仅在编辑界面修复验证码
         if (["edit", "submit"].includes(mw.config.get("wgAction"))) {
             tcc();

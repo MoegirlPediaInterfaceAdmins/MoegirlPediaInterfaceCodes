@@ -6,7 +6,7 @@
     $.extend({
         createIcon: function (iconClass) {
             return $("<span>", {
-                "class": "ui-icon " + iconClass + " jquery-inline-icon",
+                "class": `ui-icon ${ iconClass } jquery-inline-icon`,
                 text: " ",
             });
         },
@@ -14,7 +14,7 @@
             return $("<div>", {
                 "class": "ui-widget",
             }).append($("<div>", {
-                "class": state + " ui-corner-all",
+                "class": `${state } ui-corner-all`,
                 style: "margin-top:20px; padding:0.7em;",
             }).append($("<p>").append($.createIcon(icon).css("margin-right", ".3em"), textNode)));
         },
@@ -28,7 +28,7 @@
         "libjq-proceed-title": "Proceed [Enter] in single-line text fields",
         "libjq-report-title": "报告错误以改进本工具",
     });
-    var buttonConfig = {
+    const buttonConfig = {
         proceed: {
             icon: "ui-icon-circle-check",
             "class": "ui-button-green",
@@ -63,20 +63,20 @@
          * @return {Object} jQuery instance (jQuery DOM node list)
          */
         _jqInteraction: function () {
-            var _this = this;
-            return this.hover(function () {
+            const _this = this;
+            return this.hover(() => {
                 _this.addClass("ui-state-hover");
-            }, function () {
+            }, () => {
                 _this.removeClass("ui-state-hover").removeClass("ui-state-active");
-            }).focusin(function () {
+            }).focusin(() => {
                 _this.addClass("ui-state-focus");
-            }).focusout(function () {
+            }).focusout(() => {
                 _this.removeClass("ui-state-focus");
-            }).mousedown(function (e) {
+            }).mousedown((e) => {
                 if (1 === e.which) {
                     _this.addClass("ui-state-active");
                 }
-            }).mouseup(function () {
+            }).mouseup(() => {
                 _this.removeClass("ui-state-active");
             });
         },

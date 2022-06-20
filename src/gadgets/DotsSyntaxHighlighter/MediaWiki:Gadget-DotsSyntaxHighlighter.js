@@ -13,55 +13,55 @@
    <https://www.gnu.org/licenses/old-licenses/fdl-1.2.html>
 */
 
-	mw.loader.using("jquery.client", function() {
+mw.loader.using("jquery.client", () => {
     "use strict";
 
-    var wpTextbox0;
-    var wpTextbox1;
-    var syntaxStyleTextNode;
-    var lastText;
-    var maxSpanNumber = -1;
-    var highlightSyntaxIfNeededIntervalID;
-    var attributeObserver;
-    var parentObserver;
+    let wpTextbox0;
+    let wpTextbox1;
+    let syntaxStyleTextNode;
+    let lastText;
+    let maxSpanNumber = -1;
+    let highlightSyntaxIfNeededIntervalID;
+    let attributeObserver;
+    let parentObserver;
 
-    var wgUrlProtocols = mw.config.get("wgUrlProtocols");
-    var entityRegexBase = "&(?:(?:n(?:bsp|dash)|m(?:dash|inus)|lt|e[mn]sp|thinsp|amp|quot|gt|shy|zwn?j|lrm|rlm|Alpha|Beta|Epsilon|Zeta|Eta|Iota|Kappa|[Mm]u|micro|Nu|[Oo]micron|[Rr]ho|Tau|Upsilon|Chi)|#x[0-9a-fA-F]+);\n*";
-    var breakerRegexBase = "\\[(?:\\[|(?:" + wgUrlProtocols + "))|\\{(?:\\{\\{?|\\|)|<(?:[:A-Z_a-z\u00C0-\u00D6\u00D8-\u00F6\u00F8-\u02FF\u0370-\u037D\u037F-\u1FFF\u200C\u200D\u2070-\u218F\u2C00-\u2FEF\u3001-\uD7FF\uF900-\uFDCF\uFDF0-\uFFFD][:\\w\u00C0-\u00D6\u00D8-\u00F6\u00F8-\u02FF\u0370-\u037D\u037F-\u1FFF\u200C\u200D\u2070-\u218F\u2C00-\u2FEF\u3001-\uD7FF\uF900-\uFDCF\uFDF0-\uFFFD-\\.\u00B7\u0300-\u036F\u203F-\u203F-\u2040]*(?=/?>| |\n)|!--[^]*?-->\n*)|(?:" + wgUrlProtocols.replace("|\\/\\/", "") + ")[^\\s\"<>[\\]{-}]*[^\\s\",\\.:;<>[\\]{-}]\n*|^(?:=|[*#:;]+\n*|-{4,}\n*)|\\\\'\\\\'(?:\\\\')?|~{3,5}\n*|" + entityRegexBase;
+    const wgUrlProtocols = mw.config.get("wgUrlProtocols");
+    const entityRegexBase = "&(?:(?:n(?:bsp|dash)|m(?:dash|inus)|lt|e[mn]sp|thinsp|amp|quot|gt|shy|zwn?j|lrm|rlm|Alpha|Beta|Epsilon|Zeta|Eta|Iota|Kappa|[Mm]u|micro|Nu|[Oo]micron|[Rr]ho|Tau|Upsilon|Chi)|#x[0-9a-fA-F]+);\n*";
+    const breakerRegexBase = `\\[(?:\\[|(?:${ wgUrlProtocols }))|\\{(?:\\{\\{?|\\|)|<(?:[:A-Z_a-z\u00C0-\u00D6\u00D8-\u00F6\u00F8-\u02FF\u0370-\u037D\u037F-\u1FFF\u200C\u200D\u2070-\u218F\u2C00-\u2FEF\u3001-\uD7FF\uF900-\uFDCF\uFDF0-\uFFFD][:\\w\u00C0-\u00D6\u00D8-\u00F6\u00F8-\u02FF\u0370-\u037D\u037F-\u1FFF\u200C\u200D\u2070-\u218F\u2C00-\u2FEF\u3001-\uD7FF\uF900-\uFDCF\uFDF0-\uFFFD-\\.\u00B7\u0300-\u036F\u203F-\u203F-\u2040]*(?=/?>| |\n)|!--[^]*?-->\n*)|(?:${ wgUrlProtocols.replace("|\\/\\/", "") })[^\\s"<>[\\]{-}]*[^\\s",\\.:;<>[\\]{-}]\n*|^(?:=|[*#:;]+\n*|-{4,}\n*)|\\\\'\\\\'(?:\\\\')?|~{3,5}\n*|${ entityRegexBase}`;
     function breakerRegexWithPrefix(prefix)
     {
-        return new RegExp("(" + prefix + ")\n*|" + breakerRegexBase, "gm");
+        return new RegExp(`(${ prefix })\n*|${ breakerRegexBase}`, "gm");
     }
     function nowikiTagBreakerRegex(tagName)
     {
-        return new RegExp("(</" + tagName + ">)\n*|" + entityRegexBase, "gm");
+        return new RegExp(`(</${ tagName }>)\n*|${ entityRegexBase}`, "gm");
     }
-    var defaultBreakerRegex = new RegExp(breakerRegexBase, "gm");
-    var wikilinkBreakerRegex = breakerRegexWithPrefix("]][a-zA-Z]*");
-    var namedExternalLinkBreakerRegex = breakerRegexWithPrefix("]");
-    var parameterBreakerRegex = breakerRegexWithPrefix("}}}");
-    var templateBreakerRegex = breakerRegexWithPrefix("}}");
-    var tableBreakerRegex = breakerRegexWithPrefix("\\|}");
-    var headingBreakerRegex = breakerRegexWithPrefix("\n");
-    var tagBreakerRegexCache = {};
-    var nowikiTagBreakerRegexCache = {};
+    const defaultBreakerRegex = new RegExp(breakerRegexBase, "gm");
+    const wikilinkBreakerRegex = breakerRegexWithPrefix("]][a-zA-Z]*");
+    const namedExternalLinkBreakerRegex = breakerRegexWithPrefix("]");
+    const parameterBreakerRegex = breakerRegexWithPrefix("}}}");
+    const templateBreakerRegex = breakerRegexWithPrefix("}}");
+    const tableBreakerRegex = breakerRegexWithPrefix("\\|}");
+    const headingBreakerRegex = breakerRegexWithPrefix("\n");
+    const tagBreakerRegexCache = {};
+    const nowikiTagBreakerRegexCache = {};
 
     function highlightSyntax()
     {
         lastText = wpTextbox1.value;
-        var text = lastText.replace(/['\\]/g, "\\$&") + "\n";
-        var i = 0;
+        const text = `${lastText.replace(/['\\]/g, "\\$&") }\n`;
+        let i = 0;
 
-        var css = "";
-        var spanNumber = 0;
-        var lastColor;
-        var before = true;
+        let css = "";
+        let spanNumber = 0;
+        let lastColor;
+        let before = true;
 
         function writeText(text, color)
         {
             if (color != lastColor)
             {
-                css += "'}#s" + spanNumber;
+                css += `'}#s${ spanNumber}`;
                 if (before)
                 {
                     css += ":before{";
@@ -75,7 +75,7 @@
                 }
                 if (color)
                 {
-                    css += "background-color:" + color + ";";
+                    css += `background-color:${ color };`;
                 }
                 css += "content:'";
                 lastColor = color;
@@ -85,7 +85,7 @@
 
         function highlightBlock(color, breakerRegex, assumedBold, assumedItalic)
         {
-            var match;
+            let match;
 
             for (breakerRegex.lastIndex = i; match = breakerRegex.exec(text); breakerRegex.lastIndex = i)
             {
@@ -96,7 +96,7 @@
                     return;
                 }
 
-                var endIndexOfLastColor = breakerRegex.lastIndex - match[0].length;
+                const endIndexOfLastColor = breakerRegex.lastIndex - match[0].length;
                 if (i < endIndexOfLastColor)
                 {
                     writeText(text.substring(i, endIndexOfLastColor), color);
@@ -146,7 +146,7 @@
                         }
                         else
                         {
-                            var tagEnd = text.indexOf(">", i) + 1;
+                            const tagEnd = text.indexOf(">", i) + 1;
                             if (tagEnd == 0)
                             {
                                 writeText("<", color);
@@ -161,12 +161,12 @@
                             }
                             else
                             {
-                                var tagName = match[0].substring(1);
+                                const tagName = match[0].substring(1);
 
                                 if (syntaxHighlighterConfig.sourceTags.indexOf(tagName) != -1)
                                 {
-                                    var stopAfter = "</" + tagName + ">";
-                                    var endIndex = text.indexOf(stopAfter, i);
+                                    const stopAfter = `</${ tagName }>`;
+                                    let endIndex = text.indexOf(stopAfter, i);
                                     if (endIndex == -1)
                                     {
                                         endIndex = text.length;
@@ -190,7 +190,7 @@
                                     i = tagEnd;
                                     if (!tagBreakerRegexCache[tagName])
                                     {
-                                        tagBreakerRegexCache[tagName] = breakerRegexWithPrefix("</" + tagName + ">");
+                                        tagBreakerRegexCache[tagName] = breakerRegexWithPrefix(`</${ tagName }>`);
                                     }
                                     highlightBlock(syntaxHighlighterConfig.tagColor || color, tagBreakerRegexCache[tagName]);
                                 }
@@ -285,7 +285,7 @@
             }
         }
 
-        var startTime = Date.now();
+        const startTime = Date.now();
         highlightBlock("", defaultBreakerRegex);
 
         if (i < text.length)
@@ -293,7 +293,7 @@
             writeText(text.substring(i), "");
         }
 
-        var endTime = Date.now();
+        const endTime = Date.now();
 
         if (endTime - startTime > syntaxHighlighterConfig.timeout)
         {
@@ -305,11 +305,11 @@
             parentObserver.disconnect();
             syntaxStyleTextNode.nodeValue = "";
 
-            var errorMessage = {
+            let errorMessage = {
             	zh: "由于渲染耗时过长， Syntax highlighting 已在本页禁用。在设定中渲染时间被限制在$1毫秒以内，但这次我们耗去了$2毫秒。您可以尝试关闭一些标签页和程序，并点击“显示预览”或“显示更改”。如果这不起作用，请尝试更换一个不同的浏览器。如果这还不起作用，请尝试更换一个更快的电脑=w=。",
                 en: "Syntax highlighting on this page was disabled because it took too long. The maximum allowed highlighting time is $1ms, and your computer took $2ms. Try closing some tabs and programs and clicking \"Show preview\" or \"Show changes\". If that doesn't work, try a different web browser, and if that doesn't work, try a faster computer.",
             };
-            var wgUserLanguage = mw.config.get("wgUserLanguage");
+            const wgUserLanguage = mw.config.get("wgUserLanguage");
 
             errorMessage = errorMessage[wgUserLanguage] || errorMessage[wgUserLanguage.substring(0, wgUserLanguage.indexOf("-"))] || errorMessage.en;
 
@@ -325,16 +325,16 @@
 
         if (maxSpanNumber < spanNumber)
         {
-            var fragment = document.createDocumentFragment();
+            const fragment = document.createDocumentFragment();
             do
             {
-                fragment.appendChild(document.createElement("span")).id = "s" + ++maxSpanNumber;
+                fragment.appendChild(document.createElement("span")).id = `s${ ++maxSpanNumber}`;
             }
             while (maxSpanNumber < spanNumber);
             wpTextbox0.appendChild(fragment);
         }
 
-        syntaxStyleTextNode.nodeValue = css.substring(2).replace(/\n/g, "\\A ") + "'}";
+        syntaxStyleTextNode.nodeValue = `${css.substring(2).replace(/\n/g, "\\A ") }'}`;
     }
 
     function syncScrollX()
@@ -378,9 +378,9 @@
         }
         if (wpTextbox1.offsetHeight != wpTextbox0.offsetHeight)
         {
-            var height = wpTextbox1.offsetHeight + "px";
+            const height = `${wpTextbox1.offsetHeight }px`;
             wpTextbox0.style.height = height;
-            wpTextbox1.style.marginTop = "-" + height;
+            wpTextbox1.style.marginTop = `-${ height}`;
         }
     }
 
@@ -388,7 +388,7 @@
     {
         function configureColor(parameterName, hardcodedFallback, defaultOk)
         {
-            if (typeof(syntaxHighlighterConfig[parameterName]) == "undefined")
+            if (typeof syntaxHighlighterConfig[parameterName] === "undefined")
             {
                 syntaxHighlighterConfig[parameterName] = syntaxHighlighterSiteConfig[parameterName];
             }
@@ -397,11 +397,11 @@
             {
                 syntaxHighlighterConfig[parameterName] = hardcodedFallback;
             }
-            else if (typeof(syntaxHighlighterConfig[parameterName]) != "undefined")
+            else if (typeof syntaxHighlighterConfig[parameterName] !== "undefined")
             {
                 return;
             }
-            else if (typeof(syntaxHighlighterConfig.defaultColor) != "undefined" && defaultOk)
+            else if (typeof syntaxHighlighterConfig.defaultColor !== "undefined" && defaultOk)
             {
                 syntaxHighlighterConfig[parameterName] = syntaxHighlighterConfig.defaultColor;
             }
@@ -434,19 +434,19 @@
         syntaxHighlighterConfig.voidTags = syntaxHighlighterConfig.voidTags || syntaxHighlighterSiteConfig.voidTags || ["br", "hr"];
         syntaxHighlighterConfig.timeout = syntaxHighlighterConfig.timeout || syntaxHighlighterSiteConfig.timeout || 50;
 
-        syntaxHighlighterConfig.nowikiTags.forEach(function(tagName) {
+        syntaxHighlighterConfig.nowikiTags.forEach((tagName) => {
             nowikiTagBreakerRegexCache[tagName] = nowikiTagBreakerRegex(tagName);
         });
 
         wpTextbox0 = document.createElement("div");
         wpTextbox1 = document.getElementById("wpTextbox1");
 
-        var syntaxStyleElement = document.createElement("style");
+        const syntaxStyleElement = document.createElement("style");
         syntaxStyleTextNode = syntaxStyleElement.appendChild(document.createTextNode(""));
 
-        var wpTextbox1Style = window.getComputedStyle(wpTextbox1);
+        const wpTextbox1Style = window.getComputedStyle(wpTextbox1);
 
-        var resize = (wpTextbox1Style.resize == "vertical" || wpTextbox1Style.resize == "both" ? "vertical" : "none");
+        const resize = wpTextbox1Style.resize == "vertical" || wpTextbox1Style.resize == "both" ? "vertical" : "none";
 
         wpTextbox0.dir = wpTextbox1.dir;
         wpTextbox0.id = "wpTextbox0";
@@ -486,9 +486,9 @@
         wpTextbox1.style.resize = resize;
         wpTextbox1.style.width = "100%";
         wpTextbox1.style.wordWrap = "normal";
-        wpTextbox1.style.height = wpTextbox0.style.height = wpTextbox1.offsetHeight + "px";
+        wpTextbox1.style.height = wpTextbox0.style.height = `${wpTextbox1.offsetHeight }px`;
 
-        wpTextbox1.style.marginTop = -wpTextbox1.offsetHeight + "px";
+        wpTextbox1.style.marginTop = `${-wpTextbox1.offsetHeight }px`;
         wpTextbox1.parentNode.insertBefore(wpTextbox0, wpTextbox1);
 
         document.head.appendChild(syntaxStyleElement);
@@ -504,8 +504,8 @@
         highlightSyntax();
     }
 
-    var wgAction = mw.config.get("wgAction");
-    var layoutEngine = $.client.profile().layout;
+    const wgAction = mw.config.get("wgAction");
+    const layoutEngine = $.client.profile().layout;
     if ((wgAction == "edit" || wgAction == "submit") && mw.config.get("wgPageContentModel") == "wikitext" && layoutEngine != "trident" && layoutEngine != "edge")
     {
         if (document.readyState == "complete")

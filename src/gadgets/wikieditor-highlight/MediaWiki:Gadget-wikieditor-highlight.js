@@ -4,11 +4,11 @@
 "use strict";
 var __awaiter = function(thisArg, _arguments, P, generator) {
     function adopt(value) {
-        return value instanceof P ? value : new P(function(resolve) {
+        return value instanceof P ? value : new P((resolve) => {
             resolve(value);
         });
     }
-    return new(P || (P = Promise))(function(resolve, reject) {
+    return new(P || (P = Promise))((resolve, reject) => {
         function fulfilled(value) {
             try {
                 step(generator.next(value));
@@ -19,7 +19,7 @@ var __awaiter = function(thisArg, _arguments, P, generator) {
 
         function rejected(value) {
             try {
-                step(generator["throw"](value));
+                step(generator.throw(value));
             } catch (e) {
                 reject(e);
             }
@@ -32,20 +32,20 @@ var __awaiter = function(thisArg, _arguments, P, generator) {
     });
 };
 var __generator = function(thisArg, body) {
-    var _ = {
+    let _ = {
             label: 0,
             sent: function() {
-                if (t[0] & 1) throw t[1];
+                if (t[0] & 1) {throw t[1];}
                 return t[1];
             },
             trys: [],
-            ops: []
+            ops: [],
         },
         f, y, t, g;
     return g = {
         next: verb(0),
         "throw": verb(1),
-        "return": verb(2)
+        "return": verb(2),
     }, typeof Symbol === "function" && (g[Symbol.iterator] = function() {
         return this;
     }), g;
@@ -57,10 +57,10 @@ var __generator = function(thisArg, body) {
     }
 
     function step(op) {
-        if (f) throw new TypeError("Generator is already executing.");
-        while (_) try {
-            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
-            if (y = 0, t) op = [op[0] & 2, t.value];
+        if (f) {throw new TypeError("Generator is already executing.");}
+        while (_) {try {
+            if (f = 1, y && (t = op[0] & 2 ? y.return : op[0] ? y.throw || ((t = y.return) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) {return t;}
+            if (y = 0, t) {op = [op[0] & 2, t.value];}
             switch (op[0]) {
                 case 0:
                 case 1:
@@ -70,7 +70,7 @@ var __generator = function(thisArg, body) {
                     _.label++;
                     return {
                         value: op[1],
-                        done: false
+                        done: false,
                     };
                 case 5:
                     _.label++;
@@ -86,7 +86,7 @@ var __generator = function(thisArg, body) {
                         _ = 0;
                         continue;
                     }
-                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) {
+                    if (op[0] === 3 && (!t || op[1] > t[0] && op[1] < t[3])) {
                         _.label = op[1];
                         break;
                     }
@@ -100,7 +100,7 @@ var __generator = function(thisArg, body) {
                         _.ops.push(op);
                         break;
                     }
-                    if (t[2]) _.ops.pop();
+                    if (t[2]) {_.ops.pop();}
                     _.trys.pop();
                     continue;
             }
@@ -110,19 +110,19 @@ var __generator = function(thisArg, body) {
             y = 0;
         } finally {
             f = t = 0;
-        }
-        if (op[0] & 5) throw op[1];
+        }}
+        if (op[0] & 5) {throw op[1];}
         return {
             value: op[0] ? op[1] : void 0,
-            done: true
+            done: true,
         };
     }
 };
-$(function() {
+$(() => {
     return (function() {
         return __awaiter(void 0, void 0, void 0, function() {
-            var cm, $doc, state, $textarea, isAdvanced, ns, init, $form, btn, fn, submit, shared, update, initAndUpdate, group;
-            return __generator(this, function(_a) {
+            let cm, $doc, state, $textarea, isAdvanced, ns, init, $form, btn, fn, submit, shared, update, initAndUpdate, group;
+            return __generator(this, (_a) => {
                 switch (_a.label) {
                     case 0:
                         if (!["edit", "submit"].includes(mw.config.get("wgAction")) ||
@@ -135,8 +135,8 @@ $(function() {
                         ns = mw.config.get("wgNamespaceNumber");
                         init = function() {
                             return __awaiter(void 0, void 0, void 0, function() {
-                                var $search, addon, config;
-                                return __generator(this, function(_a) {
+                                let $search, addon, config;
+                                return __generator(this, (_a) => {
                                     switch (_a.label) {
                                         case 0:
                                             mw.loader.load("//fastly.jsdelivr.net/npm/codemirror@5.65.1/lib/codemirror.min.css", "text/css");
@@ -144,7 +144,7 @@ $(function() {
                                             mw.loader.addStyleTag("\n#wikiEditor-ui-toolbar .menu {\n    position: relative;\n    z-index: 5;\n}\n\n.CodeMirror pre {\n    font-family: Monaco, Menlo, \"Ubuntu Mono\", Consolas, \"source-code-pro\", monospace;\n}\n\n.skin-vector #wpTextbox1:not([readonly])+.CodeMirror {\n    font-size: 13px;\n    line-height: 1.5;\n}\n\n#wpTextbox1[readonly]+.CodeMirror,\n.skin-minerva #wpTextbox1+.CodeMirror {\n    font-size: 16px;\n    line-height: 1.2;\n    border: 1px solid #c8ccd1;\n}\n\n.cm-matchingbracket,\n.cm-nonmatchingbracket {\n    margin: -1px;\n    border: 1px solid #c0c0c0;\n}\n\n.cm-matchingbracket {\n    background-color: #0b04;\n}\n\n.cm-nonmatchingbracket {\n    background-color: #ec14;\n}\n            ");
                                             $search = $(".group-search a");
                                             addon = function() {
-                                                var Pos = CodeMirror.Pos,
+                                                const Pos = CodeMirror.Pos,
                                                     defaults = {
                                                         bracketRegex: /[{}[\]]/,
                                                         maxScanLineLength: 3000,
@@ -154,43 +154,43 @@ $(function() {
                                                         maxHighlightLineLength: 1000,
                                                         highlightNonMatching: true,
                                                     };
-                                                var matching = {
+                                                const matching = {
                                                     "[": "]>",
                                                     "]": "[<",
                                                     "{": "}>",
                                                     "}": "{<",
                                                 };
-                                                var pair = {
+                                                const pair = {
                                                     "[": /[[\]]/,
                                                     "]": /[[\]]/,
                                                     "{": /[{}]/,
                                                     "}": /[{}]/,
                                                 };
-                                                var bracketRegex = function(config) {
+                                                const bracketRegex = function(config) {
                                                     return config && config.bracketRegex;
                                                 };
-                                                var scanForBracket = function(cm, where, dir, style, config) {
-                                                    var maxScanLen = config && config.maxScanLineLength;
-                                                    var maxScanLines = config && config.maxScanLines;
-                                                    var stack = [];
-                                                    var re = bracketRegex(config);
-                                                    var lineEnd = dir > 0 ? Math.min(where.line + maxScanLines, cm.lineCount()) : Math.max(-1, where.line - maxScanLines);
-                                                    var lineNo = where.line;
+                                                const scanForBracket = function(cm, where, dir, style, config) {
+                                                    const maxScanLen = config && config.maxScanLineLength;
+                                                    const maxScanLines = config && config.maxScanLines;
+                                                    const stack = [];
+                                                    const re = bracketRegex(config);
+                                                    const lineEnd = dir > 0 ? Math.min(where.line + maxScanLines, cm.lineCount()) : Math.max(-1, where.line - maxScanLines);
+                                                    let lineNo = where.line;
                                                     for (; lineNo !== lineEnd; lineNo += dir) {
-                                                        var line = cm.getLine(lineNo);
+                                                        const line = cm.getLine(lineNo);
                                                         if (!line || line.length > maxScanLen) {
                                                             continue;
                                                         }
-                                                        var end = dir > 0 ? line.length : -1;
-                                                        var pos = dir > 0 ? 0 : line.length - 1;
+                                                        const end = dir > 0 ? line.length : -1;
+                                                        let pos = dir > 0 ? 0 : line.length - 1;
                                                         if (lineNo === where.line) {
                                                             pos = where.ch - (dir < 0 ? 1 : 0);
                                                         }
                                                         for (; pos !== end; pos += dir) {
-                                                            var ch = line.charAt(pos);
+                                                            const ch = line.charAt(pos);
                                                             if (re.test(ch) && (style === undefined ||
                                                                     (cm.getTokenTypeAt(Pos(lineNo, pos + 1)) || "") === (style || ""))) {
-                                                                var match = matching[ch];
+                                                                const match = matching[ch];
                                                                 if (match && match.charAt(1) === ">" === dir > 0) {
                                                                     stack.push(ch);
                                                                 } else if (stack.length === 0) {
@@ -206,25 +206,25 @@ $(function() {
                                                     }
                                                     return lineNo - dir === (dir > 0 ? cm.lastLine() : cm.firstLine()) ? false : null;
                                                 };
-                                                var findMatchingBracket = function(cm, where, config) {
-                                                    var line = cm.getLine(where.line);
-                                                    var re = bracketRegex(config);
-                                                    var afterCursor = config && config.afterCursor;
-                                                    var pos = !afterCursor && where.ch > 0 ? where.ch - 1 : where.ch;
-                                                    var key = line.charAt(pos);
-                                                    var match = re.test(key) && matching[key];
+                                                const findMatchingBracket = function(cm, where, config) {
+                                                    const line = cm.getLine(where.line);
+                                                    const re = bracketRegex(config);
+                                                    const afterCursor = config && config.afterCursor;
+                                                    const pos = !afterCursor && where.ch > 0 ? where.ch - 1 : where.ch;
+                                                    const key = line.charAt(pos);
+                                                    const match = re.test(key) && matching[key];
                                                     if (!match) {
                                                         return null;
                                                     }
-                                                    var dir = match.charAt(1) === ">" ? 1 : -1;
+                                                    const dir = match.charAt(1) === ">" ? 1 : -1;
                                                     if (config && config.strict && dir > 0 !== (pos === where.ch)) {
                                                         return null;
                                                     }
-                                                    var newConfig = Object.assign({}, config, {
+                                                    const newConfig = Object.assign({}, config, {
                                                         bracketRegex: pair[key],
                                                     });
-                                                    var style = cm.getTokenTypeAt(Pos(where.line, pos + 1));
-                                                    var found = scanForBracket(cm, Pos(where.line, pos + (dir > 0 ? 1 : 0)), dir, style, newConfig);
+                                                    const style = cm.getTokenTypeAt(Pos(where.line, pos + 1));
+                                                    const found = scanForBracket(cm, Pos(where.line, pos + (dir > 0 ? 1 : 0)), dir, style, newConfig);
                                                     if (found === null) {
                                                         return null;
                                                     }
@@ -235,21 +235,21 @@ $(function() {
                                                         forward: dir > 0,
                                                     };
                                                 };
-                                                var markChar = function(cm, pos, style) {
+                                                const markChar = function(cm, pos, style) {
                                                     return cm.markText(pos, Pos(pos.line, pos.ch + 1), {
                                                         className: style,
                                                     });
                                                 };
-                                                var matchBrackets = function(cm, autoclear, _config) {
-                                                    var config = _config || cm.state.matchBrackets;
-                                                    var maxHighlightLen = config && config.maxHighlightLineLength;
-                                                    var highlightNonMatching = config && config.highlightNonMatching;
-                                                    var marks = [];
-                                                    cm.listSelections().forEach(function(range) {
-                                                        var match = range.empty() && findMatchingBracket(cm, range.head, config);
+                                                const matchBrackets = function(cm, autoclear, _config) {
+                                                    const config = _config || cm.state.matchBrackets;
+                                                    const maxHighlightLen = config && config.maxHighlightLineLength;
+                                                    const highlightNonMatching = config && config.highlightNonMatching;
+                                                    const marks = [];
+                                                    cm.listSelections().forEach((range) => {
+                                                        const match = range.empty() && findMatchingBracket(cm, range.head, config);
                                                         if (match && (match.match || highlightNonMatching) &&
                                                             cm.getLine(match.from.line).length <= maxHighlightLen) {
-                                                            var style = match.match ? "cm-matchingbracket" : "cm-nonmatchingbracket";
+                                                            const style = match.match ? "cm-matchingbracket" : "cm-nonmatchingbracket";
                                                             marks.push(markChar(cm, match.from, style));
                                                             if (match.to && cm.getLine(match.to.line).length <= maxHighlightLen) {
                                                                 marks.push(markChar(cm, match.to, style));
@@ -257,9 +257,9 @@ $(function() {
                                                         }
                                                     });
                                                     if (marks.length) {
-                                                        var clear = function() {
-                                                            cm.operation(function() {
-                                                                marks.forEach(function(mark) {
+                                                        const clear = function() {
+                                                            cm.operation(() => {
+                                                                marks.forEach((mark) => {
                                                                     mark.clear();
                                                                 });
                                                             });
@@ -271,8 +271,8 @@ $(function() {
                                                         }
                                                     }
                                                 };
-                                                var doMatchBrackets = function(cm) {
-                                                    cm.operation(function() {
+                                                const doMatchBrackets = function(cm) {
+                                                    cm.operation(() => {
                                                         if (cm.state.matchBrackets.currentlyHighlighted) {
                                                             cm.state.matchBrackets.currentlyHighlighted();
                                                             cm.state.matchBrackets.currentlyHighlighted = null;
@@ -280,13 +280,13 @@ $(function() {
                                                         cm.state.matchBrackets.currentlyHighlighted = matchBrackets(cm, false);
                                                     });
                                                 };
-                                                var clearHighlighted = function(cm) {
+                                                const clearHighlighted = function(cm) {
                                                     if (cm.state.matchBrackets && cm.state.matchBrackets.currentlyHighlighted) {
                                                         cm.state.matchBrackets.currentlyHighlighted();
                                                         cm.state.matchBrackets.currentlyHighlighted = null;
                                                     }
                                                 };
-                                                CodeMirror.defineOption("matchBrackets", false, function(cm, val, old) {
+                                                CodeMirror.defineOption("matchBrackets", false, (cm, val, old) => {
                                                     if (old && old !== CodeMirror.Init) {
                                                         cm.off("cursorActivity", doMatchBrackets);
                                                         cm.off("focus", doMatchBrackets);
@@ -300,7 +300,7 @@ $(function() {
                                                         cm.on("blur", clearHighlighted);
                                                     }
                                                 });
-                                                CodeMirror.defineExtension("matchBrackets", function(config) {
+                                                CodeMirror.defineExtension("matchBrackets", (config) => {
                                                     matchBrackets(CodeMirror, true, config);
                                                 });
                                             };
@@ -319,7 +319,7 @@ $(function() {
                                             })];
                                         case 2:
                                             _a.sent();
-                                            if (!(ns === 274)) return [3 /*break*/ , 4];
+                                            if (!(ns === 274)) {return [3 /*break*/ , 4];}
                                             return [4 /*yield*/ , Promise.all([
                                                 $.get({
                                                     dataType: "script",
@@ -417,7 +417,7 @@ $(function() {
                             icon: "highlight",
                             framed: false,
                             title: "代码高亮开关",
-                        }).on("click", function() {
+                        }).on("click", () => {
                             if (cm) {
                                 $doc.toggle();
                                 update();
@@ -435,7 +435,7 @@ $(function() {
                                 return this;
                             },
                             getCaretPosition: function(options) {
-                                var caretPos = cm.indexFromPos(cm.getCursor("from")),
+                                const caretPos = cm.indexFromPos(cm.getCursor("from")),
                                     endPos = cm.indexFromPos(cm.getCursor("to"));
                                 if (options.startAndEnd) {
                                     return [caretPos, endPos];
@@ -471,7 +471,7 @@ $(function() {
                         };
                         initAndUpdate = function() {
                             return __awaiter(void 0, void 0, void 0, function() {
-                                return __generator(this, function(_a) {
+                                return __generator(this, (_a) => {
                                     switch (_a.label) {
                                         case 0:
                                             return [4 /*yield*/ , init()];
@@ -484,13 +484,13 @@ $(function() {
                             });
                         };
                         group = $("#wikiEditor-section-main > .group-insert")[0];
-                        $textarea.on("wikiEditor-toolbar-doneInitialSections", function() {
+                        $textarea.on("wikiEditor-toolbar-doneInitialSections", () => {
                             btn.$element.appendTo("#wikiEditor-section-main > .group-insert");
                         });
                         if (group && !group.contains(btn.$element[0])) {
                             $textarea.trigger("wikiEditor-toolbar-doneInitialSections");
                         }
-                        if (!state) return [3 /*break*/ , 3];
+                        if (!state) {return [3 /*break*/ , 3];}
                         return [4 /*yield*/ , mw.loader.using("ext.wikiEditor")];
                     case 1:
                         _a.sent();

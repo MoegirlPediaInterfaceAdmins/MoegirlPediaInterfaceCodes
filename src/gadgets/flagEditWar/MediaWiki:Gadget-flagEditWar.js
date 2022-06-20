@@ -22,7 +22,7 @@ $(() => {
                 autoHide: false,
                 tag: "lr-flagEditWar",
             });
-            let data = (await api.get({
+            const data = (await api.get({
                 action: "query",
                 list: "logevents",
                 letype: "protect",

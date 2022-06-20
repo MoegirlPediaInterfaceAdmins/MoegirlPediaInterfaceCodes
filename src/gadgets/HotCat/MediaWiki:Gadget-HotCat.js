@@ -1,3 +1,4 @@
+"use strict";
 /**
   * https://commons.wikimedia.org/wiki/MediaWiki:Gadget-HotCat.js
   * 同步到 https://commons.wikimedia.org/w/index.php?title=MediaWiki:Gadget-HotCat.js&oldid=578342698

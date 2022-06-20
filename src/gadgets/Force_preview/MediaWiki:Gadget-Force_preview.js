@@ -1,18 +1,18 @@
 "use strict";
-$(function() {
-    var wgPermittedGroups = ["autoconfirmed"]; //默认只允许自动确认用户绕过强制预览。
+$(() => {
+    const wgPermittedGroups = ["autoconfirmed"]; //默认只允许自动确认用户绕过强制预览。
     //检测两个数组是否有重复元素
     function intersects(arr1, arr2) {
         if (!Array.isArray(arr1) || !Array.isArray(arr2))
-            return false;
-        for (var i1 = 0, l1 = arr1.length; i1 < l1; i1++) {
+        {return false;}
+        for (let i1 = 0, l1 = arr1.length; i1 < l1; i1++) {
             if (arr1.indexOf(arr1[i1]) === -1)
-                continue; // 检测是否为空位
-            for (var i2 = 0, l2 = arr2.length; i2 < l2; i2++) {
+            {continue;} // 检测是否为空位
+            for (let i2 = 0, l2 = arr2.length; i2 < l2; i2++) {
                 if (arr2.indexOf(arr2[i2]) === -1)
-                    continue;
+                {continue;}
                 if (arr1[i1] === arr2[i2])
-                    return true;
+                {return true;}
             }
         }
         return false;
@@ -20,23 +20,23 @@ $(function() {
     if (mw.config.get("wgAction") !== "edit" || intersects(mw.config.get("wgUserGroups"), wgPermittedGroups) && +mw.user.options.get("gadget-ForcePreviewUponUserRequest", 0) !== 1) {
         return;
     }
-    var saveButton = $("#wpSave");
-    var previewButton = $("#wpPreview");
-    var previewContainer = $("#wikiPreview");
-    var isUserChosenPreviewLive = [true, 1, "1"].includes(mw.user.options.get("uselivepreview"));
-    var isPreviewedLive = false;
+    const saveButton = $("#wpSave");
+    const previewButton = $("#wpPreview");
+    const previewContainer = $("#wikiPreview");
+    const isUserChosenPreviewLive = [true, 1, "1"].includes(mw.user.options.get("uselivepreview"));
+    let isPreviewedLive = false;
     if (!saveButton[0]) {
         return;
     }
-    var oldSaveBottonValue = saveButton.val();
-    var tcb = $("#TencentCaptchaBtn");
+    const oldSaveBottonValue = saveButton.val();
+    const tcb = $("#TencentCaptchaBtn");
     if (tcb.length > 0) {
         tcb.attr("disabled", "disabled").hide().after('<button type="button" class="mw-ui-button mw-ui-progressive mw-ui-primary" style="display: block;" disabled="disabled">请先预览</button>');
     }
     saveButton.attr("disabled", "disabled").val("预览一次后才可保存内容").css("font-weight", "normal").parent().removeClass("oo-ui-widget-enabled oo-ui-flaggedElement-primary oo-ui-flaggedElement-progressive").addClass("oo-ui-widget-disabled");
-    var hook = mw.hook("wikipage.editform");
-    var hookFunc = function hookFunc() {
-        var previewArea = previewContainer.children(".mw-content-ltr, .mw-content-rtl");
+    const hook = mw.hook("wikipage.editform");
+    const hookFunc = function hookFunc() {
+        const previewArea = previewContainer.children(".mw-content-ltr, .mw-content-rtl");
         if (previewArea[0] && previewArea.is(":not(:empty)")) {
             if (!isPreviewedLive) {
                 isPreviewedLive = true;
@@ -49,21 +49,21 @@ $(function() {
             hook.remove(hookFunc);
         }
     };
-    previewButton.closest(".oo-ui-buttonElement-framed").addClass("oo-ui-flaggedElement-primary oo-ui-flaggedElement-progressive").on("click", function(e) {
+    previewButton.closest(".oo-ui-buttonElement-framed").addClass("oo-ui-flaggedElement-primary oo-ui-flaggedElement-progressive").on("click", (e) => {
         if (isUserChosenPreviewLive && !isPreviewedLive) {
             hook.add(hookFunc);
         }
     });
-    var captureSupported = false;
+    let captureSupported = false;
     try {
-        var options = Object.defineProperty({}, "capture", {
+        const options = Object.defineProperty({}, "capture", {
             get: function() {
                 captureSupported = true;
-            }
+            },
         });
         window.addEventListener("test", null, options);
     } catch (err) {}
-    saveButton[0].addEventListener("click", function(e) {
+    saveButton[0].addEventListener("click", (e) => {
         if (!isPreviewedLive) {
             e.preventDefault();
             e.stopImmediatePropagation();
@@ -74,7 +74,7 @@ $(function() {
         capture: true,
     } : true);
     if ("MutationObserver" in window) {
-        var observer = new MutationObserver(function() {
+        const observer = new MutationObserver(() => {
             if (!isPreviewedLive) {
                 if (saveButton.is(":enabled")) {
                     saveButton.attr("disabled", "disabled");
@@ -88,7 +88,7 @@ $(function() {
         observer.observe(saveButton[0], {
             attributes: true,
             childList: true,
-            subtree: true
+            subtree: true,
         });
     }
 });

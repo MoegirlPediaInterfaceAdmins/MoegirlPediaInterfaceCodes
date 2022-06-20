@@ -1,3 +1,4 @@
-$(function() {
-    $("#pt-mycontris").append("(" + mw.config.get("wgUserEditCount") + ")");
+"use strict";
+$(() => {
+    $("#pt-mycontris").append(`(${ mw.config.get("wgUserEditCount") })`);
 });

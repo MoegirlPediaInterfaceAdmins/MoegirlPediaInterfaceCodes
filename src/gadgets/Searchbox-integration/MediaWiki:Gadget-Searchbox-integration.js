@@ -1,3 +1,4 @@
-$(function () {
-    $('#p-search').prependTo('#p-personal');
+"use strict";
+$(() => {
+    $("#p-search").prependTo("#p-personal");
 });

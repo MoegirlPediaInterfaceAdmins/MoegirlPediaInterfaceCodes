@@ -8,16 +8,16 @@ var AsyncLock = function (opts) {
     // lock is reentrant for same domain
     this.domainReentrant = opts.domainReentrant || false;
     if (this.domainReentrant) {
-        if (typeof process === 'undefined' || typeof process.domain === 'undefined') {
-            throw new Error('Domain-reentrant locks require `process.domain` to exist. Please flip `opts.domainReentrant = false`, ' +
-                'use a NodeJS version that still implements Domain, or install a browser polyfill.');
+        if (typeof process === "undefined" || typeof process.domain === "undefined") {
+            throw new Error("Domain-reentrant locks require `process.domain` to exist. Please flip `opts.domainReentrant = false`, " +
+                "use a NodeJS version that still implements Domain, or install a browser polyfill.");
         }
         // domain of current running func {key : fn}
         this.domains = Object.create(null);
     }
     this.timeout = opts.timeout || AsyncLock.DEFAULT_TIMEOUT;
     this.maxOccupationTime = opts.maxOccupationTime || AsyncLock.DEFAULT_MAX_OCCUPATION_TIME;
-    if (opts.maxPending === Infinity || (Number.isInteger(opts.maxPending) && opts.maxPending >= 0)) {
+    if (opts.maxPending === Infinity || Number.isInteger(opts.maxPending) && opts.maxPending >= 0) {
         this.maxPending = opts.maxPending;
     }
     else {
@@ -39,28 +39,28 @@ AsyncLock.prototype.acquire = function (key, fn, cb, opts) {
     if (Array.isArray(key)) {
         return this._acquireBatch(key, fn, cb, opts);
     }
-    if (typeof (fn) !== 'function') {
-        throw new Error('You must pass a function to execute');
+    if (typeof fn !== "function") {
+        throw new Error("You must pass a function to execute");
     }
     // faux-deferred promise using new Promise() (as Promise.defer is deprecated)
-    var deferredResolve = null;
-    var deferredReject = null;
-    var deferred = null;
-    if (typeof (cb) !== 'function') {
+    let deferredResolve = null;
+    let deferredReject = null;
+    let deferred = null;
+    if (typeof cb !== "function") {
         opts = cb;
         cb = null;
         // will return a promise
-        deferred = new this.Promise(function (resolve, reject) {
+        deferred = new this.Promise((resolve, reject) => {
             deferredResolve = resolve;
             deferredReject = reject;
         });
     }
     opts = opts || {};
-    var resolved = false;
-    var timer = null;
-    var occupationTimer = null;
-    var self = this;
-    var done = function (locked, err, ret) {
+    let resolved = false;
+    let timer = null;
+    let occupationTimer = null;
+    const self = this;
+    const done = function (locked, err, ret) {
         if (occupationTimer) {
             clearTimeout(occupationTimer);
             occupationTimer = null;
@@ -75,7 +75,7 @@ AsyncLock.prototype.acquire = function (key, fn, cb, opts) {
         }
         if (!resolved) {
             if (!deferred) {
-                if (typeof (cb) === 'function') {
+                if (typeof cb === "function") {
                     cb(err, ret);
                 }
             }
@@ -97,7 +97,7 @@ AsyncLock.prototype.acquire = function (key, fn, cb, opts) {
             }
         }
     };
-    var exec = function (locked) {
+    let exec = function (locked) {
         if (resolved) { // may due to timed out
             return done(locked);
         }
@@ -110,8 +110,8 @@ AsyncLock.prototype.acquire = function (key, fn, cb, opts) {
         }
         // Callback mode
         if (fn.length === 1) {
-            var called = false;
-            fn(function (err, ret) {
+            let called = false;
+            fn((err, ret) => {
                 if (!called) {
                     called = true;
                     done(locked, err, ret);
@@ -120,14 +120,14 @@ AsyncLock.prototype.acquire = function (key, fn, cb, opts) {
         }
         else {
             // Promise mode
-            self._promiseTry(function () {
+            self._promiseTry(() => {
                 return fn();
             })
-                .then(function (ret) {
-                done(locked, undefined, ret);
-            }, function (error) {
-                done(locked, error);
-            });
+                .then((ret) => {
+                    done(locked, undefined, ret);
+                }, (error) => {
+                    done(locked, error);
+                });
         }
     };
     if (self.domainReentrant && !!process.domain) {
@@ -143,10 +143,10 @@ AsyncLock.prototype.acquire = function (key, fn, cb, opts) {
         exec(false);
     }
     else if (self.queues[key].length >= self.maxPending) {
-        done(false, new Error('Too many pending tasks in queue ' + key));
+        done(false, new Error(`Too many pending tasks in queue ${ key}`));
     }
     else {
-        var taskFn = function () {
+        const taskFn = function () {
             exec(true);
         };
         if (opts.skipQueue) {
@@ -155,19 +155,19 @@ AsyncLock.prototype.acquire = function (key, fn, cb, opts) {
         else {
             self.queues[key].push(taskFn);
         }
-        var timeout = opts.timeout || self.timeout;
+        const timeout = opts.timeout || self.timeout;
         if (timeout) {
-            timer = setTimeout(function () {
+            timer = setTimeout(() => {
                 timer = null;
-                done(false, new Error('async-lock timed out in queue ' + key));
+                done(false, new Error(`async-lock timed out in queue ${ key}`));
             }, timeout);
         }
     }
-    var maxOccupationTime = opts.maxOccupationTime || self.maxOccupationTime;
+    const maxOccupationTime = opts.maxOccupationTime || self.maxOccupationTime;
     if (maxOccupationTime) {
-        occupationTimer = setTimeout(function () {
-            if (!!self.queues[key]) {
-                done(false, new Error('Maximum occupation time is exceeded in queue ' + key));
+        occupationTimer = setTimeout(() => {
+            if (self.queues[key]) {
+                done(false, new Error(`Maximum occupation time is exceeded in queue ${ key}`));
             }
         }, maxOccupationTime);
     }
@@ -192,28 +192,28 @@ AsyncLock.prototype.acquire = function (key, fn, cb, opts) {
  * fn1(cb);
  */
 AsyncLock.prototype._acquireBatch = function (keys, fn, cb, opts) {
-    if (typeof (cb) !== 'function') {
+    if (typeof cb !== "function") {
         opts = cb;
         cb = null;
     }
-    var self = this;
-    var getFn = function (key, fn) {
+    const self = this;
+    const getFn = function (key, fn) {
         return function (cb) {
             self.acquire(key, fn, cb, opts);
         };
     };
-    var fnx = fn;
-    keys.reverse().forEach(function (key) {
+    let fnx = fn;
+    keys.reverse().forEach((key) => {
         fnx = getFn(key, fnx);
     });
-    if (typeof (cb) === 'function') {
+    if (typeof cb === "function") {
         fnx(cb);
     }
     else {
-        return new this.Promise(function (resolve, reject) {
+        return new this.Promise((resolve, reject) => {
             // check for promise mode in case keys is empty array
             if (fnx.length === 1) {
-                fnx(function (err, ret) {
+                fnx((err, ret) => {
                     if (err) {
                         reject(err);
                     }
@@ -237,9 +237,9 @@ AsyncLock.prototype.isBusy = function (key) {
     if (!key) {
         return Object.keys(this.queues).length > 0;
     }
-    else {
-        return !!this.queues[key];
-    }
+    
+    return !!this.queues[key];
+    
 };
 /**
  * Promise.try() implementation to become independent of Q-specific methods

@@ -14,7 +14,7 @@
  */
 "use strict";
 (function () {
-    var defaults = {
+    const defaults = {
         src: "data-src",
         srcset: "data-srcset",
         selector: ".lazyload",
@@ -30,22 +30,22 @@
     * @returns {Object}          Merged values of defaults and options
     */
     var extend = function () {
-        var args = [];
-        for (var _i = 0; _i < arguments.length; _i++) {
+        const args = [];
+        for (let _i = 0; _i < arguments.length; _i++) {
             args[_i] = arguments[_i];
         }
-        var extended = {};
-        var deep = false;
-        var i = 0;
-        var length = args.length;
+        const extended = {};
+        let deep = false;
+        let i = 0;
+        const length = args.length;
         /* Check if a deep merge */
         if (Object.prototype.toString.call(args[0]) === "[object Boolean]") {
             deep = args[0];
             i++;
         }
         /* Merge the object into the extended object */
-        var merge = function (obj) {
-            for (var prop in obj) {
+        const merge = function (obj) {
+            for (const prop in obj) {
                 if (Object.prototype.hasOwnProperty.call(obj, prop)) {
                     /* If deep merge and property is an object, merge properties */
                     if (deep && Object.prototype.toString.call(obj[prop]) === "[object Object]") {
@@ -59,12 +59,12 @@
         };
         /* Loop through each object and conduct a merge */
         for (; i < length; i++) {
-            var obj = args[i];
+            const obj = args[i];
             merge(obj);
         }
         return extended;
     };
-    var LazyLoad = /** @class */ (function () {
+    const LazyLoad = /** @class */ (function () {
         function LazyLoad(images, options) {
             this.settings = extend(defaults, options || {});
             this.images = images || document.querySelectorAll(this.settings.selector);
@@ -77,18 +77,18 @@
                 this.loadImages();
                 return;
             }
-            var self = this;
-            var observerConfig = {
+            const self = this;
+            const observerConfig = {
                 root: this.settings.root,
                 rootMargin: this.settings.rootMargin,
                 threshold: [this.settings.threshold],
             };
-            this.observer = new IntersectionObserver(function (entries) {
-                Array.prototype.forEach.call(entries, function (entry) {
+            this.observer = new IntersectionObserver((entries) => {
+                Array.prototype.forEach.call(entries, (entry) => {
                     if (entry.isIntersecting) {
                         self.observer.unobserve(entry.target);
-                        var src = entry.target.getAttribute(self.settings.src);
-                        var srcset = entry.target.getAttribute(self.settings.srcset);
+                        const src = entry.target.getAttribute(self.settings.src);
+                        const srcset = entry.target.getAttribute(self.settings.srcset);
                         if ("img" === entry.target.tagName.toLowerCase()) {
                             if (src) {
                                 entry.target.src = src;
@@ -98,12 +98,12 @@
                             }
                         }
                         else {
-                            entry.target.style.backgroundImage = "url(" + src + ")";
+                            entry.target.style.backgroundImage = `url(${ src })`;
                         }
                     }
                 });
             }, observerConfig);
-            Array.prototype.forEach.call(this.images, function (image) {
+            Array.prototype.forEach.call(this.images, (image) => {
                 self.observer.observe(image);
             });
         };
@@ -118,10 +118,10 @@
             if (!this.settings) {
                 return;
             }
-            var self = this;
-            Array.prototype.forEach.call(this.images, function (image) {
-                var src = image.getAttribute(self.settings.src);
-                var srcset = image.getAttribute(self.settings.srcset);
+            const self = this;
+            Array.prototype.forEach.call(this.images, (image) => {
+                const src = image.getAttribute(self.settings.src);
+                const srcset = image.getAttribute(self.settings.srcset);
                 if ("img" === image.tagName.toLowerCase()) {
                     if (src) {
                         image.src = src;
@@ -131,7 +131,7 @@
                     }
                 }
                 else {
-                    image.style.backgroundImage = "url('" + src + "')";
+                    image.style.backgroundImage = `url('${ src }')`;
                 }
             });
         };
@@ -148,9 +148,9 @@
         return new LazyLoad(images, options);
     };
     if (window.jQuery) {
-        var $_1 = window.jQuery;
+        const $_1 = window.jQuery;
         $_1.fn.lazyload = function (_options) {
-            var options = _options || {};
+            const options = _options || {};
             options.attribute = options.attribute || "data-src";
             new LazyLoad($_1.makeArray(this), options);
             return this;

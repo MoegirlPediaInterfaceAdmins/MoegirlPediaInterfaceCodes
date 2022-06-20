@@ -330,7 +330,7 @@ $(() => {
                         this.stackLayout.setItem(this.confirmPanel);
                         this.updateSize();
                         dfd.resolve();
-                    })["catch"]((e) => {
+                    }).catch((e) => {
                         dfd.reject(new OO.ui.Error(e, { recoverable: false }));
                     });
                     return dfd.promise();
@@ -351,7 +351,7 @@ $(() => {
                         this.reasonTextarea.setValue("");
                         this.emailInput.setValue("");
                         dfd.resolve();
-                    })["catch"]((e) => {
+                    }).catch((e) => {
                         dfd.reject(new OO.ui.Error(e));
                     });
                     return dfd.promise();
@@ -435,9 +435,9 @@ $(() => {
         }
         $("#mw-notification-area").appendTo($body);
         windowManager.openWindow(reportDialog);
-    }
+    };
 
-    switch (mw.config.get('skin')) {
+    switch (mw.config.get("skin")) {
         case "moeskin":
             mw.hook("moeskin.pagetools").add(({ addPageToolsButton }) => {
                 /** @type {JQuery<HTMLAnchorElement>} */

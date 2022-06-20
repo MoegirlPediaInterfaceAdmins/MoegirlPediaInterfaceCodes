@@ -10,7 +10,7 @@
     } else if (typeof define === "function" && define.amd) {
         define([], f);
     } else {
-        var g;
+        let g;
         if (typeof window !== "undefined") {
             g = window;
         } else if (typeof global !== "undefined") {
@@ -22,49 +22,49 @@
         }
         g.localforage = f();
     }
-})(function() {
-    var define, module, exports;
+})(() => {
+    let define, module, exports;
     return function e(t, n, r) {
         function s(o, u) {
             if (!n[o]) {
                 if (!t[o]) {
-                    var a = typeof require == "function" && require;
-                    if (!u && a) return a(o, !0);
-                    if (i) return i(o, !0);
-                    var f = new Error("Cannot find module '" + o + "'");
+                    const a = typeof require === "function" && require;
+                    if (!u && a) {return a(o, !0);}
+                    if (i) {return i(o, !0);}
+                    const f = new Error(`Cannot find module '${ o }'`);
                     throw f.code = "MODULE_NOT_FOUND", f;
                 }
-                var l = n[o] = {
-                    exports: {}
+                const l = n[o] = {
+                    exports: {},
                 };
-                t[o][0].call(l.exports, function(e) {
-                    var n = t[o][1][e];
+                t[o][0].call(l.exports, (e) => {
+                    const n = t[o][1][e];
                     return s(n ? n : e);
                 }, l, l.exports, e, t, n, r);
             }
             return n[o].exports;
         }
-        var i = typeof require == "function" && require;
-        for (var o = 0; o < r.length; o++) s(r[o]);
+        var i = typeof require === "function" && require;
+        for (let o = 0; o < r.length; o++) {s(r[o]);}
         return s;
     }({
         1: [function(_dereq_, module, exports) {
             (function(global) {
                 "use strict";
-                var Mutation = global.MutationObserver || global.WebKitMutationObserver;
-                var scheduleDrain; {
+                const Mutation = global.MutationObserver || global.WebKitMutationObserver;
+                let scheduleDrain; {
                     if (Mutation) {
-                        var called = 0;
-                        var observer = new Mutation(nextTick);
-                        var element = global.document.createTextNode("");
+                        let called = 0;
+                        const observer = new Mutation(nextTick);
+                        const element = global.document.createTextNode("");
                         observer.observe(element, {
-                            characterData: true
+                            characterData: true,
                         });
                         scheduleDrain = function() {
                             element.data = called = ++called % 2;
                         };
                     } else if (!global.setImmediate && typeof global.MessageChannel !== "undefined") {
-                        var channel = new global.MessageChannel();
+                        const channel = new global.MessageChannel();
                         channel.port1.onmessage = nextTick;
                         scheduleDrain = function() {
                             channel.port2.postMessage(0);
@@ -73,7 +73,7 @@
                         scheduleDrain = function() {
                             // Create a <script> element; its readystatechange event will be fired asynchronously once it is inserted
                             // into the document. Do so, thus queuing up the task. Remember to clean up once it's been called.
-                            var scriptEl = global.document.createElement("script");
+                            let scriptEl = global.document.createElement("script");
                             scriptEl.onreadystatechange = function() {
                                 nextTick();
                                 scriptEl.onreadystatechange = null;
@@ -88,13 +88,13 @@
                         };
                     }
                 }
-                var draining;
-                var queue = [];
+                let draining;
+                let queue = [];
                 //named nextTick for less confusing stack traces
                 function nextTick() {
                     draining = true;
-                    var i, oldQueue;
-                    var len = queue.length;
+                    let i, oldQueue;
+                    let len = queue.length;
                     while (len) {
                         oldQueue = queue;
                         queue = [];
@@ -116,13 +116,13 @@
         }, {}],
         2: [function(_dereq_, module, exports) {
             "use strict";
-            var immediate = _dereq_(1);
+            const immediate = _dereq_(1);
             /* istanbul ignore next */
             function INTERNAL() {}
-            var handlers = {};
-            var REJECTED = ["REJECTED"];
-            var FULFILLED = ["FULFILLED"];
-            var PENDING = ["PENDING"];
+            const handlers = {};
+            const REJECTED = ["REJECTED"];
+            const FULFILLED = ["FULFILLED"];
+            const PENDING = ["PENDING"];
             module.exports = Promise;
             function Promise(resolver) {
                 if (typeof resolver !== "function") {
@@ -135,16 +135,16 @@
                     safelyResolveThenable(this, resolver);
                 }
             }
-            Promise.prototype["catch"] = function(onRejected) {
+            Promise.prototype.catch = function(onRejected) {
                 return this.then(null, onRejected);
             };
             Promise.prototype.then = function(onFulfilled, onRejected) {
                 if (typeof onFulfilled !== "function" && this.state === FULFILLED || typeof onRejected !== "function" && this.state === REJECTED) {
                     return this;
                 }
-                var promise = new this.constructor(INTERNAL);
+                const promise = new this.constructor(INTERNAL);
                 if (this.state !== PENDING) {
-                    var resolver = this.state === FULFILLED ? onFulfilled : onRejected;
+                    const resolver = this.state === FULFILLED ? onFulfilled : onRejected;
                     unwrap(promise, resolver, this.outcome);
                 } else {
                     this.queue.push(new QueueItem(promise, onFulfilled, onRejected));
@@ -175,8 +175,8 @@
                 unwrap(this.promise, this.onRejected, value);
             };
             function unwrap(promise, func, value) {
-                immediate(function() {
-                    var returnValue;
+                immediate(() => {
+                    let returnValue;
                     try {
                         returnValue = func(value);
                     } catch (e) {
@@ -190,18 +190,18 @@
                 });
             }
             handlers.resolve = function(self, value) {
-                var result = tryCatch(getThen, value);
+                const result = tryCatch(getThen, value);
                 if (result.status === "error") {
                     return handlers.reject(self, result.value);
                 }
-                var thenable = result.value;
+                const thenable = result.value;
                 if (thenable) {
                     safelyResolveThenable(self, thenable);
                 } else {
                     self.state = FULFILLED;
                     self.outcome = value;
-                    var i = -1;
-                    var len = self.queue.length;
+                    let i = -1;
+                    const len = self.queue.length;
                     while (++i < len) {
                         self.queue[i].callFulfilled(value);
                     }
@@ -211,8 +211,8 @@
             handlers.reject = function(self, error) {
                 self.state = REJECTED;
                 self.outcome = error;
-                var i = -1;
-                var len = self.queue.length;
+                let i = -1;
+                const len = self.queue.length;
                 while (++i < len) {
                     self.queue[i].callRejected(error);
                 }
@@ -220,7 +220,7 @@
             };
             function getThen(obj) {
                 // Make sure we only access the accessor once as required by the spec
-                var then = obj && obj.then;
+                const then = obj && obj.then;
                 if (obj && (typeof obj === "object" || typeof obj === "function") && typeof then === "function") {
                     return function appyThen() {
                         then.apply(obj, arguments);
@@ -229,7 +229,7 @@
             }
             function safelyResolveThenable(self, thenable) {
                 // Either fulfill, reject or reject with error
-                var called = false;
+                let called = false;
                 function onError(value) {
                     if (called) {
                         return;
@@ -247,13 +247,13 @@
                 function tryToUnwrap() {
                     thenable(onSuccess, onError);
                 }
-                var result = tryCatch(tryToUnwrap);
+                const result = tryCatch(tryToUnwrap);
                 if (result.status === "error") {
                     onError(result.value);
                 }
             }
             function tryCatch(func, value) {
-                var out = {};
+                const out = {};
                 try {
                     out.value = func(value);
                     out.status = "success";
@@ -272,30 +272,30 @@
             }
             Promise.reject = reject;
             function reject(reason) {
-                var promise = new this(INTERNAL);
+                const promise = new this(INTERNAL);
                 return handlers.reject(promise, reason);
             }
             Promise.all = all;
             function all(iterable) {
-                var self = this;
+                const self = this;
                 if (Object.prototype.toString.call(iterable) !== "[object Array]") {
                     return this.reject(new TypeError("must be an array"));
                 }
-                var len = iterable.length;
-                var called = false;
+                const len = iterable.length;
+                let called = false;
                 if (!len) {
                     return this.resolve([]);
                 }
-                var values = new Array(len);
-                var resolved = 0;
-                var i = -1;
-                var promise = new this(INTERNAL);
+                const values = new Array(len);
+                let resolved = 0;
+                let i = -1;
+                const promise = new this(INTERNAL);
                 while (++i < len) {
                     allResolver(iterable[i], i);
                 }
                 return promise;
                 function allResolver(value, i) {
-                    self.resolve(value).then(resolveFromAll, function(error) {
+                    self.resolve(value).then(resolveFromAll, (error) => {
                         if (!called) {
                             called = true;
                             handlers.reject(promise, error);
@@ -312,28 +312,28 @@
             }
             Promise.race = race;
             function race(iterable) {
-                var self = this;
+                const self = this;
                 if (Object.prototype.toString.call(iterable) !== "[object Array]") {
                     return this.reject(new TypeError("must be an array"));
                 }
-                var len = iterable.length;
-                var called = false;
+                const len = iterable.length;
+                let called = false;
                 if (!len) {
                     return this.resolve([]);
                 }
-                var i = -1;
-                var promise = new this(INTERNAL);
+                let i = -1;
+                const promise = new this(INTERNAL);
                 while (++i < len) {
                     resolver(iterable[i]);
                 }
                 return promise;
                 function resolver(value) {
-                    self.resolve(value).then(function(response) {
+                    self.resolve(value).then((response) => {
                         if (!called) {
                             called = true;
                             handlers.resolve(promise, response);
                         }
-                    }, function(error) {
+                    }, (error) => {
                         if (!called) {
                             called = true;
                             handlers.reject(promise, error);
@@ -342,7 +342,7 @@
                 }
             }
         }, {
-            "1": 1
+            1: 1,
         }],
         3: [function(_dereq_, module, exports) {
             (function(global) {
@@ -352,11 +352,11 @@
                 }
             }).call(this, typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {});
         }, {
-            "2": 2
+            2: 2,
         }],
         4: [function(_dereq_, module, exports) {
             "use strict";
-            var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function(obj) {
+            const _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function(obj) {
                 return typeof obj;
             } : function(obj) {
                 return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
@@ -388,7 +388,7 @@
                     return;
                 }
             }
-            var idb = getIDB();
+            const idb = getIDB();
             function isIndexedDBValid() {
                 try {
                     // Initialize IndexedDB; fall back to vendor-prefixed versions
@@ -400,8 +400,8 @@
                     //
                     // We test for openDatabase because IE Mobile identifies itself
                     // as Safari. Oh the lulz...
-                    var isSafari = typeof openDatabase !== "undefined" && /(Safari|iPhone|iPad|iPod)/.test(navigator.userAgent) && !/Chrome/.test(navigator.userAgent) && !/BlackBerry/.test(navigator.platform);
-                    var hasFetch = typeof fetch === "function" && fetch.toString().indexOf("[native code") !== -1;
+                    const isSafari = typeof openDatabase !== "undefined" && /(Safari|iPhone|iPad|iPod)/.test(navigator.userAgent) && !/Chrome/.test(navigator.userAgent) && !/BlackBerry/.test(navigator.platform);
+                    const hasFetch = typeof fetch === "function" && fetch.toString().indexOf("[native code") !== -1;
                     // Safari <10.1 does not meet our requirements for IDB support
                     // (see: https://github.com/pouchdb/pouchdb/issues/5572).
                     // Safari 10.1 shipped with fetch, we can use that to detect it.
@@ -433,9 +433,9 @@
                     if (e.name !== "TypeError") {
                         throw e;
                     }
-                    var Builder = typeof BlobBuilder !== "undefined" ? BlobBuilder : typeof MSBlobBuilder !== "undefined" ? MSBlobBuilder : typeof MozBlobBuilder !== "undefined" ? MozBlobBuilder : WebKitBlobBuilder;
-                    var builder = new Builder();
-                    for (var i = 0; i < parts.length; i += 1) {
+                    const Builder = typeof BlobBuilder !== "undefined" ? BlobBuilder : typeof MSBlobBuilder !== "undefined" ? MSBlobBuilder : typeof MozBlobBuilder !== "undefined" ? MozBlobBuilder : WebKitBlobBuilder;
+                    const builder = new Builder();
+                    for (let i = 0; i < parts.length; i += 1) {
                         builder.append(parts[i]);
                     }
                     return builder.getBlob(properties.type);
@@ -448,12 +448,12 @@
                 // a global promise object, but it would throw anyway later.
                 _dereq_(3);
             }
-            var Promise$1 = Promise;
+            const Promise$1 = Promise;
             function executeCallback(promise, callback) {
                 if (callback) {
-                    promise.then(function(result) {
+                    promise.then((result) => {
                         callback(null, result);
-                    }, function(error) {
+                    }, (error) => {
                         callback(error);
                     });
                 }
@@ -463,13 +463,13 @@
                     promise.then(callback);
                 }
                 if (typeof errorCallback === "function") {
-                    promise["catch"](errorCallback);
+                    promise.catch(errorCallback);
                 }
             }
             function normalizeKey(key) {
                 // Cast the key to a string, as that's all we can set as a key.
                 if (typeof key !== "string") {
-                    console.warn(key + " used as a key, but it is not a string.");
+                    console.warn(`${key } used as a key, but it is not a string.`);
                     key = String(key);
                 }
                 return key;
@@ -481,23 +481,23 @@
             }
             // Some code originally from async_storage.js in
             // [Gaia](https://github.com/mozilla-b2g/gaia).
-            var DETECT_BLOB_SUPPORT_STORE = "local-forage-detect-blob-support";
-            var supportsBlobs = void 0;
-            var dbContexts = {};
-            var toString = Object.prototype.toString;
+            const DETECT_BLOB_SUPPORT_STORE = "local-forage-detect-blob-support";
+            let supportsBlobs = void 0;
+            const dbContexts = {};
+            const toString = Object.prototype.toString;
             // Transaction Modes
-            var READ_ONLY = "readonly";
-            var READ_WRITE = "readwrite";
+            const READ_ONLY = "readonly";
+            const READ_WRITE = "readwrite";
             // Transform a binary string to an array buffer, because otherwise
             // weird stuff happens when you try to work with the binary string directly.
             // It is known.
             // From http://stackoverflow.com/questions/14967647/ (continues on next line)
             // encode-decode-image-with-base64-breaks-image (2013-04-21)
             function _binStringToArrayBuffer(bin) {
-                var length = bin.length;
-                var buf = new ArrayBuffer(length);
-                var arr = new Uint8Array(buf);
-                for (var i = 0; i < length; i++) {
+                const length = bin.length;
+                const buf = new ArrayBuffer(length);
+                const arr = new Uint8Array(buf);
+                for (let i = 0; i < length; i++) {
                     arr[i] = bin.charCodeAt(i);
                 }
                 return buf;
@@ -518,9 +518,9 @@
             // https://github.com/pouchdb/pouchdb/blob/master/packages/node_modules/pouchdb-adapter-idb/src/blobSupport.js
             //
             function _checkBlobSupportWithoutCaching(idb) {
-                return new Promise$1(function(resolve) {
-                    var txn = idb.transaction(DETECT_BLOB_SUPPORT_STORE, READ_WRITE);
-                    var blob = createBlob([""]);
+                return new Promise$1((resolve) => {
+                    const txn = idb.transaction(DETECT_BLOB_SUPPORT_STORE, READ_WRITE);
+                    const blob = createBlob([""]);
                     txn.objectStore(DETECT_BLOB_SUPPORT_STORE).put(blob, "key");
                     txn.onabort = function(e) {
                         // If the transaction aborts now its due to not being able to
@@ -530,13 +530,13 @@
                         resolve(false);
                     };
                     txn.oncomplete = function() {
-                        var matchedChrome = navigator.userAgent.match(/Chrome\/(\d+)/);
-                        var matchedEdge = navigator.userAgent.match(/Edge\//);
+                        const matchedChrome = navigator.userAgent.match(/Chrome\/(\d+)/);
+                        const matchedEdge = navigator.userAgent.match(/Edge\//);
                         // MS Edge pretends to be Chrome 42:
                         // https://msdn.microsoft.com/en-us/library/hh869301%28v=vs.85%29.aspx
                         resolve(matchedEdge || !matchedChrome || parseInt(matchedChrome[1], 10) >= 43);
                     };
-                })["catch"](function() {
+                }).catch(() => {
                     return false;
                 });
             }
@@ -544,16 +544,16 @@
                 if (typeof supportsBlobs === "boolean") {
                     return Promise$1.resolve(supportsBlobs);
                 }
-                return _checkBlobSupportWithoutCaching(idb).then(function(value) {
+                return _checkBlobSupportWithoutCaching(idb).then((value) => {
                     supportsBlobs = value;
                     return supportsBlobs;
                 });
             }
             function _deferReadiness(dbInfo) {
-                var dbContext = dbContexts[dbInfo.name];
+                const dbContext = dbContexts[dbInfo.name];
                 // Create a deferred object representing the current database operation.
-                var deferredOperation = {};
-                deferredOperation.promise = new Promise$1(function(resolve, reject) {
+                const deferredOperation = {};
+                deferredOperation.promise = new Promise$1((resolve, reject) => {
                     deferredOperation.resolve = resolve;
                     deferredOperation.reject = reject;
                 });
@@ -563,15 +563,15 @@
                 if (!dbContext.dbReady) {
                     dbContext.dbReady = deferredOperation.promise;
                 } else {
-                    dbContext.dbReady = dbContext.dbReady.then(function() {
+                    dbContext.dbReady = dbContext.dbReady.then(() => {
                         return deferredOperation.promise;
                     });
                 }
             }
             function _advanceReadiness(dbInfo) {
-                var dbContext = dbContexts[dbInfo.name];
+                const dbContext = dbContexts[dbInfo.name];
                 // Dequeue a deferred operation.
-                var deferredOperation = dbContext.deferredOperations.pop();
+                const deferredOperation = dbContext.deferredOperations.pop();
                 // Resolve its promise (which is part of the database readiness
                 // chain of promises).
                 if (deferredOperation) {
@@ -580,9 +580,9 @@
                 }
             }
             function _rejectReadiness(dbInfo, err) {
-                var dbContext = dbContexts[dbInfo.name];
+                const dbContext = dbContexts[dbInfo.name];
                 // Dequeue a deferred operation.
-                var deferredOperation = dbContext.deferredOperations.pop();
+                const deferredOperation = dbContext.deferredOperations.pop();
                 // Reject its promise (which is part of the database readiness
                 // chain of promises).
                 if (deferredOperation) {
@@ -591,7 +591,7 @@
                 }
             }
             function _getConnection(dbInfo, upgradeNeeded) {
-                return new Promise$1(function(resolve, reject) {
+                return new Promise$1((resolve, reject) => {
                     dbContexts[dbInfo.name] = dbContexts[dbInfo.name] || createDbContext();
                     if (dbInfo.db) {
                         if (upgradeNeeded) {
@@ -601,14 +601,14 @@
                             return resolve(dbInfo.db);
                         }
                     }
-                    var dbArgs = [dbInfo.name];
+                    const dbArgs = [dbInfo.name];
                     if (upgradeNeeded) {
                         dbArgs.push(dbInfo.version);
                     }
-                    var openreq = idb.open.apply(idb, dbArgs);
+                    const openreq = idb.open.apply(idb, dbArgs);
                     if (upgradeNeeded) {
                         openreq.onupgradeneeded = function(e) {
-                            var db = openreq.result;
+                            const db = openreq.result;
                             try {
                                 db.createObjectStore(dbInfo.storeName);
                                 if (e.oldVersion <= 1) {
@@ -617,7 +617,7 @@
                                 }
                             } catch (ex) {
                                 if (ex.name === "ConstraintError") {
-                                    console.warn('The database "' + dbInfo.name + '"' + " has been upgraded from version " + e.oldVersion + " to version " + e.newVersion + ', but the storage "' + dbInfo.storeName + '" already exists.');
+                                    console.warn(`The database "${ dbInfo.name }"` + ` has been upgraded from version ${ e.oldVersion } to version ${ e.newVersion }, but the storage "${ dbInfo.storeName }" already exists.`);
                                 } else {
                                     throw ex;
                                 }
@@ -644,14 +644,14 @@
                 if (!dbInfo.db) {
                     return true;
                 }
-                var isNewStore = !dbInfo.db.objectStoreNames.contains(dbInfo.storeName);
-                var isDowngrade = dbInfo.version < dbInfo.db.version;
-                var isUpgrade = dbInfo.version > dbInfo.db.version;
+                const isNewStore = !dbInfo.db.objectStoreNames.contains(dbInfo.storeName);
+                const isDowngrade = dbInfo.version < dbInfo.db.version;
+                const isUpgrade = dbInfo.version > dbInfo.db.version;
                 if (isDowngrade) {
                     // If the version is not the default one
                     // then warn for impossible downgrade.
                     if (dbInfo.version !== defaultVersion) {
-                        console.warn('The database "' + dbInfo.name + '"' + " can't be downgraded from version " + dbInfo.db.version + " to version " + dbInfo.version + ".");
+                        console.warn(`The database "${ dbInfo.name }"` + ` can't be downgraded from version ${ dbInfo.db.version } to version ${ dbInfo.version }.`);
                     }
                     // Align the versions to prevent errors.
                     dbInfo.version = dbInfo.db.version;
@@ -661,7 +661,7 @@
                     // This will trigger an "upgradeneeded" event which is required
                     // for creating a store.
                     if (isNewStore) {
-                        var incVersion = dbInfo.db.version + 1;
+                        const incVersion = dbInfo.db.version + 1;
                         if (incVersion > dbInfo.version) {
                             dbInfo.version = incVersion;
                         }
@@ -672,15 +672,15 @@
             }
             // encode a blob for indexeddb engines that don't support blobs
             function _encodeBlob(blob) {
-                return new Promise$1(function(resolve, reject) {
-                    var reader = new FileReader();
+                return new Promise$1((resolve, reject) => {
+                    const reader = new FileReader();
                     reader.onerror = reject;
                     reader.onloadend = function(e) {
-                        var base64 = btoa(e.target.result || "");
+                        const base64 = btoa(e.target.result || "");
                         resolve({
                             __local_forage_encoded_blob: true,
                             data: base64,
-                            type: blob.type
+                            type: blob.type,
                         });
                     };
                     reader.readAsBinaryString(blob);
@@ -688,9 +688,9 @@
             }
             // decode an encoded blob
             function _decodeBlob(encodedBlob) {
-                var arrayBuff = _binStringToArrayBuffer(atob(encodedBlob.data));
+                const arrayBuff = _binStringToArrayBuffer(atob(encodedBlob.data));
                 return createBlob([arrayBuff], {
-                    type: encodedBlob.type
+                    type: encodedBlob.type,
                 });
             }
             // is this one of our fancy encoded blobs?
@@ -702,9 +702,9 @@
             // ready when it's been initialized (default) *and* there are no pending
             // operations on the database (initiated by some other instances).
             function _fullyReady(callback) {
-                var self = this;
-                var promise = self._initReady().then(function() {
-                    var dbContext = dbContexts[self._dbInfo.name];
+                const self = this;
+                const promise = self._initReady().then(() => {
+                    const dbContext = dbContexts[self._dbInfo.name];
                     if (dbContext && dbContext.dbReady) {
                         return dbContext.dbReady;
                     }
@@ -717,31 +717,31 @@
             // InvalidStateError while creating a transaction).
             function _tryReconnect(dbInfo) {
                 _deferReadiness(dbInfo);
-                var dbContext = dbContexts[dbInfo.name];
-                var forages = dbContext.forages;
-                for (var i = 0; i < forages.length; i++) {
-                    var forage = forages[i];
+                const dbContext = dbContexts[dbInfo.name];
+                const forages = dbContext.forages;
+                for (let i = 0; i < forages.length; i++) {
+                    const forage = forages[i];
                     if (forage._dbInfo.db) {
                         forage._dbInfo.db.close();
                         forage._dbInfo.db = null;
                     }
                 }
                 dbInfo.db = null;
-                return _getOriginalConnection(dbInfo).then(function(db) {
+                return _getOriginalConnection(dbInfo).then((db) => {
                     dbInfo.db = db;
                     if (_isUpgradeNeeded(dbInfo)) {
                         // Reopen the database for upgrading.
                         return _getUpgradedConnection(dbInfo);
                     }
                     return db;
-                }).then(function(db) {
+                }).then((db) => {
                     // store the latest db reference
                     // in case the db was upgraded
                     dbInfo.db = dbContext.db = db;
-                    for (var i = 0; i < forages.length; i++) {
+                    for (let i = 0; i < forages.length; i++) {
                         forages[i]._dbInfo.db = db;
                     }
-                })["catch"](function(err) {
+                }).catch((err) => {
                     _rejectReadiness(dbInfo, err);
                     throw err;
                 });
@@ -753,11 +753,11 @@
                     retries = 1;
                 }
                 try {
-                    var tx = dbInfo.db.transaction(dbInfo.storeName, mode);
+                    const tx = dbInfo.db.transaction(dbInfo.storeName, mode);
                     callback(null, tx);
                 } catch (err) {
                     if (retries > 0 && (!dbInfo.db || err.name === "InvalidStateError" || err.name === "NotFoundError")) {
-                        return Promise$1.resolve().then(function() {
+                        return Promise$1.resolve().then(() => {
                             if (!dbInfo.db || err.name === "NotFoundError" && !dbInfo.db.objectStoreNames.contains(dbInfo.storeName) && dbInfo.version <= dbInfo.db.version) {
                                 // increase the db version, to create the new ObjectStore
                                 if (dbInfo.db) {
@@ -766,11 +766,11 @@
                                 // Reopen the database for upgrading.
                                 return _getUpgradedConnection(dbInfo);
                             }
-                        }).then(function() {
-                            return _tryReconnect(dbInfo).then(function() {
+                        }).then(() => {
+                            return _tryReconnect(dbInfo).then(() => {
                                 createTransaction(dbInfo, mode, callback, retries - 1);
                             });
-                        })["catch"](callback);
+                        }).catch(callback);
                     }
                     callback(err);
                 }
@@ -784,23 +784,23 @@
                     // Database readiness (promise).
                     dbReady: null,
                     // Deferred operations on the database.
-                    deferredOperations: []
+                    deferredOperations: [],
                 };
             }
             // Open the IndexedDB database (automatically creates one if one didn't
             // previously exist), using any options set in the config.
             function _initStorage(options) {
-                var self = this;
-                var dbInfo = {
-                    db: null
+                const self = this;
+                const dbInfo = {
+                    db: null,
                 };
                 if (options) {
-                    for (var i in options) {
+                    for (const i in options) {
                         dbInfo[i] = options[i];
                     }
                 }
                 // Get the current context of the database;
-                var dbContext = dbContexts[dbInfo.name];
+                let dbContext = dbContexts[dbInfo.name];
                 // ...or create a new context.
                 if (!dbContext) {
                     dbContext = createDbContext();
@@ -815,40 +815,40 @@
                     self.ready = _fullyReady;
                 }
                 // Create an array of initialization states of the related localForages.
-                var initPromises = [];
+                const initPromises = [];
                 function ignoreErrors() {
                     // Don't handle errors here,
                     // just makes sure related localForages aren't pending.
                     return Promise$1.resolve();
                 }
-                for (var j = 0; j < dbContext.forages.length; j++) {
-                    var forage = dbContext.forages[j];
+                for (let j = 0; j < dbContext.forages.length; j++) {
+                    const forage = dbContext.forages[j];
                     if (forage !== self) {
                         // Don't wait for itself...
-                        initPromises.push(forage._initReady()["catch"](ignoreErrors));
+                        initPromises.push(forage._initReady().catch(ignoreErrors));
                     }
                 }
                 // Take a snapshot of the related localForages.
-                var forages = dbContext.forages.slice(0);
+                const forages = dbContext.forages.slice(0);
                 // Initialize the connection process only when
                 // all the related localForages aren't pending.
-                return Promise$1.all(initPromises).then(function() {
+                return Promise$1.all(initPromises).then(() => {
                     dbInfo.db = dbContext.db;
                     // Get the connection or open a new one without upgrade.
                     return _getOriginalConnection(dbInfo);
-                }).then(function(db) {
+                }).then((db) => {
                     dbInfo.db = db;
                     if (_isUpgradeNeeded(dbInfo, self._defaultConfig.version)) {
                         // Reopen the database for upgrading.
                         return _getUpgradedConnection(dbInfo);
                     }
                     return db;
-                }).then(function(db) {
+                }).then((db) => {
                     dbInfo.db = dbContext.db = db;
                     self._dbInfo = dbInfo;
                     // Share the final connection amongst related localForages.
-                    for (var k = 0; k < forages.length; k++) {
-                        var forage = forages[k];
+                    for (let k = 0; k < forages.length; k++) {
+                        const forage = forages[k];
                         if (forage !== self) {
                             // Self is already up-to-date.
                             forage._dbInfo.db = dbInfo.db;
@@ -858,19 +858,19 @@
                 });
             }
             function getItem(key, callback) {
-                var self = this;
+                const self = this;
                 key = normalizeKey(key);
-                var promise = new Promise$1(function(resolve, reject) {
-                    self.ready().then(function() {
-                        createTransaction(self._dbInfo, READ_ONLY, function(err, transaction) {
+                const promise = new Promise$1((resolve, reject) => {
+                    self.ready().then(() => {
+                        createTransaction(self._dbInfo, READ_ONLY, (err, transaction) => {
                             if (err) {
                                 return reject(err);
                             }
                             try {
-                                var store = transaction.objectStore(self._dbInfo.storeName);
-                                var req = store.get(key);
+                                const store = transaction.objectStore(self._dbInfo.storeName);
+                                const req = store.get(key);
                                 req.onsuccess = function() {
-                                    var value = req.result;
+                                    let value = req.result;
                                     if (value === undefined) {
                                         value = null;
                                     }
@@ -886,39 +886,39 @@
                                 reject(e);
                             }
                         });
-                    })["catch"](reject);
+                    }).catch(reject);
                 });
                 executeCallback(promise, callback);
                 return promise;
             }
             // Iterate over all items stored in database.
             function iterate(iterator, callback) {
-                var self = this;
-                var promise = new Promise$1(function(resolve, reject) {
-                    self.ready().then(function() {
-                        createTransaction(self._dbInfo, READ_ONLY, function(err, transaction) {
+                const self = this;
+                const promise = new Promise$1((resolve, reject) => {
+                    self.ready().then(() => {
+                        createTransaction(self._dbInfo, READ_ONLY, (err, transaction) => {
                             if (err) {
                                 return reject(err);
                             }
                             try {
-                                var store = transaction.objectStore(self._dbInfo.storeName);
-                                var req = store.openCursor();
-                                var iterationNumber = 1;
+                                const store = transaction.objectStore(self._dbInfo.storeName);
+                                const req = store.openCursor();
+                                let iterationNumber = 1;
                                 req.onsuccess = function() {
-                                    var cursor = req.result;
+                                    const cursor = req.result;
                                     if (cursor) {
-                                        var value = cursor.value;
+                                        let value = cursor.value;
                                         if (_isEncodedBlob(value)) {
                                             value = _decodeBlob(value);
                                         }
-                                        var result = iterator(value, cursor.key, iterationNumber++);
+                                        const result = iterator(value, cursor.key, iterationNumber++);
                                         // when the iterator callback returns any
                                         // (non-`undefined`) value, then we stop
                                         // the iteration immediately
                                         if (result !== void 0) {
                                             resolve(result);
                                         } else {
-                                            cursor["continue"]();
+                                            cursor.continue();
                                         }
                                     } else {
                                         resolve();
@@ -931,20 +931,20 @@
                                 reject(e);
                             }
                         });
-                    })["catch"](reject);
+                    }).catch(reject);
                 });
                 executeCallback(promise, callback);
                 return promise;
             }
             function setItem(key, value, callback) {
-                var self = this;
+                const self = this;
                 key = normalizeKey(key);
-                var promise = new Promise$1(function(resolve, reject) {
-                    var dbInfo;
-                    self.ready().then(function() {
+                const promise = new Promise$1((resolve, reject) => {
+                    let dbInfo;
+                    self.ready().then(() => {
                         dbInfo = self._dbInfo;
                         if (toString.call(value) === "[object Blob]") {
-                            return _checkBlobSupport(dbInfo.db).then(function(blobSupport) {
+                            return _checkBlobSupport(dbInfo.db).then((blobSupport) => {
                                 if (blobSupport) {
                                     return value;
                                 }
@@ -952,13 +952,13 @@
                             });
                         }
                         return value;
-                    }).then(function(value) {
-                        createTransaction(self._dbInfo, READ_WRITE, function(err, transaction) {
+                    }).then((value) => {
+                        createTransaction(self._dbInfo, READ_WRITE, (err, transaction) => {
                             if (err) {
                                 return reject(err);
                             }
                             try {
-                                var store = transaction.objectStore(self._dbInfo.storeName);
+                                const store = transaction.objectStore(self._dbInfo.storeName);
                                 // The reason we don't _save_ null is because IE 10 does
                                 // not support saving the `null` type in IndexedDB. How
                                 // ironic, given the bug below!
@@ -966,7 +966,7 @@
                                 if (value === null) {
                                     value = undefined;
                                 }
-                                var req = store.put(value, key);
+                                const req = store.put(value, key);
                                 transaction.oncomplete = function() {
                                     // Cast to undefined so the value passed to
                                     // callback/promise is the same as what one would get out
@@ -980,35 +980,35 @@
                                     resolve(value);
                                 };
                                 transaction.onabort = transaction.onerror = function() {
-                                    var err = req.error ? req.error : req.transaction.error;
+                                    const err = req.error ? req.error : req.transaction.error;
                                     reject(err);
                                 };
                             } catch (e) {
                                 reject(e);
                             }
                         });
-                    })["catch"](reject);
+                    }).catch(reject);
                 });
                 executeCallback(promise, callback);
                 return promise;
             }
             function removeItem(key, callback) {
-                var self = this;
+                const self = this;
                 key = normalizeKey(key);
-                var promise = new Promise$1(function(resolve, reject) {
-                    self.ready().then(function() {
-                        createTransaction(self._dbInfo, READ_WRITE, function(err, transaction) {
+                const promise = new Promise$1((resolve, reject) => {
+                    self.ready().then(() => {
+                        createTransaction(self._dbInfo, READ_WRITE, (err, transaction) => {
                             if (err) {
                                 return reject(err);
                             }
                             try {
-                                var store = transaction.objectStore(self._dbInfo.storeName);
+                                const store = transaction.objectStore(self._dbInfo.storeName);
                                 // We use a Grunt task to make this safe for IE and some
                                 // versions of Android (including those used by Cordova).
                                 // Normally IE won't like `.delete()` and will insist on
                                 // using `['delete']()`, but we have a build step that
                                 // fixes this for us now.
-                                var req = store["delete"](key);
+                                const req = store.delete(key);
                                 transaction.oncomplete = function() {
                                     resolve();
                                 };
@@ -1018,56 +1018,56 @@
                                 // The request will be also be aborted if we've exceeded our storage
                                 // space.
                                 transaction.onabort = function() {
-                                    var err = req.error ? req.error : req.transaction.error;
+                                    const err = req.error ? req.error : req.transaction.error;
                                     reject(err);
                                 };
                             } catch (e) {
                                 reject(e);
                             }
                         });
-                    })["catch"](reject);
+                    }).catch(reject);
                 });
                 executeCallback(promise, callback);
                 return promise;
             }
             function clear(callback) {
-                var self = this;
-                var promise = new Promise$1(function(resolve, reject) {
-                    self.ready().then(function() {
-                        createTransaction(self._dbInfo, READ_WRITE, function(err, transaction) {
+                const self = this;
+                const promise = new Promise$1((resolve, reject) => {
+                    self.ready().then(() => {
+                        createTransaction(self._dbInfo, READ_WRITE, (err, transaction) => {
                             if (err) {
                                 return reject(err);
                             }
                             try {
-                                var store = transaction.objectStore(self._dbInfo.storeName);
-                                var req = store.clear();
+                                const store = transaction.objectStore(self._dbInfo.storeName);
+                                const req = store.clear();
                                 transaction.oncomplete = function() {
                                     resolve();
                                 };
                                 transaction.onabort = transaction.onerror = function() {
-                                    var err = req.error ? req.error : req.transaction.error;
+                                    const err = req.error ? req.error : req.transaction.error;
                                     reject(err);
                                 };
                             } catch (e) {
                                 reject(e);
                             }
                         });
-                    })["catch"](reject);
+                    }).catch(reject);
                 });
                 executeCallback(promise, callback);
                 return promise;
             }
             function length(callback) {
-                var self = this;
-                var promise = new Promise$1(function(resolve, reject) {
-                    self.ready().then(function() {
-                        createTransaction(self._dbInfo, READ_ONLY, function(err, transaction) {
+                const self = this;
+                const promise = new Promise$1((resolve, reject) => {
+                    self.ready().then(() => {
+                        createTransaction(self._dbInfo, READ_ONLY, (err, transaction) => {
                             if (err) {
                                 return reject(err);
                             }
                             try {
-                                var store = transaction.objectStore(self._dbInfo.storeName);
-                                var req = store.count();
+                                const store = transaction.objectStore(self._dbInfo.storeName);
+                                const req = store.count();
                                 req.onsuccess = function() {
                                     resolve(req.result);
                                 };
@@ -1078,29 +1078,29 @@
                                 reject(e);
                             }
                         });
-                    })["catch"](reject);
+                    }).catch(reject);
                 });
                 executeCallback(promise, callback);
                 return promise;
             }
             function key(n, callback) {
-                var self = this;
-                var promise = new Promise$1(function(resolve, reject) {
+                const self = this;
+                const promise = new Promise$1((resolve, reject) => {
                     if (n < 0) {
                         resolve(null);
                         return;
                     }
-                    self.ready().then(function() {
-                        createTransaction(self._dbInfo, READ_ONLY, function(err, transaction) {
+                    self.ready().then(() => {
+                        createTransaction(self._dbInfo, READ_ONLY, (err, transaction) => {
                             if (err) {
                                 return reject(err);
                             }
                             try {
-                                var store = transaction.objectStore(self._dbInfo.storeName);
-                                var advanced = false;
-                                var req = store.openKeyCursor();
+                                const store = transaction.objectStore(self._dbInfo.storeName);
+                                let advanced = false;
+                                const req = store.openKeyCursor();
                                 req.onsuccess = function() {
-                                    var cursor = req.result;
+                                    const cursor = req.result;
                                     if (!cursor) {
                                         // this means there weren't enough keys
                                         resolve(null);
@@ -1129,31 +1129,31 @@
                                 reject(e);
                             }
                         });
-                    })["catch"](reject);
+                    }).catch(reject);
                 });
                 executeCallback(promise, callback);
                 return promise;
             }
             function keys(callback) {
-                var self = this;
-                var promise = new Promise$1(function(resolve, reject) {
-                    self.ready().then(function() {
-                        createTransaction(self._dbInfo, READ_ONLY, function(err, transaction) {
+                const self = this;
+                const promise = new Promise$1((resolve, reject) => {
+                    self.ready().then(() => {
+                        createTransaction(self._dbInfo, READ_ONLY, (err, transaction) => {
                             if (err) {
                                 return reject(err);
                             }
                             try {
-                                var store = transaction.objectStore(self._dbInfo.storeName);
-                                var req = store.openKeyCursor();
-                                var keys = [];
+                                const store = transaction.objectStore(self._dbInfo.storeName);
+                                const req = store.openKeyCursor();
+                                const keys = [];
                                 req.onsuccess = function() {
-                                    var cursor = req.result;
+                                    const cursor = req.result;
                                     if (!cursor) {
                                         resolve(keys);
                                         return;
                                     }
                                     keys.push(cursor.key);
-                                    cursor["continue"]();
+                                    cursor.continue();
                                 };
                                 req.onerror = function() {
                                     reject(req.error);
@@ -1162,113 +1162,113 @@
                                 reject(e);
                             }
                         });
-                    })["catch"](reject);
+                    }).catch(reject);
                 });
                 executeCallback(promise, callback);
                 return promise;
             }
             function dropInstance(options, callback) {
                 callback = getCallback.apply(this, arguments);
-                var currentConfig = this.config();
+                const currentConfig = this.config();
                 options = typeof options !== "function" && options || {};
                 if (!options.name) {
                     options.name = options.name || currentConfig.name;
                     options.storeName = options.storeName || currentConfig.storeName;
                 }
-                var self = this;
-                var promise;
+                const self = this;
+                let promise;
                 if (!options.name) {
                     promise = Promise$1.reject("Invalid arguments");
                 } else {
-                    var isCurrentDb = options.name === currentConfig.name && self._dbInfo.db;
-                    var dbPromise = isCurrentDb ? Promise$1.resolve(self._dbInfo.db) : _getOriginalConnection(options).then(function(db) {
-                        var dbContext = dbContexts[options.name];
-                        var forages = dbContext.forages;
+                    const isCurrentDb = options.name === currentConfig.name && self._dbInfo.db;
+                    const dbPromise = isCurrentDb ? Promise$1.resolve(self._dbInfo.db) : _getOriginalConnection(options).then((db) => {
+                        const dbContext = dbContexts[options.name];
+                        const forages = dbContext.forages;
                         dbContext.db = db;
-                        for (var i = 0; i < forages.length; i++) {
+                        for (let i = 0; i < forages.length; i++) {
                             forages[i]._dbInfo.db = db;
                         }
                         return db;
                     });
                     if (!options.storeName) {
-                        promise = dbPromise.then(function(db) {
+                        promise = dbPromise.then((db) => {
                             _deferReadiness(options);
-                            var dbContext = dbContexts[options.name];
-                            var forages = dbContext.forages;
+                            const dbContext = dbContexts[options.name];
+                            const forages = dbContext.forages;
                             db.close();
-                            for (var i = 0; i < forages.length; i++) {
-                                var forage = forages[i];
+                            for (let i = 0; i < forages.length; i++) {
+                                const forage = forages[i];
                                 forage._dbInfo.db = null;
                             }
-                            var dropDBPromise = new Promise$1(function(resolve, reject) {
-                                var req = idb.deleteDatabase(options.name);
+                            const dropDBPromise = new Promise$1((resolve, reject) => {
+                                const req = idb.deleteDatabase(options.name);
                                 req.onerror = req.onblocked = function(err) {
-                                    var db = req.result;
+                                    const db = req.result;
                                     if (db) {
                                         db.close();
                                     }
                                     reject(err);
                                 };
                                 req.onsuccess = function() {
-                                    var db = req.result;
+                                    const db = req.result;
                                     if (db) {
                                         db.close();
                                     }
                                     resolve(db);
                                 };
                             });
-                            return dropDBPromise.then(function(db) {
+                            return dropDBPromise.then((db) => {
                                 dbContext.db = db;
-                                for (var i = 0; i < forages.length; i++) {
-                                    var _forage = forages[i];
+                                for (let i = 0; i < forages.length; i++) {
+                                    const _forage = forages[i];
                                     _advanceReadiness(_forage._dbInfo);
                                 }
-                            })["catch"](function(err) {
-                                (_rejectReadiness(options, err) || Promise$1.resolve())["catch"](function() {});
+                            }).catch((err) => {
+                                (_rejectReadiness(options, err) || Promise$1.resolve()).catch(() => {});
                                 throw err;
                             });
                         });
                     } else {
-                        promise = dbPromise.then(function(db) {
+                        promise = dbPromise.then((db) => {
                             if (!db.objectStoreNames.contains(options.storeName)) {
                                 return;
                             }
-                            var newVersion = db.version + 1;
+                            const newVersion = db.version + 1;
                             _deferReadiness(options);
-                            var dbContext = dbContexts[options.name];
-                            var forages = dbContext.forages;
+                            const dbContext = dbContexts[options.name];
+                            const forages = dbContext.forages;
                             db.close();
-                            for (var i = 0; i < forages.length; i++) {
-                                var forage = forages[i];
+                            for (let i = 0; i < forages.length; i++) {
+                                const forage = forages[i];
                                 forage._dbInfo.db = null;
                                 forage._dbInfo.version = newVersion;
                             }
-                            var dropObjectPromise = new Promise$1(function(resolve, reject) {
-                                var req = idb.open(options.name, newVersion);
+                            const dropObjectPromise = new Promise$1((resolve, reject) => {
+                                const req = idb.open(options.name, newVersion);
                                 req.onerror = function(err) {
-                                    var db = req.result;
+                                    const db = req.result;
                                     db.close();
                                     reject(err);
                                 };
                                 req.onupgradeneeded = function() {
-                                    var db = req.result;
+                                    const db = req.result;
                                     db.deleteObjectStore(options.storeName);
                                 };
                                 req.onsuccess = function() {
-                                    var db = req.result;
+                                    const db = req.result;
                                     db.close();
                                     resolve(db);
                                 };
                             });
-                            return dropObjectPromise.then(function(db) {
+                            return dropObjectPromise.then((db) => {
                                 dbContext.db = db;
-                                for (var j = 0; j < forages.length; j++) {
-                                    var _forage2 = forages[j];
+                                for (let j = 0; j < forages.length; j++) {
+                                    const _forage2 = forages[j];
                                     _forage2._dbInfo.db = db;
                                     _advanceReadiness(_forage2._dbInfo);
                                 }
-                            })["catch"](function(err) {
-                                (_rejectReadiness(options, err) || Promise$1.resolve())["catch"](function() {});
+                            }).catch((err) => {
+                                (_rejectReadiness(options, err) || Promise$1.resolve()).catch(() => {});
                                 throw err;
                             });
                         });
@@ -1277,7 +1277,7 @@
                 executeCallback(promise, callback);
                 return promise;
             }
-            var asyncStorage = {
+            const asyncStorage = {
                 _driver: "asyncStorage",
                 _initStorage: _initStorage,
                 _support: isIndexedDBValid(),
@@ -1289,7 +1289,7 @@
                 length: length,
                 key: key,
                 keys: keys,
-                dropInstance: dropInstance
+                dropInstance: dropInstance,
             };
             function isWebSQLValid() {
                 return typeof openDatabase === "function";
@@ -1297,40 +1297,40 @@
             // Sadly, the best way to save binary data in WebSQL/localStorage is serializing
             // it to Base64, so this is how we store it to prevent very strange errors with less
             // verbose ways of binary <-> string data storage.
-            var BASE_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
-            var BLOB_TYPE_PREFIX = "~~local_forage_type~";
-            var BLOB_TYPE_PREFIX_REGEX = /^~~local_forage_type~([^~]+)~/;
-            var SERIALIZED_MARKER = "__lfsc__:";
-            var SERIALIZED_MARKER_LENGTH = SERIALIZED_MARKER.length;
+            const BASE_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+            const BLOB_TYPE_PREFIX = "~~local_forage_type~";
+            const BLOB_TYPE_PREFIX_REGEX = /^~~local_forage_type~([^~]+)~/;
+            const SERIALIZED_MARKER = "__lfsc__:";
+            const SERIALIZED_MARKER_LENGTH = SERIALIZED_MARKER.length;
             // OMG the serializations!
-            var TYPE_ARRAYBUFFER = "arbf";
-            var TYPE_BLOB = "blob";
-            var TYPE_INT8ARRAY = "si08";
-            var TYPE_UINT8ARRAY = "ui08";
-            var TYPE_UINT8CLAMPEDARRAY = "uic8";
-            var TYPE_INT16ARRAY = "si16";
-            var TYPE_INT32ARRAY = "si32";
-            var TYPE_UINT16ARRAY = "ur16";
-            var TYPE_UINT32ARRAY = "ui32";
-            var TYPE_FLOAT32ARRAY = "fl32";
-            var TYPE_FLOAT64ARRAY = "fl64";
-            var TYPE_SERIALIZED_MARKER_LENGTH = SERIALIZED_MARKER_LENGTH + TYPE_ARRAYBUFFER.length;
-            var toString$1 = Object.prototype.toString;
+            const TYPE_ARRAYBUFFER = "arbf";
+            const TYPE_BLOB = "blob";
+            const TYPE_INT8ARRAY = "si08";
+            const TYPE_UINT8ARRAY = "ui08";
+            const TYPE_UINT8CLAMPEDARRAY = "uic8";
+            const TYPE_INT16ARRAY = "si16";
+            const TYPE_INT32ARRAY = "si32";
+            const TYPE_UINT16ARRAY = "ur16";
+            const TYPE_UINT32ARRAY = "ui32";
+            const TYPE_FLOAT32ARRAY = "fl32";
+            const TYPE_FLOAT64ARRAY = "fl64";
+            const TYPE_SERIALIZED_MARKER_LENGTH = SERIALIZED_MARKER_LENGTH + TYPE_ARRAYBUFFER.length;
+            const toString$1 = Object.prototype.toString;
             function stringToBuffer(serializedString) {
                 // Fill the string into a ArrayBuffer.
-                var bufferLength = serializedString.length * .75;
-                var len = serializedString.length;
-                var i;
-                var p = 0;
-                var encoded1, encoded2, encoded3, encoded4;
+                let bufferLength = serializedString.length * 0.75;
+                const len = serializedString.length;
+                let i;
+                let p = 0;
+                let encoded1, encoded2, encoded3, encoded4;
                 if (serializedString[serializedString.length - 1] === "=") {
                     bufferLength--;
                     if (serializedString[serializedString.length - 2] === "=") {
                         bufferLength--;
                     }
                 }
-                var buffer = new ArrayBuffer(bufferLength);
-                var bytes = new Uint8Array(buffer);
+                const buffer = new ArrayBuffer(bufferLength);
+                const bytes = new Uint8Array(buffer);
                 for (i = 0; i < len; i += 4) {
                     encoded1 = BASE_CHARS.indexOf(serializedString[i]);
                     encoded2 = BASE_CHARS.indexOf(serializedString[i + 1]);
@@ -1347,9 +1347,9 @@
             // storage library.
             function bufferToString(buffer) {
                 // base64-arraybuffer
-                var bytes = new Uint8Array(buffer);
-                var base64String = "";
-                var i;
+                const bytes = new Uint8Array(buffer);
+                let base64String = "";
+                let i;
                 for (i = 0; i < bytes.length; i += 3) {
                     /*jslint bitwise: true */
                     base64String += BASE_CHARS[bytes[i] >> 2];
@@ -1358,9 +1358,9 @@
                     base64String += BASE_CHARS[bytes[i + 2] & 63];
                 }
                 if (bytes.length % 3 === 2) {
-                    base64String = base64String.substring(0, base64String.length - 1) + "=";
+                    base64String = `${base64String.substring(0, base64String.length - 1) }=`;
                 } else if (bytes.length % 3 === 1) {
-                    base64String = base64String.substring(0, base64String.length - 2) + "==";
+                    base64String = `${base64String.substring(0, base64String.length - 2) }==`;
                 }
                 return base64String;
             }
@@ -1368,7 +1368,7 @@
             // instructs the `setItem()` callback/promise to be executed). This is how
             // we store binary data with localStorage.
             function serialize(value, callback) {
-                var valueType = "";
+                let valueType = "";
                 if (value) {
                     valueType = toString$1.call(value);
                 }
@@ -1379,8 +1379,8 @@
                 if (value && (valueType === "[object ArrayBuffer]" || value.buffer && toString$1.call(value.buffer) === "[object ArrayBuffer]")) {
                     // Convert binary arrays to a string and prefix the string with
                     // a special marker.
-                    var buffer;
-                    var marker = SERIALIZED_MARKER;
+                    let buffer;
+                    let marker = SERIALIZED_MARKER;
                     if (value instanceof ArrayBuffer) {
                         buffer = value;
                         marker += TYPE_ARRAYBUFFER;
@@ -1411,10 +1411,10 @@
                     callback(marker + bufferToString(buffer));
                 } else if (valueType === "[object Blob]") {
                     // Conver the blob to a binaryArray and then to a string.
-                    var fileReader = new FileReader();
+                    const fileReader = new FileReader();
                     fileReader.onload = function() {
                         // Backwards-compatible prefix for the blob type.
-                        var str = BLOB_TYPE_PREFIX + value.type + "~" + bufferToString(this.result);
+                        const str = `${BLOB_TYPE_PREFIX + value.type }~${ bufferToString(this.result)}`;
                         callback(SERIALIZED_MARKER + TYPE_BLOB + str);
                     };
                     fileReader.readAsArrayBuffer(value);
@@ -1445,17 +1445,17 @@
                 // The following code deals with deserializing some kind of Blob or
                 // TypedArray. First we separate out the type of data we're dealing
                 // with from the data itself.
-                var serializedString = value.substring(TYPE_SERIALIZED_MARKER_LENGTH);
-                var type = value.substring(SERIALIZED_MARKER_LENGTH, TYPE_SERIALIZED_MARKER_LENGTH);
-                var blobType;
+                let serializedString = value.substring(TYPE_SERIALIZED_MARKER_LENGTH);
+                const type = value.substring(SERIALIZED_MARKER_LENGTH, TYPE_SERIALIZED_MARKER_LENGTH);
+                let blobType;
                 // Backwards-compatible blob type serialization strategy.
                 // DBs created with older versions of localForage will simply not have the blob type.
                 if (type === TYPE_BLOB && BLOB_TYPE_PREFIX_REGEX.test(serializedString)) {
-                    var matcher = serializedString.match(BLOB_TYPE_PREFIX_REGEX);
+                    const matcher = serializedString.match(BLOB_TYPE_PREFIX_REGEX);
                     blobType = matcher[1];
                     serializedString = serializedString.substring(matcher[0].length);
                 }
-                var buffer = stringToBuffer(serializedString);
+                const buffer = stringToBuffer(serializedString);
                 // Return the right type based on the code/type set during
                 // serialization.
                 switch (type) {
@@ -1463,7 +1463,7 @@
                         return buffer;
                     case TYPE_BLOB:
                         return createBlob([buffer], {
-                            type: blobType
+                            type: blobType,
                         });
                     case TYPE_INT8ARRAY:
                         return new Int8Array(buffer);
@@ -1484,14 +1484,14 @@
                     case TYPE_FLOAT64ARRAY:
                         return new Float64Array(buffer);
                     default:
-                        throw new Error("Unkown type: " + type);
+                        throw new Error(`Unkown type: ${ type}`);
                 }
             }
-            var localforageSerializer = {
+            const localforageSerializer = {
                 serialize: serialize,
                 deserialize: deserialize,
                 stringToBuffer: stringToBuffer,
-                bufferToString: bufferToString
+                bufferToString: bufferToString,
             };
             /*
              * Includes code from:
@@ -1503,21 +1503,21 @@
              * Licensed under the MIT license.
              */
             function createDbTable(t, dbInfo, callback, errorCallback) {
-                t.executeSql("CREATE TABLE IF NOT EXISTS " + dbInfo.storeName + " " + "(id INTEGER PRIMARY KEY, key unique, value)", [], callback, errorCallback);
+                t.executeSql(`CREATE TABLE IF NOT EXISTS ${ dbInfo.storeName } ` + "(id INTEGER PRIMARY KEY, key unique, value)", [], callback, errorCallback);
             }
             // Open the WebSQL database (automatically creates one if one didn't
             // previously exist), using any options set in the config.
             function _initStorage$1(options) {
-                var self = this;
-                var dbInfo = {
-                    db: null
+                const self = this;
+                const dbInfo = {
+                    db: null,
                 };
                 if (options) {
-                    for (var i in options) {
+                    for (const i in options) {
                         dbInfo[i] = typeof options[i] !== "string" ? options[i].toString() : options[i];
                     }
                 }
-                var dbInfoPromise = new Promise$1(function(resolve, reject) {
+                const dbInfoPromise = new Promise$1((resolve, reject) => {
                     // Open the database; the openDatabase API will automatically
                     // create it for us if it doesn't exist.
                     try {
@@ -1526,11 +1526,11 @@
                         return reject(e);
                     }
                     // Create our key/value table if it doesn't exist.
-                    dbInfo.db.transaction(function(t) {
-                        createDbTable(t, dbInfo, function() {
+                    dbInfo.db.transaction((t) => {
+                        createDbTable(t, dbInfo, () => {
                             self._dbInfo = dbInfo;
                             resolve();
-                        }, function(t, error) {
+                        }, (t, error) => {
                             reject(error);
                         });
                     }, reject);
@@ -1539,13 +1539,13 @@
                 return dbInfoPromise;
             }
             function tryExecuteSql(t, dbInfo, sqlStatement, args, callback, errorCallback) {
-                t.executeSql(sqlStatement, args, callback, function(t, error) {
+                t.executeSql(sqlStatement, args, callback, (t, error) => {
                     if (error.code === error.SYNTAX_ERR) {
-                        t.executeSql("SELECT name FROM sqlite_master " + "WHERE type='table' AND name = ?", [dbInfo.storeName], function(t, results) {
+                        t.executeSql("SELECT name FROM sqlite_master " + "WHERE type='table' AND name = ?", [dbInfo.storeName], (t, results) => {
                             if (!results.rows.length) {
                                 // if the table is missing (was deleted)
                                 // re-create it table and retry
-                                createDbTable(t, dbInfo, function() {
+                                createDbTable(t, dbInfo, () => {
                                     t.executeSql(sqlStatement, args, callback, errorCallback);
                                 }, errorCallback);
                             } else {
@@ -1558,41 +1558,41 @@
                 }, errorCallback);
             }
             function getItem$1(key, callback) {
-                var self = this;
+                const self = this;
                 key = normalizeKey(key);
-                var promise = new Promise$1(function(resolve, reject) {
-                    self.ready().then(function() {
-                        var dbInfo = self._dbInfo;
-                        dbInfo.db.transaction(function(t) {
-                            tryExecuteSql(t, dbInfo, "SELECT * FROM " + dbInfo.storeName + " WHERE key = ? LIMIT 1", [key], function(t, results) {
-                                var result = results.rows.length ? results.rows.item(0).value : null;
+                const promise = new Promise$1((resolve, reject) => {
+                    self.ready().then(() => {
+                        const dbInfo = self._dbInfo;
+                        dbInfo.db.transaction((t) => {
+                            tryExecuteSql(t, dbInfo, `SELECT * FROM ${ dbInfo.storeName } WHERE key = ? LIMIT 1`, [key], (t, results) => {
+                                let result = results.rows.length ? results.rows.item(0).value : null;
                                 // Check to see if this is serialized content we need to
                                 // unpack.
                                 if (result) {
                                     result = dbInfo.serializer.deserialize(result);
                                 }
                                 resolve(result);
-                            }, function(t, error) {
+                            }, (t, error) => {
                                 reject(error);
                             });
                         });
-                    })["catch"](reject);
+                    }).catch(reject);
                 });
                 executeCallback(promise, callback);
                 return promise;
             }
             function iterate$1(iterator, callback) {
-                var self = this;
-                var promise = new Promise$1(function(resolve, reject) {
-                    self.ready().then(function() {
-                        var dbInfo = self._dbInfo;
-                        dbInfo.db.transaction(function(t) {
-                            tryExecuteSql(t, dbInfo, "SELECT * FROM " + dbInfo.storeName, [], function(t, results) {
-                                var rows = results.rows;
-                                var length = rows.length;
-                                for (var i = 0; i < length; i++) {
-                                    var item = rows.item(i);
-                                    var result = item.value;
+                const self = this;
+                const promise = new Promise$1((resolve, reject) => {
+                    self.ready().then(() => {
+                        const dbInfo = self._dbInfo;
+                        dbInfo.db.transaction((t) => {
+                            tryExecuteSql(t, dbInfo, `SELECT * FROM ${ dbInfo.storeName}`, [], (t, results) => {
+                                const rows = results.rows;
+                                const length = rows.length;
+                                for (let i = 0; i < length; i++) {
+                                    const item = rows.item(i);
+                                    let result = item.value;
                                     // Check to see if this is serialized content
                                     // we need to unpack.
                                     if (result) {
@@ -1607,20 +1607,20 @@
                                     }
                                 }
                                 resolve();
-                            }, function(t, error) {
+                            }, (t, error) => {
                                 reject(error);
                             });
                         });
-                    })["catch"](reject);
+                    }).catch(reject);
                 });
                 executeCallback(promise, callback);
                 return promise;
             }
             function _setItem(key, value, callback, retriesLeft) {
-                var self = this;
+                const self = this;
                 key = normalizeKey(key);
-                var promise = new Promise$1(function(resolve, reject) {
-                    self.ready().then(function() {
+                const promise = new Promise$1((resolve, reject) => {
+                    self.ready().then(() => {
                         // The localStorage API doesn't return undefined values in an
                         // "expected" way, so undefined is always cast to null in all
                         // drivers. See: https://github.com/mozilla/localForage/pull/42
@@ -1628,19 +1628,19 @@
                             value = null;
                         }
                         // Save the original value to pass to the callback.
-                        var originalValue = value;
-                        var dbInfo = self._dbInfo;
-                        dbInfo.serializer.serialize(value, function(value, error) {
+                        const originalValue = value;
+                        const dbInfo = self._dbInfo;
+                        dbInfo.serializer.serialize(value, (value, error) => {
                             if (error) {
                                 reject(error);
                             } else {
-                                dbInfo.db.transaction(function(t) {
-                                    tryExecuteSql(t, dbInfo, "INSERT OR REPLACE INTO " + dbInfo.storeName + " " + "(key, value) VALUES (?, ?)", [key, value], function() {
+                                dbInfo.db.transaction((t) => {
+                                    tryExecuteSql(t, dbInfo, `INSERT OR REPLACE INTO ${ dbInfo.storeName } ` + "(key, value) VALUES (?, ?)", [key, value], () => {
                                         resolve(originalValue);
-                                    }, function(t, error) {
+                                    }, (t, error) => {
                                         reject(error);
                                     });
-                                }, function(sqlError) {
+                                }, (sqlError) => {
                                     // The transaction failed; check
                                     // to see if it's a quota error.
                                     if (sqlError.code === sqlError.QUOTA_ERR) {
@@ -1660,7 +1660,7 @@
                                 });
                             }
                         });
-                    })["catch"](reject);
+                    }).catch(reject);
                 });
                 executeCallback(promise, callback);
                 return promise;
@@ -1669,19 +1669,19 @@
                 return _setItem.apply(this, [key, value, callback, 1]);
             }
             function removeItem$1(key, callback) {
-                var self = this;
+                const self = this;
                 key = normalizeKey(key);
-                var promise = new Promise$1(function(resolve, reject) {
-                    self.ready().then(function() {
-                        var dbInfo = self._dbInfo;
-                        dbInfo.db.transaction(function(t) {
-                            tryExecuteSql(t, dbInfo, "DELETE FROM " + dbInfo.storeName + " WHERE key = ?", [key], function() {
+                const promise = new Promise$1((resolve, reject) => {
+                    self.ready().then(() => {
+                        const dbInfo = self._dbInfo;
+                        dbInfo.db.transaction((t) => {
+                            tryExecuteSql(t, dbInfo, `DELETE FROM ${ dbInfo.storeName } WHERE key = ?`, [key], () => {
                                 resolve();
-                            }, function(t, error) {
+                            }, (t, error) => {
                                 reject(error);
                             });
                         });
-                    })["catch"](reject);
+                    }).catch(reject);
                 });
                 executeCallback(promise, callback);
                 return promise;
@@ -1689,18 +1689,18 @@
             // Deletes every item in the table.
             // TODO: Find out if this resets the AUTO_INCREMENT number.
             function clear$1(callback) {
-                var self = this;
-                var promise = new Promise$1(function(resolve, reject) {
-                    self.ready().then(function() {
-                        var dbInfo = self._dbInfo;
-                        dbInfo.db.transaction(function(t) {
-                            tryExecuteSql(t, dbInfo, "DELETE FROM " + dbInfo.storeName, [], function() {
+                const self = this;
+                const promise = new Promise$1((resolve, reject) => {
+                    self.ready().then(() => {
+                        const dbInfo = self._dbInfo;
+                        dbInfo.db.transaction((t) => {
+                            tryExecuteSql(t, dbInfo, `DELETE FROM ${ dbInfo.storeName}`, [], () => {
                                 resolve();
-                            }, function(t, error) {
+                            }, (t, error) => {
                                 reject(error);
                             });
                         });
-                    })["catch"](reject);
+                    }).catch(reject);
                 });
                 executeCallback(promise, callback);
                 return promise;
@@ -1708,20 +1708,20 @@
             // Does a simple `COUNT(key)` to get the number of items stored in
             // localForage.
             function length$1(callback) {
-                var self = this;
-                var promise = new Promise$1(function(resolve, reject) {
-                    self.ready().then(function() {
-                        var dbInfo = self._dbInfo;
-                        dbInfo.db.transaction(function(t) {
+                const self = this;
+                const promise = new Promise$1((resolve, reject) => {
+                    self.ready().then(() => {
+                        const dbInfo = self._dbInfo;
+                        dbInfo.db.transaction((t) => {
                             // Ahhh, SQL makes this one soooooo easy.
-                            tryExecuteSql(t, dbInfo, "SELECT COUNT(key) as c FROM " + dbInfo.storeName, [], function(t, results) {
-                                var result = results.rows.item(0).c;
+                            tryExecuteSql(t, dbInfo, `SELECT COUNT(key) as c FROM ${ dbInfo.storeName}`, [], (t, results) => {
+                                const result = results.rows.item(0).c;
                                 resolve(result);
-                            }, function(t, error) {
+                            }, (t, error) => {
                                 reject(error);
                             });
                         });
-                    })["catch"](reject);
+                    }).catch(reject);
                 });
                 executeCallback(promise, callback);
                 return promise;
@@ -1734,40 +1734,40 @@
             // procedure for the `setItem()` SQL would solve this problem?
             // TODO: Don't change ID on `setItem()`.
             function key$1(n, callback) {
-                var self = this;
-                var promise = new Promise$1(function(resolve, reject) {
-                    self.ready().then(function() {
-                        var dbInfo = self._dbInfo;
-                        dbInfo.db.transaction(function(t) {
-                            tryExecuteSql(t, dbInfo, "SELECT key FROM " + dbInfo.storeName + " WHERE id = ? LIMIT 1", [n + 1], function(t, results) {
-                                var result = results.rows.length ? results.rows.item(0).key : null;
+                const self = this;
+                const promise = new Promise$1((resolve, reject) => {
+                    self.ready().then(() => {
+                        const dbInfo = self._dbInfo;
+                        dbInfo.db.transaction((t) => {
+                            tryExecuteSql(t, dbInfo, `SELECT key FROM ${ dbInfo.storeName } WHERE id = ? LIMIT 1`, [n + 1], (t, results) => {
+                                const result = results.rows.length ? results.rows.item(0).key : null;
                                 resolve(result);
-                            }, function(t, error) {
+                            }, (t, error) => {
                                 reject(error);
                             });
                         });
-                    })["catch"](reject);
+                    }).catch(reject);
                 });
                 executeCallback(promise, callback);
                 return promise;
             }
             function keys$1(callback) {
-                var self = this;
-                var promise = new Promise$1(function(resolve, reject) {
-                    self.ready().then(function() {
-                        var dbInfo = self._dbInfo;
-                        dbInfo.db.transaction(function(t) {
-                            tryExecuteSql(t, dbInfo, "SELECT key FROM " + dbInfo.storeName, [], function(t, results) {
-                                var keys = [];
-                                for (var i = 0; i < results.rows.length; i++) {
+                const self = this;
+                const promise = new Promise$1((resolve, reject) => {
+                    self.ready().then(() => {
+                        const dbInfo = self._dbInfo;
+                        dbInfo.db.transaction((t) => {
+                            tryExecuteSql(t, dbInfo, `SELECT key FROM ${ dbInfo.storeName}`, [], (t, results) => {
+                                const keys = [];
+                                for (let i = 0; i < results.rows.length; i++) {
                                     keys.push(results.rows.item(i).key);
                                 }
                                 resolve(keys);
-                            }, function(t, error) {
+                            }, (t, error) => {
                                 reject(error);
                             });
                         });
-                    })["catch"](reject);
+                    }).catch(reject);
                 });
                 executeCallback(promise, callback);
                 return promise;
@@ -1775,40 +1775,40 @@
             // https://www.w3.org/TR/webdatabase/#databases
             // > There is no way to enumerate or delete the databases available for an origin from this API.
             function getAllStoreNames(db) {
-                return new Promise$1(function(resolve, reject) {
-                    db.transaction(function(t) {
-                        t.executeSql("SELECT name FROM sqlite_master " + "WHERE type='table' AND name <> '__WebKitDatabaseInfoTable__'", [], function(t, results) {
-                            var storeNames = [];
-                            for (var i = 0; i < results.rows.length; i++) {
+                return new Promise$1((resolve, reject) => {
+                    db.transaction((t) => {
+                        t.executeSql("SELECT name FROM sqlite_master " + "WHERE type='table' AND name <> '__WebKitDatabaseInfoTable__'", [], (t, results) => {
+                            const storeNames = [];
+                            for (let i = 0; i < results.rows.length; i++) {
                                 storeNames.push(results.rows.item(i).name);
                             }
                             resolve({
                                 db: db,
-                                storeNames: storeNames
+                                storeNames: storeNames,
                             });
-                        }, function(t, error) {
+                        }, (t, error) => {
                             reject(error);
                         });
-                    }, function(sqlError) {
+                    }, (sqlError) => {
                         reject(sqlError);
                     });
                 });
             }
             function dropInstance$1(options, callback) {
                 callback = getCallback.apply(this, arguments);
-                var currentConfig = this.config();
+                const currentConfig = this.config();
                 options = typeof options !== "function" && options || {};
                 if (!options.name) {
                     options.name = options.name || currentConfig.name;
                     options.storeName = options.storeName || currentConfig.storeName;
                 }
-                var self = this;
-                var promise;
+                const self = this;
+                let promise;
                 if (!options.name) {
                     promise = Promise$1.reject("Invalid arguments");
                 } else {
-                    promise = new Promise$1(function(resolve) {
-                        var db;
+                    promise = new Promise$1((resolve) => {
+                        let db;
                         if (options.name === currentConfig.name) {
                             // use the db reference of the current instance
                             db = self._dbInfo.db;
@@ -1821,31 +1821,31 @@
                         } else {
                             resolve({
                                 db: db,
-                                storeNames: [options.storeName]
+                                storeNames: [options.storeName],
                             });
                         }
-                    }).then(function(operationInfo) {
-                        return new Promise$1(function(resolve, reject) {
-                            operationInfo.db.transaction(function(t) {
+                    }).then((operationInfo) => {
+                        return new Promise$1((resolve, reject) => {
+                            operationInfo.db.transaction((t) => {
                                 function dropTable(storeName) {
-                                    return new Promise$1(function(resolve, reject) {
-                                        t.executeSql("DROP TABLE IF EXISTS " + storeName, [], function() {
+                                    return new Promise$1((resolve, reject) => {
+                                        t.executeSql(`DROP TABLE IF EXISTS ${ storeName}`, [], () => {
                                             resolve();
-                                        }, function(t, error) {
+                                        }, (t, error) => {
                                             reject(error);
                                         });
                                     });
                                 }
-                                var operations = [];
-                                for (var i = 0, len = operationInfo.storeNames.length; i < len; i++) {
+                                const operations = [];
+                                for (let i = 0, len = operationInfo.storeNames.length; i < len; i++) {
                                     operations.push(dropTable(operationInfo.storeNames[i]));
                                 }
-                                Promise$1.all(operations).then(function() {
+                                Promise$1.all(operations).then(() => {
                                     resolve();
-                                })["catch"](function(e) {
+                                }).catch((e) => {
                                     reject(e);
                                 });
-                            }, function(sqlError) {
+                            }, (sqlError) => {
                                 reject(sqlError);
                             });
                         });
@@ -1854,7 +1854,7 @@
                 executeCallback(promise, callback);
                 return promise;
             }
-            var webSQLStorage = {
+            const webSQLStorage = {
                 _driver: "webSQLStorage",
                 _initStorage: _initStorage$1,
                 _support: isWebSQLValid(),
@@ -1866,7 +1866,7 @@
                 length: length$1,
                 key: key$1,
                 keys: keys$1,
-                dropInstance: dropInstance$1
+                dropInstance: dropInstance$1,
             };
             function isLocalStorageValid() {
                 try {
@@ -1877,15 +1877,15 @@
                 }
             }
             function _getKeyPrefix(options, defaultConfig) {
-                var keyPrefix = options.name + "/";
+                let keyPrefix = `${options.name }/`;
                 if (options.storeName !== defaultConfig.storeName) {
-                    keyPrefix += options.storeName + "/";
+                    keyPrefix += `${options.storeName }/`;
                 }
                 return keyPrefix;
             }
             // Check if localStorage throws when saving an item
             function checkIfLocalStorageThrows() {
-                var localStorageTestKey = "_localforage_support_test";
+                const localStorageTestKey = "_localforage_support_test";
                 try {
                     localStorage.setItem(localStorageTestKey, true);
                     localStorage.removeItem(localStorageTestKey);
@@ -1903,10 +1903,10 @@
             }
             // Config the localStorage backend, using options set in the config.
             function _initStorage$2(options) {
-                var self = this;
-                var dbInfo = {};
+                const self = this;
+                const dbInfo = {};
                 if (options) {
-                    for (var i in options) {
+                    for (const i in options) {
                         dbInfo[i] = options[i];
                     }
                 }
@@ -1921,11 +1921,11 @@
             // Remove all keys from the datastore, effectively destroying all data in
             // the app's key/value store!
             function clear$2(callback) {
-                var self = this;
-                var promise = self.ready().then(function() {
-                    var keyPrefix = self._dbInfo.keyPrefix;
-                    for (var i = localStorage.length - 1; i >= 0; i--) {
-                        var key = localStorage.key(i);
+                const self = this;
+                const promise = self.ready().then(() => {
+                    const keyPrefix = self._dbInfo.keyPrefix;
+                    for (let i = localStorage.length - 1; i >= 0; i--) {
+                        const key = localStorage.key(i);
                         if (key.indexOf(keyPrefix) === 0) {
                             localStorage.removeItem(key);
                         }
@@ -1938,11 +1938,11 @@
             // library in Gaia, we don't modify return values at all. If a key's value
             // is `undefined`, we pass that value to the callback function.
             function getItem$2(key, callback) {
-                var self = this;
+                const self = this;
                 key = normalizeKey(key);
-                var promise = self.ready().then(function() {
-                    var dbInfo = self._dbInfo;
-                    var result = localStorage.getItem(dbInfo.keyPrefix + key);
+                const promise = self.ready().then(() => {
+                    const dbInfo = self._dbInfo;
+                    let result = localStorage.getItem(dbInfo.keyPrefix + key);
                     // If a result was found, parse it from the serialized
                     // string into a JS object. If result isn't truthy, the key
                     // is likely undefined and we'll pass it straight to the
@@ -1957,25 +1957,25 @@
             }
             // Iterate over all items in the store.
             function iterate$2(iterator, callback) {
-                var self = this;
-                var promise = self.ready().then(function() {
-                    var dbInfo = self._dbInfo;
-                    var keyPrefix = dbInfo.keyPrefix;
-                    var keyPrefixLength = keyPrefix.length;
-                    var length = localStorage.length;
+                const self = this;
+                const promise = self.ready().then(() => {
+                    const dbInfo = self._dbInfo;
+                    const keyPrefix = dbInfo.keyPrefix;
+                    const keyPrefixLength = keyPrefix.length;
+                    const length = localStorage.length;
                     // We use a dedicated iterator instead of the `i` variable below
                     // so other keys we fetch in localStorage aren't counted in
                     // the `iterationNumber` argument passed to the `iterate()`
                     // callback.
                     //
                     // See: github.com/mozilla/localForage/pull/435#discussion_r38061530
-                    var iterationNumber = 1;
-                    for (var i = 0; i < length; i++) {
-                        var key = localStorage.key(i);
+                    let iterationNumber = 1;
+                    for (let i = 0; i < length; i++) {
+                        const key = localStorage.key(i);
                         if (key.indexOf(keyPrefix) !== 0) {
                             continue;
                         }
-                        var value = localStorage.getItem(key);
+                        let value = localStorage.getItem(key);
                         // If a result was found, parse it from the serialized
                         // string into a JS object. If result isn't truthy, the
                         // key is likely undefined and we'll pass it straight
@@ -1994,10 +1994,10 @@
             }
             // Same as localStorage's key() method, except takes a callback.
             function key$2(n, callback) {
-                var self = this;
-                var promise = self.ready().then(function() {
-                    var dbInfo = self._dbInfo;
-                    var result;
+                const self = this;
+                const promise = self.ready().then(() => {
+                    const dbInfo = self._dbInfo;
+                    let result;
                     try {
                         result = localStorage.key(n);
                     } catch (error) {
@@ -2013,13 +2013,13 @@
                 return promise;
             }
             function keys$2(callback) {
-                var self = this;
-                var promise = self.ready().then(function() {
-                    var dbInfo = self._dbInfo;
-                    var length = localStorage.length;
-                    var keys = [];
-                    for (var i = 0; i < length; i++) {
-                        var itemKey = localStorage.key(i);
+                const self = this;
+                const promise = self.ready().then(() => {
+                    const dbInfo = self._dbInfo;
+                    const length = localStorage.length;
+                    const keys = [];
+                    for (let i = 0; i < length; i++) {
+                        const itemKey = localStorage.key(i);
                         if (itemKey.indexOf(dbInfo.keyPrefix) === 0) {
                             keys.push(itemKey.substring(dbInfo.keyPrefix.length));
                         }
@@ -2031,8 +2031,8 @@
             }
             // Supply the number of keys in the datastore to the callback function.
             function length$2(callback) {
-                var self = this;
-                var promise = self.keys().then(function(keys) {
+                const self = this;
+                const promise = self.keys().then((keys) => {
                     return keys.length;
                 });
                 executeCallback(promise, callback);
@@ -2040,10 +2040,10 @@
             }
             // Remove an item from the store, nice and simple.
             function removeItem$2(key, callback) {
-                var self = this;
+                const self = this;
                 key = normalizeKey(key);
-                var promise = self.ready().then(function() {
-                    var dbInfo = self._dbInfo;
+                const promise = self.ready().then(() => {
+                    const dbInfo = self._dbInfo;
                     localStorage.removeItem(dbInfo.keyPrefix + key);
                 });
                 executeCallback(promise, callback);
@@ -2054,19 +2054,19 @@
             // in case you want to operate on that value only after you're sure it
             // saved, or something like that.
             function setItem$2(key, value, callback) {
-                var self = this;
+                const self = this;
                 key = normalizeKey(key);
-                var promise = self.ready().then(function() {
+                const promise = self.ready().then(() => {
                     // Convert undefined values to null.
                     // https://github.com/mozilla/localForage/pull/42
                     if (value === undefined) {
                         value = null;
                     }
                     // Save the original value to pass to the callback.
-                    var originalValue = value;
-                    return new Promise$1(function(resolve, reject) {
-                        var dbInfo = self._dbInfo;
-                        dbInfo.serializer.serialize(value, function(value, error) {
+                    const originalValue = value;
+                    return new Promise$1((resolve, reject) => {
+                        const dbInfo = self._dbInfo;
+                        dbInfo.serializer.serialize(value, (value, error) => {
                             if (error) {
                                 reject(error);
                             } else {
@@ -2092,24 +2092,24 @@
                 callback = getCallback.apply(this, arguments);
                 options = typeof options !== "function" && options || {};
                 if (!options.name) {
-                    var currentConfig = this.config();
+                    const currentConfig = this.config();
                     options.name = options.name || currentConfig.name;
                     options.storeName = options.storeName || currentConfig.storeName;
                 }
-                var self = this;
-                var promise;
+                const self = this;
+                let promise;
                 if (!options.name) {
                     promise = Promise$1.reject("Invalid arguments");
                 } else {
-                    promise = new Promise$1(function(resolve) {
+                    promise = new Promise$1((resolve) => {
                         if (!options.storeName) {
-                            resolve(options.name + "/");
+                            resolve(`${options.name }/`);
                         } else {
                             resolve(_getKeyPrefix(options, self._defaultConfig));
                         }
-                    }).then(function(keyPrefix) {
-                        for (var i = localStorage.length - 1; i >= 0; i--) {
-                            var key = localStorage.key(i);
+                    }).then((keyPrefix) => {
+                        for (let i = localStorage.length - 1; i >= 0; i--) {
+                            const key = localStorage.key(i);
                             if (key.indexOf(keyPrefix) === 0) {
                                 localStorage.removeItem(key);
                             }
@@ -2119,7 +2119,7 @@
                 executeCallback(promise, callback);
                 return promise;
             }
-            var localStorageWrapper = {
+            const localStorageWrapper = {
                 _driver: "localStorageWrapper",
                 _initStorage: _initStorage$2,
                 _support: isLocalStorageValid(),
@@ -2131,14 +2131,14 @@
                 length: length$2,
                 key: key$2,
                 keys: keys$2,
-                dropInstance: dropInstance$2
+                dropInstance: dropInstance$2,
             };
-            var sameValue = function sameValue(x, y) {
+            const sameValue = function sameValue(x, y) {
                 return x === y || typeof x === "number" && typeof y === "number" && isNaN(x) && isNaN(y);
             };
-            var includes = function includes(array, searchElement) {
-                var len = array.length;
-                var i = 0;
+            const includes = function includes(array, searchElement) {
+                const len = array.length;
+                let i = 0;
                 while (i < len) {
                     if (sameValue(array[i], searchElement)) {
                         return true;
@@ -2147,22 +2147,22 @@
                 }
                 return false;
             };
-            var isArray = Array.isArray || function(arg) {
+            const isArray = Array.isArray || function(arg) {
                 return Object.prototype.toString.call(arg) === "[object Array]";
             };
             // Drivers are stored here when `defineDriver()` is called.
             // They are shared across all instances of localForage.
-            var DefinedDrivers = {};
-            var DriverSupport = {};
-            var DefaultDrivers = {
+            const DefinedDrivers = {};
+            const DriverSupport = {};
+            const DefaultDrivers = {
                 INDEXEDDB: asyncStorage,
                 WEBSQL: webSQLStorage,
-                LOCALSTORAGE: localStorageWrapper
+                LOCALSTORAGE: localStorageWrapper,
             };
-            var DefaultDriverOrder = [DefaultDrivers.INDEXEDDB._driver, DefaultDrivers.WEBSQL._driver, DefaultDrivers.LOCALSTORAGE._driver];
-            var OptionalDriverMethods = ["dropInstance"];
-            var LibraryMethods = ["clear", "getItem", "iterate", "key", "keys", "length", "removeItem", "setItem"].concat(OptionalDriverMethods);
-            var DefaultConfig = {
+            const DefaultDriverOrder = [DefaultDrivers.INDEXEDDB._driver, DefaultDrivers.WEBSQL._driver, DefaultDrivers.LOCALSTORAGE._driver];
+            const OptionalDriverMethods = ["dropInstance"];
+            const LibraryMethods = ["clear", "getItem", "iterate", "key", "keys", "length", "removeItem", "setItem"].concat(OptionalDriverMethods);
+            const DefaultConfig = {
                 description: "",
                 driver: DefaultDriverOrder.slice(),
                 name: "localforage",
@@ -2170,21 +2170,21 @@
                 // we can use without a prompt.
                 size: 4980736,
                 storeName: "keyvaluepairs",
-                version: 1
+                version: 1,
             };
             function callWhenReady(localForageInstance, libraryMethod) {
                 localForageInstance[libraryMethod] = function() {
-                    var _args = arguments;
-                    return localForageInstance.ready().then(function() {
+                    const _args = arguments;
+                    return localForageInstance.ready().then(() => {
                         return localForageInstance[libraryMethod].apply(localForageInstance, _args);
                     });
                 };
             }
             function extend() {
-                for (var i = 1; i < arguments.length; i++) {
-                    var arg = arguments[i];
+                for (let i = 1; i < arguments.length; i++) {
+                    const arg = arguments[i];
                     if (arg) {
-                        for (var _key in arg) {
+                        for (const _key in arg) {
                             if (arg.hasOwnProperty(_key)) {
                                 if (isArray(arg[_key])) {
                                     arguments[0][_key] = arg[_key].slice();
@@ -2197,13 +2197,13 @@
                 }
                 return arguments[0];
             }
-            var LocalForage = function() {
+            const LocalForage = function() {
                 function LocalForage(options) {
                     _classCallCheck(this, LocalForage);
-                    for (var driverTypeKey in DefaultDrivers) {
+                    for (const driverTypeKey in DefaultDrivers) {
                         if (DefaultDrivers.hasOwnProperty(driverTypeKey)) {
-                            var driver = DefaultDrivers[driverTypeKey];
-                            var driverName = driver._driver;
+                            const driver = DefaultDrivers[driverTypeKey];
+                            const driverName = driver._driver;
                             this[driverTypeKey] = driverName;
                             if (!DefinedDrivers[driverName]) {
                                 // we don't need to wait for the promise,
@@ -2220,7 +2220,7 @@
                     this._ready = false;
                     this._dbInfo = null;
                     this._wrapLibraryMethodsWithReady();
-                    this.setDriver(this._config.driver)["catch"](function() {});
+                    this.setDriver(this._config.driver).catch(() => {});
                 }
                 // Set any config values for localForage; can be called anytime before
                 // the first API call (e.g. `getItem`, `setItem`).
@@ -2236,7 +2236,7 @@
                         if (this._ready) {
                             return new Error("Can't call config() after localforage " + "has been used.");
                         }
-                        for (var i in options) {
+                        for (const i in options) {
                             if (i === "storeName") {
                                 options[i] = options[i].replace(/\W/g, "_");
                             }
@@ -2253,54 +2253,54 @@
                         return true;
                     } else if (typeof options === "string") {
                         return this._config[options];
-                    } else {
-                        return this._config;
-                    }
+                    } 
+                    return this._config;
+                    
                 };
                 // Used to define a custom driver, shared across all instances of
                 // localForage.
                 LocalForage.prototype.defineDriver = function defineDriver(driverObject, callback, errorCallback) {
-                    var promise = new Promise$1(function(resolve, reject) {
+                    const promise = new Promise$1((resolve, reject) => {
                         try {
-                            var driverName = driverObject._driver;
-                            var complianceError = new Error("Custom driver not compliant; see " + "https://mozilla.github.io/localForage/#definedriver");
+                            const driverName = driverObject._driver;
+                            const complianceError = new Error("Custom driver not compliant; see " + "https://mozilla.github.io/localForage/#definedriver");
                             // A driver name should be defined and not overlap with the
                             // library-defined, default drivers.
                             if (!driverObject._driver) {
                                 reject(complianceError);
                                 return;
                             }
-                            var driverMethods = LibraryMethods.concat("_initStorage");
-                            for (var i = 0, len = driverMethods.length; i < len; i++) {
-                                var driverMethodName = driverMethods[i];
+                            const driverMethods = LibraryMethods.concat("_initStorage");
+                            for (let i = 0, len = driverMethods.length; i < len; i++) {
+                                const driverMethodName = driverMethods[i];
                                 // when the property is there,
                                 // it should be a method even when optional
-                                var isRequired = !includes(OptionalDriverMethods, driverMethodName);
+                                const isRequired = !includes(OptionalDriverMethods, driverMethodName);
                                 if ((isRequired || driverObject[driverMethodName]) && typeof driverObject[driverMethodName] !== "function") {
                                     reject(complianceError);
                                     return;
                                 }
                             }
-                            var configureMissingMethods = function configureMissingMethods() {
-                                var methodNotImplementedFactory = function methodNotImplementedFactory(methodName) {
+                            const configureMissingMethods = function configureMissingMethods() {
+                                const methodNotImplementedFactory = function methodNotImplementedFactory(methodName) {
                                     return function() {
-                                        var error = new Error("Method " + methodName + " is not implemented by the current driver");
-                                        var promise = Promise$1.reject(error);
+                                        const error = new Error(`Method ${ methodName } is not implemented by the current driver`);
+                                        const promise = Promise$1.reject(error);
                                         executeCallback(promise, arguments[arguments.length - 1]);
                                         return promise;
                                     };
                                 };
-                                for (var _i = 0, _len = OptionalDriverMethods.length; _i < _len; _i++) {
-                                    var optionalDriverMethod = OptionalDriverMethods[_i];
+                                for (let _i = 0, _len = OptionalDriverMethods.length; _i < _len; _i++) {
+                                    const optionalDriverMethod = OptionalDriverMethods[_i];
                                     if (!driverObject[optionalDriverMethod]) {
                                         driverObject[optionalDriverMethod] = methodNotImplementedFactory(optionalDriverMethod);
                                     }
                                 }
                             };
                             configureMissingMethods();
-                            var setDriverSupport = function setDriverSupport(support) {
+                            const setDriverSupport = function setDriverSupport(support) {
                                 if (DefinedDrivers[driverName]) {
-                                    console.info("Redefining LocalForage driver: " + driverName);
+                                    console.info(`Redefining LocalForage driver: ${ driverName}`);
                                 }
                                 DefinedDrivers[driverName] = driverObject;
                                 DriverSupport[driverName] = support;
@@ -2329,18 +2329,18 @@
                     return this._driver || null;
                 };
                 LocalForage.prototype.getDriver = function getDriver(driverName, callback, errorCallback) {
-                    var getDriverPromise = DefinedDrivers[driverName] ? Promise$1.resolve(DefinedDrivers[driverName]) : Promise$1.reject(new Error("Driver not found."));
+                    const getDriverPromise = DefinedDrivers[driverName] ? Promise$1.resolve(DefinedDrivers[driverName]) : Promise$1.reject(new Error("Driver not found."));
                     executeTwoCallbacks(getDriverPromise, callback, errorCallback);
                     return getDriverPromise;
                 };
                 LocalForage.prototype.getSerializer = function getSerializer(callback) {
-                    var serializerPromise = Promise$1.resolve(localforageSerializer);
+                    const serializerPromise = Promise$1.resolve(localforageSerializer);
                     executeTwoCallbacks(serializerPromise, callback);
                     return serializerPromise;
                 };
                 LocalForage.prototype.ready = function ready(callback) {
-                    var self = this;
-                    var promise = self._driverSet.then(function() {
+                    const self = this;
+                    const promise = self._driverSet.then(() => {
                         if (self._ready === null) {
                             self._ready = self._initDriver();
                         }
@@ -2350,11 +2350,11 @@
                     return promise;
                 };
                 LocalForage.prototype.setDriver = function setDriver(drivers, callback, errorCallback) {
-                    var self = this;
+                    const self = this;
                     if (!isArray(drivers)) {
                         drivers = [drivers];
                     }
-                    var supportedDrivers = this._getSupportedDrivers(drivers);
+                    const supportedDrivers = this._getSupportedDrivers(drivers);
                     function setDriverToConfig() {
                         self._config.driver = self.driver();
                     }
@@ -2366,17 +2366,17 @@
                     }
                     function initDriver(supportedDrivers) {
                         return function() {
-                            var currentDriverIndex = 0;
+                            let currentDriverIndex = 0;
                             function driverPromiseLoop() {
                                 while (currentDriverIndex < supportedDrivers.length) {
-                                    var driverName = supportedDrivers[currentDriverIndex];
+                                    const driverName = supportedDrivers[currentDriverIndex];
                                     currentDriverIndex++;
                                     self._dbInfo = null;
                                     self._ready = null;
-                                    return self.getDriver(driverName).then(extendSelfWithDriver)["catch"](driverPromiseLoop);
+                                    return self.getDriver(driverName).then(extendSelfWithDriver).catch(driverPromiseLoop);
                                 }
                                 setDriverToConfig();
-                                var error = new Error("No available storage method found.");
+                                const error = new Error("No available storage method found.");
                                 self._driverSet = Promise$1.reject(error);
                                 return self._driverSet;
                             }
@@ -2386,22 +2386,22 @@
                     // There might be a driver initialization in progress
                     // so wait for it to finish in order to avoid a possible
                     // race condition to set _dbInfo
-                    var oldDriverSetDone = this._driverSet !== null ? this._driverSet["catch"](function() {
+                    const oldDriverSetDone = this._driverSet !== null ? this._driverSet.catch(() => {
                         return Promise$1.resolve();
                     }) : Promise$1.resolve();
-                    this._driverSet = oldDriverSetDone.then(function() {
-                        var driverName = supportedDrivers[0];
+                    this._driverSet = oldDriverSetDone.then(() => {
+                        const driverName = supportedDrivers[0];
                         self._dbInfo = null;
                         self._ready = null;
-                        return self.getDriver(driverName).then(function(driver) {
+                        return self.getDriver(driverName).then((driver) => {
                             self._driver = driver._driver;
                             setDriverToConfig();
                             self._wrapLibraryMethodsWithReady();
                             self._initDriver = initDriver(supportedDrivers);
                         });
-                    })["catch"](function() {
+                    }).catch(() => {
                         setDriverToConfig();
-                        var error = new Error("No available storage method found.");
+                        const error = new Error("No available storage method found.");
                         self._driverSet = Promise$1.reject(error);
                         return self._driverSet;
                     });
@@ -2415,9 +2415,9 @@
                     extend(this, libraryMethodsAndProperties);
                 };
                 LocalForage.prototype._getSupportedDrivers = function _getSupportedDrivers(drivers) {
-                    var supportedDrivers = [];
-                    for (var i = 0, len = drivers.length; i < len; i++) {
-                        var driverName = drivers[i];
+                    const supportedDrivers = [];
+                    for (let i = 0, len = drivers.length; i < len; i++) {
+                        const driverName = drivers[i];
                         if (this.supports(driverName)) {
                             supportedDrivers.push(driverName);
                         }
@@ -2429,7 +2429,7 @@
                     // corresponding driver method until localForage is ready. These stubs
                     // will be replaced by the driver methods as soon as the driver is
                     // loaded, so there is no performance impact.
-                    for (var i = 0, len = LibraryMethods.length; i < len; i++) {
+                    for (let i = 0, len = LibraryMethods.length; i < len; i++) {
                         callWhenReady(this, LibraryMethods[i]);
                     }
                 };
@@ -2440,10 +2440,10 @@
             }();
             // The actual localForage object that we expose as a module or via a
             // global. It's extended by pulling in one of our other libraries.
-            var localforage_js = new LocalForage();
+            const localforage_js = new LocalForage();
             module.exports = localforage_js;
         }, {
-            "3": 3
-        }]
+            3: 3,
+        }],
     }, {}, [4])(4);
 });
