@@ -226,6 +226,7 @@ $(() => (async () => {
             container.find(".selectBox").attr("disabled", "disabled");
             $("#deletionControl").append('<br><span id="result_text"><img src="https://img.moegirl.org.cn/common/d/d1/Windows_10_loading.gif" style="height: 1em; margin-top: -.25em;"><span id="deletionStatus"></span></span>');
             const statu = $("#deletionStatus");
+            // eslint-disable-next-line require-atomic-updates
             globalDeletionLock = true;
             container.find("a:not(.bypass)").each((_, ele) => {
                 const self = $(ele);

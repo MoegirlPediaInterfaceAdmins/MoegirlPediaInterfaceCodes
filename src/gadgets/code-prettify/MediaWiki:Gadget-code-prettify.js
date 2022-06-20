@@ -1,4 +1,5 @@
 "use strict";
+/* global prettyPrint */
 // <pre>
 $(() => {
     if (mw.config.get("wgPageName").match(/\.js$/)) {
@@ -30,26 +31,26 @@ $(() => {
     };
     const wgPageContentModel = mw.config.get("wgPageContentModel", "").toLowerCase();
     if (wgPageContentModel in acceptsLangs) {
-        $(".mw-code").addClass(`prettyprint lang-${ acceptsLangs[wgPageContentModel]}`);
+        $(".mw-code").addClass(`prettyprint lang-${acceptsLangs[wgPageContentModel]}`);
     }
     $("pre[lang]").each(function () {
         const self = $(this);
         const lang = self.attr("lang").toLowerCase();
         if (lang in acceptsLangs) {
-            self.addClass(`prettyprint lang-${ acceptsLangs[lang]}`);
+            self.addClass(`prettyprint lang-${acceptsLangs[lang]}`);
         }
     });
     if ($('.prettyprint[class*=" lang-"]').length > 0) {
         $('pre.prettyprint[class*=" lang-"]').each((_, ele) => {
             const start = ele.dataset.start;
             if (/^[1-9]\d*$/.test(start)) {
-                $(ele).removeClass("linenums").addClass(`linenums:${ start}`);
+                $(ele).removeClass("linenums").addClass(`linenums:${start}`);
             } else {
                 $(ele).addClass("linenums");
             }
         });
         $.ajax({
-            url: `${mw.config.get("wgServer") + mw.config.get("wgScriptPath") }/index.php?title=MediaWiki:Gadget-code-prettify-core.js&action=raw&ctype=text/javascript`,
+            url: `${mw.config.get("wgServer") + mw.config.get("wgScriptPath")}/index.php?title=MediaWiki:Gadget-code-prettify-core.js&action=raw&ctype=text/javascript`,
             dataType: "script",
             cache: true,
             success: function () {
@@ -58,7 +59,7 @@ $(() => {
                     $(window).on("hashchange", () => {
                         const frag = new mw.Uri().fragment;
                         if (/^L\d+$/.test(frag)) {
-                            const firstCode = $(`#${ frag}`)[0] || $(".prettyprint.prettyprinted > .linenums").first().children().eq(+frag.substring(1) - 1)[0];
+                            const firstCode = $(`#${frag}`)[0] || $(".prettyprint.prettyprinted > .linenums").first().children().eq(+frag.substring(1) - 1)[0];
                             if (firstCode) {
                                 const $firstCode = $(firstCode).addClass("linenums-active");
                                 $("html, body").animate({
