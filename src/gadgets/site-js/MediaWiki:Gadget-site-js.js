@@ -1,0 +1,524 @@
+// <nowiki>
+/* 这里的任何JavaScript将在全站加载
+ * 请尊重萌娘百科版权，以下代码复制需要注明原自萌娘百科，并且附上URL地址http://zh.moegirl.org.cn/MediaWiki:Common.js
+ * 版权协定：知识共享 署名-非商业性使用-相同方式共享 3.0
+ *  loader模块 写法参见 https://www.mediawiki.org/wiki/ResourceLoader/Modules#mw.loader.load
+ */
+/* eslint-disable prefer-arrow-callback */
+/* eslint-disable prefer-template */
+/* eslint-disable comma-dangle */
+/* eslint-disable no-var */
+/* eslint dot-notation: ["error", { "allowPattern": "^(?:catch|default)$" } ] */
+/* eslint-disable prefer-rest-params */
+/* eslint-disable no-unused-vars */
+/* eslint-disable no-redeclare */
+/* global mw, $, OO, moment, Cron, prettyPrint, LocalObjectStorage, lazyload, wgULS, oouiDialog */
+/* eslint-enable no-unused-vars */
+/* eslint-enable no-redeclare */
+"use strict";
+(function () {
+    /* 检查是否为维护组成员 */
+    var wgUserGroups = mw.config.get("wgUserGroups");
+    var isMGPMGUser = wgUserGroups.includes("patroller") || wgUserGroups.includes("sysop");
+    var wgNamespaceNumber = mw.config.get("wgNamespaceNumber");
+
+    var body = document.body;
+    var html = document.documentElement;
+    var $body = $(body);
+    var $window = $(window);
+    /* 共享站相关 */
+    if (["ViewAvatar", "Listfiles", "ListDuplicatedFiles", "Unusedimages", "Uncategorizedimages", "MediaStatistics", "TimedMediaHandler"].includes(mw.config.get("wgCanonicalSpecialPageName"))) {
+        var url = new mw.Uri();
+        url.host = url.host.replace(/^[^\.]+/g, "commons");
+        url.path = mw.config.get("wgScript");
+        url.query.title = mw.config.get("wgCanonicalNamespace") + ":" + mw.config.get("wgCanonicalSpecialPageName");
+        location.replace(url);
+    }
+    /* 浮动滚动条 */
+    var forbiddenScroll = ["hidden", "clip"];
+    $window.on("resize", function () {
+        var innerWidth = window.innerWidth;
+        var scrollbarWidth;
+        if (!forbiddenScroll.includes(getComputedStyle(body).overflowY)) {
+            scrollbarWidth = innerWidth - body.clientWidth;
+        } else if (!forbiddenScroll.includes(getComputedStyle(html).overflowY)) {
+            scrollbarWidth = innerWidth - html.clientWidth;
+        } else {
+            var backup = body.style.overflowY;
+            body.style.overflowY = "scroll";
+            scrollbarWidth = innerWidth - body.clientWidth;
+            body.style.overflowY = backup;
+        }
+        $body[scrollbarWidth <= 0 ? "addClass" : "removeClass"]("overlay-scrollbars");
+    }).trigger("resize");
+    /* Tabs */
+    function tabs() {
+        var defaultStyle = {
+            purple: {
+                labelColor: " ", //anti check
+                labelBackgroundColor: "#9070c0",
+                labelBorderColor: "#b090e0 #7050a0 #9070c0 #b090e0",
+                labelPadding: ".2em .3em .2em .3em",
+                textBorderColor: "#9070c0",
+                textBackgroundColor: "#f0edf5",
+                textPadding: "1em"
+            },
+            green: {
+                labelColor: " ",
+                labelBackgroundColor: "#75c045",
+                labelBorderColor: "#90d060 #60b030 #75c045 #90d060",
+                labelPadding: ".2em .3em .2em .3em",
+                textBorderColor: "#75c045 #60b030 #60b030 #75c045",
+                textBackgroundColor: "#f5fffa",
+                textPadding: "1em"
+            },
+            red: {
+                labelColor: " ",
+                labelBackgroundColor: "#FF0000",
+                labelBorderColor: "#FF8888 #CC0000 #FF0000 #FF8888",
+                labelPadding: ".2em .3em .2em .3em",
+                textBorderColor: "#FF0000 #CC0000 #CC0000 #FF0000",
+                textBackgroundColor: "#fffafa",
+                textPadding: "1em"
+            },
+            blue: {
+                labelColor: " ",
+                labelBackgroundColor: "#5b8dd6",
+                labelBorderColor: "#88abde #3379de #5b8dd6 #88abde",
+                labelPadding: ".2em .3em .2em .3em",
+                textBackgroundColor: "#f0f8ff",
+                textBorderColor: "#5b8dd6 #3379de #3379de #5b8dd6",
+                textPadding: "1em"
+            },
+            yellow: {
+                labelColor: " ",
+                labelBackgroundColor: "#ffe147",
+                labelBorderColor: "#ffe977 #ffd813 #ffe147 #ffe977",
+                labelPadding: ".2em .3em .2em .3em",
+                textBackgroundColor: "#fffce8",
+                textBorderColor: "#ffe147 #ffd813 #ffd813 #ffe147",
+                textPadding: "1em"
+            },
+            orange: {
+                labelColor: " ",
+                labelBackgroundColor: "#ff9d42",
+                labelBorderColor: "#ffac5d #ff820e #ff9d42 #ffac5d",
+                labelPadding: ".2em .3em .2em .3em",
+                textBackgroundColor: "#ffeedd",
+                textBorderColor: "#ff9d42 #ff820e #ff820e #ff9d42",
+                textPadding: "1em"
+            },
+            black: {
+                labelColor: " ",
+                labelBackgroundColor: "#7f7f7f",
+                labelBorderColor: "#999999 #4c4c4c #7f7f7f #999999",
+                labelPadding: ".2em .3em .2em .3em",
+                textBackgroundColor: "#e5e5e5",
+                textBorderColor: "#7f7f7f #4c4c4c #4c4c4c #7f7f7f",
+                textPadding: "1em"
+            }
+        };
+        var sides = {
+            top: {
+                className: "tabLabelTop",
+                labelColorSide: "top",
+                labelBorderSide: ["left", "right"],
+                labelColorSideReverse: "bottom",
+                dividerSizeType: "height"
+            },
+            bottom: {
+                className: "tabLabelBottom",
+                labelColorSide: "bottom",
+                labelBorderSide: ["left", "right"],
+                labelColorSideReverse: "top",
+                dividerSizeType: "height"
+            },
+            left: {
+                className: "tabLabelLeft",
+                labelColorSide: "left",
+                labelBorderSide: ["top", "bottom"],
+                labelColorSideReverse: "right",
+                dividerSizeType: "width"
+            },
+            right: {
+                className: "tabLabelRight",
+                labelColorSide: "right",
+                labelBorderSide: ["top", "bottom"],
+                labelColorSideReverse: "left",
+                dividerSizeType: "width"
+            }
+        };
+        var truthy = ["1", "on", "true", "yes"];
+        $body.addClass("tab");
+        function getOwnPropertyNamesLength(obj) {
+            return Object.getOwnPropertyNames(obj).length;
+        }
+        function toLowerFirstCase(str) {
+            return str.substring(0, 1).toLowerCase() + str.substring(1);
+        }
+        function toUpperFirstCase(str) {
+            return str.substring(0, 1).toUpperCase() + str.substring(1);
+        }
+        mw.hook("wikipage.content").add(function (content) {
+            content.find(".Tabs").each(function () {
+                var self = $(this);
+                if (self.children(".TabLabel")[0]) {
+                    return true;
+                }
+                var classList = Array.from(this.classList).filter(function (n) {
+                    return n in defaultStyle;
+                });
+                var data = $.extend({
+                    labelPadding: "2px",
+                    labelBorderColor: "#aaa",
+                    labelColor: "green",
+                    labelBackgroundColor: $("#content").css("background-color"),
+                    textPadding: "20px 30px",
+                    textBorderColor: "#aaa",
+                    textBackgroundColor: "white",
+                    defaultTab: 1
+                }, classList[0] ? defaultStyle[classList[0]] || {} : {}, this.dataset || {});
+                var styleSheet = {
+                    label: {},
+                    text: {}
+                };
+                var tabLabel = self.append('<div class="TabLabel"></div>').children(".TabLabel"),
+                    tabDivider = self.append('<div class="TabDivider"></div>').children(".TabDivider"),
+                    tabContent = self.append('<div class="TabContent"></div>').children(".TabContent"),
+                    labelPadding = data.labelPadding,
+                    labelColor = data.labelColor,
+                    labelSide = data.labelSide in sides ? data.labelSide : "top",
+                    side = sides[labelSide],
+                    labelColorSideReverse = truthy.includes(data.labelColorSideReverse),
+                    dividerSize = parseInt(data.dividerSize),
+                    defaultTab = parseInt(data.defaultTab);
+                if (labelSide === "top") {
+                    tabLabel.after(tabDivider);
+                    tabDivider.after(tabContent);
+                } else if (labelSide === "bottom") {
+                    tabContent.after(tabDivider);
+                    tabDivider.after(tabLabel);
+                }
+                if (!isNaN(dividerSize) && dividerSize > 0) {
+                    self.find(".TabDivider")[side.dividerSizeType](dividerSize);
+                }
+                var labelColorName = toUpperFirstCase(labelColorSideReverse ? side.labelColorSideReverse : side.labelColorSide);
+                self.addClass(side.className);
+                if (labelColorSideReverse) {
+                    self.addClass("reverse");
+                }
+                self.children(".Tab").each(function () {
+                    if ($(this).children(".TabLabelText").text().replace(/\s/g, "").length || $(this).children(".TabLabelText").children().length) {
+                        $(this).children(".TabLabelText").appendTo(tabLabel);
+                        $(this).children(".TabContentText").appendTo(self.children(".TabContent"));
+                    }
+                    $(this).remove();
+                });
+                if (isNaN(defaultTab) || defaultTab <= 0 || defaultTab > tabLabel.children(".TabLabelText").length) {
+                    defaultTab = 1;
+                }
+                tabLabel.children(".TabLabelText").on("click", function () {
+                    var label = $(this);
+                    label.addClass("selected").siblings().removeClass("selected").css({
+                        "border-color": "transparent",
+                        "background-color": "inherit"
+                    });
+                    tabContent.children(".TabContentText").eq(tabLabel.children(".TabLabelText").index(label)).addClass("selected").siblings().removeClass("selected").removeAttr("style");
+                    if (getOwnPropertyNamesLength(styleSheet.label) > 0) {
+                        label.css(styleSheet.label);
+                    }
+                    setTimeout(function () {
+                        $window.triggerHandler("scroll");
+                    }, 1);
+                }).eq(defaultTab - 1).trigger("click");
+                if (labelPadding) {
+                    tabLabel.children(".TabLabelText").css("padding", labelPadding);
+                }
+                ["labelBorderColor", "labelBackgroundColor", "textPadding", "textBorderColor", "textBackgroundColor"].forEach(function (n) {
+                    var target = /^label/.test(n) ? "label" : "text",
+                        key = toLowerFirstCase(n.replace(target, ""));
+                    styleSheet[target][key] = data[n];
+                });
+                if (labelColor) {
+                    styleSheet.label["border" + labelColorName + "Color"] = labelColor;
+                } else if (styleSheet.label.borderColor) {
+                    styleSheet.label["border" + labelColorName + "Color"] = "green";
+                }
+                tabLabel.find(".selected").trigger("click");
+                if (getOwnPropertyNamesLength(styleSheet.text) > 0) {
+                    tabContent.css(styleSheet.text);
+                }
+                if (data.autoWidth === "yes") {
+                    self.addClass("AutoWidth");
+                }
+                if (data.float === "left") {
+                    self.addClass("FloatLeft");
+                }
+                if (data.float === "right") {
+                    self.addClass("FloatRight");
+                }
+            });
+        });
+    }
+    /* 修正嵌套使用删除线、黑幕、彩色幕和胡话模板 */
+    var templateTags = ["s", "del"].join(", ");
+    var templateClasses = [".heimu", ".colormu", ".just-kidding-text"];
+    var templateStr = templateClasses.join(", ") + "," + templateTags;
+    /**
+     * @param {JQuery<HTMLDivElement>} $content 
+     */
+    function templateFix($content) {
+        var target = $();
+        $content.find(templateStr).each(function (_, ele) {
+            if (ele.isTemplateFixed === "true") {
+                return;
+            }
+            ele.isTemplateFixed = true;
+            var subElements = Array.from(ele.querySelectorAll(templateStr));
+            if (subElements.length > 0) {
+                target.push(ele);
+                subElements.forEach(function (subElement) {
+                    subElement.isTemplateFixed = true;
+                    templateClasses.forEach(function (cls) {
+                        if (!isMGPMGUser) {
+                            subElement.classList.remove(cls.substring(1));
+                        }
+                    });
+                });
+                console.info("TemplateFix", ele, subElements);
+            }
+        });
+        if (wgNamespaceNumber >= 0 && wgNamespaceNumber % 2 === 0 && target.length > 0) {
+            if (+mw.user.options.get("gadget-enable-nest-highlight", 0) === 1 || isMGPMGUser && !wgUserGroups.includes("staff")) {
+                target.css("border", "3px dashed red");
+            }
+            if (isMGPMGUser && !wgUserGroups.includes("staff") && +mw.user.options.get("gadget-disable-nest-alert", 0) !== 1) {
+                oouiDialog.alert("本页面含有嵌套使用（混用）以下标签或模板的内容（已用红色虚线边框标识），请检查源码并修改之：<ul><li>删除线：<code>" + oouiDialog.sanitize("<s>") + "</code>、<code>" + oouiDialog.sanitize("<del>") + "</code>；</li><li>黑幕：<code>{{黑幕}}</code>、<code>{{Block}}</code>、<code>{{Heimu}}</code>、<code>{{Chide}}</code>；</li><li>彩色幕：<code>{{彩色幕}}</code>；</li><li>胡话：<code>{{胡话}}</code>、<code>{{jk}}</code>，大小写不限。</li></ul>", {
+                    title: "萌娘百科提醒您",
+                    size: "medium"
+                });
+            }
+        }
+    }
+    /* 修正验证码 */
+    function tcc() {
+        var tcBtn = document.getElementById("TencentCaptchaBtn");
+        if (tcBtn && !tcBtn.disabled) {
+            var originText = tcBtn.innerText;
+            tcBtn.innerText = "正在加载验证码，请稍候……";
+            var wpCaptchaWord = document.getElementById("wpCaptchaWord");
+            var wpCaptchaId = document.getElementById("wpCaptchaId");
+            var c = setInterval(function () {
+                if (typeof window.TencentCaptcha === "function") {
+                    clearInterval(c);
+                    if (!tcBtn.disabled) {
+                        new window.TencentCaptcha(tcBtn);
+                        tcBtn.innerText = originText;
+                    }
+                }
+            }, 100);
+            document.getElementById("wpSave").addEventListener("click", function (e) {
+                if (!tcBtn.disabled && (!wpCaptchaWord.value || !wpCaptchaId.value)) {
+                    oouiDialog.alert("请点击验证按钮，完成验证后再提交");
+                    e.preventDefault();
+                    e.stopImmediatePropagation();
+                    e.stopPropagation();
+                }
+            }, {
+                capture: true
+            });
+        }
+    }
+    /* 域名跳转提示 */
+    function domainChangedAlert() {
+        $body.before('<div style="background: #3366CC; color: white; text-align: center; padding: .5rem; position: static;" id="domainChangedAlert"><p>萌娘百科已将域名替换为 <code>*.moegirl.org<b><u>.cn</u></b></code>，原有域名可能访问困难，请更换您的书签等的页面地址。</p></div>');
+        $body.css({
+            "background-position-y": $("#domainChangedAlert").outerHeight(),
+            position: "relative"
+        });
+    }
+    /* 水印 */
+    function watermark(txt, size) {
+        $("<div>").attr("style", "position: fixed !important; z-index: 99999 !important; inset: 0px !important; background-image: url(\"data:image/svg+xml;base64," + btoa('<svg xmlns="http://www.w3.org/2000/svg" width="' + size + '" height="' + size + '"><foreignObject width="' + size + '" height="' + size + '"><html xmlns="http://www.w3.org/1999/xhtml" style="width: ' + size + "px; height: " + size + 'px;"><head></head><body style="width: ' + size + "px; height: " + size + 'px; margin: 0px;"><div style="width: 100% !important; height: 100% !important; opacity: .17 !important; font-size: 24px !important; position: relative !important; color: black !important;"><div style="transform: rotate(-15deg) translateX(-50%) translateY(-50%) !important; word-break: break-all !important; top: 36% !important; left: 50% !important; position: absolute !important; width: 100% !important; text-align: center !important;">' + unescape(encodeURIComponent(txt)) + "</div></div></body></html></foreignObject></svg>") + "\") !important; background-repeat: repeat !important; pointer-events: none !important; display: block !important; visibility: visible !important; width: unset !important; height: unset !important; opacity: unset !important; background-color: unset !important;").appendTo("body");
+    }
+    /* 获取特定名字空间前缀正则表达式 */
+    function getNamespacePrefixRegex(namespaceNumber) {
+        return RegExp("^(?:" + Object.entries(mw.config.get("wgNamespaceIds")).filter(function (config) {
+            return config[1] === namespaceNumber;
+        }).map(function (config) {
+            return config[0].toLowerCase();
+        }).join("|") + "):", "i");
+    }
+    // 列表侧边距
+    function listMarginLeft() {
+        $(".mw-parser-output ul:not(.margin-left-set), .mw-parser-output ol:not(.margin-left-set), #mw-content-text > pre.prettyprint ul:not(.margin-left-set), #mw-content-text > pre.prettyprint ol:not(.margin-left-set)").each(function (_, ele) {
+            var $ele = $(ele);
+            if (/none.+none/i.test($ele.css("list-style")) || $ele.is(".gallery")) {
+                if ($ele.parent().is("li") && $ele.parent().parent().is("ul, ol")) {
+                    $ele.css("margin-left", "1.2em");
+                } else {
+                    $ele.css("margin-left", "0.2em");
+                }
+            } else if ($ele.is("ol")) {
+                var li = $ele.children("li");
+                var start = $ele.attr("start");
+                var max = /^\d+$/.test(start) ? +start : 0;
+                li.each(function (_, e) {
+                    var value = $(e).attr("value");
+                    if (/^\d+$/.test(value)) {
+                        max = Math.max(max, +value);
+                    } else {
+                        max++;
+                    }
+                });
+                $ele.attr("data-last-margin-left-max-length", max).css("margin-left", (max + "").length * 0.5 + 1.2 + "em");
+            } else {
+                $ele.css("margin-left", "1.2em");
+            }
+            $ele.addClass("margin-left-set");
+        });
+    }
+    /* 反嵌入反反代 */
+    try {
+        var substHost;
+        try {
+            substHost = top.location.host;
+        } catch (_) {
+            substHost = "";
+        }
+        var currentHostFlag = !/\.moegirl\.org(?:\.cn)?$/i.test(location.host);
+        if (top !== window || currentHostFlag) {
+            var reverseProxyhostAlerted = [];
+            if (localStorage.getItem("reverse proxy alerted") !== null) {
+                try {
+                    reverseProxyhostAlerted = JSON.parse(localStorage.getItem("reverse proxy alerted"));
+                    if (!$.isPlainObject(reverseProxyhostAlerted)) {
+                        reverseProxyhostAlerted = {};
+                    }
+                } catch (e) {
+                    reverseProxyhostAlerted = {};
+                }
+            }
+            var detectedHost = currentHostFlag ? location.host : substHost;
+            var now = new Date().getTime();
+            if (!(detectedHost in reverseProxyhostAlerted) || typeof reverseProxyhostAlerted[detectedHost] !== "number" || reverseProxyhostAlerted[detectedHost] < now - 24 * 60 * 60 * 1000) {
+                reverseProxyhostAlerted[detectedHost] = now;
+                oouiDialog.alert("<p>您当前是在" + (currentHostFlag ? "非萌百域名" : "嵌套窗口") + "访问，请注意不要在此域名下输入您的用户名或密码，以策安全！</p><p>" + (detectedHost ? (currentHostFlag ? "当前" : "顶层窗口") + "域名为 <code>" + detectedHost + "</code>，" : "") + "萌百域名是以 <code>" + mw.config.get("wgServer").replace(/^(?:(?:https?:)?\/\/[^.]+)?/, "") + "</code> 结尾的。</p>", {
+                    title: "萌娘百科提醒您",
+                    size: "medium"
+                });
+            }
+            localStorage.setItem("reverse proxy alerted", JSON.stringify(reverseProxyhostAlerted));
+        } else if (!location.hostname.endsWith(".moegirl.org.cn")) {
+            $(domainChangedAlert);
+        }
+    } catch (e) {
+        console.debug(e);
+    }
+    $(function () {
+        tabs();
+        //图片地址
+        mw.loader.using("mediawiki.Uri").then(function () {
+            setInterval(function () {
+                $(document.querySelectorAll('img[src*="//img.moegirl.org/"]:not(.org-changed), img[src*="//commons.moegirl.org/"]:not(.org-changed)')).each(function (_, ele) {
+                    try {
+                        var url = new mw.Uri(ele.src);
+                        if (["img.moegirl.org", "commons.moegirl.org"].includes(url.host)) {
+                            url.host += ".cn";
+                            ele.src = url;
+                        }
+                        ele.classList.add("org-changed");
+                    } catch (e) { }
+                });
+            }, 200);
+        });
+        // 修复错误嵌套模板
+        mw.hook('wikipage.content').add(templateFix);
+        // 仅在编辑界面修复验证码
+        if (["edit", "submit"].includes(mw.config.get("wgAction"))) {
+            tcc();
+        }
+        $window.triggerHandler("resize");
+        $window.on("load", function () {
+            $window.triggerHandler("resize");
+        });
+        var needHashChange = /[)]$/.test(location.pathname + location.search);
+        if (needHashChange) {
+            var originHash = location.hash;
+            location.hash = "%";
+            location.hash = originHash;
+        }
+        $window.on("hashchange.hashchange", function () {
+            var hash = decodeURIComponent(location.hash.replace(/^#/, ""));
+            if (hash.length > 0) {
+                var target = document.getElementById(hash);
+                if (target) {
+                    var $target = $(target);
+                    var needScroll = true;
+                    var mwCollapsible = $target.closest(".mw-collapsible.mw-collapsed");
+                    if (mwCollapsible.length > 0) {
+                        mwCollapsible.find(".mw-collapsible-toggle").first().triggerHandler("click");
+                        // needScroll = false;
+                    }
+                    var tabContentTextUnselected = $target.closest(".TabContentText:not(.selected)");
+                    if (tabContentTextUnselected.length > 0) {
+                        tabContentTextUnselected.closest(".Tabs").children(".TabLabel").children().eq(tabContentTextUnselected.index()).trigger("click");
+                        // needScroll = false;
+                    }
+                    if (needScroll) {
+                        setTimeout(function () {
+                            $("html, body").scrollTop($target.offset().top - window.innerHeight / 8);
+                        }, 50);
+                    }
+                }
+            }
+        });
+        $window.one("load.hashchange", function () {
+            $window.triggerHandler("hashchange.hashchange");
+        });
+        $(function () {
+            $window.triggerHandler("load.hashchange");
+        });
+        // 列表侧边距
+        setInterval(listMarginLeft, 200);
+        ["copy", "keydown", "scroll", "mousemove"].forEach(function (type) {
+            document.addEventListener(type, function () {
+                $(".mailSymbol").replaceWith('<span title="Template:Mail@">@</span>');
+            }, {
+                capture: true,
+                passive: true
+            });
+        });
+        //只在ns0和ns2的子页面加载预加载工具
+        if (![0, 2].includes(mw.config.get("wgNamespaceNumber")) || mw.config.get("wgNamespaceNumber") === 2 && !mw.config.get("wgPageName").includes("/")) {
+            $("#multiboilerplateform").remove();
+        }
+        // 水印
+        var wgCurRevisionId = mw.config.get("wgCurRevisionId") || -1;
+        var wgRevisionId = mw.config.get("wgRevisionId") || -1;
+        if (!wgUserGroups.includes("autoconfirmed")) {
+            if (wgCurRevisionId > 0 && wgRevisionId > 0 && wgCurRevisionId !== wgRevisionId) {
+                watermark("历史版本，非最新内容<br/>不代表萌娘百科立场", 300);
+            } else if ([2, 3].includes(wgNamespaceNumber)) {
+                var wgPageName = mw.config.get("wgPageName");
+                var namespacePrefixRegex = getNamespacePrefixRegex(wgNamespaceNumber);
+                var displayedTitle = $("#firstHeading, #section_0").first().text().replace(/ /g, "_").replace(namespacePrefixRegex, "").trim();
+                if (mw.config.get("wgAction") === "view" && mw.config.get("wgArticleId") > 0 && displayedTitle !== wgPageName.replace(/ /g, "_").replace(namespacePrefixRegex, "").trim()) {
+                    new mw.Api().post({
+                        action: "query",
+                        prop: "info",
+                        inprop: "varianttitles",
+                        titles: wgPageName
+                    }).then(function (result) {
+                        var matchTitles = Object.values(result.query.pages[mw.config.get("wgArticleId")].varianttitles).filter(function (title) {
+                            return displayedTitle === title.replace(/ /g, "_").replace(namespacePrefixRegex, "").trim();
+                        });
+                        if (matchTitles.length === 0) {
+                            watermark("用户页面，非正式条目<br/>不代表萌娘百科立场", 300);
+                        }
+                    });
+                }
+            }
+        }
+    });
+})();
