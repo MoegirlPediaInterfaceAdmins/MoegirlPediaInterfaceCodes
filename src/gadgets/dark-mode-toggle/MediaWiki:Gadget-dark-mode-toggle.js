@@ -33,10 +33,10 @@ $(() => {
     }
 
     const onOrOff = isOn ? "off" : "on";
-    const label = mw.msg(`darkmode-turn-${ onOrOff }-label`);
-    const tooltip = mw.msg(`darkmode-turn-${ onOrOff }-tooltip`);
+    const label = mw.msg(`darkmode-turn-${onOrOff}-label`);
+    const tooltip = mw.msg(`darkmode-turn-${onOrOff}-tooltip`);
     const nextnode = mw.config.get("skin") !== "minerva" && "#pt-watchlist";
-    const portletLink = mw.util.addPortletLink( "p-personal", "#", label, "pt-darkmode", tooltip, "", nextnode);
+    const portletLink = mw.util.addPortletLink("p-personal", "#", label, "pt-darkmode", tooltip, "", nextnode);
 
     function toggleMode() {
         const newState = +!mw.user.options.get("gadget-dark-mode");
@@ -51,8 +51,8 @@ $(() => {
 
         // Toggle portlet link label and tooltip
         /* var labelSelector = ["vector", "minerva"].includes(mw.config.get("skin"))? "#pt-darkmode span:not(.mw-ui-icon)": "#pt-darkmode a"; */
-        $("#pt-darkmode a").text(mw.msg(`darkmode-turn-${ onOrOff }-label`));
-        $("#pt-darkmode a").attr("title", mw.msg(`darkmode-turn-${ onOrOff }-tooltip`));
+        $("#pt-darkmode a").text(mw.msg(`darkmode-turn-${onOrOff}-label`));
+        $("#pt-darkmode a").attr("title", mw.msg(`darkmode-turn-${onOrOff}-tooltip`));
         // Update the mobile theme-color
         $('meta[name="theme-color"]').attr("content", newState ? "#000000" : "#eaecf0");
 
@@ -81,8 +81,8 @@ $(() => {
             $("<link>").attr({
                 rel: "stylesheet",
                 href:
-					`/load.php?lang=${ mw.config.get("wgUserLanguage") 
-					}&modules=ext.gadget.dark-mode&only=styles&skin=${ mw.config.get("skin")}`,
+                    `/load.php?lang=${mw.config.get("wgUserLanguage")
+                    }&modules=ext.gadget.dark-mode&only=styles&skin=${mw.config.get("skin")}`,
             }).appendTo(document.head);
         }
     }

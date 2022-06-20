@@ -27,14 +27,12 @@ mw.loader.using("jquery.client", () => {
 
     const wgUrlProtocols = mw.config.get("wgUrlProtocols");
     const entityRegexBase = "&(?:(?:n(?:bsp|dash)|m(?:dash|inus)|lt|e[mn]sp|thinsp|amp|quot|gt|shy|zwn?j|lrm|rlm|Alpha|Beta|Epsilon|Zeta|Eta|Iota|Kappa|[Mm]u|micro|Nu|[Oo]micron|[Rr]ho|Tau|Upsilon|Chi)|#x[0-9a-fA-F]+);\n*";
-    const breakerRegexBase = `\\[(?:\\[|(?:${ wgUrlProtocols }))|\\{(?:\\{\\{?|\\|)|<(?:[:A-Z_a-z\u00C0-\u00D6\u00D8-\u00F6\u00F8-\u02FF\u0370-\u037D\u037F-\u1FFF\u200C\u200D\u2070-\u218F\u2C00-\u2FEF\u3001-\uD7FF\uF900-\uFDCF\uFDF0-\uFFFD][:\\w\u00C0-\u00D6\u00D8-\u00F6\u00F8-\u02FF\u0370-\u037D\u037F-\u1FFF\u200C\u200D\u2070-\u218F\u2C00-\u2FEF\u3001-\uD7FF\uF900-\uFDCF\uFDF0-\uFFFD-\\.\u00B7\u0300-\u036F\u203F-\u203F-\u2040]*(?=/?>| |\n)|!--[^]*?-->\n*)|(?:${ wgUrlProtocols.replace("|\\/\\/", "") })[^\\s"<>[\\]{-}]*[^\\s",\\.:;<>[\\]{-}]\n*|^(?:=|[*#:;]+\n*|-{4,}\n*)|\\\\'\\\\'(?:\\\\')?|~{3,5}\n*|${ entityRegexBase}`;
-    function breakerRegexWithPrefix(prefix)
-    {
-        return new RegExp(`(${ prefix })\n*|${ breakerRegexBase}`, "gm");
+    const breakerRegexBase = `\\[(?:\\[|(?:${wgUrlProtocols}))|\\{(?:\\{\\{?|\\|)|<(?:[:A-Z_a-z\u00C0-\u00D6\u00D8-\u00F6\u00F8-\u02FF\u0370-\u037D\u037F-\u1FFF\u200C\u200D\u2070-\u218F\u2C00-\u2FEF\u3001-\uD7FF\uF900-\uFDCF\uFDF0-\uFFFD][:\\w\u00C0-\u00D6\u00D8-\u00F6\u00F8-\u02FF\u0370-\u037D\u037F-\u1FFF\u200C\u200D\u2070-\u218F\u2C00-\u2FEF\u3001-\uD7FF\uF900-\uFDCF\uFDF0-\uFFFD-\\.\u00B7\u0300-\u036F\u203F-\u203F-\u2040]*(?=/?>| |\n)|!--[^]*?-->\n*)|(?:${wgUrlProtocols.replace("|\\/\\/", "")})[^\\s"<>[\\]{-}]*[^\\s",\\.:;<>[\\]{-}]\n*|^(?:=|[*#:;]+\n*|-{4,}\n*)|\\\\'\\\\'(?:\\\\')?|~{3,5}\n*|${entityRegexBase}`;
+    function breakerRegexWithPrefix(prefix) {
+        return new RegExp(`(${prefix})\n*|${breakerRegexBase}`, "gm");
     }
-    function nowikiTagBreakerRegex(tagName)
-    {
-        return new RegExp(`(</${ tagName }>)\n*|${ entityRegexBase}`, "gm");
+    function nowikiTagBreakerRegex(tagName) {
+        return new RegExp(`(</${tagName}>)\n*|${entityRegexBase}`, "gm");
     }
     const defaultBreakerRegex = new RegExp(breakerRegexBase, "gm");
     const wikilinkBreakerRegex = breakerRegexWithPrefix("]][a-zA-Z]*");
@@ -46,10 +44,9 @@ mw.loader.using("jquery.client", () => {
     const tagBreakerRegexCache = {};
     const nowikiTagBreakerRegexCache = {};
 
-    function highlightSyntax()
-    {
+    function highlightSyntax() {
         lastText = wpTextbox1.value;
-        const text = `${lastText.replace(/['\\]/g, "\\$&") }\n`;
+        const text = `${lastText.replace(/['\\]/g, "\\$&")}\n`;
         let i = 0;
 
         let css = "";
@@ -57,25 +54,20 @@ mw.loader.using("jquery.client", () => {
         let lastColor;
         let before = true;
 
-        function writeText(text, color)
-        {
-            if (color != lastColor)
-            {
-                css += `'}#s${ spanNumber}`;
-                if (before)
-                {
+        function writeText(text, color) {
+            if (color != lastColor) {
+                css += `'}#s${spanNumber}`;
+                if (before) {
                     css += ":before{";
                     before = false;
                 }
-                else
-                {
+                else {
                     css += ":after{";
                     before = true;
                     ++spanNumber;
                 }
-                if (color)
-                {
-                    css += `background-color:${ color };`;
+                if (color) {
+                    css += `background-color:${color};`;
                 }
                 css += "content:'";
                 lastColor = color;
@@ -83,114 +75,92 @@ mw.loader.using("jquery.client", () => {
             css += text;
         }
 
-        function highlightBlock(color, breakerRegex, assumedBold, assumedItalic)
-        {
+        function highlightBlock(color, breakerRegex, assumedBold, assumedItalic) {
             let match;
 
-            for (breakerRegex.lastIndex = i; match = breakerRegex.exec(text); breakerRegex.lastIndex = i)
-            {
-                if (match[1])
-                {
+            for (breakerRegex.lastIndex = i; match = breakerRegex.exec(text); breakerRegex.lastIndex = i) {
+                if (match[1]) {
                     writeText(text.substring(i, breakerRegex.lastIndex), color);
                     i = breakerRegex.lastIndex;
                     return;
                 }
 
                 const endIndexOfLastColor = breakerRegex.lastIndex - match[0].length;
-                if (i < endIndexOfLastColor)
-                {
+                if (i < endIndexOfLastColor) {
                     writeText(text.substring(i, endIndexOfLastColor), color);
                 }
 
                 i = breakerRegex.lastIndex;
 
-                switch (match[0].charAt(0))
-                {
+                switch (match[0].charAt(0)) {
                     case "[":
-                        if (match[0].charAt(1) == "[")
-                        {
+                        if (match[0].charAt(1) == "[") {
                             writeText("[[", syntaxHighlighterConfig.wikilinkColor || color);
                             highlightBlock(syntaxHighlighterConfig.wikilinkColor || color, wikilinkBreakerRegex);
                         }
-                        else
-                        {
+                        else {
                             writeText(match[0], syntaxHighlighterConfig.externalLinkColor || color);
                             highlightBlock(syntaxHighlighterConfig.externalLinkColor || color, namedExternalLinkBreakerRegex);
                         }
                         break;
                     case "{":
-                        if (match[0].charAt(1) == "{")
-                        {
-                            if (match[0].length == 3)
-                            {
+                        if (match[0].charAt(1) == "{") {
+                            if (match[0].length == 3) {
                                 writeText("{{{", syntaxHighlighterConfig.parameterColor || color);
                                 highlightBlock(syntaxHighlighterConfig.parameterColor || color, parameterBreakerRegex);
                             }
-                            else
-                            {
+                            else {
                                 writeText("{{", syntaxHighlighterConfig.templateColor || color);
                                 highlightBlock(syntaxHighlighterConfig.templateColor || color, templateBreakerRegex);
                             }
                         }
-                        else
-                        {
+                        else {
                             writeText("{|", syntaxHighlighterConfig.tableColor || color);
                             highlightBlock(syntaxHighlighterConfig.tableColor || color, tableBreakerRegex);
                         }
                         break;
                     case "<":
-                        if (match[0].charAt(1) == "!")
-                        {
+                        if (match[0].charAt(1) == "!") {
                             writeText(match[0], syntaxHighlighterConfig.commentColor || color);
                             break;
                         }
-                        else
-                        {
+                        else {
                             const tagEnd = text.indexOf(">", i) + 1;
-                            if (tagEnd == 0)
-                            {
+                            if (tagEnd == 0) {
                                 writeText("<", color);
                                 i = i - match[0].length + 1;
                                 break;
                             }
 
-                            if (text.charAt(tagEnd - 2) == "/" || syntaxHighlighterConfig.voidTags.indexOf(match[0].substring(1)) != -1)
-                            {
+                            if (text.charAt(tagEnd - 2) == "/" || syntaxHighlighterConfig.voidTags.indexOf(match[0].substring(1)) != -1) {
                                 writeText(text.substring(i - match[0].length, tagEnd), syntaxHighlighterConfig.tagColor || color);
                                 i = tagEnd;
                             }
-                            else
-                            {
+                            else {
                                 const tagName = match[0].substring(1);
 
-                                if (syntaxHighlighterConfig.sourceTags.indexOf(tagName) != -1)
-                                {
-                                    const stopAfter = `</${ tagName }>`;
+                                if (syntaxHighlighterConfig.sourceTags.indexOf(tagName) != -1) {
+                                    const stopAfter = `</${tagName}>`;
                                     let endIndex = text.indexOf(stopAfter, i);
-                                    if (endIndex == -1)
-                                    {
+                                    if (endIndex == -1) {
                                         endIndex = text.length;
                                     }
-                                    else
-                                    {
+                                    else {
                                         endIndex += stopAfter.length;
                                     }
                                     writeText(text.substring(i - match[0].length, endIndex), syntaxHighlighterConfig.tagColor || color);
                                     i = endIndex;
                                 }
-                                else if (syntaxHighlighterConfig.nowikiTags.indexOf(tagName) != -1)
-                                {
+                                else if (syntaxHighlighterConfig.nowikiTags.indexOf(tagName) != -1) {
                                     writeText(text.substring(i - match[0].length, tagEnd), syntaxHighlighterConfig.tagColor || color);
                                     i = tagEnd;
                                     highlightBlock(syntaxHighlighterConfig.tagColor || color, nowikiTagBreakerRegexCache[tagName]);
                                 }
-                                else
-                                {
+                                else {
                                     writeText(text.substring(i - match[0].length, tagEnd), syntaxHighlighterConfig.tagColor || color);
                                     i = tagEnd;
-                                    if (!tagBreakerRegexCache[tagName])
-                                    {
-                                        tagBreakerRegexCache[tagName] = breakerRegexWithPrefix(`</${ tagName }>`);
+                                    if (!tagBreakerRegexCache[tagName]) {
+                                        tagBreakerRegexCache[tagName] = breakerRegexWithPrefix(`</${tagName}>`);
                                     }
                                     highlightBlock(syntaxHighlighterConfig.tagColor || color, tagBreakerRegexCache[tagName]);
                                 }
@@ -198,13 +168,11 @@ mw.loader.using("jquery.client", () => {
                         }
                         break;
                     case "=":
-                        if (/[^=]=+$/.test(text.substring(i, text.indexOf("\n", i))))
-                        {
+                        if (/[^=]=+$/.test(text.substring(i, text.indexOf("\n", i)))) {
                             writeText("=", syntaxHighlighterConfig.headingColor || color);
                             highlightBlock(syntaxHighlighterConfig.headingColor || color, headingBreakerRegex);
                         }
-                        else
-                        {
+                        else {
                             writeText("=", color);
                         }
                         break;
@@ -222,52 +190,38 @@ mw.loader.using("jquery.client", () => {
                         break;
                     case "\\":
                         writeText(match[0], syntaxHighlighterConfig.boldOrItalicColor || color);
-                        if (match[0].length == 6)
-                        {
-                            if (assumedBold)
-                            {
-                                if (assumedItalic)
-                                {
+                        if (match[0].length == 6) {
+                            if (assumedBold) {
+                                if (assumedItalic) {
                                     assumedBold = false;
                                 }
-                                else
-                                {
+                                else {
                                     return;
                                 }
                             }
-                            else
-                            {
-                                if (assumedItalic)
-                                {
+                            else {
+                                if (assumedItalic) {
                                     assumedBold = true;
                                 }
-                                else
-                                {
+                                else {
                                     highlightBlock(syntaxHighlighterConfig.boldOrItalicColor || color, defaultBreakerRegex, true, false);
                                 }
                             }
                         }
-                        else
-                        {
-                            if (assumedItalic)
-                            {
-                                if (assumedBold)
-                                {
+                        else {
+                            if (assumedItalic) {
+                                if (assumedBold) {
                                     assumedItalic = false;
                                 }
-                                else
-                                {
+                                else {
                                     return;
                                 }
                             }
-                            else
-                            {
-                                if (assumedBold)
-                                {
+                            else {
+                                if (assumedBold) {
                                     assumedItalic = true;
                                 }
-                                else
-                                {
+                                else {
                                     highlightBlock(syntaxHighlighterConfig.boldOrItalicColor || color, defaultBreakerRegex, false, true);
                                 }
                             }
@@ -288,15 +242,13 @@ mw.loader.using("jquery.client", () => {
         const startTime = Date.now();
         highlightBlock("", defaultBreakerRegex);
 
-        if (i < text.length)
-        {
+        if (i < text.length) {
             writeText(text.substring(i), "");
         }
 
         const endTime = Date.now();
 
-        if (endTime - startTime > syntaxHighlighterConfig.timeout)
-        {
+        if (endTime - startTime > syntaxHighlighterConfig.timeout) {
             clearInterval(highlightSyntaxIfNeededIntervalID);
             wpTextbox1.removeEventListener("input", highlightSyntax);
             wpTextbox1.removeEventListener("scroll", syncScrollX);
@@ -306,7 +258,7 @@ mw.loader.using("jquery.client", () => {
             syntaxStyleTextNode.nodeValue = "";
 
             let errorMessage = {
-            	zh: "由于渲染耗时过长， Syntax highlighting 已在本页禁用。在设定中渲染时间被限制在$1毫秒以内，但这次我们耗去了$2毫秒。您可以尝试关闭一些标签页和程序，并点击“显示预览”或“显示更改”。如果这不起作用，请尝试更换一个不同的浏览器。如果这还不起作用，请尝试更换一个更快的电脑=w=。",
+                zh: "由于渲染耗时过长， Syntax highlighting 已在本页禁用。在设定中渲染时间被限制在$1毫秒以内，但这次我们耗去了$2毫秒。您可以尝试关闭一些标签页和程序，并点击“显示预览”或“显示更改”。如果这不起作用，请尝试更换一个不同的浏览器。如果这还不起作用，请尝试更换一个更快的电脑=w=。",
                 en: "Syntax highlighting on this page was disabled because it took too long. The maximum allowed highlighting time is $1ms, and your computer took $2ms. Try closing some tabs and programs and clicking \"Show preview\" or \"Show changes\". If that doesn't work, try a different web browser, and if that doesn't work, try a faster computer.",
             };
             const wgUserLanguage = mw.config.get("wgUserLanguage");
@@ -323,90 +275,71 @@ mw.loader.using("jquery.client", () => {
             return;
         }
 
-        if (maxSpanNumber < spanNumber)
-        {
+        if (maxSpanNumber < spanNumber) {
             const fragment = document.createDocumentFragment();
-            do
-            {
-                fragment.appendChild(document.createElement("span")).id = `s${ ++maxSpanNumber}`;
+            do {
+                fragment.appendChild(document.createElement("span")).id = `s${++maxSpanNumber}`;
             }
             while (maxSpanNumber < spanNumber);
             wpTextbox0.appendChild(fragment);
         }
 
-        syntaxStyleTextNode.nodeValue = `${css.substring(2).replace(/\n/g, "\\A ") }'}`;
+        syntaxStyleTextNode.nodeValue = `${css.substring(2).replace(/\n/g, "\\A ")}'}`;
     }
 
-    function syncScrollX()
-    {
+    function syncScrollX() {
         wpTextbox0.scrollLeft = wpTextbox1.scrollLeft;
     }
 
-    function syncScrollY()
-    {
+    function syncScrollY() {
         wpTextbox0.scrollTop = wpTextbox1.scrollTop;
     }
 
-    function syncTextDirection()
-    {
+    function syncTextDirection() {
         wpTextbox0.dir = wpTextbox1.dir;
     }
 
-    function syncParent()
-    {
-        if (wpTextbox1.previousSibling != wpTextbox0)
-        {
+    function syncParent() {
+        if (wpTextbox1.previousSibling != wpTextbox0) {
             wpTextbox1.parentNode.insertBefore(wpTextbox0, wpTextbox1);
             parentObserver.disconnect();
-            parentObserver.observe(wpTextbox1.parentNode, {childList: true});
+            parentObserver.observe(wpTextbox1.parentNode, { childList: true });
         }
     }
 
-    function highlightSyntaxIfNeeded()
-    {
-        if (wpTextbox1.value != lastText)
-        {
+    function highlightSyntaxIfNeeded() {
+        if (wpTextbox1.value != lastText) {
             highlightSyntax();
         }
-        if (wpTextbox1.scrollLeft != wpTextbox0.scrollLeft)
-        {
+        if (wpTextbox1.scrollLeft != wpTextbox0.scrollLeft) {
             syncScrollX();
         }
-        if (wpTextbox1.scrollTop != wpTextbox0.scrollTop)
-        {
+        if (wpTextbox1.scrollTop != wpTextbox0.scrollTop) {
             syncScrollY();
         }
-        if (wpTextbox1.offsetHeight != wpTextbox0.offsetHeight)
-        {
-            const height = `${wpTextbox1.offsetHeight }px`;
+        if (wpTextbox1.offsetHeight != wpTextbox0.offsetHeight) {
+            const height = `${wpTextbox1.offsetHeight}px`;
             wpTextbox0.style.height = height;
-            wpTextbox1.style.marginTop = `-${ height}`;
+            wpTextbox1.style.marginTop = `-${height}`;
         }
     }
 
-    function setup()
-    {
-        function configureColor(parameterName, hardcodedFallback, defaultOk)
-        {
-            if (typeof syntaxHighlighterConfig[parameterName] === "undefined")
-            {
+    function setup() {
+        function configureColor(parameterName, hardcodedFallback, defaultOk) {
+            if (typeof syntaxHighlighterConfig[parameterName] === "undefined") {
                 syntaxHighlighterConfig[parameterName] = syntaxHighlighterSiteConfig[parameterName];
             }
 
-            if (syntaxHighlighterConfig[parameterName] == "normal")
-            {
+            if (syntaxHighlighterConfig[parameterName] == "normal") {
                 syntaxHighlighterConfig[parameterName] = hardcodedFallback;
             }
-            else if (typeof syntaxHighlighterConfig[parameterName] !== "undefined")
-            {
+            else if (typeof syntaxHighlighterConfig[parameterName] !== "undefined") {
                 return;
             }
-            else if (typeof syntaxHighlighterConfig.defaultColor !== "undefined" && defaultOk)
-            {
+            else if (typeof syntaxHighlighterConfig.defaultColor !== "undefined" && defaultOk) {
                 syntaxHighlighterConfig[parameterName] = syntaxHighlighterConfig.defaultColor;
             }
-            else
-            {
+            else {
                 syntaxHighlighterConfig[parameterName] = hardcodedFallback;
             }
         }
@@ -470,7 +403,7 @@ mw.loader.using("jquery.client", () => {
         wpTextbox0.style.whiteSpace = "pre-wrap";
         wpTextbox0.style.width = "100%";
         wpTextbox0.style.wordWrap = "normal";
-        
+
         wpTextbox1.style.backgroundColor = "transparent";
         wpTextbox1.style.border = "1px inset gray";
         wpTextbox1.style.boxSizing = "border-box";
@@ -486,9 +419,9 @@ mw.loader.using("jquery.client", () => {
         wpTextbox1.style.resize = resize;
         wpTextbox1.style.width = "100%";
         wpTextbox1.style.wordWrap = "normal";
-        wpTextbox1.style.height = wpTextbox0.style.height = `${wpTextbox1.offsetHeight }px`;
+        wpTextbox1.style.height = wpTextbox0.style.height = `${wpTextbox1.offsetHeight}px`;
 
-        wpTextbox1.style.marginTop = `${-wpTextbox1.offsetHeight }px`;
+        wpTextbox1.style.marginTop = `${-wpTextbox1.offsetHeight}px`;
         wpTextbox1.parentNode.insertBefore(wpTextbox0, wpTextbox1);
 
         document.head.appendChild(syntaxStyleElement);
@@ -497,23 +430,20 @@ mw.loader.using("jquery.client", () => {
         wpTextbox1.addEventListener("scroll", syncScrollX);
         wpTextbox1.addEventListener("scroll", syncScrollY);
         attributeObserver = new MutationObserver(syncTextDirection);
-        attributeObserver.observe(wpTextbox1, {attributes: true});
+        attributeObserver.observe(wpTextbox1, { attributes: true });
         parentObserver = new MutationObserver(syncParent);
-        parentObserver.observe(wpTextbox1.parentNode, {childList: true});
+        parentObserver.observe(wpTextbox1.parentNode, { childList: true });
         highlightSyntaxIfNeededIntervalID = setInterval(highlightSyntaxIfNeeded, 500);
         highlightSyntax();
     }
 
     const wgAction = mw.config.get("wgAction");
     const layoutEngine = $.client.profile().layout;
-    if ((wgAction == "edit" || wgAction == "submit") && mw.config.get("wgPageContentModel") == "wikitext" && layoutEngine != "trident" && layoutEngine != "edge")
-    {
-        if (document.readyState == "complete")
-        {
+    if ((wgAction == "edit" || wgAction == "submit") && mw.config.get("wgPageContentModel") == "wikitext" && layoutEngine != "trident" && layoutEngine != "edge") {
+        if (document.readyState == "complete") {
             setup();
         }
-        else
-        {
+        else {
             window.addEventListener("load", setup);
         }
     }
