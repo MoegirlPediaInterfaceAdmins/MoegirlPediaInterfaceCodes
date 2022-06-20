@@ -1,6 +1,6 @@
 // <pre>
 "use strict";
-$(() => (async () => {
+$(() => {
     if (!mw.config.get("wgTitle").startsWith("提案/讨论中提案/")) {
         return;
     }
@@ -196,5 +196,5 @@ $(() => (async () => {
         wrapper.trigger("acup:init");
     });
     container.appendTo("body").hide();
-})());
+});
 // </pre>

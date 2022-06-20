@@ -1,9 +1,8 @@
 "use strict";
-/* eslint-disable */
 // <pre>
 (function (isCompleted) {
-    function load() {
-        if (mw.config.get('wgNamespaceNumber') !== -1 || mw.config.get('wgCanonicalSpecialPageName') !== "Allmessages") return;
+    function run() {
+        if (mw.config.get("wgNamespaceNumber") !== -1 || mw.config.get("wgCanonicalSpecialPageName") !== "Allmessages") { return; }
         mw.util.addCSS([
             ".TablePager_nav {",
             "    user-select: none;",
@@ -13,22 +12,22 @@
             "}",
             "#mw-allmessages-filter-status {",
             "    color: red;",
-            "}"
-        ].join('\n'));
-        var containter = $('<fieldset/>'),
+            "}",
+        ].join("\n"));
+        const containter = $("<fieldset/>"),
             api = new mw.Api(),
-            length = +$('#mw-table_pager_limit_label').val();
-        var index = 0,
+            length = +$("#mw-table_pager_limit_label").val();
+        let index = 0,
             filter, rfilter, am;
-        var enablePrevLink = function enablePrevLink(b) {
-            if (!b) $('.TablePager_nav-prev div').removeClass("TablePager_nav-enabled").addClass("TablePager_nav-disabled");
-            else $('.TablePager_nav-prev div').removeClass("TablePager_nav-disabled").addClass("TablePager_nav-enabled");
+        const enablePrevLink = function enablePrevLink(b) {
+            if (!b) { $(".TablePager_nav-prev div").removeClass("TablePager_nav-enabled").addClass("TablePager_nav-disabled"); }
+            else { $(".TablePager_nav-prev div").removeClass("TablePager_nav-disabled").addClass("TablePager_nav-enabled"); }
         };
-        var enableNextLink = function enableNextLink(b) {
-            if (!b) $('.TablePager_nav-next div').removeClass("TablePager_nav-enabled").addClass("TablePager_nav-disabled");
-            else $('.TablePager_nav-next div').removeClass("TablePager_nav-disabled").addClass("TablePager_nav-enabled");
+        const enableNextLink = function enableNextLink(b) {
+            if (!b) { $(".TablePager_nav-next div").removeClass("TablePager_nav-enabled").addClass("TablePager_nav-disabled"); }
+            else { $(".TablePager_nav-next div").removeClass("TablePager_nav-disabled").addClass("TablePager_nav-enabled"); }
         };
-        var check = function check(am) {
+        const check = function check(am) {
             if (am.length <= length) {
                 enableNextLink(false);
                 enablePrevLink(false);
@@ -43,85 +42,84 @@
                 enableNextLink(false);
             }
         };
-        var init = function init() {
-            if (!$('#mw-allmessages-form')[0]) return;
-            $('#mw-allmessages-form').remove();
-            $('.TablePager_nav td').remove();
-            $('.TablePager_nav tr').append('<td style="width: 50%;" class="TablePager_nav-prev"><div class="TablePager_nav-disabled">上一页</div></td><td style="width: 50%;" class="TablePager_nav-next"><div class="TablePager_nav-disabled">下一页</div></td>');
-            $('.TablePager_nav-prev div').on('click', function () {
-                if ($(this).hasClass('TablePager_nav-disabled')) return false;
+        const init = function init() {
+            if (!$("#mw-allmessages-form")[0]) { return; }
+            $("#mw-allmessages-form").remove();
+            $(".TablePager_nav td").remove();
+            $(".TablePager_nav tr").append('<td style="width: 50%;" class="TablePager_nav-prev"><div class="TablePager_nav-disabled">上一页</div></td><td style="width: 50%;" class="TablePager_nav-next"><div class="TablePager_nav-disabled">下一页</div></td>');
+            $(".TablePager_nav-prev div").on("click", function () {
+                if ($(this).hasClass("TablePager_nav-disabled")) { return false; }
                 index -= length;
-                if (index < 0) index = 0;
+                if (index < 0) { index = 0; }
                 load(am.slice(index, index + length));
             });
-            $('.TablePager_nav-next div').on('click', function () {
-                if ($(this).hasClass('TablePager_nav-disabled')) return false;
+            $(".TablePager_nav-next div").on("click", function () {
+                if ($(this).hasClass("TablePager_nav-disabled")) { return false; }
                 index += length;
                 load(am.slice(index, index + length));
             });
         };
-        var load = function load(_am) {
+        const load = (_am) => {
             check(am);
-            var head = $('#mw-allmessagestable thead');
-            if (head.find('tr').length !== 1) {
-                head.find('td:first').removeAttr('rowspan');
-                head.find('tr:first td:last').text('当前信息文字');
-                head.find('tr:not(:first)').remove();
+            const head = $("#mw-allmessagestable thead");
+            if (head.find("tr").length !== 1) {
+                head.find("td:first").removeAttr("rowspan");
+                head.find("tr:first td:last").text("当前信息文字");
+                head.find("tr:not(:first)").remove();
             }
-            var list = $('#mw-allmessagestable tbody');
+            const list = $("#mw-allmessagestable tbody");
             list.empty();
-            _am.forEach(function (n) {
-                var name = n.name,
-                    text = n['*'];
-                var row = $('<tr/>');
-                row.attr('id', name).append('<td class="am_title"></td><td class="am_default"></td>');
-                $('<a/>').addClass('external').attr({
-                    href: mw.config.get("wgServer") + mw.config.get("wgScriptPath") + '/MediaWiki:' + name,
-                    rel: 'nofollow'
-                }).html(name.replace(rfilter, '<span style="font-weight: bold;">' + filter + '</span>')).appendTo(row.find('.am_title'));
-                row.find('.am_default').text(text);
+            _am.forEach((n) => {
+                const name = n.name, text = n["*"];
+                const row = $("<tr/>");
+                row.attr("id", name).append('<td class="am_title"></td><td class="am_default"></td>');
+                $("<a/>").addClass("external").attr({
+                    href: `${mw.config.get("wgServer") + mw.config.get("wgScriptPath")}/MediaWiki:${name}`,
+                    rel: "nofollow",
+                }).html(name.replace(rfilter, `<span style="font-weight: bold;">${filter}</span>`)).appendTo(row.find(".am_title"));
+                row.find(".am_default").text(text);
                 list.append(row);
             });
         };
-        $('#mw-allmessages-form').after(containter);
-        containter.append('<legend>搜索</legend>');
-        var table = $('<table/>');
+        $("#mw-allmessages-form").after(containter);
+        containter.append("<legend>搜索</legend>");
+        const table = $("<table/>");
         containter.append(table);
-        table.append('<tr></tr><tr></tr>');
-        $('<td/>').addClass('mw-label').html('<label for="mw-allmessages-filter">以含有此字符串过滤：</label>').appendTo(table.find('tr:first'));
-        $('<td/>').addClass('mw-input').html('<input size="20" value="" id="mw-allmessages-filter">').appendTo(table.find('tr:first'));
-        $('<td/>').appendTo(table.find('tr:last'));
-        var submit = $('<button/>');
-        submit.text('搜索');
-        $('<td/>').addClass('mw-input').append(submit).appendTo(table.find('tr:last'));
-        var input = $('#mw-allmessages-filter');
-        submit.on('click', function () {
-            if (!input.val()) return oouiDialog.alert('请输入内容以搜索系统消息');
-            $('#mw-allmessages-filter-status').remove();
+        table.append("<tr></tr><tr></tr>");
+        $("<td/>").addClass("mw-label").html('<label for="mw-allmessages-filter">以含有此字符串过滤：</label>').appendTo(table.find("tr:first"));
+        $("<td/>").addClass("mw-input").html('<input size="20" value="" id="mw-allmessages-filter">').appendTo(table.find("tr:first"));
+        $("<td/>").appendTo(table.find("tr:last"));
+        const submit = $("<button/>");
+        submit.text("搜索");
+        $("<td/>").addClass("mw-input").append(submit).appendTo(table.find("tr:last"));
+        const input = $("#mw-allmessages-filter");
+        submit.on("click", () => {
+            if (!input.val()) { return oouiDialog.alert("请输入内容以搜索系统消息"); }
+            $("#mw-allmessages-filter-status").remove();
             init();
             filter = input.val();
-            rfilter = RegExp(filter, 'i');
+            rfilter = RegExp(filter, "i");
             containter.append('<div id="mw-allmessages-filter-status">正在加载中……</div>');
             api.post({
-                action: 'query',
-                format: 'json',
-                meta: 'allmessages',
-                amfilter: filter
-            }).then(function (data) {
+                action: "query",
+                format: "json",
+                meta: "allmessages",
+                amfilter: filter,
+            }).then((data) => {
                 am = data.query.allmessages;
                 index = 0;
-                $('#mw-allmessages-filter-status').remove();
+                $("#mw-allmessages-filter-status").remove();
                 load(am.slice(index, index + length));
-            }, function () {
-                $('#mw-allmessages-filter-status').remove();
+            }, () => {
+                $("#mw-allmessages-filter-status").remove();
                 containter.append('<div id="mw-allmessages-filter-status">发生错误，请重试！</div>');
             });
         });
-        input.on('keypress', function (e) {
-            if (e.which == 13) submit.click();
+        input.on("keypress", (e) => {
+            if (e.which === 13) { submit.click(); }
         });
     }
-    if (isCompleted) load();
-    else $(window).on('load', load);
-})(document.readyState === 'complete');
+    if (isCompleted) { run(); }
+    else { $(window).on("load", run); }
+})(document.readyState === "complete");
 // </pre>
