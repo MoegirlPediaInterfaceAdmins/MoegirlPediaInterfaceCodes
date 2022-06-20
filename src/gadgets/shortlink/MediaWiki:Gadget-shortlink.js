@@ -1,97 +1,87 @@
-/* eslint-disable prefer-arrow-callback */
-/* eslint-disable prefer-template */
-/* eslint-disable comma-dangle */
-/* eslint-disable no-var */
-/* eslint dot-notation: ["error", { "allowPattern": "^(?:catch|default)$" } ] */
-/* eslint-disable no-unused-vars */
-/* eslint-disable no-redeclare */
-/* global mw, $, OO, moment, Cron, prettyPrint, wgULS */
-/* eslint-enable no-unused-vars */
-/* eslint-enable no-redeclare */
 "use strict";
 // <pre>
-$(function () {
-    var wgArticleId = mw.config.get("wgArticleId") || -1;
-    var wgCurRevisionId = mw.config.get("wgCurRevisionId") || -1;
-    var wgRevisionId = mw.config.get("wgRevisionId") || -1;
-    var wgDiffOldId = mw.config.get("wgDiffOldId") || -1;
-    var wgDiffNewId = mw.config.get("wgDiffNewId") || -1;
+$(() => {
+    const wgArticleId = mw.config.get("wgArticleId") || -1;
+    const wgCurRevisionId = mw.config.get("wgCurRevisionId") || -1;
+    const wgRevisionId = mw.config.get("wgRevisionId") || -1;
+    const wgDiffOldId = mw.config.get("wgDiffOldId") || -1;
+    const wgDiffNewId = mw.config.get("wgDiffNewId") || -1;
     if (wgArticleId <= 0 && wgRevisionId <= 0 && wgCurRevisionId <= 0 && wgDiffOldId <= 0 && wgDiffNewId <= 0) {
         return;
     }
-    var $body = $("body");
-    var $mwPanel = $("#mw-panel");
+    const $body = $("body");
+    const $mwPanel = $("#mw-panel");
     $body.css("height", "auto");
-    var links = [{
+    const links = [{
         id: "page",
-        href: "curid=" + wgArticleId,
+        href: `curid=${ wgArticleId}`,
         title: wgULS("本页面的短链接（页面ID）","本頁面的短網址（頁面ID）"),
         text: wgULS("本页短链","本頁短網址"),
-        wikitext: "[[Special:重定向/page/" + wgArticleId + "]]",
+        wikitext: `[[Special:重定向/page/${ wgArticleId }]]`,
     }, {
         id: "currev",
-        href: "oldid=" + wgCurRevisionId,
+        href: `oldid=${ wgCurRevisionId}`,
         title: wgULS("本页面最新版本的短链接（版本ID）","本頁面最新修訂的短網址（版本ID）"),
         text: wgULS("最新版本","最新修訂"),
-        wikitext: "[[Special:固定链接/" + wgCurRevisionId + "]]",
+        wikitext: `[[Special:固定链接/${ wgCurRevisionId }]]`,
     }];
     if (wgRevisionId > 0) {
         if (wgCurRevisionId !== wgRevisionId) {
             links.push({
                 id: "rev",
-                href: "oldid=" + wgRevisionId,
+                href: `oldid=${ wgRevisionId}`,
                 title: wgULS("本页面当前版本的短链接（版本ID）","本頁面當前修訂的短網址（版本ID）"),
                 text: wgULS("当前版本","當前修訂"),
-                wikitext: "[[Special:固定链接/" + wgRevisionId + "]]",
+                wikitext: `[[Special:固定链接/${ wgRevisionId }]]`,
             }, {
                 id: "currev",
-                href: "diff=" + wgRevisionId,
+                href: `diff=${ wgRevisionId}`,
                 title: wgULS("本页面当前版本与前一版本的差异的链接（版本ID）","本頁面當前修訂與前一修訂的短網址（版本ID）"),
                 text: wgULS("当前版本差异","當前修訂差異"),
-                wikitext: "[[Special:差异/" + wgRevisionId + "]]",
+                wikitext: `[[Special:差异/${ wgRevisionId }]]`,
             }, {
                 id: "curdiff",
-                href: "diff=" + wgCurRevisionId + "&oldid=" + wgRevisionId,
+                href: `diff=${ wgCurRevisionId }&oldid=${ wgRevisionId}`,
                 title: wgULS("与本页面最新版本的差异的短链接（版本ID）","與本頁面最新修訂差異的短網址（版本ID）"),
                 text: wgULS("与最新版本差异","與最新修訂差異"),
-                wikitext: "[[Special:差异/" + wgRevisionId + "/" + wgCurRevisionId + "]]",
+                wikitext: `[[Special:差异/${ wgRevisionId }/${ wgCurRevisionId }]]`,
             });
         } else if (wgDiffNewId !== wgCurRevisionId) {
             links.push({
                 id: "currev",
-                href: "diff=" + wgCurRevisionId,
+                href: `diff=${ wgCurRevisionId}`,
                 title: wgULS("本页面最新版本与前一版本的差异的链接（版本ID）","本頁面最新修訂與前一修訂差異的短網址（版本ID）"),
                 text: wgULS("最新版本差异","與最新修訂差異"), 
-                wikitext: "[[Special:差异/" + wgCurRevisionId + "]]",
+                wikitext: `[[Special:差异/${ wgCurRevisionId }]]`,
             });
         }
     }
     if (wgDiffNewId > 0 && wgDiffOldId > 0) {
         links.push({
             id: "diff",
-            href: "diff=" + wgDiffNewId + "&oldid=" + wgDiffOldId,
+            href: `diff=${ wgDiffNewId }&oldid=${ wgDiffOldId}`,
             title: wgULS("当前比较的差异的短链接（版本ID）","當前比較的差異的短網址（版本ID）"),
             text: wgULS("当前比较的差异","當前比較的差異"),
-            wikitext: "[[Special:差异/" + wgDiffOldId + "/" + wgDiffNewId + "]]",
+            wikitext: `[[Special:差异/${ wgDiffOldId }/${ wgDiffNewId }]]`,
         });
     }
-    $mwPanel.append('<div class="portal" role="navigation" id="p-sl" aria-labelledby="p-sl-label" style="position: sticky; top: 0;"><h3 lang="zh-CN" dir="ltr" id="p-sl-label">'+ wgULS("短链接","短網址") +'</h3><div class="body"><ul>' +
-        links.map(function (l) {
-            return '<li id="sl-' + l.id + '"><a href="' + mw.config.get("wgServer") + mw.config.get("wgScriptPath") + "/_?" + l.href + '" title="' + l.title + '">' + l.text + '</a><br><span>（<a data-wikitext="' + l.wikitext + '" href="javascript:void(0);">'+ wgULS("复制对应wikitext","複製對應wikitext") + "</a>）</span></li>";
-        }).join("\n") +
-        "</ul></div></div>");
-    var valueNode = $("<pre/>", {
+    $mwPanel.append(`<div class="portal" role="navigation" id="p-sl" aria-labelledby="p-sl-label" style="position: sticky; top: 0;"><h3 lang="zh-CN" dir="ltr" id="p-sl-label">${ wgULS("短链接","短網址") }</h3><div class="body"><ul>${ 
+        links.map((l) => {
+            return `<li id="sl-${ l.id }"><a href="${ mw.config.get("wgServer") }${mw.config.get("wgScriptPath") }/_?${ l.href }" title="${ l.title }">${ l.text }</a><br><span>（<a data-wikitext="${ l.wikitext }" href="javascript:void(0);">${ wgULS("复制对应wikitext","複製對應wikitext") }</a>）</span></li>`;
+        }).join("\n") 
+    }</ul></div></div>`);
+    const valueNode = $("<pre/>", {
         css: {
             position: "absolute",
             left: "-99999px",
             "z-index": "-99999",
-        }
+        },
     }).appendTo("body");
     $("#mw-panel a[data-wikitext]").on("click", function () {
-        var self = $(this),
+        const self = $(this),
             selection = window.getSelection();
-        var rangeCount = selection.rangeCount;
-        var range;
+        const rangeCount = selection.rangeCount;
+        let range;
         if (rangeCount > 0) {
             range = selection.getRangeAt(0);
         }
@@ -99,7 +89,7 @@ $(function () {
         selection.selectAllChildren(valueNode[0]);
         document.execCommand("copy");
         self.text( wgULS("wikitext复制成功","wikitext複製成功") ).data("last-time", new Date().getTime()).addClass("text-modified");
-        window.setTimeout(function () {
+        window.setTimeout(() => {
             selection.removeAllRanges();
             if (rangeCount > 0) {
                 selection.addRange(range);
@@ -108,15 +98,15 @@ $(function () {
         }, 0);
         return false;
     });
-    setInterval(function () {
+    setInterval(() => {
         $("#mw-panel a[data-wikitext].text-modified").each(function () {
-            var self = $(this);
+            const self = $(this);
             if (self.data("last-time") < new Date().getTime() - 3000) {
                 self.text( wgULS("复制对应wikitext","複製對應wikitext") ).removeClass("text-modified");
             }
         });
     }, 1000);
-    $(window).on("resize", function () {
+    $(window).on("resize", () => {
         $mwPanel.height($body.height());
     });
 });

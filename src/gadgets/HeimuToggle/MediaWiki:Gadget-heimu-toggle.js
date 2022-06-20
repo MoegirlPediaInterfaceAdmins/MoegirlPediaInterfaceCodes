@@ -1,31 +1,22 @@
-/* eslint-disable prefer-arrow-callback */
-/* eslint-disable prefer-template */
-/* eslint-disable comma-dangle */
-/* eslint-disable no-var */
-/* eslint-disable no-unused-vars */
-/* eslint dot-notation: ["error", { "allowPattern": "^(?:catch|default)$" } ] */
-// eslint-disable-next-line no-redeclare
-/* global mw, $, OO, moment, Cron, wgULS, insertToBottomRightCorner */
-/* eslint-enable no-unused-vars */
 "use strict";
 // <pre>
-$(function () {
+$(() => {
     if (!$(".heimu, .colormu")[0] || $("#heimu_toggle")[0]) {
         return;
     }
     $(".colormu").each(function () {
         this.dataset.backgroundColor = $(this).css("background-color");
     });
-    var $body = $("body");
-    var btn = insertToBottomRightCorner(wgULS("半隐黑幕", "半隱黑幕")).attr("id", "heimu_toggle").css({
+    const $body = $("body");
+    const btn = insertToBottomRightCorner(wgULS("半隐黑幕", "半隱黑幕")).attr("id", "heimu_toggle").css({
         "user-select": "none",
         order: "50",
     });
-    btn.on("click", function () {
+    btn.on("click", () => {
         btn.text($("body.heimu_toggle_on")[0] ? wgULS("半隐黑幕", "半隱黑幕") : wgULS("隐藏黑幕", "隱藏黑幕"));
         $body.toggleClass("heimu_toggle_on");
         $(".colormu").each(function () {
-            var $thisColormu = $(this);
+            const $thisColormu = $(this);
             if ($thisColormu.hasClass("colormu_toggle_on")) {
                 $thisColormu.removeClass("colormu_toggle_on");
                 $thisColormu.css("background-color", this.dataset.backgroundColor);

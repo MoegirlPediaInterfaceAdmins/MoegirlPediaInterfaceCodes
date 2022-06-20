@@ -8,7 +8,7 @@
     const REF_LINK_SELECTOR = '.reference, a[href^="#CITEREF"]',
         COMMENTED_TEXT_CLASS = "rt-commentedText",
         COMMENTED_TEXT_SELECTOR = `${COMMENTED_TEXT_CLASS ? `.${COMMENTED_TEXT_CLASS}, ` : ""
-            }abbr[title]`;
+        }abbr[title]`;
 
     mw.messages.set(wgULS({
         "rt-settings": "参考文献提示工具设置",

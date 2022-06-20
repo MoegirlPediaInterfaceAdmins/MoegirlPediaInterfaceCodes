@@ -1,4 +1,3 @@
-/* global mw, $, wgULS */
 /**
  * Enables or disables the dark-mode gadget.
  *

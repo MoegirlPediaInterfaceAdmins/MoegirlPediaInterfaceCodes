@@ -1,13 +1,3 @@
-/* eslint-disable prefer-arrow-callback */
-/* eslint-disable prefer-template */
-/* eslint-disable comma-dangle */
-/* eslint-disable no-var */
-/* eslint dot-notation: ["error", { "allowPattern": "^(?:catch|default)$" } ] */
-/* eslint-disable no-unused-vars */
-/* eslint-disable no-redeclare */
-/* global mw, $, OO, moment, Cron, prettyPrint, LocalObjectStorage, lazyload, wgULS */
-/* eslint-enable no-unused-vars */
-/* eslint-enable no-redeclare */
 "use strict";
 // <pre>
 /**
@@ -15,12 +5,12 @@
    URL:https://zh.wikipedia.org/w/index.php?title=User:Zuohaocheng/patrollCount.js
    为代码能适用做出了适当修改
 */
-$(function () {
+$(() => {
     if (mw.config.get("wgAction") !== "view") {
         return;
     }
     // 在此修改监视的名字空间
-    var namespaceWatched = [
+    const namespaceWatched = [
         // 将你  想监视的名字空间前面去掉 //
         // 将你不想监视的名字空间前面加上 //
 
@@ -51,53 +41,53 @@ $(function () {
         // "gadget_definition",
         // "gadget_definition_talk": false
     ];
-    var apiPrefix = mw.config.get("wgServer") + mw.config.get("wgScriptPath") + "/api.php";
-    var newPageMax = 50;
-    var writeCountNum = function (pages, plus) {
-        var strCount = "";
+    const apiPrefix = `${mw.config.get("wgServer") + mw.config.get("wgScriptPath") }/api.php`;
+    const newPageMax = 50;
+    const writeCountNum = function (pages, plus) {
+        let strCount = "";
         if (pages.length !== 0) {
-            var vNum = Math.round(Math.random() * (pages.length - 1));
+            const vNum = Math.round(Math.random() * (pages.length - 1));
             var page = pages[vNum];
-            var link = encodeURIComponent(page.title) + "&redirect=no&rcid=" + page.rcid;
+            const link = `${encodeURIComponent(page.title) }&redirect=no&rcid=${ page.rcid}`;
             strCount = pages.length.toString();
             if (plus) {
                 strCount += "+";
             }
-            var title = page.title;
+            let title = page.title;
             if (!page.confidence) {
                 title += '" class="patrollListNotConfident';
             }
-            strCount = '(<a id="unpatrollArticle" href="' + mw.config.get("wgServer") + mw.config.get("wgScriptPath") + "/index.php?title=" + link + '" title="' + title + '">' + strCount + "</a>)";
-            ptPatrollLink.attr("href", mw.config.get("wgServer") + mw.config.get("wgScriptPath") + "/index.php?title=Special:最新页面&hidepatrolled=1");
+            strCount = `(<a id="unpatrollArticle" href="${ mw.config.get("wgServer") }${mw.config.get("wgScriptPath") }/index.php?title=${ link }" title="${ title }">${ strCount }</a>)`;
+            ptPatrollLink.attr("href", `${mw.config.get("wgServer") + mw.config.get("wgScriptPath") }/index.php?title=Special:最新页面&hidepatrolled=1`);
         } else {
-            ptPatrollLink.attr("href", mw.config.get("wgServer") + mw.config.get("wgScriptPath") + "/index.php?title=Special:最新页面&hidepatrolled=0");
+            ptPatrollLink.attr("href", `${mw.config.get("wgServer") + mw.config.get("wgScriptPath") }/index.php?title=Special:最新页面&hidepatrolled=0`);
         }
         $("span#not-patrolled-count").html(strCount);
         generateList(pages);
         return page;
     };
-    var showAllUnbind = [];
-    var showAll = false;
-    var prepareList = function (pages, countMax) {
-        var $list = $("#patrollTooltipList").empty();
-        var addItem = function (istart, iend) {
-            for (var idx = istart; idx < iend; ++idx) {
-                var page = pages[idx];
-                var link = encodeURIComponent(page.title) + "&redirect=no&rcid=" + page.rcid;
-                var shortTitle = page.title;
+    let showAllUnbind = [];
+    let showAll = false;
+    const prepareList = function (pages, countMax) {
+        const $list = $("#patrollTooltipList").empty();
+        const addItem = function (istart, iend) {
+            for (let idx = istart; idx < iend; ++idx) {
+                const page = pages[idx];
+                const link = `${encodeURIComponent(page.title) }&redirect=no&rcid=${ page.rcid}`;
+                let shortTitle = page.title;
                 if (shortTitle.length > 8) {
-                    shortTitle = shortTitle.slice(0, 7) + "...";
+                    shortTitle = `${shortTitle.slice(0, 7) }...`;
                 }
-                var item = $("<li></li>").html('<a href="' + mw.config.get("wgServer") + mw.config.get("wgScriptPath") + "/index.php?title=" + link + '" title="' + page.title + '">' + shortTitle + "</a>").appendTo($list);
+                const item = $("<li></li>").html(`<a href="${ mw.config.get("wgServer") }${mw.config.get("wgScriptPath") }/index.php?title=${ link }" title="${ page.title }">${ shortTitle }</a>`).appendTo($list);
                 if (!page.confidence) {
                     item.addClass("patrollListNotConfident");
                 }
             }
         };
-        var length = pages.length;
+        const length = pages.length;
         if (length > countMax && !showAll) {
             addItem(0, countMax);
-            var $showAll = $("#patrollListShowAll");
+            let $showAll = $("#patrollListShowAll");
             if ($showAll.length === 0) {
                 $showAll = $("<div></div>", {
                     id: "patrollListShowAll",
@@ -115,10 +105,10 @@ $(function () {
                 $showAll.show();
             }
             $showAll.off("click");
-            $showAll.on("click", function () {
+            $showAll.on("click", () => {
                 addItem(countMax, length);
                 $showAll.hide();
-                for (var idx = 0; idx < showAllUnbind.length; ++idx) {
+                for (let idx = 0; idx < showAllUnbind.length; ++idx) {
                     showAllUnbind[idx].off("mouseover.autohide mouseout");
                 }
                 showAll = true;
@@ -127,7 +117,7 @@ $(function () {
             addItem(0, pages.length);
         }
     };
-    var loadCvtooltip = function () {
+    const loadCvtooltip = function () {
         $("body").append($("<div></div>", {
             id: "patrollTooltip",
             style: "display: none;",
@@ -148,8 +138,8 @@ $(function () {
          */
         (function ($) {
             $.fn.cvtooltip = function (options) {
-                var self = $(this);
-                var defaults = {
+                const self = $(this);
+                const defaults = {
                     panel: "body", //该参数是加载气泡提示的容器，值不同可能会导致计算的位置不同，默认为添加至body容器
                     selector: "", //用于计算定位的控件
                     width: 0, //气泡提示宽度，完全手动设置
@@ -162,36 +152,36 @@ $(function () {
                         $.noop(); //点击关闭后的事件
                     },
                 };
-                var param = $.extend({}, defaults, options || {});
-                var controlID = self.attr("ID");
+                const param = $.extend({}, defaults, options || {});
+                const controlID = self.attr("ID");
                 // 气泡样式
-                var cvToolTipCssBtm = "position: absolute; border-color: transparent transparent #A7D7F9 transparent; border-style: dashed dashed solid dashed; border-width: 7px 7px 7px 7px; width: 0; overflow: hidden; right:40px; top:-17px;";
-                var cvToolTipCssTop = "position: absolute; border-color: transparent transparent #A7D7F9 transparent; border-style: dashed dashed solid dashed; border-width: 7px 7px 7px 7px; width: 0; overflow: hidden; right:40px; top:-17px;";
-                var cvToolTipCss = "z-index:713; display:none; position: absolute; border: 3px solid #A7D7F9; background-color: #F3F3F3; line-height:14px; border-radius: 10px; right:" + param.left + "px; top:" + param.top + "px;";
+                const cvToolTipCssBtm = "position: absolute; border-color: transparent transparent #A7D7F9 transparent; border-style: dashed dashed solid dashed; border-width: 7px 7px 7px 7px; width: 0; overflow: hidden; right:40px; top:-17px;";
+                const cvToolTipCssTop = "position: absolute; border-color: transparent transparent #A7D7F9 transparent; border-style: dashed dashed solid dashed; border-width: 7px 7px 7px 7px; width: 0; overflow: hidden; right:40px; top:-17px;";
+                let cvToolTipCss = `z-index:713; display:none; position: absolute; border: 3px solid #A7D7F9; background-color: #F3F3F3; line-height:14px; border-radius: 10px; right:${ param.left }px; top:${ param.top }px;`;
                 if (param.width !== 0) {
-                    cvToolTipCss += "width: " + param.width + "px;";
+                    cvToolTipCss += `width: ${ param.width }px;`;
                 }
                 // 气泡显示
-                if (!document.getElementById(controlID + "Body")) {
-                    var cvTipsElement = $("<div>");
+                if (!document.getElementById(`${controlID }Body`)) {
+                    const cvTipsElement = $("<div>");
                     cvTipsElement.attr({
-                        id: controlID + "Body",
+                        id: `${controlID }Body`,
                         "class": "cvToolTip",
                         style: cvToolTipCss,
                     });
-                    var cvTipsElementBtm = $("<span>");
+                    const cvTipsElementBtm = $("<span>");
                     cvTipsElementBtm.attr("style", cvToolTipCssBtm);
                     cvTipsElement.append(cvTipsElementBtm);
-                    var cvTipsElementTop = $("<span>");
+                    const cvTipsElementTop = $("<span>");
                     cvTipsElementTop.attr("style", cvToolTipCssTop);
                     cvTipsElement.append(cvTipsElementTop);
-                    var cvTipsElementContent = $("<span>");
-                    cvTipsElementContent.attr("id", controlID + "Content");
+                    const cvTipsElementContent = $("<span>");
+                    cvTipsElementContent.attr("id", `${controlID }Content`);
                     cvTipsElementContent.css("float", "left");
                     cvTipsElement.append(cvTipsElementContent);
                     if (param.close) {
-                        var cvTipsElementClose = $("<a>");
-                        cvTipsElementClose.attr("id", controlID + "Close");
+                        const cvTipsElementClose = $("<a>");
+                        cvTipsElementClose.attr("id", `${controlID }Close`);
                         cvTipsElementClose.css("display", "none");
                         cvTipsElementClose.html('<span style="float:right; font-family:verdana; position: absolute; top:1px; right:5px; font-size:12px; cursor:pointer;">x</span>');
                         cvTipsElement.append(cvTipsElementClose);
@@ -199,9 +189,9 @@ $(function () {
                     $(param.panel).append(cvTipsElement);
                 }
                 // 气泡容器、装载内容的容器
-                var cttBody = $(document.getElementById(controlID + "Body"));
-                var cttContent = $(document.getElementById(controlID + "Content"));
-                var cttClose = $(document.getElementById(controlID + "Close"));
+                const cttBody = $(document.getElementById(`${controlID }Body`));
+                const cttContent = $(document.getElementById(`${controlID }Content`));
+                const cttClose = $(document.getElementById(`${controlID }Close`));
                 cttBody.show();
                 var ctt = {
                     body: cttBody,
@@ -210,7 +200,7 @@ $(function () {
                         return self;
                     },
                     position: function () {
-                        var p = $(param.selector).position();
+                        const p = $(param.selector).position();
                         cttBody.css({
                             top: p.top + param.top,
                             left: p.left + param.left,
@@ -219,7 +209,7 @@ $(function () {
                     hide: function () {
                         cttClose.hide();
                         cttBody.off();
-                        cttContent.slideUp(param.speed, function () {
+                        cttContent.slideUp(param.speed, () => {
                             ctt.content().hide().appendTo($(param.panel));
                             cttBody.remove();
                         });
@@ -228,7 +218,7 @@ $(function () {
                     timer: null,
                     show: function () {
                         if (cttContent.html() === "") {
-                            cttContent.append(ctt.content()).css("height", cttContent[0].scrollHeight + "px").hide().slideDown(param.speed, function () {
+                            cttContent.append(ctt.content()).css("height", `${cttContent[0].scrollHeight }px`).hide().slideDown(param.speed, () => {
                                 cttContent.css("height", "");
                                 cttBody.on({
                                     mouseover: function () {
@@ -255,20 +245,20 @@ $(function () {
             };
         })(jQuery);
     };
-    var ttListShow = false;
+    let ttListShow = false;
     var generateList = function (pages) {
         if (ttListShow) {
             prepareList(pages, 10);
         } else {
-            var timer = null;
+            let timer = null;
             // Why, Wikipedians, why
             // var $ptPatroll = $("#pt-patroll").off("mouseover mouseover.autohide mouseout");
-            var $ptPatroll = $("#pt-patroll").off("mouseover.autohide mouseout");
-            $ptPatroll.on("mouseover", function () {
+            const $ptPatroll = $("#pt-patroll").off("mouseover.autohide mouseout");
+            $ptPatroll.on("mouseover", () => {
                 if (timer) {
                     return;
                 }
-                timer = setTimeout(function () {
+                timer = setTimeout(() => {
                     timer = null;
                     if (pages.length !== 0 && !ttListShow) {
                         if (typeof $.fn.cvtooltip === "undefined") {
@@ -276,7 +266,7 @@ $(function () {
                         }
                         prepareList(pages, 10);
                         ttListShow = true;
-                        var ctt = $("#patrollTooltip").cvtooltip({
+                        const ctt = $("#patrollTooltip").cvtooltip({
                             left: $(window).width() - ($("#pt-patroll").offset().left + $("#pt-patroll").outerWidth()),
                             top: $("#pt-patroll").offset().top + $("#pt-patroll").height() + 10,
                             callback: function () {
@@ -285,8 +275,8 @@ $(function () {
                                 $ptPatroll.off("mouseover.autohide mouseout");
                             },
                         });
-                        var tipCloseTimer;
-                        var clearHideTimer = function () {
+                        let tipCloseTimer;
+                        const clearHideTimer = function () {
                             if (tipCloseTimer) {
                                 clearTimeout(tipCloseTimer);
                                 tipCloseTimer = null;
@@ -294,7 +284,7 @@ $(function () {
                         };
                         ctt.body.on("mouseover.autohide", clearHideTimer);
                         $ptPatroll.on("mouseover.autohide", clearHideTimer);
-                        var setHideTimer = function () {
+                        const setHideTimer = function () {
                             if (!tipCloseTimer) {
                                 tipCloseTimer = setTimeout(ctt.hide, 1000);
                             }
@@ -304,7 +294,7 @@ $(function () {
                         showAllUnbind = [ctt.body, $ptPatroll];
                     }
                 }, 500);
-                $ptPatroll.on("mouseout", function () {
+                $ptPatroll.on("mouseout", () => {
                     if (timer) {
                         clearTimeout(timer);
                         timer = null;
@@ -313,15 +303,15 @@ $(function () {
             });
         }
     };
-    var missingPage = {};
-    var checkMissing = function (pages, plus) {
-        var missingQuery = [];
-        for (var idx = 0; idx < pages.length; ++idx) {
-            var title = pages[idx].title;
+    const missingPage = {};
+    const checkMissing = function (pages, plus) {
+        const missingQuery = [];
+        for (let idx = 0; idx < pages.length; ++idx) {
+            const title = pages[idx].title;
             if (typeof title === "undefined") {
                 continue;
             }
-            var isMissing = missingPage[title];
+            const isMissing = missingPage[title];
             if (typeof isMissing === "undefined") {
                 missingQuery.push(title);
             } else if (isMissing) {
@@ -330,19 +320,19 @@ $(function () {
         }
         // 查询删除状态
         if (missingQuery.length !== 0) {
-            var pagesStr = missingQuery.join("|");
-            var checkMissingURI = apiPrefix + "?action=query&format=xml&prop=info";
+            const pagesStr = missingQuery.join("|");
+            const checkMissingURI = `${apiPrefix }?action=query&format=xml&prop=info`;
             $.post(checkMissingURI, {
-                titles: pagesStr
-            }, function (result) {
-                var regenerate = false;
+                titles: pagesStr,
+            }, (result) => {
+                let regenerate = false;
                 $(result).find("pages page").each(function () {
-                    var $this = $(this);
-                    var isMissing = typeof $this.attr("missing") !== "undefined";
-                    var title = $this.attr("title");
+                    const $this = $(this);
+                    const isMissing = typeof $this.attr("missing") !== "undefined";
+                    const title = $this.attr("title");
                     missingPage[title] = isMissing;
                     if (isMissing) {
-                        for (var idx = 0; idx < pages.length; ++idx) {
+                        for (let idx = 0; idx < pages.length; ++idx) {
                             if (pages[idx].title === title) {
                                 pages.splice(idx, 1);
                                 break;
@@ -360,27 +350,27 @@ $(function () {
         }
     };
     // 加入标记巡查按钮
-    var addPatrollLink = (function () {
-        var checked = false;
-        var addlink = function (page) {
-            var $patrollinks = $("<a></a>", {
-                href: "index.php?title=" + encodeURIComponent(page.title) + "&rcid=" + encodeURIComponent(page.rcid),
+    const addPatrollLink = (function () {
+        let checked = false;
+        const addlink = function (page) {
+            let $patrollinks = $("<a></a>", {
+                href: `index.php?title=${ encodeURIComponent(page.title) }&rcid=${ encodeURIComponent(page.rcid)}`,
                 text: "标记此页面为已巡查",
             });
-            var $divPatrolllink = $("<div></div>", {
+            const $divPatrolllink = $("<div></div>", {
                 "class": "patrollink",
             }).append("[").append($patrollinks).append("]");
             $("div.printfooter").before($divPatrolllink);
-            var markAsPatrol = function (e) {
+            const markAsPatrol = function (e) {
                 e.preventDefault();
-                var data = {
+                const data = {
                     rcid: page.rcid,
                     token: page.rctoken,
                 };
-                var uri = apiPrefix + "?format=xml&action=patrol";
+                const uri = `${apiPrefix }?format=xml&action=patrol`;
                 $patrollinks.text("Marking as patrolled...");
                 $patrollinks = $patrollinks.parent();
-                $.post(uri, data, function (data, status) {
+                $.post(uri, data, (data, status) => {
                     // window.data = [data, status, request]; // DEBUG
                     if (status === "success") {
                         $patrollinks.html('<span style="color:green">Marked as patrolled</span>'); // MediaWiki:Markedaspatrolled
@@ -398,9 +388,9 @@ $(function () {
         };
         return function (pages) {
             if (!checked && $("div.patrollink").length === 0) {
-                var pageName = mw.config.get("wgPageName");
-                for (var idx = 0; idx < pages.length; ++idx) {
-                    var page = pages[idx];
+                const pageName = mw.config.get("wgPageName");
+                for (let idx = 0; idx < pages.length; ++idx) {
+                    const page = pages[idx];
                     if (page.title === pageName) {
                         addlink(page);
                         break;
@@ -412,30 +402,30 @@ $(function () {
     })();
     // 定时抓取未巡查的页面数量
     // 新版本：仅当鼠标移动到巡查列表上、且距上次抓取时间超过10秒时才抓取
-    var namespaceList = mw.config.get("wgNamespaceIds");
-    var namespaceWatchList = namespaceWatched.map(function (i) {
+    const namespaceList = mw.config.get("wgNamespaceIds");
+    const namespaceWatchList = namespaceWatched.map((i) => {
         return namespaceList[i === "(main)" ? "" : i];
     });
-    var lastRequest = 0;
-    var updateUnpatrolled = function () {
-        var d = new Date();
+    let lastRequest = 0;
+    const updateUnpatrolled = function () {
+        const d = new Date();
         if (d - lastRequest < 10000) {
             return;
         }
         // console.log(`[petrolCount] Updating unpatrolled... (${d.toLocaleString()})`);
         lastRequest = d;
-        var requestid = d.getTime();
-        var newPages = apiPrefix + "?action=query&format=xml&list=recentchanges&rctype=new&rcnamespace=" + namespaceWatchList.join("|") + "&rcshow=!redirect|!patrolled&rctoken=patrol&rcprop=title|ids|user|tags";
+        const requestid = d.getTime();
+        const newPages = `${apiPrefix }?action=query&format=xml&list=recentchanges&rctype=new&rcnamespace=${ namespaceWatchList.join("|") }&rcshow=!redirect|!patrolled&rctoken=patrol&rcprop=title|ids|user|tags`;
         $.get(newPages, {
             rclimit: newPageMax,
             requestid: requestid,
-        }, function (result) {
-            var pages = [];
-            var jqResult = $(result);
+        }, (result) => {
+            const pages = [];
+            const jqResult = $(result);
             jqResult.find("rc").each(function () {
-                var $self = $(this);
-                var confidence = typeof $self.attr("anon") === "undefined" && $self.find("tag").length === 0;
-                var t = {
+                const $self = $(this);
+                const confidence = typeof $self.attr("anon") === "undefined" && $self.find("tag").length === 0;
+                const t = {
                     title: $self.attr("title"),
                     rcid: $self.attr("rcid"),
                     rctoken: $self.attr("patroltoken"),
@@ -444,7 +434,7 @@ $(function () {
                 pages.push(t);
             });
             addPatrollLink(pages);
-            var plus = jqResult.find("query-continue").length !== 0;
+            const plus = jqResult.find("query-continue").length !== 0;
             if (pages.length !== 0) {
                 checkMissing(pages, plus);
             }

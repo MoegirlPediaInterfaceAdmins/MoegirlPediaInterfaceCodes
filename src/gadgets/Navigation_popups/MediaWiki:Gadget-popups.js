@@ -1,17 +1,3 @@
-/* eslint-disable prefer-spread */
-/* eslint-disable no-redeclare */
-/* eslint-disable no-unused-vars */
-/* eslint-disable no-fallthrough */
-/* eslint-disable no-cond-assign */
-/* eslint dot-notation: ["error", { "allowPattern": "^(?:catch|default|continue)$" } ] */
-/* eslint-disable eqeqeq */
-/* eslint-disable prefer-rest-params */
-/* eslint-disable no-param-reassign */
-/* eslint-disable prefer-arrow-callback */
-/* eslint-disable prefer-template */
-/* eslint-disable comma-dangle */
-/* eslint-disable no-var */
-/* global wgULS, log, errlog, wikEdUseWikEd, WikEdUpdateFrame */
 /*
  * 全部内容引自 https://en.wikipedia.org/wiki/MediaWiki:Gadget-popups.js
  * 当前版本修改自 https://en.wikipedia.org/w/index.php?title=MediaWiki:Gadget-popups.js&oldid=1052364474
@@ -19,8 +5,8 @@
  */
 // <pre>
 "use strict";
-$(function () {
-    var popupStrings = {
+$(() => {
+    const popupStrings = {
         /////////////////////////////////////
         // summary data, searching etc.
         /////////////////////////////////////
@@ -303,9 +289,9 @@ $(function () {
         // 用户组名称从系统消息获取
         "group-no-autoconfirmed": wgULS("非自动确认用户", "非自動確認使用者", null, null, "非自動確認用戶"),
         separator: "、",
-        comma: "，"
+        comma: "，",
     };
-    var pg = {
+    const pg = {
         api: {},
         re: {},
         ns: {},
@@ -322,7 +308,7 @@ $(function () {
         counter: {},
         current: {},
         fn: {},
-        endoflist: null
+        endoflist: null,
     };
     if (window.pg && !(window.pg instanceof HTMLElement)) {
         return;
@@ -332,7 +318,7 @@ $(function () {
         mw.util.escapeRegExp = mw.RegExp.escape;
     }
     function setupTooltips(container, remove, force, popData) {
-        log("setupTooltips, container=" + container + ", remove=" + remove);
+        log(`setupTooltips, container=${ container }, remove=${ remove}`);
         if (!container) {
             if (getValueOf("popupOnEditSelection") && document && document.editform && document.editform.wpTextbox1) {
                 document.editform.wpTextbox1.onmouseup = doSelectionPopup;
@@ -343,7 +329,7 @@ $(function () {
             return;
         }
         container.ranSetupTooltipsAlready = !remove;
-        var anchors;
+        let anchors;
         anchors = container.getElementsByTagName("A");
         setupTooltipsLoop(anchors, 0, 250, 100, remove, popData);
     }
@@ -355,23 +341,23 @@ $(function () {
     }
     function setupTooltipsLoop(anchors, begin, howmany, sleep, remove, popData) {
         log(simplePrintf("setupTooltipsLoop(%s,%s,%s,%s,%s)", arguments));
-        var finish = begin + howmany;
-        var loopend = Math.min(finish, anchors.length);
-        var j = loopend - begin;
-        log("setupTooltips: anchors.length=" + anchors.length + ", begin=" + begin + ", howmany=" + howmany + ", loopend=" + loopend + ", remove=" + remove);
-        var doTooltip = remove ? removeTooltip : addTooltip;
+        const finish = begin + howmany;
+        const loopend = Math.min(finish, anchors.length);
+        let j = loopend - begin;
+        log(`setupTooltips: anchors.length=${ anchors.length }, begin=${ begin }, howmany=${ howmany }, loopend=${ loopend }, remove=${ remove}`);
+        const doTooltip = remove ? removeTooltip : addTooltip;
         if (j > 0) {
             do {
-                var a = anchors[loopend - j];
+                const a = anchors[loopend - j];
                 if (typeof a === "undefined" || !a || !a.href) {
-                    log("got null anchor at index " + loopend - j);
+                    log(`got null anchor at index ${ loopend}` - j);
                     continue;
                 }
                 doTooltip(a, popData);
             } while (--j);
         }
         if (finish < anchors.length) {
-            setTimeout(function () {
+            setTimeout(() => {
                 setupTooltipsLoop(anchors, finish, howmany, sleep, remove, popData);
             }, sleep);
         } else {
@@ -382,11 +368,11 @@ $(function () {
         }
     }
     function rmTocTooltips() {
-        var toc = document.getElementById("toc");
+        const toc = document.getElementById("toc");
         if (toc) {
-            var tocLinks = toc.getElementsByTagName("A");
-            var tocLen = tocLinks.length;
-            for (var j = 0; j < tocLen; ++j) {
+            const tocLinks = toc.getElementsByTagName("A");
+            const tocLen = tocLinks.length;
+            for (let j = 0; j < tocLen; ++j) {
                 removeTooltip(tocLinks[j], true);
             }
         }
@@ -425,10 +411,10 @@ $(function () {
         a.title = a.originalTitle;
     }
     function registerHooks(np) {
-        var popupMaxWidth = getValueOf("popupMaxWidth");
+        const popupMaxWidth = getValueOf("popupMaxWidth");
         if (typeof popupMaxWidth === "number") {
-            var setMaxWidth = function () {
-                np.mainDiv.style.maxWidth = popupMaxWidth + "px";
+            const setMaxWidth = function () {
+                np.mainDiv.style.maxWidth = `${popupMaxWidth }px`;
                 np.maxWidth = popupMaxWidth;
             };
             np.addHook(setMaxWidth, "unhide", "before");
@@ -445,9 +431,9 @@ $(function () {
             evt = window.event;
         }
         if (getValueOf("popupModifier")) {
-            var action = getValueOf("popupModifierAction");
-            var key = action == "disable" ? "keyup" : "keydown";
-            var a = this;
+            const action = getValueOf("popupModifierAction");
+            const key = action == "disable" ? "keyup" : "keydown";
+            const a = this;
             a.modifierKeyHandler = function (evt) {
                 mouseOverWikiLink2(a, evt);
             };
@@ -456,18 +442,18 @@ $(function () {
         return mouseOverWikiLink2(this, evt);
     }
     function footnoteTarget(a) {
-        var aTitle = Title.fromAnchor(a);
-        var anch = aTitle.anchor;
+        const aTitle = Title.fromAnchor(a);
+        const anch = aTitle.anchor;
         if (!/^(cite_note-|_note-|endnote)/.test(anch)) {
             return false;
         }
-        var lTitle = Title.fromURL(location.href);
+        const lTitle = Title.fromURL(location.href);
         if (lTitle.toString(true) !== aTitle.toString(true)) {
             return false;
         }
-        var el = document.getElementById(anch);
+        let el = document.getElementById(anch);
         while (el && typeof el.nodeName === "string") {
-            var nt = el.nodeName.toLowerCase();
+            const nt = el.nodeName.toLowerCase();
             if (nt === "li") {
                 return el;
             } else if (nt === "body") {
@@ -481,23 +467,23 @@ $(function () {
         return false;
     }
     function footnotePreview(x, navpop) {
-        setPopupHTML("<hr />" + x.innerHTML, "popupPreview", navpop.idNumber);
+        setPopupHTML(`<hr />${ x.innerHTML}`, "popupPreview", navpop.idNumber);
     }
     function modifierPressed(evt) {
-        var mod = getValueOf("popupModifier");
+        const mod = getValueOf("popupModifier");
         if (!mod) {
             return false;
         }
         if (!evt && window.event) {
             evt = window.event;
         }
-        return evt && mod && evt[mod.toLowerCase() + "Key"];
+        return evt && mod && evt[`${mod.toLowerCase() }Key`];
     }
     function isCorrectModifier(a, evt) {
         if (!getValueOf("popupModifier")) {
             return true;
         }
-        var action = getValueOf("popupModifierAction");
+        const action = getValueOf("popupModifierAction");
         return action == "enable" && modifierPressed(evt) || action == "disable" && !modifierPressed(evt);
     }
     function mouseOverWikiLink2(a, evt) {
@@ -514,7 +500,7 @@ $(function () {
         if (getValueOf("simplePopups") && !pg.option.popupStructure) {
             setDefault("popupStructure", "original");
         }
-        var article = new Title().fromAnchor(a);
+        const article = new Title().fromAnchor(a);
         pg.current.article = article;
         if (!a.navpopup) {
             a.navpopup = newNavpopup(a, article);
@@ -529,12 +515,12 @@ $(function () {
         pg.timer.checkPopupPosition = setInterval(checkPopupPosition, 600);
         if (getValueOf("simplePopups")) {
             if (getValueOf("popupPreviewButton") && !a.simpleNoMore) {
-                var d = document.createElement("div");
+                const d = document.createElement("div");
                 d.className = "popupPreviewButtonDiv";
-                var s = document.createElement("span");
+                const s = document.createElement("span");
                 d.appendChild(s);
                 s.className = "popupPreviewButton";
-                s["on" + getValueOf("popupPreviewButtonEvent")] = function () {
+                s[`on${ getValueOf("popupPreviewButtonEvent")}`] = function () {
                     a.simpleNoMore = true;
                     d.style.display = "none";
                     nonsimplePopupContent(a, article);
@@ -551,28 +537,28 @@ $(function () {
         a.navpopup.hasPopupMenu = false;
         a.navpopup.setInnerHTML(popupHTML(a));
         fillEmptySpans({
-            navpopup: a.navpopup
+            navpopup: a.navpopup,
         });
         if (getValueOf("popupDraggable")) {
-            var dragHandle = getValueOf("popupDragHandle") || null;
+            let dragHandle = getValueOf("popupDragHandle") || null;
             if (dragHandle && dragHandle != "all") {
                 dragHandle += a.navpopup.idNumber;
             }
-            setTimeout(function () {
+            setTimeout(() => {
                 a.navpopup.makeDraggable(dragHandle);
             }, 150);
         }
         if (getValueOf("popupRedlinkRemoval") && a.className == "new") {
-            setPopupHTML("<br>" + popupRedlinkHTML(article), "popupRedlink", a.navpopup.idNumber);
+            setPopupHTML(`<br>${ popupRedlinkHTML(article)}`, "popupRedlink", a.navpopup.idNumber);
         }
     }
     function debugData(navpopup) {
         if (getValueOf("popupDebugging") && navpopup.idNumber) {
-            setPopupHTML("idNumber=" + navpopup.idNumber + ", pending=" + navpopup.pending, "popupError", navpopup.idNumber);
+            setPopupHTML(`idNumber=${ navpopup.idNumber }, pending=${ navpopup.pending}`, "popupError", navpopup.idNumber);
         }
     }
     function newNavpopup(a, article) {
-        var navpopup = new Navpopup();
+        const navpopup = new Navpopup();
         navpopup.fuzz = 5;
         navpopup.delay = getValueOf("popupDelay") * 1e3;
         navpopup.idNumber = ++pg.idNumber;
@@ -589,13 +575,13 @@ $(function () {
         if (shouldShowNonSimple(a)) {
             return getValueOf(option);
         }
-        return typeof window[option] != "undefined" && window[option];
+        return typeof window[option] !== "undefined" && window[option];
     }
     function nonsimplePopupContent(a, article) {
-        var diff = null,
+        let diff = null,
             history = null;
-        var params = parseParams(a.href);
-        var oldid = typeof params.oldid == "undefined" ? null : params.oldid;
+        const params = parseParams(a.href);
+        const oldid = typeof params.oldid === "undefined" ? null : params.oldid;
         if (shouldShow(a, "popupPreviewDiffs")) {
             diff = params.diff;
         }
@@ -603,7 +589,7 @@ $(function () {
             history = params.action == "history";
         }
         a.navpopup.pending = 0;
-        var referenceElement = footnoteTarget(a);
+        const referenceElement = footnoteTarget(a);
         if (referenceElement) {
             footnotePreview(referenceElement, a.navpopup);
         } else if (diff || diff === 0) {
@@ -653,19 +639,19 @@ $(function () {
         loadAPIPreview("revision", article, navpop);
     }
     function loadPreviewFromRedir(redirMatch, navpop) {
-        var target = new Title().fromWikiText(redirMatch[2]);
+        const target = new Title().fromWikiText(redirMatch[2]);
         if (navpop.article.anchor) {
             target.anchor = navpop.article.anchor;
         }
         navpop.redir++;
         navpop.redirTarget = target;
-        var warnRedir = redirLink(target, navpop.article);
+        const warnRedir = redirLink(target, navpop.article);
         setPopupHTML(warnRedir, "popupWarnRedir", navpop.idNumber);
         navpop.article = target;
         fillEmptySpans({
             redir: true,
             redirTarget: target,
-            navpopup: navpop
+            navpopup: navpop,
         });
         return loadPreview(target, null, navpop);
     }
@@ -673,7 +659,7 @@ $(function () {
         if (!download.owner) {
             return;
         }
-        var redirMatch = pg.re.redirect.exec(download.data);
+        const redirMatch = pg.re.redirect.exec(download.data);
         if (download.owner.redir === 0 && redirMatch) {
             loadPreviewFromRedir(redirMatch, download.owner);
             return;
@@ -681,8 +667,8 @@ $(function () {
         if (download.owner.visible || !getValueOf("popupLazyPreviews")) {
             insertPreviewNow(download);
         } else {
-            var id = download.owner.redir ? "PREVIEW_REDIR_HOOK" : "PREVIEW_HOOK";
-            download.owner.addHook(function () {
+            const id = download.owner.redir ? "PREVIEW_REDIR_HOOK" : "PREVIEW_HOOK";
+            download.owner.addHook(() => {
                 insertPreviewNow(download);
                 return true;
             }, "unhide", "after", id);
@@ -692,15 +678,15 @@ $(function () {
         if (!download.owner) {
             return;
         }
-        var wikiText = download.data;
-        var navpop = download.owner;
-        var art = navpop.redirTarget || navpop.originalArticle;
+        const wikiText = download.data;
+        const navpop = download.owner;
+        const art = navpop.redirTarget || navpop.originalArticle;
         makeFixDabs(wikiText, navpop);
         if (getValueOf("popupSummaryData")) {
             getPageInfo(wikiText, download);
             setPopupTrailer(getPageInfo(wikiText, download), navpop.idNumber);
         }
-        var imagePage = "";
+        let imagePage = "";
         if (art.namespaceId() == pg.nsImageId) {
             imagePage = art.toString();
         } else {
@@ -714,33 +700,33 @@ $(function () {
         }
     }
     function insertArticlePreview(download, art, navpop) {
-        if (download && typeof download.data == typeof "") {
+        if (download && typeof download.data === typeof "") {
             if (art.namespaceId() == pg.nsTemplateId && getValueOf("popupPreviewRawTemplates")) {
-                var h = '<hr /><span style="font-family: monospace;">' + download.data.entify().split("\\n").join("<br />\\n") + "</span>";
+                const h = `<hr /><span style="font-family: monospace;">${ download.data.entify().split("\\n").join("<br />\\n") }</span>`;
                 setPopupHTML(h, "popupPreview", navpop.idNumber);
             } else {
-                var p = prepPreviewmaker(download.data, art, navpop);
+                const p = prepPreviewmaker(download.data, art, navpop);
                 p.showPreview();
             }
         }
     }
     function prepPreviewmaker(data, article, navpop) {
-        var d = anchorize(data, article.anchorString());
-        var urlBase = joinPath([pg.wiki.articlebase, article.urlString()]);
-        var p = new Previewmaker(d, urlBase, navpop);
+        const d = anchorize(data, article.anchorString());
+        const urlBase = joinPath([pg.wiki.articlebase, article.urlString()]);
+        const p = new Previewmaker(d, urlBase, navpop);
         return p;
     }
     function anchorize(d, anch) {
         if (!anch) {
             return d;
         }
-        var anchRe = RegExp("(?:=+\\s*" + literalizeRegex(anch).replace(/[_ ]/g, "[_ ]") + "\\s*=+|\\{\\{\\s*" + getValueOf("popupAnchorRegexp") + "\\s*(?:\\|[^|}]*)*?\\s*" + literalizeRegex(anch) + "\\s*(?:\\|[^}]*)?}})");
-        var match = d.match(anchRe);
+        const anchRe = RegExp(`(?:=+\\s*${ literalizeRegex(anch).replace(/[_ ]/g, "[_ ]") }\\s*=+|\\{\\{\\s*${ getValueOf("popupAnchorRegexp") }\\s*(?:\\|[^|}]*)*?\\s*${ literalizeRegex(anch) }\\s*(?:\\|[^}]*)?}})`);
+        const match = d.match(anchRe);
         if (match && match.length > 0 && match[0]) {
             return d.substring(d.indexOf(match[0]));
         }
-        var lines = d.split("\n");
-        for (var i = 0; i < lines.length; ++i) {
+        const lines = d.split("\n");
+        for (let i = 0; i < lines.length; ++i) {
             lines[i] = lines[i].replace(RegExp("[[]{2}([^|\\]]*?[|])?(.*?)[\\]]{2}", "g"), "$2").replace(/'''([^'])/g, "$1").replace(RegExp("''([^'])", "g"), "$1");
             if (lines[i].match(anchRe)) {
                 return d.split("\n").slice(i).join("\n").replace(RegExp("^[^=]*"), "");
@@ -772,19 +758,19 @@ $(function () {
         this.endHook = null;
     }
     Drag.prototype.fixE = function (e) {
-        if (typeof e == "undefined") {
+        if (typeof e === "undefined") {
             e = window.event;
         }
-        if (typeof e.layerX == "undefined") {
+        if (typeof e.layerX === "undefined") {
             e.layerX = e.offsetX;
         }
-        if (typeof e.layerY == "undefined") {
+        if (typeof e.layerY === "undefined") {
             e.layerY = e.offsetY;
         }
         return e;
     };
     Drag.prototype.init = function (o, oRoot) {
-        var dragObj = this;
+        const dragObj = this;
         this.obj = o;
         o.onmousedown = function (e) {
             dragObj.start.apply(dragObj, [e]);
@@ -808,17 +794,17 @@ $(function () {
         };
     };
     Drag.prototype.start = function (e) {
-        var o = this.obj;
+        const o = this.obj;
         e = this.fixE(e);
         if (this.startCondition && !this.startCondition(e)) {
             return;
         }
-        var y = parseInt(o.vmode ? o.root.style.top : o.root.style.bottom, 10);
-        var x = parseInt(o.hmode ? o.root.style.left : o.root.style.right, 10);
+        const y = parseInt(o.vmode ? o.root.style.top : o.root.style.bottom, 10);
+        const x = parseInt(o.hmode ? o.root.style.left : o.root.style.right, 10);
         o.root.onthisStart(x, y);
         o.lastMouseX = e.clientX;
         o.lastMouseY = e.clientY;
-        var dragObj = this;
+        const dragObj = this;
         o.onmousemoveDefault = document.onmousemove;
         o.dragging = true;
         document.onmousemove = function (e) {
@@ -831,16 +817,16 @@ $(function () {
     };
     Drag.prototype.drag = function (e) {
         e = this.fixE(e);
-        var o = this.obj;
-        var ey = e.clientY;
-        var ex = e.clientX;
-        var y = parseInt(o.vmode ? o.root.style.top : o.root.style.bottom, 10);
-        var x = parseInt(o.hmode ? o.root.style.left : o.root.style.right, 10);
-        var nx, ny;
+        const o = this.obj;
+        const ey = e.clientY;
+        const ex = e.clientX;
+        const y = parseInt(o.vmode ? o.root.style.top : o.root.style.bottom, 10);
+        const x = parseInt(o.hmode ? o.root.style.left : o.root.style.right, 10);
+        let nx, ny;
         nx = x + (ex - o.lastMouseX) * (o.hmode ? 1 : -1);
         ny = y + (ey - o.lastMouseY) * (o.vmode ? 1 : -1);
-        this.obj.root.style[o.hmode ? "left" : "right"] = nx + "px";
-        this.obj.root.style[o.vmode ? "top" : "bottom"] = ny + "px";
+        this.obj.root.style[o.hmode ? "left" : "right"] = `${nx }px`;
+        this.obj.root.style[o.vmode ? "top" : "bottom"] = `${ny }px`;
         this.obj.lastMouseX = ex;
         this.obj.lastMouseY = ey;
         this.obj.root.onthis(nx, ny);
@@ -876,29 +862,29 @@ $(function () {
         return "";
     };
     pg.structures.original.popupImage = function (x) {
-        log("original.popupImage, x.article=" + x.article + ", x.navpop.idNumber=" + x.navpop.idNumber);
+        log(`original.popupImage, x.article=${ x.article }, x.navpop.idNumber=${ x.navpop.idNumber}`);
         return imageHTML(x.article, x.navpop.idNumber);
     };
     pg.structures.original.popupRedirTitle = pg.structures.original.popupTitle;
     pg.structures.original.popupRedirTopLinks = pg.structures.original.popupTopLinks;
     function copyStructure(oldStructure, newStructure) {
         pg.structures[newStructure] = {};
-        for (var prop in pg.structures[oldStructure]) {
+        for (const prop in pg.structures[oldStructure]) {
             pg.structures[newStructure][prop] = pg.structures[oldStructure][prop];
         }
     }
     copyStructure("original", "nostalgia");
     pg.structures.nostalgia.popupTopLinks = function (x) {
-        var str = "";
+        let str = "";
         str += "<b><<mainlink|shortcut= >></b>";
         str += "if(user){<br><<contribs|shortcut=c>>";
         str += "if(wikimedia){*<<count|shortcut=#>>}";
         str += "if(ipuser){}else{*<<email|shortcut=E>>}if(admin){*<<block|shortcut=b>>}}";
-        var editstr = "<<edit|shortcut=e>>";
-        var editOldidStr = "if(oldid){<<editOld|shortcut=e>>|<<revert|shortcut=v|rv>>|<<edit|cur>>}else{" + editstr + "}";
-        var historystr = "<<history|shortcut=h>>";
-        var watchstr = "<<unwatch|unwatchShort>>|<<watch|shortcut=w|watchThingy>>";
-        str += "<br>if(talk){" + editOldidStr + "|<<new|shortcut=+>>" + "*" + historystr + "*" + watchstr + "*" + "<b><<article|shortcut=a>></b>|<<editArticle|edit>>" + "}else{" + editOldidStr + "*" + historystr + "*" + watchstr + "*" + "<b><<talk|shortcut=t>></b>|<<editTalk|edit>>|<<newTalk|shortcut=+|new>>}";
+        const editstr = "<<edit|shortcut=e>>";
+        const editOldidStr = `if(oldid){<<editOld|shortcut=e>>|<<revert|shortcut=v|rv>>|<<edit|cur>>}else{${ editstr }}`;
+        const historystr = "<<history|shortcut=h>>";
+        const watchstr = "<<unwatch|unwatchShort>>|<<watch|shortcut=w|watchThingy>>";
+        str += `<br>if(talk){${ editOldidStr }|<<new|shortcut=+>>` + `*${ historystr }*${ watchstr }*` + "<b><<article|shortcut=a>></b>|<<editArticle|edit>>" + `}else{${ editOldidStr }*${ historystr }*${ watchstr }*` + "<b><<talk|shortcut=t>></b>|<<editTalk|edit>>|<<newTalk|shortcut=+|new>>}";
         str += "<br><<whatLinksHere|shortcut=l>>*<<relatedChanges|shortcut=r>>";
         str += "if(admin){<br>}else{*}<<move|shortcut=m>>";
         str += "if(admin){*<<unprotect|unprotectShort>>|<<protect|shortcut=p>>*" + "<<undelete|undeleteShort>>|<<delete|shortcut=d>>}";
@@ -910,24 +896,24 @@ $(function () {
         return navlinkStringToHTML("<font size=+0><<mainlink>></font>", x.article, x.params);
     };
     pg.structures.fancy.popupTopLinks = function (x) {
-        var hist = "<<history|shortcut=h|hist>>|<<lastEdit|shortcut=/|last>>|<<editors|shortcut=E|eds>>";
-        var watch = "<<unwatch|unwatchShort>>|<<watch|shortcut=w|watchThingy>>";
-        var move = "<<move|shortcut=m|move>>";
-        return navlinkStringToHTML("if(talk){" + "<<edit|shortcut=e>>|<<new|shortcut=+|+>>*" + hist + "*" + "<<article|shortcut=a>>|<<editArticle|edit>>" + "*" + watch + "*" + move + "}else{<<edit|shortcut=e>>*" + hist + "*<<talk|shortcut=t|>>|<<editTalk|edit>>|<<newTalk|shortcut=+|new>>" + "*" + watch + "*" + move + "}<br>", x.article, x.params);
+        const hist = "<<history|shortcut=h|hist>>|<<lastEdit|shortcut=/|last>>|<<editors|shortcut=E|eds>>";
+        const watch = "<<unwatch|unwatchShort>>|<<watch|shortcut=w|watchThingy>>";
+        const move = "<<move|shortcut=m|move>>";
+        return navlinkStringToHTML("if(talk){" + `<<edit|shortcut=e>>|<<new|shortcut=+|+>>*${ hist }*` + "<<article|shortcut=a>>|<<editArticle|edit>>" + `*${ watch }*${ move }}else{<<edit|shortcut=e>>*${ hist }*<<talk|shortcut=t|>>|<<editTalk|edit>>|<<newTalk|shortcut=+|new>>` + `*${ watch }*${ move }}<br>`, x.article, x.params);
     };
     pg.structures.fancy.popupOtherLinks = function (x) {
-        var admin = "<<unprotect|unprotectShort>>|<<protect|shortcut=p>>*<<undelete|undeleteShort>>|<<delete|shortcut=d|del>>";
-        var user = "<<contribs|shortcut=c>>if(wikimedia){|<<count|shortcut=#|#>>}";
-        user += "if(ipuser){|<<arin>>}else{*<<email|shortcut=E|" + popupString("email") + ">>}if(admin){*<<block|shortcut=b>>}";
-        var normal = "<<whatLinksHere|shortcut=l|links here>>*<<relatedChanges|shortcut=r|related>>";
-        return navlinkStringToHTML("<br>if(user){" + user + "*}if(admin){" + admin + "if(user){<br>}else{*}}" + normal, x.article, x.params);
+        const admin = "<<unprotect|unprotectShort>>|<<protect|shortcut=p>>*<<undelete|undeleteShort>>|<<delete|shortcut=d|del>>";
+        let user = "<<contribs|shortcut=c>>if(wikimedia){|<<count|shortcut=#|#>>}";
+        user += `if(ipuser){|<<arin>>}else{*<<email|shortcut=E|${ popupString("email") }>>}if(admin){*<<block|shortcut=b>>}`;
+        const normal = "<<whatLinksHere|shortcut=l|links here>>*<<relatedChanges|shortcut=r|related>>";
+        return navlinkStringToHTML(`<br>if(user){${ user }*}if(admin){${ admin }if(user){<br>}else{*}}${ normal}`, x.article, x.params);
     };
     pg.structures.fancy.popupRedirTitle = pg.structures.fancy.popupTitle;
     pg.structures.fancy.popupRedirTopLinks = pg.structures.fancy.popupTopLinks;
     pg.structures.fancy.popupRedirOtherLinks = pg.structures.fancy.popupOtherLinks;
     copyStructure("fancy", "fancy2");
     pg.structures.fancy2.popupTopLinks = function (x) {
-        return "<br>" + pg.structures.fancy.popupTopLinks(x).replace(RegExp("<br>$", "i"), "");
+        return `<br>${ pg.structures.fancy.popupTopLinks(x).replace(RegExp("<br>$", "i"), "")}`;
     };
     pg.structures.fancy2.popupLayout = function () {
         return ["popupError", "popupImage", "popupTitle", "popupUserData", "popupData", "popupTopLinks", "popupOtherLinks", "popupRedir", ["popupWarnRedir", "popupRedirTopLinks", "popupRedirTitle", "popupRedirData", "popupRedirOtherLinks"], "popupMiscTools", ["popupRedlink"], "popupPrePreviewSep", "popupPreview", "popupSecondPreview", "popupPreviewMore", "popupPostPreview", "popupFixDab"];
@@ -937,33 +923,33 @@ $(function () {
         return ["popupError", "popupImage", "popupTopLinks", "popupTitle", "popupOtherLinks", "popupRedir", ["popupWarnRedir", "popupRedirTopLinks", "popupRedirTitle", "popupRedirData", "popupRedirOtherLinks"], "popupUserData", "popupData", "popupMiscTools", ["popupRedlink"], "popupPrePreviewSep", "popupPreview", "popupSecondPreview", "popupPreviewMore", "popupPostPreview", "popupFixDab"];
     };
     pg.structures.menus.popupTopLinks = function (x, shorter) {
-        var s = [];
-        var dropdiv = '<div class="popup_drop">';
-        var enddiv = "</div>";
-        var hist = "<<history|shortcut=h>>";
+        const s = [];
+        const dropdiv = '<div class="popup_drop">';
+        const enddiv = "</div>";
+        let hist = "<<history|shortcut=h>>";
         if (!shorter) {
-            hist = "<menurow>" + hist + "|<<historyfeed|rss>>|<<editors|shortcut=E>></menurow>";
+            hist = `<menurow>${ hist }|<<historyfeed|rss>>|<<editors|shortcut=E>></menurow>`;
         }
-        var lastedit = "<<lastEdit|shortcut=/|show last edit>>";
-        var thank = "if(diff){<<thank|send thanks>>}";
-        var jsHistory = "<<lastContrib|last set of edits>><<sinceMe|changes since mine>>";
-        var linkshere = "<<whatLinksHere|shortcut=l|what links here>>";
-        var related = "<<relatedChanges|shortcut=r|related changes>>";
-        var search = "<menurow><<search|shortcut=s>>if(wikimedia){|<<globalsearch|shortcut=g|global>>}" + "|<<google|shortcut=G|web>></menurow>";
-        var watch = "<menurow><<unwatch|unwatchShort>>|<<watch|shortcut=w|watchThingy>></menurow>";
-        var protect = "<menurow><<unprotect|unprotectShort>>|" + "<<protect|shortcut=p>>|<<protectlog|log>></menurow>";
-        var del = "<menurow><<undelete|undeleteShort>>|<<delete|shortcut=d>>|" + "<<deletelog|log>></menurow>";
-        var move = "<<move|shortcut=m|move page>>";
-        var nullPurge = "<menurow><<nullEdit|shortcut=n|null edit>>|<<purge|shortcut=P>></menurow>";
-        var viewOptions = "<menurow><<view|shortcut=v>>|<<render|shortcut=S>>|<<raw>></menurow>";
-        var editRow = "if(oldid){" + "<menurow><<edit|shortcut=e>>|<<editOld|shortcut=e|this&nbsp;revision>></menurow>" + "<menurow><<revert|shortcut=v>>|<<undo>></menurow>" + "}else{<<edit|shortcut=e>>}";
-        var markPatrolled = "if(rcid){<<markpatrolled|mark patrolled>>}";
-        var newTopic = "if(talk){<<new|shortcut=+|new topic>>}";
-        var protectDelete = "if(admin){" + protect + del + "}";
+        const lastedit = "<<lastEdit|shortcut=/|show last edit>>";
+        const thank = "if(diff){<<thank|send thanks>>}";
+        const jsHistory = "<<lastContrib|last set of edits>><<sinceMe|changes since mine>>";
+        const linkshere = "<<whatLinksHere|shortcut=l|what links here>>";
+        const related = "<<relatedChanges|shortcut=r|related changes>>";
+        const search = "<menurow><<search|shortcut=s>>if(wikimedia){|<<globalsearch|shortcut=g|global>>}" + "|<<google|shortcut=G|web>></menurow>";
+        const watch = "<menurow><<unwatch|unwatchShort>>|<<watch|shortcut=w|watchThingy>></menurow>";
+        const protect = "<menurow><<unprotect|unprotectShort>>|" + "<<protect|shortcut=p>>|<<protectlog|log>></menurow>";
+        const del = "<menurow><<undelete|undeleteShort>>|<<delete|shortcut=d>>|" + "<<deletelog|log>></menurow>";
+        const move = "<<move|shortcut=m|move page>>";
+        const nullPurge = "<menurow><<nullEdit|shortcut=n|null edit>>|<<purge|shortcut=P>></menurow>";
+        const viewOptions = "<menurow><<view|shortcut=v>>|<<render|shortcut=S>>|<<raw>></menurow>";
+        const editRow = "if(oldid){" + "<menurow><<edit|shortcut=e>>|<<editOld|shortcut=e|this&nbsp;revision>></menurow>" + "<menurow><<revert|shortcut=v>>|<<undo>></menurow>" + "}else{<<edit|shortcut=e>>}";
+        const markPatrolled = "if(rcid){<<markpatrolled|mark patrolled>>}";
+        const newTopic = "if(talk){<<new|shortcut=+|new topic>>}";
+        const protectDelete = `if(admin){${ protect }${del }}`;
         if (getValueOf("popupActionsMenu")) {
-            s.push("<<mainlink>>*" + dropdiv + menuTitle("actions"));
+            s.push(`<<mainlink>>*${ dropdiv }${menuTitle("actions")}`);
         } else {
-            s.push(dropdiv + "<<mainlink>>");
+            s.push(`${dropdiv }<<mainlink>>`);
         }
         s.push("<menu>");
         s.push(editRow + markPatrolled + newTopic + hist + lastedit + thank);
@@ -977,36 +963,36 @@ $(function () {
         if (!shorter) {
             s.push(viewOptions);
         }
-        s.push("<hr />" + watch + protectDelete);
-        s.push("<hr />" + "if(talk){<<article|shortcut=a|view article>><<editArticle|edit article>>}" + "else{<<talk|shortcut=t|talk page>><<editTalk|edit talk>>" + "<<newTalk|shortcut=+|new topic>>}</menu>" + enddiv);
-        var email = "<<email|shortcut=E|email user>>";
-        var contribs = "if(wikimedia){<menurow>}<<contribs|shortcut=c|contributions>>if(wikimedia){</menurow>}" + "if(admin){<menurow><<deletedContribs>></menurow>}";
-        s.push("if(user){*" + dropdiv + menuTitle("user"));
+        s.push(`<hr />${ watch }${protectDelete}`);
+        s.push("<hr />" + "if(talk){<<article|shortcut=a|view article>><<editArticle|edit article>>}" + "else{<<talk|shortcut=t|talk page>><<editTalk|edit talk>>" + `<<newTalk|shortcut=+|new topic>>}</menu>${ enddiv}`);
+        const email = "<<email|shortcut=E|email user>>";
+        const contribs = "if(wikimedia){<menurow>}<<contribs|shortcut=c|contributions>>if(wikimedia){</menurow>}" + "if(admin){<menurow><<deletedContribs>></menurow>}";
+        s.push(`if(user){*${ dropdiv }${menuTitle("user")}`);
         s.push("<menu>");
         s.push("<menurow><<userPage|shortcut=u|user&nbsp;page>>|<<userSpace|space>></menurow>");
         s.push("<<userTalk|shortcut=t|user talk>><<editUserTalk|edit user talk>>" + "<<newUserTalk|shortcut=+|leave comment>>");
         if (!shorter) {
-            s.push("if(ipuser){<<arin>>}else{" + email + "}");
+            s.push(`if(ipuser){<<arin>>}else{${ email }}`);
         } else {
-            s.push("if(ipuser){}else{" + email + "}");
+            s.push(`if(ipuser){}else{${ email }}`);
         }
-        s.push("<hr />" + contribs + "<<userlog|shortcut=L|user log>>");
+        s.push(`<hr />${ contribs }<<userlog|shortcut=L|user log>>`);
         s.push("if(wikimedia){<<count|shortcut=#|edit counter>>}");
         s.push("if(admin){<menurow><<unblock|unblockShort>>|<<block|shortcut=b|block user>></menurow>}");
         s.push("<<blocklog|shortcut=B|block log>>");
-        s.push("</menu>" + enddiv + "}");
+        s.push(`</menu>${ enddiv }}`);
         if (getValueOf("popupSetupMenu") && !x.navpop.hasPopupMenu) {
             x.navpop.hasPopupMenu = true;
-            s.push("*" + dropdiv + menuTitle("popupsMenu") + "<menu>");
+            s.push(`*${ dropdiv }${menuTitle("popupsMenu") }<menu>`);
             s.push("<<togglePreviews|toggle previews>>");
             s.push("<<purgePopups|reset>>");
             s.push("<<disablePopups|disable>>");
-            s.push("</menu>" + enddiv);
+            s.push(`</menu>${ enddiv}`);
         }
         return navlinkStringToHTML(s.join(""), x.article, x.params);
     };
     function menuTitle(s) {
-        return '<a href="#" noPopup=1>' + popupString(s) + "</a>";
+        return `<a href="#" noPopup=1>${ popupString(s) }</a>`;
     }
     pg.structures.menus.popupRedirTitle = pg.structures.menus.popupTitle;
     pg.structures.menus.popupRedirTopLinks = pg.structures.menus.popupTopLinks;
@@ -1020,15 +1006,15 @@ $(function () {
         return ["popupTitle", "popupPreview"];
     };
     pg.structures.lite.popupTitle = function (x) {
-        log(x.article + ": structures.lite.popupTitle");
-        return '<div><span class="popup_mainlink"><b>' + x.article.toString() + "</b></span></div>";
+        log(`${x.article }: structures.lite.popupTitle`);
+        return `<div><span class="popup_mainlink"><b>${ x.article.toString() }</b></span></div>`;
     };
     function substitute(data, cmdBody) {
-        var fromRe = RegExp(cmdBody.from, cmdBody.flags);
+        const fromRe = RegExp(cmdBody.from, cmdBody.flags);
         return data.replace(fromRe, cmdBody.to);
     }
     function execCmds(data, cmdList) {
-        for (var i = 0; i < cmdList.length; ++i) {
+        for (let i = 0; i < cmdList.length; ++i) {
             data = cmdList[i].action(data, cmdList[i]);
         }
         return data;
@@ -1037,7 +1023,7 @@ $(function () {
         if (!str.length) {
             return [];
         }
-        var p = false;
+        let p = false;
         switch (str.charAt(0)) {
             case "s":
                 p = parseSubstitute(str);
@@ -1051,14 +1037,14 @@ $(function () {
         return false;
     }
     function unEscape(str, sep) {
-        return str.split("\\\\").join("\\").split("\\" + sep).join(sep).split("\\n").join("\n");
+        return str.split("\\\\").join("\\").split(`\\${ sep}`).join(sep).split("\\n").join("\n");
     }
     function parseSubstitute(str) {
-        var from, to, flags, tmp;
+        let from, to, flags, tmp;
         if (str.length < 4) {
             return false;
         }
-        var sep = str.charAt(1);
+        const sep = str.charAt(1);
         str = str.substring(2);
         tmp = skipOver(str, sep);
         if (tmp) {
@@ -1087,28 +1073,28 @@ $(function () {
             from: from,
             to: to,
             flags: flags,
-            remainder: str
+            remainder: str,
         };
     }
     function skipOver(str, sep) {
-        var endSegment = findNext(str, sep);
+        const endSegment = findNext(str, sep);
         if (endSegment < 0) {
             return false;
         }
-        var segment = unEscape(str.substring(0, endSegment), sep);
+        const segment = unEscape(str.substring(0, endSegment), sep);
         return {
             segment: segment,
-            remainder: str.substring(endSegment + 1)
+            remainder: str.substring(endSegment + 1),
         };
     }
     function skipToEnd(str, sep) {
         return {
             segment: str,
-            remainder: ""
+            remainder: "",
         };
     }
     function findNext(str, ch) {
-        for (var i = 0; i < str.length; ++i) {
+        for (let i = 0; i < str.length; ++i) {
             if (str.charAt(i) == "\\") {
                 i += 2;
             }
@@ -1119,7 +1105,7 @@ $(function () {
         return -1;
     }
     function setCheckbox(param, box) {
-        var val = mw.util.getParamValue(param);
+        const val = mw.util.getParamValue(param);
         if (val) {
             switch (val) {
                 case "1":
@@ -1139,7 +1125,7 @@ $(function () {
             return false;
         }
         if (/Popups/.test(mw.util.getParamValue("wpChangeTags"))) {
-            var wpChangeTags = document.createElement("input");
+            const wpChangeTags = document.createElement("input");
             wpChangeTags.type = "hidden";
             wpChangeTags.name = "wpChangeTags";
             wpChangeTags.value = "Popups";
@@ -1150,7 +1136,7 @@ $(function () {
                 document.editform.action += "%2CAutomation%20tool";
             }
         }
-        setupPopups(function () {
+        setupPopups(() => {
             if (mw.util.getParamValue("autoimpl") !== popupString("autoedit_version")) {
                 return false;
             }
@@ -1161,18 +1147,18 @@ $(function () {
                 return false;
             }
             autoEdit.alreadyRan = true;
-            var cmdString = mw.util.getParamValue("autoedit");
+            const cmdString = mw.util.getParamValue("autoedit");
             if (cmdString) {
                 try {
-                    var editbox = document.editform.wpTextbox1;
-                    var cmdList = parseCmd(cmdString);
-                    var input = editbox.value;
-                    var output = execCmds(input, cmdList);
+                    const editbox = document.editform.wpTextbox1;
+                    const cmdList = parseCmd(cmdString);
+                    const input = editbox.value;
+                    const output = execCmds(input, cmdList);
                     editbox.value = output;
                 } catch (dang) {
                     return;
                 }
-                if (typeof wikEdUseWikEd != "undefined") {
+                if (typeof wikEdUseWikEd !== "undefined") {
                     if (wikEdUseWikEd === true) {
                         WikEdUpdateFrame();
                     }
@@ -1180,9 +1166,9 @@ $(function () {
             }
             setCheckbox("autominor", document.editform.wpMinoredit);
             setCheckbox("autowatch", document.editform.wpWatchthis);
-            var rvid = mw.util.getParamValue("autorv");
+            const rvid = mw.util.getParamValue("autorv");
             if (rvid) {
-                var url = pg.wiki.apiwikibase + "?action=query&format=json&formatversion=2&prop=revisions&revids=" + rvid;
+                const url = `${pg.wiki.apiwikibase }?action=query&format=json&formatversion=2&prop=revisions&revids=${ rvid}`;
                 startDownload(url, null, autoEdit2);
             } else {
                 autoEdit2();
@@ -1190,11 +1176,11 @@ $(function () {
         });
     }
     function autoEdit2(d) {
-        var summary = mw.util.getParamValue("autosummary");
-        var summaryprompt = mw.util.getParamValue("autosummaryprompt");
-        var summarynotice = "";
+        let summary = mw.util.getParamValue("autosummary");
+        let summaryprompt = mw.util.getParamValue("autosummaryprompt");
+        let summarynotice = "";
         if (d && d.data && mw.util.getParamValue("autorv")) {
-            var s = getRvSummary(summary, d.data);
+            const s = getRvSummary(summary, d.data);
             if (s === false) {
                 summaryprompt = true;
                 summarynotice = popupString("Failed to get revision information, please edit manually.\n\n");
@@ -1204,8 +1190,8 @@ $(function () {
             }
         }
         if (summaryprompt) {
-            var txt = summarynotice + popupString("Enter a non-empty edit summary or press cancel to abort");
-            var response = prompt(txt, summary);
+            const txt = summarynotice + popupString("Enter a non-empty edit summary or press cancel to abort");
+            const response = prompt(txt, summary);
             if (response) {
                 summary = response;
             } else {
@@ -1224,13 +1210,13 @@ $(function () {
         if (mw.util.getParamValue("actoken") != autoClickToken()) {
             return;
         }
-        var btn = mw.util.getParamValue("autoclick");
+        const btn = mw.util.getParamValue("autoclick");
         if (btn) {
             if (document.editform && document.editform[btn]) {
-                var button = document.editform[btn];
-                var msg = tprintf("The %s button has been automatically clicked. Please wait for the next page to load.", [button.value]);
+                const button = document.editform[btn];
+                const msg = tprintf("The %s button has been automatically clicked. Please wait for the next page to load.", [button.value]);
                 bannerMessage(msg);
-                document.title = "(" + document.title + ")";
+                document.title = `(${ document.title })`;
                 button.click();
             } else {
                 alert(tprintf("Could not find button %s. Please check the settings in your javascript file.", [btn]));
@@ -1238,25 +1224,25 @@ $(function () {
         }
     }
     function bannerMessage(s) {
-        var headings = document.getElementsByTagName("h1");
+        const headings = document.getElementsByTagName("h1");
         if (headings) {
-            var div = document.createElement("div");
-            div.innerHTML = "<font size=+1><b>" + s + "</b></font>";
+            const div = document.createElement("div");
+            div.innerHTML = `<font size=+1><b>${ s }</b></font>`;
             headings[0].parentNode.insertBefore(div, headings[0]);
         }
     }
     function getRvSummary(template, json) {
         try {
-            var o = getJsObj(json);
-            var edit = anyChild(o.query.pages).revisions[0];
-            var timestamp = edit.timestamp.split(/[A-Z]/g).join(" ").replace(/^ *| *$/g, "");
+            const o = getJsObj(json);
+            const edit = anyChild(o.query.pages).revisions[0];
+            const timestamp = edit.timestamp.split(/[A-Z]/g).join(" ").replace(/^ *| *$/g, "");
             return simplePrintf(template, [edit.revid, timestamp, edit.userhidden ? "(hidden)" : edit.user]);
         } catch (badness) {
             return false;
         }
     }
     function Downloader(url) {
-        if (typeof XMLHttpRequest != "undefined") {
+        if (typeof XMLHttpRequest !== "undefined") {
             this.http = new XMLHttpRequest();
         }
         this.url = url;
@@ -1313,7 +1299,7 @@ $(function () {
         if (!this.http) {
             return null;
         }
-        var lastmod = null;
+        let lastmod = null;
         try {
             lastmod = this.http.getResponseHeader("Last-Modified");
         } catch (err) {
@@ -1336,7 +1322,7 @@ $(function () {
         return this.http.status;
     };
     function newDownload(url, id, callback, onfailure) {
-        var d = new Downloader(url);
+        const d = new Downloader(url);
         if (!d.http) {
             return "ohdear";
         }
@@ -1345,7 +1331,7 @@ $(function () {
         if (!onfailure) {
             onfailure = 2;
         }
-        var f = function () {
+        const f = function () {
             if (d.getReadyState() == 4) {
                 delete pg.misc.downloadsInProgress[this.id];
                 try {
@@ -1353,7 +1339,7 @@ $(function () {
                         d.data = d.getData();
                         d.lastModified = d.getLastModifiedDate();
                         callback(d);
-                    } else if (typeof onfailure == typeof 1) {
+                    } else if (typeof onfailure === typeof 1) {
                         if (onfailure > 0) {
                             newDownload(url, id, callback, onfailure - 1);
                         }
@@ -1368,7 +1354,7 @@ $(function () {
         return d;
     }
     function fakeDownload(url, id, callback, data, lastModified, owner) {
-        var d = newDownload(url, callback);
+        const d = newDownload(url, callback);
         d.owner = owner;
         d.id = id;
         d.data = data;
@@ -1376,15 +1362,15 @@ $(function () {
         return callback(d);
     }
     function startDownload(url, id, callback) {
-        var d = newDownload(url, id, callback);
-        if (typeof d == typeof "") {
+        const d = newDownload(url, id, callback);
+        if (typeof d === typeof "") {
             return d;
         }
         d.start();
         return d;
     }
     function abortAllDownloads() {
-        for (var x in pg.misc.downloadsInProgress) {
+        for (const x in pg.misc.downloadsInProgress) {
             try {
                 pg.misc.downloadsInProgress[x].aborted = true;
                 pg.misc.downloadsInProgress[x].abort();
@@ -1393,7 +1379,7 @@ $(function () {
             }
         }
     }
-    var Insta = {};
+    const Insta = {};
     function setupLivePreview() {
         Insta.conf = {
             baseUrl: "",
@@ -1401,36 +1387,36 @@ $(function () {
             wiki: {
                 lang: pg.wiki.lang,
                 interwiki: pg.wiki.interwiki,
-                default_thumb_width: 180
+                default_thumb_width: 180,
             },
             paths: {
-                articles: pg.wiki.articlePath + "/",
+                articles: `${pg.wiki.articlePath }/`,
                 math: "/math/",
                 images: "//upload.wikimedia.org/wikipedia/en/",
-                images_fallback: "//upload.wikimedia.org/wikipedia/commons/"
+                images_fallback: "//upload.wikimedia.org/wikipedia/commons/",
             },
             locale: {
                 user: mw.config.get("wgFormattedNamespaces")[pg.nsUserId],
                 image: mw.config.get("wgFormattedNamespaces")[pg.nsImageId],
                 category: mw.config.get("wgFormattedNamespaces")[pg.nsCategoryId],
-                months: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
-            }
+                months: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+            },
         };
         Insta.conf.user.name = Insta.conf.user.name || "Wikipedian";
-        Insta.conf.user.signature = "[[" + Insta.conf.locale.user + ":" + Insta.conf.user.name + "|" + Insta.conf.user.name + "]]";
-        Insta.BLOCK_IMAGE = new RegExp("^\\[\\[(?:File|Image|" + Insta.conf.locale.image + "):.*?\\|.*?(?:frame|thumbnail|thumb|none|right|left|center)", "i");
+        Insta.conf.user.signature = `[[${ Insta.conf.locale.user }:${ Insta.conf.user.name }|${ Insta.conf.user.name }]]`;
+        Insta.BLOCK_IMAGE = new RegExp(`^\\[\\[(?:File|Image|${ Insta.conf.locale.image }):.*?\\|.*?(?:frame|thumbnail|thumb|none|right|left|center)`, "i");
     }
     Insta.dump = function (from, to) {
-        if (typeof from == "string") {
+        if (typeof from === "string") {
             from = document.getElementById(from);
         }
-        if (typeof to == "string") {
+        if (typeof to === "string") {
             to = document.getElementById(to);
         }
         to.innerHTML = this.convert(from.value);
     };
     Insta.convert = function (wiki) {
-        var ll = typeof wiki == "string" ? wiki.replace(/\r/g, "").split(/\n/) : wiki,
+        let ll = typeof wiki === "string" ? wiki.replace(/\r/g, "").split(/\n/) : wiki,
             o = "",
             p = 0,
             r;
@@ -1444,7 +1430,7 @@ $(function () {
             o += s;
         }
         function f() {
-            var i = 1,
+            let i = 1,
                 a = arguments,
                 f = a[0],
                 o = "",
@@ -1478,7 +1464,7 @@ $(function () {
             return i;
         }
         function compareLineStringOrReg(c) {
-            return typeof c == "string" ? ll[0] && ll[0].substr(0, c.length) == c : r = ll[0] && ll[0].match(c);
+            return typeof c === "string" ? ll[0] && ll[0].substr(0, c.length) == c : r = ll[0] && ll[0].match(c);
         }
         function compareLineString(c) {
             return ll[0] == c;
@@ -1491,13 +1477,13 @@ $(function () {
             sh();
         }
         function parse_list() {
-            var prev = "";
+            let prev = "";
             while (remain() && compareLineStringOrReg(/^([*#:;]+)(.*)$/)) {
-                var l_match = r;
+                const l_match = r;
                 sh();
-                var ipos = str_imatch(prev, l_match[1]);
-                for (var prevPos = prev.length - 1; prevPos >= ipos; prevPos--) {
-                    var pi = prev.charAt(prevPos);
+                const ipos = str_imatch(prev, l_match[1]);
+                for (let prevPos = prev.length - 1; prevPos >= ipos; prevPos--) {
+                    const pi = prev.charAt(prevPos);
                     if (pi == "*") {
                         ps("</ul>");
                     } else if (pi == "#") {
@@ -1506,8 +1492,8 @@ $(function () {
                         ps("</dl>");
                     }
                 }
-                for (var matchPos = ipos; matchPos < l_match[1].length; matchPos++) {
-                    var li = l_match[1].charAt(matchPos);
+                for (let matchPos = ipos; matchPos < l_match[1].length; matchPos++) {
+                    const li = l_match[1].charAt(matchPos);
                     if (li == "*") {
                         ps("<ul>");
                     } else if (li == "#") {
@@ -1519,7 +1505,7 @@ $(function () {
                 switch (l_match[1].charAt(l_match[1].length - 1)) {
                     case "*":
                     case "#":
-                        ps("<li>" + parse_inline_nowiki(l_match[2]));
+                        ps(`<li>${ parse_inline_nowiki(l_match[2])}`);
                         break;
                     case ";":
                         ps("<dt>");
@@ -1532,11 +1518,11 @@ $(function () {
                         }
                         break;
                     case ":":
-                        ps("<dd>" + parse_inline_nowiki(l_match[2]));
+                        ps(`<dd>${ parse_inline_nowiki(l_match[2])}`);
                 }
                 prev = l_match[1];
             }
-            for (var i = prev.length - 1; i >= 0; i--) {
+            for (let i = prev.length - 1; i >= 0; i--) {
                 ps(f("</?>", prev.charAt(i) == "*" ? "ul" : prev.charAt(i) == "#" ? "ol" : "dl"));
             }
         }
@@ -1562,14 +1548,14 @@ $(function () {
             }
         }
         function parse_table_data() {
-            var td_line, match_i;
-            var td_match = sh().match(/^(\|\+|\||!)((?:([^[|]*?)\|(?!\|))?(.*))$/);
+            let td_line, match_i;
+            const td_match = sh().match(/^(\|\+|\||!)((?:([^[|]*?)\|(?!\|))?(.*))$/);
             if (td_match[1] == "|+") {
                 ps("<caption");
             } else {
-                ps("<t" + (td_match[1] == "|" ? "d" : "h"));
+                ps(`<t${ td_match[1] == "|" ? "d" : "h"}`);
             }
-            if (typeof td_match[3] != "undefined") {
+            if (typeof td_match[3] !== "undefined") {
                 match_i = 4;
             } else {
                 match_i = 2;
@@ -1584,7 +1570,7 @@ $(function () {
             } else {
                 ps(td_match[match_i]);
             }
-            var tc = 0,
+            let tc = 0,
                 td = [];
             while (remain()) {
                 td.push(sh());
@@ -1607,7 +1593,7 @@ $(function () {
         function parse_pre() {
             ps("<pre>");
             do {
-                endl(parse_inline_nowiki(ll[0].substring(1)) + "\n");
+                endl(`${parse_inline_nowiki(ll[0].substring(1)) }\n`);
             } while (remain() && compareLineStringOrReg(" "));
             ps("</pre>");
         }
@@ -1615,18 +1601,18 @@ $(function () {
             ps(parse_image(sh()));
         }
         function parse_image(str) {
-            var tag = str.substring(str.indexOf(":") + 1, str.length - 2);
-            var width;
-            var attr = [],
+            let tag = str.substring(str.indexOf(":") + 1, str.length - 2);
+            let width;
+            let attr = [],
                 filename, caption = "";
-            var thumb = 0,
+            let thumb = 0,
                 frame = 0,
                 center = 0;
-            var align = "";
+            let align = "";
             if (tag.match(/\|/)) {
-                var nesting = 0;
-                var last_attr;
-                for (var i = tag.length - 1; i > 0; i--) {
+                let nesting = 0;
+                let last_attr;
+                for (let i = tag.length - 1; i > 0; i--) {
                     if (tag.charAt(i) == "|" && !nesting) {
                         last_attr = tag.substr(i + 1);
                         tag = tag.substring(0, i);
@@ -1646,7 +1632,7 @@ $(function () {
                 attr = tag.split(/\s*\|\s*/);
                 attr.push(last_attr);
                 filename = attr.shift();
-                var w_match;
+                let w_match;
                 for (; attr.length; attr.shift()) {
                     w_match = attr[0].match(/^(\d*)(?:[px]*\d*)?px$/);
                     if (w_match) {
@@ -1684,11 +1670,11 @@ $(function () {
             return "";
         }
         function parse_inline_nowiki(str) {
-            var start, lastend = 0;
-            var substart = 0,
+            let start, lastend = 0;
+            let substart = 0,
                 nestlev = 0,
                 open, close, subloop;
-            var html = "";
+            let html = "";
             while (-1 != (start = str.indexOf("<nowiki>", substart))) {
                 html += parse_inline_wiki(str.substring(lastend, start));
                 start += 8;
@@ -1718,11 +1704,11 @@ $(function () {
             return html + parse_inline_wiki(str.substr(lastend));
         }
         function parse_inline_images(str) {
-            var start, substart = 0,
+            let start, substart = 0,
                 nestlev = 0;
-            var loop, close, open, wiki, html;
+            let loop, close, open, wiki, html;
             while (-1 != (start = str.indexOf("[[", substart))) {
-                if (str.substr(start + 2).match(RegExp("^(Image|File|" + Insta.conf.locale.image + "):", "i"))) {
+                if (str.substr(start + 2).match(RegExp(`^(Image|File|${ Insta.conf.locale.image }):`, "i"))) {
                     loop = true;
                     substart = start;
                     do {
@@ -1755,7 +1741,7 @@ $(function () {
             return str;
         }
         function parse_inline_formatting(str) {
-            var em, st, i, li, o = "";
+            let em, st, i, li, o = "";
             while ((i = str.indexOf("''", li)) + 1) {
                 o += str.substring(li, i);
                 li = i + 2;
@@ -1774,33 +1760,33 @@ $(function () {
             str = parse_inline_images(str);
             str = parse_inline_formatting(str);
             str = str.replace(/<(?:)math>(.*?)<\/math>/gi, "");
-            var date = new Date();
-            var minutes = date.getUTCMinutes();
+            let date = new Date();
+            let minutes = date.getUTCMinutes();
             if (minutes < 10) {
-                minutes = "0" + minutes;
+                minutes = `0${ minutes}`;
             }
             date = f("?:?, ? ? ? (UTC)", date.getUTCHours(), minutes, date.getUTCDate(), Insta.conf.locale.months[date.getUTCMonth()], date.getUTCFullYear());
-            return str.replace(/~{5}(?!~)/g, date).replace(/~{4}(?!~)/g, Insta.conf.user.name + " " + date).replace(/~{3}(?!~)/g, Insta.conf.user.name).replace(RegExp("\\[\\[:((?:" + Insta.conf.locale.category + "|Image|File|" + Insta.conf.locale.image + "|" + Insta.conf.wiki.interwiki + "):[^|]*?)\\]\\](\\w*)", "gi"), function ($0, $1, $2) {
+            return str.replace(/~{5}(?!~)/g, date).replace(/~{4}(?!~)/g, `${Insta.conf.user.name } ${ date}`).replace(/~{3}(?!~)/g, Insta.conf.user.name).replace(RegExp(`\\[\\[:((?:${ Insta.conf.locale.category }|Image|File|${ Insta.conf.locale.image }|${ Insta.conf.wiki.interwiki }):[^|]*?)\\]\\](\\w*)`, "gi"), ($0, $1, $2) => {
                 return f("<a href='?'>?</a>", Insta.conf.paths.articles + htmlescape_attr($1), htmlescape_text($1) + htmlescape_text($2));
-            }).replace(RegExp("\\[\\[(?:" + Insta.conf.locale.category + "|" + Insta.conf.wiki.interwiki + "):.*?\\]\\]", "gi"), "").replace(RegExp("\\[\\[:((?:" + Insta.conf.locale.category + "|Image|File|" + Insta.conf.locale.image + "|" + Insta.conf.wiki.interwiki + "):.*?)\\|([^\\]]+?)\\]\\](\\w*)", "gi"), function ($0, $1, $2, $3) {
+            }).replace(RegExp(`\\[\\[(?:${ Insta.conf.locale.category }|${ Insta.conf.wiki.interwiki }):.*?\\]\\]`, "gi"), "").replace(RegExp(`\\[\\[:((?:${ Insta.conf.locale.category }|Image|File|${ Insta.conf.locale.image }|${ Insta.conf.wiki.interwiki }):.*?)\\|([^\\]]+?)\\]\\](\\w*)`, "gi"), ($0, $1, $2, $3) => {
                 return f("<a href='?'>?</a>", Insta.conf.paths.articles + htmlescape_attr($1), htmlescape_text($2) + htmlescape_text($3));
-            }).replace(/\[\[(\/[^|]*?)\]\]/g, function ($0, $1) {
+            }).replace(/\[\[(\/[^|]*?)\]\]/g, ($0, $1) => {
                 return f("<a href='?'>?</a>", Insta.conf.baseUrl + htmlescape_attr($1), htmlescape_text($1));
-            }).replace(/\[\[(\/.*?)\|(.+?)\]\]/g, function ($0, $1, $2) {
+            }).replace(/\[\[(\/.*?)\|(.+?)\]\]/g, ($0, $1, $2) => {
                 return f("<a href='?'>?</a>", Insta.conf.baseUrl + htmlescape_attr($1), htmlescape_text($2));
-            }).replace(/\[\[([^[|]*?)\]\](\w*)/g, function ($0, $1, $2) {
+            }).replace(/\[\[([^[|]*?)\]\](\w*)/g, ($0, $1, $2) => {
                 return f("<a href='?'>?</a>", Insta.conf.paths.articles + htmlescape_attr($1), htmlescape_text($1) + htmlescape_text($2));
-            }).replace(/\[\[([^[]*?)\|([^\]]+?)\]\](\w*)/g, function ($0, $1, $2, $3) {
+            }).replace(/\[\[([^[]*?)\|([^\]]+?)\]\](\w*)/g, ($0, $1, $2, $3) => {
                 return f("<a href='?'>?</a>", Insta.conf.paths.articles + htmlescape_attr($1), htmlescape_text($2) + htmlescape_text($3));
-            }).replace(/\[\[([^\]]*?:)?(.*?)( *\(.*?\))?\|\]\]/g, function ($0, $1, $2, $3) {
+            }).replace(/\[\[([^\]]*?:)?(.*?)( *\(.*?\))?\|\]\]/g, ($0, $1, $2, $3) => {
                 return f("<a href='?'>?</a>", Insta.conf.paths.articles + htmlescape_attr($1) + htmlescape_attr($2) + htmlescape_attr($3), htmlescape_text($2));
-            }).replace(/\[(https?|news|ftp|mailto|gopher|irc):(\/*)([^\]]*?) (.*?)\]/g, function ($0, $1, $2, $3, $4) {
+            }).replace(/\[(https?|news|ftp|mailto|gopher|irc):(\/*)([^\]]*?) (.*?)\]/g, ($0, $1, $2, $3, $4) => {
                 return f("<a class='external' href='?:?'>?</a>", htmlescape_attr($1), htmlescape_attr($2) + htmlescape_attr($3), htmlescape_text($4));
-            }).replace(/\[http:\/\/(.*?)\]/g, function ($0, $1) {
+            }).replace(/\[http:\/\/(.*?)\]/g, ($0, $1) => {
                 return f("<a class='external' href='http://?'>[#]</a>", htmlescape_attr($1));
-            }).replace(/\[(news|ftp|mailto|gopher|irc):(\/*)(.*?)\]/g, function ($0, $1, $2, $3) {
+            }).replace(/\[(news|ftp|mailto|gopher|irc):(\/*)(.*?)\]/g, ($0, $1, $2, $3) => {
                 return f("<a class='external' href='?:?'>?:?</a>", htmlescape_attr($1), htmlescape_attr($2) + htmlescape_attr($3), htmlescape_text($1), htmlescape_text($2) + htmlescape_text($3));
-            }).replace(/(^| )(https?|news|ftp|mailto|gopher|irc):(\/*)([^ $]*[^.,!?;: $])/g, function ($0, $1, $2, $3, $4) {
+            }).replace(/(^| )(https?|news|ftp|mailto|gopher|irc):(\/*)([^ $]*[^.,!?;: $])/g, ($0, $1, $2, $3, $4) => {
                 return f("?<a class='external' href='?:?'>?:?</a>", htmlescape_text($1), htmlescape_attr($2), htmlescape_attr($3) + htmlescape_attr($4), htmlescape_text($2), htmlescape_text($3) + htmlescape_text($4));
             }).replace("__NOTOC__", "").replace("__NOINDEX__", "").replace("__INDEX__", "").replace("__NOEDITSECTION__", "");
         }
@@ -1834,7 +1820,7 @@ $(function () {
                         ps("<p>");
                         p = 1;
                     }
-                    ps(parse_inline_nowiki(ll[0]) + " ");
+                    ps(`${parse_inline_nowiki(ll[0]) } `);
                 }
                 sh();
             }
@@ -1849,31 +1835,31 @@ $(function () {
         return formatBytes(data.length);
     }
     function popupFilterCountLinks(data) {
-        var num = countLinks(data);
-        return String(num) + "&nbsp;" + (num != 1 ? popupString("wikiLinks") : popupString("wikiLink"));
+        const num = countLinks(data);
+        return `${String(num) }&nbsp;${ num != 1 ? popupString("wikiLinks") : popupString("wikiLink")}`;
     }
     function popupFilterCountImages(data) {
-        var num = countImages(data);
-        return String(num) + "&nbsp;" + (num != 1 ? popupString("images") : popupString("image"));
+        const num = countImages(data);
+        return `${String(num) }&nbsp;${ num != 1 ? popupString("images") : popupString("image")}`;
     }
     function popupFilterCountCategories(data) {
-        var num = countCategories(data);
-        return String(num) + "&nbsp;" + (num != 1 ? popupString("categories") : popupString("category"));
+        const num = countCategories(data);
+        return `${String(num) }&nbsp;${ num != 1 ? popupString("categories") : popupString("category")}`;
     }
     function popupFilterLastModified(data, download) {
-        var lastmod = download.lastModified;
+        const lastmod = download.lastModified;
         //var now = new Date();
-        var age = moment(lastmod);// now - lastmod;
+        const age = moment(lastmod);// now - lastmod;
         if (lastmod && getValueOf("popupLastModified")) {
             return tprintf("%s old", [formatAge(age)]).replace(RegExp(" ", "g"), "&nbsp;");
         }
         return "";
     }
     function formatAge(age) {
-        var now = moment();
-        var isBefore = age.isBefore(now);
-        var monthsHave31Days = [0, 2, 4, 6, 7, 9, 11]; // 月份从0开始
-        var year = isBefore ? now.year() - age.year() : age.year() - now.year(),
+        const now = moment();
+        const isBefore = age.isBefore(now);
+        const monthsHave31Days = [0, 2, 4, 6, 7, 9, 11]; // 月份从0开始
+        let year = isBefore ? now.year() - age.year() : age.year() - now.year(),
             month = isBefore ? now.month() - age.month() : age.month() - now.month(),
             day = isBefore ? now.date() - age.date() : age.date() - now.date(),
             hour = isBefore ? now.hour() - age.hour() : age.hour() - now.hour(),
@@ -1909,7 +1895,7 @@ $(function () {
             year--;
             month += 12;
         }
-        var result = "";
+        let result = "";
         if (year > 0) {
             result += addunit(year, "year");
         }
@@ -1941,13 +1927,13 @@ $(function () {
         return result.replace(/(\d) /g, "$1");
     }
     function addunit(num, str) {
-        return "" + num + " " + (num != 1 ? popupString(str + "s") : popupString(str));
+        return `${ num } ${ num != 1 ? popupString(`${str }s`) : popupString(str)}`;
     }
     function runPopupFilters(list, data, download) {
-        var ret = [];
-        for (var i = 0; i < list.length; ++i) {
-            if (list[i] && typeof list[i] == "function") {
-                var s = list[i](data, download, download.owner.article);
+        const ret = [];
+        for (let i = 0; i < list.length; ++i) {
+            if (list[i] && typeof list[i] === "function") {
+                const s = list[i](data, download, download.owner.article);
                 if (s) {
                     ret.push(s);
                 }
@@ -1959,10 +1945,10 @@ $(function () {
         if (!data || data.length === 0) {
             return popupString("Empty page");
         }
-        var popupFilters = getValueOf("popupFilters") || [];
-        var extraPopupFilters = getValueOf("extraPopupFilters") || [];
-        var pageInfoArray = runPopupFilters(popupFilters.concat(extraPopupFilters), data, download);
-        var pageInfo = pageInfoArray.join(popupString("comma"));
+        const popupFilters = getValueOf("popupFilters") || [];
+        const extraPopupFilters = getValueOf("extraPopupFilters") || [];
+        const pageInfoArray = runPopupFilters(popupFilters.concat(extraPopupFilters), data, download);
+        let pageInfo = pageInfoArray.join(popupString("comma"));
         if (pageInfo !== "") {
             pageInfo = upcaseFirst(pageInfo);
         }
@@ -1978,7 +1964,7 @@ $(function () {
         return (wikiText.parenSplit(pg.re.category).length - 1) / (pg.re.categoryBracketCount + 1);
     }
     function popupFilterStubDetect(data, download, article) {
-        var counts = stubCount(data, article);
+        const counts = stubCount(data, article);
         if (counts.real) {
             return popupString("stub");
         }
@@ -1994,7 +1980,7 @@ $(function () {
         return isDisambig(data, article) ? popupString("disambig") : "";
     }
     function formatBytes(num) {
-        return num > 949 ? Math.round(num / 100) / 10 + popupString("kB") : num + "&nbsp;" + popupString("bytes");
+        return num > 949 ? Math.round(num / 100) / 10 + popupString("kB") : `${num }&nbsp;${ popupString("bytes")}`;
     }
     function Stringwrapper() {
         this.indexOf = function (x) {
@@ -2007,7 +1993,7 @@ $(function () {
             return this.toString().parenSplit(x);
         };
         this.substring = function (x, y) {
-            if (typeof y == "undefined") {
+            if (typeof y === "undefined") {
                 return this.toString().substring(x);
             }
             return this.toString().substring(x, y);
@@ -2026,16 +2012,16 @@ $(function () {
     }
     Title.prototype = new Stringwrapper();
     Title.prototype.toString = function (omitAnchor) {
-        return this.value + (!omitAnchor && this.anchor ? "#" + this.anchorString() : "");
+        return this.value + (!omitAnchor && this.anchor ? `#${ this.anchorString()}` : "");
     };
     Title.prototype.anchorString = function () {
         if (!this.anchor) {
             return "";
         }
-        var split = this.anchor.parenSplit(/((?:[.][0-9A-F]{2})+)/);
-        var len = split.length;
-        var value;
-        for (var j = 1; j < len; j += 2) {
+        const split = this.anchor.parenSplit(/((?:[.][0-9A-F]{2})+)/);
+        const len = split.length;
+        let value;
+        for (let j = 1; j < len; j += 2) {
             value = split[j].split(".").join("%");
             try {
                 value = decodeURIComponent(value);
@@ -2047,9 +2033,9 @@ $(function () {
         return split.join("");
     };
     Title.prototype.urlAnchor = function () {
-        var split = this.anchor.parenSplit("/((?:[%][0-9A-F]{2})+)/");
-        var len = split.length;
-        for (var j = 1; j < len; j += 2) {
+        const split = this.anchor.parenSplit("/((?:[%][0-9A-F]{2})+)/");
+        const len = split.length;
+        for (let j = 1; j < len; j += 2) {
             split[j] = split[j].split("%").join(".");
         }
         return split.join("");
@@ -2061,46 +2047,46 @@ $(function () {
         return new Title().fromURL(h);
     };
     Title.prototype.fromURL = function (h) {
-        if (typeof h != "string") {
+        if (typeof h !== "string") {
             this.value = null;
             return this;
         }
-        var splitted = h.split("?");
+        const splitted = h.split("?");
         splitted[0] = splitted[0].split("&").join("%26");
         h = splitted.join("?");
-        var contribs = pg.re.contribs.exec(h);
+        const contribs = pg.re.contribs.exec(h);
         if (contribs) {
             if (contribs[1] == "title=") {
                 contribs[3] = contribs[3].split("+").join(" ");
             }
-            var u = new Title(contribs[3]);
-            this.setUtf(this.decodeNasties(mw.config.get("wgFormattedNamespaces")[pg.nsUserId] + ":" + u.stripNamespace()));
+            const u = new Title(contribs[3]);
+            this.setUtf(this.decodeNasties(`${mw.config.get("wgFormattedNamespaces")[pg.nsUserId] }:${ u.stripNamespace()}`));
             return this;
         }
-        var email = pg.re.email.exec(h);
+        const email = pg.re.email.exec(h);
         if (email) {
-            this.setUtf(this.decodeNasties(mw.config.get("wgFormattedNamespaces")[pg.nsUserId] + ":" + new Title(email[3]).stripNamespace()));
+            this.setUtf(this.decodeNasties(`${mw.config.get("wgFormattedNamespaces")[pg.nsUserId] }:${ new Title(email[3]).stripNamespace()}`));
             return this;
         }
-        var backlinks = pg.re.backlinks.exec(h);
+        const backlinks = pg.re.backlinks.exec(h);
         if (backlinks) {
             this.setUtf(this.decodeNasties(new Title(backlinks[3])));
             return this;
         }
-        var specialdiff = pg.re.specialdiff.exec(h);
+        const specialdiff = pg.re.specialdiff.exec(h);
         if (specialdiff) {
-            this.setUtf(this.decodeNasties(new Title(mw.config.get("wgFormattedNamespaces")[pg.nsSpecialId] + ":Diff")));
+            this.setUtf(this.decodeNasties(new Title(`${mw.config.get("wgFormattedNamespaces")[pg.nsSpecialId] }:Diff`)));
             return this;
         }
-        var m = pg.re.main.exec(h);
+        const m = pg.re.main.exec(h);
         if (m === null) {
             this.value = null;
         } else {
-            var fromBotInterface = /[?](.+[&])?title=/.test(h);
+            const fromBotInterface = /[?](.+[&])?title=/.test(h);
             if (fromBotInterface) {
                 m[2] = m[2].split("+").join("_");
             }
-            var extracted = m[2] + (m[3] ? "#" + m[3] : "");
+            const extracted = m[2] + (m[3] ? `#${ m[3]}` : "");
             if (pg.flag.isSafari && /%25[0-9A-Fa-f]{2}/.test(extracted)) {
                 this.setUtf(decodeURIComponent(unescape(extracted)));
             } else {
@@ -2111,7 +2097,7 @@ $(function () {
     };
     Title.prototype.decodeNasties = function (txt) {
         try {
-            var ret = decodeURI(this.decodeEscapes(txt));
+            let ret = decodeURI(this.decodeEscapes(txt));
             ret = ret.replace(/[_ ]*$/, "");
             return ret;
         } catch (e) {
@@ -2119,9 +2105,9 @@ $(function () {
         }
     };
     Title.prototype.decodeEscapes = function (txt) {
-        var split = txt.parenSplit(/((?:[%][0-9A-Fa-f]{2})+)/);
-        var len = split.length;
-        for (var i = 1; i < len; i = i + 2) {
+        const split = txt.parenSplit(/((?:[%][0-9A-Fa-f]{2})+)/);
+        const len = split.length;
+        for (let i = 1; i < len; i = i + 2) {
             split[i] = decodeURIComponent(split[i]);
         }
         return split.join("");
@@ -2155,10 +2141,10 @@ $(function () {
             this.value = null;
             return;
         }
-        this.value = (withNs ? mw.config.get("wgFormattedNamespaces")[pg.nsUserId] + ":" : "") + this.stripNamespace().split("/")[0];
+        this.value = (withNs ? `${mw.config.get("wgFormattedNamespaces")[pg.nsUserId] }:` : "") + this.stripNamespace().split("/")[0];
     };
     Title.prototype.userName = function (withNs) {
-        var t = new Title(this.value);
+        const t = new Title(this.value);
         t.toUserName(withNs);
         if (t.value) {
             return t;
@@ -2169,14 +2155,14 @@ $(function () {
         if (this.value === null) {
             return null;
         }
-        var namespaceId = this.namespaceId();
+        const namespaceId = this.namespaceId();
         if (namespaceId >= 0 && namespaceId % 2 === 0) {
-            var localizedNamespace = mw.config.get("wgFormattedNamespaces")[namespaceId + 1];
+            const localizedNamespace = mw.config.get("wgFormattedNamespaces")[namespaceId + 1];
             if (typeof localizedNamespace !== "undefined") {
                 if (localizedNamespace === "") {
                     this.value = this.stripNamespace();
                 } else {
-                    this.value = localizedNamespace.split(" ").join("_") + ":" + this.stripNamespace();
+                    this.value = `${localizedNamespace.split(" ").join("_") }:${ this.stripNamespace()}`;
                 }
                 return this.value;
             }
@@ -2188,18 +2174,18 @@ $(function () {
         return mw.config.get("wgFormattedNamespaces")[this.namespaceId()];
     };
     Title.prototype.namespaceId = function () {
-        var n = this.value.indexOf(":");
+        const n = this.value.indexOf(":");
         if (n < 0) {
             return 0;
         }
-        var namespaceId = mw.config.get("wgNamespaceIds")[this.value.substring(0, n).split(" ").join("_").toLowerCase()];
-        if (typeof namespaceId == "undefined") {
+        const namespaceId = mw.config.get("wgNamespaceIds")[this.value.substring(0, n).split(" ").join("_").toLowerCase()];
+        if (typeof namespaceId === "undefined") {
             return 0;
         }
         return namespaceId;
     };
     Title.prototype.talkPage = function () {
-        var t = new Title(this.value);
+        const t = new Title(this.value);
         t.toTalkPage();
         if (t.value) {
             return t;
@@ -2216,14 +2202,14 @@ $(function () {
         if (this.value === null) {
             return null;
         }
-        var namespaceId = this.namespaceId();
+        const namespaceId = this.namespaceId();
         if (namespaceId >= 0 && namespaceId % 2 == 1) {
-            var localizedNamespace = mw.config.get("wgFormattedNamespaces")[namespaceId - 1];
+            const localizedNamespace = mw.config.get("wgFormattedNamespaces")[namespaceId - 1];
             if (typeof localizedNamespace !== "undefined") {
                 if (localizedNamespace === "") {
                     this.value = this.stripNamespace();
                 } else {
-                    this.value = localizedNamespace.split(" ").join("_") + ":" + this.stripNamespace();
+                    this.value = `${localizedNamespace.split(" ").join("_") }:${ this.stripNamespace()}`;
                 }
                 return this.value;
             }
@@ -2232,7 +2218,7 @@ $(function () {
         return null;
     };
     Title.prototype.articleFromTalkPage = function () {
-        var t = new Title(this.value);
+        const t = new Title(this.value);
         t.toArticleFromTalkPage();
         if (t.value) {
             return t;
@@ -2240,7 +2226,7 @@ $(function () {
         return null;
     };
     Title.prototype.articleFromTalkOrArticle = function () {
-        var t = new Title(this.value);
+        const t = new Title(this.value);
         if (t.toArticleFromTalkPage()) {
             return t;
         }
@@ -2250,11 +2236,11 @@ $(function () {
         return pg.re.ipUser.test(this.userName());
     };
     Title.prototype.stripNamespace = function () {
-        var n = this.value.indexOf(":");
+        const n = this.value.indexOf(":");
         if (n < 0) {
             return this.value;
         }
-        var namespaceId = this.namespaceId();
+        const namespaceId = this.namespaceId();
         if (namespaceId === pg.nsMainspaceId) {
             return this.value;
         }
@@ -2265,7 +2251,7 @@ $(function () {
             this.value = "";
             return;
         }
-        var anch = value.indexOf("#");
+        const anch = value.indexOf("#");
         if (anch < 0) {
             this.value = value.split("_").join(" ");
             this.anchor = "";
@@ -2276,7 +2262,7 @@ $(function () {
         this.ns = null;
     };
     Title.prototype.setUrl = function (urlfrag) {
-        var anch = urlfrag.indexOf("#");
+        const anch = urlfrag.indexOf("#");
         this.value = safeDecodeURI(urlfrag.substring(0, anch));
         this.anchor = this.value.substring(anch + 1);
     };
@@ -2287,9 +2273,9 @@ $(function () {
         if (!x) {
             x = {};
         }
-        var v = this.toString(true);
+        let v = this.toString(true);
         if (!x.omitAnchor && this.anchor) {
-            v += "#" + this.urlAnchor();
+            v += `#${ this.urlAnchor()}`;
         }
         if (!x.keepSpaces) {
             v = v.split(" ").join("_");
@@ -2303,30 +2289,30 @@ $(function () {
         return pg.wiki.titlebase + this.urlString();
     };
     function parseParams(url) {
-        var specialDiff = pg.re.specialdiff.exec(url);
+        const specialDiff = pg.re.specialdiff.exec(url);
         if (specialDiff) {
-            var split = specialDiff[1].split("/");
+            const split = specialDiff[1].split("/");
             if (split.length == 1) {
                 return {
                     oldid: split[0],
-                    diff: "prev"
+                    diff: "prev",
                 };
             } else if (split.length == 2) {
                 return {
                     oldid: split[0],
-                    diff: split[1]
+                    diff: split[1],
                 };
             }
         }
-        var ret = {};
+        const ret = {};
         if (url.indexOf("?") == -1) {
             return ret;
         }
         url = url.split("#")[0];
-        var s = url.split("?").slice(1).join();
-        var t = s.split("&");
-        for (var i = 0; i < t.length; ++i) {
-            var z = t[i].split("=");
+        const s = url.split("?").slice(1).join();
+        const t = s.split("&");
+        for (let i = 0; i < t.length; ++i) {
+            const z = t[i].split("=");
             z.push(null);
             ret[z[0]] = z[1];
         }
@@ -2334,28 +2320,28 @@ $(function () {
             ret.oldid = "prev";
         }
         if (ret.oldid && (ret.oldid === "prev" || ret.oldid === "next" || ret.oldid === "cur")) {
-            var helper = ret.diff;
+            const helper = ret.diff;
             ret.diff = ret.oldid;
             ret.oldid = helper;
         }
         return ret;
     }
     function myDecodeURI(str) {
-        var ret;
+        let ret;
         try {
             ret = decodeURI(str.toString());
         } catch (summat) {
             return str;
         }
-        for (var i = 0; i < pg.misc.decodeExtras.length; ++i) {
-            var from = pg.misc.decodeExtras[i].from;
-            var to = pg.misc.decodeExtras[i].to;
+        for (let i = 0; i < pg.misc.decodeExtras.length; ++i) {
+            const from = pg.misc.decodeExtras[i].from;
+            const to = pg.misc.decodeExtras[i].to;
             ret = ret.split(from).join(to);
         }
         return ret;
     }
     function safeDecodeURI(str) {
-        var ret = myDecodeURI(str);
+        const ret = myDecodeURI(str);
         return ret || str;
     }
     function isDisambig(data, article) {
@@ -2368,11 +2354,11 @@ $(function () {
         if (!getValueOf("popupAllDabsStubs") && article.namespace()) {
             return false;
         }
-        var sectStub = 0;
-        var realStub = 0;
+        let sectStub = 0;
+        let realStub = 0;
         if (pg.re.stub.test(data)) {
-            var s = data.parenSplit(pg.re.stub);
-            for (var i = 1; i < s.length; i = i + 2) {
+            const s = data.parenSplit(pg.re.stub);
+            for (let i = 1; i < s.length; i = i + 2) {
                 if (s[i]) {
                     ++sectStub;
                 } else {
@@ -2382,7 +2368,7 @@ $(function () {
         }
         return {
             real: realStub,
-            sect: sectStub
+            sect: sectStub,
         };
     }
     function isValidImageName(str) {
@@ -2398,8 +2384,8 @@ $(function () {
         if (a === null) {
             return false;
         }
-        var kids = a.childNodes;
-        for (var i = 0; i < kids.length; ++i) {
+        const kids = a.childNodes;
+        for (let i = 0; i < kids.length; ++i) {
             if (kids[i].nodeName == "IMG") {
                 return true;
             }
@@ -2416,8 +2402,8 @@ $(function () {
         if (a.onmousedown || a.getAttribute("nopopup")) {
             return false;
         }
-        var h = a.href;
-        if (h === document.location.href + "#") {
+        const h = a.href;
+        if (h === `${document.location.href }#`) {
             return false;
         }
         if (!pg.re.basenames.test(h)) {
@@ -2432,10 +2418,10 @@ $(function () {
         if (!getValueOf("popupOnlyArticleLinks")) {
             fixVectorMenuPopups();
         }
-        var s = $(".nopopups").toArray();
-        for (var i = 0; i < s.length; ++i) {
-            var as = s[i].getElementsByTagName("a");
-            for (var j = 0; j < as.length; ++j) {
+        const s = $(".nopopups").toArray();
+        for (let i = 0; i < s.length; ++i) {
+            const as = s[i].getElementsByTagName("a");
+            for (let j = 0; j < as.length; ++j) {
                 as[j].inNopopupSpan = true;
             }
         }
@@ -2445,9 +2431,9 @@ $(function () {
         $("div.vectorMenu h3:first a:first, div.vector-menu h3:first a:first, nav.vector-menu h3:first a:first").prop("inNopopupSpan", true);
     }
     function getPageWithCaching(url, onComplete, owner) {
-        log("getPageWithCaching, url=" + url);
-        var i = findInPageCache(url);
-        var d;
+        log(`getPageWithCaching, url=${ url}`);
+        const i = findInPageCache(url);
+        let d;
         if (i > -1) {
             d = fakeDownload(url, owner.idNumber, onComplete, pg.cache.pages[i].data, pg.cache.pages[i].lastModified, owner);
         } else {
@@ -2460,7 +2446,7 @@ $(function () {
     }
     function getPage(url, onComplete, owner) {
         log("getPage");
-        var callback = function (d) {
+        const callback = function (d) {
             if (!d.aborted) {
                 addPageToCache(d);
                 onComplete(d);
@@ -2469,7 +2455,7 @@ $(function () {
         return startDownload(url, owner.idNumber, callback);
     }
     function findInPageCache(url) {
-        for (var i = 0; i < pg.cache.pages.length; ++i) {
+        for (let i = 0; i < pg.cache.pages.length; ++i) {
             if (url == pg.cache.pages[i].url) {
                 return i;
             }
@@ -2477,23 +2463,23 @@ $(function () {
         return -1;
     }
     function addPageToCache(download) {
-        log("addPageToCache " + download.url);
-        var page = {
+        log(`addPageToCache ${ download.url}`);
+        const page = {
             url: download.url,
             data: download.data,
-            lastModified: download.lastModified
+            lastModified: download.lastModified,
         };
         return pg.cache.pages.push(page);
     }
     if (String("abc".split(/(b)/)) != "a,b,c") {
         String.prototype.parenSplit = function (re) {
             re = nonGlobalRegex(re);
-            var s = this;
-            var m = re.exec(s);
-            var ret = [];
+            let s = this;
+            let m = re.exec(s);
+            let ret = [];
             while (m && s) {
-                for (var i = 0; i < m.length; ++i) {
-                    if (typeof m[i] == "undefined") {
+                for (let i = 0; i < m.length; ++i) {
+                    if (typeof m[i] === "undefined") {
                         m[i] = "";
                     }
                 }
@@ -2512,21 +2498,21 @@ $(function () {
         String.prototype.parenSplit.isNative = true;
     }
     function nonGlobalRegex(re) {
-        var s = re.toString();
-        var flags = "";
+        const s = re.toString();
+        let flags = "";
         for (var j = s.length; s.charAt(j) != "/"; --j) {
             if (s.charAt(j) != "g") {
                 flags += s.charAt(j);
             }
         }
-        var t = s.substring(1, j);
+        const t = s.substring(1, j);
         return RegExp(t, flags);
     }
     function getJsObj(json) {
         try {
-            var json_ret = JSON.parse(json);
+            const json_ret = JSON.parse(json);
             if (json_ret.warnings) {
-                for (var w = 0; w < json_ret.warnings.length; w++) {
+                for (let w = 0; w < json_ret.warnings.length; w++) {
                     if (json_ret.warnings[w]["*"]) {
                         log(json_ret.warnings[w]["*"]);
                     } else {
@@ -2534,22 +2520,22 @@ $(function () {
                     }
                 }
             } else if (json_ret.error) {
-                errlog(json_ret.error.code + ": " + json_ret.error.info);
+                errlog(`${json_ret.error.code }: ${ json_ret.error.info}`);
             }
             return json_ret;
         } catch (someError) {
-            errlog("Something went wrong with getJsObj, json=" + json);
+            errlog(`Something went wrong with getJsObj, json=${ json}`);
             return 1;
         }
     }
     function anyChild(obj) {
-        for (var p in obj) {
+        for (const p in obj) {
             return obj[p];
         }
         return null;
     }
     function upcaseFirst(str) {
-        if (typeof str != typeof "" || str === "") {
+        if (typeof str !== typeof "" || str === "") {
             return "";
         }
         return str.charAt(0).toUpperCase() + str.substring(1);
@@ -2558,8 +2544,8 @@ $(function () {
         if (!arr || !arr.length) {
             return -1;
         }
-        var len = arr.length;
-        for (var i = 0; i < len; ++i) {
+        const len = arr.length;
+        for (let i = 0; i < len; ++i) {
             if (arr[i] == foo) {
                 return i;
             }
@@ -2567,7 +2553,7 @@ $(function () {
         return -1;
     }
     function nextOne(array, value) {
-        var i = findInArray(array, value);
+        const i = findInArray(array, value);
         if (i < 0) {
             return null;
         }
@@ -2589,15 +2575,15 @@ $(function () {
         if (!str || !subs) {
             return str;
         }
-        var ret = [];
-        var s = str.parenSplit(/(%s|\$[0-9]+)/);
-        var i = 0;
+        const ret = [];
+        const s = str.parenSplit(/(%s|\$[0-9]+)/);
+        let i = 0;
         do {
             ret.push(s.shift());
             if (!s.length) {
                 break;
             }
-            var cmd = s.shift();
+            const cmd = s.shift();
             if (cmd == "%s") {
                 if (i < subs.length) {
                     ret.push(subs[i]);
@@ -2606,7 +2592,7 @@ $(function () {
                 }
                 ++i;
             } else {
-                var j = parseInt(cmd.replace("$", ""), 10) - 1;
+                const j = parseInt(cmd.replace("$", ""), 10) - 1;
                 if (j > -1 && j < subs.length) {
                     ret.push(subs[j]);
                 } else {
@@ -2635,15 +2621,15 @@ $(function () {
         return !isRegExp(x) && (typeof x === "function" || x instanceof Function);
     }
     function repeatString(s, mult) {
-        var ret = "";
-        for (var i = 0; i < mult; ++i) {
+        let ret = "";
+        for (let i = 0; i < mult; ++i) {
             ret += s;
         }
         return ret;
     }
     function zeroFill(s, min) {
         min = min || 2;
-        var t = s.toString();
+        const t = s.toString();
         return repeatString("0", min - t.length) + t;
     }
     function map(f, o) {
@@ -2653,15 +2639,15 @@ $(function () {
         return map_object(f, o);
     }
     function map_array(f, o) {
-        var ret = [];
-        for (var i = 0; i < o.length; ++i) {
+        const ret = [];
+        for (let i = 0; i < o.length; ++i) {
             ret.push(f(o[i]));
         }
         return ret;
     }
     function map_object(f, o) {
-        var ret = {};
-        for (var i in o) {
+        const ret = {};
+        for (const i in o) {
             ret[o] = f(o[i]);
         }
         return ret;
@@ -2670,7 +2656,7 @@ $(function () {
         return text.replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
     };
     function retargetDab(newTarget, oldTarget, friendlyCurrentArticleName, titleToEdit) {
-        log("retargetDab: newTarget=" + newTarget + " oldTarget=" + oldTarget);
+        log(`retargetDab: newTarget=${ newTarget } oldTarget=${ oldTarget}`);
         return changeLinkTargetLink({
             newTarget: newTarget,
             text: newTarget.split(" ").join("&nbsp;"),
@@ -2680,25 +2666,25 @@ $(function () {
             minor: true,
             oldTarget: oldTarget,
             watch: getValueOf("popupWatchDisambiggedPages"),
-            title: titleToEdit
+            title: titleToEdit,
         });
     }
     function listLinks(wikitext, oldTarget, titleToEdit) {
-        var reg = RegExp("\\[\\[([^|]*?) *(\\||\\]\\])", "gi");
-        var ret = [];
-        var splitted = wikitext.parenSplit(reg);
-        var omitRegex = RegExp("^[a-z]*:|^[Ss]pecial:|^[Ii]mage|^[Cc]ategory");
-        var friendlyCurrentArticleName = oldTarget.toString();
-        var wikPos = getValueOf("popupDabWiktionary");
-        for (var i = 1; i < splitted.length; i = i + 3) {
-            if (typeof splitted[i] == typeof "string" && splitted[i].length > 0 && !omitRegex.test(splitted[i])) {
+        const reg = RegExp("\\[\\[([^|]*?) *(\\||\\]\\])", "gi");
+        let ret = [];
+        const splitted = wikitext.parenSplit(reg);
+        const omitRegex = RegExp("^[a-z]*:|^[Ss]pecial:|^[Ii]mage|^[Cc]ategory");
+        const friendlyCurrentArticleName = oldTarget.toString();
+        const wikPos = getValueOf("popupDabWiktionary");
+        for (let i = 1; i < splitted.length; i = i + 3) {
+            if (typeof splitted[i] === typeof "string" && splitted[i].length > 0 && !omitRegex.test(splitted[i])) {
                 ret.push(retargetDab(splitted[i], oldTarget, friendlyCurrentArticleName, titleToEdit));
             }
         }
         ret = rmDupesFromSortedList(ret.sort());
         if (wikPos) {
-            var wikTarget = "wiktionary:" + friendlyCurrentArticleName.replace(RegExp("^(.+)\\s+[(][^)]+[)]\\s*$"), "$1");
-            var meth;
+            const wikTarget = `wiktionary:${ friendlyCurrentArticleName.replace(RegExp("^(.+)\\s+[(][^)]+[)]\\s*$"), "$1")}`;
+            let meth;
             if (wikPos.toLowerCase() == "first") {
                 meth = "unshift";
             } else {
@@ -2714,13 +2700,13 @@ $(function () {
             oldTarget: oldTarget,
             summary: simplePrintf(getValueOf("popupRmDabLinkSummary"), [friendlyCurrentArticleName]),
             watch: getValueOf("popupWatchDisambiggedPages"),
-            title: titleToEdit
+            title: titleToEdit,
         }));
         return ret;
     }
     function rmDupesFromSortedList(list) {
-        var ret = [];
-        for (var i = 0; i < list.length; ++i) {
+        const ret = [];
+        for (let i = 0; i < list.length; ++i) {
             if (ret.length === 0 || list[i] != ret[ret.length - 1]) {
                 ret.push(list[i]);
             }
@@ -2728,13 +2714,13 @@ $(function () {
         return ret;
     }
     function makeFixDab(data, navpop) {
-        var titleToEdit = navpop.parentPopup && navpop.parentPopup.article.toString();
-        var list = listLinks(data, navpop.originalArticle, titleToEdit);
+        const titleToEdit = navpop.parentPopup && navpop.parentPopup.article.toString();
+        const list = listLinks(data, navpop.originalArticle, titleToEdit);
         if (list.length === 0) {
             log("listLinks returned empty list");
             return null;
         }
-        var html = "<hr />" + popupString("Click to disambiguate this link to:") + "<br>";
+        let html = `<hr />${ popupString("Click to disambiguate this link to:") }<br>`;
         html += list.join(popupString("separator"));
         return html;
     }
@@ -2750,14 +2736,14 @@ $(function () {
             hint: popupString("remove all links to this page from this article"),
             clickButton: getValueOf("popupRedlinkAutoClick"),
             oldTarget: article.toString(),
-            summary: simplePrintf(getValueOf("popupRedlinkSummary"), [article.toString()])
+            summary: simplePrintf(getValueOf("popupRedlinkSummary"), [article.toString()]),
         });
     }
     function setPopupHTML(str, elementId, popupId, onSuccess, append) {
         if (typeof popupId === "undefined") {
             popupId = pg.idNumber;
         }
-        var popupElement = document.getElementById(elementId + popupId);
+        const popupElement = document.getElementById(elementId + popupId);
         if (popupElement) {
             if (!append) {
                 popupElement.innerHTML = "";
@@ -2773,7 +2759,7 @@ $(function () {
             setTimeout(checkPopupPosition, 100);
             return true;
         }
-        setTimeout(function () {
+        setTimeout(() => {
             setPopupHTML(str, elementId, popupId, onSuccess);
         }, 600);
         return null;
@@ -2782,16 +2768,16 @@ $(function () {
         return setPopupHTML(str, "popupData", id);
     }
     function fillEmptySpans(args) {
-        var redir = true;
-        var rcid;
-        if (typeof args != "object" || typeof args.redir == "undefined" || !args.redir) {
+        let redir = true;
+        let rcid;
+        if (typeof args !== "object" || typeof args.redir === "undefined" || !args.redir) {
             redir = false;
         }
-        var a = args.navpopup.parentAnchor;
-        var article, hint = null,
+        const a = args.navpopup.parentAnchor;
+        let article, hint = null,
             oldid = null,
             params = {};
-        if (redir && typeof args.redirTarget == typeof {}) {
+        if (redir && typeof args.redirTarget === typeof {}) {
             article = args.redirTarget;
         } else {
             article = new Title().fromAnchor(a);
@@ -2800,56 +2786,56 @@ $(function () {
             oldid = getValueOf("popupHistoricalLinks") ? params.oldid : null;
             rcid = params.rcid;
         }
-        var x = {
+        const x = {
             article: article,
             hint: hint,
             oldid: oldid,
             rcid: rcid,
             navpop: args.navpopup,
-            params: params
+            params: params,
         };
-        var structure = pg.structures[getValueOf("popupStructure")];
-        if (typeof structure != "object") {
-            setPopupHTML("popupError", "Unknown structure (this should never happen): " + pg.option.popupStructure, args.navpopup.idNumber);
+        const structure = pg.structures[getValueOf("popupStructure")];
+        if (typeof structure !== "object") {
+            setPopupHTML("popupError", `Unknown structure (this should never happen): ${ pg.option.popupStructure}`, args.navpopup.idNumber);
             return;
         }
-        var spans = flatten(pg.misc.layout);
-        var numspans = spans.length;
-        var redirs = pg.misc.redirSpans;
-        for (var i = 0; i < numspans; ++i) {
-            var found = redirs && redirs.indexOf(spans[i]) !== -1;
+        const spans = flatten(pg.misc.layout);
+        const numspans = spans.length;
+        const redirs = pg.misc.redirSpans;
+        for (let i = 0; i < numspans; ++i) {
+            const found = redirs && redirs.indexOf(spans[i]) !== -1;
             if (found && !redir || !found && redir) {
                 continue;
             }
-            var structurefn = structure[spans[i]];
+            const structurefn = structure[spans[i]];
             if (structurefn === undefined) {
                 continue;
             }
-            var setfn = setPopupHTML;
+            let setfn = setPopupHTML;
             if (getValueOf("popupActiveNavlinks") && (spans[i].indexOf("popupTopLinks") === 0 || spans[i].indexOf("popupRedirTopLinks") === 0)) {
                 setfn = setPopupTipsAndHTML;
             }
             switch (typeof structurefn) {
                 case "function":
-                    log("running " + spans[i] + "({article:" + x.article + ", hint:" + x.hint + ", oldid: " + x.oldid + "})");
+                    log(`running ${ spans[i] }({article:${ x.article }, hint:${ x.hint }, oldid: ${ x.oldid }})`);
                     setfn(structurefn(x), spans[i], args.navpopup.idNumber);
                     break;
                 case "string":
                     setfn(structurefn, spans[i], args.navpopup.idNumber);
                     break;
                 default:
-                    errlog("unknown thing with label " + spans[i] + " (span index was " + i + ")");
+                    errlog(`unknown thing with label ${ spans[i] } (span index was ${ i })`);
                     break;
             }
         }
     }
     function flatten(list, start) {
-        var ret = [];
-        if (typeof start == "undefined") {
+        const ret = [];
+        if (typeof start === "undefined") {
             start = 0;
         }
-        for (var i = start; i < list.length; ++i) {
-            if (typeof list[i] == typeof []) {
+        for (let i = start; i < list.length; ++i) {
+            if (typeof list[i] === typeof []) {
                 return ret.concat(flatten(list[i])).concat(flatten(list, i + 1));
             }
             ret.push(list[i]);
@@ -2858,12 +2844,12 @@ $(function () {
     }
     function popupHTML(a) {
         getValueOf("popupStructure");
-        var structure = pg.structures[pg.option.popupStructure];
-        if (typeof structure != "object") {
+        const structure = pg.structures[pg.option.popupStructure];
+        if (typeof structure !== "object") {
             pg.option.popupStructure = pg.optionDefault.popupStructure;
             return popupHTML(a);
         }
-        if (typeof structure.popupLayout != "function") {
+        if (typeof structure.popupLayout !== "function") {
             return "Bad layout";
         }
         pg.misc.layout = structure.popupLayout();
@@ -2875,13 +2861,13 @@ $(function () {
         return makeEmptySpans(pg.misc.layout, a.navpopup);
     }
     function makeEmptySpans(list, navpop) {
-        var ret = "";
-        for (var i = 0; i < list.length; ++i) {
-            if (typeof list[i] == typeof "") {
+        let ret = "";
+        for (let i = 0; i < list.length; ++i) {
+            if (typeof list[i] === typeof "") {
                 ret += emptySpanHTML(list[i], navpop.idNumber, "div");
-            } else if (typeof list[i] == typeof [] && list[i].length > 0) {
+            } else if (typeof list[i] === typeof [] && list[i].length > 0) {
                 ret = ret.parenSplit(RegExp("(</[^>]*?>$)")).join(makeEmptySpans(list[i], navpop));
-            } else if (typeof list[i] == typeof {} && list[i].nodeType) {
+            } else if (typeof list[i] === typeof {} && list[i].nodeType) {
                 ret += emptySpanHTML(list[i].name, navpop.idNumber, list[i].nodeType);
             }
         }
@@ -2899,7 +2885,7 @@ $(function () {
         return simplePrintf('<%s id="%s" class="%s"></%s>', [tag, name + id, classname, tag]);
     }
     emptySpanHTML.classAliases = {
-        popupSecondPreview: "popupPreview"
+        popupSecondPreview: "popupPreview",
     };
     function imageHTML(article, idNumber) {
         return simplePrintf('<a id="popupImageLink$1">' + '<img align="right" valign="top" id="popupImg$1" style="display: none;"></img>' + "</a>", [idNumber]);
@@ -2908,7 +2894,7 @@ $(function () {
         if (!when) {
             when = 250;
         }
-        var popTips = function () {
+        const popTips = function () {
             setupTooltips(document.getElementById(id), false, true, popData);
         };
         return function () {
@@ -2922,8 +2908,8 @@ $(function () {
         if (!parent) {
             return null;
         }
-        var uls = parent.getElementsByTagName("ul");
-        for (var i = 0; i < uls.length; ++i) {
+        const uls = parent.getElementsByTagName("ul");
+        for (let i = 0; i < uls.length; ++i) {
             if (uls[i].className == "popup_menu") {
                 if (uls[i].offsetWidth > 0) {
                     return false;
@@ -2938,7 +2924,7 @@ $(function () {
         }
     }
     function mouseOutWikiLink() {
-        var a = this;
+        const a = this;
         removeModifierKeyHandler(a);
         if (a.navpopup === null || typeof a.navpopup === "undefined") {
             return;
@@ -2958,10 +2944,10 @@ $(function () {
             if (Navpopup.tracker.dirty) {
                 return false;
             }
-            var x = Navpopup.tracker.x,
+            const x = Navpopup.tracker.x,
                 y = Navpopup.tracker.y;
-            var mouseOverNavpop = navpop.isWithin(x, y, navpop.fuzz, navpop.mainDiv) || !fuzzyCursorOffMenus(x, y, navpop.fuzz, navpop.mainDiv);
-            var t = getValueOf("popupHideDelay");
+            const mouseOverNavpop = navpop.isWithin(x, y, navpop.fuzz, navpop.mainDiv) || !fuzzyCursorOffMenus(x, y, navpop.fuzz, navpop.mainDiv);
+            let t = getValueOf("popupHideDelay");
             if (t) {
                 t = t * 1e3;
             }
@@ -2975,7 +2961,7 @@ $(function () {
                 }
                 return false;
             }
-            var d = +new Date();
+            const d = +new Date();
             if (!navpop.mouseLeavingTime) {
                 navpop.mouseLeavingTime = d;
                 return false;
@@ -2995,7 +2981,7 @@ $(function () {
     function runStopPopupTimer(navpop) {
         if (!navpop.stopPopupTimer) {
             navpop.stopPopupTimer = setInterval(posCheckerHook(navpop), 500);
-            navpop.addHook(function () {
+            navpop.addHook(() => {
                 clearInterval(navpop.stopPopupTimer);
             }, "hide", "before");
         }
@@ -3009,7 +2995,7 @@ $(function () {
         this.setData();
     }
     Previewmaker.prototype.setData = function () {
-        var maxSize = Math.max(1e4, 2 * this.maxCharacters);
+        const maxSize = Math.max(1e4, 2 * this.maxCharacters);
         this.data = this.originalData.substring(0, maxSize);
     };
     Previewmaker.prototype.killComments = function () {
@@ -3022,8 +3008,8 @@ $(function () {
         this.data = this.data.replace(RegExp("< *gallery[^>]* *>[\\s\\S]*?< */ *gallery *>", "gi"), "");
     };
     Previewmaker.prototype.kill = function (opening, closing, subopening, subclosing, repl) {
-        var oldk = this.data;
-        var k = this.killStuff(this.data, opening, closing, subopening, subclosing, repl);
+        let oldk = this.data;
+        let k = this.killStuff(this.data, opening, closing, subopening, subclosing, repl);
         while (k.length < oldk.length) {
             oldk = k;
             k = this.killStuff(k, opening, closing, subopening, subclosing, repl);
@@ -3031,10 +3017,10 @@ $(function () {
         this.data = k;
     };
     Previewmaker.prototype.killStuff = function (txt, opening, closing, subopening, subclosing, repl) {
-        var op = this.makeRegexp(opening);
-        var cl = this.makeRegexp(closing, "^");
-        var sb = subopening ? this.makeRegexp(subopening, "^") : null;
-        var sc = subclosing ? this.makeRegexp(subclosing, "^") : cl;
+        const op = this.makeRegexp(opening);
+        const cl = this.makeRegexp(closing, "^");
+        const sb = subopening ? this.makeRegexp(subopening, "^") : null;
+        const sc = subclosing ? this.makeRegexp(subclosing, "^") : cl;
         if (!op || !cl) {
             alert("Navigation Popups error: op or cl is null! something is wrong.");
             return;
@@ -3042,13 +3028,13 @@ $(function () {
         if (!op.test(txt)) {
             return txt;
         }
-        var ret = "";
-        var opResult = op.exec(txt);
+        let ret = "";
+        const opResult = op.exec(txt);
         ret = txt.substring(0, opResult.index);
         txt = txt.substring(opResult.index + opResult[0].length);
-        var depth = 1;
+        let depth = 1;
         while (txt.length > 0) {
-            var removal = 0;
+            let removal = 0;
             if (depth == 1 && cl.test(txt)) {
                 depth--;
                 removal = cl.exec(txt)[0].length;
@@ -3072,13 +3058,13 @@ $(function () {
     Previewmaker.prototype.makeRegexp = function (x, prefix, suffix) {
         prefix = prefix || "";
         suffix = suffix || "";
-        var reStr = "";
-        var flags = "";
+        let reStr = "";
+        let flags = "";
         if (isString(x)) {
             reStr = prefix + literalizeRegex(x) + suffix;
         } else if (isRegExp(x)) {
-            var s = x.toString().substring(1);
-            var sp = s.split("/");
+            let s = x.toString().substring(1);
+            const sp = s.split("/");
             flags = sp[sp.length - 1];
             sp[sp.length - 1] = "";
             s = sp.join("/");
@@ -3087,7 +3073,7 @@ $(function () {
         } else {
             log("makeRegexp failed");
         }
-        log("makeRegexp: got reStr=" + reStr + ", flags=" + flags);
+        log(`makeRegexp: got reStr=${ reStr }, flags=${ flags}`);
         return RegExp(reStr, flags);
     };
     Previewmaker.prototype.killBoxTemplates = function () {
@@ -3103,21 +3089,21 @@ $(function () {
         this.data = this.data.replace(RegExp("^[|].*$", "mg"), "");
     };
     Previewmaker.prototype.killImages = function () {
-        var forbiddenNamespaceAliases = [];
-        jQuery.each(mw.config.get("wgNamespaceIds"), function (_localizedNamespaceLc, _namespaceId) {
+        const forbiddenNamespaceAliases = [];
+        jQuery.each(mw.config.get("wgNamespaceIds"), (_localizedNamespaceLc, _namespaceId) => {
             if (_namespaceId != pg.nsImageId && _namespaceId != pg.nsCategoryId) {
                 return;
             }
             forbiddenNamespaceAliases.push(_localizedNamespaceLc.split(" ").join("[ _]"));
         });
-        this.kill(RegExp("[[][[]\\s*(" + forbiddenNamespaceAliases.join("|") + ")\\s*:", "i"), /\]\]\s*/, "[", "]");
+        this.kill(RegExp(`[[][[]\\s*(${ forbiddenNamespaceAliases.join("|") })\\s*:`, "i"), /\]\]\s*/, "[", "]");
     };
     Previewmaker.prototype.killHTML = function () {
         this.kill(/<ref\b[^/>]*?>/i, /<\/ref>/i);
         this.data = this.data.replace(RegExp("(^|\\n) *<.*", "g"), "\n");
-        var splitted = this.data.parenSplit(/(<[\w\W]*?(?:>|$|(?=<)))/);
-        var len = splitted.length;
-        for (var i = 1; i < len; i = i + 2) {
+        const splitted = this.data.parenSplit(/(<[\w\W]*?(?:>|$|(?=<)))/);
+        const len = splitted.length;
+        for (let i = 1; i < len; i = i + 2) {
             switch (splitted[i]) {
                 case "<nowiki>":
                 case "</nowiki>":
@@ -3131,7 +3117,7 @@ $(function () {
         this.data = splitted.join("");
     };
     Previewmaker.prototype.killChunks = function () {
-        var italicChunkRegex = new RegExp("((^|\\n)\\s*:*\\s*''[^']([^']|'''|'[^']){20}(.|\\n[^\\n])*''[.!?\\s]*\\n)+", "g");
+        const italicChunkRegex = new RegExp("((^|\\n)\\s*:*\\s*''[^']([^']|'''|'[^']){20}(.|\\n[^\\n])*''[.!?\\s]*\\n)+", "g");
         this.data = this.data.replace(italicChunkRegex, "\n");
     };
     Previewmaker.prototype.mopup = function () {
@@ -3140,12 +3126,12 @@ $(function () {
         this.data = this.data.replace(RegExp("^__[A-Z_]*__ *$", "gmi"), "");
     };
     Previewmaker.prototype.firstBit = function () {
-        var d = this.data;
+        let d = this.data;
         if (getValueOf("popupPreviewCutHeadings")) {
             this.data = this.data.replace(RegExp("\\s*(==+[^=]*==+)\\s*", "g"), "\n\n$1 ");
             this.data = this.data.replace(RegExp("([:;]) *\\n{2,}", "g"), "$1\n");
             this.data = this.data.replace(RegExp("^[\\s\\n]*"), "");
-            var stuff = RegExp("^([^\\n]|\\n[^\\n\\s])*").exec(this.data);
+            const stuff = RegExp("^([^\\n]|\\n[^\\n\\s])*").exec(this.data);
             if (stuff) {
                 d = stuff[0];
             }
@@ -3156,11 +3142,11 @@ $(function () {
         }
         d = d.parenSplit(RegExp('([!?.]+["' + "'" + "]*\\s)", "g"));
         d[0] = d[0].replace(RegExp("^\\s*"), "");
-        var notSentenceEnds = RegExp("([^.][a-z][.] *[a-z]|etc|sic|Dr|Mr|Mrs|Ms|St|no|op|cit|\\[[^\\]]*|\\s[A-Zvclm])$", "i");
+        const notSentenceEnds = RegExp("([^.][a-z][.] *[a-z]|etc|sic|Dr|Mr|Mrs|Ms|St|no|op|cit|\\[[^\\]]*|\\s[A-Zvclm])$", "i");
         d = this.fixSentenceEnds(d, notSentenceEnds);
         this.fullLength = d.join("").length;
-        var n = this.maxSentences;
-        var dd = this.firstSentences(d, n);
+        let n = this.maxSentences;
+        let dd = this.firstSentences(d, n);
         do {
             dd = this.firstSentences(d, n);
             --n;
@@ -3168,10 +3154,10 @@ $(function () {
         this.data = dd;
     };
     Previewmaker.prototype.fixSentenceEnds = function (strs, reg) {
-        for (var i = 0; i < strs.length - 2; ++i) {
+        for (let i = 0; i < strs.length - 2; ++i) {
             if (reg.test(strs[i])) {
-                var a = [];
-                for (var j = 0; j < strs.length; ++j) {
+                const a = [];
+                for (let j = 0; j < strs.length; ++j) {
                     if (j < i) {
                         a[j] = strs[j];
                     }
@@ -3188,7 +3174,7 @@ $(function () {
         return strs;
     };
     Previewmaker.prototype.firstSentences = function (strs, howmany) {
-        var t = strs.slice(0, 2 * howmany);
+        const t = strs.slice(0, 2 * howmany);
         return t.join("");
     };
     Previewmaker.prototype.killBadWhitespace = function () {
@@ -3220,39 +3206,39 @@ $(function () {
         this.stripLongTemplates();
     };
     Previewmaker.prototype.esWiki2HtmlPart = function (data) {
-        var reLinks = /(?:\[\[([^|\]]*)(?:\|([^|\]]*))*]]([a-z]*))/gi;
+        const reLinks = /(?:\[\[([^|\]]*)(?:\|([^|\]]*))*]]([a-z]*))/gi;
         reLinks.lastIndex = 0;
-        var match;
-        var result = "";
-        var postfixIndex = 0;
+        let match;
+        let result = "";
+        let postfixIndex = 0;
         while (match = reLinks.exec(data)) {
-            result += pg.escapeQuotesHTML(data.substring(postfixIndex, match.index)) + '<a href="' + Insta.conf.paths.articles + pg.escapeQuotesHTML(match[1]) + '">' + pg.escapeQuotesHTML((match[2] ? match[2] : match[1]) + match[3]) + "</a>";
+            result += `${pg.escapeQuotesHTML(data.substring(postfixIndex, match.index)) }<a href="${ Insta.conf.paths.articles }${pg.escapeQuotesHTML(match[1]) }">${ pg.escapeQuotesHTML((match[2] ? match[2] : match[1]) + match[3]) }</a>`;
             postfixIndex = reLinks.lastIndex;
         }
         result += pg.escapeQuotesHTML(data.substring(postfixIndex));
         return result;
     };
     Previewmaker.prototype.editSummaryPreview = function () {
-        var reAes = /\/\* *(.*?) *\*\//g;
+        const reAes = /\/\* *(.*?) *\*\//g;
         reAes.lastIndex = 0;
-        var match;
+        let match;
         match = reAes.exec(this.data);
         if (match) {
-            var prefix = this.data.substring(0, match.index - 1);
-            var section = match[1];
-            var postfix = this.data.substring(reAes.lastIndex);
-            var start = "<span class='autocomment'>";
-            var end = "</span>";
+            const prefix = this.data.substring(0, match.index - 1);
+            const section = match[1];
+            const postfix = this.data.substring(reAes.lastIndex);
+            let start = "<span class='autocomment'>";
+            let end = "</span>";
             if (prefix.length > 0) {
-                start = this.esWiki2HtmlPart(prefix) + " " + start + "- ";
+                start = `${this.esWiki2HtmlPart(prefix) } ${ start }- `;
             }
             if (postfix.length > 0) {
-                end = ": " + end + this.esWiki2HtmlPart(postfix);
+                end = `: ${ end }${this.esWiki2HtmlPart(postfix)}`;
             }
-            var t = new Title().fromURL(this.baseUrl);
+            const t = new Title().fromURL(this.baseUrl);
             t.anchorFromUtf(section);
-            var sectionLink = Insta.conf.paths.articles + pg.escapeQuotesHTML(t.toString(true)) + "#" + pg.escapeQuotesHTML(t.anchor);
-            return start + '<a href="' + sectionLink + '">&rarr;</a> ' + pg.escapeQuotesHTML(section) + end;
+            const sectionLink = `${Insta.conf.paths.articles + pg.escapeQuotesHTML(t.toString(true)) }#${ pg.escapeQuotesHTML(t.anchor)}`;
+            return `${start }<a href="${ sectionLink }">&rarr;</a> ${ pg.escapeQuotesHTML(section) }${end}`;
         }
         return this.esWiki2HtmlPart(this.data);
     };
@@ -3267,88 +3253,88 @@ $(function () {
             }
         }
         txt = txt.substring(0, 1e4);
-        var base = pg.wiki.articlebase + Title.fromURL(document.location.href).urlString();
-        var p = new Previewmaker(txt, base, pg.current.link.navpopup);
+        const base = pg.wiki.articlebase + Title.fromURL(document.location.href).urlString();
+        const p = new Previewmaker(txt, base, pg.current.link.navpopup);
         if (this.owner.article.namespaceId() != pg.nsTemplateId) {
             p.killComments();
-            if (!confirm("done killComments(). Continue?\n---\n" + p.data)) {
+            if (!confirm(`done killComments(). Continue?\n---\n${ p.data}`)) {
                 return;
             }
             p.killDivs();
-            if (!confirm("done killDivs(). Continue?\n---\n" + p.data)) {
+            if (!confirm(`done killDivs(). Continue?\n---\n${ p.data}`)) {
                 return;
             }
             p.killGalleries();
-            if (!confirm("done killGalleries(). Continue?\n---\n" + p.data)) {
+            if (!confirm(`done killGalleries(). Continue?\n---\n${ p.data}`)) {
                 return;
             }
             p.killBoxTemplates();
-            if (!confirm("done killBoxTemplates(). Continue?\n---\n" + p.data)) {
+            if (!confirm(`done killBoxTemplates(). Continue?\n---\n${ p.data}`)) {
                 return;
             }
             if (getValueOf("popupPreviewKillTemplates")) {
                 p.killTemplates();
-                if (!confirm("done killTemplates(). Continue?\n---\n" + p.data)) {
+                if (!confirm(`done killTemplates(). Continue?\n---\n${ p.data}`)) {
                     return;
                 }
             } else {
                 p.killMultilineTemplates();
-                if (!confirm("done killMultilineTemplates(). Continue?\n---\n" + p.data)) {
+                if (!confirm(`done killMultilineTemplates(). Continue?\n---\n${ p.data}`)) {
                     return;
                 }
             }
             p.killTables();
-            if (!confirm("done killTables(). Continue?\n---\n" + p.data)) {
+            if (!confirm(`done killTables(). Continue?\n---\n${ p.data}`)) {
                 return;
             }
             p.killImages();
-            if (!confirm("done killImages(). Continue?\n---\n" + p.data)) {
+            if (!confirm(`done killImages(). Continue?\n---\n${ p.data}`)) {
                 return;
             }
             p.killHTML();
-            if (!confirm("done killHTML(). Continue?\n---\n" + p.data)) {
+            if (!confirm(`done killHTML(). Continue?\n---\n${ p.data}`)) {
                 return;
             }
             p.killChunks();
-            if (!confirm("done killChunks(). Continue?\n---\n" + p.data)) {
+            if (!confirm(`done killChunks(). Continue?\n---\n${ p.data}`)) {
                 return;
             }
             p.mopup();
-            if (!confirm("done mopup(). Continue?\n---\n" + p.data)) {
+            if (!confirm(`done mopup(). Continue?\n---\n${ p.data}`)) {
                 return;
             }
             p.firstBit();
-            if (!confirm("done firstBit(). Continue?\n---\n" + p.data)) {
+            if (!confirm(`done firstBit(). Continue?\n---\n${ p.data}`)) {
                 return;
             }
             p.killBadWhitespace();
-            if (!confirm("done killBadWhitespace(). Continue?\n---\n" + p.data)) {
+            if (!confirm(`done killBadWhitespace(). Continue?\n---\n${ p.data}`)) {
                 return;
             }
         }
         p.html = wiki2html(p.data, base);
         p.fixHTML();
-        if (!confirm("done fixHTML(). Continue?\n---\n" + p.html)) {
+        if (!confirm(`done fixHTML(). Continue?\n---\n${ p.html}`)) {
             return;
         }
         p.stripLongTemplates();
-        if (!confirm("done stripLongTemplates(). Continue?\n---\n" + p.html)) {
+        if (!confirm(`done stripLongTemplates(). Continue?\n---\n${ p.html}`)) {
             return;
         }
-        alert("finished preview - end result follows.\n---\n" + p.html);
+        alert(`finished preview - end result follows.\n---\n${ p.html}`);
     }
     Previewmaker.prototype.fixHTML = function () {
         if (!this.html) {
             return;
         }
-        var ret = this.html;
-        ret = ret.replace(RegExp('(<a href="' + pg.wiki.articlePath + '/[^"]*)[?](.*?")', "g"), "$1%3F$2");
-        ret = ret.replace(RegExp("(<a href='" + pg.wiki.articlePath + "/[^']*)[?](.*?')", "g"), "$1%3F$2");
+        let ret = this.html;
+        ret = ret.replace(RegExp(`(<a href="${ pg.wiki.articlePath }/[^"]*)[?](.*?")`, "g"), "$1%3F$2");
+        ret = ret.replace(RegExp(`(<a href='${ pg.wiki.articlePath }/[^']*)[?](.*?')`, "g"), "$1%3F$2");
         this.html = ret;
     };
     Previewmaker.prototype.showPreview = function () {
         this.makePreview();
-        if (typeof this.html != typeof "") {
+        if (typeof this.html !== typeof "") {
             return;
         }
         if (RegExp("^\\s*$").test(this.html)) {
@@ -3356,16 +3342,16 @@ $(function () {
         }
         setPopupHTML("<hr />", "popupPrePreviewSep", this.owner.idNumber);
         setPopupTipsAndHTML(this.html, "popupPreview", this.owner.idNumber, {
-            owner: this.owner
+            owner: this.owner,
         });
-        var more = this.fullLength > this.data.length ? this.moreLink() : "";
+        const more = this.fullLength > this.data.length ? this.moreLink() : "";
         setPopupHTML(more, "popupPreviewMore", this.owner.idNumber);
     };
     Previewmaker.prototype.moreLink = function () {
-        var a = document.createElement("a");
+        const a = document.createElement("a");
         a.className = "popupMoreLink";
         a.innerHTML = popupString("more...");
-        var savedThis = this;
+        const savedThis = this;
         a.onclick = function () {
             savedThis.maxCharacters += 2e3;
             savedThis.maxSentences += 20;
@@ -3384,95 +3370,95 @@ $(function () {
         this.kill(RegExp("\\s*[{][{][^{}]*\\n"), "}}", "{{");
     };
     function loadAPIPreview(queryType, article, navpop) {
-        var art = new Title(article).urlString();
-        var url = pg.wiki.apiwikibase + "?format=json&formatversion=2&action=query&";
-        var htmlGenerator = function () {
+        const art = new Title(article).urlString();
+        let url = `${pg.wiki.apiwikibase }?format=json&formatversion=2&action=query&`;
+        let htmlGenerator = function () {
             alert("invalid html generator");
         };
-        var usernameart = "";
+        let usernameart = "";
         switch (queryType) {
             case "history":
-                url += "titles=" + art + "&prop=revisions&rvlimit=" + getValueOf("popupHistoryPreviewLimit");
+                url += `titles=${ art }&prop=revisions&rvlimit=${ getValueOf("popupHistoryPreviewLimit")}`;
                 htmlGenerator = APIhistoryPreviewHTML;
                 break;
             case "category":
-                url += "list=categorymembers&cmtitle=" + art;
+                url += `list=categorymembers&cmtitle=${ art}`;
                 htmlGenerator = APIcategoryPreviewHTML;
                 break;
             case "userinfo":
                 var username = new Title(article).userName();
                 usernameart = encodeURIComponent(username);
                 if (pg.re.ipUser.test(username)) {
-                    url += "list=blocks&bkprop=range|restrictions&bkip=" + usernameart;
+                    url += `list=blocks&bkprop=range|restrictions&bkip=${ usernameart}`;
                 } else {
-                    url += "list=users|usercontribs&usprop=blockinfo|groups|editcount|registration|gender&ususers=" + usernameart + "&meta=globaluserinfo&guiprop=groups|unattached&guiuser=" + usernameart + "&uclimit=1&ucprop=timestamp&ucuser=" + usernameart;
+                    url += `list=users|usercontribs&usprop=blockinfo|groups|editcount|registration|gender&ususers=${ usernameart }&meta=globaluserinfo&guiprop=groups|unattached&guiuser=${ usernameart }&uclimit=1&ucprop=timestamp&ucuser=${ usernameart}`;
                 }
                 htmlGenerator = APIuserInfoPreviewHTML;
                 break;
             case "contribs":
                 usernameart = encodeURIComponent(new Title(article).userName());
-                url += "list=usercontribs&ucuser=" + usernameart + "&uclimit=" + getValueOf("popupContribsPreviewLimit");
+                url += `list=usercontribs&ucuser=${ usernameart }&uclimit=${ getValueOf("popupContribsPreviewLimit")}`;
                 htmlGenerator = APIcontribsPreviewHTML;
                 break;
             case "imagepagepreview":
                 var trail = "";
                 if (getValueOf("popupImageLinks")) {
-                    trail = "&list=imageusage&iutitle=" + art;
+                    trail = `&list=imageusage&iutitle=${ art}`;
                 }
-                url += "titles=" + art + "&prop=revisions|imageinfo&rvprop=content" + trail;
+                url += `titles=${ art }&prop=revisions|imageinfo&rvprop=content${ trail}`;
                 htmlGenerator = APIimagepagePreviewHTML;
                 break;
             case "backlinks":
-                url += "list=backlinks&bltitle=" + art;
+                url += `list=backlinks&bltitle=${ art}`;
                 htmlGenerator = APIbacklinksPreviewHTML;
                 break;
             case "revision":
                 if (article.oldid) {
-                    url += "revids=" + article.oldid;
+                    url += `revids=${ article.oldid}`;
                 } else {
-                    url += "titles=" + article.removeAnchor().urlString();
+                    url += `titles=${ article.removeAnchor().urlString()}`;
                 }
                 url += "&prop=revisions|pageprops|info|images|categories&rvprop=ids|timestamp|flags|comment|user|content&cllimit=max&imlimit=max";
                 htmlGenerator = APIrevisionPreviewHTML;
                 break;
         }
         pendingNavpopTask(navpop);
-        var callback = function (d) {
+        const callback = function (d) {
             log("callback of API functions was hit");
             if (queryType === "userinfo") {
-                fetchUserGroupNames(d.data).then(function () {
+                fetchUserGroupNames(d.data).then(() => {
                     showAPIPreview(queryType, htmlGenerator(article, d, navpop), navpop.idNumber, navpop, d);
                 });
                 return;
             }
             showAPIPreview(queryType, htmlGenerator(article, d, navpop), navpop.idNumber, navpop, d);
         };
-        var go = function () {
+        const go = function () {
             getPageWithCaching(url, callback, navpop);
             return true;
         };
         if (navpop.visible || !getValueOf("popupLazyDownloads")) {
             go();
         } else {
-            navpop.addHook(go, "unhide", "before", "DOWNLOAD_" + queryType + "_QUERY_DATA");
+            navpop.addHook(go, "unhide", "before", `DOWNLOAD_${ queryType }_QUERY_DATA`);
         }
     }
     function linkList(list) {
-        list.sort(function (x, y) {
+        list.sort((x, y) => {
             return x == y ? 0 : x < y ? -1 : 1;
         });
-        var buf = [];
-        for (var i = 0; i < list.length; ++i) {
+        const buf = [];
+        for (let i = 0; i < list.length; ++i) {
             buf.push(wikiLink({
                 article: new Title(list[i]),
                 text: list[i].split(" ").join("&nbsp;"),
-                action: "view"
+                action: "view",
             }));
         }
         return buf.join(popupString("separator"));
     }
     function getTimeOffset() {
-        var tz = mw.user.options.get("timecorrection");
+        const tz = mw.user.options.get("timecorrection");
         if (tz) {
             if (tz.indexOf("|") > -1) {
                 return parseInt(tz.split("|")[1], 10);
@@ -3481,14 +3467,14 @@ $(function () {
         return 0;
     } function getTimeZone() {
         if (!pg.user.timeZone) {
-            var tz = mw.user.options.get("timecorrection");
+            const tz = mw.user.options.get("timecorrection");
             pg.user.timeZone = "UTC";
             if (tz) {
-                var tzComponents = tz.split("|");
+                const tzComponents = tz.split("|");
                 if (tzComponents.length === 3 && tzComponents[0] === "ZoneInfo") {
                     pg.user.timeZone = tzComponents[2];
                 } else {
-                    errlog("Unexpected timezone information: " + tz);
+                    errlog(`Unexpected timezone information: ${ tz}`);
                 }
             }
         }
@@ -3499,7 +3485,7 @@ $(function () {
             // IE 11
             return true;
         }
-        var tz = mw.user.options.get("timecorrection");
+        const tz = mw.user.options.get("timecorrection");
         if (tz && tz.indexOf("ZoneInfo|") === -1) {
             return true;
         }
@@ -3507,7 +3493,7 @@ $(function () {
     }
     function getLocales() {
         if (!pg.user.locales) {
-            var userLanguage = document.querySelector("html").getAttribute("lang");
+            let userLanguage = document.querySelector("html").getAttribute("lang");
             if (getValueOf("popupLocale")) {
                 userLanguage = getValueOf("popupLocale");
             } else if (userLanguage === "en") {
@@ -3525,60 +3511,60 @@ $(function () {
         return mw.user.options.get("date");
     }
     function editPreviewTable(article, h, reallyContribs) {
-        var html = ["<table>"];
-        var day = null;
-        var curart = article;
-        var page = null;
-        var makeFirstColumnLinks;
+        let html = ["<table>"];
+        let day = null;
+        let curart = article;
+        let page = null;
+        let makeFirstColumnLinks;
         if (reallyContribs) {
             makeFirstColumnLinks = function (currentRevision) {
-                var result = "(";
-                result += '<a href="' + pg.wiki.titlebase + new Title(currentRevision.title).urlString() + "&diff=prev" + "&oldid=" + currentRevision.revid + '">' + popupString("diff") + "</a>";
+                let result = "(";
+                result += `<a href="${ pg.wiki.titlebase }${new Title(currentRevision.title).urlString() }&diff=prev` + `&oldid=${ currentRevision.revid }">${ popupString("diff") }</a>`;
                 result += "&nbsp;|&nbsp;";
-                result += '<a href="' + pg.wiki.titlebase + new Title(currentRevision.title).urlString() + '&action=history">' + popupString("hist") + "</a>";
+                result += `<a href="${ pg.wiki.titlebase }${new Title(currentRevision.title).urlString() }&action=history">${ popupString("hist") }</a>`;
                 result += ")";
                 return result;
             };
         } else {
-            var firstRevid = h[0].revid;
+            const firstRevid = h[0].revid;
             makeFirstColumnLinks = function (currentRevision) {
-                var result = "(";
-                result += '<a href="' + pg.wiki.titlebase + new Title(curart).urlString() + "&diff=" + firstRevid + "&oldid=" + currentRevision.revid + '">' + popupString("cur") + "</a>";
+                let result = "(";
+                result += `<a href="${ pg.wiki.titlebase }${new Title(curart).urlString() }&diff=${ firstRevid }&oldid=${ currentRevision.revid }">${ popupString("cur") }</a>`;
                 result += "&nbsp;|&nbsp;";
-                result += '<a href="' + pg.wiki.titlebase + new Title(curart).urlString() + "&diff=prev&oldid=" + currentRevision.revid + '">' + popupString("last") + "</a>";
+                result += `<a href="${ pg.wiki.titlebase }${new Title(curart).urlString() }&diff=prev&oldid=${ currentRevision.revid }">${ popupString("last") }</a>`;
                 result += ")";
                 return result;
             };
         }
-        for (var i = 0; i < h.length; ++i) {
+        for (let i = 0; i < h.length; ++i) {
             if (reallyContribs) {
                 page = h[i].title;
                 curart = new Title(page);
             }
-            var minor = h[i].minor ? "<b>m </b>" : "";
-            var editDate = new Date(h[i].timestamp);
-            var thisDay = formattedDate(editDate);
-            var thisTime = formattedTime(editDate);
+            const minor = h[i].minor ? "<b>m </b>" : "";
+            const editDate = new Date(h[i].timestamp);
+            let thisDay = formattedDate(editDate);
+            const thisTime = formattedTime(editDate);
             if (thisDay == day) {
                 thisDay = "";
             } else {
                 day = thisDay;
             }
             if (thisDay) {
-                html.push('<tr><td colspan=3><span class="popup_history_date">' + thisDay + "</span></td></tr>");
+                html.push(`<tr><td colspan=3><span class="popup_history_date">${ thisDay }</span></td></tr>`);
             }
-            html.push('<tr class="popup_history_row_' + (i % 2 ? "odd" : "even") + '">');
-            html.push("<td>" + makeFirstColumnLinks(h[i]) + "</td>");
-            html.push("<td>" + '<a href="' + pg.wiki.titlebase + new Title(curart).urlString() + "&oldid=" + h[i].revid + '">' + thisTime + "</a></td>");
-            var col3url = "",
+            html.push(`<tr class="popup_history_row_${ i % 2 ? "odd" : "even" }">`);
+            html.push(`<td>${ makeFirstColumnLinks(h[i]) }</td>`);
+            html.push("<td>" + `<a href="${ pg.wiki.titlebase }${new Title(curart).urlString() }&oldid=${ h[i].revid }">${ thisTime }</a></td>`);
+            let col3url = "",
                 col3txt = "";
             if (!reallyContribs) {
-                var user = h[i].user;
+                const user = h[i].user;
                 if (!h[i].userhidden) {
                     if (pg.re.ipUser.test(user)) {
-                        col3url = pg.wiki.titlebase + mw.config.get("wgFormattedNamespaces")[pg.nsSpecialId] + ":Contributions&target=" + new Title(user).urlString();
+                        col3url = `${pg.wiki.titlebase + mw.config.get("wgFormattedNamespaces")[pg.nsSpecialId] }:Contributions&target=${ new Title(user).urlString()}`;
                     } else {
-                        col3url = pg.wiki.titlebase + mw.config.get("wgFormattedNamespaces")[pg.nsUserId] + ":" + new Title(user).urlString();
+                        col3url = `${pg.wiki.titlebase + mw.config.get("wgFormattedNamespaces")[pg.nsUserId] }:${ new Title(user).urlString()}`;
                     }
                     col3txt = pg.escapeQuotesHTML(user);
                 } else {
@@ -3589,15 +3575,15 @@ $(function () {
                 col3url = pg.wiki.titlebase + curart.urlString();
                 col3txt = pg.escapeQuotesHTML(page);
             }
-            html.push("<td>" + (reallyContribs ? minor : "") + '<a href="' + col3url + '">' + col3txt + "</a></td>");
-            var comment = "";
-            var c = h[i].comment || h[i].content;
+            html.push(`<td>${ reallyContribs ? minor : "" }<a href="${ col3url }">${ col3txt }</a></td>`);
+            let comment = "";
+            const c = h[i].comment || h[i].content;
             if (c) {
                 comment = new Previewmaker(c, new Title(curart).toUrl()).editSummaryPreview();
             } else if (h[i].commenthidden) {
                 comment = popupString("revdel");
             }
-            html.push("<td>" + (!reallyContribs ? minor : "") + comment + "</td>");
+            html.push(`<td>${ !reallyContribs ? minor : "" }${comment }</td>`);
             html.push("</tr>");
             html = [html.join("")];
         }
@@ -3605,23 +3591,23 @@ $(function () {
         return html.join("");
     }
     function adjustDate(d, offset) {
-        var o = offset * 60 * 1e3;
+        const o = offset * 60 * 1e3;
         return new Date(+d + o);
     }
     function convertTimeZone(date, timeZone) {
         return new Date(date.toLocaleString("en-US", {
-            timeZone: timeZone
+            timeZone: timeZone,
         }));
     }
     function formattedDateTime(date) {
         if (useTimeOffset()) {
-            return formattedDate(date) + " " + formattedTime(date);
+            return `${formattedDate(date) } ${ formattedTime(date)}`;
         }
         if (getMWDateFormat() === "ISO 8601") {
-            var d2 = convertTimeZone(date, getTimeZone());
-            return map(zeroFill, [d2.getFullYear(), d2.getMonth() + 1, d2.getDate()]).join("-") + "T" + map(zeroFill, [d2.getHours(), d2.getMinutes(), d2.getSeconds()]).join(":");
+            const d2 = convertTimeZone(date, getTimeZone());
+            return `${map(zeroFill, [d2.getFullYear(), d2.getMonth() + 1, d2.getDate()]).join("-") }T${ map(zeroFill, [d2.getHours(), d2.getMinutes(), d2.getSeconds()]).join(":")}`;
         }
-        var options = getValueOf("popupDateTimeFormatterOptions");
+        const options = getValueOf("popupDateTimeFormatterOptions");
         options.timeZone = getTimeZone();
         return date.toLocaleString(getLocales(), options);
     }
@@ -3634,7 +3620,7 @@ $(function () {
             var d2 = convertTimeZone(date, getTimeZone());
             return map(zeroFill, [d2.getFullYear(), d2.getMonth() + 1, d2.getDate()]).join("-");
         }
-        var options = getValueOf("popupDateFormatterOptions");
+        const options = getValueOf("popupDateFormatterOptions");
         options.timeZone = getTimeZone();
         return date.toLocaleDateString(getLocales(), options);
     }
@@ -3647,28 +3633,28 @@ $(function () {
             var d2 = convertTimeZone(date, getTimeZone());
             return map(zeroFill, [d2.getHours(), d2.getMinutes(), d2.getSeconds()]).join(":");
         }
-        var options = getValueOf("popupTimeFormatterOptions");
+        const options = getValueOf("popupTimeFormatterOptions");
         options.timeZone = getTimeZone();
         return date.toLocaleTimeString(getLocales(), options);
     }
     function fetchUserGroupNames(userinfoResponse) {
-        var queryObj = getJsObj(userinfoResponse).query;
-        var user = anyChild(queryObj.users);
-        var messages = [];
+        const queryObj = getJsObj(userinfoResponse).query;
+        const user = anyChild(queryObj.users);
+        const messages = [];
         if (user.groups) {
-            user.groups.forEach(function (groupName) {
-                messages.push("group-" + groupName + "-member");
+            user.groups.forEach((groupName) => {
+                messages.push(`group-${ groupName }-member`);
             });
         }
         if (queryObj.globaluserinfo && queryObj.globaluserinfo.groups) {
-            queryObj.globaluserinfo.groups.forEach(function (groupName) {
-                messages.push("group-" + groupName + "-member");
+            queryObj.globaluserinfo.groups.forEach((groupName) => {
+                messages.push(`group-${ groupName }-member`);
             });
         }
         return getMwApi().loadMessagesIfMissing(messages);
     }
     function showAPIPreview(queryType, html, id, navpop, download) {
-        var target = "popupPreview";
+        let target = "popupPreview";
         completedNavpopTask(navpop);
         switch (queryType) {
             case "imagelinks":
@@ -3686,13 +3672,13 @@ $(function () {
     }
     function APIrevisionPreviewHTML(article, download) {
         try {
-            var jsObj = getJsObj(download.data);
-            var page = anyChild(jsObj.query.pages);
+            const jsObj = getJsObj(download.data);
+            const page = anyChild(jsObj.query.pages);
             if (page.missing) {
                 download.owner = null;
                 return;
             }
-            var content = page && page.revisions && page.revisions[0].contentmodel === "wikitext" ? page.revisions[0].content : null;
+            const content = page && page.revisions && page.revisions[0].contentmodel === "wikitext" ? page.revisions[0].content : null;
             if (typeof content === "string") {
                 download.data = content;
                 download.lastModified = new Date(page.revisions[0].timestamp);
@@ -3703,18 +3689,18 @@ $(function () {
     }
     function APIbacklinksPreviewHTML(article, download) {
         try {
-            var jsObj = getJsObj(download.data);
-            var list = jsObj.query.backlinks;
-            var html = [];
+            const jsObj = getJsObj(download.data);
+            const list = jsObj.query.backlinks;
+            let html = [];
             if (!list) {
                 return popupString("No backlinks found");
             }
-            for (var i = 0; i < list.length; i++) {
-                var t = new Title(list[i].title);
-                html.push('<a href="' + pg.wiki.titlebase + t.urlString() + '">' + t + "</a>");
+            for (let i = 0; i < list.length; i++) {
+                const t = new Title(list[i].title);
+                html.push(`<a href="${ pg.wiki.titlebase }${t.urlString() }">${ t }</a>`);
             }
             html = html.join(popupString("separator"));
-            if (jsObj["continue"] && jsObj["continue"].blcontinue) {
+            if (jsObj.continue && jsObj.continue.blcontinue) {
                 html += popupString(" and more");
             }
             return html;
@@ -3724,12 +3710,12 @@ $(function () {
     }
     pg.fn.APIsharedImagePagePreviewHTML = function APIsharedImagePagePreviewHTML(obj) {
         log("APIsharedImagePagePreviewHTML");
-        var popupid = obj.requestid;
+        const popupid = obj.requestid;
         if (obj.query && obj.query.pages) {
-            var page = anyChild(obj.query.pages);
-            var content = page && page.revisions && page.revisions[0].contentmodel === "wikitext" ? page.revisions[0].content : null;
+            const page = anyChild(obj.query.pages);
+            const content = page && page.revisions && page.revisions[0].contentmodel === "wikitext" ? page.revisions[0].content : null;
             if (typeof content === "string" && pg && pg.current && pg.current.link && pg.current.link.navpopup) {
-                var p = new Previewmaker(content, pg.current.link.navpopup.article, pg.current.link.navpopup);
+                const p = new Previewmaker(content, pg.current.link.navpopup.article, pg.current.link.navpopup);
                 p.makePreview();
                 setPopupHTML(p.html, "popupSecondPreview", popupid);
             }
@@ -3737,35 +3723,35 @@ $(function () {
     };
     function APIimagepagePreviewHTML(article, download, navpop) {
         try {
-            var jsObj = getJsObj(download.data);
-            var page = anyChild(jsObj.query.pages);
-            var content = page && page.revisions && page.revisions[0].contentmodel === "wikitext" ? page.revisions[0].content : null;
-            var ret = "";
-            var alt = "";
+            const jsObj = getJsObj(download.data);
+            const page = anyChild(jsObj.query.pages);
+            const content = page && page.revisions && page.revisions[0].contentmodel === "wikitext" ? page.revisions[0].content : null;
+            let ret = "";
+            let alt = "";
             try {
                 alt = navpop.parentAnchor.childNodes[0].alt;
             } catch (e) {
             }
             if (alt) {
-                ret = ret + "<hr /><b>" + popupString("Alt text:") + "</b> " + pg.escapeQuotesHTML(alt);
+                ret = `${ret }<hr /><b>${ popupString("Alt text:") }</b> ${ pg.escapeQuotesHTML(alt)}`;
             }
             if (typeof content === "string") {
-                var p = prepPreviewmaker(content, article, navpop);
+                const p = prepPreviewmaker(content, article, navpop);
                 p.makePreview();
                 if (p.html) {
-                    ret += "<hr />" + p.html;
+                    ret += `<hr />${ p.html}`;
                 }
                 if (getValueOf("popupSummaryData")) {
-                    var info = getPageInfo(content, download);
+                    const info = getPageInfo(content, download);
                     log(info);
                     setPopupTrailer(info, navpop.idNumber);
                 }
             }
             if (page && page.imagerepository == "shared") {
-                var art = new Title(article);
-                var encart = encodeURIComponent("File:" + art.stripNamespace());
-                var shared_url = pg.wiki.apicommonsbase + "?format=json&formatversion=2" + "&callback=pg.fn.APIsharedImagePagePreviewHTML" + "&requestid=" + navpop.idNumber + "&action=query&prop=revisions&rvprop=content&titles=" + encart;
-                ret = ret + "<hr />" + popupString("Image from Commons") + ': <a href="' + pg.wiki.commonsbase + "?title=" + encart + '">' + popupString("Description page") + "</a>";
+                const art = new Title(article);
+                const encart = encodeURIComponent(`File:${ art.stripNamespace()}`);
+                const shared_url = `${pg.wiki.apicommonsbase }?format=json&formatversion=2` + "&callback=pg.fn.APIsharedImagePagePreviewHTML" + `&requestid=${ navpop.idNumber }&action=query&prop=revisions&rvprop=content&titles=${ encart}`;
+                ret = `${ret }<hr />${ popupString("Image from Commons") }: <a href="${ pg.wiki.commonsbase }?title=${ encart }">${ popupString("Description page") }</a>`;
                 mw.loader.load(shared_url);
             }
             showAPIPreview("imagelinks", APIimagelinksPreviewHTML(article, download), navpop.idNumber, download);
@@ -3776,17 +3762,17 @@ $(function () {
     }
     function APIimagelinksPreviewHTML(article, download) {
         try {
-            var jsobj = getJsObj(download.data);
-            var list = jsobj.query.imageusage;
+            const jsobj = getJsObj(download.data);
+            const list = jsobj.query.imageusage;
             if (list) {
-                var ret = [];
-                for (var i = 0; i < list.length; i++) {
+                const ret = [];
+                for (let i = 0; i < list.length; i++) {
                     ret.push(list[i].title);
                 }
                 if (ret.length === 0) {
                     return popupString("No image links found");
                 }
-                return "<h2>" + popupString("File links") + "</h2>" + linkList(ret);
+                return `<h2>${ popupString("File links") }</h2>${ linkList(ret)}`;
             }
             return popupString("No image links found");
         } catch (someError) {
@@ -3795,17 +3781,17 @@ $(function () {
     }
     function APIcategoryPreviewHTML(article, download) {
         try {
-            var jsobj = getJsObj(download.data);
-            var list = jsobj.query.categorymembers;
-            var ret = [];
-            for (var p = 0; p < list.length; p++) {
+            const jsobj = getJsObj(download.data);
+            const list = jsobj.query.categorymembers;
+            let ret = [];
+            for (let p = 0; p < list.length; p++) {
                 ret.push(list[p].title);
             }
             if (ret.length === 0) {
                 return popupString("Empty category");
             }
-            ret = "<h2>" + tprintf("Category members (%s shown)", [ret.length]) + "</h2>" + linkList(ret);
-            if (jsobj["continue"] && jsobj["continue"].cmcontinue) {
+            ret = `<h2>${ tprintf("Category members (%s shown)", [ret.length]) }</h2>${ linkList(ret)}`;
+            if (jsobj.continue && jsobj.continue.cmcontinue) {
                 ret += popupString(" and more");
             }
             return ret;
@@ -3814,16 +3800,16 @@ $(function () {
         }
     }
     function APIuserInfoPreviewHTML(article, download) {
-        var ret = [];
-        var queryobj = {};
+        let ret = [];
+        let queryobj = {};
         try {
             queryobj = getJsObj(download.data).query;
         } catch (someError) {
             return "Userinfo preview failed :(";
         }
-        var user = anyChild(queryobj.users);
+        const user = anyChild(queryobj.users);
         if (user) {
-            var globaluserinfo = queryobj.globaluserinfo;
+            const globaluserinfo = queryobj.globaluserinfo;
             if (user.invalid === "") {
                 ret.push(popupString("Invalid user"));
             } else if (user.missing === "") {
@@ -3831,14 +3817,14 @@ $(function () {
             }
             if (user.blockedby) {
                 if (user.blockpartial) {
-                    ret.push("<b>" + popupString("Has blocks") + "</b>");
+                    ret.push(`<b>${ popupString("Has blocks") }</b>`);
                 } else {
-                    ret.push("<b>" + popupString("BLOCKED") + "</b>");
+                    ret.push(`<b>${ popupString("BLOCKED") }</b>`);
                 }
             }
             if (globaluserinfo && ("locked" in globaluserinfo || "hidden" in globaluserinfo)) {
-                var lockedSulAccountIsAttachedToThis = true;
-                for (var i = 0; globaluserinfo.unattached && i < globaluserinfo.unattached.length; i++) {
+                let lockedSulAccountIsAttachedToThis = true;
+                for (let i = 0; globaluserinfo.unattached && i < globaluserinfo.unattached.length; i++) {
                     if (globaluserinfo.unattached[i].wiki === mw.config.get("wgDBname")) {
                         lockedSulAccountIsAttachedToThis = false;
                         break;
@@ -3846,10 +3832,10 @@ $(function () {
                 }
                 if (lockedSulAccountIsAttachedToThis) {
                     if ("locked" in globaluserinfo) {
-                        ret.push("<b><i>" + popupString("LOCKED") + "</i></b>");
+                        ret.push(`<b><i>${ popupString("LOCKED") }</i></b>`);
                     }
                     if ("hidden" in globaluserinfo) {
-                        ret.push("<b><i>" + popupString("HIDDEN") + "</i></b>");
+                        ret.push(`<b><i>${ popupString("HIDDEN") }</i></b>`);
                     }
                 }
             }
@@ -3867,14 +3853,14 @@ $(function () {
             }
             if (user.groups) {
                 // 自定义
-                var ug = [];
-                user.groups.forEach(function (groupName) {
+                const ug = [];
+                user.groups.forEach((groupName) => {
                     if (["*", "user", "autoconfirmed", "extendedconfirmed"].indexOf(groupName) === -1) {
-                        ug.push(pg.escapeQuotesHTML(mw.message("group-" + groupName + "-member", user.gender).text()));
+                        ug.push(pg.escapeQuotesHTML(mw.message(`group-${ groupName }-member`, user.gender).text()));
                     }
                 });
                 if (user.groups.indexOf("autoconfirmed") === -1) {
-                    ug.push("<b>" + pg.escapeQuotesHTML(popupString("group-no-autoconfirmed")) + "</b>");
+                    ug.push(`<b>${ pg.escapeQuotesHTML(popupString("group-no-autoconfirmed")) }</b>`);
                 }
                 if (ug.length === 0) {
                     ug.push(pg.escapeQuotesHTML(mw.message("group-user-member", user.gender).text()));
@@ -3882,9 +3868,9 @@ $(function () {
                 ret.push(ug.join(popupString("separator")));
             }
             if (globaluserinfo && globaluserinfo.groups) {
-                var gug = [];
-                globaluserinfo.groups.forEach(function (groupName) {
-                    gug.push("<i>" + pg.escapeQuotesHTML(mw.message("group-" + groupName + "-member", user.gender).text()) + "</i>");
+                const gug = [];
+                globaluserinfo.groups.forEach((groupName) => {
+                    gug.push(`<i>${ pg.escapeQuotesHTML(mw.message(`group-${ groupName }-member`, user.gender).text()) }</i>`);
                 });
                 ret.push(gug.join(popupString("separator")));
             }
@@ -3897,13 +3883,13 @@ $(function () {
         }
         if (queryobj.blocks) {
             ret.push(popupString("IP user"));
-            for (var l = 0; l < queryobj.blocks.length; l++) {
-                var rbstr = queryobj.blocks[l].rangestart === queryobj.blocks[l].rangeend ? "BLOCK" : "RANGEBLOCK";
-                rbstr = !Array.isArray(queryobj.blocks[l].restrictions) ? "Has " + rbstr.toLowerCase() + "s" : rbstr + "ED";
-                ret.push("<b>" + popupString(rbstr) + "</b>");
+            for (let l = 0; l < queryobj.blocks.length; l++) {
+                let rbstr = queryobj.blocks[l].rangestart === queryobj.blocks[l].rangeend ? "BLOCK" : "RANGEBLOCK";
+                rbstr = !Array.isArray(queryobj.blocks[l].restrictions) ? `Has ${ rbstr.toLowerCase() }s` : `${rbstr }ED`;
+                ret.push(`<b>${ popupString(rbstr) }</b>`);
             }
         }
-        ret = "<hr />" + ret.join(popupString("comma"));
+        ret = `<hr />${ ret.join(popupString("comma"))}`;
         return ret;
     }
     function APIcontribsPreviewHTML(article, download, navpop) {
@@ -3911,14 +3897,14 @@ $(function () {
     }
     function APIhistoryPreviewHTML(article, download, navpop, reallyContribs) {
         try {
-            var jsobj = getJsObj(download.data);
-            var edits = [];
+            const jsobj = getJsObj(download.data);
+            let edits = [];
             if (reallyContribs) {
                 edits = jsobj.query.usercontribs;
             } else {
                 edits = anyChild(jsobj.query.pages).revisions;
             }
-            var ret = editPreviewTable(article, edits, reallyContribs);
+            const ret = editPreviewTable(article, edits, reallyContribs);
             return ret;
         } catch (someError) {
             return "History preview failed :-(";
@@ -3941,7 +3927,7 @@ $(function () {
         }
     }
     function loadImage(image, navpop) {
-        if (typeof image.stripNamespace != "function") {
+        if (typeof image.stripNamespace !== "function") {
             alert("loadImages bad");
         }
         if (!getValueOf("popupImages")) {
@@ -3950,15 +3936,15 @@ $(function () {
         if (!isValidImageName(image)) {
             return false;
         }
-        var art = image.urlString();
-        var url = pg.wiki.apiwikibase + "?format=json&formatversion=2&action=query";
-        url += "&prop=imageinfo&iiprop=url|mime&iiurlwidth=" + getValueOf("popupImageSizeLarge");
-        url += "&titles=" + art;
+        const art = image.urlString();
+        let url = `${pg.wiki.apiwikibase }?format=json&formatversion=2&action=query`;
+        url += `&prop=imageinfo&iiprop=url|mime&iiurlwidth=${ getValueOf("popupImageSizeLarge")}`;
+        url += `&titles=${ art}`;
         pendingNavpopTask(navpop);
-        var callback = function (d) {
+        const callback = function (d) {
             popupsInsertImage(navpop.idNumber, navpop, d);
         };
-        var go = function () {
+        const go = function () {
             getPageWithCaching(url, callback, navpop);
             return true;
         };
@@ -3970,10 +3956,10 @@ $(function () {
     }
     function popupsInsertImage(id, navpop, download) {
         log("popupsInsertImage");
-        var imageinfo;
+        let imageinfo;
         try {
-            var jsObj = getJsObj(download.data);
-            var imagepage = anyChild(jsObj.query.pages);
+            const jsObj = getJsObj(download.data);
+            const imagepage = anyChild(jsObj.query.pages);
             if (typeof imagepage.imageinfo === "undefined") {
                 return;
             }
@@ -3982,7 +3968,7 @@ $(function () {
             log("popupsInsertImage failed :(");
             return;
         }
-        var popupImage = document.getElementById("popupImg" + id);
+        const popupImage = document.getElementById(`popupImg${ id}`);
         if (!popupImage) {
             log("could not find insertion point for image");
             return;
@@ -3997,7 +3983,7 @@ $(function () {
         } else {
             log("fullsize imagethumb, but not sure if it's an image");
         }
-        var a = document.getElementById("popupImageLink" + id);
+        const a = document.getElementById(`popupImageLink${ id}`);
         if (a === null) {
             return null;
         }
@@ -4005,7 +3991,7 @@ $(function () {
             case "imagepage":
                 if (pg.current.article.namespaceId() != pg.nsImageId) {
                     a.href = imageinfo.descriptionurl;
-                    popTipsSoonFn("popupImage" + id)();
+                    popTipsSoonFn(`popupImage${ id}`)();
                     break;
                 }
             case "sizetoggle":
@@ -4019,12 +4005,12 @@ $(function () {
         }
     }
     function toggleSize() {
-        var imgContainer = this;
+        const imgContainer = this;
         if (!imgContainer) {
             alert("imgContainer is null :/");
             return;
         }
-        var img = imgContainer.firstChild;
+        const img = imgContainer.firstChild;
         if (!img) {
             alert("img is null :/");
             return;
@@ -4036,11 +4022,11 @@ $(function () {
         }
     }
     function getValidImageFromWikiText(wikiText) {
-        var matched = null;
-        var match;
-        var t = removeMatchesUnless(wikiText, RegExp("(<!--[\\s\\S]*?-->)"), 1, RegExp("^<!--[^[]*popup", "i"));
+        let matched = null;
+        let match;
+        const t = removeMatchesUnless(wikiText, RegExp("(<!--[\\s\\S]*?-->)"), 1, RegExp("^<!--[^[]*popup", "i"));
         while (match = pg.re.image.exec(t)) {
-            var m = match[2] || match[6];
+            const m = match[2] || match[6];
             if (isValidImageName(m)) {
                 matched = m;
                 break;
@@ -4050,12 +4036,12 @@ $(function () {
         if (!matched) {
             return null;
         }
-        return mw.config.get("wgFormattedNamespaces")[pg.nsImageId] + ":" + upcaseFirst(matched);
+        return `${mw.config.get("wgFormattedNamespaces")[pg.nsImageId] }:${ upcaseFirst(matched)}`;
     }
     function removeMatchesUnless(str, re1, parencount, re2) {
-        var split = str.parenSplit(re1);
-        var c = parencount + 1;
-        for (var i = 0; i < split.length; ++i) {
+        const split = str.parenSplit(re1);
+        const c = parencount + 1;
+        for (let i = 0; i < split.length; ++i) {
             if (i % c === 0 || re2.test(split[i])) {
                 continue;
             }
@@ -4073,9 +4059,9 @@ $(function () {
         pg.nsTemplateId = 10;
     }
     function setRedirs() {
-        var r = "redirect";
-        var R = "REDIRECT";
-        var redirLists = {
+        const r = "redirect";
+        const R = "REDIRECT";
+        const redirLists = {
             ar: [R, "تحويل"],
             be: [r, "перанакіраваньне"],
             bg: [r, "пренасочване", "виж"],
@@ -4106,23 +4092,23 @@ $(function () {
             tt: [R, "yünältü", "перенаправление", "перенапр"],
             uk: [R, "ПЕРЕНАПРАВЛЕННЯ", "ПЕРЕНАПР"],
             vi: [r, "đổi"],
-            zh: [R, "重定向"]
+            zh: [R, "重定向"],
         };
-        var redirList = redirLists[pg.wiki.lang] || [r, R];
-        pg.re.redirect = RegExp("^\\s*[#](" + redirList.join("|") + ").*?\\[{2}([^\\|\\]]*)(|[^\\]]*)?\\]{2}\\s*(.*)", "i");
+        const redirList = redirLists[pg.wiki.lang] || [r, R];
+        pg.re.redirect = RegExp(`^\\s*[#](${ redirList.join("|") }).*?\\[{2}([^\\|\\]]*)(|[^\\]]*)?\\]{2}\\s*(.*)`, "i");
     }
     function setInterwiki() {
         if (pg.wiki.wikimedia) {
             pg.wiki.interwiki = "aa|ab|ace|af|ak|als|am|an|ang|ar|arc|arz|as|ast|av|ay|az|ba|bar|bat-smg|bcl|be|be-x-old|bg|bh|bi|bjn|bm|bn|bo|bpy|br|bs|bug|bxr|ca|cbk-zam|cdo|ce|ceb|ch|cho|chr|chy|ckb|co|cr|crh|cs|csb|cu|cv|cy|da|de|diq|dsb|dv|dz|ee|el|eml|en|eo|es|et|eu|ext|fa|ff|fi|fiu-vro|fj|fo|fr|frp|frr|fur|fy|ga|gag|gan|gd|gl|glk|gn|got|gu|gv|ha|hak|haw|he|hi|hif|ho|hr|hsb|ht|hu|hy|hz|ia|id|ie|ig|ii|ik|ilo|io|is|it|iu|ja|jbo|jv|ka|kaa|kab|kbd|kg|ki|kj|kk|kl|km|kn|ko|koi|kr|krc|ks|ksh|ku|kv|kw|ky|la|lad|lb|lbe|lg|li|lij|lmo|ln|lo|lt|ltg|lv|map-bms|mdf|mg|mh|mhr|mi|mk|ml|mn|mo|mr|mrj|ms|mt|mus|mwl|my|myv|mzn|na|nah|nap|nds|nds-nl|ne|new|ng|nl|nn|no|nov|nrm|nv|ny|oc|om|or|os|pa|pag|pam|pap|pcd|pdc|pfl|pi|pih|pl|pms|pnb|pnt|ps|pt|qu|rm|rmy|rn|ro|roa-rup|roa-tara|ru|rue|rw|sa|sah|sc|scn|sco|sd|se|sg|sh|si|simple|sk|sl|sm|sn|so|sq|sr|srn|ss|st|stq|su|sv|sw|szl|ta|te|tet|tg|th|ti|tk|tl|tn|to|tpi|tr|ts|tt|tum|tw|ty|udm|ug|uk|ur|uz|ve|vec|vi|vls|vo|wa|war|wo|wuu|xal|xh|yi|yo|za|zea|zh|zh-classical|zh-min-nan|zh-yue|zu";
-            pg.re.interwiki = RegExp("^" + pg.wiki.interwiki + ":");
+            pg.re.interwiki = RegExp(`^${ pg.wiki.interwiki }:`);
         } else {
             pg.wiki.interwiki = null;
             pg.re.interwiki = RegExp("^$");
         }
     }
     function nsRe(namespaceId) {
-        var imageNamespaceVariants = [];
-        jQuery.each(mw.config.get("wgNamespaceIds"), function (_localizedNamespaceLc, _namespaceId) {
+        const imageNamespaceVariants = [];
+        jQuery.each(mw.config.get("wgNamespaceIds"), (_localizedNamespaceLc, _namespaceId) => {
             if (_namespaceId != namespaceId) {
                 return;
             }
@@ -4130,13 +4116,13 @@ $(function () {
             imageNamespaceVariants.push(mw.util.escapeRegExp(_localizedNamespaceLc).split(" ").join("[ _]"));
             imageNamespaceVariants.push(mw.util.escapeRegExp(encodeURI(_localizedNamespaceLc)));
         });
-        return "(?:" + imageNamespaceVariants.join("|") + ")";
+        return `(?:${ imageNamespaceVariants.join("|") })`;
     }
     function nsReImage() {
         return nsRe(pg.nsImageId);
     }
     function getEditboxSelection() {
-        var editbox;
+        let editbox;
         try {
             editbox = document.editform.wpTextbox1;
         } catch (dang) {
@@ -4145,15 +4131,15 @@ $(function () {
         if (document.selection) {
             return document.selection.createRange().text;
         }
-        var selStart = editbox.selectionStart;
-        var selEnd = editbox.selectionEnd;
+        const selStart = editbox.selectionStart;
+        const selEnd = editbox.selectionEnd;
         return editbox.value.substring(selStart, selEnd);
     }
     function doSelectionPopup() {
-        var sel = getEditboxSelection();
-        var open = sel.indexOf("[[");
-        var pipe = sel.indexOf("|");
-        var close = sel.indexOf("]]");
+        const sel = getEditboxSelection();
+        const open = sel.indexOf("[[");
+        const pipe = sel.indexOf("|");
+        const close = sel.indexOf("]]");
         if (open == -1 || pipe == -1 && close == -1) {
             return;
         }
@@ -4163,26 +4149,26 @@ $(function () {
         if (getValueOf("popupOnEditSelection") == "boxpreview") {
             return doSeparateSelectionPopup(sel);
         }
-        var article = new Title(sel.substring(open + 2, pipe < 0 ? close : pipe)).urlString();
+        const article = new Title(sel.substring(open + 2, pipe < 0 ? close : pipe)).urlString();
         if (close > 0 && sel.substring(close + 2).indexOf("[[") >= 0) {
             return;
         }
-        var a = document.createElement("a");
+        const a = document.createElement("a");
         a.href = pg.wiki.titlebase + article;
         mouseOverWikiLink2(a);
         if (a.navpopup) {
-            a.navpopup.addHook(function () {
+            a.navpopup.addHook(() => {
                 runStopPopupTimer(a.navpopup);
             }, "unhide", "after");
         }
     }
     function doSeparateSelectionPopup(str) {
-        var div = document.getElementById("selectionPreview");
+        let div = document.getElementById("selectionPreview");
         if (!div) {
             div = document.createElement("div");
             div.id = "selectionPreview";
             try {
-                var box = document.editform.wpTextbox1;
+                const box = document.editform.wpTextbox1;
                 box.parentNode.insertBefore(div, box);
             } catch (error) {
                 return;
@@ -4206,12 +4192,12 @@ $(function () {
         if (!this.hooks || !this.hooks.length) {
             return;
         }
-        var remove = false;
-        var removeObj = {};
-        var x = this.x,
+        let remove = false;
+        const removeObj = {};
+        const x = this.x,
             y = this.y,
             len = this.hooks.length;
-        for (var i = 0; i < len; ++i) {
+        for (let i = 0; i < len; ++i) {
             if (this.hooks[i](x, y) === true) {
                 remove = true;
                 removeObj[i] = true;
@@ -4222,9 +4208,9 @@ $(function () {
         }
     };
     Mousetracker.prototype.removeHooks = function (removeObj) {
-        var newHooks = [];
-        var len = this.hooks.length;
-        for (var i = 0; i < len; ++i) {
+        const newHooks = [];
+        const len = this.hooks.length;
+        for (let i = 0; i < len; ++i) {
             if (!removeObj[i]) {
                 newHooks.push(this.hooks[i]);
             }
@@ -4233,13 +4219,13 @@ $(function () {
     };
     Mousetracker.prototype.track = function (e) {
         e = e || window.event;
-        var x, y;
+        let x, y;
         if (e) {
             if (e.pageX) {
                 x = e.pageX;
                 y = e.pageY;
-            } else if (typeof e.clientX != "undefined") {
-                var left, top, docElt = document.documentElement;
+            } else if (typeof e.clientX !== "undefined") {
+                let left, top, docElt = document.documentElement;
                 if (docElt) {
                     left = docElt.scrollLeft;
                 }
@@ -4263,11 +4249,11 @@ $(function () {
             this.dirty = false;
             return;
         }
-        if (typeof this.lastHook_x != "number") {
+        if (typeof this.lastHook_x !== "number") {
             this.lastHook_x = -100;
             this.lastHook_y = -100;
         }
-        var diff = (this.lastHook_x - x) * (this.lastHook_y - y);
+        let diff = (this.lastHook_x - x) * (this.lastHook_y - y);
         diff = diff >= 0 ? diff : -diff;
         if (diff > 1) {
             this.lastHook_x = x;
@@ -4285,12 +4271,12 @@ $(function () {
         }
         this.active = true;
         this.savedHandler = document.onmousemove;
-        var savedThis = this;
+        const savedThis = this;
         document.onmousemove = function (e) {
             savedThis.track.apply(savedThis, [e]);
         };
         if (this.loopDelay) {
-            this.timer = setInterval(function () {
+            this.timer = setInterval(() => {
                 savedThis.runHooks();
             }, this.loopDelay);
         }
@@ -4316,7 +4302,7 @@ $(function () {
         this.hooks = {
             create: [],
             unhide: [],
-            hide: []
+            hide: [],
         };
         this.hookIds = {};
         this.downloads = [];
@@ -4333,16 +4319,16 @@ $(function () {
         return this.visible;
     };
     Navpopup.prototype.reposition = function (x, y, noLimitHor) {
-        log("reposition(" + x + "," + y + "," + noLimitHor + ")");
-        if (typeof x != "undefined" && x !== null) {
+        log(`reposition(${ x },${ y },${ noLimitHor })`);
+        if (typeof x !== "undefined" && x !== null) {
             this.left = x;
         }
-        if (typeof y != "undefined" && y !== null) {
+        if (typeof y !== "undefined" && y !== null) {
             this.top = y;
         }
-        if (typeof this.left != "undefined" && typeof this.top != "undefined") {
-            this.mainDiv.style.left = this.left + "px";
-            this.mainDiv.style.top = this.top + "px";
+        if (typeof this.left !== "undefined" && typeof this.top !== "undefined") {
+            this.mainDiv.style.left = `${this.left }px`;
+            this.mainDiv.style.top = `${this.top }px`;
         }
         if (!noLimitHor) {
             this.limitHorizontalPosition();
@@ -4353,19 +4339,19 @@ $(function () {
             return;
         }
         this.updateDimensions();
-        var x = this.left;
-        var w = this.width;
-        var cWidth = document.body.clientWidth;
+        const x = this.left;
+        const w = this.width;
+        const cWidth = document.body.clientWidth;
         if (x + w >= cWidth || x > 0 && this.maxWidth && this.width < this.maxWidth && this.height > this.width && x > cWidth - this.maxWidth) {
             this.mainDiv.style.left = "-10000px";
-            this.mainDiv.style.width = this.maxWidth + "px";
-            var naturalWidth = parseInt(this.mainDiv.offsetWidth, 10);
-            var newLeft = cWidth - naturalWidth - 1;
+            this.mainDiv.style.width = `${this.maxWidth }px`;
+            const naturalWidth = parseInt(this.mainDiv.offsetWidth, 10);
+            let newLeft = cWidth - naturalWidth - 1;
             if (newLeft < 0) {
                 newLeft = 0;
                 this.tooWide = true;
             }
-            log("limitHorizontalPosition: moving to (" + newLeft + "," + this.top + ");" + " naturalWidth=" + naturalWidth + ", clientWidth=" + cWidth);
+            log(`limitHorizontalPosition: moving to (${ newLeft },${ this.top });` + ` naturalWidth=${ naturalWidth }, clientWidth=${ cWidth}`);
             this.reposition(newLeft, null, true);
         }
     };
@@ -4383,20 +4369,20 @@ $(function () {
         this.unhide();
     };
     Navpopup.prototype.showSoonIfStable = function (time) {
-        log("showSoonIfStable, time=" + time);
+        log(`showSoonIfStable, time=${ time}`);
         if (this.visible) {
             return;
         }
         this.noshow = false;
         this.stable_x = -1e4;
         this.stable_y = -1e4;
-        var stableShow = function () {
+        const stableShow = function () {
             log("stableShow called");
-            var new_x = Navpopup.tracker.x,
+            const new_x = Navpopup.tracker.x,
                 new_y = Navpopup.tracker.y;
-            var dx = savedThis.stable_x - new_x,
+            const dx = savedThis.stable_x - new_x,
                 dy = savedThis.stable_y - new_y;
-            var fuzz2 = 0;
+            const fuzz2 = 0;
             if (dx * dx <= fuzz2 && dy * dy <= fuzz2) {
                 log("mouse is stable");
                 clearInterval(savedThis.showSoonStableTimer);
@@ -4424,9 +4410,9 @@ $(function () {
         if (!this.hooks[key]) {
             return;
         }
-        var keyHooks = this.hooks[key];
-        var len = keyHooks.length;
-        for (var i = 0; i < len; ++i) {
+        const keyHooks = this.hooks[key];
+        const len = keyHooks.length;
+        for (let i = 0; i < len; ++i) {
             if (keyHooks[i] && keyHooks[i].when == when) {
                 if (keyHooks[i].hook.apply(this, [])) {
                     if (keyHooks[i].hookId) {
@@ -4442,7 +4428,7 @@ $(function () {
         if (!this.hooks[key]) {
             return;
         }
-        var hookId = null;
+        let hookId = null;
         if (uid) {
             hookId = [key, when, uid].join("|");
             if (this.hookIds[hookId]) {
@@ -4453,7 +4439,7 @@ $(function () {
         this.hooks[key].push({
             hook: hook,
             when: when,
-            hookId: hookId
+            hookId: hookId,
         });
     };
     Navpopup.prototype.createMainDiv = function () {
@@ -4461,8 +4447,8 @@ $(function () {
             return;
         }
         this.runHooks("create", "before");
-        var mainDiv = document.createElement("div");
-        var savedThis = this;
+        const mainDiv = document.createElement("div");
+        const savedThis = this;
         mainDiv.onclick = function (e) {
             savedThis.onclickHandler(e);
         };
@@ -4484,7 +4470,7 @@ $(function () {
         if (!this.mainDiv) {
             this.createMainDiv();
         }
-        var drag = new Drag();
+        const drag = new Drag();
         if (!handleName) {
             drag.startCondition = function (e) {
                 try {
@@ -4497,14 +4483,14 @@ $(function () {
                 return true;
             };
         }
-        var dragHandle;
+        let dragHandle;
         if (handleName) {
             dragHandle = document.getElementById(handleName);
         }
         if (!dragHandle) {
             dragHandle = this.mainDiv;
         }
-        var np = this;
+        const np = this;
         drag.endHook = function (x, y) {
             Navpopup.tracker.dirty = true;
             np.reposition(x, y);
@@ -4514,7 +4500,7 @@ $(function () {
     Navpopup.prototype.hide = function () {
         this.runHooks("hide", "before");
         this.abortDownloads();
-        if (typeof this.visible != "undefined" && this.visible) {
+        if (typeof this.visible !== "undefined" && this.visible) {
             this.mainDiv.style.display = "none";
             this.visible = false;
         }
@@ -4522,7 +4508,7 @@ $(function () {
     };
     Navpopup.prototype.unhide = function () {
         this.runHooks("unhide", "before");
-        if (typeof this.visible != "undefined" && !this.visible) {
+        if (typeof this.visible !== "undefined" && !this.visible) {
             this.mainDiv.style.display = "inline";
             this.visible = true;
         }
@@ -4540,7 +4526,7 @@ $(function () {
             return false;
         }
         this.updateDimensions();
-        var fuzz = this.fuzz || 0;
+        const fuzz = this.fuzz || 0;
         return x + fuzz >= this.left && x - fuzz <= this.left + this.width && y + fuzz >= this.top && y - fuzz <= this.top + this.height;
     };
     Navpopup.prototype.addDownload = function (download) {
@@ -4550,8 +4536,8 @@ $(function () {
         this.downloads.push(download);
     };
     Navpopup.prototype.abortDownloads = function () {
-        for (var i = 0; i < this.downloads.length; ++i) {
-            var d = this.downloads[i];
+        for (let i = 0; i < this.downloads.length; ++i) {
+            const d = this.downloads[i];
             if (d && d.abort) {
                 d.abort();
             }
@@ -4563,20 +4549,20 @@ $(function () {
         if (!x.length) {
             return "";
         }
-        return "<del class='popupDiff'>" + x.join("") + "</del>";
+        return `<del class='popupDiff'>${ x.join("") }</del>`;
     }
     function insFmt(x) {
         if (!x.length) {
             return "";
         }
-        return "<ins class='popupDiff'>" + x.join("") + "</ins>";
+        return `<ins class='popupDiff'>${ x.join("") }</ins>`;
     }
     function countCrossings(a, b, i, eject) {
         if (!b[i].row && b[i].row !== 0) {
             return -1;
         }
-        var count = 0;
-        for (var j = 0; j < a.length; ++j) {
+        let count = 0;
+        for (let j = 0; j < a.length; ++j) {
             if (!a[j].row && a[j].row !== 0) {
                 continue;
             }
@@ -4590,10 +4576,10 @@ $(function () {
         return count;
     }
     function shortenDiffString(str, context) {
-        var re = RegExp("(<del[\\s\\S]*?</del>|<ins[\\s\\S]*?</ins>)");
-        var splitted = str.parenSplit(re);
-        var ret = [""];
-        for (var i = 0; i < splitted.length; i += 2) {
+        const re = RegExp("(<del[\\s\\S]*?</del>|<ins[\\s\\S]*?</ins>)");
+        const splitted = str.parenSplit(re);
+        let ret = [""];
+        for (let i = 0; i < splitted.length; i += 2) {
             if (splitted[i].length < 2 * context) {
                 ret[ret.length - 1] += splitted[i];
                 if (i + 1 < splitted.length) {
@@ -4615,8 +4601,8 @@ $(function () {
         return ret;
     }
     function diffString(o, n, simpleSplit) {
-        var splitRe = RegExp("([[]{2}|[\\]]{2}|[{]{2,3}|[}]{2,3}|[|]|=|<|>|[*:]+|\\s|\\b)");
-        var out, i, oSplitted, nSplitted;
+        const splitRe = RegExp("([[]{2}|[\\]]{2}|[{]{2,3}|[}]{2,3}|[|]|=|<|>|[*:]+|\\s|\\b)");
+        let out, i, oSplitted, nSplitted;
         if (simpleSplit) {
             oSplitted = o.split(/\b/);
             nSplitted = n.split(/\b/);
@@ -4631,9 +4617,9 @@ $(function () {
             nSplitted[i] = nSplitted[i].entify();
         }
         out = diff(oSplitted, nSplitted);
-        var str = "";
-        var acc = [];
-        var maxOutputPair = 0;
+        let str = "";
+        let acc = [];
+        let maxOutputPair = 0;
         for (i = 0; i < out.n.length; ++i) {
             if (out.n[i].paired) {
                 if (maxOutputPair > out.n[i].row) {
@@ -4658,7 +4644,7 @@ $(function () {
             acc = [];
             if (i < out.n.length) {
                 str += out.n[i].text;
-                var m = out.n[i].row + 1;
+                let m = out.n[i].row + 1;
                 while (m < out.o.length && !out.o[m].paired) {
                     acc.push(out.o[m++]);
                 }
@@ -4668,17 +4654,17 @@ $(function () {
         }
         return str;
     }
-    var jsReservedProperties = RegExp("^(constructor|prototype|__((define|lookup)[GS]etter)__" + "|eval|hasOwnProperty|propertyIsEnumerable" + "|to(Source|String|LocaleString)|(un)?watch|valueOf)$");
+    const jsReservedProperties = RegExp("^(constructor|prototype|__((define|lookup)[GS]etter)__" + "|eval|hasOwnProperty|propertyIsEnumerable" + "|to(Source|String|LocaleString)|(un)?watch|valueOf)$");
     function diffBugAlert(word) {
         if (!diffBugAlert.list[word]) {
             diffBugAlert.list[word] = 1;
-            alert("Bad word: " + word + "\n\nPlease report this bug.");
+            alert(`Bad word: ${ word }\n\nPlease report this bug.`);
         }
     }
     diffBugAlert.list = {};
     function makeDiffHashtable(src) {
-        var ret = {};
-        for (var i = 0; i < src.length; i++) {
+        const ret = {};
+        for (let i = 0; i < src.length; i++) {
             if (jsReservedProperties.test(src[i])) {
                 src[i] += "<!-- -->";
             }
@@ -4694,20 +4680,20 @@ $(function () {
         return ret;
     }
     function diff(o, n) {
-        var ns = makeDiffHashtable(n);
-        var os = makeDiffHashtable(o);
-        var i;
+        const ns = makeDiffHashtable(n);
+        const os = makeDiffHashtable(o);
+        let i;
         for (i in ns) {
             if (ns[i].length == 1 && os[i] && os[i].length == 1) {
                 n[ns[i][0]] = {
                     text: n[ns[i][0]],
                     row: os[i][0],
-                    paired: true
+                    paired: true,
                 };
                 o[os[i][0]] = {
                     text: o[os[i][0]],
                     row: ns[i][0],
-                    paired: true
+                    paired: true,
                 };
             }
         }
@@ -4716,12 +4702,12 @@ $(function () {
                 n[i + 1] = {
                     text: n[i + 1],
                     row: n[i].row + 1,
-                    paired: true
+                    paired: true,
                 };
                 o[n[i].row + 1] = {
                     text: o[n[i].row + 1],
                     row: i + 1,
-                    paired: true
+                    paired: true,
                 };
             }
         }
@@ -4730,18 +4716,18 @@ $(function () {
                 n[i - 1] = {
                     text: n[i - 1],
                     row: n[i].row - 1,
-                    paired: true
+                    paired: true,
                 };
                 o[n[i].row - 1] = {
                     text: o[n[i].row - 1],
                     row: i - 1,
-                    paired: true
+                    paired: true,
                 };
             }
         }
         return {
             o: o,
-            n: n
+            n: n,
         };
     }
     function setSiteInfo() {
@@ -4755,63 +4741,63 @@ $(function () {
         pg.wiki.isLocal = RegExp("^localhost").test(pg.wiki.hostname);
         pg.wiki.commons = pg.wiki.wikimedia && pg.wiki.hostname != "commons.wikimedia.org" ? "commons.wikimedia.org" : null;
         pg.wiki.lang = mw.config.get("wgContentLanguage");
-        var port = location.port ? ":" + location.port : "";
+        const port = location.port ? `:${ location.port}` : "";
         pg.wiki.sitebase = pg.wiki.hostname + port;
     }
     function setUserInfo() {
-        var params = {
+        const params = {
             action: "query",
             list: "users",
             ususers: mw.config.get("wgUserName"),
-            usprop: "rights"
+            usprop: "rights",
         };
         pg.user.canReview = false;
         if (getValueOf("popupReview")) {
-            getMwApi().get(params).done(function (data) {
-                var rights = data.query.users[0].rights;
+            getMwApi().get(params).done((data) => {
+                const rights = data.query.users[0].rights;
                 pg.user.canReview = rights.indexOf("review") !== -1;
             });
         }
     }
     function fetchSpecialPageNames() {
-        var params = {
+        const params = {
             action: "query",
             meta: "siteinfo",
             siprop: "specialpagealiases",
             formatversion: 2,
             uselang: "content",
-            maxage: 3600
+            maxage: 3600,
         };
-        return getMwApi().get(params).then(function (data) {
+        return getMwApi().get(params).then((data) => {
             pg.wiki.specialpagealiases = data.query.specialpagealiases;
         });
     }
     function setTitleBase() {
-        var protocol = window.popupLocalDebug ? "http:" : location.protocol;
+        const protocol = window.popupLocalDebug ? "http:" : location.protocol;
         pg.wiki.articlePath = mw.config.get("wgArticlePath").replace(/\/\$1/, "");
         pg.wiki.botInterfacePath = mw.config.get("wgScript");
-        pg.wiki.APIPath = mw.config.get("wgScriptPath") + "/api.php";
-        var titletail = pg.wiki.botInterfacePath + "?title=";
-        pg.wiki.titlebase = protocol + "//" + pg.wiki.sitebase + titletail;
-        pg.wiki.wikibase = protocol + "//" + pg.wiki.sitebase + pg.wiki.botInterfacePath;
-        pg.wiki.apiwikibase = protocol + "//" + pg.wiki.sitebase + pg.wiki.APIPath;
-        pg.wiki.articlebase = protocol + "//" + pg.wiki.sitebase + pg.wiki.articlePath;
-        pg.wiki.commonsbase = protocol + "//" + pg.wiki.commons + pg.wiki.botInterfacePath;
-        pg.wiki.apicommonsbase = protocol + "//" + pg.wiki.commons + pg.wiki.APIPath;
-        pg.re.basenames = RegExp("^(" + map(literalizeRegex, [pg.wiki.titlebase, pg.wiki.articlebase]).join("|") + ")");
+        pg.wiki.APIPath = `${mw.config.get("wgScriptPath") }/api.php`;
+        const titletail = `${pg.wiki.botInterfacePath }?title=`;
+        pg.wiki.titlebase = `${protocol }//${ pg.wiki.sitebase }${titletail}`;
+        pg.wiki.wikibase = `${protocol }//${ pg.wiki.sitebase }${pg.wiki.botInterfacePath}`;
+        pg.wiki.apiwikibase = `${protocol }//${ pg.wiki.sitebase }${pg.wiki.APIPath}`;
+        pg.wiki.articlebase = `${protocol }//${ pg.wiki.sitebase }${pg.wiki.articlePath}`;
+        pg.wiki.commonsbase = `${protocol }//${ pg.wiki.commons }${pg.wiki.botInterfacePath}`;
+        pg.wiki.apicommonsbase = `${protocol }//${ pg.wiki.commons }${pg.wiki.APIPath}`;
+        pg.re.basenames = RegExp(`^(${ map(literalizeRegex, [pg.wiki.titlebase, pg.wiki.articlebase]).join("|") })`);
     }
     function setMainRegex() {
-        var reStart = "[^:]*://";
-        var preTitles = literalizeRegex(mw.config.get("wgScriptPath")) + "/(?:index[.]php|wiki[.]phtml)[?]title=";
-        preTitles += "|" + literalizeRegex(pg.wiki.articlePath + "/");
-        var reEnd = "(" + preTitles + ")([^&?#]*)[^#]*(?:#(.+))?";
+        const reStart = "[^:]*://";
+        let preTitles = `${literalizeRegex(mw.config.get("wgScriptPath")) }/(?:index[.]php|wiki[.]phtml)[?]title=`;
+        preTitles += `|${ literalizeRegex(`${pg.wiki.articlePath }/`)}`;
+        const reEnd = `(${ preTitles })([^&?#]*)[^#]*(?:#(.+))?`;
         pg.re.main = RegExp(reStart + literalizeRegex(pg.wiki.sitebase) + reEnd);
     }
     function buildSpecialPageGroup(specialPageObj) {
-        var variants = [];
+        const variants = [];
         variants.push(mw.util.escapeRegExp(specialPageObj.realname));
         variants.push(mw.util.escapeRegExp(encodeURI(specialPageObj.realname)));
-        specialPageObj.aliases.forEach(function (alias) {
+        specialPageObj.aliases.forEach((alias) => {
             variants.push(mw.util.escapeRegExp(alias));
             variants.push(mw.util.escapeRegExp(encodeURI(alias)));
         });
@@ -4819,31 +4805,31 @@ $(function () {
     }
     function setRegexps() {
         setMainRegex();
-        var sp = nsRe(pg.nsSpecialId);
-        pg.re.urlNoPopup = RegExp("((title=|/)" + sp + "(?:%3A|:)|section=[0-9]|^#$)");
-        pg.wiki.specialpagealiases.forEach(function (specialpage) {
+        const sp = nsRe(pg.nsSpecialId);
+        pg.re.urlNoPopup = RegExp(`((title=|/)${ sp }(?:%3A|:)|section=[0-9]|^#$)`);
+        pg.wiki.specialpagealiases.forEach((specialpage) => {
             if (specialpage.realname === "Contributions") {
-                pg.re.contribs = RegExp("(title=|/)" + sp +
-                    "(?:%3A|:)(?:" + buildSpecialPageGroup(specialpage) + ")" +
-                    "(&target=|/|/" + nsRe(pg.nsUserId) + ":)(.*)", "i");
+                pg.re.contribs = RegExp(`(title=|/)${ sp 
+                }(?:%3A|:)(?:${ buildSpecialPageGroup(specialpage) })` +
+                    `(&target=|/|/${ nsRe(pg.nsUserId) }:)(.*)`, "i");
             } else if (specialpage.realname === "Diff") {
-                pg.re.specialdiff = RegExp("/" + sp +
-                    "(?:%3A|:)(?:" + buildSpecialPageGroup(specialpage) + ")" +
+                pg.re.specialdiff = RegExp(`/${ sp 
+                }(?:%3A|:)(?:${ buildSpecialPageGroup(specialpage) })` +
                     "/([^?#]*)", "i");
             } else if (specialpage.realname === "Emailuser") {
-                pg.re.email = RegExp("(title=|/)" + sp +
-                    "(?:%3A|:)(?:" + buildSpecialPageGroup(specialpage) +
-                    ")" + "(&target=|/|/(?:" + nsRe(pg.nsUserId) + ":)?)(.*)", "i");
+                pg.re.email = RegExp(`(title=|/)${ sp 
+                }(?:%3A|:)(?:${ buildSpecialPageGroup(specialpage) 
+                })` + `(&target=|/|/(?:${ nsRe(pg.nsUserId) }:)?)(.*)`, "i");
             } else if (specialpage.realname === "Whatlinkshere") {
-                pg.re.backlinks = RegExp("(title=|/)" + sp +
-                    "(?:%3A|:)(?:" + buildSpecialPageGroup(specialpage) +
-                    ")" + "(&target=|/)([^&]*)", "i");
+                pg.re.backlinks = RegExp(`(title=|/)${ sp 
+                }(?:%3A|:)(?:${ buildSpecialPageGroup(specialpage) 
+                })` + "(&target=|/)([^&]*)", "i");
             }
         });
-        var im = nsReImage();
-        pg.re.image = RegExp("(^|\\[\\[)" + im + ": *([^|\\]]*[^|\\] ])" + "([^0-9\\]]*([0-9]+) *px)?|(?:\\n *[|]?|[|]) *" + "(" + getValueOf("popupImageVarsRegexp") + ")" + " *= *(?:\\[\\[ *)?(?:" + im + ":)?" + "([^|]*?)(?:\\]\\])? *[|]? *\\n", "img");
+        const im = nsReImage();
+        pg.re.image = RegExp(`(^|\\[\\[)${ im }: *([^|\\]]*[^|\\] ])` + "([^0-9\\]]*([0-9]+) *px)?|(?:\\n *[|]?|[|]) *" + `(${ getValueOf("popupImageVarsRegexp") })` + ` *= *(?:\\[\\[ *)?(?:${ im }:)?` + "([^|]*?)(?:\\]\\])? *[|]? *\\n", "img");
         pg.re.imageBracketCount = 6;
-        pg.re.category = RegExp("\\[\\[" + nsRe(pg.nsCategoryId) + ": *([^|\\]]*[^|\\] ]) *", "i");
+        pg.re.category = RegExp(`\\[\\[${ nsRe(pg.nsCategoryId) }: *([^|\\]]*[^|\\] ]) *`, "i");
         pg.re.categoryBracketCount = 1;
         pg.re.ipUser = RegExp("^" + "(?::(?::|(?::[0-9A-Fa-f]{1,4}){1,7})|[0-9A-Fa-f]{1,4}(?::[0-9A-Fa-f]{1,4}){0,6}::|[0-9A-Fa-f]{1,4}(?::[0-9A-Fa-f]{1,4}){7})" + "|(((25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])\\.){3}" + "(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9]))$");
         pg.re.stub = RegExp(getValueOf("popupStubRegexp"), "im");
@@ -4864,27 +4850,27 @@ $(function () {
         pg.idNumber = 0;
         pg.misc.decodeExtras = [{
             from: "%2C",
-            to: ","
+            to: ",",
         }, {
             from: "_",
-            to: " "
+            to: " ",
         }, {
             from: "%24",
-            to: "$"
+            to: "$",
         }, {
             from: "%26",
-            to: "&"
+            to: "&",
         }];
     }
     function getMwApi() {
         if (!pg.api.client) {
-            pg.api.userAgent = "Navigation popups/1.0 (" + mw.config.get("wgServerName") + ")";
+            pg.api.userAgent = `Navigation popups/1.0 (${ mw.config.get("wgServerName") })`;
             pg.api.client = new mw.Api({
                 ajax: {
                     headers: {
-                        "Api-User-Agent": pg.api.userAgent
-                    }
-                }
+                        "Api-User-Agent": pg.api.userAgent,
+                    },
+                },
             });
         }
         return pg.api.client;
@@ -4901,8 +4887,8 @@ $(function () {
             "mediawiki.api",
             "mediawiki.user",
             "user.options",
-            "mediawiki.jqueryMsg"
-        ].concat(mw.config.get("wgVersion").startsWith("1.31") ? ["mediawiki.api.messages"] : [])).then(fetchSpecialPageNames).then(function () {
+            "mediawiki.jqueryMsg",
+        ].concat(mw.config.get("wgVersion").startsWith("1.31") ? ["mediawiki.api.messages"] : [])).then(fetchSpecialPageNames).then(() => {
             setupDebugging();
             setSiteInfo();
             setTitleBase();
@@ -4924,7 +4910,7 @@ $(function () {
         });
     }
     function defaultNavlinkSpec() {
-        var str = "";
+        let str = "";
         str += "<b><<mainlink|shortcut= >></b>";
         if (getValueOf("popupLastEditLink")) {
             str += "*<<lastEdit|shortcut=/>>|<<lastContrib>>|<<sinceMe>>if(oldid){|<<oldEdit>>|<<diffCur>>}";
@@ -4932,38 +4918,38 @@ $(function () {
         str += "if(user){<br><<contribs|shortcut=c>>*<<userlog|shortcut=L|log>>";
         str += "if(ipuser){*<<arin>>}if(wikimedia){*<<count|shortcut=#>>}";
         str += "if(ipuser){}else{*<<email|shortcut=E>>}if(admin){*<<block|shortcut=b>>|<<blocklog|log>>}}";
-        var editstr = "<<edit|shortcut=e>>";
-        var editOldidStr = "if(oldid){<<editOld|shortcut=e>>|<<revert|shortcut=v|rv>>|<<edit|cur>>}else{" + editstr + "}";
-        var historystr = "<<history|shortcut=h>>|<<editors|shortcut=E|>>";
-        var watchstr = "<<unwatch|unwatchShort>>|<<watch|shortcut=w|watchThingy>>";
-        str += "<br>if(talk){" + editOldidStr + "|<<new|shortcut=+>>" + "*" + historystr + "*" + watchstr + "*" + "<b><<article|shortcut=a>></b>|<<editArticle|edit>>" + "}else{" + editOldidStr + "*" + historystr + "*" + watchstr + "*" + "<b><<talk|shortcut=t>></b>|<<editTalk|edit>>|<<newTalk|shortcut=+|new>>}";
+        const editstr = "<<edit|shortcut=e>>";
+        const editOldidStr = `if(oldid){<<editOld|shortcut=e>>|<<revert|shortcut=v|rv>>|<<edit|cur>>}else{${ editstr }}`;
+        const historystr = "<<history|shortcut=h>>|<<editors|shortcut=E|>>";
+        const watchstr = "<<unwatch|unwatchShort>>|<<watch|shortcut=w|watchThingy>>";
+        str += `<br>if(talk){${ editOldidStr }|<<new|shortcut=+>>` + `*${ historystr }*${ watchstr }*` + "<b><<article|shortcut=a>></b>|<<editArticle|edit>>" + `}else{${ editOldidStr }*${ historystr }*${ watchstr }*` + "<b><<talk|shortcut=t>></b>|<<editTalk|edit>>|<<newTalk|shortcut=+|new>>}";
         str += "<br><<whatLinksHere|shortcut=l>>*<<relatedChanges|shortcut=r>>*<<move|shortcut=m>>";
         str += "if(admin){<br><<unprotect|unprotectShort>>|<<protect|shortcut=p>>|<<protectlog|log>>*" + "<<undelete|undeleteShort>>|<<delete|shortcut=d>>|<<deletelog|log>>}";
         return str;
     }
     function navLinksHTML(article, hint, params) {
-        var str = '<span class="popupNavLinks">' + defaultNavlinkSpec() + "</span>";
+        const str = `<span class="popupNavLinks">${ defaultNavlinkSpec() }</span>`;
         return navlinkStringToHTML(str, article, params);
     }
     function expandConditionalNavlinkString(s, article, z, recursionCount) {
-        var oldid = z.oldid,
+        const oldid = z.oldid,
             rcid = z.rcid,
             diff = z.diff;
-        if (typeof recursionCount != typeof 0) {
+        if (typeof recursionCount !== typeof 0) {
             recursionCount = 0;
         }
-        var conditionalSplitRegex = RegExp("(;?\\s*if\\s*\\(\\s*([\\w]*)\\s*\\)\\s*\\{([^{}]*)\\}(\\s*else\\s*\\{([^{}]*?)\\}|))", "i");
-        var splitted = s.parenSplit(conditionalSplitRegex);
-        var numParens = 5;
-        var ret = splitted[0];
-        for (var i = 1; i < splitted.length; i = i + numParens + 1) {
-            var testString = splitted[i + 2 - 1];
-            var trueString = splitted[i + 3 - 1];
-            var falseString = splitted[i + 5 - 1];
-            if (typeof falseString == "undefined" || !falseString) {
+        const conditionalSplitRegex = RegExp("(;?\\s*if\\s*\\(\\s*([\\w]*)\\s*\\)\\s*\\{([^{}]*)\\}(\\s*else\\s*\\{([^{}]*?)\\}|))", "i");
+        const splitted = s.parenSplit(conditionalSplitRegex);
+        const numParens = 5;
+        let ret = splitted[0];
+        for (let i = 1; i < splitted.length; i = i + numParens + 1) {
+            const testString = splitted[i + 2 - 1];
+            const trueString = splitted[i + 3 - 1];
+            let falseString = splitted[i + 5 - 1];
+            if (typeof falseString === "undefined" || !falseString) {
                 falseString = "";
             }
-            var testResult = null;
+            let testResult = null;
             switch (testString) {
                 case "user":
                     testResult = article.userName() ? true : false;
@@ -4975,10 +4961,10 @@ $(function () {
                     testResult = getValueOf("popupAdminLinks") ? true : false;
                     break;
                 case "oldid":
-                    testResult = typeof oldid != "undefined" && oldid ? true : false;
+                    testResult = typeof oldid !== "undefined" && oldid ? true : false;
                     break;
                 case "rcid":
-                    testResult = typeof rcid != "undefined" && rcid ? true : false;
+                    testResult = typeof rcid !== "undefined" && rcid ? true : false;
                     break;
                 case "ipuser":
                     testResult = article.isIpUser() ? true : false;
@@ -4990,7 +4976,7 @@ $(function () {
                     testResult = pg.wiki.wikimedia ? true : false;
                     break;
                 case "diff":
-                    testResult = typeof diff != "undefined" && diff ? true : false;
+                    testResult = typeof diff !== "undefined" && diff ? true : false;
                     break;
             }
             switch (testResult) {
@@ -5013,15 +4999,15 @@ $(function () {
     }
     function navlinkStringToArray(s, article, params) {
         s = expandConditionalNavlinkString(s, article, params);
-        var splitted = s.parenSplit(RegExp("<<(.*?)>>"));
-        var ret = [];
-        for (var i = 0; i < splitted.length; ++i) {
+        const splitted = s.parenSplit(RegExp("<<(.*?)>>"));
+        const ret = [];
+        for (let i = 0; i < splitted.length; ++i) {
             if (i % 2) {
-                var t = new navlinkTag();
-                var ss = splitted[i].split("|");
+                const t = new navlinkTag();
+                const ss = splitted[i].split("|");
                 t.id = ss[0];
-                for (var j = 1; j < ss.length; ++j) {
-                    var sss = ss[j].split("=");
+                for (let j = 1; j < ss.length; ++j) {
+                    const sss = ss[j].split("=");
                     if (sss.length > 1) {
                         t[sss[0]] = sss[1];
                     } else {
@@ -5029,7 +5015,7 @@ $(function () {
                     }
                 }
                 t.article = article;
-                var oldid = params.oldid,
+                const oldid = params.oldid,
                     rcid = params.rcid,
                     diff = params.diff;
                 if (typeof oldid !== "undefined" && oldid !== null) {
@@ -5055,21 +5041,21 @@ $(function () {
         return s.split("*").join(getValueOf("popupNavLinkSeparator")).split("<menurow>").join('<li class="popup_menu_row">').split("</menurow>").join("</li>").split("<menu>").join('<ul class="popup_menu">').split("</menu>").join("</ul>");
     }
     function navlinkDepth(magic, s) {
-        return s.split("<" + magic + ">").length - s.split("</" + magic + ">").length;
+        return s.split(`<${ magic }>`).length - s.split(`</${ magic }>`).length;
     }
     function navlinkStringToHTML(s, article, params) {
-        var p = navlinkStringToArray(s, article, params);
-        var html = "";
-        var menudepth = 0;
-        var menurowdepth = 0;
-        for (var i = 0; i < p.length; ++i) {
-            if (typeof p[i] == typeof "") {
+        const p = navlinkStringToArray(s, article, params);
+        let html = "";
+        let menudepth = 0;
+        let menurowdepth = 0;
+        for (let i = 0; i < p.length; ++i) {
+            if (typeof p[i] === typeof "") {
                 html += navlinkSubstituteHTML(p[i]);
                 menudepth += navlinkDepth("menu", p[i]);
                 menurowdepth += navlinkDepth("menurow", p[i]);
-            } else if (typeof p[i].type != "undefined" && p[i].type == "navlinkTag") {
+            } else if (typeof p[i].type !== "undefined" && p[i].type == "navlinkTag") {
                 if (menudepth > 0 && menurowdepth === 0) {
-                    html += '<li class="popup_menu_item">' + p[i].html() + "</li>";
+                    html += `<li class="popup_menu_item">${ p[i].html() }</li>`;
                 } else {
                     html += p[i].html();
                 }
@@ -5083,23 +5069,23 @@ $(function () {
     navlinkTag.prototype.html = function () {
         this.getNewWin();
         this.getPrintFunction();
-        var html = "";
-        var opening, closing;
-        var tagType = "span";
+        let html = "";
+        let opening, closing;
+        const tagType = "span";
         if (!tagType) {
             opening = "";
             closing = "";
         } else {
-            opening = "<" + tagType + ' class="popup_' + this.id + '">';
-            closing = "</" + tagType + ">";
+            opening = `<${ tagType } class="popup_${ this.id }">`;
+            closing = `</${ tagType }>`;
         }
-        if (typeof this.print != "function") {
-            errlog("Oh dear - invalid print function for a navlinkTag, id=" + this.id);
+        if (typeof this.print !== "function") {
+            errlog(`Oh dear - invalid print function for a navlinkTag, id=${ this.id}`);
         } else {
             html = this.print(this);
-            if (typeof html != typeof "") {
+            if (typeof html !== typeof "") {
                 html = "";
-            } else if (typeof this.shortcut != "undefined") {
+            } else if (typeof this.shortcut !== "undefined") {
                 html = addPopupShortcut(html, this.shortcut);
             }
         }
@@ -5113,7 +5099,7 @@ $(function () {
         this.newWin = pg.option.popupLinksNewWindow[this.id];
     };
     navlinkTag.prototype.getPrintFunction = function () {
-        if (typeof this.id != typeof "" || typeof this.article != typeof {}) {
+        if (typeof this.id !== typeof "" || typeof this.article !== typeof {}) {
             return;
         }
         this.noPopup = 1;
@@ -5244,7 +5230,7 @@ $(function () {
             case "unwatch":
             case "watch":
                 this.print = magicWatchLink;
-                this.action = this.id + "&autowatchlist=1&autoimpl=" + popupString("autoedit_version") + "&actoken=" + autoClickToken();
+                this.action = `${this.id }&autowatchlist=1&autoimpl=${ popupString("autoedit_version") }&actoken=${ autoClickToken()}`;
                 break;
             case "history":
             case "historyfeed":
@@ -5257,8 +5243,8 @@ $(function () {
                 this.print = wikiLink;
                 this.action = "delete";
                 if (this.article.namespaceId() == pg.nsImageId) {
-                    var img = this.article.stripNamespace();
-                    this.action += "&image=" + img;
+                    const img = this.article.stripNamespace();
+                    this.action += `&image=${ img}`;
                 }
                 break;
             case "markpatrolled":
@@ -5279,11 +5265,11 @@ $(function () {
                 this.action = "edit&section=new";
                 break;
             case "mainlink":
-                if (typeof this.text == "undefined") {
+                if (typeof this.text === "undefined") {
                     this.text = this.article.toString().entify();
                 }
                 if (getValueOf("popupSimplifyMainLink") && isInStrippableNamespace(this.article)) {
-                    var s = this.text.split("/");
+                    const s = this.text.split("/");
                     this.text = s[s.length - 1];
                     if (this.text === "" && s.length > 1) {
                         this.text = s[s.length - 2];
@@ -5342,7 +5328,7 @@ $(function () {
                 break;
             case "oldEdit":
                 this.print = titledDiffLink;
-                this.title = popupString("Show the edit made to get revision") + " " + this.oldid;
+                this.title = `${popupString("Show the edit made to get revision") } ${ this.oldid}`;
                 this.from = "prev";
                 this.to = this.oldid;
                 break;
@@ -5393,12 +5379,12 @@ $(function () {
                 break;
             default:
                 this.print = function () {
-                    return "Unknown navlink type: " + this.id + "";
+                    return `Unknown navlink type: ${ this.id }`;
                 };
         }
     };
     function popupHandleKeypress(evt) {
-        var keyCode = window.event ? window.event.keyCode : evt.keyCode ? evt.keyCode : evt.which;
+        const keyCode = window.event ? window.event.keyCode : evt.keyCode ? evt.keyCode : evt.which;
         if (!keyCode || !pg.current.link || !pg.current.link.navpopup) {
             return;
         }
@@ -5406,10 +5392,10 @@ $(function () {
             killPopup();
             return false;
         }
-        var letter = String.fromCharCode(keyCode);
-        var links = pg.current.link.navpopup.mainDiv.getElementsByTagName("A");
-        var startLink = 0;
-        var i, j;
+        const letter = String.fromCharCode(keyCode);
+        const links = pg.current.link.navpopup.mainDiv.getElementsByTagName("A");
+        let startLink = 0;
+        let i, j;
         if (popupHandleKeypress.lastPopupLinkSelected) {
             for (i = 0; i < links.length; ++i) {
                 if (links[i] == popupHandleKeypress.lastPopupLinkSelected) {
@@ -5451,32 +5437,32 @@ $(function () {
         }
     }
     function addLinkProperty(html, property) {
-        var i = html.indexOf(">");
+        const i = html.indexOf(">");
         if (i < 0) {
             return html;
         }
-        return html.substring(0, i) + " " + property + html.substring(i);
+        return `${html.substring(0, i) } ${ property }${html.substring(i)}`;
     }
     function addPopupShortcut(html, key) {
         if (!getValueOf("popupShortcutKeys")) {
             return html;
         }
-        var ret = addLinkProperty(html, 'popupkey="' + key + '"');
+        const ret = addLinkProperty(html, `popupkey="${ key }"`);
         if (key == " ") {
             key = popupString("spacebar");
         }
-        return ret.replace(RegExp('^(.*?)(title=")(.*?)(".*)$', "i"), "$1$2$3 [" + key + "]$4");
+        return ret.replace(RegExp('^(.*?)(title=")(.*?)(".*)$', "i"), `$1$2$3 [${ key }]$4`);
     }
     function loadDiff(article, oldid, diff, navpop) {
         navpop.diffData = {
             oldRev: {},
-            newRev: {}
+            newRev: {},
         };
-        mw.loader.using("mediawiki.api").then(function () {
-            var api = getMwApi();
-            var params = {
+        mw.loader.using("mediawiki.api").then(() => {
+            const api = getMwApi();
+            const params = {
                 action: "compare",
-                prop: "ids|title"
+                prop: "ids|title",
             };
             if (article.title) {
                 params.fromtitle = article.title;
@@ -5512,14 +5498,14 @@ $(function () {
                     params.torev = diff || 0;
                     break;
             }
-            api.get(params).then(function (data) {
+            api.get(params).then((data) => {
                 navpop.diffData.oldRev.revid = data.compare.fromrevid;
                 navpop.diffData.newRev.revid = data.compare.torevid;
                 addReviewLink(navpop, "popupMiscTools");
-                var go = function () {
+                const go = function () {
                     pendingNavpopTask(navpop);
-                    var url = pg.wiki.apiwikibase + "?format=json&formatversion=2&action=query&";
-                    url += "revids=" + navpop.diffData.oldRev.revid + "|" + navpop.diffData.newRev.revid;
+                    let url = `${pg.wiki.apiwikibase }?format=json&formatversion=2&action=query&`;
+                    url += `revids=${ navpop.diffData.oldRev.revid }|${ navpop.diffData.newRev.revid}`;
                     url += "&prop=revisions&rvprop=ids|timestamp|content";
                     getPageWithCaching(url, doneDiff, navpop);
                     return true;
@@ -5539,27 +5525,27 @@ $(function () {
         if (navpop.diffData.newRev.revid <= navpop.diffData.oldRev.revid) {
             return;
         }
-        var params = {
+        const params = {
             action: "query",
             prop: "info|flagged",
             revids: navpop.diffData.oldRev.revid,
-            formatversion: 2
+            formatversion: 2,
         };
-        getMwApi().get(params).then(function (data) {
-            var stable_revid = data.query.pages[0].flagged && data.query.pages[0].flagged.stable_revid || 0;
+        getMwApi().get(params).then((data) => {
+            const stable_revid = data.query.pages[0].flagged && data.query.pages[0].flagged.stable_revid || 0;
             if (stable_revid == navpop.diffData.oldRev.revid) {
-                var a = document.createElement("a");
+                const a = document.createElement("a");
                 a.innerHTML = popupString("mark patrolled");
                 a.title = popupString("markpatrolledHint");
                 a.onclick = function () {
-                    var params = {
+                    const params = {
                         action: "review",
                         revid: navpop.diffData.newRev.revid,
-                        comment: tprintf("defaultpopupReviewedSummary", [navpop.diffData.oldRev.revid, navpop.diffData.newRev.revid])
+                        comment: tprintf("defaultpopupReviewedSummary", [navpop.diffData.oldRev.revid, navpop.diffData.newRev.revid]),
                     };
-                    getMwApi().postWithToken("csrf", params).done(function () {
+                    getMwApi().postWithToken("csrf", params).done(() => {
                         a.style.display = "none";
-                    }).fail(function () {
+                    }).fail(() => {
                         alert(popupString("Could not marked this edit as patrolled"));
                     });
                 };
@@ -5571,9 +5557,9 @@ $(function () {
         if (!download.owner || !download.owner.diffData) {
             return;
         }
-        var navpop = download.owner;
+        const navpop = download.owner;
         completedNavpopTask(navpop);
-        var pages, revisions = [];
+        let pages, revisions = [];
         try {
             pages = getJsObj(download.data).query.pages;
             for (var i = 0; i < pages.length; i++) {
@@ -5592,14 +5578,14 @@ $(function () {
         insertDiff(navpop);
     }
     function rmBoringLines(a, b, context) {
-        if (typeof context == "undefined") {
+        if (typeof context === "undefined") {
             context = 2;
         }
-        var aa = [],
+        const aa = [],
             aaa = [];
-        var bb = [],
+        const bb = [],
             bbb = [];
-        var i, j;
+        let i, j;
         for (i = 0; i < a.length; ++i) {
             if (!a[i].paired) {
                 aa[i] = 1;
@@ -5656,32 +5642,32 @@ $(function () {
         }
         return {
             a: aaa,
-            b: bbb
+            b: bbb,
         };
     }
     function stripOuterCommonLines(a, b, context) {
-        var i = 0;
+        let i = 0;
         while (i < a.length && i < b.length && a[i] == b[i]) {
             ++i;
         }
-        var j = a.length - 1;
-        var k = b.length - 1;
+        let j = a.length - 1;
+        let k = b.length - 1;
         while (j >= 0 && k >= 0 && a[j] == b[k]) {
             --j;
             --k;
         }
         return {
             a: a.slice(Math.max(0, i - 1 - context), Math.min(a.length + 1, j + context + 1)),
-            b: b.slice(Math.max(0, i - 1 - context), Math.min(b.length + 1, k + context + 1))
+            b: b.slice(Math.max(0, i - 1 - context), Math.min(b.length + 1, k + context + 1)),
         };
     }
     function insertDiff(navpop) {
-        var oldlines = navpop.diffData.oldRev.revision.content.split("\n");
-        var newlines = navpop.diffData.newRev.revision.content.split("\n");
-        var inner = stripOuterCommonLines(oldlines, newlines, getValueOf("popupDiffContextLines"));
+        let oldlines = navpop.diffData.oldRev.revision.content.split("\n");
+        let newlines = navpop.diffData.newRev.revision.content.split("\n");
+        let inner = stripOuterCommonLines(oldlines, newlines, getValueOf("popupDiffContextLines"));
         oldlines = inner.a;
         newlines = inner.b;
-        var truncated = false;
+        let truncated = false;
         getValueOf("popupDiffMaxLines");
         if (oldlines.length > pg.option.popupDiffMaxLines || newlines.length > pg.option.popupDiffMaxLines) {
             truncated = true;
@@ -5689,71 +5675,71 @@ $(function () {
             oldlines = inner.a;
             newlines = inner.b;
         }
-        var lineDiff = diff(oldlines, newlines);
-        var lines2 = rmBoringLines(lineDiff.o, lineDiff.n);
-        var oldlines2 = lines2.a;
-        var newlines2 = lines2.b;
-        var simpleSplit = !String.prototype.parenSplit.isNative;
-        var html = "<hr />";
+        const lineDiff = diff(oldlines, newlines);
+        const lines2 = rmBoringLines(lineDiff.o, lineDiff.n);
+        const oldlines2 = lines2.a;
+        const newlines2 = lines2.b;
+        const simpleSplit = !String.prototype.parenSplit.isNative;
+        let html = "<hr />";
         if (getValueOf("popupDiffDates")) {
             html += diffDatesTable(navpop);
             html += "<hr />";
         }
         html += shortenDiffString(diffString(oldlines2.join("\n"), newlines2.join("\n"), simpleSplit), getValueOf("popupDiffContextCharacters")).join("<hr />");
-        setPopupTipsAndHTML(html.split("\n").join("<br>") + (truncated ? "<hr /><b>" + popupString("Diff truncated for performance reasons") + "</b>" : ""), "popupPreview", navpop.idNumber);
+        setPopupTipsAndHTML(html.split("\n").join("<br>") + (truncated ? `<hr /><b>${ popupString("Diff truncated for performance reasons") }</b>` : ""), "popupPreview", navpop.idNumber);
     }
     function diffDatesTable(navpop) {
-        var html = '<table class="popup_diff_dates">';
+        let html = '<table class="popup_diff_dates">';
         html += diffDatesTableRow(navpop.diffData.newRev.revision, tprintf("New revision"));
         html += diffDatesTableRow(navpop.diffData.oldRev.revision, tprintf("Old revision"));
         html += "</table>";
         return html;
     }
     function diffDatesTableRow(revision, label) {
-        var txt = "";
-        var lastModifiedDate = new Date(revision.timestamp);
-        var datePrint = getValueOf("popupDiffDatePrinter");
+        let txt = "";
+        const lastModifiedDate = new Date(revision.timestamp);
+        const datePrint = getValueOf("popupDiffDatePrinter");
         txt = formattedDateTime(lastModifiedDate);
-        var revlink = generalLink({
-            url: mw.config.get("wgScript") + "?oldid=" + revision.revid,
+        const revlink = generalLink({
+            url: `${mw.config.get("wgScript") }?oldid=${ revision.revid}`,
             text: label,
-            title: label
+            title: label,
         });
         return simplePrintf("<tr><td>%s</td><td>%s</td></tr>", [revlink, txt]);
     }
     function titledDiffLink(l) {
         return titledWikiLink({
             article: l.article,
-            action: l.to + "&oldid=" + l.from,
+            action: `${l.to }&oldid=${ l.from}`,
             newWin: l.newWin,
             noPopup: l.noPopup,
             text: l.text,
             title: l.title,
-            actionName: "diff"
+            actionName: "diff",
         });
     }
     function wikiLink(l) {
-        if (!(typeof l.article == typeof {} && typeof l.action == typeof "" && typeof l.text == typeof "")) {
+        if (!(typeof l.article === typeof {} && typeof l.action === typeof "" && typeof l.text === typeof "")) {
             return null;
         }
-        if (typeof l.oldid == "undefined") {
+        if (typeof l.oldid === "undefined") {
             l.oldid = null;
         }
-        var savedOldid = l.oldid;
+        const savedOldid = l.oldid;
         if (!/^(edit|view|revert|render)$|^raw/.test(l.action)) {
             l.oldid = null;
         }
-        var hint = popupString(l.action + "Hint");
-        var oldidData = [l.oldid, safeDecodeURI(l.article)];
-        var revisionString = tprintf("revision %s of %s", oldidData);
-        log("revisionString=" + revisionString);
+        let hint = popupString(`${l.action }Hint`);
+        const oldidData = [l.oldid, safeDecodeURI(l.article)];
+        let revisionString = tprintf("revision %s of %s", oldidData);
+        log(`revisionString=${ revisionString}`);
         switch (l.action) {
             case "edit&section=new":
                 hint = popupString("newSectionHint");
                 break;
             case "edit&undo=":
                 if (l.diff && l.diff != "prev" && savedOldid) {
-                    l.action += l.diff + "&undoafter=" + savedOldid;
+                    l.action += `${l.diff }&undoafter=${ savedOldid}`;
                 } else if (savedOldid) {
                     l.action += savedOldid;
                 }
@@ -5764,7 +5750,7 @@ $(function () {
                 break;
             case "revert":
                 var p = parseParams(pg.current.link.href);
-                l.action = "edit&autoclick=wpSave&actoken=" + autoClickToken() + "&autoimpl=" + popupString("autoedit_version") + "&autosummary=" + revertSummary(l.oldid, p.diff);
+                l.action = `edit&autoclick=wpSave&actoken=${ autoClickToken() }&autoimpl=${ popupString("autoedit_version") }&autosummary=${ revertSummary(l.oldid, p.diff)}`;
                 if (p.diff == "prev") {
                     l.action += "&direction=prev";
                     revisionString = tprintf("the revision prior to revision %s of %s", oldidData);
@@ -5775,16 +5761,16 @@ $(function () {
                 if (getValueOf("popupMinorReverts")) {
                     l.action += "&autominor=true";
                 }
-                log("revisionString is now " + revisionString);
+                log(`revisionString is now ${ revisionString}`);
                 break;
             case "nullEdit":
-                l.action = "edit&autoclick=wpSave&actoken=" + autoClickToken() + "&autoimpl=" + popupString("autoedit_version") + "&autosummary=" + popupString("nullEditSummary");
+                l.action = `edit&autoclick=wpSave&actoken=${ autoClickToken() }&autoimpl=${ popupString("autoedit_version") }&autosummary=${ popupString("nullEditSummary")}`;
                 break;
             case "historyfeed":
                 l.action = "history&feed=rss";
                 break;
             case "markpatrolled":
-                l.action = "markpatrolled&rcid=" + l.rcid;
+                l.action = `markpatrolled&rcid=${ l.rcid}`;
         }
         if (hint) {
             if (l.oldid) {
@@ -5793,7 +5779,7 @@ $(function () {
                 hint = simplePrintf(hint, [safeDecodeURI(l.article)]);
             }
         } else {
-            hint = safeDecodeURI(l.article + "&action=" + l.action) + l.oldid ? "&oldid=" + l.oldid : "";
+            hint = safeDecodeURI(`${l.article }&action=${ l.action}`) + l.oldid ? `&oldid=${ l.oldid}` : "";
         }
         return titledWikiLink({
             article: l.article,
@@ -5803,56 +5789,56 @@ $(function () {
             title: hint,
             oldid: l.oldid,
             noPopup: l.noPopup,
-            onclick: l.onclick
+            onclick: l.onclick,
         });
     }
     function revertSummary(oldid, diff) {
-        var ret = "";
+        let ret = "";
         if (diff == "prev") {
             ret = getValueOf("popupQueriedRevertToPreviousSummary");
         } else {
             ret = getValueOf("popupQueriedRevertSummary");
         }
-        return ret + "&autorv=" + oldid;
+        return `${ret }&autorv=${ oldid}`;
     }
     function titledWikiLink(l) {
-        if (typeof l.article == "undefined" || typeof l.action == "undefined") {
+        if (typeof l.article === "undefined" || typeof l.action === "undefined") {
             errlog("got undefined article or action in titledWikiLink");
             return null;
         }
-        var base = pg.wiki.titlebase + l.article.urlString();
-        var url = base;
-        if (typeof l.actionName == "undefined" || !l.actionName) {
+        const base = pg.wiki.titlebase + l.article.urlString();
+        let url = base;
+        if (typeof l.actionName === "undefined" || !l.actionName) {
             l.actionName = "action";
         }
         if (l.action != "view") {
-            url = base + "&" + l.actionName + "=" + l.action;
+            url = `${base }&${ l.actionName }=${ l.action}`;
         }
         if (l.action === "edit") {
             url += "&wpChangeTags=Popups%2CAutomation%20tool";
         }
-        if (typeof l.oldid != "undefined" && l.oldid) {
-            url += "&oldid=" + l.oldid;
+        if (typeof l.oldid !== "undefined" && l.oldid) {
+            url += `&oldid=${ l.oldid}`;
         }
-        var cssClass = pg.misc.defaultNavlinkClassname;
-        if (typeof l.className != "undefined" && l.className) {
+        let cssClass = pg.misc.defaultNavlinkClassname;
+        if (typeof l.className !== "undefined" && l.className) {
             cssClass = l.className;
         }
         return generalNavLink({
             url: url,
             newWin: l.newWin,
-            title: typeof l.title != "undefined" ? l.title : null,
-            text: typeof l.text != "undefined" ? l.text : null,
+            title: typeof l.title !== "undefined" ? l.title : null,
+            text: typeof l.text !== "undefined" ? l.text : null,
             className: cssClass,
             noPopup: l.noPopup,
-            onclick: l.onclick
+            onclick: l.onclick,
         });
     }
     pg.fn.getLastContrib = function getLastContrib(wikipage, newWin) {
-        getHistoryInfo(wikipage, function (x) {
+        getHistoryInfo(wikipage, (x) => {
             processLastContribInfo(x, {
                 page: wikipage,
-                newWin: newWin
+                newWin: newWin,
             });
         });
     };
@@ -5865,14 +5851,14 @@ $(function () {
             alert(tprintf("Only found one editor: %s made %s edits", [info.edits[0].editor, info.edits.length]));
             return;
         }
-        var newUrl = pg.wiki.titlebase + new Title(stuff.page).urlString() + "&diff=cur&oldid=" + info.firstNewEditor.oldid;
+        const newUrl = `${pg.wiki.titlebase + new Title(stuff.page).urlString() }&diff=cur&oldid=${ info.firstNewEditor.oldid}`;
         displayUrl(newUrl, stuff.newWin);
     }
     pg.fn.getDiffSinceMyEdit = function getDiffSinceMyEdit(wikipage, newWin) {
-        getHistoryInfo(wikipage, function (x) {
+        getHistoryInfo(wikipage, (x) => {
             processDiffSinceMyEdit(x, {
                 page: wikipage,
-                newWin: newWin
+                newWin: newWin,
             });
         });
     };
@@ -5881,7 +5867,7 @@ $(function () {
             alert("Popups: something fishy happened. Please try again.");
             return;
         }
-        var friendlyName = stuff.page.split("_").join(" ");
+        const friendlyName = stuff.page.split("_").join(" ");
         if (!info.myLastEdit) {
             alert(tprintf("Couldn't find an edit by %s\nin the last %s edits to\n%s", [info.userName, getValueOf("popupHistoryLimit"), friendlyName]));
             return;
@@ -5890,7 +5876,7 @@ $(function () {
             alert(tprintf("%s seems to be the last editor to the page %s", [info.userName, friendlyName]));
             return;
         }
-        var newUrl = pg.wiki.titlebase + new Title(stuff.page).urlString() + "&diff=cur&oldid=" + info.myLastEdit.oldid;
+        const newUrl = `${pg.wiki.titlebase + new Title(stuff.page).urlString() }&diff=cur&oldid=${ info.myLastEdit.oldid}`;
         displayUrl(newUrl, stuff.newWin);
     }
     function displayUrl(url, newWin) {
@@ -5907,7 +5893,7 @@ $(function () {
         abortAllDownloads();
     };
     function processAllPopups(nullify, banish) {
-        for (var i = 0; pg.current.links && i < pg.current.links.length; ++i) {
+        for (let i = 0; pg.current.links && i < pg.current.links.length; ++i) {
             if (!pg.current.links[i].navpopup) {
                 continue;
             }
@@ -5934,30 +5920,30 @@ $(function () {
         return wikiLink(l);
     }
     pg.fn.modifyWatchlist = function modifyWatchlist(title, action) {
-        var reqData = {
+        const reqData = {
             action: "watch",
             formatversion: 2,
             titles: title,
-            uselang: mw.config.get("wgUserLanguage")
+            uselang: mw.config.get("wgUserLanguage"),
         };
         if (action === "unwatch") {
             reqData.unwatch = true;
         }
-        var mwTitle = mw.Title.newFromText(title);
-        var messageName;
+        const mwTitle = mw.Title.newFromText(title);
+        let messageName;
         if (mwTitle && mwTitle.getNamespaceId() > 0 && mwTitle.getNamespaceId() % 2 === 1) {
             messageName = action === "watch" ? "addedwatchtext-talk" : "removedwatchtext-talk";
         } else {
             messageName = action === "watch" ? "addedwatchtext" : "removedwatchtext";
         }
-        $.when(getMwApi().postWithToken("watch", reqData), mw.loader.using(["mediawiki.api", "mediawiki.jqueryMsg"]).then(function () {
+        $.when(getMwApi().postWithToken("watch", reqData), mw.loader.using(["mediawiki.api", "mediawiki.jqueryMsg"]).then(() => {
             return getMwApi().loadMessagesIfMissing([messageName]);
-        })).done(function () {
+        })).done(() => {
             mw.notify(mw.message(messageName, title).parseDom());
         });
     };
     function magicHistoryLink(l) {
-        var jsUrl = "",
+        let jsUrl = "",
             title = "",
             onClick = "";
         switch (l.id) {
@@ -5970,7 +5956,7 @@ $(function () {
                 title = popupString("sinceMeHint");
                 break;
         }
-        jsUrl = "javascript:" + onClick;
+        jsUrl = `javascript:${ onClick}`;
         onClick += ";return false;";
         return generalNavLink({
             url: jsUrl,
@@ -5978,34 +5964,34 @@ $(function () {
             title: title,
             text: l.text,
             noPopup: l.noPopup,
-            onclick: onClick
+            onclick: onClick,
         });
     }
     function popupMenuLink(l) {
-        var jsUrl = simplePrintf("javascript:pg.fn.%s()", [l.id]);
-        var title = popupString(simplePrintf("%sHint", [l.id]));
-        var onClick = simplePrintf("pg.fn.%s();return false;", [l.id]);
+        const jsUrl = simplePrintf("javascript:pg.fn.%s()", [l.id]);
+        const title = popupString(simplePrintf("%sHint", [l.id]));
+        const onClick = simplePrintf("pg.fn.%s();return false;", [l.id]);
         return generalNavLink({
             url: jsUrl,
             newWin: false,
             title: title,
             text: l.text,
             noPopup: l.noPopup,
-            onclick: onClick
+            onclick: onClick,
         });
     }
     function specialLink(l) {
-        if (typeof l.specialpage == "undefined" || !l.specialpage) {
+        if (typeof l.specialpage === "undefined" || !l.specialpage) {
             return null;
         }
-        var base = pg.wiki.titlebase + mw.config.get("wgFormattedNamespaces")[pg.nsSpecialId] + ":" + l.specialpage;
-        if (typeof l.sep == "undefined" || l.sep === null) {
+        const base = `${pg.wiki.titlebase + mw.config.get("wgFormattedNamespaces")[pg.nsSpecialId] }:${ l.specialpage}`;
+        if (typeof l.sep === "undefined" || l.sep === null) {
             l.sep = "&target=";
         }
-        var article = l.article.urlString({
-            keepSpaces: l.specialpage == "Search"
+        let article = l.article.urlString({
+            keepSpaces: l.specialpage == "Search",
         });
-        var hint = popupString(l.specialpage + "Hint");
+        let hint = popupString(`${l.specialpage }Hint`);
         switch (l.specialpage) {
             case "Log":
                 switch (l.sep) {
@@ -6025,7 +6011,7 @@ $(function () {
                         hint = popupString("deleteLogHint");
                         break;
                     default:
-                        log("Unknown log type, sep=" + l.sep);
+                        log(`Unknown log type, sep=${ l.sep}`);
                         hint = "Missing hint (FIXME)";
                 }
                 break;
@@ -6036,34 +6022,34 @@ $(function () {
         if (hint) {
             hint = simplePrintf(hint, [safeDecodeURI(l.article)]);
         } else {
-            hint = safeDecodeURI(l.specialpage + ":" + l.article);
+            hint = safeDecodeURI(`${l.specialpage }:${ l.article}`);
         }
-        var url = base + l.sep + article;
+        const url = base + l.sep + article;
         return generalNavLink({
             url: url,
             title: hint,
             text: l.text,
             newWin: l.newWin,
-            noPopup: l.noPopup
+            noPopup: l.noPopup,
         });
     }
     function generalLink(l) {
-        if (typeof l.url == "undefined") {
+        if (typeof l.url === "undefined") {
             return null;
         }
-        var url = l.url.split('"').join("%22");
-        var ret = '<a href="' + url + '"';
-        if (typeof l.title != "undefined" && l.title) {
-            ret += ' title="' + pg.escapeQuotesHTML(l.title) + '"';
+        const url = l.url.split('"').join("%22");
+        let ret = `<a href="${ url }"`;
+        if (typeof l.title !== "undefined" && l.title) {
+            ret += ` title="${ pg.escapeQuotesHTML(l.title) }"`;
         }
-        if (typeof l.onclick != "undefined" && l.onclick) {
-            ret += ' onclick="' + pg.escapeQuotesHTML(l.onclick) + '"';
+        if (typeof l.onclick !== "undefined" && l.onclick) {
+            ret += ` onclick="${ pg.escapeQuotesHTML(l.onclick) }"`;
         }
         if (l.noPopup) {
             ret += " noPopup=1";
         }
-        var newWin;
-        if (typeof l.newWin == "undefined" || l.newWin === null) {
+        let newWin;
+        if (typeof l.newWin === "undefined" || l.newWin === null) {
             newWin = getValueOf("popupNewWindows");
         } else {
             newWin = l.newWin;
@@ -6071,80 +6057,80 @@ $(function () {
         if (newWin) {
             ret += ' target="_blank"';
         }
-        if (typeof l.className != "undefined" && l.className) {
-            ret += ' class="' + l.className + '"';
+        if (typeof l.className !== "undefined" && l.className) {
+            ret += ` class="${ l.className }"`;
         }
         ret += ">";
-        if (typeof l.text == typeof "") {
+        if (typeof l.text === typeof "") {
             ret += l.text;
         }
         ret += "</a>";
         return ret;
     }
     function appendParamsToLink(linkstr, params) {
-        var sp = linkstr.parenSplit(RegExp('(href="[^"]+?)"', "i"));
+        const sp = linkstr.parenSplit(RegExp('(href="[^"]+?)"', "i"));
         if (sp.length < 2) {
             return null;
         }
-        var ret = sp.shift() + sp.shift();
-        ret += "&" + params + '"';
+        let ret = sp.shift() + sp.shift();
+        ret += `&${ params }"`;
         ret += sp.join("");
         return ret;
     }
     function changeLinkTargetLink(x) {
         if (x.newTarget) {
-            log("changeLinkTargetLink: newTarget=" + x.newTarget);
+            log(`changeLinkTargetLink: newTarget=${ x.newTarget}`);
         }
         if (x.oldTarget !== decodeURIComponent(x.oldTarget)) {
-            log("This might be an input problem: " + x.oldTarget);
+            log(`This might be an input problem: ${ x.oldTarget}`);
         }
-        var cA = mw.util.escapeRegExp(x.oldTarget);
-        var chs = cA.charAt(0).toUpperCase();
-        chs = "[" + chs + chs.toLowerCase() + "]";
-        var currentArticleRegexBit = chs + cA.substring(1);
+        const cA = mw.util.escapeRegExp(x.oldTarget);
+        let chs = cA.charAt(0).toUpperCase();
+        chs = `[${ chs }${chs.toLowerCase() }]`;
+        let currentArticleRegexBit = chs + cA.substring(1);
         currentArticleRegexBit = currentArticleRegexBit.split(RegExp("(?:[_ ]+|%20)", "g")).join("(?:[_ ]+|%20)").split("\\(").join("(?:%28|\\()").split("\\)").join("(?:%29|\\))");
-        currentArticleRegexBit = "\\s*(" + currentArticleRegexBit + "(?:#[^\\[\\|]*)?)\\s*";
-        var title = x.title || mw.config.get("wgPageName").split("_").join(" ");
-        var lk = titledWikiLink({
+        currentArticleRegexBit = `\\s*(${ currentArticleRegexBit }(?:#[^\\[\\|]*)?)\\s*`;
+        const title = x.title || mw.config.get("wgPageName").split("_").join(" ");
+        const lk = titledWikiLink({
             article: new Title(title),
             newWin: x.newWin,
             action: "edit",
             text: x.text,
             title: x.hint,
-            className: "popup_change_title_link"
+            className: "popup_change_title_link",
         });
-        var cmd = "";
+        let cmd = "";
         if (x.newTarget) {
-            var t = x.newTarget;
-            var s = mw.util.escapeRegExp(x.newTarget);
+            const t = x.newTarget;
+            const s = mw.util.escapeRegExp(x.newTarget);
             if (x.alsoChangeLabel) {
-                cmd += "s~\\[\\[" + currentArticleRegexBit + "\\]\\]~[[" + t + "]]~g;";
-                cmd += "s~\\[\\[" + currentArticleRegexBit + "[|]~[[" + t + "|~g;";
-                cmd += "s~\\[\\[" + s + "\\|" + s + "\\]\\]~[[" + t + "]]~g";
+                cmd += `s~\\[\\[${ currentArticleRegexBit }\\]\\]~[[${ t }]]~g;`;
+                cmd += `s~\\[\\[${ currentArticleRegexBit }[|]~[[${ t }|~g;`;
+                cmd += `s~\\[\\[${ s }\\|${ s }\\]\\]~[[${ t }]]~g`;
             } else {
-                cmd += "s~\\[\\[" + currentArticleRegexBit + "\\]\\]~[[" + t + "|$1]]~g;";
-                cmd += "s~\\[\\[" + currentArticleRegexBit + "[|]~[[" + t + "|~g;";
-                cmd += "s~\\[\\[" + s + "\\|" + s + "\\]\\]~[[" + t + "]]~g";
+                cmd += `s~\\[\\[${ currentArticleRegexBit }\\]\\]~[[${ t }|$1]]~g;`;
+                cmd += `s~\\[\\[${ currentArticleRegexBit }[|]~[[${ t }|~g;`;
+                cmd += `s~\\[\\[${ s }\\|${ s }\\]\\]~[[${ t }]]~g`;
             }
         } else {
-            cmd += "s~\\[\\[" + currentArticleRegexBit + "\\]\\]~$1~g;";
-            cmd += "s~\\[\\[" + currentArticleRegexBit + "[|](.*?)\\]\\]~$2~g";
+            cmd += `s~\\[\\[${ currentArticleRegexBit }\\]\\]~$1~g;`;
+            cmd += `s~\\[\\[${ currentArticleRegexBit }[|](.*?)\\]\\]~$2~g`;
         }
-        cmd = "autoedit=" + encodeURIComponent(cmd);
-        cmd += "&autoclick=" + encodeURIComponent(x.clickButton) + "&actoken=" + encodeURIComponent(autoClickToken());
-        cmd += x.minor === null ? "" : "&autominor=" + encodeURIComponent(x.minor);
-        cmd += x.watch === null ? "" : "&autowatch=" + encodeURIComponent(x.watch);
-        cmd += "&autosummary=" + encodeURIComponent(x.summary);
-        cmd += "&autoimpl=" + encodeURIComponent(popupString("autoedit_version"));
+        cmd = `autoedit=${ encodeURIComponent(cmd)}`;
+        cmd += `&autoclick=${ encodeURIComponent(x.clickButton) }&actoken=${ encodeURIComponent(autoClickToken())}`;
+        cmd += x.minor === null ? "" : `&autominor=${ encodeURIComponent(x.minor)}`;
+        cmd += x.watch === null ? "" : `&autowatch=${ encodeURIComponent(x.watch)}`;
+        cmd += `&autosummary=${ encodeURIComponent(x.summary)}`;
+        cmd += `&autoimpl=${ encodeURIComponent(popupString("autoedit_version"))}`;
         return appendParamsToLink(lk, cmd);
     }
     function redirLink(redirMatch, article) {
-        var ret = "";
+        let ret = "";
         if (getValueOf("popupAppendRedirNavLinks") && getValueOf("popupNavLinks")) {
             ret += "<hr />";
-            if (getValueOf("popupFixRedirs") && typeof autoEdit != "undefined" && autoEdit) {
+            if (getValueOf("popupFixRedirs") && typeof autoEdit !== "undefined" && autoEdit) {
                 ret += popupString("Redirects to: (Fix ");
-                log("redirLink: newTarget=" + redirMatch);
+                log(`redirLink: newTarget=${ redirMatch}`);
                 ret += addPopupShortcut(changeLinkTargetLink({
                     newTarget: redirMatch,
                     text: popupString("target"),
@@ -6153,7 +6139,7 @@ $(function () {
                     oldTarget: article.toString(),
                     clickButton: getValueOf("popupRedirAutoClick"),
                     minor: true,
-                    watch: getValueOf("popupWatchRedirredPages")
+                    watch: getValueOf("popupWatchRedirredPages"),
                 }), "R");
                 ret += popupString(" or ");
                 ret += addPopupShortcut(changeLinkTargetLink({
@@ -6165,19 +6151,19 @@ $(function () {
                     clickButton: getValueOf("popupRedirAutoClick"),
                     minor: true,
                     watch: getValueOf("popupWatchRedirredPages"),
-                    alsoChangeLabel: true
+                    alsoChangeLabel: true,
                 }), "R");
                 ret += popupString(")");
             } else {
                 ret += popupString("Redirects") + popupString(" to ");
             }
             return ret;
-        } return "<br> " + popupString("Redirects") + popupString(" to ") + titledWikiLink({
+        } return `<br> ${ popupString("Redirects") }${popupString(" to ") }${titledWikiLink({
             article: new Title().fromWikiText(redirMatch),
             action: "view",
             text: safeDecodeURI(redirMatch),
-            title: popupString("Bypass redirect")
-        });
+            title: popupString("Bypass redirect"),
+        })}`;
     }
     function arinLink(l) {
         if (!saneLinkCheck(l)) {
@@ -6186,24 +6172,24 @@ $(function () {
         if (!l.article.isIpUser() || !pg.wiki.wikimedia) {
             return null;
         }
-        var uN = l.article.userName();
+        const uN = l.article.userName();
         return generalNavLink({
-            url: "http://ws.arin.net/cgi-bin/whois.pl?queryinput=" + encodeURIComponent(uN),
+            url: `http://ws.arin.net/cgi-bin/whois.pl?queryinput=${ encodeURIComponent(uN)}`,
             newWin: l.newWin,
             title: tprintf("Look up %s in ARIN whois database", [uN]),
             text: l.text,
-            noPopup: 1
+            noPopup: 1,
         });
     }
     function toolDbName(cookieStyle) {
-        var ret = mw.config.get("wgDBname");
+        let ret = mw.config.get("wgDBname");
         if (!cookieStyle) {
             ret += "_p";
         }
         return ret;
     }
     function saneLinkCheck(l) {
-        if (typeof l.article != typeof {} || typeof l.text != typeof "") {
+        if (typeof l.article !== typeof {} || typeof l.text !== typeof "") {
             return false;
         }
         return true;
@@ -6215,10 +6201,10 @@ $(function () {
         if (!pg.wiki.wikimedia) {
             return null;
         }
-        var uN = l.article.userName();
-        var tool = getValueOf("popupEditCounterTool");
-        var url;
-        var defaultToolUrl = "//tools.wmflabs.org/supercount/index.php?user=$1&project=$2.$3";
+        const uN = l.article.userName();
+        const tool = getValueOf("popupEditCounterTool");
+        let url;
+        const defaultToolUrl = "//tools.wmflabs.org/supercount/index.php?user=$1&project=$2.$3";
         switch (tool) {
             case "custom":
                 url = simplePrintf(getValueOf("popupEditCounterUrl"), [encodeURIComponent(uN), toolDbName()]);
@@ -6236,53 +6222,53 @@ $(function () {
             title: tprintf("editCounterLinkHint", [uN]),
             newWin: l.newWin,
             text: l.text,
-            noPopup: 1
+            noPopup: 1,
         });
     }
     function globalSearchLink(l) {
         if (!saneLinkCheck(l)) {
             return null;
         }
-        var base = "http://vs.aka-online.de/cgi-bin/globalwpsearch.pl?timeout=120&search=";
-        var article = l.article.urlString({
-            keepSpaces: true
+        const base = "http://vs.aka-online.de/cgi-bin/globalwpsearch.pl?timeout=120&search=";
+        const article = l.article.urlString({
+            keepSpaces: true,
         });
         return generalNavLink({
             url: base + article,
             newWin: l.newWin,
             title: tprintf("globalSearchHint", [safeDecodeURI(l.article)]),
             text: l.text,
-            noPopup: 1
+            noPopup: 1,
         });
     }
     function googleLink(l) {
         if (!saneLinkCheck(l)) {
             return null;
         }
-        var base = "https://www.google.com/search?q=";
-        var article = l.article.urlString({
-            keepSpaces: true
+        const base = "https://www.google.com/search?q=";
+        const article = l.article.urlString({
+            keepSpaces: true,
         });
         return generalNavLink({
-            url: base + "%22" + article + "%22",
+            url: `${base }%22${ article }%22`,
             newWin: l.newWin,
             title: tprintf("googleSearchHint", [safeDecodeURI(l.article)]),
             text: l.text,
-            noPopup: 1
+            noPopup: 1,
         });
     }
     function editorListLink(l) {
         if (!saneLinkCheck(l)) {
             return null;
         }
-        var article = l.article.articleFromTalkPage() || l.article;
-        var url = "https://xtools.wmflabs.org/articleinfo/" + encodeURI(pg.wiki.hostname) + "/" + article.urlString() + "?uselang=" + mw.config.get("wgUserLanguage");
+        const article = l.article.articleFromTalkPage() || l.article;
+        const url = `https://xtools.wmflabs.org/articleinfo/${ encodeURI(pg.wiki.hostname) }/${ article.urlString() }?uselang=${ mw.config.get("wgUserLanguage")}`;
         return generalNavLink({
             url: url,
             title: tprintf("editorListHint", [article]),
             newWin: l.newWin,
             text: l.text,
-            noPopup: 1
+            noPopup: 1,
         });
     }
     function generalNavLink(l) {
@@ -6291,28 +6277,28 @@ $(function () {
     }
     function getHistoryInfo(wikipage, whatNext) {
         log("getHistoryInfo");
-        getHistory(wikipage, whatNext ? function (d) {
+        getHistory(wikipage, whatNext ? (d) => {
             whatNext(processHistory(d));
         } : processHistory);
     }
     function getHistory(wikipage, onComplete) {
         log("getHistory");
-        var url = pg.wiki.apiwikibase + "?format=json&formatversion=2&action=query&prop=revisions&titles=" + new Title(wikipage).urlString() + "&rvlimit=" + getValueOf("popupHistoryLimit");
-        log("getHistory: url=" + url);
-        return startDownload(url, pg.idNumber + "history", onComplete);
+        const url = `${pg.wiki.apiwikibase }?format=json&formatversion=2&action=query&prop=revisions&titles=${ new Title(wikipage).urlString() }&rvlimit=${ getValueOf("popupHistoryLimit")}`;
+        log(`getHistory: url=${ url}`);
+        return startDownload(url, `${pg.idNumber }history`, onComplete);
     }
     function processHistory(download) {
-        var jsobj = getJsObj(download.data);
+        const jsobj = getJsObj(download.data);
         try {
-            var revisions = anyChild(jsobj.query.pages).revisions;
-            var edits = [];
-            for (var i = 0; i < revisions.length; ++i) {
+            const revisions = anyChild(jsobj.query.pages).revisions;
+            const edits = [];
+            for (let i = 0; i < revisions.length; ++i) {
                 edits.push({
                     oldid: revisions[i].revid,
-                    editor: revisions[i].user
+                    editor: revisions[i].user,
                 });
             }
-            log("processed " + edits.length + " edits");
+            log(`processed ${ edits.length } edits`);
             return finishProcessHistory(edits, mw.config.get("wgUserName"));
         } catch (someError) {
             log("Something went wrong with JSON business");
@@ -6320,30 +6306,30 @@ $(function () {
         }
     }
     function finishProcessHistory(edits, userName) {
-        var histInfo = {};
+        const histInfo = {};
         histInfo.edits = edits;
         histInfo.userName = userName;
-        for (var i = 0; i < edits.length; ++i) {
+        for (let i = 0; i < edits.length; ++i) {
             if (typeof histInfo.myLastEdit === "undefined" && userName && edits[i].editor == userName) {
                 histInfo.myLastEdit = {
                     index: i,
                     oldid: edits[i].oldid,
-                    previd: i === 0 ? null : edits[i - 1].oldid
+                    previd: i === 0 ? null : edits[i - 1].oldid,
                 };
             }
             if (typeof histInfo.firstNewEditor === "undefined" && edits[i].editor != edits[0].editor) {
                 histInfo.firstNewEditor = {
                     index: i,
                     oldid: edits[i].oldid,
-                    previd: i === 0 ? null : edits[i - 1].oldid
+                    previd: i === 0 ? null : edits[i - 1].oldid,
                 };
             }
         }
         return histInfo;
     }
     function defaultize(x) {
-        if (pg.option[x] === null || typeof pg.option[x] == "undefined") {
-            if (typeof window[x] != "undefined") {
+        if (pg.option[x] === null || typeof pg.option[x] === "undefined") {
+            if (typeof window[x] !== "undefined") {
                 pg.option[x] = window[x];
             } else {
                 pg.option[x] = pg.optionDefault[x];
@@ -6361,17 +6347,17 @@ $(function () {
         return pg.option[varName];
     }
     function useDefaultOptions() {
-        for (var p in pg.optionDefault) {
+        for (const p in pg.optionDefault) {
             pg.option[p] = pg.optionDefault[p];
-            if (typeof window[p] != "undefined") {
+            if (typeof window[p] !== "undefined") {
                 delete window[p];
             }
         }
     }
     function setOptions() {
-        var userIsSysop = false;
+        let userIsSysop = false;
         if (mw.config.get("wgUserGroups")) {
-            for (var g = 0; g < mw.config.get("wgUserGroups").length; ++g) {
+            for (let g = 0; g < mw.config.get("wgUserGroups").length; ++g) {
                 if (mw.config.get("wgUserGroups")[g] == "sysop") {
                     userIsSysop = true;
                 }
@@ -6411,7 +6397,7 @@ $(function () {
             hour12: false,
             hour: "2-digit",
             minute: "2-digit",
-            second: "2-digit"
+            second: "2-digit",
         });
         newOption("popupDateFormatterOptions", {
             year: "numeric",
@@ -6422,7 +6408,7 @@ $(function () {
             hour12: false,
             hour: "2-digit",
             minute: "2-digit",
-            second: "2-digit"
+            second: "2-digit",
         });
         newOption("popupImages", true);
         newOption("imagePopupsForImages", true);
@@ -6488,7 +6474,7 @@ $(function () {
         newOption("popupNewWindows", false);
         newOption("popupLinksNewWindow", {
             lastContrib: true,
-            sinceMe: true
+            sinceMe: true,
         });
         newOption("popupDabRegexp", "(\\{\\{\\s*disambig(?!uation needed)|disambig(uation|)\\s*\\}\\}|disamb\\s*\\}\\}|dab\\s*\\}\\})|\\{\\{\\s*(((geo|hn|road?|school|number)dis)|[234][lc][acw]|(road|ship)index)(\\s*[|][^}]*)?\\s*[}][}]|is a .*disambiguation.*page");
         newOption("popupAnchorRegexp", "anchors?");
@@ -6709,19 +6695,19 @@ $(function () {
         "Could not find button %s. Please check the settings in your javascript file.": "Could not find button %s. Please check the settings in your javascript file.",
         "Open full-size image": "Open full-size image",
         zxy: "zxy",
-        autoedit_version: "np20140416"
+        autoedit_version: "np20140416",
     };
-    var willBeReplaces = [];
-    var __extends = (function () {
+    const willBeReplaces = [];
+    const __extends = (function () {
         var extendStatics = function (d, b) {
             extendStatics = Object.setPrototypeOf ||
                 {
-                    __proto__: []
+                    __proto__: [],
                 } instanceof Array && function (d, b) {
                     d.__proto__ = b;
                 } ||
                 function (d, b) {
-                    for (var p in b) {
+                    for (const p in b) {
                         if (Object.prototype.hasOwnProperty.call(b, p)) {
                             d[p] = b[p];
                         }
@@ -6731,7 +6717,7 @@ $(function () {
         };
         return function (d, b) {
             if (typeof b !== "function" && b !== null) {
-                throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
+                throw new TypeError(`Class extends value ${ String(b) } is not a constructor or null`);
             }
             extendStatics(d, b);
             function __() {
@@ -6740,11 +6726,11 @@ $(function () {
             d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
         };
     })();
-    var PopupNoTranslation = /** @class */ (function (_super) {
+    const PopupNoTranslation = /** @class */ (function (_super) {
         __extends(PopupNoTranslation, _super);
         function PopupNoTranslation() {
-            var _this = this;
-            var s;
+            const _this = this;
+            let s;
             try {
                 s = JSON.parse(localStorage.getItem("popupNoTranslation"));
                 if (!Array.isArray(s)) {
@@ -6758,24 +6744,24 @@ $(function () {
             return _this;
         }
         PopupNoTranslation.prototype._push = function () {
-            var a = [];
-            for (var _i = 0; _i < arguments.length; _i++) {
+            const a = [];
+            for (let _i = 0; _i < arguments.length; _i++) {
                 a[_i] = arguments[_i];
             }
-            var returnValue = Array.prototype.push.bind(this).apply(void 0, a.filter(function (n) {
+            const returnValue = Array.prototype.push.bind(this).apply(void 0, a.filter((n) => {
                 return !n.includes("&autoimpl=np20140416&actoken=") && !n.endsWith("Hint") && !willBeReplaces.includes(n);
             }));
             localStorage.setItem("popupNoTranslation", JSON.stringify(this));
             return returnValue;
         };
         PopupNoTranslation.prototype.push = function (str) {
-            var hasDefault = !!pg.string[str];
+            const hasDefault = !!pg.string[str];
             if (this.includes(str)) {
                 return hasDefault ? pg.string[str] : str;
             }
             this._push(str);
             if (mw.util.getParamValue("debug") === "1") {
-                console.groupCollapsed("Gadget Popups", "can't find the translation of", str, hasDefault ? ", use the default text [" + pg.string[str] + "]." : ", and no default text found.");
+                console.groupCollapsed("Gadget Popups", "can't find the translation of", str, hasDefault ? `, use the default text [${ pg.string[str] }].` : ", and no default text found.");
                 console.info(new Error().stack);
                 console.groupEnd();
             }
@@ -6787,13 +6773,13 @@ $(function () {
         if (!window.popupNoTranslation) {
             window.popupNoTranslation = new PopupNoTranslation();
         }
-        if (typeof popupStrings != "undefined" && popupStrings && popupStrings[str]) {
+        if (typeof popupStrings !== "undefined" && popupStrings && popupStrings[str]) {
             return popupStrings[str];
         }
         return window.popupNoTranslation.push(str);
     }
     function tprintf(str, subs) {
-        if (typeof subs != typeof []) {
+        if (typeof subs !== typeof []) {
             subs = [subs];
         }
         return simplePrintf(popupString(str), subs);
@@ -6816,8 +6802,8 @@ $(function () {
                 $content.data("once", true);
             }
             function registerHooksForVisibleNavpops() {
-                for (var i = 0; pg.current.links && i < pg.current.links.length; ++i) {
-                    var navpop = pg.current.links[i].navpopup;
+                for (let i = 0; pg.current.links && i < pg.current.links.length; ++i) {
+                    const navpop = pg.current.links[i].navpopup;
                     if (!navpop || !navpop.isVisible()) {
                         continue;
                     }
@@ -6834,7 +6820,7 @@ $(function () {
             setupPopups(doIt);
         }
         mw.hook("wikipage.content").add(dynamicContentHandler);
-        mw.hook("ext.echo.overlay.beforeShowingOverlay").add(function ($overlay) {
+        mw.hook("ext.echo.overlay.beforeShowingOverlay").add(($overlay) => {
             dynamicContentHandler($overlay.find(".mw-echo-state"));
         });
     })();

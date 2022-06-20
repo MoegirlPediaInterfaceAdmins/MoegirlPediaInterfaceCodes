@@ -1,4 +1,3 @@
-/* eslint-disable require-atomic-updates */
 // <pre>
 "use strict";
 $(() => (async () => {
