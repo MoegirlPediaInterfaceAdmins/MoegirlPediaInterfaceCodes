@@ -19,6 +19,7 @@
         "LocalObjectStorage": "readonly",
         "insertToBottomRightCorner": "readonly",
         "wgULS": "readonly",
+        "wgUVS": "readonly",
         "hashwasm": "readonly",
         "oouiDialog": "readonly",
         "echarts": "readonly",

@@ -19,8 +19,7 @@ var AsyncLock = function (opts) {
     this.maxOccupationTime = opts.maxOccupationTime || AsyncLock.DEFAULT_MAX_OCCUPATION_TIME;
     if (opts.maxPending === Infinity || Number.isInteger(opts.maxPending) && opts.maxPending >= 0) {
         this.maxPending = opts.maxPending;
-    }
-    else {
+    } else {
         this.maxPending = AsyncLock.DEFAULT_MAX_PENDING;
     }
 };
@@ -78,13 +77,11 @@ AsyncLock.prototype.acquire = function (key, fn, cb, opts) {
                 if (typeof cb === "function") {
                     cb(err, ret);
                 }
-            }
-            else {
+            } else {
                 //promise mode
                 if (err) {
                     deferredReject(err);
-                }
-                else {
+                } else {
                     deferredResolve(ret);
                 }
             }
@@ -117,8 +114,7 @@ AsyncLock.prototype.acquire = function (key, fn, cb, opts) {
                     done(locked, err, ret);
                 }
             });
-        }
-        else {
+        } else {
             // Promise mode
             self._promiseTry(() => {
                 return fn();
@@ -136,30 +132,26 @@ AsyncLock.prototype.acquire = function (key, fn, cb, opts) {
     if (!self.queues[key]) {
         self.queues[key] = [];
         exec(true);
-    }
-    else if (self.domainReentrant && !!process.domain && process.domain === self.domains[key]) {
+    } else if (self.domainReentrant && !!process.domain && process.domain === self.domains[key]) {
         // If code is in the same domain of current running task, run it directly
         // Since lock is re-enterable
         exec(false);
-    }
-    else if (self.queues[key].length >= self.maxPending) {
-        done(false, new Error(`Too many pending tasks in queue ${ key}`));
-    }
-    else {
+    } else if (self.queues[key].length >= self.maxPending) {
+        done(false, new Error(`Too many pending tasks in queue ${key}`));
+    } else {
         const taskFn = function () {
             exec(true);
         };
         if (opts.skipQueue) {
             self.queues[key].unshift(taskFn);
-        }
-        else {
+        } else {
             self.queues[key].push(taskFn);
         }
         const timeout = opts.timeout || self.timeout;
         if (timeout) {
             timer = setTimeout(() => {
                 timer = null;
-                done(false, new Error(`async-lock timed out in queue ${ key}`));
+                done(false, new Error(`async-lock timed out in queue ${key}`));
             }, timeout);
         }
     }
@@ -167,7 +159,7 @@ AsyncLock.prototype.acquire = function (key, fn, cb, opts) {
     if (maxOccupationTime) {
         occupationTimer = setTimeout(() => {
             if (self.queues[key]) {
-                done(false, new Error(`Maximum occupation time is exceeded in queue ${ key}`));
+                done(false, new Error(`Maximum occupation time is exceeded in queue ${key}`));
             }
         }, maxOccupationTime);
     }
@@ -208,21 +200,18 @@ AsyncLock.prototype._acquireBatch = function (keys, fn, cb, opts) {
     });
     if (typeof cb === "function") {
         fnx(cb);
-    }
-    else {
+    } else {
         return new this.Promise((resolve, reject) => {
             // check for promise mode in case keys is empty array
             if (fnx.length === 1) {
                 fnx((err, ret) => {
                     if (err) {
                         reject(err);
-                    }
-                    else {
+                    } else {
                         resolve(ret);
                     }
                 });
-            }
-            else {
+            } else {
                 resolve(fnx());
             }
         });
@@ -237,9 +226,9 @@ AsyncLock.prototype.isBusy = function (key) {
     if (!key) {
         return Object.keys(this.queues).length > 0;
     }
-    
+
     return !!this.queues[key];
-    
+
 };
 /**
  * Promise.try() implementation to become independent of Q-specific methods

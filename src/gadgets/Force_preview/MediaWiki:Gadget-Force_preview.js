@@ -3,16 +3,12 @@ $(() => {
     const wgPermittedGroups = ["autoconfirmed"]; //默认只允许自动确认用户绕过强制预览。
     //检测两个数组是否有重复元素
     function intersects(arr1, arr2) {
-        if (!Array.isArray(arr1) || !Array.isArray(arr2))
-        {return false;}
+        if (!Array.isArray(arr1) || !Array.isArray(arr2)) { return false; }
         for (let i1 = 0, l1 = arr1.length; i1 < l1; i1++) {
-            if (arr1.indexOf(arr1[i1]) === -1)
-            {continue;} // 检测是否为空位
+            if (arr1.indexOf(arr1[i1]) === -1) { continue; } // 检测是否为空位
             for (let i2 = 0, l2 = arr2.length; i2 < l2; i2++) {
-                if (arr2.indexOf(arr2[i2]) === -1)
-                {continue;}
-                if (arr1[i1] === arr2[i2])
-                {return true;}
+                if (arr2.indexOf(arr2[i2]) === -1) { continue; }
+                if (arr1[i1] === arr2[i2]) { return true; }
             }
         }
         return false;
@@ -49,7 +45,7 @@ $(() => {
             hook.remove(hookFunc);
         }
     };
-    previewButton.closest(".oo-ui-buttonElement-framed").addClass("oo-ui-flaggedElement-primary oo-ui-flaggedElement-progressive").on("click", (e) => {
+    previewButton.closest(".oo-ui-buttonElement-framed").addClass("oo-ui-flaggedElement-primary oo-ui-flaggedElement-progressive").on("click", () => {
         if (isUserChosenPreviewLive && !isPreviewedLive) {
             hook.add(hookFunc);
         }
@@ -57,12 +53,13 @@ $(() => {
     let captureSupported = false;
     try {
         const options = Object.defineProperty({}, "capture", {
-            get: function() {
+            get: function () {
                 captureSupported = true;
+                return undefined;
             },
         });
         window.addEventListener("test", null, options);
-    } catch (err) {}
+    } catch (err) { }
     saveButton[0].addEventListener("click", (e) => {
         if (!isPreviewedLive) {
             e.preventDefault();

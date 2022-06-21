@@ -20,12 +20,10 @@
         let index = 0,
             filter, rfilter, am;
         const enablePrevLink = function enablePrevLink(b) {
-            if (!b) { $(".TablePager_nav-prev div").removeClass("TablePager_nav-enabled").addClass("TablePager_nav-disabled"); }
-            else { $(".TablePager_nav-prev div").removeClass("TablePager_nav-disabled").addClass("TablePager_nav-enabled"); }
+            if (!b) { $(".TablePager_nav-prev div").removeClass("TablePager_nav-enabled").addClass("TablePager_nav-disabled"); } else { $(".TablePager_nav-prev div").removeClass("TablePager_nav-disabled").addClass("TablePager_nav-enabled"); }
         };
         const enableNextLink = function enableNextLink(b) {
-            if (!b) { $(".TablePager_nav-next div").removeClass("TablePager_nav-enabled").addClass("TablePager_nav-disabled"); }
-            else { $(".TablePager_nav-next div").removeClass("TablePager_nav-disabled").addClass("TablePager_nav-enabled"); }
+            if (!b) { $(".TablePager_nav-next div").removeClass("TablePager_nav-enabled").addClass("TablePager_nav-disabled"); } else { $(".TablePager_nav-next div").removeClass("TablePager_nav-disabled").addClass("TablePager_nav-enabled"); }
         };
         const check = function check(am) {
             if (am.length <= length) {
@@ -119,7 +117,6 @@
             if (e.which === 13) { submit.click(); }
         });
     }
-    if (isCompleted) { run(); }
-    else { $(window).on("load", run); }
+    if (isCompleted) { run(); } else { $(window).on("load", run); }
 })(document.readyState === "complete");
 // </pre>

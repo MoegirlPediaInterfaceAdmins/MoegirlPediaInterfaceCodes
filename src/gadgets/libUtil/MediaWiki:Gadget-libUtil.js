@@ -53,7 +53,7 @@
         monthNamesInSiteLang: ["", "一月", "二月", "三月", "四月", "五月", "六月", "七月", "八月", "九月", "十月", "十一月", "十二月"],
         formatDate: function (fmt, _date, fallbackDate) {
             const pad0 = function (s) {
-                return s > 9 ? s : `0${ s}`;
+                return s > 9 ? s : `0${s}`;
             }; // zero-pad to two digits
             let date = _date || fallbackDate || new Date();
             const month = date.getUTCMonth() + 1;
@@ -71,8 +71,7 @@
             let title = _title;
             if (pref) {
                 pref = pref[1].toLowerCase().replace(/ /g, "_");
-            }
-            else {
+            } else {
                 pref = "";
             }
             nsid = mw.config.get("wgNamespaceIds")[pref];
@@ -80,11 +79,10 @@
             if (0 === nsid % 2) {
                 nsid++;
             }
-            const newPref = `${mw.config.get("wgFormattedNamespaces")[nsid] }:`;
+            const newPref = `${mw.config.get("wgFormattedNamespaces")[nsid]}:`;
             if (pref) {
                 title = title.replace(/^.+:/, newPref);
-            }
-            else {
+            } else {
                 title = newPref + title;
             }
             return title;

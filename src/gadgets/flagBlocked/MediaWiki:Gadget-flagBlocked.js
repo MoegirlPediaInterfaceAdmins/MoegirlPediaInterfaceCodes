@@ -3,7 +3,7 @@
 $(() => {
     const usergroup = mw.config.get("wgUserGroups");
     const pagename = mw.config.get("wgPageName");
-    if (mw.config.get("wgNamespaceNumber") !== 2 || !mw.config.get("wgIsArticle") || /\//.test(pagename) || !usergroup.includes("sysop") && !usergroup.includes("patroller") ) {
+    if (mw.config.get("wgNamespaceNumber") !== 2 || !mw.config.get("wgIsArticle") || /\//.test(pagename) || !usergroup.includes("sysop") && !usergroup.includes("patroller")) {
         return;
     }
 
@@ -40,12 +40,7 @@ $(() => {
             if (data.params.flags.includes("hiddenname") || "suppressed" in data) {
                 throw new Error("用户名被隐藏或日志被监督！");
             }
-            if (/Abuse|长期破坏者|a\s*\d+/gi.test(comment)) {
-                const abuse = comment.replace(/\D*/g, "");
-                var template = `{{永久封禁|time=${blockTime}|reason=${comment}|abuse=${abuse}}}`;
-            } else {
-                var template = `{{永久封禁|time=${blockTime}|reason=${comment}}}`;
-            }
+            const template = `{{永久封禁|time=${blockTime}|reason=${comment}${/Abuse|长期破坏者|a\s*\d+/ig.test(comment) ? `|abuse=${comment.replace(/\D*/g, "")}` : ""}}}`;
 
             mw.notify("正在添加永久封禁模板……", {
                 title: "正在标记永久封禁",
@@ -80,7 +75,7 @@ $(() => {
         }
     };
 
-    $(mw.util.addPortletLink("p-tb", "#", "标记永久封禁", "t-lr-flagBlocked", "将此页面替换为永久封禁模板")).on("click", async (e) => { 
+    $(mw.util.addPortletLink("p-tb", "#", "标记永久封禁", "t-lr-flagBlocked", "将此页面替换为永久封禁模板")).on("click", async (e) => {
         e.preventDefault();
         if (working || !await oouiDialog.confirm("确定要将此页面替换为永久封禁模板吗？", {
             title: "标记永久封禁小工具",

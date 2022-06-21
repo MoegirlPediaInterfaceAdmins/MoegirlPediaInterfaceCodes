@@ -50,8 +50,7 @@
                     /* If deep merge and property is an object, merge properties */
                     if (deep && Object.prototype.toString.call(obj[prop]) === "[object Object]") {
                         extended[prop] = extend(true, extended[prop], obj[prop]);
-                    }
-                    else {
+                    } else {
                         extended[prop] = obj[prop];
                     }
                 }
@@ -96,9 +95,8 @@
                             if (srcset) {
                                 entry.target.srcset = srcset;
                             }
-                        }
-                        else {
-                            entry.target.style.backgroundImage = `url(${ src })`;
+                        } else {
+                            entry.target.style.backgroundImage = `url(${src})`;
                         }
                     }
                 });
@@ -129,9 +127,8 @@
                     if (srcset) {
                         image.srcset = srcset;
                     }
-                }
-                else {
-                    image.style.backgroundImage = `url('${ src }')`;
+                } else {
+                    image.style.backgroundImage = `url('${src}')`;
                 }
             });
         };

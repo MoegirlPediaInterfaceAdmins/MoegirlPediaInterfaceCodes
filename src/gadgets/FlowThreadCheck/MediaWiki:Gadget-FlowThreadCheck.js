@@ -1,7 +1,7 @@
 "use strict";
 // <pre>
 $(() => {
-    let rules = [],
+    const rules = [],
         checkBox = {
             node: $('<div id="flowthreadCheckBox"><div id="flowthreadCheckBoxTitle"><div id="flowthreadCheckBoxTitleContent">评论预览</div><span id="flowthreadCheckBoxCloseButton">×</span></div><div id="flowthreadCheckBoxContent"><div id="flowthreadCheckBoxContentBox"></div></div></div>'),
             closeButton: $("#flowthreadCheckBoxCloseButton").on("click", checkBoxFadeOut),
@@ -53,18 +53,18 @@ $(() => {
         }
         if (!rules[0]) {
             $.ajax({
-                url: `${mw.config.get("wgServer") + mw.config.get("wgScriptPath") }/MediaWiki:Flowthread-blacklist?action=raw`,
+                url: `${mw.config.get("wgServer") + mw.config.get("wgScriptPath")}/MediaWiki:Flowthread-blacklist?action=raw`,
                 type: "GET",
                 success: function (data) {
-                    rules = data.split("\n");
+                    rules.length = 0;
+                    rules.push(...data.split("\n"));
                     rules.splice(0, 5);
                     rules.forEach((v, i) => {
                         const length = v.indexOf("#") === -1 ? i.length : v.indexOf("#"),
                             regexp = v.slice(0, length).trim();
                         if (!/^\s*#/.test(v) && regexp) {
                             rules[i] = [rules[i], RegExp(regexp, "ig")];
-                        }
-                        else {
+                        } else {
                             rules[i] = ["Unexpected Rule", /\s{1307,}/];
                         }
                     });
@@ -74,8 +74,7 @@ $(() => {
                     showCheckBox.call(self);
                 },
             });
-        }
-        else {
+        } else {
             checkText(text);
         }
     }
@@ -90,13 +89,12 @@ $(() => {
         checkBoxFadeIn();
         if (!errorText[0]) {
             checkBox.content.append("您的评论没有触发黑名单机制。");
-        }
-        else {
+        } else {
             const table = checkBox.content.append('您的评论触发以下黑名单（使用正则表达式<sup><a rel="nofollow" target="_blank" class="external text" href="http://baike' + '.baidu.com/view/94238.htm">解释</a></sup>）：').append($("<table/>")).find("table");
             table.append("<tr><th>No.</th>" /* + '<th>黑名单</th>' */ + "<th>命中字符串</th></tr>");
             errorText.forEach((n) => {
                 table.append($("<tr/>").append($("<td/>").addClass("first").text(table.find("tr").length))/* .append($('<td/>').text(n[0])) */.append($("<td/>").append(n[1].map((t) => {
-                    return `<code>${ $("<span/>").text(t).html() }</code>`;
+                    return `<code>${$("<span/>").text(t).html()}</code>`;
                 }).join("<br/>"))));
             });
         }

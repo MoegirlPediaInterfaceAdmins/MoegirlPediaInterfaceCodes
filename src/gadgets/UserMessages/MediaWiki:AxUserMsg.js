@@ -138,8 +138,7 @@
                         const umType = umsg.umTemplate[umsg.umSelect][3];
                         if (!(umType & umsg.umFlagUQ) && !(umType & umsg.umFlagRq)) {
                             umsg.fireImmediately = true;
-                        }
-                        else {
+                        } else {
                             umsg.fireImmediately = false;
                         }
                     }
@@ -485,8 +484,7 @@
                     umsg.talkTag = `\n{{subst:${umsg.umTemplate[$("#umTagToInsert").val()][0]}${umsg.umCleanFileAndUser($("#umMedia").val()) ? `|1=${umType & umsg.umFlagNS ? `File:${umsg.umCleanFileAndUser($("#umMedia").val())}` : $("#umMedia").val()}` : ""}`;
                 } else if (umType & umsg.umFlagUQ) {
                     umsg.talkTag = `\n{{subst:${umsg.umTemplate[$("#umTagToInsert").val()][0]}|1=${umsg.umCleanFileAndUser($("#umRelatedUser").val())}`;
-                }
-                else {
+                } else {
                     umsg.talkTag = `\n{{subst:${umsg.umTemplate[$("#umTagToInsert").val()][0]}`;
                 }
                 let paramCount = (umType & umsg.umFlagUQ ? 1 : 0) + (umType & umsg.umFlagMQ ? 1 : 0);
