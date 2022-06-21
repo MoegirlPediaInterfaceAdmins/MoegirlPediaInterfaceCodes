@@ -1,7 +1,8 @@
+/* global wikEdUseWikEd, WikEdUpdateFrame */
 /*
  * 全部内容引自 https://en.wikipedia.org/wiki/MediaWiki:Gadget-popups.js
- * 当前版本修改自 https://en.wikipedia.org/w/index.php?title=MediaWiki:Gadget-popups.js&oldid=1052364474
- * 当前版本含有自定义tags，参见 https://zh.moegirl.org.cn/index.php?diff=5472811&oldid=5469608 https://zh.moegirl.org.cn/_?diff=5608805
+ * 当前版本修改自 https://en.wikipedia.org/w/index.php?title=MediaWiki:Gadget-popups.js&oldid=1086319046
+ * 当前版本相较于引述版本有大量优化，请不要直接复制粘贴新版本代码
  */
 // <pre>
 "use strict";
@@ -317,7 +318,10 @@ $(() => {
     if (!mw.util.escapeRegExp) {
         mw.util.escapeRegExp = mw.RegExp.escape;
     }
-    function setupTooltips(container, remove, force, popData) {
+    const log = (...args) => window.popupDebug && console.log(...args);
+    const errlog = (...args) => window.popupDebug && console.error(...args);
+    function setupTooltips(_container, remove, force, popData) {
+        let container = _container;
         log(`setupTooltips, container=${container}, remove=${remove}`);
         if (!container) {
             if (getValueOf("popupOnEditSelection") && document && document.editform && document.editform.wpTextbox1) {
@@ -329,8 +333,7 @@ $(() => {
             return;
         }
         container.ranSetupTooltipsAlready = !remove;
-        let anchors;
-        anchors = container.getElementsByTagName("A");
+        const anchors = container.getElementsByTagName("A");
         setupTooltipsLoop(anchors, 0, 250, 100, remove, popData);
     }
     function defaultPopupsContainer() {
@@ -340,7 +343,7 @@ $(() => {
         return document;
     }
     function setupTooltipsLoop(anchors, begin, howmany, sleep, remove, popData) {
-        log(simplePrintf("setupTooltipsLoop(%s,%s,%s,%s,%s)", arguments));
+        log(simplePrintf("setupTooltipsLoop(%s,%s,%s,%s,%s)", [anchors, begin, howmany, sleep, remove, popData]));
         const finish = begin + howmany;
         const loopend = Math.min(finish, anchors.length);
         let j = loopend - begin;
@@ -426,13 +429,14 @@ $(() => {
         document.removeEventListener("keydown", a.modifierKeyHandler, false);
         document.removeEventListener("keyup", a.modifierKeyHandler, false);
     }
-    function mouseOverWikiLink(evt) {
+    function mouseOverWikiLink(_evt) {
+        let evt = _evt;
         if (!evt && window.event) {
             evt = window.event;
         }
         if (getValueOf("popupModifier")) {
             const action = getValueOf("popupModifierAction");
-            const key = action == "disable" ? "keyup" : "keydown";
+            const key = action === "disable" ? "keyup" : "keydown";
             const a = this;
             a.modifierKeyHandler = function (evt) {
                 mouseOverWikiLink2(a, evt);
@@ -469,7 +473,8 @@ $(() => {
     function footnotePreview(x, navpop) {
         setPopupHTML(`<hr />${x.innerHTML}`, "popupPreview", navpop.idNumber);
     }
-    function modifierPressed(evt) {
+    function modifierPressed(_evt) {
+        let evt = _evt;
         const mod = getValueOf("popupModifier");
         if (!mod) {
             return false;
@@ -484,7 +489,7 @@ $(() => {
             return true;
         }
         const action = getValueOf("popupModifierAction");
-        return action == "enable" && modifierPressed(evt) || action == "disable" && !modifierPressed(evt);
+        return action === "enable" && modifierPressed(evt) || action === "disable" && !modifierPressed(evt);
     }
     function mouseOverWikiLink2(a, evt) {
         if (!isCorrectModifier(a, evt)) {
@@ -493,7 +498,7 @@ $(() => {
         if (getValueOf("removeTitles")) {
             removeTitle(a);
         }
-        if (a == pg.current.link && a.navpopup && a.navpopup.isVisible()) {
+        if (a === pg.current.link && a.navpopup && a.navpopup.isVisible()) {
             return;
         }
         pg.current.link = a;
@@ -541,14 +546,14 @@ $(() => {
         });
         if (getValueOf("popupDraggable")) {
             let dragHandle = getValueOf("popupDragHandle") || null;
-            if (dragHandle && dragHandle != "all") {
+            if (dragHandle && dragHandle !== "all") {
                 dragHandle += a.navpopup.idNumber;
             }
             setTimeout(() => {
                 a.navpopup.makeDraggable(dragHandle);
             }, 150);
         }
-        if (getValueOf("popupRedlinkRemoval") && a.className == "new") {
+        if (getValueOf("popupRedlinkRemoval") && a.className === "new") {
             setPopupHTML(`<br>${popupRedlinkHTML(article)}`, "popupRedlink", a.navpopup.idNumber);
         }
     }
@@ -586,7 +591,7 @@ $(() => {
             diff = params.diff;
         }
         if (shouldShow(a, "popupPreviewHistory")) {
-            history = params.action == "history";
+            history = params.action === "history";
         }
         a.navpopup.pending = 0;
         const referenceElement = footnoteTarget(a);
@@ -600,13 +605,13 @@ $(() => {
             loadAPIPreview("contribs", article, a.navpopup);
         } else if (shouldShowNonSimple(a) && pg.re.backlinks.test(a.href)) {
             loadAPIPreview("backlinks", article, a.navpopup);
-        } else if (article.namespaceId() == pg.nsImageId && (shouldShow(a, "imagePopupsForImages") || !anchorContainsImage(a))) {
+        } else if (article.namespaceId() === pg.nsImageId && (shouldShow(a, "imagePopupsForImages") || !anchorContainsImage(a))) {
             loadAPIPreview("imagepagepreview", article, a.navpopup);
             loadImage(article, a.navpopup);
         } else {
-            if (article.namespaceId() == pg.nsCategoryId && shouldShow(a, "popupCategoryMembers")) {
+            if (article.namespaceId() === pg.nsCategoryId && shouldShow(a, "popupCategoryMembers")) {
                 loadAPIPreview("category", article, a.navpopup);
-            } else if ((article.namespaceId() == pg.nsUserId || article.namespaceId() == pg.nsUsertalkId) && shouldShow(a, "popupUserInfo")) {
+            } else if ((article.namespaceId() === pg.nsUserId || article.namespaceId() === pg.nsUsertalkId) && shouldShow(a, "popupUserInfo")) {
                 loadAPIPreview("userinfo", article, a.navpopup);
             }
             if (shouldShowNonSimple(a)) {
@@ -687,7 +692,7 @@ $(() => {
             setPopupTrailer(getPageInfo(wikiText, download), navpop.idNumber);
         }
         let imagePage = "";
-        if (art.namespaceId() == pg.nsImageId) {
+        if (art.namespaceId() === pg.nsImageId) {
             imagePage = art.toString();
         } else {
             imagePage = getValidImageFromWikiText(wikiText);
@@ -701,7 +706,7 @@ $(() => {
     }
     function insertArticlePreview(download, art, navpop) {
         if (download && typeof download.data === typeof "") {
-            if (art.namespaceId() == pg.nsTemplateId && getValueOf("popupPreviewRawTemplates")) {
+            if (art.namespaceId() === pg.nsTemplateId && getValueOf("popupPreviewRawTemplates")) {
                 const h = `<hr /><span style="font-family: monospace;">${download.data.entify().split("\\n").join("<br />\\n")}</span>`;
                 setPopupHTML(h, "popupPreview", navpop.idNumber);
             } else {
@@ -753,93 +758,92 @@ $(() => {
         }
         return true;
     }
-    function Drag() {
-        this.startCondition = null;
-        this.endHook = null;
+    class Drag {
+        startCondition = null;
+        endHook = null;
+        fixE(_e) {
+            let e = _e;
+            if (typeof e === "undefined") {
+                e = window.event;
+            }
+            if (typeof e.layerX === "undefined") {
+                e.layerX = e.offsetX;
+            }
+            if (typeof e.layerY === "undefined") {
+                e.layerY = e.offsetY;
+            }
+            return e;
+        }
+        init(o, oRoot) {
+            const dragObj = this;
+            this.obj = o;
+            o.onmousedown = function (e) {
+                dragObj.start.apply(dragObj, [e]);
+            };
+            o.dragging = false;
+            o.popups_draggable = true;
+            o.hmode = true;
+            o.vmode = true;
+            o.root = oRoot ? oRoot : o;
+            if (isNaN(parseInt(o.root.style.left, 10))) {
+                o.root.style.left = "0px";
+            }
+            if (isNaN(parseInt(o.root.style.top, 10))) {
+                o.root.style.top = "0px";
+            }
+            o.root.onthisStart = function () { };
+            o.root.onthisEnd = function () { };
+            o.root.onthis = function () { };
+        }
+        start(_e) {
+            let e = _e;
+            const o = this.obj;
+            e = this.fixE(e);
+            if (this.startCondition && !this.startCondition(e)) {
+                return;
+            }
+            const y = parseInt(o.vmode ? o.root.style.top : o.root.style.bottom, 10);
+            const x = parseInt(o.hmode ? o.root.style.left : o.root.style.right, 10);
+            o.root.onthisStart(x, y);
+            o.lastMouseX = e.clientX;
+            o.lastMouseY = e.clientY;
+            const dragObj = this;
+            o.onmousemoveDefault = document.onmousemove;
+            o.dragging = true;
+            document.onmousemove = function (e) {
+                dragObj.drag.apply(dragObj, [e]);
+            };
+            document.onmouseup = function (e) {
+                dragObj.end.apply(dragObj, [e]);
+            };
+            return false;
+        }
+        drag(_e) {
+            let e = _e;
+            e = this.fixE(e);
+            const o = this.obj;
+            const ey = e.clientY;
+            const ex = e.clientX;
+            const y = parseInt(o.vmode ? o.root.style.top : o.root.style.bottom, 10);
+            const x = parseInt(o.hmode ? o.root.style.left : o.root.style.right, 10);
+            const nx = x + (ex - o.lastMouseX) * (o.hmode ? 1 : -1);
+            const ny = y + (ey - o.lastMouseY) * (o.vmode ? 1 : -1);
+            this.obj.root.style[o.hmode ? "left" : "right"] = `${nx}px`;
+            this.obj.root.style[o.vmode ? "top" : "bottom"] = `${ny}px`;
+            this.obj.lastMouseX = ex;
+            this.obj.lastMouseY = ey;
+            this.obj.root.onthis(nx, ny);
+            return false;
+        }
+        end() {
+            document.onmousemove = this.obj.onmousemoveDefault;
+            document.onmouseup = null;
+            this.obj.dragging = false;
+            if (this.endHook) {
+                this.endHook(parseInt(this.obj.root.style[this.obj.hmode ? "left" : "right"], 10), parseInt(this.obj.root.style[this.obj.vmode ? "top" : "bottom"], 10));
+            }
+        }
     }
-    Drag.prototype.fixE = function (e) {
-        if (typeof e === "undefined") {
-            e = window.event;
-        }
-        if (typeof e.layerX === "undefined") {
-            e.layerX = e.offsetX;
-        }
-        if (typeof e.layerY === "undefined") {
-            e.layerY = e.offsetY;
-        }
-        return e;
-    };
-    Drag.prototype.init = function (o, oRoot) {
-        const dragObj = this;
-        this.obj = o;
-        o.onmousedown = function (e) {
-            dragObj.start.apply(dragObj, [e]);
-        };
-        o.dragging = false;
-        o.popups_draggable = true;
-        o.hmode = true;
-        o.vmode = true;
-        o.root = oRoot ? oRoot : o;
-        if (isNaN(parseInt(o.root.style.left, 10))) {
-            o.root.style.left = "0px";
-        }
-        if (isNaN(parseInt(o.root.style.top, 10))) {
-            o.root.style.top = "0px";
-        }
-        o.root.onthisStart = function () {
-        };
-        o.root.onthisEnd = function () {
-        };
-        o.root.onthis = function () {
-        };
-    };
-    Drag.prototype.start = function (e) {
-        const o = this.obj;
-        e = this.fixE(e);
-        if (this.startCondition && !this.startCondition(e)) {
-            return;
-        }
-        const y = parseInt(o.vmode ? o.root.style.top : o.root.style.bottom, 10);
-        const x = parseInt(o.hmode ? o.root.style.left : o.root.style.right, 10);
-        o.root.onthisStart(x, y);
-        o.lastMouseX = e.clientX;
-        o.lastMouseY = e.clientY;
-        const dragObj = this;
-        o.onmousemoveDefault = document.onmousemove;
-        o.dragging = true;
-        document.onmousemove = function (e) {
-            dragObj.drag.apply(dragObj, [e]);
-        };
-        document.onmouseup = function (e) {
-            dragObj.end.apply(dragObj, [e]);
-        };
-        return false;
-    };
-    Drag.prototype.drag = function (e) {
-        e = this.fixE(e);
-        const o = this.obj;
-        const ey = e.clientY;
-        const ex = e.clientX;
-        const y = parseInt(o.vmode ? o.root.style.top : o.root.style.bottom, 10);
-        const x = parseInt(o.hmode ? o.root.style.left : o.root.style.right, 10);
-        let nx, ny;
-        nx = x + (ex - o.lastMouseX) * (o.hmode ? 1 : -1);
-        ny = y + (ey - o.lastMouseY) * (o.vmode ? 1 : -1);
-        this.obj.root.style[o.hmode ? "left" : "right"] = `${nx}px`;
-        this.obj.root.style[o.vmode ? "top" : "bottom"] = `${ny}px`;
-        this.obj.lastMouseX = ex;
-        this.obj.lastMouseY = ey;
-        this.obj.root.onthis(nx, ny);
-        return false;
-    };
-    Drag.prototype.end = function () {
-        document.onmousemove = this.obj.onmousemoveDefault;
-        document.onmouseup = null;
-        this.obj.dragging = false;
-        if (this.endHook) {
-            this.endHook(parseInt(this.obj.root.style[this.obj.hmode ? "left" : "right"], 10), parseInt(this.obj.root.style[this.obj.vmode ? "top" : "bottom"], 10));
-        }
-    };
     pg.structures.original = {};
     pg.structures.original.popupLayout = function () {
         return ["popupError", "popupImage", "popupTopLinks", "popupTitle", "popupUserData", "popupData", "popupOtherLinks", "popupRedir", ["popupWarnRedir", "popupRedirTopLinks", "popupRedirTitle", "popupRedirData", "popupRedirOtherLinks"], "popupMiscTools", ["popupRedlink"], "popupPrePreviewSep", "popupPreview", "popupSecondPreview", "popupPreviewMore", "popupPostPreview", "popupFixDab"];
@@ -884,10 +888,10 @@ $(() => {
         const editOldidStr = `if(oldid){<<editOld|shortcut=e>>|<<revert|shortcut=v|rv>>|<<edit|cur>>}else{${editstr}}`;
         const historystr = "<<history|shortcut=h>>";
         const watchstr = "<<unwatch|unwatchShort>>|<<watch|shortcut=w|watchThingy>>";
-        str += `<br>if(talk){${editOldidStr}|<<new|shortcut=+>>` + `*${historystr}*${watchstr}*` + "<b><<article|shortcut=a>></b>|<<editArticle|edit>>" + `}else{${editOldidStr}*${historystr}*${watchstr}*` + "<b><<talk|shortcut=t>></b>|<<editTalk|edit>>|<<newTalk|shortcut=+|new>>}";
+        str += `<br>if(talk){${editOldidStr}|<<new|shortcut=+>>*${historystr}*${watchstr}*<b><<article|shortcut=a>></b>|<<editArticle|edit>>}else{${editOldidStr}*${historystr}*${watchstr}*<b><<talk|shortcut=t>></b>|<<editTalk|edit>>|<<newTalk|shortcut=+|new>>}`;
         str += "<br><<whatLinksHere|shortcut=l>>*<<relatedChanges|shortcut=r>>";
         str += "if(admin){<br>}else{*}<<move|shortcut=m>>";
-        str += "if(admin){*<<unprotect|unprotectShort>>|<<protect|shortcut=p>>*" + "<<undelete|undeleteShort>>|<<delete|shortcut=d>>}";
+        str += "if(admin){*<<unprotect|unprotectShort>>|<<protect|shortcut=p>>*<<undelete|undeleteShort>>|<<delete|shortcut=d>>}";
         return navlinkStringToHTML(str, x.article, x.params);
     };
     pg.structures.nostalgia.popupRedirTopLinks = pg.structures.nostalgia.popupTopLinks;
@@ -899,7 +903,7 @@ $(() => {
         const hist = "<<history|shortcut=h|hist>>|<<lastEdit|shortcut=/|last>>|<<editors|shortcut=E|eds>>";
         const watch = "<<unwatch|unwatchShort>>|<<watch|shortcut=w|watchThingy>>";
         const move = "<<move|shortcut=m|move>>";
-        return navlinkStringToHTML("if(talk){" + `<<edit|shortcut=e>>|<<new|shortcut=+|+>>*${hist}*` + "<<article|shortcut=a>>|<<editArticle|edit>>" + `*${watch}*${move}}else{<<edit|shortcut=e>>*${hist}*<<talk|shortcut=t|>>|<<editTalk|edit>>|<<newTalk|shortcut=+|new>>` + `*${watch}*${move}}<br>`, x.article, x.params);
+        return navlinkStringToHTML(`if(talk){<<edit|shortcut=e>>|<<new|shortcut=+|+>>*${hist}*<<article|shortcut=a>>|<<editArticle|edit>>*${watch}*${move}}else{<<edit|shortcut=e>>*${hist}*<<talk|shortcut=t|>>|<<editTalk|edit>>|<<newTalk|shortcut=+|new>>*${watch}*${move}}<br>`, x.article, x.params);
     };
     pg.structures.fancy.popupOtherLinks = function (x) {
         const admin = "<<unprotect|unprotectShort>>|<<protect|shortcut=p>>*<<undelete|undeleteShort>>|<<delete|shortcut=d|del>>";
@@ -935,14 +939,14 @@ $(() => {
         const jsHistory = "<<lastContrib|last set of edits>><<sinceMe|changes since mine>>";
         const linkshere = "<<whatLinksHere|shortcut=l|what links here>>";
         const related = "<<relatedChanges|shortcut=r|related changes>>";
-        const search = "<menurow><<search|shortcut=s>>if(wikimedia){|<<globalsearch|shortcut=g|global>>}" + "|<<google|shortcut=G|web>></menurow>";
+        const search = "<menurow><<search|shortcut=s>>if(wikimedia){|<<globalsearch|shortcut=g|global>>}|<<google|shortcut=G|web>></menurow>";
         const watch = "<menurow><<unwatch|unwatchShort>>|<<watch|shortcut=w|watchThingy>></menurow>";
-        const protect = "<menurow><<unprotect|unprotectShort>>|" + "<<protect|shortcut=p>>|<<protectlog|log>></menurow>";
-        const del = "<menurow><<undelete|undeleteShort>>|<<delete|shortcut=d>>|" + "<<deletelog|log>></menurow>";
+        const protect = "<menurow><<unprotect|unprotectShort>>|<<protect|shortcut=p>>|<<protectlog|log>></menurow>";
+        const del = "<menurow><<undelete|undeleteShort>>|<<delete|shortcut=d>>|<<deletelog|log>></menurow>";
         const move = "<<move|shortcut=m|move page>>";
         const nullPurge = "<menurow><<nullEdit|shortcut=n|null edit>>|<<purge|shortcut=P>></menurow>";
         const viewOptions = "<menurow><<view|shortcut=v>>|<<render|shortcut=S>>|<<raw>></menurow>";
-        const editRow = "if(oldid){" + "<menurow><<edit|shortcut=e>>|<<editOld|shortcut=e|this&nbsp;revision>></menurow>" + "<menurow><<revert|shortcut=v>>|<<undo>></menurow>" + "}else{<<edit|shortcut=e>>}";
+        const editRow = "if(oldid){<menurow><<edit|shortcut=e>>|<<editOld|shortcut=e|this&nbsp;revision>></menurow><menurow><<revert|shortcut=v>>|<<undo>></menurow>}else{<<edit|shortcut=e>>}";
         const markPatrolled = "if(rcid){<<markpatrolled|mark patrolled>>}";
         const newTopic = "if(talk){<<new|shortcut=+|new topic>>}";
         const protectDelete = `if(admin){${protect}${del}}`;
@@ -964,13 +968,13 @@ $(() => {
             s.push(viewOptions);
         }
         s.push(`<hr />${watch}${protectDelete}`);
-        s.push("<hr />" + "if(talk){<<article|shortcut=a|view article>><<editArticle|edit article>>}" + "else{<<talk|shortcut=t|talk page>><<editTalk|edit talk>>" + `<<newTalk|shortcut=+|new topic>>}</menu>${enddiv}`);
+        s.push(`<hr />if(talk){<<article|shortcut=a|view article>><<editArticle|edit article>>}else{<<talk|shortcut=t|talk page>><<editTalk|edit talk>><<newTalk|shortcut=+|new topic>>}</menu>${enddiv}`);
         const email = "<<email|shortcut=E|email user>>";
-        const contribs = "if(wikimedia){<menurow>}<<contribs|shortcut=c|contributions>>if(wikimedia){</menurow>}" + "if(admin){<menurow><<deletedContribs>></menurow>}";
+        const contribs = "if(wikimedia){<menurow>}<<contribs|shortcut=c|contributions>>if(wikimedia){</menurow>}if(admin){<menurow><<deletedContribs>></menurow>}";
         s.push(`if(user){*${dropdiv}${menuTitle("user")}`);
         s.push("<menu>");
         s.push("<menurow><<userPage|shortcut=u|user&nbsp;page>>|<<userSpace|space>></menurow>");
-        s.push("<<userTalk|shortcut=t|user talk>><<editUserTalk|edit user talk>>" + "<<newUserTalk|shortcut=+|leave comment>>");
+        s.push("<<userTalk|shortcut=t|user talk>><<editUserTalk|edit user talk>><<newUserTalk|shortcut=+|leave comment>>");
         if (!shorter) {
             s.push(`if(ipuser){<<arin>>}else{${email}}`);
         } else {
@@ -1013,7 +1017,8 @@ $(() => {
         const fromRe = RegExp(cmdBody.from, cmdBody.flags);
         return data.replace(fromRe, cmdBody.to);
     }
-    function execCmds(data, cmdList) {
+    function execCmds(_data, cmdList) {
+        let data = _data;
         for (let i = 0; i < cmdList.length; ++i) {
             data = cmdList[i].action(data, cmdList[i]);
         }
@@ -1039,7 +1044,8 @@ $(() => {
     function unEscape(str, sep) {
         return str.split("\\\\").join("\\").split(`\\${sep}`).join(sep).split("\\n").join("\n");
     }
-    function parseSubstitute(str) {
+    function parseSubstitute(_str) {
+        let str = _str;
         let from, to, flags, tmp;
         if (str.length < 4) {
             return false;
@@ -1087,7 +1093,7 @@ $(() => {
             remainder: str.substring(endSegment + 1),
         };
     }
-    function skipToEnd(str, sep) {
+    function skipToEnd(str) {
         return {
             segment: str,
             remainder: "",
@@ -1095,10 +1101,10 @@ $(() => {
     }
     function findNext(str, ch) {
         for (let i = 0; i < str.length; ++i) {
-            if (str.charAt(i) == "\\") {
+            if (str.charAt(i) === "\\") {
                 i += 2;
             }
-            if (str.charAt(i) == ch) {
+            if (str.charAt(i) === ch) {
                 return i;
             }
         }
@@ -1142,6 +1148,9 @@ $(() => {
             }
             if (mw.util.getParamValue("autowatchlist") && mw.util.getParamValue("actoken") === autoClickToken()) {
                 pg.fn.modifyWatchlist(mw.util.getParamValue("title"), mw.util.getParamValue("action"));
+            }
+            if (!document.editform) {
+                return false;
             }
             if (autoEdit.alreadyRan) {
                 return false;
@@ -1207,7 +1216,7 @@ $(() => {
         return mw.user.sessionId();
     }
     function autoEdit3() {
-        if (mw.util.getParamValue("actoken") != autoClickToken()) {
+        if (mw.util.getParamValue("actoken") !== autoClickToken()) {
             return;
         }
         const btn = mw.util.getParamValue("autoclick");
@@ -1227,7 +1236,7 @@ $(() => {
         const headings = document.getElementsByTagName("h1");
         if (headings) {
             const div = document.createElement("div");
-            div.innerHTML = `<font size=+1><b>${s}</b></font>`;
+            div.innerHTML = `<font size=+1><b>${pg.escapeQuotesHTML(s)}</b></font>`;
             headings[0].parentNode.insertBefore(div, headings[0]);
         }
     }
@@ -1241,87 +1250,87 @@ $(() => {
             return false;
         }
     }
-    function Downloader(url) {
-        if (typeof XMLHttpRequest !== "undefined") {
-            this.http = new XMLHttpRequest();
+    class Downloader {
+        id = null;
+        lastModified = null;
+        callbackFunction = null;
+        onFailure = null;
+        aborted = false;
+        method = "GET";
+        async = true;
+        constructor(url) {
+            if (typeof XMLHttpRequest !== "undefined") {
+                this.http = new XMLHttpRequest();
+            }
+            this.url = url;
         }
-        this.url = url;
-        this.id = null;
-        this.lastModified = null;
-        this.callbackFunction = null;
-        this.onFailure = null;
-        this.aborted = false;
-        this.method = "GET";
-        this.async = true;
+        send(x) {
+            if (!this.http) {
+                return null;
+            }
+            return this.http.send(x);
+        }
+        abort() {
+            if (!this.http) {
+                return null;
+            }
+            this.aborted = true;
+            return this.http.abort();
+        }
+        getData() {
+            if (!this.http) {
+                return null;
+            }
+            return this.http.responseText;
+        }
+        setTarget() {
+            if (!this.http) {
+                return null;
+            }
+            this.http.open(this.method, this.url, this.async);
+            this.http.setRequestHeader("Api-User-Agent", pg.api.userAgent);
+        }
+        getReadyState() {
+            if (!this.http) {
+                return null;
+            }
+            return this.http.readyState;
+        }
+        start() {
+            if (!this.http) {
+                return;
+            }
+            pg.misc.downloadsInProgress[this.id] = this;
+            this.http.send(null);
+        }
+        getLastModifiedDate() {
+            if (!this.http) {
+                return null;
+            }
+            let lastmod = null;
+            try {
+                lastmod = this.http.getResponseHeader("Last-Modified");
+            } catch { } if (lastmod) {
+                return new Date(lastmod);
+            }
+            return null;
+        }
+        setCallback(f) {
+            if (!this.http) {
+                return;
+            }
+            this.http.onreadystatechange = f;
+        }
+        getStatus() {
+            if (!this.http) {
+                return null;
+            }
+            return this.http.status;
+        }
     }
-    new Downloader();
-    Downloader.prototype.send = function (x) {
-        if (!this.http) {
-            return null;
-        }
-        return this.http.send(x);
-    };
-    Downloader.prototype.abort = function () {
-        if (!this.http) {
-            return null;
-        }
-        this.aborted = true;
-        return this.http.abort();
-    };
-    Downloader.prototype.getData = function () {
-        if (!this.http) {
-            return null;
-        }
-        return this.http.responseText;
-    };
-    Downloader.prototype.setTarget = function () {
-        if (!this.http) {
-            return null;
-        }
-        this.http.open(this.method, this.url, this.async);
-        this.http.setRequestHeader("Api-User-Agent", pg.api.userAgent);
-    };
-    Downloader.prototype.getReadyState = function () {
-        if (!this.http) {
-            return null;
-        }
-        return this.http.readyState;
-    };
     pg.misc.downloadsInProgress = {};
-    Downloader.prototype.start = function () {
-        if (!this.http) {
-            return;
-        }
-        pg.misc.downloadsInProgress[this.id] = this;
-        this.http.send(null);
-    };
-    Downloader.prototype.getLastModifiedDate = function () {
-        if (!this.http) {
-            return null;
-        }
-        let lastmod = null;
-        try {
-            lastmod = this.http.getResponseHeader("Last-Modified");
-        } catch (err) {
-        }
-        if (lastmod) {
-            return new Date(lastmod);
-        }
-        return null;
-    };
-    Downloader.prototype.setCallback = function (f) {
-        if (!this.http) {
-            return;
-        }
-        this.http.onreadystatechange = f;
-    };
-    Downloader.prototype.getStatus = function () {
-        if (!this.http) {
-            return null;
-        }
-        return this.http.status;
-    };
-    function newDownload(url, id, callback, onfailure) {
+    function newDownload(url, id, callback, _onfailure) {
+        let onfailure = _onfailure;
         const d = new Downloader(url);
         if (!d.http) {
             return "ohdear";
@@ -1332,10 +1341,10 @@ $(() => {
             onfailure = 2;
         }
         const f = function () {
-            if (d.getReadyState() == 4) {
+            if (d.getReadyState() === 4) {
                 delete pg.misc.downloadsInProgress[this.id];
                 try {
-                    if (d.getStatus() == 200) {
+                    if (d.getStatus() === 200) {
                         d.data = d.getData();
                         d.lastModified = d.getLastModifiedDate();
                         callback(d);
@@ -1346,8 +1355,7 @@ $(() => {
                     } else if (typeof onfailure === "function") {
                         onfailure(d, url, id, callback);
                     }
-                } catch (somerr) {
-                }
+                } catch { }
             }
         };
         d.setCallback(f);
@@ -1375,8 +1383,7 @@ $(() => {
                 pg.misc.downloadsInProgress[x].aborted = true;
                 pg.misc.downloadsInProgress[x].abort();
                 delete pg.misc.downloadsInProgress[x];
-            } catch (e) {
-            }
+            } catch { }
         }
     }
     const Insta = {};
@@ -1406,7 +1413,8 @@ $(() => {
         Insta.conf.user.signature = `[[${Insta.conf.locale.user}:${Insta.conf.user.name}|${Insta.conf.user.name}]]`;
         Insta.BLOCK_IMAGE = new RegExp(`^\\[\\[(?:File|Image|${Insta.conf.locale.image}):.*?\\|.*?(?:frame|thumbnail|thumb|none|right|left|center)`, "i");
     }
-    Insta.dump = function (from, to) {
+    Insta.dump = function (_from, _to) {
+        let from = _from, to = _to;
         if (typeof from === "string") {
             from = document.getElementById(from);
         }
@@ -1416,8 +1424,8 @@ $(() => {
         to.innerHTML = this.convert(from.value);
     };
     Insta.convert = function (wiki) {
-        let ll = typeof wiki === "string" ? wiki.replace(/\r/g, "").split(/\n/) : wiki,
-            o = "",
+        const ll = typeof wiki === "string" ? wiki.replace(/\r/g, "").split(/\n/) : wiki;
+        let o = "",
             p = 0,
             r;
         function remain() {
@@ -1429,15 +1437,14 @@ $(() => {
         function ps(s) {
             o += s;
         }
-        function f() {
+        function f(...a) {
             let i = 1,
-                a = arguments,
                 f = a[0],
                 o = "",
                 c, p;
             for (; i < a.length; i++) {
                 if ((p = f.indexOf("?")) + 1) {
-                    i -= c = f.charAt(p + 1) == "?" ? 1 : 0;
+                    i -= c = f.charAt(p + 1) === "?" ? 1 : 0;
                     o += f.substring(0, p) + (c ? "?" : a[i]);
                     f = f.substr(p + 1 + c);
                 } else {
@@ -1456,18 +1463,20 @@ $(() => {
             return htmlescape_text(s).replace(/'/g, "&#39;").replace(/"/g, "&quot;");
         }
         function str_imatch(a, b) {
-            for (var i = 0, l = Math.min(a.length, b.length); i < l; i++) {
-                if (a.charAt(i) != b.charAt(i)) {
+            const l = Math.min(a.length, b.length);
+            let i;
+            for (i = 0; i < l; i++) {
+                if (a.charAt(i) !== b.charAt(i)) {
                     break;
                 }
             }
             return i;
         }
         function compareLineStringOrReg(c) {
-            return typeof c === "string" ? ll[0] && ll[0].substr(0, c.length) == c : r = ll[0] && ll[0].match(c);
+            return typeof c === "string" ? ll[0] && ll[0].substr(0, c.length) === c : r = ll[0] && ll[0].match(c);
         }
         function compareLineString(c) {
-            return ll[0] == c;
+            return ll[0] === c;
         }
         function charAtPoint(p) {
             return ll[0].charAt(p);
@@ -1484,21 +1493,21 @@ $(() => {
                 const ipos = str_imatch(prev, l_match[1]);
                 for (let prevPos = prev.length - 1; prevPos >= ipos; prevPos--) {
                     const pi = prev.charAt(prevPos);
-                    if (pi == "*") {
+                    if (pi === "*") {
                         ps("</ul>");
-                    } else if (pi == "#") {
+                    } else if (pi === "#") {
                         ps("</ol>");
-                    } else if (compareLineStringOrReg.inArray(l_match[1].charAt(prevPos), ["", "*", "#"])) {
+                    } else if ($.inArray(l_match[1].charAt(prevPos), ["", "*", "#"])) {
                         ps("</dl>");
                     }
                 }
                 for (let matchPos = ipos; matchPos < l_match[1].length; matchPos++) {
                     const li = l_match[1].charAt(matchPos);
-                    if (li == "*") {
+                    if (li === "*") {
                         ps("<ul>");
-                    } else if (li == "#") {
+                    } else if (li === "#") {
                         ps("<ol>");
-                    } else if (compareLineStringOrReg.inArray(prev.charAt(matchPos), ["", "*", "#"])) {
+                    } else if ($.inArray(prev.charAt(matchPos), ["", "*", "#"])) {
                         ps("<dl>");
                     }
                 }
@@ -1507,9 +1516,9 @@ $(() => {
                     case "#":
                         ps(`<li>${parse_inline_nowiki(l_match[2])}`);
                         break;
-                    case ";":
+                    case ";": {
                         ps("<dt>");
-                        var dt_match = l_match[2].match(/(.*?)(:.*?)$/);
+                        const dt_match = l_match[2].match(/(.*?)(:.*?)$/);
                         if (dt_match) {
                             ps(parse_inline_nowiki(dt_match[1]));
                             ll.unshift(dt_match[2]);
@@ -1517,18 +1526,19 @@ $(() => {
                             ps(parse_inline_nowiki(l_match[2]));
                         }
                         break;
+                    }
                     case ":":
                         ps(`<dd>${parse_inline_nowiki(l_match[2])}`);
                 }
                 prev = l_match[1];
             }
             for (let i = prev.length - 1; i >= 0; i--) {
-                ps(f("</?>", prev.charAt(i) == "*" ? "ul" : prev.charAt(i) == "#" ? "ol" : "dl"));
+                ps(f("</?>", prev.charAt(i) === "*" ? "ul" : prev.charAt(i) === "#" ? "ol" : "dl"));
             }
         }
         function parse_table() {
             endl(f("<table>", compareLineStringOrReg(/^\{\|( .*)$/) ? r[1] : ""));
-            for (; remain();) {
+            while (remain()) {
                 if (compareLineStringOrReg("|")) {
                     switch (charAtPoint(1)) {
                         case "}":
@@ -1550,10 +1560,10 @@ $(() => {
         function parse_table_data() {
             let td_line, match_i;
             const td_match = sh().match(/^(\|\+|\||!)((?:([^[|]*?)\|(?!\|))?(.*))$/);
-            if (td_match[1] == "|+") {
+            if (td_match[1] === "|+") {
                 ps("<caption");
             } else {
-                ps(`<t${td_match[1] == "|" ? "d" : "h"}`);
+                ps(`<t${td_match[1] === "|" ? "d" : "h"}`);
             }
             if (typeof td_match[3] !== "undefined") {
                 match_i = 4;
@@ -1561,23 +1571,23 @@ $(() => {
                 match_i = 2;
             }
             ps(">");
-            if (td_match[1] != "|+") {
-                td_line = td_match[match_i].split(td_match[1] == "|" ? "||" : /(?:\|\||!!)/);
+            if (td_match[1] !== "|+") {
+                td_line = td_match[match_i].split(td_match[1] === "|" ? "||" : /(?:\|\||!!)/);
                 ps(parse_inline_nowiki(td_line.shift()));
                 while (td_line.length) {
                     ll.unshift(td_match[1] + td_line.pop());
                 }
             } else {
-                ps(td_match[match_i]);
+                ps(parse_inline_nowiki(td_match[match_i]));
             }
-            let tc = 0,
-                td = [];
+            let tc = 0;
+            const td = [];
             while (remain()) {
                 td.push(sh());
                 if (compareLineStringOrReg("|")) {
                     if (!tc) {
                         break;
-                    } else if (charAtPoint(1) == "}") {
+                    } else if (charAtPoint(1) === "}") {
                         tc--;
                     }
                 } else if (!tc && compareLineStringOrReg("!")) {
@@ -1602,18 +1612,12 @@ $(() => {
         }
         function parse_image(str) {
             let tag = str.substring(str.indexOf(":") + 1, str.length - 2);
-            let width;
-            let attr = [],
-                filename, caption = "";
-            let thumb = 0,
-                frame = 0,
-                center = 0;
-            let align = "";
+            const attr = [];
             if (tag.match(/\|/)) {
                 let nesting = 0;
                 let last_attr;
                 for (let i = tag.length - 1; i > 0; i--) {
-                    if (tag.charAt(i) == "|" && !nesting) {
+                    if (tag.charAt(i) === "|" && !nesting) {
                         last_attr = tag.substr(i + 1);
                         tag = tag.substring(0, i);
                         break;
@@ -1629,43 +1633,9 @@ $(() => {
                         }
                     }
                 }
-                attr = tag.split(/\s*\|\s*/);
+                attr.length = 0;
+                attr.push(...tag.split(/\s*\|\s*/));
                 attr.push(last_attr);
-                filename = attr.shift();
-                let w_match;
-                for (; attr.length; attr.shift()) {
-                    w_match = attr[0].match(/^(\d*)(?:[px]*\d*)?px$/);
-                    if (w_match) {
-                        width = w_match[1];
-                    } else {
-                        switch (attr[0]) {
-                            case "thumb":
-                            case "thumbnail":
-                                thumb = true;
-                                frame = true;
-                                break;
-                            case "frame":
-                                frame = true;
-                                break;
-                            case "none":
-                            case "right":
-                            case "left":
-                                center = false;
-                                align = attr[0];
-                                break;
-                            case "center":
-                                center = true;
-                                align = "none";
-                                break;
-                            default:
-                                if (attr.length == 1) {
-                                    caption = attr[0];
-                                }
-                        }
-                    }
-                }
-            } else {
-                filename = tag;
             }
             return "";
         }
@@ -1675,7 +1645,7 @@ $(() => {
                 nestlev = 0,
                 open, close, subloop;
             let html = "";
-            while (-1 != (start = str.indexOf("<nowiki>", substart))) {
+            while (-1 !== (start = str.indexOf("<nowiki>", substart))) {
                 html += parse_inline_wiki(str.substring(lastend, start));
                 start += 8;
                 substart = start;
@@ -1683,8 +1653,8 @@ $(() => {
                 do {
                     open = str.indexOf("<nowiki>", substart);
                     close = str.indexOf("</nowiki>", substart);
-                    if (close <= open || open == -1) {
-                        if (close == -1) {
+                    if (close <= open || open === -1) {
+                        if (close === -1) {
                             return html + html_entities(str.substr(start));
                         }
                         substart = close + 9;
@@ -1703,11 +1673,12 @@ $(() => {
             }
             return html + parse_inline_wiki(str.substr(lastend));
         }
-        function parse_inline_images(str) {
+        function parse_inline_images(_str) {
+            let str = _str;
             let start, substart = 0,
                 nestlev = 0;
             let loop, close, open, wiki, html;
-            while (-1 != (start = str.indexOf("[[", substart))) {
+            while (-1 !== (start = str.indexOf("[[", substart))) {
                 if (str.substr(start + 2).match(RegExp(`^(Image|File|${Insta.conf.locale.image}):`, "i"))) {
                     loop = true;
                     substart = start;
@@ -1715,8 +1686,8 @@ $(() => {
                         substart += 2;
                         close = str.indexOf("]]", substart);
                         open = str.indexOf("[[", substart);
-                        if (close <= open || open == -1) {
-                            if (close == -1) {
+                        if (close <= open || open === -1) {
+                            if (close === -1) {
                                 return str;
                             }
                             substart = close;
@@ -1745,7 +1716,7 @@ $(() => {
             while ((i = str.indexOf("''", li)) + 1) {
                 o += str.substring(li, i);
                 li = i + 2;
-                if (str.charAt(i + 2) == "'") {
+                if (str.charAt(i + 2) === "'") {
                     li++;
                     st = !st;
                     o += st ? "<strong>" : "</strong>";
@@ -1756,7 +1727,8 @@ $(() => {
             }
             return o + str.substr(li);
         }
-        function parse_inline_wiki(str) {
+        function parse_inline_wiki(_str) {
+            let str = _str;
             str = parse_inline_images(str);
             str = parse_inline_formatting(str);
             str = str.replace(/<(?:)math>(.*?)<\/math>/gi, "");
@@ -1790,7 +1762,7 @@ $(() => {
                 return f("?<a class='external' href='?:?'>?:?</a>", htmlescape_text($1), htmlescape_attr($2), htmlescape_attr($3) + htmlescape_attr($4), htmlescape_text($2), htmlescape_text($3) + htmlescape_text($4));
             }).replace("__NOTOC__", "").replace("__NOINDEX__", "").replace("__INDEX__", "").replace("__NOEDITSECTION__", "");
         }
-        for (; remain();) {
+        while (remain()) {
             if (compareLineStringOrReg(/^(={1,6})(.*)\1(.*)$/)) {
                 p = 0;
                 endl(f("<h?>?</h?>?", r[1].length, parse_inline_nowiki(r[2]), r[1].length, r[3]));
@@ -1836,20 +1808,19 @@ $(() => {
     }
     function popupFilterCountLinks(data) {
         const num = countLinks(data);
-        return `${String(num)}&nbsp;${num != 1 ? popupString("wikiLinks") : popupString("wikiLink")}`;
+        return `${String(num)}&nbsp;${num !== 1 ? popupString("wikiLinks") : popupString("wikiLink")}`;
     }
     function popupFilterCountImages(data) {
         const num = countImages(data);
-        return `${String(num)}&nbsp;${num != 1 ? popupString("images") : popupString("image")}`;
+        return `${String(num)}&nbsp;${num !== 1 ? popupString("images") : popupString("image")}`;
     }
     function popupFilterCountCategories(data) {
         const num = countCategories(data);
-        return `${String(num)}&nbsp;${num != 1 ? popupString("categories") : popupString("category")}`;
+        return `${String(num)}&nbsp;${num !== 1 ? popupString("categories") : popupString("category")}`;
     }
     function popupFilterLastModified(data, download) {
         const lastmod = download.lastModified;
-        //var now = new Date();
-        const age = moment(lastmod);// now - lastmod;
+        const age = moment(lastmod); // formatAge 现仅直接接受 moment 对象
         if (lastmod && getValueOf("popupLastModified")) {
             return tprintf("%s old", [formatAge(age)]).replace(RegExp(" ", "g"), "&nbsp;");
         }
@@ -1927,7 +1898,7 @@ $(() => {
         return result.replace(/(\d) /g, "$1");
     }
     function addunit(num, str) {
-        return `${num} ${num != 1 ? popupString(`${str}s`) : popupString(str)}`;
+        return `${num} ${num !== 1 ? popupString(`${str}s`) : popupString(str)}`;
     }
     function runPopupFilters(list, data, download) {
         const ret = [];
@@ -1982,322 +1953,328 @@ $(() => {
     function formatBytes(num) {
         return num > 949 ? Math.round(num / 100) / 10 + popupString("kB") : `${num}&nbsp;${popupString("bytes")}`;
     }
-    function Stringwrapper() {
-        this.indexOf = function (x) {
+    class Stringwrapper {
+        indexOf(x) {
             return this.toString().indexOf(x);
-        };
-        this.toString = function () {
+        }
+        toString() {
             return this.value;
-        };
-        this.parenSplit = function (x) {
+        }
+        parenSplit(x) {
             return this.toString().parenSplit(x);
-        };
-        this.substring = function (x, y) {
+        }
+        substring(x, y) {
             if (typeof y === "undefined") {
                 return this.toString().substring(x);
             }
             return this.toString().substring(x, y);
-        };
-        this.split = function (x) {
+        }
+        split(x) {
             return this.toString().split(x);
-        };
-        this.replace = function (x, y) {
+        }
+        replace(x, y) {
             return this.toString().replace(x, y);
-        };
-    }
-    function Title(val) {
-        this.value = null;
-        this.anchor = "";
-        this.setUtf(val);
-    }
-    Title.prototype = new Stringwrapper();
-    Title.prototype.toString = function (omitAnchor) {
-        return this.value + (!omitAnchor && this.anchor ? `#${this.anchorString()}` : "");
-    };
-    Title.prototype.anchorString = function () {
-        if (!this.anchor) {
-            return "";
         }
-        const split = this.anchor.parenSplit(/((?:[.][0-9A-F]{2})+)/);
-        const len = split.length;
-        let value;
-        for (let j = 1; j < len; j += 2) {
-            value = split[j].split(".").join("%");
+    }
+    class Title extends Stringwrapper {
+        value = null;
+        anchor = "";
+        constructor(val) {
+            super();
+            this.setUtf(val);
+        }
+        static fromURL(h) {
+            return new Title().fromURL(h);
+        }
+        static fromAnchor(a) {
+            return new Title().fromAnchor(a);
+        }
+        static fromWikiText(txt) {
+            return new Title().fromWikiText(txt);
+        }
+        toString(omitAnchor) {
+            return this.value + (!omitAnchor && this.anchor ? `#${this.anchorString()}` : "");
+        }
+        anchorString() {
+            if (!this.anchor) {
+                return "";
+            }
+            const split = this.anchor.parenSplit(/((?:[.][0-9A-F]{2})+)/);
+            const len = split.length;
+            let value;
+            for (let j = 1; j < len; j += 2) {
+                value = split[j].split(".").join("%");
+                try {
+                    value = decodeURIComponent(value);
+                } catch { } split[j] = value.split("_").join(" ");
+            }
+            return split.join("");
+        }
+        urlAnchor() {
+            const split = this.anchor.parenSplit("/((?:[%][0-9A-F]{2})+)/");
+            const len = split.length;
+            for (let j = 1; j < len; j += 2) {
+                split[j] = split[j].split("%").join(".");
+            }
+            return split.join("");
+        }
+        anchorFromUtf(str) {
+            this.anchor = encodeURIComponent(str.split(" ").join("_")).split("%3A").join(":").split("'").join("%27").split("%").join(".");
+        }
+        decodeNasties(txt) {
             try {
-                value = decodeURIComponent(value);
+                let ret = decodeURI(this.decodeEscapes(txt));
+                ret = ret.replace(/[_ ]*$/, "");
+                return ret;
             } catch (e) {
-                // cannot decode
+                return txt;
             }
-            split[j] = value.split("_").join(" ");
         }
-        return split.join("");
-    };
-    Title.prototype.urlAnchor = function () {
-        const split = this.anchor.parenSplit("/((?:[%][0-9A-F]{2})+)/");
-        const len = split.length;
-        for (let j = 1; j < len; j += 2) {
-            split[j] = split[j].split("%").join(".");
+        decodeEscapes(txt) {
+            const split = txt.parenSplit(/((?:[%][0-9A-Fa-f]{2})+)/);
+            const len = split.length;
+            if (len === 1) {
+                return split[0].replace(/%(?![0-9a-fA-F][0-9a-fA-F])/g, "%25");
+            }
+            for (let i = 1; i < len; i = i + 2) {
+                split[i] = decodeURIComponent(split[i]);
+            }
+            return split.join("");
         }
-        return split.join("");
-    };
-    Title.prototype.anchorFromUtf = function (str) {
-        this.anchor = encodeURIComponent(str.split(" ").join("_")).split("%3A").join(":").split("'").join("%27").split("%").join(".");
-    };
-    Title.fromURL = function (h) {
-        return new Title().fromURL(h);
-    };
-    Title.prototype.fromURL = function (h) {
-        if (typeof h !== "string") {
+        hintValue() {
+            if (!this.value) {
+                return "";
+            }
+            return safeDecodeURI(this.value);
+        }
+        toUserName(withNs) {
+            if (this.namespaceId() !== pg.nsUserId && this.namespaceId() !== pg.nsUsertalkId) {
+                this.value = null;
+                return;
+            }
+            this.value = (withNs ? `${mw.config.get("wgFormattedNamespaces")[pg.nsUserId]}:` : "") + this.stripNamespace().split("/")[0];
+        }
+        userName(withNs) {
+            const t = new Title(this.value);
+            t.toUserName(withNs);
+            if (t.value) {
+                return t;
+            }
+            return null;
+        }
+        toTalkPage() {
+            if (this.value === null) {
+                return null;
+            }
+            const namespaceId = this.namespaceId();
+            if (namespaceId >= 0 && namespaceId % 2 === 0) {
+                const localizedNamespace = mw.config.get("wgFormattedNamespaces")[namespaceId + 1];
+                if (typeof localizedNamespace !== "undefined") {
+                    if (localizedNamespace === "") {
+                        this.value = this.stripNamespace();
+                    } else {
+                        this.value = `${localizedNamespace.split(" ").join("_")}:${this.stripNamespace()}`;
+                    }
+                    return this.value;
+                }
+            }
             this.value = null;
-            return this;
+            return null;
         }
-        const splitted = h.split("?");
-        splitted[0] = splitted[0].split("&").join("%26");
-        h = splitted.join("?");
-        const contribs = pg.re.contribs.exec(h);
-        if (contribs) {
-            if (contribs[1] == "title=") {
-                contribs[3] = contribs[3].split("+").join(" ");
+        namespace() {
+            return mw.config.get("wgFormattedNamespaces")[this.namespaceId()];
+        }
+        namespaceId() {
+            const n = this.value.indexOf(":");
+            if (n < 0) {
+                return 0;
             }
-            const u = new Title(contribs[3]);
-            this.setUtf(this.decodeNasties(`${mw.config.get("wgFormattedNamespaces")[pg.nsUserId]}:${u.stripNamespace()}`));
-            return this;
+            const namespaceId = mw.config.get("wgNamespaceIds")[this.value.substring(0, n).split(" ").join("_").toLowerCase()];
+            if (typeof namespaceId === "undefined") {
+                return 0;
+            }
+            return namespaceId;
         }
-        const email = pg.re.email.exec(h);
-        if (email) {
-            this.setUtf(this.decodeNasties(`${mw.config.get("wgFormattedNamespaces")[pg.nsUserId]}:${new Title(email[3]).stripNamespace()}`));
-            return this;
+        talkPage() {
+            const t = new Title(this.value);
+            t.toTalkPage();
+            if (t.value) {
+                return t;
+            }
+            return null;
         }
-        const backlinks = pg.re.backlinks.exec(h);
-        if (backlinks) {
-            this.setUtf(this.decodeNasties(new Title(backlinks[3])));
-            return this;
+        isTalkPage() {
+            if (this.talkPage() === null) {
+                return true;
+            }
+            return false;
         }
-        const specialdiff = pg.re.specialdiff.exec(h);
-        if (specialdiff) {
-            this.setUtf(this.decodeNasties(new Title(`${mw.config.get("wgFormattedNamespaces")[pg.nsSpecialId]}:Diff`)));
-            return this;
-        }
-        const m = pg.re.main.exec(h);
-        if (m === null) {
+        toArticleFromTalkPage() {
+            if (this.value === null) {
+                return null;
+            }
+            const namespaceId = this.namespaceId();
+            if (namespaceId >= 0 && namespaceId % 2 === 1) {
+                const localizedNamespace = mw.config.get("wgFormattedNamespaces")[namespaceId - 1];
+                if (typeof localizedNamespace !== "undefined") {
+                    if (localizedNamespace === "") {
+                        this.value = this.stripNamespace();
+                    } else {
+                        this.value = `${localizedNamespace.split(" ").join("_")}:${this.stripNamespace()}`;
+                    }
+                    return this.value;
+                }
+            }
             this.value = null;
-        } else {
-            const fromBotInterface = /[?](.+[&])?title=/.test(h);
-            if (fromBotInterface) {
-                m[2] = m[2].split("+").join("_");
+            return null;
+        }
+        articleFromTalkPage() {
+            const t = new Title(this.value);
+            t.toArticleFromTalkPage();
+            if (t.value) {
+                return t;
             }
-            const extracted = m[2] + (m[3] ? `#${m[3]}` : "");
-            if (pg.flag.isSafari && /%25[0-9A-Fa-f]{2}/.test(extracted)) {
-                this.setUtf(decodeURIComponent(unescape(extracted)));
+            return null;
+        }
+        articleFromTalkOrArticle() {
+            const t = new Title(this.value);
+            if (t.toArticleFromTalkPage()) {
+                return t;
+            }
+            return this;
+        }
+        isIpUser() {
+            return pg.re.ipUser.test(this.userName());
+        }
+        stripNamespace() {
+            const n = this.value.indexOf(":");
+            if (n < 0) {
+                return this.value;
+            }
+            const namespaceId = this.namespaceId();
+            if (namespaceId === pg.nsMainspaceId) {
+                return this.value;
+            }
+            return this.value.substring(n + 1);
+        }
+        setUtf(value) {
+            if (!value) {
+                this.value = "";
+                return;
+            }
+            const anch = value.indexOf("#");
+            if (anch < 0) {
+                this.value = value.split("_").join(" ");
+                this.anchor = "";
+                return;
+            }
+            this.value = value.substring(0, anch).split("_").join(" ");
+            this.anchor = value.substring(anch + 1);
+            this.ns = null;
+        }
+        setUrl(urlfrag) {
+            const anch = urlfrag.indexOf("#");
+            this.value = safeDecodeURI(urlfrag.substring(0, anch));
+            this.anchor = this.value.substring(anch + 1);
+        }
+        append(x) {
+            this.setUtf(this.value + x);
+        }
+        urlString(_x) {
+            let x = _x;
+            if (!x) {
+                x = {};
+            }
+            let v = this.toString(true);
+            if (!x.omitAnchor && this.anchor) {
+                v += `#${this.urlAnchor()}`;
+            }
+            if (!x.keepSpaces) {
+                v = v.split(" ").join("_");
+            }
+            return encodeURI(v).split("&").join("%26").split("?").join("%3F").split("+").join("%2B");
+        }
+        removeAnchor() {
+            return new Title(this.toString(true));
+        }
+        toUrl() {
+            return pg.wiki.titlebase + this.urlString();
+        }
+        fromURL(_h) {
+            let h = _h;
+            if (typeof h !== "string") {
+                this.value = null;
+                return this;
+            }
+            const splitted = h.split("?");
+            splitted[0] = splitted[0].split("&").join("%26");
+            h = splitted.join("?");
+            const contribs = pg.re.contribs.exec(h);
+            if (contribs) {
+                if (contribs[1] === "title=") {
+                    contribs[3] = contribs[3].split("+").join(" ");
+                }
+                const u = new Title(contribs[3]);
+                this.setUtf(this.decodeNasties(`${mw.config.get("wgFormattedNamespaces")[pg.nsUserId]}:${u.stripNamespace()}`));
+                return this;
+            }
+            const email = pg.re.email.exec(h);
+            if (email) {
+                this.setUtf(this.decodeNasties(`${mw.config.get("wgFormattedNamespaces")[pg.nsUserId]}:${new Title(email[3]).stripNamespace()}`));
+                return this;
+            }
+            const backlinks = pg.re.backlinks.exec(h);
+            if (backlinks) {
+                this.setUtf(this.decodeNasties(new Title(backlinks[3])));
+                return this;
+            }
+            const specialdiff = pg.re.specialdiff.exec(h);
+            if (specialdiff) {
+                this.setUtf(this.decodeNasties(new Title(`${mw.config.get("wgFormattedNamespaces")[pg.nsSpecialId]}:Diff`)));
+                return this;
+            }
+            const m = pg.re.main.exec(h);
+            if (m === null) {
+                this.value = null;
             } else {
-                this.setUtf(this.decodeNasties(extracted));
+                const fromBotInterface = /[?](.+[&])?title=/.test(h);
+                if (fromBotInterface) {
+                    m[2] = m[2].split("+").join("_");
+                }
+                const extracted = m[2] + (m[3] ? `#${m[3]}` : "");
+                if (pg.flag.isSafari && /%25[0-9A-Fa-f]{2}/.test(extracted)) {
+                    this.setUtf(decodeURIComponent(unescape(extracted)));
+                } else {
+                    this.setUtf(this.decodeNasties(extracted));
+                }
             }
-        }
-        return this;
-    };
-    Title.prototype.decodeNasties = function (txt) {
-        try {
-            let ret = decodeURI(this.decodeEscapes(txt));
-            ret = ret.replace(/[_ ]*$/, "");
-            return ret;
-        } catch (e) {
-            return txt; // cannot decode
-        }
-    };
-    Title.prototype.decodeEscapes = function (txt) {
-        const split = txt.parenSplit(/((?:[%][0-9A-Fa-f]{2})+)/);
-        const len = split.length;
-        for (let i = 1; i < len; i = i + 2) {
-            split[i] = decodeURIComponent(split[i]);
-        }
-        return split.join("");
-    };
-    Title.fromAnchor = function (a) {
-        return new Title().fromAnchor(a);
-    };
-    Title.prototype.fromAnchor = function (a) {
-        if (!a) {
-            this.value = null;
             return this;
         }
-        return this.fromURL(a.href);
-    };
-    Title.fromWikiText = function (txt) {
-        return new Title().fromWikiText(txt);
-    };
-    Title.prototype.fromWikiText = function (txt) {
-        txt = myDecodeURI(txt);
-        this.setUtf(txt);
-        return this;
-    };
-    Title.prototype.hintValue = function () {
-        if (!this.value) {
-            return "";
-        }
-        return safeDecodeURI(this.value);
-    };
-    Title.prototype.toUserName = function (withNs) {
-        if (this.namespaceId() != pg.nsUserId && this.namespaceId() != pg.nsUsertalkId) {
-            this.value = null;
-            return;
-        }
-        this.value = (withNs ? `${mw.config.get("wgFormattedNamespaces")[pg.nsUserId]}:` : "") + this.stripNamespace().split("/")[0];
-    };
-    Title.prototype.userName = function (withNs) {
-        const t = new Title(this.value);
-        t.toUserName(withNs);
-        if (t.value) {
-            return t;
-        }
-        return null;
-    };
-    Title.prototype.toTalkPage = function () {
-        if (this.value === null) {
-            return null;
-        }
-        const namespaceId = this.namespaceId();
-        if (namespaceId >= 0 && namespaceId % 2 === 0) {
-            const localizedNamespace = mw.config.get("wgFormattedNamespaces")[namespaceId + 1];
-            if (typeof localizedNamespace !== "undefined") {
-                if (localizedNamespace === "") {
-                    this.value = this.stripNamespace();
-                } else {
-                    this.value = `${localizedNamespace.split(" ").join("_")}:${this.stripNamespace()}`;
-                }
-                return this.value;
+        fromAnchor(a) {
+            if (!a) {
+                this.value = null;
+                return this;
             }
+            return this.fromURL(a.href);
         }
-        this.value = null;
-        return null;
-    };
-    Title.prototype.namespace = function () {
-        return mw.config.get("wgFormattedNamespaces")[this.namespaceId()];
-    };
-    Title.prototype.namespaceId = function () {
-        const n = this.value.indexOf(":");
-        if (n < 0) {
-            return 0;
+        fromWikiText(_txt) {
+            let txt = _txt;
+            txt = myDecodeURI(txt);
+            this.setUtf(txt);
+            return this;
         }
-        const namespaceId = mw.config.get("wgNamespaceIds")[this.value.substring(0, n).split(" ").join("_").toLowerCase()];
-        if (typeof namespaceId === "undefined") {
-            return 0;
-        }
-        return namespaceId;
-    };
-    Title.prototype.talkPage = function () {
-        const t = new Title(this.value);
-        t.toTalkPage();
-        if (t.value) {
-            return t;
-        }
-        return null;
-    };
-    Title.prototype.isTalkPage = function () {
-        if (this.talkPage() === null) {
-            return true;
-        }
-        return false;
-    };
-    Title.prototype.toArticleFromTalkPage = function () {
-        if (this.value === null) {
-            return null;
-        }
-        const namespaceId = this.namespaceId();
-        if (namespaceId >= 0 && namespaceId % 2 == 1) {
-            const localizedNamespace = mw.config.get("wgFormattedNamespaces")[namespaceId - 1];
-            if (typeof localizedNamespace !== "undefined") {
-                if (localizedNamespace === "") {
-                    this.value = this.stripNamespace();
-                } else {
-                    this.value = `${localizedNamespace.split(" ").join("_")}:${this.stripNamespace()}`;
-                }
-                return this.value;
-            }
-        }
-        this.value = null;
-        return null;
-    };
-    Title.prototype.articleFromTalkPage = function () {
-        const t = new Title(this.value);
-        t.toArticleFromTalkPage();
-        if (t.value) {
-            return t;
-        }
-        return null;
-    };
-    Title.prototype.articleFromTalkOrArticle = function () {
-        const t = new Title(this.value);
-        if (t.toArticleFromTalkPage()) {
-            return t;
-        }
-        return this;
-    };
-    Title.prototype.isIpUser = function () {
-        return pg.re.ipUser.test(this.userName());
-    };
-    Title.prototype.stripNamespace = function () {
-        const n = this.value.indexOf(":");
-        if (n < 0) {
-            return this.value;
-        }
-        const namespaceId = this.namespaceId();
-        if (namespaceId === pg.nsMainspaceId) {
-            return this.value;
-        }
-        return this.value.substring(n + 1);
-    };
-    Title.prototype.setUtf = function (value) {
-        if (!value) {
-            this.value = "";
-            return;
-        }
-        const anch = value.indexOf("#");
-        if (anch < 0) {
-            this.value = value.split("_").join(" ");
-            this.anchor = "";
-            return;
-        }
-        this.value = value.substring(0, anch).split("_").join(" ");
-        this.anchor = value.substring(anch + 1);
-        this.ns = null;
-    };
-    Title.prototype.setUrl = function (urlfrag) {
-        const anch = urlfrag.indexOf("#");
-        this.value = safeDecodeURI(urlfrag.substring(0, anch));
-        this.anchor = this.value.substring(anch + 1);
-    };
-    Title.prototype.append = function (x) {
-        this.setUtf(this.value + x);
-    };
-    Title.prototype.urlString = function (x) {
-        if (!x) {
-            x = {};
-        }
-        let v = this.toString(true);
-        if (!x.omitAnchor && this.anchor) {
-            v += `#${this.urlAnchor()}`;
-        }
-        if (!x.keepSpaces) {
-            v = v.split(" ").join("_");
-        }
-        return encodeURI(v).split("&").join("%26").split("?").join("%3F").split("+").join("%2B");
-    };
-    Title.prototype.removeAnchor = function () {
-        return new Title(this.toString(true));
-    };
-    Title.prototype.toUrl = function () {
-        return pg.wiki.titlebase + this.urlString();
-    };
-    function parseParams(url) {
+    }
+    function parseParams(_url) {
+        let url = _url;
         const specialDiff = pg.re.specialdiff.exec(url);
         if (specialDiff) {
             const split = specialDiff[1].split("/");
-            if (split.length == 1) {
+            if (split.length === 1) {
                 return {
                     oldid: split[0],
                     diff: "prev",
                 };
-            } else if (split.length == 2) {
+            } else if (split.length === 2) {
                 return {
                     oldid: split[0],
                     diff: split[1],
@@ -2305,7 +2282,7 @@ $(() => {
             }
         }
         const ret = {};
-        if (url.indexOf("?") == -1) {
+        if (url.indexOf("?") === -1) {
             return ret;
         }
         url = url.split("#")[0];
@@ -2372,7 +2349,7 @@ $(() => {
         };
     }
     function isValidImageName(str) {
-        return str.indexOf("{") == -1;
+        return str.indexOf("{") === -1;
     }
     function isInStrippableNamespace(article) {
         return article.namespaceId() !== 0;
@@ -2386,7 +2363,7 @@ $(() => {
         }
         const kids = a.childNodes;
         for (let i = 0; i < kids.length; ++i) {
-            if (kids[i].nodeName == "IMG") {
+            if (kids[i].nodeName === "IMG") {
                 return true;
             }
         }
@@ -2412,7 +2389,7 @@ $(() => {
         if (!pg.re.urlNoPopup.test(h)) {
             return true;
         }
-        return (pg.re.email.test(h) || pg.re.contribs.test(h) || pg.re.backlinks.test(h) || pg.re.specialdiff.test(h)) && h.indexOf("&limit=") == -1;
+        return (pg.re.email.test(h) || pg.re.contribs.test(h) || pg.re.backlinks.test(h) || pg.re.specialdiff.test(h)) && h.indexOf("&limit=") === -1;
     }
     function markNopopupSpanLinks() {
         if (!getValueOf("popupOnlyArticleLinks")) {
@@ -2456,7 +2433,7 @@ $(() => {
     }
     function findInPageCache(url) {
         for (let i = 0; i < pg.cache.pages.length; ++i) {
-            if (url == pg.cache.pages[i].url) {
+            if (url === pg.cache.pages[i].url) {
                 return i;
             }
         }
@@ -2471,9 +2448,9 @@ $(() => {
         };
         return pg.cache.pages.push(page);
     }
-    if (String("abc".split(/(b)/)) != "a,b,c") {
-        String.prototype.parenSplit = function (re) {
-            re = nonGlobalRegex(re);
+    if (String("abc".split(/(b)/)) !== "a,b,c") {
+        String.prototype.parenSplit = function (_re) {
+            const re = nonGlobalRegex(_re);
             let s = this;
             let m = re.exec(s);
             let ret = [];
@@ -2500,8 +2477,9 @@ $(() => {
     function nonGlobalRegex(re) {
         const s = re.toString();
         let flags = "";
-        for (var j = s.length; s.charAt(j) != "/"; --j) {
-            if (s.charAt(j) != "g") {
+        let j = s.length;
+        for (; s.charAt(j) !== "/"; --j) {
+            if (s.charAt(j) !== "g") {
                 flags += s.charAt(j);
             }
         }
@@ -2540,25 +2518,6 @@ $(() => {
         }
         return str.charAt(0).toUpperCase() + str.substring(1);
     }
-    function findInArray(arr, foo) {
-        if (!arr || !arr.length) {
-            return -1;
-        }
-        const len = arr.length;
-        for (let i = 0; i < len; ++i) {
-            if (arr[i] == foo) {
-                return i;
-            }
-        }
-        return -1;
-    }
-    function nextOne(array, value) {
-        const i = findInArray(array, value);
-        if (i < 0) {
-            return null;
-        }
-        return array[i + 1];
-    }
     function literalizeRegex(str) {
         return mw.util.escapeRegExp(str);
     }
@@ -2584,7 +2543,7 @@ $(() => {
                 break;
             }
             const cmd = s.shift();
-            if (cmd == "%s") {
+            if (cmd === "%s") {
                 if (i < subs.length) {
                     ret.push(subs[i]);
                 } else {
@@ -2605,20 +2564,11 @@ $(() => {
     function isString(x) {
         return typeof x === "string" || x instanceof String;
     }
-    function isNumber(x) {
-        return typeof x === "number" || x instanceof Number;
-    }
     function isRegExp(x) {
         return x instanceof RegExp;
     }
     function isArray(x) {
         return x instanceof Array;
-    }
-    function isObject(x) {
-        return x instanceof Object;
-    }
-    function isFunction(x) {
-        return !isRegExp(x) && (typeof x === "function" || x instanceof Function);
     }
     function repeatString(s, mult) {
         let ret = "";
@@ -2627,8 +2577,8 @@ $(() => {
         }
         return ret;
     }
-    function zeroFill(s, min) {
-        min = min || 2;
+    function zeroFill(s, _min) {
+        const min = _min || 2;
         const t = s.toString();
         return repeatString("0", min - t.length) + t;
     }
@@ -2654,6 +2604,11 @@ $(() => {
     }
     pg.escapeQuotesHTML = function (text) {
         return text.replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    };
+    pg.unescapeQuotesHTML = function (html) {
+        const txt = document.createElement("textarea");
+        txt.innerHTML = html;
+        return txt.value;
     };
     function retargetDab(newTarget, oldTarget, friendlyCurrentArticleName, titleToEdit) {
         log(`retargetDab: newTarget=${newTarget} oldTarget=${oldTarget}`);
@@ -2685,7 +2640,7 @@ $(() => {
         if (wikPos) {
             const wikTarget = `wiktionary:${friendlyCurrentArticleName.replace(RegExp("^(.+)\\s+[(][^)]+[)]\\s*$"), "$1")}`;
             let meth;
-            if (wikPos.toLowerCase() == "first") {
+            if (wikPos.toLowerCase() === "first") {
                 meth = "unshift";
             } else {
                 meth = "push";
@@ -2707,7 +2662,7 @@ $(() => {
     function rmDupesFromSortedList(list) {
         const ret = [];
         for (let i = 0; i < list.length; ++i) {
-            if (ret.length === 0 || list[i] != ret[ret.length - 1]) {
+            if (ret.length === 0 || list[i] !== ret[ret.length - 1]) {
                 ret.push(list[i]);
             }
         }
@@ -2725,7 +2680,7 @@ $(() => {
         return html;
     }
     function makeFixDabs(wikiText, navpop) {
-        if (getValueOf("popupFixDabs") && isDisambig(wikiText, navpop.article) && Title.fromURL(location.href).namespaceId() != pg.nsSpecialId && navpop.article.talkPage()) {
+        if (getValueOf("popupFixDabs") && isDisambig(wikiText, navpop.article) && Title.fromURL(location.href).namespaceId() !== pg.nsSpecialId && navpop.article.talkPage()) {
             setPopupHTML(makeFixDab(wikiText, navpop), "popupFixDab", navpop.idNumber);
         }
     }
@@ -2739,7 +2694,8 @@ $(() => {
             summary: simplePrintf(getValueOf("popupRedlinkSummary"), [article.toString()]),
         });
     }
-    function setPopupHTML(str, elementId, popupId, onSuccess, append) {
+    function setPopupHTML(str, elementId, _popupId, onSuccess, append) {
+        let popupId = _popupId;
         if (typeof popupId === "undefined") {
             popupId = pg.idNumber;
         }
@@ -2829,7 +2785,8 @@ $(() => {
             }
         }
     }
-    function flatten(list, start) {
+    function flatten(list, _start) {
+        let start = _start;
         const ret = [];
         if (typeof start === "undefined") {
             start = 0;
@@ -2873,13 +2830,14 @@ $(() => {
         }
         return ret;
     }
-    function emptySpanHTML(name, id, tag, classname) {
-        tag = tag || "span";
+    function emptySpanHTML(name, id, _tag, _classname) {
+        let classname = _classname;
+        const tag = _tag || "span";
         if (!classname) {
             classname = emptySpanHTML.classAliases[name];
         }
         classname = classname || name;
-        if (name == getValueOf("popupDragHandle")) {
+        if (name === getValueOf("popupDragHandle")) {
             classname += " popupDragHandle";
         }
         return simplePrintf('<%s id="%s" class="%s"></%s>', [tag, name + id, classname, tag]);
@@ -2888,9 +2846,10 @@ $(() => {
         popupSecondPreview: "popupPreview",
     };
     function imageHTML(article, idNumber) {
-        return simplePrintf('<a id="popupImageLink$1">' + '<img align="right" valign="top" id="popupImg$1" style="display: none;"></img>' + "</a>", [idNumber]);
+        return simplePrintf('<a id="popupImageLink$1"><img align="right" valign="top" id="popupImg$1" style="display: none;"></img></a>', [idNumber]);
     }
-    function popTipsSoonFn(id, when, popData) {
+    function popTipsSoonFn(id, _when, popData) {
+        let when = _when;
         if (!when) {
             when = 250;
         }
@@ -2910,7 +2869,7 @@ $(() => {
         }
         const uls = parent.getElementsByTagName("ul");
         for (let i = 0; i < uls.length; ++i) {
-            if (uls[i].className == "popup_menu") {
+            if (uls[i].className === "popup_menu") {
                 if (uls[i].offsetWidth > 0) {
                     return false;
                 }
@@ -2986,389 +2945,311 @@ $(() => {
             }, "hide", "before");
         }
     }
-    function Previewmaker(wikiText, baseUrl, owner) {
-        this.originalData = wikiText;
-        this.baseUrl = baseUrl;
-        this.owner = owner;
-        this.maxCharacters = getValueOf("popupMaxPreviewCharacters");
-        this.maxSentences = getValueOf("popupMaxPreviewSentences");
-        this.setData();
-    }
-    Previewmaker.prototype.setData = function () {
-        const maxSize = Math.max(1e4, 2 * this.maxCharacters);
-        this.data = this.originalData.substring(0, maxSize);
-    };
-    Previewmaker.prototype.killComments = function () {
-        this.data = this.data.replace(RegExp("^<!--[^$]*?-->\\n|\\n<!--[^$]*?-->(?=\\n)|<!--[^$]*?-->", "g"), "");
-    };
-    Previewmaker.prototype.killDivs = function () {
-        this.data = this.data.replace(RegExp("< *div[^>]* *>[\\s\\S]*?< */ *div *>", "gi"), "");
-    };
-    Previewmaker.prototype.killGalleries = function () {
-        this.data = this.data.replace(RegExp("< *gallery[^>]* *>[\\s\\S]*?< */ *gallery *>", "gi"), "");
-    };
-    Previewmaker.prototype.kill = function (opening, closing, subopening, subclosing, repl) {
-        let oldk = this.data;
-        let k = this.killStuff(this.data, opening, closing, subopening, subclosing, repl);
-        while (k.length < oldk.length) {
-            oldk = k;
-            k = this.killStuff(k, opening, closing, subopening, subclosing, repl);
+    class Previewmaker {
+        maxCharacters = getValueOf("popupMaxPreviewCharacters");
+        maxSentences = getValueOf("popupMaxPreviewSentences");
+        constructor(wikiText, baseUrl, owner) {
+            this.originalData = wikiText;
+            this.baseUrl = baseUrl;
+            this.owner = owner;
+            this.setData();
         }
-        this.data = k;
-    };
-    Previewmaker.prototype.killStuff = function (txt, opening, closing, subopening, subclosing, repl) {
-        const op = this.makeRegexp(opening);
-        const cl = this.makeRegexp(closing, "^");
-        const sb = subopening ? this.makeRegexp(subopening, "^") : null;
-        const sc = subclosing ? this.makeRegexp(subclosing, "^") : cl;
-        if (!op || !cl) {
-            alert("Navigation Popups error: op or cl is null! something is wrong.");
-            return;
+        setData() {
+            const maxSize = Math.max(1e4, 2 * this.maxCharacters);
+            this.data = this.originalData.substring(0, maxSize);
         }
-        if (!op.test(txt)) {
-            return txt;
+        killComments() {
+            this.data = this.data.replace(RegExp("^<!--[^$]*?-->\\n|\\n<!--[^$]*?-->(?=\\n)|<!--[^$]*?-->", "g"), "");
         }
-        let ret = "";
-        const opResult = op.exec(txt);
-        ret = txt.substring(0, opResult.index);
-        txt = txt.substring(opResult.index + opResult[0].length);
-        let depth = 1;
-        while (txt.length > 0) {
-            let removal = 0;
-            if (depth == 1 && cl.test(txt)) {
-                depth--;
-                removal = cl.exec(txt)[0].length;
-            } else if (depth > 1 && sc.test(txt)) {
-                depth--;
-                removal = sc.exec(txt)[0].length;
-            } else if (sb && sb.test(txt)) {
-                depth++;
-                removal = sb.exec(txt)[0].length;
+        killDivs() {
+            this.data = this.data.replace(RegExp("< *div[^>]* *>[\\s\\S]*?< */ *div *>", "gi"), "");
+        }
+        killGalleries() {
+            this.data = this.data.replace(RegExp("< *gallery[^>]* *>[\\s\\S]*?< */ *gallery *>", "gi"), "");
+        }
+        kill(opening, closing, subopening, subclosing, repl) {
+            let oldk = this.data;
+            let k = this.killStuff(this.data, opening, closing, subopening, subclosing, repl);
+            while (k.length < oldk.length) {
+                oldk = k;
+                k = this.killStuff(k, opening, closing, subopening, subclosing, repl);
             }
-            if (!removal) {
-                removal = 1;
-            }
-            txt = txt.substring(removal);
-            if (depth === 0) {
-                break;
-            }
+            this.data = k;
         }
-        return ret + (repl || "") + txt;
-    };
-    Previewmaker.prototype.makeRegexp = function (x, prefix, suffix) {
-        prefix = prefix || "";
-        suffix = suffix || "";
-        let reStr = "";
-        let flags = "";
-        if (isString(x)) {
-            reStr = prefix + literalizeRegex(x) + suffix;
-        } else if (isRegExp(x)) {
-            let s = x.toString().substring(1);
-            const sp = s.split("/");
-            flags = sp[sp.length - 1];
-            sp[sp.length - 1] = "";
-            s = sp.join("/");
-            s = s.substring(0, s.length - 1);
-            reStr = prefix + s + suffix;
-        } else {
-            log("makeRegexp failed");
-        }
-        log(`makeRegexp: got reStr=${reStr}, flags=${flags}`);
-        return RegExp(reStr, flags);
-    };
-    Previewmaker.prototype.killBoxTemplates = function () {
-        this.kill(RegExp("[{][{][^{}\\s|]*?(float|box)[_ ](begin|start)", "i"), /[}][}]\s*/, "{{");
-        this.kill(RegExp("[{][{][^{}\\s|]*?(infobox|elementbox|frame)[_ ]", "i"), /[}][}]\s*/, "{{");
-    };
-    Previewmaker.prototype.killTemplates = function () {
-        this.kill("{{", "}}", "{", "}", " ");
-    };
-    Previewmaker.prototype.killTables = function () {
-        this.kill("{|", /[|]}\s*/, "{|");
-        this.kill(/<table.*?>/i, /<\/table.*?>/i, /<table.*?>/i);
-        this.data = this.data.replace(RegExp("^[|].*$", "mg"), "");
-    };
-    Previewmaker.prototype.killImages = function () {
-        const forbiddenNamespaceAliases = [];
-        jQuery.each(mw.config.get("wgNamespaceIds"), (_localizedNamespaceLc, _namespaceId) => {
-            if (_namespaceId != pg.nsImageId && _namespaceId != pg.nsCategoryId) {
+        killStuff(_txt, opening, closing, subopening, subclosing, repl) {
+            let txt = _txt;
+            const op = this.makeRegexp(opening);
+            const cl = this.makeRegexp(closing, "^");
+            const sb = subopening ? this.makeRegexp(subopening, "^") : null;
+            const sc = subclosing ? this.makeRegexp(subclosing, "^") : cl;
+            if (!op || !cl) {
+                alert("Navigation Popups error: op or cl is null! something is wrong.");
                 return;
             }
-            forbiddenNamespaceAliases.push(_localizedNamespaceLc.split(" ").join("[ _]"));
-        });
-        this.kill(RegExp(`[[][[]\\s*(${forbiddenNamespaceAliases.join("|")})\\s*:`, "i"), /\]\]\s*/, "[", "]");
-    };
-    Previewmaker.prototype.killHTML = function () {
-        this.kill(/<ref\b[^/>]*?>/i, /<\/ref>/i);
-        this.data = this.data.replace(RegExp("(^|\\n) *<.*", "g"), "\n");
-        const splitted = this.data.parenSplit(/(<[\w\W]*?(?:>|$|(?=<)))/);
-        const len = splitted.length;
-        for (let i = 1; i < len; i = i + 2) {
-            switch (splitted[i]) {
-                case "<nowiki>":
-                case "</nowiki>":
-                case "<blockquote>":
-                case "</blockquote>":
+            if (!op.test(txt)) {
+                return txt;
+            }
+            let ret = "";
+            const opResult = op.exec(txt);
+            ret = txt.substring(0, opResult.index);
+            txt = txt.substring(opResult.index + opResult[0].length);
+            let depth = 1;
+            while (txt.length > 0) {
+                let removal = 0;
+                if (depth === 1 && cl.test(txt)) {
+                    depth--;
+                    removal = cl.exec(txt)[0].length;
+                } else if (depth > 1 && sc.test(txt)) {
+                    depth--;
+                    removal = sc.exec(txt)[0].length;
+                } else if (sb && sb.test(txt)) {
+                    depth++;
+                    removal = sb.exec(txt)[0].length;
+                }
+                if (!removal) {
+                    removal = 1;
+                }
+                txt = txt.substring(removal);
+                if (depth === 0) {
                     break;
-                default:
-                    splitted[i] = "";
-            }
-        }
-        this.data = splitted.join("");
-    };
-    Previewmaker.prototype.killChunks = function () {
-        const italicChunkRegex = new RegExp("((^|\\n)\\s*:*\\s*''[^']([^']|'''|'[^']){20}(.|\\n[^\\n])*''[.!?\\s]*\\n)+", "g");
-        this.data = this.data.replace(italicChunkRegex, "\n");
-    };
-    Previewmaker.prototype.mopup = function () {
-        this.data = this.data.replace(RegExp("^-{4,}", "mg"), "");
-        this.data = this.data.replace(RegExp("(^|\\n) *:[^\\n]*", "g"), "");
-        this.data = this.data.replace(RegExp("^__[A-Z_]*__ *$", "gmi"), "");
-    };
-    Previewmaker.prototype.firstBit = function () {
-        let d = this.data;
-        if (getValueOf("popupPreviewCutHeadings")) {
-            this.data = this.data.replace(RegExp("\\s*(==+[^=]*==+)\\s*", "g"), "\n\n$1 ");
-            this.data = this.data.replace(RegExp("([:;]) *\\n{2,}", "g"), "$1\n");
-            this.data = this.data.replace(RegExp("^[\\s\\n]*"), "");
-            const stuff = RegExp("^([^\\n]|\\n[^\\n\\s])*").exec(this.data);
-            if (stuff) {
-                d = stuff[0];
-            }
-            if (!getValueOf("popupPreviewFirstParOnly")) {
-                d = this.data;
-            }
-            d = d.replace(RegExp("(==+[^=]*==+)\\s*", "g"), "$1\n\n");
-        }
-        d = d.parenSplit(RegExp('([!?.]+["' + "'" + "]*\\s)", "g"));
-        d[0] = d[0].replace(RegExp("^\\s*"), "");
-        const notSentenceEnds = RegExp("([^.][a-z][.] *[a-z]|etc|sic|Dr|Mr|Mrs|Ms|St|no|op|cit|\\[[^\\]]*|\\s[A-Zvclm])$", "i");
-        d = this.fixSentenceEnds(d, notSentenceEnds);
-        this.fullLength = d.join("").length;
-        let n = this.maxSentences;
-        let dd = this.firstSentences(d, n);
-        do {
-            dd = this.firstSentences(d, n);
-            --n;
-        } while (dd.length > this.maxCharacters && n !== 0);
-        this.data = dd;
-    };
-    Previewmaker.prototype.fixSentenceEnds = function (strs, reg) {
-        for (let i = 0; i < strs.length - 2; ++i) {
-            if (reg.test(strs[i])) {
-                const a = [];
-                for (let j = 0; j < strs.length; ++j) {
-                    if (j < i) {
-                        a[j] = strs[j];
-                    }
-                    if (j == i) {
-                        a[i] = strs[i] + strs[i + 1] + strs[i + 2];
-                    }
-                    if (j > i + 2) {
-                        a[j - 2] = strs[j];
-                    }
                 }
-                return this.fixSentenceEnds(a, reg);
             }
+            return ret + (repl || "") + txt;
         }
-        return strs;
-    };
-    Previewmaker.prototype.firstSentences = function (strs, howmany) {
-        const t = strs.slice(0, 2 * howmany);
-        return t.join("");
-    };
-    Previewmaker.prototype.killBadWhitespace = function () {
-        this.data = this.data.replace(RegExp("^ *'+ *$", "gm"), "");
-    };
-    Previewmaker.prototype.makePreview = function () {
-        if (this.owner.article.namespaceId() != pg.nsTemplateId && this.owner.article.namespaceId() != pg.nsImageId) {
-            this.killComments();
-            this.killDivs();
-            this.killGalleries();
-            this.killBoxTemplates();
-            if (getValueOf("popupPreviewKillTemplates")) {
-                this.killTemplates();
+        makeRegexp(x, _prefix, _suffix) {
+            const prefix = _prefix || "";
+            const suffix = _suffix || "";
+            let reStr = "";
+            let flags = "";
+            if (isString(x)) {
+                reStr = prefix + literalizeRegex(x) + suffix;
+            } else if (isRegExp(x)) {
+                let s = x.toString().substring(1);
+                const sp = s.split("/");
+                flags = sp[sp.length - 1];
+                sp[sp.length - 1] = "";
+                s = sp.join("/");
+                s = s.substring(0, s.length - 1);
+                reStr = prefix + s + suffix;
             } else {
-                this.killMultilineTemplates();
+                log("makeRegexp failed");
             }
-            this.killTables();
-            this.killImages();
-            this.killHTML();
-            this.killChunks();
-            this.mopup();
-            this.firstBit();
-            this.killBadWhitespace();
-        } else {
-            this.killHTML();
+            log(`makeRegexp: got reStr=${reStr}, flags=${flags}`);
+            return RegExp(reStr, flags);
         }
-        this.html = wiki2html(this.data, this.baseUrl);
-        this.fixHTML();
-        this.stripLongTemplates();
-    };
-    Previewmaker.prototype.esWiki2HtmlPart = function (data) {
-        const reLinks = /(?:\[\[([^|\]]*)(?:\|([^|\]]*))*]]([a-z]*))/gi;
-        reLinks.lastIndex = 0;
-        let match;
-        let result = "";
-        let postfixIndex = 0;
-        while (match = reLinks.exec(data)) {
-            result += `${pg.escapeQuotesHTML(data.substring(postfixIndex, match.index))}<a href="${Insta.conf.paths.articles}${pg.escapeQuotesHTML(match[1])}">${pg.escapeQuotesHTML((match[2] ? match[2] : match[1]) + match[3])}</a>`;
-            postfixIndex = reLinks.lastIndex;
+        killBoxTemplates() {
+            this.kill(RegExp("[{][{][^{}\\s|]*?(float|box)[_ ](begin|start)", "i"), /[}][}]\s*/, "{{");
+            this.kill(RegExp("[{][{][^{}\\s|]*?(infobox|elementbox|frame)[_ ]", "i"), /[}][}]\s*/, "{{");
         }
-        result += pg.escapeQuotesHTML(data.substring(postfixIndex));
-        return result;
-    };
-    Previewmaker.prototype.editSummaryPreview = function () {
-        const reAes = /\/\* *(.*?) *\*\//g;
-        reAes.lastIndex = 0;
-        let match;
-        match = reAes.exec(this.data);
-        if (match) {
-            const prefix = this.data.substring(0, match.index - 1);
-            const section = match[1];
-            const postfix = this.data.substring(reAes.lastIndex);
-            let start = "<span class='autocomment'>";
-            let end = "</span>";
-            if (prefix.length > 0) {
-                start = `${this.esWiki2HtmlPart(prefix)} ${start}- `;
-            }
-            if (postfix.length > 0) {
-                end = `: ${end}${this.esWiki2HtmlPart(postfix)}`;
-            }
-            const t = new Title().fromURL(this.baseUrl);
-            t.anchorFromUtf(section);
-            const sectionLink = `${Insta.conf.paths.articles + pg.escapeQuotesHTML(t.toString(true))}#${pg.escapeQuotesHTML(t.anchor)}`;
-            return `${start}<a href="${sectionLink}">&rarr;</a> ${pg.escapeQuotesHTML(section)}${end}`;
+        killTemplates() {
+            this.kill("{{", "}}", "{", "}", " ");
         }
-        return this.esWiki2HtmlPart(this.data);
-    };
-    function previewSteps(txt) {
-        try {
-            txt = txt || document.editform.wpTextbox1.value;
-        } catch (err) {
-            if (pg.cache.pages.length > 0) {
-                txt = pg.cache.pages[pg.cache.pages.length - 1].data;
-            } else {
-                alert("provide text or use an edit page");
-            }
+        killTables() {
+            this.kill("{|", /[|]}\s*/, "{|");
+            this.kill(/<table.*?>/i, /<\/table.*?>/i, /<table.*?>/i);
+            this.data = this.data.replace(RegExp("^[|].*$", "mg"), "");
         }
-        txt = txt.substring(0, 1e4);
-        const base = pg.wiki.articlebase + Title.fromURL(document.location.href).urlString();
-        const p = new Previewmaker(txt, base, pg.current.link.navpopup);
-        if (this.owner.article.namespaceId() != pg.nsTemplateId) {
-            p.killComments();
-            if (!confirm(`done killComments(). Continue?\n---\n${p.data}`)) {
-                return;
-            }
-            p.killDivs();
-            if (!confirm(`done killDivs(). Continue?\n---\n${p.data}`)) {
-                return;
-            }
-            p.killGalleries();
-            if (!confirm(`done killGalleries(). Continue?\n---\n${p.data}`)) {
-                return;
-            }
-            p.killBoxTemplates();
-            if (!confirm(`done killBoxTemplates(). Continue?\n---\n${p.data}`)) {
-                return;
-            }
-            if (getValueOf("popupPreviewKillTemplates")) {
-                p.killTemplates();
-                if (!confirm(`done killTemplates(). Continue?\n---\n${p.data}`)) {
+        killImages() {
+            const forbiddenNamespaceAliases = [];
+            jQuery.each(mw.config.get("wgNamespaceIds"), (_localizedNamespaceLc, _namespaceId) => {
+                if (_namespaceId !== pg.nsImageId && _namespaceId !== pg.nsCategoryId) {
                     return;
                 }
-            } else {
-                p.killMultilineTemplates();
-                if (!confirm(`done killMultilineTemplates(). Continue?\n---\n${p.data}`)) {
-                    return;
+                forbiddenNamespaceAliases.push(_localizedNamespaceLc.split(" ").join("[ _]"));
+            });
+            this.kill(RegExp(`[[][[]\\s*(${forbiddenNamespaceAliases.join("|")})\\s*:`, "i"), /\]\]\s*/, "[", "]");
+        }
+        killHTML() {
+            this.kill(/<ref\b[^/>]*?>/i, /<\/ref>/i);
+            this.data = this.data.replace(RegExp("(^|\\n) *<.*", "g"), "\n");
+            const splitted = this.data.parenSplit(/(<[\w\W]*?(?:>|$|(?=<)))/);
+            const len = splitted.length;
+            for (let i = 1; i < len; i = i + 2) {
+                switch (splitted[i]) {
+                    case "<nowiki>":
+                    case "</nowiki>":
+                    case "<blockquote>":
+                    case "</blockquote>":
+                        break;
+                    default:
+                        splitted[i] = "";
                 }
             }
-            p.killTables();
-            if (!confirm(`done killTables(). Continue?\n---\n${p.data}`)) {
-                return;
-            }
-            p.killImages();
-            if (!confirm(`done killImages(). Continue?\n---\n${p.data}`)) {
-                return;
-            }
-            p.killHTML();
-            if (!confirm(`done killHTML(). Continue?\n---\n${p.data}`)) {
-                return;
-            }
-            p.killChunks();
-            if (!confirm(`done killChunks(). Continue?\n---\n${p.data}`)) {
-                return;
-            }
-            p.mopup();
-            if (!confirm(`done mopup(). Continue?\n---\n${p.data}`)) {
-                return;
-            }
-            p.firstBit();
-            if (!confirm(`done firstBit(). Continue?\n---\n${p.data}`)) {
-                return;
-            }
-            p.killBadWhitespace();
-            if (!confirm(`done killBadWhitespace(). Continue?\n---\n${p.data}`)) {
-                return;
-            }
+            this.data = splitted.join("");
         }
-        p.html = wiki2html(p.data, base);
-        p.fixHTML();
-        if (!confirm(`done fixHTML(). Continue?\n---\n${p.html}`)) {
-            return;
+        killChunks() {
+            const italicChunkRegex = new RegExp("((^|\\n)\\s*:*\\s*''[^']([^']|'''|'[^']){20}(.|\\n[^\\n])*''[.!?\\s]*\\n)+", "g");
+            this.data = this.data.replace(italicChunkRegex, "\n");
         }
-        p.stripLongTemplates();
-        if (!confirm(`done stripLongTemplates(). Continue?\n---\n${p.html}`)) {
-            return;
+        mopup() {
+            this.data = this.data.replace(RegExp("^-{4,}", "mg"), "");
+            this.data = this.data.replace(RegExp("(^|\\n) *:[^\\n]*", "g"), "");
+            this.data = this.data.replace(RegExp("^__[A-Z_]*__ *$", "gmi"), "");
         }
-        alert(`finished preview - end result follows.\n---\n${p.html}`);
+        firstBit() {
+            let d = this.data;
+            if (getValueOf("popupPreviewCutHeadings")) {
+                this.data = this.data.replace(RegExp("\\s*(==+[^=]*==+)\\s*", "g"), "\n\n$1 ");
+                this.data = this.data.replace(RegExp("([:;]) *\\n{2,}", "g"), "$1\n");
+                this.data = this.data.replace(RegExp("^[\\s\\n]*"), "");
+                const stuff = RegExp("^([^\\n]|\\n[^\\n\\s])*").exec(this.data);
+                if (stuff) {
+                    d = stuff[0];
+                }
+                if (!getValueOf("popupPreviewFirstParOnly")) {
+                    d = this.data;
+                }
+                d = d.replace(RegExp("(==+[^=]*==+)\\s*", "g"), "$1\n\n");
+            }
+            d = d.parenSplit(RegExp("([!?.]+[\"']*\\s)", "g"));
+            d[0] = d[0].replace(RegExp("^\\s*"), "");
+            const notSentenceEnds = RegExp("([^.][a-z][.] *[a-z]|etc|sic|Dr|Mr|Mrs|Ms|St|no|op|cit|\\[[^\\]]*|\\s[A-Zvclm])$", "i");
+            d = this.fixSentenceEnds(d, notSentenceEnds);
+            this.fullLength = d.join("").length;
+            let n = this.maxSentences;
+            let dd = this.firstSentences(d, n);
+            do {
+                dd = this.firstSentences(d, n);
+                --n;
+            } while (dd.length > this.maxCharacters && n !== 0);
+            this.data = dd;
+        }
+        fixSentenceEnds(strs, reg) {
+            for (let i = 0; i < strs.length - 2; ++i) {
+                if (reg.test(strs[i])) {
+                    const a = [];
+                    for (let j = 0; j < strs.length; ++j) {
+                        if (j < i) {
+                            a[j] = strs[j];
+                        }
+                        if (j === i) {
+                            a[i] = strs[i] + strs[i + 1] + strs[i + 2];
+                        }
+                        if (j > i + 2) {
+                            a[j - 2] = strs[j];
+                        }
+                    }
+                    return this.fixSentenceEnds(a, reg);
+                }
+            }
+            return strs;
+        }
+        firstSentences(strs, howmany) {
+            const t = strs.slice(0, 2 * howmany);
+            return t.join("");
+        }
+        killBadWhitespace() {
+            this.data = this.data.replace(RegExp("^ *'+ *$", "gm"), "");
+        }
+        makePreview() {
+            if (this.owner.article.namespaceId() !== pg.nsTemplateId && this.owner.article.namespaceId() !== pg.nsImageId) {
+                this.killComments();
+                this.killDivs();
+                this.killGalleries();
+                this.killBoxTemplates();
+                if (getValueOf("popupPreviewKillTemplates")) {
+                    this.killTemplates();
+                } else {
+                    this.killMultilineTemplates();
+                }
+                this.killTables();
+                this.killImages();
+                this.killHTML();
+                this.killChunks();
+                this.mopup();
+                this.firstBit();
+                this.killBadWhitespace();
+            } else {
+                this.killHTML();
+            }
+            this.html = wiki2html(this.data, this.baseUrl);
+            this.fixHTML();
+            this.stripLongTemplates();
+        }
+        esWiki2HtmlPart(data) {
+            const reLinks = /(?:\[\[([^|\]]*)(?:\|([^|\]]*))*]]([a-z]*))/gi;
+            reLinks.lastIndex = 0;
+            let result = "";
+            let postfixIndex = 0;
+            let match = reLinks.exec(data);
+            while (match) {
+                result += `${pg.escapeQuotesHTML(data.substring(postfixIndex, match.index))}<a href="${Insta.conf.paths.articles}${pg.escapeQuotesHTML(match[1])}">${pg.escapeQuotesHTML((match[2] ? match[2] : match[1]) + match[3])}</a>`;
+                postfixIndex = reLinks.lastIndex;
+                match = reLinks.exec(data);
+            }
+            result += pg.escapeQuotesHTML(data.substring(postfixIndex));
+            return result;
+        }
+        editSummaryPreview() {
+            const reAes = /\/\* *(.*?) *\*\//g;
+            reAes.lastIndex = 0;
+            const match = reAes.exec(this.data);
+            if (match) {
+                const prefix = this.data.substring(0, match.index - 1);
+                const section = match[1];
+                const postfix = this.data.substring(reAes.lastIndex);
+                let start = "<span class='autocomment'>";
+                let end = "</span>";
+                if (prefix.length > 0) {
+                    start = `${this.esWiki2HtmlPart(prefix)} ${start}- `;
+                }
+                if (postfix.length > 0) {
+                    end = `: ${end}${this.esWiki2HtmlPart(postfix)}`;
+                }
+                const t = new Title().fromURL(this.baseUrl);
+                t.anchorFromUtf(section);
+                const sectionLink = `${Insta.conf.paths.articles + pg.escapeQuotesHTML(t.toString(true))}#${pg.escapeQuotesHTML(t.anchor)}`;
+                return `${start}<a href="${sectionLink}">&rarr;</a> ${pg.escapeQuotesHTML(section)}${end}`;
+            }
+            return this.esWiki2HtmlPart(this.data);
+        }
+        fixHTML() {
+            if (!this.html) {
+                return;
+            }
+            let ret = this.html;
+            ret = ret.replace(RegExp(`(<a href="${pg.wiki.articlePath}/[^"]*)[?](.*?")`, "g"), "$1%3F$2");
+            ret = ret.replace(RegExp(`(<a href='${pg.wiki.articlePath}/[^']*)[?](.*?')`, "g"), "$1%3F$2");
+            this.html = ret;
+        }
+        showPreview() {
+            this.makePreview();
+            if (typeof this.html !== typeof "") {
+                return;
+            }
+            if (RegExp("^\\s*$").test(this.html)) {
+                return;
+            }
+            setPopupHTML("<hr />", "popupPrePreviewSep", this.owner.idNumber);
+            setPopupTipsAndHTML(this.html, "popupPreview", this.owner.idNumber, {
+                owner: this.owner,
+            });
+            const more = this.fullLength > this.data.length ? this.moreLink() : "";
+            setPopupHTML(more, "popupPreviewMore", this.owner.idNumber);
+        }
+        moreLink() {
+            const a = document.createElement("a");
+            a.className = "popupMoreLink";
+            a.innerHTML = popupString("more...");
+            const savedThis = this;
+            a.onclick = function () {
+                savedThis.maxCharacters += 2e3;
+                savedThis.maxSentences += 20;
+                savedThis.setData();
+                savedThis.showPreview();
+            };
+            return a;
+        }
+        stripLongTemplates() {
+            this.html = this.html.replace(RegExp("^.{0,1000}[{][{][^}]*?(<(p|br)( /)?>\\s*){2,}([^{}]*?[}][}])?", "gi"), "");
+            this.html = this.html.split("\n").join(" ");
+            this.html = this.html.replace(RegExp("[{][{][^}]*<pre>[^}]*[}][}]", "gi"), "");
+        }
+        killMultilineTemplates() {
+            this.kill("{{{", "}}}");
+            this.kill(RegExp("\\s*[{][{][^{}]*\\n"), "}}", "{{");
+        }
     }
-    Previewmaker.prototype.fixHTML = function () {
-        if (!this.html) {
-            return;
-        }
-        let ret = this.html;
-        ret = ret.replace(RegExp(`(<a href="${pg.wiki.articlePath}/[^"]*)[?](.*?")`, "g"), "$1%3F$2");
-        ret = ret.replace(RegExp(`(<a href='${pg.wiki.articlePath}/[^']*)[?](.*?')`, "g"), "$1%3F$2");
-        this.html = ret;
-    };
-    Previewmaker.prototype.showPreview = function () {
-        this.makePreview();
-        if (typeof this.html !== typeof "") {
-            return;
-        }
-        if (RegExp("^\\s*$").test(this.html)) {
-            return;
-        }
-        setPopupHTML("<hr />", "popupPrePreviewSep", this.owner.idNumber);
-        setPopupTipsAndHTML(this.html, "popupPreview", this.owner.idNumber, {
-            owner: this.owner,
-        });
-        const more = this.fullLength > this.data.length ? this.moreLink() : "";
-        setPopupHTML(more, "popupPreviewMore", this.owner.idNumber);
-    };
-    Previewmaker.prototype.moreLink = function () {
-        const a = document.createElement("a");
-        a.className = "popupMoreLink";
-        a.innerHTML = popupString("more...");
-        const savedThis = this;
-        a.onclick = function () {
-            savedThis.maxCharacters += 2e3;
-            savedThis.maxSentences += 20;
-            savedThis.setData();
-            savedThis.showPreview();
-        };
-        return a;
-    };
-    Previewmaker.prototype.stripLongTemplates = function () {
-        this.html = this.html.replace(RegExp("^.{0,1000}[{][{][^}]*?(<(p|br)( /)?>\\s*){2,}([^{}]*?[}][}])?", "gi"), "");
-        this.html = this.html.split("\n").join(" ");
-        this.html = this.html.replace(RegExp("[{][{][^}]*<pre>[^}]*[}][}]", "gi"), "");
-    };
-    Previewmaker.prototype.killMultilineTemplates = function () {
-        this.kill("{{{", "}}}");
-        this.kill(RegExp("\\s*[{][{][^{}]*\\n"), "}}", "{{");
-    };
     function loadAPIPreview(queryType, article, navpop) {
         const art = new Title(article).urlString();
         let url = `${pg.wiki.apiwikibase}?format=json&formatversion=2&action=query&`;
@@ -3385,8 +3266,8 @@ $(() => {
                 url += `list=categorymembers&cmtitle=${art}`;
                 htmlGenerator = APIcategoryPreviewHTML;
                 break;
-            case "userinfo":
-                var username = new Title(article).userName();
+            case "userinfo": {
+                const username = new Title(article).userName();
                 usernameart = encodeURIComponent(username);
                 if (pg.re.ipUser.test(username)) {
                     url += `list=blocks&bkprop=range|restrictions&bkip=${usernameart}`;
@@ -3395,19 +3276,21 @@ $(() => {
                 }
                 htmlGenerator = APIuserInfoPreviewHTML;
                 break;
+            }
             case "contribs":
                 usernameart = encodeURIComponent(new Title(article).userName());
                 url += `list=usercontribs&ucuser=${usernameart}&uclimit=${getValueOf("popupContribsPreviewLimit")}`;
                 htmlGenerator = APIcontribsPreviewHTML;
                 break;
-            case "imagepagepreview":
-                var trail = "";
+            case "imagepagepreview": {
+                let trail = "";
                 if (getValueOf("popupImageLinks")) {
                     trail = `&list=imageusage&iutitle=${art}`;
                 }
                 url += `titles=${art}&prop=revisions|imageinfo&rvprop=content${trail}`;
                 htmlGenerator = APIimagepagePreviewHTML;
                 break;
+            }
             case "backlinks":
                 url += `list=backlinks&bltitle=${art}`;
                 htmlGenerator = APIbacklinksPreviewHTML;
@@ -3445,7 +3328,7 @@ $(() => {
     }
     function linkList(list) {
         list.sort((x, y) => {
-            return x == y ? 0 : x < y ? -1 : 1;
+            return x === y ? 0 : x < y ? -1 : 1;
         });
         const buf = [];
         for (let i = 0; i < list.length; ++i) {
@@ -3465,7 +3348,8 @@ $(() => {
             }
         }
         return 0;
-    } function getTimeZone() {
+    }
+    function getTimeZone() {
         if (!pg.user.timeZone) {
             const tz = mw.user.options.get("timecorrection");
             pg.user.timeZone = "UTC";
@@ -3482,7 +3366,6 @@ $(() => {
     }
     function useTimeOffset() {
         if (typeof Intl.DateTimeFormat.prototype.formatToParts === "undefined") {
-            // IE 11
             return true;
         }
         const tz = mw.user.options.get("timecorrection");
@@ -3519,7 +3402,7 @@ $(() => {
         if (reallyContribs) {
             makeFirstColumnLinks = function (currentRevision) {
                 let result = "(";
-                result += `<a href="${pg.wiki.titlebase}${new Title(currentRevision.title).urlString()}&diff=prev` + `&oldid=${currentRevision.revid}">${popupString("diff")}</a>`;
+                result += `<a href="${pg.wiki.titlebase}${new Title(currentRevision.title).urlString()}&diff=prev&oldid=${currentRevision.revid}">${popupString("diff")}</a>`;
                 result += "&nbsp;|&nbsp;";
                 result += `<a href="${pg.wiki.titlebase}${new Title(currentRevision.title).urlString()}&action=history">${popupString("hist")}</a>`;
                 result += ")";
@@ -3545,7 +3428,7 @@ $(() => {
             const editDate = new Date(h[i].timestamp);
             let thisDay = formattedDate(editDate);
             const thisTime = formattedTime(editDate);
-            if (thisDay == day) {
+            if (thisDay === day) {
                 thisDay = "";
             } else {
                 day = thisDay;
@@ -3555,7 +3438,7 @@ $(() => {
             }
             html.push(`<tr class="popup_history_row_${i % 2 ? "odd" : "even"}">`);
             html.push(`<td>${makeFirstColumnLinks(h[i])}</td>`);
-            html.push("<td>" + `<a href="${pg.wiki.titlebase}${new Title(curart).urlString()}&oldid=${h[i].revid}">${thisTime}</a></td>`);
+            html.push(`<td><a href="${pg.wiki.titlebase}${new Title(curart).urlString()}&oldid=${h[i].revid}">${thisTime}</a></td>`);
             let col3url = "",
                 col3txt = "";
             if (!reallyContribs) {
@@ -3613,11 +3496,11 @@ $(() => {
     }
     function formattedDate(date) {
         if (useTimeOffset()) {
-            var d2 = adjustDate(date, getTimeOffset());
+            const d2 = adjustDate(date, getTimeOffset());
             return map(zeroFill, [d2.getUTCFullYear(), d2.getUTCMonth() + 1, d2.getUTCDate()]).join("-");
         }
         if (getMWDateFormat() === "ISO 8601") {
-            var d2 = convertTimeZone(date, getTimeZone());
+            const d2 = convertTimeZone(date, getTimeZone());
             return map(zeroFill, [d2.getFullYear(), d2.getMonth() + 1, d2.getDate()]).join("-");
         }
         const options = getValueOf("popupDateFormatterOptions");
@@ -3626,11 +3509,11 @@ $(() => {
     }
     function formattedTime(date) {
         if (useTimeOffset()) {
-            var d2 = adjustDate(date, getTimeOffset());
+            const d2 = adjustDate(date, getTimeOffset());
             return map(zeroFill, [d2.getUTCHours(), d2.getUTCMinutes(), d2.getUTCSeconds()]).join(":");
         }
         if (getMWDateFormat() === "ISO 8601") {
-            var d2 = convertTimeZone(date, getTimeZone());
+            const d2 = convertTimeZone(date, getTimeZone());
             return map(zeroFill, [d2.getHours(), d2.getMinutes(), d2.getSeconds()]).join(":");
         }
         const options = getValueOf("popupTimeFormatterOptions");
@@ -3697,7 +3580,7 @@ $(() => {
             }
             for (let i = 0; i < list.length; i++) {
                 const t = new Title(list[i].title);
-                html.push(`<a href="${pg.wiki.titlebase}${t.urlString()}">${t}</a>`);
+                html.push(`<a href="${pg.wiki.titlebase}${t.urlString()}">${t.toString().entify()}</a>`);
             }
             html = html.join(popupString("separator"));
             if (jsObj.continue && jsObj.continue.blcontinue) {
@@ -3730,9 +3613,7 @@ $(() => {
             let alt = "";
             try {
                 alt = navpop.parentAnchor.childNodes[0].alt;
-            } catch (e) {
-            }
-            if (alt) {
+            } catch { } if (alt) {
                 ret = `${ret}<hr /><b>${popupString("Alt text:")}</b> ${pg.escapeQuotesHTML(alt)}`;
             }
             if (typeof content === "string") {
@@ -3747,10 +3628,10 @@ $(() => {
                     setPopupTrailer(info, navpop.idNumber);
                 }
             }
-            if (page && page.imagerepository == "shared") {
+            if (page && page.imagerepository === "shared") {
                 const art = new Title(article);
                 const encart = encodeURIComponent(`File:${art.stripNamespace()}`);
-                const shared_url = `${pg.wiki.apicommonsbase}?format=json&formatversion=2` + "&callback=pg.fn.APIsharedImagePagePreviewHTML" + `&requestid=${navpop.idNumber}&action=query&prop=revisions&rvprop=content&titles=${encart}`;
+                const shared_url = `${pg.wiki.apicommonsbase}?format=json&formatversion=2&callback=pg.fn.APIsharedImagePagePreviewHTML&requestid=${navpop.idNumber}&action=query&prop=revisions&rvprop=content&titles=${encart}`;
                 ret = `${ret}<hr />${popupString("Image from Commons")}: <a href="${pg.wiki.commonsbase}?title=${encart}">${popupString("Description page")}</a>`;
                 mw.loader.load(shared_url);
             }
@@ -3840,8 +3721,6 @@ $(() => {
                 }
             }
             if (getValueOf("popupShowGender") && user.gender) {
-                // https://en.wikipedia.org/w/index.php?diff=1028542485&oldid=1018830293
-                // really boring
                 switch (user.gender) {
                     case "male":
                         ret.push(popupString("♂"));
@@ -3911,20 +3790,8 @@ $(() => {
         }
     }
     function setupDebugging() {
-        if (window.popupDebug) {
-            window.log = function (x) {
-                window.console.log(x);
-            };
-            window.errlog = function (x) {
-                window.console.error(x);
-            };
-            log("Initializing logger");
-        } else {
-            window.log = function () {
-            };
-            window.errlog = function () {
-            };
-        }
+        // 已在开头设置 log 和 errlog 函数
+        log("Initializing logger");
     }
     function loadImage(image, navpop) {
         if (typeof image.stripNamespace !== "function") {
@@ -3988,12 +3855,14 @@ $(() => {
             return null;
         }
         switch (getValueOf("popupThumbAction")) {
-            case "imagepage":
-                if (pg.current.article.namespaceId() != pg.nsImageId) {
+            case "imagepage": {
+                if (pg.current.article.namespaceId() !== pg.nsImageId) {
                     a.href = imageinfo.descriptionurl;
                     popTipsSoonFn(`popupImage${id}`)();
                     break;
                 }
+                // falls through
+            }
             case "sizetoggle":
                 a.onclick = toggleSize;
                 a.title = popupString("Toggle image size");
@@ -4023,14 +3892,15 @@ $(() => {
     }
     function getValidImageFromWikiText(wikiText) {
         let matched = null;
-        let match;
+        let match = pg.re.image.exec(t);
         const t = removeMatchesUnless(wikiText, RegExp("(<!--[\\s\\S]*?-->)"), 1, RegExp("^<!--[^[]*popup", "i"));
-        while (match = pg.re.image.exec(t)) {
+        while (match) {
             const m = match[2] || match[6];
             if (isValidImageName(m)) {
                 matched = m;
                 break;
             }
+            match = pg.re.image.exec(t);
         }
         pg.re.image.lastIndex = 0;
         if (!matched) {
@@ -4066,6 +3936,7 @@ $(() => {
             be: [r, "перанакіраваньне"],
             bg: [r, "пренасочване", "виж"],
             bs: [r, "Preusmjeri", "preusmjeri", "PREUSMJERI"],
+            bn: [R, "পুনর্নির্দেশ"],
             cs: [R, "PŘESMĚRUJ"],
             cy: [r, "ail-cyfeirio"],
             de: [R, "WEITERLEITUNG"],
@@ -4082,6 +3953,7 @@ $(() => {
             ja: [R, "転送"],
             mk: [r, "пренасочување", "види"],
             nds: [r, "wiederleiden"],
+            "nds-nl": [R, "DEURVERWIEZING", "DUURVERWIEZING"],
             nl: [R, "DOORVERWIJZING"],
             nn: [r, "omdiriger"],
             pl: [R, "PATRZ", "PRZEKIERUJ", "TAM"],
@@ -4109,12 +3981,12 @@ $(() => {
     function nsRe(namespaceId) {
         const imageNamespaceVariants = [];
         jQuery.each(mw.config.get("wgNamespaceIds"), (_localizedNamespaceLc, _namespaceId) => {
-            if (_namespaceId != namespaceId) {
+            const localizedNamespaceLc = upcaseFirst(_localizedNamespaceLc);
+            if (_namespaceId !== namespaceId) {
                 return;
             }
-            _localizedNamespaceLc = upcaseFirst(_localizedNamespaceLc);
-            imageNamespaceVariants.push(mw.util.escapeRegExp(_localizedNamespaceLc).split(" ").join("[ _]"));
-            imageNamespaceVariants.push(mw.util.escapeRegExp(encodeURI(_localizedNamespaceLc)));
+            imageNamespaceVariants.push(mw.util.escapeRegExp(localizedNamespaceLc).split(" ").join("[ _]"));
+            imageNamespaceVariants.push(mw.util.escapeRegExp(encodeURI(localizedNamespaceLc)));
         });
         return `(?:${imageNamespaceVariants.join("|")})`;
     }
@@ -4140,21 +4012,21 @@ $(() => {
         const open = sel.indexOf("[[");
         const pipe = sel.indexOf("|");
         const close = sel.indexOf("]]");
-        if (open == -1 || pipe == -1 && close == -1) {
+        if (open === -1 || pipe === -1 && close === -1) {
             return;
         }
-        if (pipe != -1 && open > pipe || close != -1 && open > close) {
+        if (pipe !== -1 && open > pipe || close !== -1 && open > close) {
             return;
         }
-        if (getValueOf("popupOnEditSelection") == "boxpreview") {
+        const article = new Title(sel.substring(open + 2, pipe < 0 ? close : pipe));
+        if (getValueOf("popupOnEditSelection") === "boxpreview") {
             return doSeparateSelectionPopup(sel);
         }
-        const article = new Title(sel.substring(open + 2, pipe < 0 ? close : pipe)).urlString();
         if (close > 0 && sel.substring(close + 2).indexOf("[[") >= 0) {
             return;
         }
         const a = document.createElement("a");
-        a.href = pg.wiki.titlebase + article;
+        a.href = pg.wiki.titlebase + article.urlString();
         mouseOverWikiLink2(a);
         if (a.navpopup) {
             a.navpopup.addHook(() => {
@@ -4178,373 +4050,372 @@ $(() => {
         div.ranSetupTooltipsAlready = false;
         popTipsSoonFn("selectionPreview")();
     }
-    function Mousetracker() {
-        this.loopDelay = 400;
-        this.timer = null;
-        this.active = false;
-        this.dirty = true;
-        this.hooks = [];
-    }
-    Mousetracker.prototype.addHook = function (f) {
-        this.hooks.push(f);
-    };
-    Mousetracker.prototype.runHooks = function () {
-        if (!this.hooks || !this.hooks.length) {
-            return;
+    class Mousetracker {
+        loopDelay = 400;
+        timer = null;
+        active = false;
+        dirty = true;
+        hooks = [];
+        addHook(f) {
+            this.hooks.push(f);
         }
-        let remove = false;
-        const removeObj = {};
-        const x = this.x,
-            y = this.y,
-            len = this.hooks.length;
-        for (let i = 0; i < len; ++i) {
-            if (this.hooks[i](x, y) === true) {
-                remove = true;
-                removeObj[i] = true;
-            }
-        }
-        if (remove) {
-            this.removeHooks(removeObj);
-        }
-    };
-    Mousetracker.prototype.removeHooks = function (removeObj) {
-        const newHooks = [];
-        const len = this.hooks.length;
-        for (let i = 0; i < len; ++i) {
-            if (!removeObj[i]) {
-                newHooks.push(this.hooks[i]);
-            }
-        }
-        this.hooks = newHooks;
-    };
-    Mousetracker.prototype.track = function (e) {
-        e = e || window.event;
-        let x, y;
-        if (e) {
-            if (e.pageX) {
-                x = e.pageX;
-                y = e.pageY;
-            } else if (typeof e.clientX !== "undefined") {
-                let left, top, docElt = document.documentElement;
-                if (docElt) {
-                    left = docElt.scrollLeft;
-                }
-                left = left || document.body.scrollLeft || document.scrollLeft || 0;
-                if (docElt) {
-                    top = docElt.scrollTop;
-                }
-                top = top || document.body.scrollTop || document.scrollTop || 0;
-                x = e.clientX + left;
-                y = e.clientY + top;
-            } else {
+        runHooks() {
+            if (!this.hooks || !this.hooks.length) {
                 return;
             }
-            this.setPosition(x, y);
-        }
-    };
-    Mousetracker.prototype.setPosition = function (x, y) {
-        this.x = x;
-        this.y = y;
-        if (this.dirty || this.hooks.length === 0) {
-            this.dirty = false;
-            return;
-        }
-        if (typeof this.lastHook_x !== "number") {
-            this.lastHook_x = -100;
-            this.lastHook_y = -100;
-        }
-        let diff = (this.lastHook_x - x) * (this.lastHook_y - y);
-        diff = diff >= 0 ? diff : -diff;
-        if (diff > 1) {
-            this.lastHook_x = x;
-            this.lastHook_y = y;
-            if (this.dirty) {
-                this.dirty = false;
-            } else {
-                this.runHooks();
+            let remove = false;
+            const removeObj = {};
+            const x = this.x, y = this.y, len = this.hooks.length;
+            for (let i = 0; i < len; ++i) {
+                if (this.hooks[i](x, y) === true) {
+                    remove = true;
+                    removeObj[i] = true;
+                }
+            }
+            if (remove) {
+                this.removeHooks(removeObj);
             }
         }
-    };
-    Mousetracker.prototype.enable = function () {
-        if (this.active) {
-            return;
+        removeHooks(removeObj) {
+            const newHooks = [];
+            const len = this.hooks.length;
+            for (let i = 0; i < len; ++i) {
+                if (!removeObj[i]) {
+                    newHooks.push(this.hooks[i]);
+                }
+            }
+            this.hooks = newHooks;
         }
-        this.active = true;
-        this.savedHandler = document.onmousemove;
-        const savedThis = this;
-        document.onmousemove = function (e) {
-            savedThis.track.apply(savedThis, [e]);
-        };
-        if (this.loopDelay) {
-            this.timer = setInterval(() => {
-                savedThis.runHooks();
-            }, this.loopDelay);
+        track(_e) {
+            let e = _e;
+            e = e || window.event;
+            let x, y;
+            if (e) {
+                if (e.pageX) {
+                    x = e.pageX;
+                    y = e.pageY;
+                } else if (typeof e.clientX !== "undefined") {
+                    let left, top;
+                    const docElt = document.documentElement;
+                    if (docElt) {
+                        left = docElt.scrollLeft;
+                    }
+                    left = left || document.body.scrollLeft || document.scrollLeft || 0;
+                    if (docElt) {
+                        top = docElt.scrollTop;
+                    }
+                    top = top || document.body.scrollTop || document.scrollTop || 0;
+                    x = e.clientX + left;
+                    y = e.clientY + top;
+                } else {
+                    return;
+                }
+                this.setPosition(x, y);
+            }
         }
-    };
-    Mousetracker.prototype.disable = function () {
-        if (!this.active) {
-            return;
+        setPosition(x, y) {
+            this.x = x;
+            this.y = y;
+            if (this.dirty || this.hooks.length === 0) {
+                this.dirty = false;
+                return;
+            }
+            if (typeof this.lastHook_x !== "number") {
+                this.lastHook_x = -100;
+                this.lastHook_y = -100;
+            }
+            let diff = (this.lastHook_x - x) * (this.lastHook_y - y);
+            diff = diff >= 0 ? diff : -diff;
+            if (diff > 1) {
+                this.lastHook_x = x;
+                this.lastHook_y = y;
+                if (this.dirty) {
+                    this.dirty = false;
+                } else {
+                    this.runHooks();
+                }
+            }
         }
-        if (typeof this.savedHandler === "function") {
-            document.onmousemove = this.savedHandler;
-        } else {
-            delete document.onmousemove;
+        enable() {
+            if (this.active) {
+                return;
+            }
+            this.active = true;
+            this.savedHandler = document.onmousemove;
+            const savedThis = this;
+            document.onmousemove = function (e) {
+                savedThis.track.apply(savedThis, [e]);
+            };
+            if (this.loopDelay) {
+                this.timer = setInterval(() => {
+                    savedThis.runHooks();
+                }, this.loopDelay);
+            }
         }
-        if (this.timer) {
-            clearInterval(this.timer);
+        disable() {
+            if (!this.active) {
+                return;
+            }
+            if (typeof this.savedHandler === "function") {
+                document.onmousemove = this.savedHandler;
+            } else {
+                delete document.onmousemove;
+            }
+            if (this.timer) {
+                clearInterval(this.timer);
+            }
+            this.active = false;
         }
-        this.active = false;
-    };
-    function Navpopup() {
-        this.uid = Navpopup.uid++;
-        this.visible = false;
-        this.noshow = false;
-        this.hooks = {
+    }
+    class Navpopup {
+        static uid = 0;
+        static highest = 1e3;
+        static tracker = new Mousetracker();
+        uid = Navpopup.uid++;
+        visible = false;
+        noshow = false;
+        hooks = {
             create: [],
             unhide: [],
             hide: [],
         };
-        this.hookIds = {};
-        this.downloads = [];
-        this.pending = null;
-        this.fuzz = 5;
-        this.constrained = true;
-        this.width = 0;
-        this.height = 0;
-        this.mainDiv = null;
-        this.createMainDiv();
-    }
-    Navpopup.uid = 0;
-    Navpopup.prototype.isVisible = function () {
-        return this.visible;
-    };
-    Navpopup.prototype.reposition = function (x, y, noLimitHor) {
-        log(`reposition(${x},${y},${noLimitHor})`);
-        if (typeof x !== "undefined" && x !== null) {
-            this.left = x;
-        }
-        if (typeof y !== "undefined" && y !== null) {
-            this.top = y;
-        }
-        if (typeof this.left !== "undefined" && typeof this.top !== "undefined") {
-            this.mainDiv.style.left = `${this.left}px`;
-            this.mainDiv.style.top = `${this.top}px`;
-        }
-        if (!noLimitHor) {
-            this.limitHorizontalPosition();
-        }
-    };
-    Navpopup.prototype.limitHorizontalPosition = function () {
-        if (!this.constrained || this.tooWide) {
-            return;
-        }
-        this.updateDimensions();
-        const x = this.left;
-        const w = this.width;
-        const cWidth = document.body.clientWidth;
-        if (x + w >= cWidth || x > 0 && this.maxWidth && this.width < this.maxWidth && this.height > this.width && x > cWidth - this.maxWidth) {
-            this.mainDiv.style.left = "-10000px";
-            this.mainDiv.style.width = `${this.maxWidth}px`;
-            const naturalWidth = parseInt(this.mainDiv.offsetWidth, 10);
-            let newLeft = cWidth - naturalWidth - 1;
-            if (newLeft < 0) {
-                newLeft = 0;
-                this.tooWide = true;
-            }
-            log(`limitHorizontalPosition: moving to (${newLeft},${this.top});` + ` naturalWidth=${naturalWidth}, clientWidth=${cWidth}`);
-            this.reposition(newLeft, null, true);
-        }
-    };
-    Navpopup.highest = 1e3;
-    Navpopup.prototype.raise = function () {
-        this.mainDiv.style.zIndex = Navpopup.highest + 1;
-        ++Navpopup.highest;
-    };
-    Navpopup.prototype.show = function () {
-        if (this.noshow) {
-            return;
-        }
-        this.reposition();
-        this.raise();
-        this.unhide();
-    };
-    Navpopup.prototype.showSoonIfStable = function (time) {
-        log(`showSoonIfStable, time=${time}`);
-        if (this.visible) {
-            return;
-        }
-        this.noshow = false;
-        this.stable_x = -1e4;
-        this.stable_y = -1e4;
-        const stableShow = function () {
-            log("stableShow called");
-            const new_x = Navpopup.tracker.x,
-                new_y = Navpopup.tracker.y;
-            const dx = savedThis.stable_x - new_x,
-                dy = savedThis.stable_y - new_y;
-            const fuzz2 = 0;
-            if (dx * dx <= fuzz2 && dy * dy <= fuzz2) {
-                log("mouse is stable");
-                clearInterval(savedThis.showSoonStableTimer);
-                savedThis.reposition.apply(savedThis, [new_x + 2, new_y + 2]);
-                savedThis.show.apply(savedThis, []);
-                savedThis.limitHorizontalPosition.apply(savedThis, []);
-                return;
-            }
-            savedThis.stable_x = new_x;
-            savedThis.stable_y = new_y;
-        };
-        var savedThis = this;
-        this.showSoonStableTimer = setInterval(stableShow, time / 2);
-    };
-    Navpopup.prototype.banish = function () {
-        log("banish called");
-        this.noshow = true;
-        if (this.showSoonStableTimer) {
-            log("clearing showSoonStableTimer");
-            clearInterval(this.showSoonStableTimer);
-        }
-        this.hide();
-    };
-    Navpopup.prototype.runHooks = function (key, when) {
-        if (!this.hooks[key]) {
-            return;
-        }
-        const keyHooks = this.hooks[key];
-        const len = keyHooks.length;
-        for (let i = 0; i < len; ++i) {
-            if (keyHooks[i] && keyHooks[i].when == when) {
-                if (keyHooks[i].hook.apply(this, [])) {
-                    if (keyHooks[i].hookId) {
-                        delete this.hookIds[keyHooks[i].hookId];
-                    }
-                    keyHooks[i] = null;
-                }
-            }
-        }
-    };
-    Navpopup.prototype.addHook = function (hook, key, when, uid) {
-        when = when || "after";
-        if (!this.hooks[key]) {
-            return;
-        }
-        let hookId = null;
-        if (uid) {
-            hookId = [key, when, uid].join("|");
-            if (this.hookIds[hookId]) {
-                return;
-            }
-            this.hookIds[hookId] = true;
-        }
-        this.hooks[key].push({
-            hook: hook,
-            when: when,
-            hookId: hookId,
-        });
-    };
-    Navpopup.prototype.createMainDiv = function () {
-        if (this.mainDiv) {
-            return;
-        }
-        this.runHooks("create", "before");
-        const mainDiv = document.createElement("div");
-        const savedThis = this;
-        mainDiv.onclick = function (e) {
-            savedThis.onclickHandler(e);
-        };
-        mainDiv.className = this.className ? this.className : "navpopup_maindiv";
-        mainDiv.id = mainDiv.className + this.uid;
-        mainDiv.style.position = "absolute";
-        mainDiv.style.minWidth = "350px";
-        mainDiv.style.display = "none";
-        mainDiv.className = "navpopup";
-        mainDiv.navpopup = this;
-        this.mainDiv = mainDiv;
-        document.body.appendChild(mainDiv);
-        this.runHooks("create", "after");
-    };
-    Navpopup.prototype.onclickHandler = function () {
-        this.raise();
-    };
-    Navpopup.prototype.makeDraggable = function (handleName) {
-        if (!this.mainDiv) {
+        hookIds = {};
+        downloads = [];
+        pending = null;
+        fuzz = 5;
+        constrained = true;
+        width = 0;
+        height = 0;
+        mainDiv = null;
+        constructor() {
             this.createMainDiv();
         }
-        const drag = new Drag();
-        if (!handleName) {
-            drag.startCondition = function (e) {
-                try {
-                    if (!e.shiftKey) {
-                        return false;
-                    }
-                } catch (err) {
-                    return false;
-                }
-                return true;
-            };
+        isVisible() {
+            return this.visible;
         }
-        let dragHandle;
-        if (handleName) {
-            dragHandle = document.getElementById(handleName);
-        }
-        if (!dragHandle) {
-            dragHandle = this.mainDiv;
-        }
-        const np = this;
-        drag.endHook = function (x, y) {
-            Navpopup.tracker.dirty = true;
-            np.reposition(x, y);
-        };
-        drag.init(dragHandle, this.mainDiv);
-    };
-    Navpopup.prototype.hide = function () {
-        this.runHooks("hide", "before");
-        this.abortDownloads();
-        if (typeof this.visible !== "undefined" && this.visible) {
-            this.mainDiv.style.display = "none";
-            this.visible = false;
-        }
-        this.runHooks("hide", "after");
-    };
-    Navpopup.prototype.unhide = function () {
-        this.runHooks("unhide", "before");
-        if (typeof this.visible !== "undefined" && !this.visible) {
-            this.mainDiv.style.display = "inline";
-            this.visible = true;
-        }
-        this.runHooks("unhide", "after");
-    };
-    Navpopup.prototype.setInnerHTML = function (html) {
-        this.mainDiv.innerHTML = html;
-    };
-    Navpopup.prototype.updateDimensions = function () {
-        this.width = parseInt(this.mainDiv.offsetWidth, 10);
-        this.height = parseInt(this.mainDiv.offsetHeight, 10);
-    };
-    Navpopup.prototype.isWithin = function (x, y) {
-        if (!this.visible) {
-            return false;
-        }
-        this.updateDimensions();
-        const fuzz = this.fuzz || 0;
-        return x + fuzz >= this.left && x - fuzz <= this.left + this.width && y + fuzz >= this.top && y - fuzz <= this.top + this.height;
-    };
-    Navpopup.prototype.addDownload = function (download) {
-        if (!download) {
-            return;
-        }
-        this.downloads.push(download);
-    };
-    Navpopup.prototype.abortDownloads = function () {
-        for (let i = 0; i < this.downloads.length; ++i) {
-            const d = this.downloads[i];
-            if (d && d.abort) {
-                d.abort();
+        reposition(x, y, noLimitHor) {
+            log(`reposition(${x},${y},${noLimitHor})`);
+            if (typeof x !== "undefined" && x !== null) {
+                this.left = x;
+            }
+            if (typeof y !== "undefined" && y !== null) {
+                this.top = y;
+            }
+            if (typeof this.left !== "undefined" && typeof this.top !== "undefined") {
+                this.mainDiv.style.left = `${this.left}px`;
+                this.mainDiv.style.top = `${this.top}px`;
+            }
+            if (!noLimitHor) {
+                this.limitHorizontalPosition();
             }
         }
-        this.downloads = [];
-    };
-    Navpopup.tracker = new Mousetracker();
+        limitHorizontalPosition() {
+            if (!this.constrained || this.tooWide) {
+                return;
+            }
+            this.updateDimensions();
+            const x = this.left;
+            const w = this.width;
+            const cWidth = document.body.clientWidth;
+            if (x + w >= cWidth || x > 0 && this.maxWidth && this.width < this.maxWidth && this.height > this.width && x > cWidth - this.maxWidth) {
+                this.mainDiv.style.left = "-10000px";
+                this.mainDiv.style.width = `${this.maxWidth}px`;
+                const naturalWidth = parseInt(this.mainDiv.offsetWidth, 10);
+                let newLeft = cWidth - naturalWidth - 1;
+                if (newLeft < 0) {
+                    newLeft = 0;
+                    this.tooWide = true;
+                }
+                log(`limitHorizontalPosition: moving to (${newLeft},${this.top}); naturalWidth=${naturalWidth}, clientWidth=${cWidth}`);
+                this.reposition(newLeft, null, true);
+            }
+        }
+        raise() {
+            this.mainDiv.style.zIndex = Navpopup.highest + 1;
+            ++Navpopup.highest;
+        }
+        show() {
+            if (this.noshow) {
+                return;
+            }
+            this.reposition();
+            this.raise();
+            this.unhide();
+        }
+        showSoonIfStable(time) {
+            log(`showSoonIfStable, time=${time}`);
+            if (this.visible) {
+                return;
+            }
+            this.noshow = false;
+            this.stable_x = -1e4;
+            this.stable_y = -1e4;
+            const stableShow = () => {
+                log("stableShow called");
+                const new_x = Navpopup.tracker.x, new_y = Navpopup.tracker.y;
+                const dx = this.stable_x - new_x, dy = this.stable_y - new_y;
+                const fuzz2 = 0;
+                if (dx * dx <= fuzz2 && dy * dy <= fuzz2) {
+                    log("mouse is stable");
+                    clearInterval(this.showSoonStableTimer);
+                    this.reposition.apply(this, [new_x + 2, new_y + 2]);
+                    this.show.apply(this, []);
+                    this.limitHorizontalPosition.apply(this, []);
+                    return;
+                }
+                this.stable_x = new_x;
+                this.stable_y = new_y;
+            };
+            this.showSoonStableTimer = setInterval(stableShow, time / 2);
+        }
+        banish() {
+            log("banish called");
+            this.noshow = true;
+            if (this.showSoonStableTimer) {
+                log("clearing showSoonStableTimer");
+                clearInterval(this.showSoonStableTimer);
+            }
+            this.hide();
+        }
+        runHooks(key, when) {
+            if (!this.hooks[key]) {
+                return;
+            }
+            const keyHooks = this.hooks[key];
+            const len = keyHooks.length;
+            for (let i = 0; i < len; ++i) {
+                if (keyHooks[i] && keyHooks[i].when === when) {
+                    if (keyHooks[i].hook.apply(this, [])) {
+                        if (keyHooks[i].hookId) {
+                            delete this.hookIds[keyHooks[i].hookId];
+                        }
+                        keyHooks[i] = null;
+                    }
+                }
+            }
+        }
+        addHook(hook, key, _when, uid) {
+            const when = _when || "after";
+            if (!this.hooks[key]) {
+                return;
+            }
+            let hookId = null;
+            if (uid) {
+                hookId = [key, when, uid].join("|");
+                if (this.hookIds[hookId]) {
+                    return;
+                }
+                this.hookIds[hookId] = true;
+            }
+            this.hooks[key].push({
+                hook: hook,
+                when: when,
+                hookId: hookId,
+            });
+        }
+        createMainDiv() {
+            if (this.mainDiv) {
+                return;
+            }
+            this.runHooks("create", "before");
+            const mainDiv = document.createElement("div");
+            const savedThis = this;
+            mainDiv.onclick = function (e) {
+                savedThis.onclickHandler(e);
+            };
+            mainDiv.className = this.className ? this.className : "navpopup_maindiv";
+            mainDiv.id = mainDiv.className + this.uid;
+            mainDiv.style.position = "absolute";
+            mainDiv.style.minWidth = "350px";
+            mainDiv.style.display = "none";
+            mainDiv.className = "navpopup";
+            mainDiv.navpopup = this;
+            this.mainDiv = mainDiv;
+            document.body.appendChild(mainDiv);
+            this.runHooks("create", "after");
+        }
+        onclickHandler() {
+            this.raise();
+        }
+        makeDraggable(handleName) {
+            if (!this.mainDiv) {
+                this.createMainDiv();
+            }
+            const drag = new Drag();
+            if (!handleName) {
+                drag.startCondition = function (e) {
+                    try {
+                        if (!e.shiftKey) {
+                            return false;
+                        }
+                    } catch (err) {
+                        return false;
+                    }
+                    return true;
+                };
+            }
+            let dragHandle;
+            if (handleName) {
+                dragHandle = document.getElementById(handleName);
+            }
+            if (!dragHandle) {
+                dragHandle = this.mainDiv;
+            }
+            const np = this;
+            drag.endHook = function (x, y) {
+                Navpopup.tracker.dirty = true;
+                np.reposition(x, y);
+            };
+            drag.init(dragHandle, this.mainDiv);
+        }
+        hide() {
+            this.runHooks("hide", "before");
+            this.abortDownloads();
+            if (typeof this.visible !== "undefined" && this.visible) {
+                this.mainDiv.style.display = "none";
+                this.visible = false;
+            }
+            this.runHooks("hide", "after");
+        }
+        unhide() {
+            this.runHooks("unhide", "before");
+            if (typeof this.visible !== "undefined" && !this.visible) {
+                this.mainDiv.style.display = "inline";
+                this.visible = true;
+            }
+            this.runHooks("unhide", "after");
+        }
+        setInnerHTML(html) {
+            this.mainDiv.innerHTML = html;
+        }
+        updateDimensions() {
+            this.width = parseInt(this.mainDiv.offsetWidth, 10);
+            this.height = parseInt(this.mainDiv.offsetHeight, 10);
+        }
+        isWithin(x, y) {
+            if (!this.visible) {
+                return false;
+            }
+            this.updateDimensions();
+            const fuzz = this.fuzz || 0;
+            return x + fuzz >= this.left && x - fuzz <= this.left + this.width && y + fuzz >= this.top && y - fuzz <= this.top + this.height;
+        }
+        addDownload(download) {
+            if (!download) {
+                return;
+            }
+            this.downloads.push(download);
+        }
+        abortDownloads() {
+            for (let i = 0; i < this.downloads.length; ++i) {
+                const d = this.downloads[i];
+                if (d && d.abort) {
+                    d.abort();
+                }
+            }
+            this.downloads = [];
+        }
+    }
     function delFmt(x) {
         if (!x.length) {
             return "";
@@ -4602,7 +4473,7 @@ $(() => {
     }
     function diffString(o, n, simpleSplit) {
         const splitRe = RegExp("([[]{2}|[\\]]{2}|[{]{2,3}|[}]{2,3}|[|]|=|<|>|[*:]+|\\s|\\b)");
-        let out, i, oSplitted, nSplitted;
+        let i, oSplitted, nSplitted;
         if (simpleSplit) {
             oSplitted = o.split(/\b/);
             nSplitted = n.split(/\b/);
@@ -4616,7 +4487,7 @@ $(() => {
         for (i = 0; i < nSplitted.length; ++i) {
             nSplitted[i] = nSplitted[i].entify();
         }
-        out = diff(oSplitted, nSplitted);
+        const out = diff(oSplitted, nSplitted);
         let str = "";
         let acc = [];
         let maxOutputPair = 0;
@@ -4654,7 +4525,7 @@ $(() => {
         }
         return str;
     }
-    const jsReservedProperties = RegExp("^(constructor|prototype|__((define|lookup)[GS]etter)__" + "|eval|hasOwnProperty|propertyIsEnumerable" + "|to(Source|String|LocaleString)|(un)?watch|valueOf)$");
+    const jsReservedProperties = RegExp("^(constructor|prototype|__((define|lookup)[GS]etter)__|eval|hasOwnProperty|propertyIsEnumerable|to(Source|String|LocaleString)|(un)?watch|valueOf)$");
     function diffBugAlert(word) {
         if (!diffBugAlert.list[word]) {
             diffBugAlert.list[word] = 1;
@@ -4684,7 +4555,7 @@ $(() => {
         const os = makeDiffHashtable(o);
         let i;
         for (i in ns) {
-            if (ns[i].length == 1 && os[i] && os[i].length == 1) {
+            if (ns[i].length === 1 && os[i] && os[i].length === 1) {
                 n[ns[i][0]] = {
                     text: n[ns[i][0]],
                     row: os[i][0],
@@ -4698,7 +4569,7 @@ $(() => {
             }
         }
         for (i = 0; i < n.length - 1; i++) {
-            if (n[i].paired && !n[i + 1].paired && n[i].row + 1 < o.length && !o[n[i].row + 1].paired && n[i + 1] == o[n[i].row + 1]) {
+            if (n[i].paired && !n[i + 1].paired && n[i].row + 1 < o.length && !o[n[i].row + 1].paired && n[i + 1] === o[n[i].row + 1]) {
                 n[i + 1] = {
                     text: n[i + 1],
                     row: n[i].row + 1,
@@ -4712,7 +4583,7 @@ $(() => {
             }
         }
         for (i = n.length - 1; i > 0; i--) {
-            if (n[i].paired && !n[i - 1].paired && n[i].row > 0 && !o[n[i].row - 1].paired && n[i - 1] == o[n[i].row - 1]) {
+            if (n[i].paired && !n[i - 1].paired && n[i].row > 0 && !o[n[i].row - 1].paired && n[i - 1] === o[n[i].row - 1]) {
                 n[i - 1] = {
                     text: n[i - 1],
                     row: n[i].row - 1,
@@ -4739,7 +4610,7 @@ $(() => {
         pg.wiki.wikimedia = RegExp("(wiki([pm]edia|source|books|news|quote|versity|species|voyage|data)|metawiki|wiktionary|mediawiki)[.]org").test(pg.wiki.hostname);
         pg.wiki.wikia = RegExp("[.]wikia[.]com$", "i").test(pg.wiki.hostname);
         pg.wiki.isLocal = RegExp("^localhost").test(pg.wiki.hostname);
-        pg.wiki.commons = pg.wiki.wikimedia && pg.wiki.hostname != "commons.wikimedia.org" ? "commons.wikimedia.org" : null;
+        pg.wiki.commons = pg.wiki.wikimedia && pg.wiki.hostname !== "commons.wikimedia.org" ? "commons.wikimedia.org" : null;
         pg.wiki.lang = mw.config.get("wgContentLanguage");
         const port = location.port ? `:${location.port}` : "";
         pg.wiki.sitebase = pg.wiki.hostname + port;
@@ -4809,29 +4680,21 @@ $(() => {
         pg.re.urlNoPopup = RegExp(`((title=|/)${sp}(?:%3A|:)|section=[0-9]|^#$)`);
         pg.wiki.specialpagealiases.forEach((specialpage) => {
             if (specialpage.realname === "Contributions") {
-                pg.re.contribs = RegExp(`(title=|/)${sp
-                    }(?:%3A|:)(?:${buildSpecialPageGroup(specialpage)})` +
-                    `(&target=|/|/${nsRe(pg.nsUserId)}:)(.*)`, "i");
+                pg.re.contribs = RegExp(`(title=|/)${sp}(?:%3A|:)(?:${buildSpecialPageGroup(specialpage)})(&target=|/|/${nsRe(pg.nsUserId)}:)(.*)`, "i");
             } else if (specialpage.realname === "Diff") {
-                pg.re.specialdiff = RegExp(`/${sp
-                    }(?:%3A|:)(?:${buildSpecialPageGroup(specialpage)})` +
-                    "/([^?#]*)", "i");
+                pg.re.specialdiff = RegExp(`/${sp}(?:%3A|:)(?:${buildSpecialPageGroup(specialpage)})/([^?#]*)`, "i");
             } else if (specialpage.realname === "Emailuser") {
-                pg.re.email = RegExp(`(title=|/)${sp
-                    }(?:%3A|:)(?:${buildSpecialPageGroup(specialpage)
-                    })` + `(&target=|/|/(?:${nsRe(pg.nsUserId)}:)?)(.*)`, "i");
+                pg.re.email = RegExp(`(title=|/)${sp}(?:%3A|:)(?:${buildSpecialPageGroup(specialpage)})(&target=|/|/(?:${nsRe(pg.nsUserId)}:)?)(.*)`, "i");
             } else if (specialpage.realname === "Whatlinkshere") {
-                pg.re.backlinks = RegExp(`(title=|/)${sp
-                    }(?:%3A|:)(?:${buildSpecialPageGroup(specialpage)
-                    })` + "(&target=|/)([^&]*)", "i");
+                pg.re.backlinks = RegExp(`(title=|/)${sp}(?:%3A|:)(?:${buildSpecialPageGroup(specialpage)})(&target=|/)([^&]*)`, "i");
             }
         });
         const im = nsReImage();
-        pg.re.image = RegExp(`(^|\\[\\[)${im}: *([^|\\]]*[^|\\] ])` + "([^0-9\\]]*([0-9]+) *px)?|(?:\\n *[|]?|[|]) *" + `(${getValueOf("popupImageVarsRegexp")})` + ` *= *(?:\\[\\[ *)?(?:${im}:)?` + "([^|]*?)(?:\\]\\])? *[|]? *\\n", "img");
+        pg.re.image = RegExp(`(^|\\[\\[)${im}: *([^|\\]]*[^|\\] ])([^0-9\\]]*([0-9]+) *px)?|(?:\\n *[|]?|[|]) *(${getValueOf("popupImageVarsRegexp")}) *= *(?:\\[\\[ *)?(?:${im}:)?([^|]*?)(?:\\]\\])? *[|]? *\\n`, "img");
         pg.re.imageBracketCount = 6;
         pg.re.category = RegExp(`\\[\\[${nsRe(pg.nsCategoryId)}: *([^|\\]]*[^|\\] ]) *`, "i");
         pg.re.categoryBracketCount = 1;
-        pg.re.ipUser = RegExp("^" + "(?::(?::|(?::[0-9A-Fa-f]{1,4}){1,7})|[0-9A-Fa-f]{1,4}(?::[0-9A-Fa-f]{1,4}){0,6}::|[0-9A-Fa-f]{1,4}(?::[0-9A-Fa-f]{1,4}){7})" + "|(((25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])\\.){3}" + "(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9]))$");
+        pg.re.ipUser = RegExp("^(?::(?::|(?::[0-9A-Fa-f]{1,4}){1,7})|[0-9A-Fa-f]{1,4}(?::[0-9A-Fa-f]{1,4}){0,6}::|[0-9A-Fa-f]{1,4}(?::[0-9A-Fa-f]{1,4}){7})|(((25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])\\.){3}(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9]))$");
         pg.re.stub = RegExp(getValueOf("popupStubRegexp"), "im");
         pg.re.disambig = RegExp(getValueOf("popupDabRegexp"), "im");
         pg.re.oldid = RegExp("[?&]oldid=([^&]*)");
@@ -4922,19 +4785,20 @@ $(() => {
         const editOldidStr = `if(oldid){<<editOld|shortcut=e>>|<<revert|shortcut=v|rv>>|<<edit|cur>>}else{${editstr}}`;
         const historystr = "<<history|shortcut=h>>|<<editors|shortcut=E|>>";
         const watchstr = "<<unwatch|unwatchShort>>|<<watch|shortcut=w|watchThingy>>";
-        str += `<br>if(talk){${editOldidStr}|<<new|shortcut=+>>` + `*${historystr}*${watchstr}*` + "<b><<article|shortcut=a>></b>|<<editArticle|edit>>" + `}else{${editOldidStr}*${historystr}*${watchstr}*` + "<b><<talk|shortcut=t>></b>|<<editTalk|edit>>|<<newTalk|shortcut=+|new>>}";
+        str += `<br>if(talk){${editOldidStr}|<<new|shortcut=+>>*${historystr}*${watchstr}*<b><<article|shortcut=a>></b>|<<editArticle|edit>>}else{${editOldidStr}*${historystr}*${watchstr}*<b><<talk|shortcut=t>></b>|<<editTalk|edit>>|<<newTalk|shortcut=+|new>>}`;
         str += "<br><<whatLinksHere|shortcut=l>>*<<relatedChanges|shortcut=r>>*<<move|shortcut=m>>";
-        str += "if(admin){<br><<unprotect|unprotectShort>>|<<protect|shortcut=p>>|<<protectlog|log>>*" + "<<undelete|undeleteShort>>|<<delete|shortcut=d>>|<<deletelog|log>>}";
+        str += "if(admin){<br><<unprotect|unprotectShort>>|<<protect|shortcut=p>>|<<protectlog|log>>*<<undelete|undeleteShort>>|<<delete|shortcut=d>>|<<deletelog|log>>}";
         return str;
     }
     function navLinksHTML(article, hint, params) {
         const str = `<span class="popupNavLinks">${defaultNavlinkSpec()}</span>`;
         return navlinkStringToHTML(str, article, params);
     }
-    function expandConditionalNavlinkString(s, article, z, recursionCount) {
+    function expandConditionalNavlinkString(s, article, z, _recursionCount) {
         const oldid = z.oldid,
             rcid = z.rcid,
             diff = z.diff;
+        let recursionCount = _recursionCount;
         if (typeof recursionCount !== typeof 0) {
             recursionCount = 0;
         }
@@ -4970,7 +4834,7 @@ $(() => {
                     testResult = article.isIpUser() ? true : false;
                     break;
                 case "mainspace_en":
-                    testResult = isInMainNamespace(article) && pg.wiki.hostname == "en.wikipedia.org";
+                    testResult = isInMainNamespace(article) && pg.wiki.hostname === "en.wikipedia.org";
                     break;
                 case "wikimedia":
                     testResult = pg.wiki.wikimedia ? true : false;
@@ -4997,13 +4861,13 @@ $(() => {
         }
         return ret;
     }
-    function navlinkStringToArray(s, article, params) {
-        s = expandConditionalNavlinkString(s, article, params);
+    function navlinkStringToArray(_s, article, params) {
+        const s = expandConditionalNavlinkString(_s, article, params);
         const splitted = s.parenSplit(RegExp("<<(.*?)>>"));
         const ret = [];
         for (let i = 0; i < splitted.length; ++i) {
             if (i % 2) {
-                const t = new navlinkTag();
+                const t = new NavlinkTag();
                 const ss = splitted[i].split("|");
                 t.id = ss[0];
                 for (let j = 1; j < ss.length; ++j) {
@@ -5053,7 +4917,7 @@ $(() => {
                 html += navlinkSubstituteHTML(p[i]);
                 menudepth += navlinkDepth("menu", p[i]);
                 menurowdepth += navlinkDepth("menurow", p[i]);
-            } else if (typeof p[i].type !== "undefined" && p[i].type == "navlinkTag") {
+            } else if (typeof p[i].type !== "undefined" && p[i].type === "navlinkTag") {
                 if (menudepth > 0 && menurowdepth === 0) {
                     html += `<li class="popup_menu_item">${p[i].html()}</li>`;
                 } else {
@@ -5063,332 +4927,338 @@ $(() => {
         }
         return html;
     }
-    function navlinkTag() {
-        this.type = "navlinkTag";
-    }
-    navlinkTag.prototype.html = function () {
-        this.getNewWin();
-        this.getPrintFunction();
-        let html = "";
-        let opening, closing;
-        const tagType = "span";
-        if (!tagType) {
-            opening = "";
-            closing = "";
-        } else {
-            opening = `<${tagType} class="popup_${this.id}">`;
-            closing = `</${tagType}>`;
+    class NavlinkTag {
+        type = "navlinkTag";
+        html() {
+            this.getNewWin();
+            this.getPrintFunction();
+            let html = "";
+            let opening, closing;
+            const tagType = "span";
+            if (!tagType) {
+                opening = "";
+                closing = "";
+            } else {
+                opening = `<${tagType} class="popup_${this.id}">`;
+                closing = `</${tagType}>`;
+            }
+            if (typeof this.print !== "function") {
+                errlog(`Oh dear - invalid print function for a navlinkTag, id=${this.id}`);
+            } else {
+                html = this.print(this);
+                if (typeof html !== typeof "") {
+                    html = "";
+                } else if (typeof this.shortcut !== "undefined") {
+                    html = addPopupShortcut(html, this.shortcut);
+                }
+            }
+            return opening + html + closing;
         }
-        if (typeof this.print !== "function") {
-            errlog(`Oh dear - invalid print function for a navlinkTag, id=${this.id}`);
-        } else {
-            html = this.print(this);
-            if (typeof html !== typeof "") {
-                html = "";
-            } else if (typeof this.shortcut !== "undefined") {
-                html = addPopupShortcut(html, this.shortcut);
+        getNewWin() {
+            getValueOf("popupLinksNewWindow");
+            if (typeof pg.option.popupLinksNewWindow[this.id] === "undefined") {
+                this.newWin = null;
+            }
+            this.newWin = pg.option.popupLinksNewWindow[this.id];
+        }
+        getPrintFunction() {
+            if (typeof this.id !== typeof "" || typeof this.article !== typeof {}) {
+                return;
+            }
+            this.noPopup = 1;
+            switch (this.id) {
+                case "contribs":
+                case "history":
+                case "whatLinksHere":
+                case "userPage":
+                case "monobook":
+                case "userTalk":
+                case "talk":
+                case "article":
+                case "lastEdit":
+                    this.noPopup = null;
+            }
+            switch (this.id) {
+                case "email":
+                case "contribs":
+                case "block":
+                case "unblock":
+                case "userlog":
+                case "userSpace":
+                case "deletedContribs":
+                    this.article = this.article.userName();
+            }
+            switch (this.id) {
+                case "userTalk":
+                case "newUserTalk":
+                case "editUserTalk":
+                case "userPage":
+                case "monobook":
+                case "editMonobook":
+                case "blocklog": {
+                    this.article = this.article.userName(true);
+                    // falls through
+                }
+                case "pagelog":
+                case "deletelog":
+                case "protectlog":
+                    delete this.oldid;
+            }
+            if (this.id === "editMonobook" || this.id === "monobook") {
+                this.article.append("/monobook.js");
+            }
+            if (this.id !== "mainlink") {
+                this.article = this.article.removeAnchor();
+            }
+            switch (this.id) {
+                case "undelete":
+                    this.print = specialLink;
+                    this.specialpage = "Undelete";
+                    this.sep = "/";
+                    break;
+                case "whatLinksHere":
+                    this.print = specialLink;
+                    this.specialpage = "Whatlinkshere";
+                    break;
+                case "relatedChanges":
+                    this.print = specialLink;
+                    this.specialpage = "Recentchangeslinked";
+                    break;
+                case "move":
+                    this.print = specialLink;
+                    this.specialpage = "Movepage";
+                    break;
+                case "contribs":
+                    this.print = specialLink;
+                    this.specialpage = "Contributions";
+                    break;
+                case "deletedContribs":
+                    this.print = specialLink;
+                    this.specialpage = "Deletedcontributions";
+                    break;
+                case "email":
+                    this.print = specialLink;
+                    this.specialpage = "EmailUser";
+                    this.sep = "/";
+                    break;
+                case "block":
+                    this.print = specialLink;
+                    this.specialpage = "Blockip";
+                    this.sep = "&ip=";
+                    break;
+                case "unblock":
+                    this.print = specialLink;
+                    this.specialpage = "Ipblocklist";
+                    this.sep = "&action=unblock&ip=";
+                    break;
+                case "userlog":
+                    this.print = specialLink;
+                    this.specialpage = "Log";
+                    this.sep = "&user=";
+                    break;
+                case "blocklog":
+                    this.print = specialLink;
+                    this.specialpage = "Log";
+                    this.sep = "&type=block&page=";
+                    break;
+                case "pagelog":
+                    this.print = specialLink;
+                    this.specialpage = "Log";
+                    this.sep = "&page=";
+                    break;
+                case "protectlog":
+                    this.print = specialLink;
+                    this.specialpage = "Log";
+                    this.sep = "&type=protect&page=";
+                    break;
+                case "deletelog":
+                    this.print = specialLink;
+                    this.specialpage = "Log";
+                    this.sep = "&type=delete&page=";
+                    break;
+                case "userSpace":
+                    this.print = specialLink;
+                    this.specialpage = "PrefixIndex";
+                    this.sep = "&namespace=2&prefix=";
+                    break;
+                case "search":
+                    this.print = specialLink;
+                    this.specialpage = "Search";
+                    this.sep = "&fulltext=Search&search=";
+                    break;
+                case "thank":
+                    this.print = specialLink;
+                    this.specialpage = "Thanks";
+                    this.sep = "/";
+                    this.article.value = this.diff !== "prev" ? this.diff : this.oldid;
+                    break;
+                case "unwatch":
+                case "watch":
+                    this.print = magicWatchLink;
+                    this.action = `${this.id}&autowatchlist=1&autoimpl=${popupString("autoedit_version")}&actoken=${autoClickToken()}`;
+                    break;
+                case "history":
+                case "historyfeed":
+                case "unprotect":
+                case "protect":
+                    this.print = wikiLink;
+                    this.action = this.id;
+                    break;
+                case "delete":
+                    this.print = wikiLink;
+                    this.action = "delete";
+                    if (this.article.namespaceId() === pg.nsImageId) {
+                        const img = this.article.stripNamespace();
+                        this.action += `&image=${img}`;
+                    }
+                    break;
+                case "markpatrolled":
+                case "edit": {
+                    delete this.oldid;
+                    // falls through
+                }
+                case "view":
+                case "purge":
+                case "render":
+                    this.print = wikiLink;
+                    this.action = this.id;
+                    break;
+                case "raw":
+                    this.print = wikiLink;
+                    this.action = "raw";
+                    break;
+                case "new":
+                    this.print = wikiLink;
+                    this.action = "edit&section=new";
+                    break;
+                case "mainlink":
+                    if (typeof this.text === "undefined") {
+                        this.text = this.article.toString().entify();
+                    }
+                    if (getValueOf("popupSimplifyMainLink") && isInStrippableNamespace(this.article)) {
+                        const s = this.text.split("/");
+                        this.text = s[s.length - 1];
+                        if (this.text === "" && s.length > 1) {
+                            this.text = s[s.length - 2];
+                        }
+                    }
+                    this.print = titledWikiLink;
+                    if (typeof this.title === "undefined" && pg.current.link && typeof pg.current.link.href !== "undefined") {
+                        this.title = safeDecodeURI(pg.current.link.originalTitle ? pg.current.link.originalTitle : this.article);
+                        if (typeof this.oldid !== "undefined" && this.oldid) {
+                            this.title = tprintf("Revision %s of %s", [this.oldid, this.title]);
+                        }
+                    }
+                    this.action = "view";
+                    break;
+                case "userPage":
+                case "article":
+                case "monobook":
+                case "editMonobook":
+                case "editArticle":
+                    delete this.oldid;
+                    this.article = this.article.articleFromTalkOrArticle();
+                    this.print = wikiLink;
+                    if (this.id.indexOf("edit") === 0) {
+                        this.action = "edit";
+                    } else {
+                        this.action = "view";
+                    }
+                    break;
+                case "userTalk":
+                case "talk":
+                    this.article = this.article.talkPage();
+                    delete this.oldid;
+                    this.print = wikiLink;
+                    this.action = "view";
+                    break;
+                case "arin":
+                    this.print = arinLink;
+                    break;
+                case "count":
+                    this.print = editCounterLink;
+                    break;
+                case "google":
+                    this.print = googleLink;
+                    break;
+                case "editors":
+                    this.print = editorListLink;
+                    break;
+                case "globalsearch":
+                    this.print = globalSearchLink;
+                    break;
+                case "lastEdit":
+                    this.print = titledDiffLink;
+                    this.title = popupString("Show the last edit");
+                    this.from = "prev";
+                    this.to = "cur";
+                    break;
+                case "oldEdit":
+                    this.print = titledDiffLink;
+                    this.title = `${popupString("Show the edit made to get revision")} ${this.oldid}`;
+                    this.from = "prev";
+                    this.to = this.oldid;
+                    break;
+                case "editOld":
+                    this.print = wikiLink;
+                    this.action = "edit";
+                    break;
+                case "undo":
+                    this.print = wikiLink;
+                    this.action = "edit&undo=";
+                    break;
+                case "revert":
+                    this.print = wikiLink;
+                    this.action = "revert";
+                    break;
+                case "nullEdit":
+                    this.print = wikiLink;
+                    this.action = "nullEdit";
+                    break;
+                case "diffCur":
+                    this.print = titledDiffLink;
+                    this.title = tprintf("Show changes since revision %s", [this.oldid]);
+                    this.from = this.oldid;
+                    this.to = "cur";
+                    break;
+                case "editUserTalk":
+                case "editTalk":
+                    delete this.oldid;
+                    this.article = this.article.talkPage();
+                    this.action = "edit";
+                    this.print = wikiLink;
+                    break;
+                case "newUserTalk":
+                case "newTalk":
+                    this.article = this.article.talkPage();
+                    this.action = "edit&section=new";
+                    this.print = wikiLink;
+                    break;
+                case "lastContrib":
+                case "sinceMe":
+                    this.print = magicHistoryLink;
+                    break;
+                case "togglePreviews": {
+                    this.text = popupString(pg.option.simplePopups ? "enable previews" : "disable previews");
+                    // falls through
+                }
+                case "disablePopups":
+                case "purgePopups":
+                    this.print = popupMenuLink;
+                    break;
+                default:
+                    this.print = function () {
+                        return `Unknown navlink type: ${this.id}`;
+                    };
             }
         }
-        return opening + html + closing;
-    };
-    navlinkTag.prototype.getNewWin = function () {
-        getValueOf("popupLinksNewWindow");
-        if (typeof pg.option.popupLinksNewWindow[this.id] === "undefined") {
-            this.newWin = null;
-        }
-        this.newWin = pg.option.popupLinksNewWindow[this.id];
-    };
-    navlinkTag.prototype.getPrintFunction = function () {
-        if (typeof this.id !== typeof "" || typeof this.article !== typeof {}) {
-            return;
-        }
-        this.noPopup = 1;
-        switch (this.id) {
-            case "contribs":
-            case "history":
-            case "whatLinksHere":
-            case "userPage":
-            case "monobook":
-            case "userTalk":
-            case "talk":
-            case "article":
-            case "lastEdit":
-                this.noPopup = null;
-        }
-        switch (this.id) {
-            case "email":
-            case "contribs":
-            case "block":
-            case "unblock":
-            case "userlog":
-            case "userSpace":
-            case "deletedContribs":
-                this.article = this.article.userName();
-        }
-        switch (this.id) {
-            case "userTalk":
-            case "newUserTalk":
-            case "editUserTalk":
-            case "userPage":
-            case "monobook":
-            case "editMonobook":
-            case "blocklog":
-                this.article = this.article.userName(true);
-            case "pagelog":
-            case "deletelog":
-            case "protectlog":
-                delete this.oldid;
-        }
-        if (this.id == "editMonobook" || this.id == "monobook") {
-            this.article.append("/monobook.js");
-        }
-        if (this.id != "mainlink") {
-            this.article = this.article.removeAnchor();
-        }
-        switch (this.id) {
-            case "undelete":
-                this.print = specialLink;
-                this.specialpage = "Undelete";
-                this.sep = "/";
-                break;
-            case "whatLinksHere":
-                this.print = specialLink;
-                this.specialpage = "Whatlinkshere";
-                break;
-            case "relatedChanges":
-                this.print = specialLink;
-                this.specialpage = "Recentchangeslinked";
-                break;
-            case "move":
-                this.print = specialLink;
-                this.specialpage = "Movepage";
-                break;
-            case "contribs":
-                this.print = specialLink;
-                this.specialpage = "Contributions";
-                break;
-            case "deletedContribs":
-                this.print = specialLink;
-                this.specialpage = "Deletedcontributions";
-                break;
-            case "email":
-                this.print = specialLink;
-                this.specialpage = "EmailUser";
-                this.sep = "/";
-                break;
-            case "block":
-                this.print = specialLink;
-                this.specialpage = "Blockip";
-                this.sep = "&ip=";
-                break;
-            case "unblock":
-                this.print = specialLink;
-                this.specialpage = "Ipblocklist";
-                this.sep = "&action=unblock&ip=";
-                break;
-            case "userlog":
-                this.print = specialLink;
-                this.specialpage = "Log";
-                this.sep = "&user=";
-                break;
-            case "blocklog":
-                this.print = specialLink;
-                this.specialpage = "Log";
-                this.sep = "&type=block&page=";
-                break;
-            case "pagelog":
-                this.print = specialLink;
-                this.specialpage = "Log";
-                this.sep = "&page=";
-                break;
-            case "protectlog":
-                this.print = specialLink;
-                this.specialpage = "Log";
-                this.sep = "&type=protect&page=";
-                break;
-            case "deletelog":
-                this.print = specialLink;
-                this.specialpage = "Log";
-                this.sep = "&type=delete&page=";
-                break;
-            case "userSpace":
-                this.print = specialLink;
-                this.specialpage = "PrefixIndex";
-                this.sep = "&namespace=2&prefix=";
-                break;
-            case "search":
-                this.print = specialLink;
-                this.specialpage = "Search";
-                this.sep = "&fulltext=Search&search=";
-                break;
-            case "thank":
-                this.print = specialLink;
-                this.specialpage = "Thanks";
-                this.sep = "/";
-                this.article.value = this.diff !== "prev" ? this.diff : this.oldid;
-                break;
-            case "unwatch":
-            case "watch":
-                this.print = magicWatchLink;
-                this.action = `${this.id}&autowatchlist=1&autoimpl=${popupString("autoedit_version")}&actoken=${autoClickToken()}`;
-                break;
-            case "history":
-            case "historyfeed":
-            case "unprotect":
-            case "protect":
-                this.print = wikiLink;
-                this.action = this.id;
-                break;
-            case "delete":
-                this.print = wikiLink;
-                this.action = "delete";
-                if (this.article.namespaceId() == pg.nsImageId) {
-                    const img = this.article.stripNamespace();
-                    this.action += `&image=${img}`;
-                }
-                break;
-            case "markpatrolled":
-            case "edit":
-                delete this.oldid;
-            case "view":
-            case "purge":
-            case "render":
-                this.print = wikiLink;
-                this.action = this.id;
-                break;
-            case "raw":
-                this.print = wikiLink;
-                this.action = "raw";
-                break;
-            case "new":
-                this.print = wikiLink;
-                this.action = "edit&section=new";
-                break;
-            case "mainlink":
-                if (typeof this.text === "undefined") {
-                    this.text = this.article.toString().entify();
-                }
-                if (getValueOf("popupSimplifyMainLink") && isInStrippableNamespace(this.article)) {
-                    const s = this.text.split("/");
-                    this.text = s[s.length - 1];
-                    if (this.text === "" && s.length > 1) {
-                        this.text = s[s.length - 2];
-                    }
-                }
-                this.print = titledWikiLink;
-                if (typeof this.title === "undefined" && pg.current.link && typeof pg.current.link.href !== "undefined") {
-                    this.title = safeDecodeURI(pg.current.link.originalTitle ? pg.current.link.originalTitle : this.article);
-                    if (typeof this.oldid !== "undefined" && this.oldid) {
-                        this.title = tprintf("Revision %s of %s", [this.oldid, this.title]);
-                    }
-                }
-                this.action = "view";
-                break;
-            case "userPage":
-            case "article":
-            case "monobook":
-            case "editMonobook":
-            case "editArticle":
-                delete this.oldid;
-                this.article = this.article.articleFromTalkOrArticle();
-                this.print = wikiLink;
-                if (this.id.indexOf("edit") === 0) {
-                    this.action = "edit";
-                } else {
-                    this.action = "view";
-                }
-                break;
-            case "userTalk":
-            case "talk":
-                this.article = this.article.talkPage();
-                delete this.oldid;
-                this.print = wikiLink;
-                this.action = "view";
-                break;
-            case "arin":
-                this.print = arinLink;
-                break;
-            case "count":
-                this.print = editCounterLink;
-                break;
-            case "google":
-                this.print = googleLink;
-                break;
-            case "editors":
-                this.print = editorListLink;
-                break;
-            case "globalsearch":
-                this.print = globalSearchLink;
-                break;
-            case "lastEdit":
-                this.print = titledDiffLink;
-                this.title = popupString("Show the last edit");
-                this.from = "prev";
-                this.to = "cur";
-                break;
-            case "oldEdit":
-                this.print = titledDiffLink;
-                this.title = `${popupString("Show the edit made to get revision")} ${this.oldid}`;
-                this.from = "prev";
-                this.to = this.oldid;
-                break;
-            case "editOld":
-                this.print = wikiLink;
-                this.action = "edit";
-                break;
-            case "undo":
-                this.print = wikiLink;
-                this.action = "edit&undo=";
-                break;
-            case "revert":
-                this.print = wikiLink;
-                this.action = "revert";
-                break;
-            case "nullEdit":
-                this.print = wikiLink;
-                this.action = "nullEdit";
-                break;
-            case "diffCur":
-                this.print = titledDiffLink;
-                this.title = tprintf("Show changes since revision %s", [this.oldid]);
-                this.from = this.oldid;
-                this.to = "cur";
-                break;
-            case "editUserTalk":
-            case "editTalk":
-                delete this.oldid;
-                this.article = this.article.talkPage();
-                this.action = "edit";
-                this.print = wikiLink;
-                break;
-            case "newUserTalk":
-            case "newTalk":
-                this.article = this.article.talkPage();
-                this.action = "edit&section=new";
-                this.print = wikiLink;
-                break;
-            case "lastContrib":
-            case "sinceMe":
-                this.print = magicHistoryLink;
-                break;
-            case "togglePreviews":
-                this.text = popupString(pg.option.simplePopups ? "enable previews" : "disable previews");
-            case "disablePopups":
-            case "purgePopups":
-                this.print = popupMenuLink;
-                break;
-            default:
-                this.print = function () {
-                    return `Unknown navlink type: ${this.id}`;
-                };
-        }
-    };
+    }
     function popupHandleKeypress(evt) {
         const keyCode = window.event ? window.event.keyCode : evt.keyCode ? evt.keyCode : evt.which;
         if (!keyCode || !pg.current.link || !pg.current.link.navpopup) {
             return;
         }
-        if (keyCode == 27) {
+        if (keyCode === 27) {
             killPopup();
             return false;
         }
@@ -5398,14 +5268,14 @@ $(() => {
         let i, j;
         if (popupHandleKeypress.lastPopupLinkSelected) {
             for (i = 0; i < links.length; ++i) {
-                if (links[i] == popupHandleKeypress.lastPopupLinkSelected) {
+                if (links[i] === popupHandleKeypress.lastPopupLinkSelected) {
                     startLink = i;
                 }
             }
         }
         for (j = 0; j < links.length; ++j) {
             i = (startLink + j + 1) % links.length;
-            if (links[i].getAttribute("popupkey") == letter) {
+            if (links[i].getAttribute("popupkey") === letter) {
                 if (evt && evt.preventDefault) {
                     evt.preventDefault();
                 }
@@ -5420,7 +5290,7 @@ $(() => {
         return true;
     }
     function addPopupShortcuts() {
-        if (document.onkeypress != popupHandleKeypress) {
+        if (document.onkeypress !== popupHandleKeypress) {
             document.oldPopupOnkeypress = document.onkeypress;
         }
         document.onkeypress = popupHandleKeypress;
@@ -5428,13 +5298,12 @@ $(() => {
     function rmPopupShortcuts() {
         popupHandleKeypress.lastPopupLinkSelected = null;
         try {
-            if (document.oldPopupOnkeypress && document.oldPopupOnkeypress == popupHandleKeypress) {
+            if (document.oldPopupOnkeypress && document.oldPopupOnkeypress === popupHandleKeypress) {
                 document.onkeypress = null;
                 return;
             }
             document.onkeypress = document.oldPopupOnkeypress;
-        } catch (nasties) {
-        }
+        } catch { }
     }
     function addLinkProperty(html, property) {
         const i = html.indexOf(">");
@@ -5443,12 +5312,13 @@ $(() => {
         }
         return `${html.substring(0, i)} ${property}${html.substring(i)}`;
     }
-    function addPopupShortcut(html, key) {
+    function addPopupShortcut(html, _key) {
+        let key = _key;
         if (!getValueOf("popupShortcutKeys")) {
             return html;
         }
         const ret = addLinkProperty(html, `popupkey="${key}"`);
-        if (key == " ") {
+        if (key === " ") {
             key = popupString("spacebar");
         }
         return ret.replace(RegExp('^(.*?)(title=")(.*?)(".*)$', "i"), `$1$2$3 [${key}]$4`);
@@ -5533,7 +5403,7 @@ $(() => {
         };
         getMwApi().get(params).then((data) => {
             const stable_revid = data.query.pages[0].flagged && data.query.pages[0].flagged.stable_revid || 0;
-            if (stable_revid == navpop.diffData.oldRev.revid) {
+            if (stable_revid === navpop.diffData.oldRev.revid) {
                 const a = document.createElement("a");
                 a.innerHTML = popupString("mark patrolled");
                 a.title = popupString("markpatrolledHint");
@@ -5562,14 +5432,14 @@ $(() => {
         let pages, revisions = [];
         try {
             pages = getJsObj(download.data).query.pages;
-            for (var i = 0; i < pages.length; i++) {
+            for (let i = 0; i < pages.length; i++) {
                 revisions = revisions.concat(pages[i].revisions);
             }
-            for (i = 0; i < revisions.length; i++) {
-                if (revisions[i].revid == navpop.diffData.oldRev.revid) {
-                    navpop.diffData.oldRev.revision = revisions[i];
-                } else if (revisions[i].revid == navpop.diffData.newRev.revid) {
-                    navpop.diffData.newRev.revision = revisions[i];
+            for (let j = 0; j < revisions.length; j++) {
+                if (revisions[j].revid === navpop.diffData.oldRev.revid) {
+                    navpop.diffData.oldRev.revision = revisions[j];
+                } else if (revisions[j].revid === navpop.diffData.newRev.revid) {
+                    navpop.diffData.newRev.revision = revisions[j];
                 }
             }
         } catch (someError) {
@@ -5577,7 +5447,8 @@ $(() => {
         }
         insertDiff(navpop);
     }
-    function rmBoringLines(a, b, context) {
+    function rmBoringLines(a, b, _context) {
+        let context = _context;
         if (typeof context === "undefined") {
             context = 2;
         }
@@ -5595,7 +5466,7 @@ $(() => {
             }
         }
         for (i = 0; i < b.length; ++i) {
-            if (bb[i] == 1) {
+            if (bb[i] === 1) {
                 continue;
             }
             if (!b[i].paired) {
@@ -5603,7 +5474,7 @@ $(() => {
             }
         }
         for (i = 0; i < b.length; ++i) {
-            if (bb[i] == 1) {
+            if (bb[i] === 1) {
                 for (j = Math.max(0, i - context); j < Math.min(b.length, i + context); ++j) {
                     if (!bb[j]) {
                         bb[j] = 1;
@@ -5613,7 +5484,7 @@ $(() => {
             }
         }
         for (i = 0; i < a.length; ++i) {
-            if (aa[i] == 1) {
+            if (aa[i] === 1) {
                 for (j = Math.max(0, i - context); j < Math.min(a.length, i + context); ++j) {
                     if (!aa[j]) {
                         aa[j] = 1;
@@ -5647,12 +5518,12 @@ $(() => {
     }
     function stripOuterCommonLines(a, b, context) {
         let i = 0;
-        while (i < a.length && i < b.length && a[i] == b[i]) {
+        while (i < a.length && i < b.length && a[i] === b[i]) {
             ++i;
         }
         let j = a.length - 1;
         let k = b.length - 1;
-        while (j >= 0 && k >= 0 && a[j] == b[k]) {
+        while (j >= 0 && k >= 0 && a[j] === b[k]) {
             --j;
             --k;
         }
@@ -5698,7 +5569,6 @@ $(() => {
     function diffDatesTableRow(revision, label) {
         let txt = "";
         const lastModifiedDate = new Date(revision.timestamp);
-        const datePrint = getValueOf("popupDiffDatePrinter");
         txt = formattedDateTime(lastModifiedDate);
         const revlink = generalLink({
             url: `${mw.config.get("wgScript")}?oldid=${revision.revid}`,
@@ -5738,7 +5608,7 @@ $(() => {
                 hint = popupString("newSectionHint");
                 break;
             case "edit&undo=":
-                if (l.diff && l.diff != "prev" && savedOldid) {
+                if (l.diff && l.diff !== "prev" && savedOldid) {
                     l.action += `${l.diff}&undoafter=${savedOldid}`;
                 } else if (savedOldid) {
                     l.action += savedOldid;
@@ -5748,10 +5618,10 @@ $(() => {
             case "raw&ctype=text/css":
                 hint = popupString("rawHint");
                 break;
-            case "revert":
-                var p = parseParams(pg.current.link.href);
+            case "revert": {
+                const p = parseParams(pg.current.link.href);
                 l.action = `edit&autoclick=wpSave&actoken=${autoClickToken()}&autoimpl=${popupString("autoedit_version")}&autosummary=${revertSummary(l.oldid, p.diff)}`;
-                if (p.diff == "prev") {
+                if (p.diff === "prev") {
                     l.action += "&direction=prev";
                     revisionString = tprintf("the revision prior to revision %s of %s", oldidData);
                 }
@@ -5763,6 +5633,7 @@ $(() => {
                 }
                 log(`revisionString is now ${revisionString}`);
                 break;
+            }
             case "nullEdit":
                 l.action = `edit&autoclick=wpSave&actoken=${autoClickToken()}&autoimpl=${popupString("autoedit_version")}&autosummary=${popupString("nullEditSummary")}`;
                 break;
@@ -5794,7 +5665,7 @@ $(() => {
     }
     function revertSummary(oldid, diff) {
         let ret = "";
-        if (diff == "prev") {
+        if (diff === "prev") {
             ret = getValueOf("popupQueriedRevertToPreviousSummary");
         } else {
             ret = getValueOf("popupQueriedRevertSummary");
@@ -5811,7 +5682,7 @@ $(() => {
         if (typeof l.actionName === "undefined" || !l.actionName) {
             l.actionName = "action";
         }
-        if (l.action != "view") {
+        if (l.action !== "view") {
             url = `${base}&${l.actionName}=${l.action}`;
         }
         if (l.action === "edit") {
@@ -5989,7 +5860,7 @@ $(() => {
             l.sep = "&target=";
         }
         let article = l.article.urlString({
-            keepSpaces: l.specialpage == "Search",
+            keepSpaces: l.specialpage === "Search",
         });
         let hint = popupString(`${l.specialpage}Hint`);
         switch (l.specialpage) {
@@ -6062,7 +5933,7 @@ $(() => {
         }
         ret += ">";
         if (typeof l.text === typeof "") {
-            ret += l.text;
+            ret += pg.escapeQuotesHTML(pg.unescapeQuotesHTML(l.text));
         }
         ret += "</a>";
         return ret;
@@ -6158,7 +6029,8 @@ $(() => {
                 ret += popupString("Redirects") + popupString(" to ");
             }
             return ret;
-        } return `<br> ${popupString("Redirects")}${popupString(" to ")}${titledWikiLink({
+        }
+        return `<br> ${popupString("Redirects")}${popupString(" to ")}${titledWikiLink({
             article: new Title().fromWikiText(redirMatch),
             action: "view",
             text: safeDecodeURI(redirMatch),
@@ -6213,9 +6085,10 @@ $(() => {
             case "kate":
             case "interiot":
             case "supercount":
-            default:
-                var theWiki = pg.wiki.hostname.split(".");
+            default: {
+                const theWiki = pg.wiki.hostname.split(".");
                 url = simplePrintf(defaultToolUrl, [encodeURIComponent(uN), theWiki[0], theWiki[1]]);
+            }
         }
         return generalNavLink({
             url: url,
@@ -6310,14 +6183,14 @@ $(() => {
         histInfo.edits = edits;
         histInfo.userName = userName;
         for (let i = 0; i < edits.length; ++i) {
-            if (typeof histInfo.myLastEdit === "undefined" && userName && edits[i].editor == userName) {
+            if (typeof histInfo.myLastEdit === "undefined" && userName && edits[i].editor === userName) {
                 histInfo.myLastEdit = {
                     index: i,
                     oldid: edits[i].oldid,
                     previd: i === 0 ? null : edits[i - 1].oldid,
                 };
             }
-            if (typeof histInfo.firstNewEditor === "undefined" && edits[i].editor != edits[0].editor) {
+            if (typeof histInfo.firstNewEditor === "undefined" && edits[i].editor !== edits[0].editor) {
                 histInfo.firstNewEditor = {
                     index: i,
                     oldid: edits[i].oldid,
@@ -6346,19 +6219,11 @@ $(() => {
         defaultize(varName);
         return pg.option[varName];
     }
-    function useDefaultOptions() {
-        for (const p in pg.optionDefault) {
-            pg.option[p] = pg.optionDefault[p];
-            if (typeof window[p] !== "undefined") {
-                delete window[p];
-            }
-        }
-    }
     function setOptions() {
         let userIsSysop = false;
         if (mw.config.get("wgUserGroups")) {
             for (let g = 0; g < mw.config.get("wgUserGroups").length; ++g) {
-                if (mw.config.get("wgUserGroups")[g] == "sysop") {
+                if (mw.config.get("wgUserGroups")[g] === "sysop") {
                     userIsSysop = true;
                 }
             }
@@ -6476,7 +6341,7 @@ $(() => {
             lastContrib: true,
             sinceMe: true,
         });
-        newOption("popupDabRegexp", "(\\{\\{\\s*disambig(?!uation needed)|disambig(uation|)\\s*\\}\\}|disamb\\s*\\}\\}|dab\\s*\\}\\})|\\{\\{\\s*(((geo|hn|road?|school|number)dis)|[234][lc][acw]|(road|ship)index)(\\s*[|][^}]*)?\\s*[}][}]|is a .*disambiguation.*page");
+        newOption("popupDabRegexp", "\\{\\{\\s*(d(ab|isamb(ig(uation)?)?)|(((geo|hn|road?|school|number)dis)|[234][lc][acw]|(road|ship)index))\\s*(\\|[^}]*)?\\}\\}|is a .*disambiguation.*page");
         newOption("popupAnchorRegexp", "anchors?");
         newOption("popupStubRegexp", "(sect)?stub[}][}]|This .*-related article is a .*stub");
         newOption("popupImageVarsRegexp", "image|image_(?:file|skyline|name|flag|seal)|cover|badge|logo");
@@ -6687,6 +6552,7 @@ $(() => {
         "Invalid or IP user": "Invalid or IP user",
         "Not a registered username": "Not a registered username",
         BLOCKED: "BLOCKED",
+        "Has blocks": "Has blocks",
         " edits since: ": " edits since: ",
         "last edit on ": "last edit on ",
         "Enter a non-empty edit summary or press cancel to abort": "Enter a non-empty edit summary or press cancel to abort",
@@ -6698,62 +6564,28 @@ $(() => {
         autoedit_version: "np20140416",
     };
     const willBeReplaces = [];
-    const __extends = (function () {
-        var extendStatics = function (d, b) {
-            extendStatics = Object.setPrototypeOf ||
-                {
-                    __proto__: [],
-                } instanceof Array && function (d, b) {
-                    d.__proto__ = b;
-                } ||
-                function (d, b) {
-                    for (const p in b) {
-                        if (Object.prototype.hasOwnProperty.call(b, p)) {
-                            d[p] = b[p];
-                        }
-                    }
-                };
-            return extendStatics(d, b);
-        };
-        return function (d, b) {
-            if (typeof b !== "function" && b !== null) {
-                throw new TypeError(`Class extends value ${String(b)} is not a constructor or null`);
-            }
-            extendStatics(d, b);
-            function __() {
-                this.constructor = d;
-            }
-            d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-        };
-    })();
-    const PopupNoTranslation = /** @class */ (function (_super) {
-        __extends(PopupNoTranslation, _super);
-        function PopupNoTranslation() {
-            const _this = this;
+    class PopupNoTranslation extends Array {
+        constructor() {
+            super();
             let s;
             try {
                 s = JSON.parse(localStorage.getItem("popupNoTranslation"));
                 if (!Array.isArray(s)) {
                     s = [];
                 }
-            } catch (_) {
+            } catch {
                 s = [];
             }
-            _this._push.apply(_this, s);
-            return _this;
+            this._push(s);
         }
-        PopupNoTranslation.prototype._push = function () {
-            const a = [];
-            for (let _i = 0; _i < arguments.length; _i++) {
-                a[_i] = arguments[_i];
-            }
-            const returnValue = Array.prototype.push.bind(this).apply(void 0, a.filter((n) => {
+        _push(args) {
+            const ret = Array.prototype.push.bind(this).push(args.filter((n) => {
                 return !n.includes("&autoimpl=np20140416&actoken=") && !n.endsWith("Hint") && !willBeReplaces.includes(n);
             }));
             localStorage.setItem("popupNoTranslation", JSON.stringify(this));
-            return returnValue;
-        };
-        PopupNoTranslation.prototype.push = function (str) {
+            return ret;
+        }
+        push(str) {
             const hasDefault = !!pg.string[str];
             if (this.includes(str)) {
                 return hasDefault ? pg.string[str] : str;
@@ -6765,9 +6597,8 @@ $(() => {
                 console.groupEnd();
             }
             return hasDefault ? pg.string[str] : str;
-        };
-        return PopupNoTranslation;
-    }(Array));
+        }
+    }
     function popupString(str) {
         if (!window.popupNoTranslation) {
             window.popupNoTranslation = new PopupNoTranslation();
@@ -6777,7 +6608,8 @@ $(() => {
         }
         return window.popupNoTranslation.push(str);
     }
-    function tprintf(str, subs) {
+    function tprintf(str, _subs) {
+        let subs = _subs;
         if (typeof subs !== typeof []) {
             subs = [subs];
         }
@@ -6787,18 +6619,19 @@ $(() => {
         autoEdit();
         setupPopups();
     }
-    if (document.readyState == "complete") {
+    if (document.readyState === "complete") {
         run();
     } else {
         $(window).on("load", run);
     }
     (function () {
+        let once = true;
         function dynamicContentHandler($content) {
-            if ($content.attr("id") == "mw-content-text") {
-                if ($content.data("once")) {
+            if ($content.attr("id") === "mw-content-text") {
+                if (once) {
+                    once = false;
                     return;
                 }
-                $content.data("once", true);
             }
             function registerHooksForVisibleNavpops() {
                 for (let i = 0; pg.current.links && i < pg.current.links.length; ++i) {

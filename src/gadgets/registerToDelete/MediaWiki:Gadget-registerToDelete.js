@@ -198,7 +198,7 @@ $(() => (async () => {
                 return;
             }
             storage.setItem("deletereason-fetching", true);
-            $.get(`${mw.config.get("wgServer") + mw.config.get("wgScriptPath")}/MediaWiki:Deletereason-dropdown?action=raw`, (reasons) => {
+            $.get(`${mw.config.get("wgServer")}${mw.config.get("wgScriptPath")}/MediaWiki:Deletereason-dropdown?action=raw`, (reasons) => {
                 const cache = [];
                 reasons.split(/\n+/).forEach((reason) => {
                     if (reason.length === 0 || !reason.startsWith("*")) {

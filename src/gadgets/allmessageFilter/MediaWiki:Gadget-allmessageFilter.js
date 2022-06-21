@@ -72,7 +72,7 @@
                 const row = $("<tr/>");
                 row.attr("id", name).append('<td class="am_title"></td><td class="am_default"></td>');
                 $("<a/>").addClass("external").attr({
-                    href: `${mw.config.get("wgServer") + mw.config.get("wgScriptPath")}/MediaWiki:${name}`,
+                    href: `${mw.config.get("wgServer")}${mw.config.get("wgScriptPath")}/MediaWiki:${name}`,
                     rel: "nofollow",
                 }).html(name.replace(rfilter, `<span style="font-weight: bold;">${filter}</span>`)).appendTo(row.find(".am_title"));
                 row.find(".am_default").text(text);

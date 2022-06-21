@@ -44,8 +44,7 @@
                                 }
                                 break;
                         }
-                    } catch (ex) { }
-                    break;
+                    } catch { } break;
             }
         },
         monthNamesInSiteLang: ["", "一月", "二月", "三月", "四月", "五月", "六月", "七月", "八月", "九月", "十月", "十一月", "十二月"],
@@ -95,7 +94,7 @@
                 } catch (ex2) {
                     try {
                         return decodeURIComponent(src).match(/\/[a-f0-9]\/[a-f0-9]{2}\/(\S+\.\S{2,5})$/)[1].replace(/_/g, " ");
-                    } catch (ex3) { }
+                    } catch { }
                 }
             }
         },

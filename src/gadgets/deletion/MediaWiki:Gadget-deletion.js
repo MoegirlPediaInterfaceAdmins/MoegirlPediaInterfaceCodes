@@ -153,7 +153,7 @@ $(() => (async () => {
         })(), async ({ title, pageid }) => {
             for (let retryTimes = 0; retryTimes < 3; retryTimes++) {
                 try {
-                    const renderedHTML = await $.get(`${mw.config.get("wgServer") + mw.config.get("wgScriptPath")}/index.php?action=render&title=${mw.util.rawurlencode(title)}&uselang=zh&_=${Math.random().toString().substring(2)}`);
+                    const renderedHTML = await $.get(`${mw.config.get("wgServer")}${mw.config.get("wgScriptPath")}/index.php?action=render&title=${mw.util.rawurlencode(title)}&uselang=zh&_=${Math.random().toString().substring(2)}`);
                     const root = $("<div/>").html(renderedHTML);
                     const reason = root.find(".mw-parser-output > .infoBox.will2Be2Deleted #reason");
                     const actor = root.find(".mw-parser-output > .infoBox.will2Be2Deleted #actor a").first();

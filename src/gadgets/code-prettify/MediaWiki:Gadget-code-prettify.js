@@ -50,7 +50,7 @@ $(() => {
             }
         });
         $.ajax({
-            url: `${mw.config.get("wgServer") + mw.config.get("wgScriptPath")}/index.php?title=MediaWiki:Gadget-code-prettify-core.js&action=raw&ctype=text/javascript`,
+            url: `${mw.config.get("wgServer")}${mw.config.get("wgScriptPath")}/index.php?title=MediaWiki:Gadget-code-prettify-core.js&action=raw&ctype=text/javascript`,
             dataType: "script",
             cache: true,
             success: function () {

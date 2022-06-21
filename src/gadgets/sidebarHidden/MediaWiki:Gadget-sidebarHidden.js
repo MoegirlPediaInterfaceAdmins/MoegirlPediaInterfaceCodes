@@ -5,7 +5,7 @@ $(() => {
         || getComputedStyle(document.body).direction !== "ltr") { //mw-sidebar-button
         return;
     }
-    mw.loader.load(`${mw.config.get("wgServer") + mw.config.get("wgScriptPath")}/index.php?title=MediaWiki:Gadget-sidebarHidden.css&action=raw&ctype=text/css`, "text/css");
+    mw.loader.load(`${mw.config.get("wgServer")}${mw.config.get("wgScriptPath")}/index.php?title=MediaWiki:Gadget-sidebarHidden.css&action=raw&ctype=text/css`, "text/css");
     const localObjectStorage = new LocalObjectStorage("AnnTools-SidebarHidden");
     let hidden = localObjectStorage.getItem("hidden");
     const generateImageObject = (svg) => URL.createObjectURL(new Blob([svg], { type: "image/svg+xml" }));

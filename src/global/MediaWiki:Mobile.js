@@ -402,7 +402,7 @@
                                 url.host = mw.config.get("wgServer").replace(/^(?:(?:https?:)?\/\/)?zh/, "mzh");
                                 ele.href = url;
                             }
-                        } catch (_) { }
+                        } catch { }
                     }
                 });
             }, captureSupported ? {

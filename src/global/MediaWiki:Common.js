@@ -246,7 +246,7 @@
         try {
             var result = JSON.parse(localStorage.getItem(key));
             return Array.isArray(result) ? result : [];
-        } catch (_) {
+        } catch {
             return [];
         }
     }
@@ -368,8 +368,8 @@
         });
         // 注释内列表
         $(".reference-text > ul,.reference-text > ol").each(function () {
-            if (this.parentElement.childNodes[0] === this) { 
-                $(this).addClass("listInRef"); 
+            if (this.parentElement.childNodes[0] === this) {
+                $(this).addClass("listInRef");
             }
         });
         // 修正hash跳转错误

@@ -59,8 +59,7 @@ $(() => {
             },
         });
         window.addEventListener("test", null, options);
-    } catch (err) { }
-    saveButton[0].addEventListener("click", (e) => {
+    } catch { } saveButton[0].addEventListener("click", (e) => {
         if (!isPreviewedLive) {
             e.preventDefault();
             e.stopImmediatePropagation();

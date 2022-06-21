@@ -23,7 +23,8 @@
         "hashwasm": "readonly",
         "oouiDialog": "readonly",
         "echarts": "readonly",
-        "AsyncLock": "readonly"
+        "AsyncLock": "readonly",
+        "MOE_SKIN_GLOBAL_DATA_REF": "readonly"
     },
     "rules": {
         "no-var": "error",

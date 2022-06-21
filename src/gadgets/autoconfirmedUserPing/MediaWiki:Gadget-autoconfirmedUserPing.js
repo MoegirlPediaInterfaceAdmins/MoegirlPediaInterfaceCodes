@@ -144,7 +144,7 @@ $(() => {
     }).on("acup:success", async (_, { plain, ping }) => {
         try {
             await navigator.clipboard.writeText(ping);
-        } catch (_) {
+        } catch {
             const textarea = $(`<textarea>${ping}</textarea>`).appendTo("body");
             const textareaDom = textarea[0]/* as HTMLTextAreaElement */; // For TypeScript only
             textareaDom.select();

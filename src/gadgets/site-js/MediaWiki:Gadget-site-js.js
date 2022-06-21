@@ -383,7 +383,7 @@
         var substHost;
         try {
             substHost = top.location.host;
-        } catch (_) {
+        } catch {
             substHost = "";
         }
         var currentHostFlag = !/\.moegirl\.org(?:\.cn)?$/i.test(location.host);
@@ -428,7 +428,7 @@
                             ele.src = url;
                         }
                         ele.classList.add("org-changed");
-                    } catch (e) { }
+                    } catch { }
                 });
             }, 200);
         });

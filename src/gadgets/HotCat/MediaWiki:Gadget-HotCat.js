@@ -44,7 +44,7 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
             commit: "Save",
             ok: "OK",
             cancel: "Cancel",
-            multi_error: "Could not retrieve the page text from the server. Therefore, your category changes " + "cannot be saved. We apologize for the inconvenience.",
+            multi_error: "Could not retrieve the page text from the server. Therefore, your category changes cannot be saved. We apologize for the inconvenience.",
             short_catchange: null
         },
         categories: "Categories",
@@ -166,7 +166,7 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
     if (conf.wgUserLanguage !== "en") {
         if (window.hotcat_translations_from_commons === undefined) window.hotcat_translations_from_commons = true;
         if (window.hotcat_translations_from_commons && conf.wgServer.indexOf("//commons") < 0) {
-            loadURI("//commons.wikimedia.org/w/index.php?title=" + "MediaWiki:Gadget-HotCat.js/" + conf.wgUserLanguage + "&action=raw&ctype=text/javascript", loadTrigger.loaded);
+            loadURI("//commons.wikimedia.org/w/index.php?title=MediaWiki:Gadget-HotCat.js/" + conf.wgUserLanguage + "&action=raw&ctype=text/javascript", loadTrigger.loaded);
         } else {
             loadJS("MediaWiki:Gadget-HotCat.js/" + conf.wgUserLanguage, loadTrigger.loaded);
         }
@@ -251,7 +251,7 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
         var lbrace = escapeRE(options.lbrace || "{");
         var rbrace = escapeRE(options.rbrace || "}");
         var re;
-        re = new RegExp("(?:" + indicator + "(" + indicator + "))|" + "(?:" + indicator + "(\\d+))|" + "(?:" + indicator + "(?:" + lbrace + "([^" + lbrace + rbrace + "]+)" + rbrace + "))|" + "(?:" + indicator + "(?!(?:[" + indicator + lbrace + "]|\\d))(\\S+?)\\b)", "g");
+        re = new RegExp("(?:" + indicator + "(" + indicator + "))|(?:" + indicator + "(\\d+))|(?:" + indicator + "(?:" + lbrace + "([^" + lbrace + rbrace + "]+)" + rbrace + "))|(?:" + indicator + "(?!(?:[" + indicator + lbrace + "]|\\d))(\\S+?)\\b)", "g");
         return function (str, map) {
             if (!map) return str;
             return str.replace(re, function (match, prefix, idx, key, alpha) {
@@ -512,7 +512,7 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
             if (commitButton) commitButton.disabled = oldButtonState;
             failure.apply(this, arguments);
         }
-        $.getJSON(conf.wgServer + conf.wgScriptPath + "/api.php?" + "format=json&action=query&rawcontinue=&titles=" + encodeURIComponent(conf.wgPageName) + "&prop=info%7Crevisions%7Clanglinks&inprop=watched&rvprop=content%7Ctimestamp%7Cids%7Cuser&lllimit=500" + "&rvlimit=2&rvdir=newer&rvstartid=" + conf.wgCurRevisionId + "&meta=siteinfo%7Cuserinfo%7Ctokens&type=csrf&uiprop=options", function (json) {
+        $.getJSON(conf.wgServer + conf.wgScriptPath + "/api.php?format=json&action=query&rawcontinue=&titles=" + encodeURIComponent(conf.wgPageName) + "&prop=info%7Crevisions%7Clanglinks&inprop=watched&rvprop=content%7Ctimestamp%7Cids%7Cuser&lllimit=500&rvlimit=2&rvdir=newer&rvstartid=" + conf.wgCurRevisionId + "&meta=siteinfo%7Cuserinfo%7Ctokens&type=csrf&uiprop=options", function (json) {
             setPage(json);
             doEdit(fail);
         }).fail(function (req) {
@@ -719,7 +719,7 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
             callback(toResolve);
             return;
         }
-        var args = "action=query&prop=info%7Clinks%7Ccategories%7Ccategoryinfo&plnamespace=14" + "&pllimit=" + toResolve.length * 10 + "&cllimit=" + toResolve.length * 10 + "&format=json&titles=";
+        var args = "action=query&prop=info%7Clinks%7Ccategories%7Ccategoryinfo&plnamespace=14&pllimit=" + toResolve.length * 10 + "&cllimit=" + toResolve.length * 10 + "&format=json&titles=";
         for (i = 0; i < toResolve.length; i++) {
             var v = toResolve[i].dabInput;
             v = replaceShortcuts(v, HC.shortcuts);
@@ -1175,8 +1175,7 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
                         self.ime = false;
                         self.invokeSuggestions(false);
                     });
-                } catch (any) { }
-                $(text).on("blur", function () {
+                } catch { } $(text).on("blur", function () {
                     self.usesComposition = false;
                     self.ime = false;
                 });
@@ -1350,7 +1349,7 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
                 if (!onUpload) {
                     try {
                         this.catLink.style.backgroundColor = HC.bg_changed;
-                    } catch (ex) { }
+                    } catch { }
                 }
             }
             checkMultiInput();
@@ -1485,7 +1484,7 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
                 if (!onUpload) {
                     try {
                         this.catLink.style.backgroundColor = HC.bg_changed;
-                    } catch (ex) { }
+                    } catch { }
                 }
             }
             if (this.upDownLinks) this.upDownLinks.style.display = this.lastSavedExists ? "" : "none";
@@ -1533,8 +1532,7 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
                 this.catLink.style.cssText += "; text-decoration : line-through !important;";
                 try {
                     this.catLink.style.backgroundColor = HC.bg_changed;
-                } catch (ex) { }
-                this.originalState = this.state;
+                } catch { } this.originalState = this.state;
                 this.state = CategoryEditor.DELETED;
                 this.normalLinks.style.display = "none";
                 this.undelLink.style.display = "";
@@ -1567,7 +1565,7 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
             } else {
                 try {
                     this.catLink.style.backgroundColor = HC.bg_changed;
-                } catch (ex) { }
+                } catch { }
             }
             this.normalLinks.style.display = "";
             this.undelLink.style.display = "none";
@@ -2288,17 +2286,17 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
     }
     function list_categorys() {
         if (pageText === null) return [];
-         if (cleanedText === null) {
-            cleanedText = pageText.replace( /<!--(\s|\S)*?-->/g, '' ).replace( /<nowiki>(\s|\S)*?<\/nowiki>/g, '' );
-        }        
+        if (cleanedText === null) {
+            cleanedText = pageText.replace(/<!--(\s|\S)*?-->/g, '').replace(/<nowiki>(\s|\S)*?<\/nowiki>/g, '');
+        }
         var cat_regex = new RegExp("\\[\\[" + wikiTextBlankOrBidi + "(" + HC.category_regexp + ")" + wikiTextBlankOrBidi + ":" + wikiTextBlankOrBidi + "([^\\[\\]]+?)" + wikiTextBlankOrBidi + "(\\|.*?)?\\]\\]", "g");
- 
+
         var result = [];
         var curr_match = null;
-        while ( ( curr_match = cat_regex.exec( cleanedText ) ) !== null ) {
-            result.push( {
+        while ((curr_match = cat_regex.exec(cleanedText)) !== null) {
+            result.push({
                 match: curr_match
-            } );
+            });
         }
         result.re = cat_regex;
         return result; // An array containing all matches, with positions, in result[ i ].match
@@ -2376,7 +2374,7 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
             }
             if (chkCats.length && (!is_hidden && !has_hidden || is_hidden)) {
                 var arg_titles = chkCats.join("|");
-                $.getJSON(conf.wgServer + conf.wgScriptPath + "/api.php?action=query&format=json&titles=" + encodeURIComponent(arg_titles) + "&redirects=1&converttitles=1", function(json) {
+                $.getJSON(conf.wgServer + conf.wgScriptPath + "/api.php?action=query&format=json&titles=" + encodeURIComponent(arg_titles) + "&redirects=1&converttitles=1", function (json) {
                     var converted = json.query.converted;
                     if (!converted || converted.length < chkCats.length) console.log(arg_titles);
                     if (!converted) converted = [];
@@ -2385,7 +2383,7 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
                         var sOrginal = inpIndex[converted[i].from.replace(HC.category_canonical + ":", "")];
                         if (sTitle in idxCopys && line) {
                             // eslint-disable-next-line no-new
-                            new CategoryEditor(line, copyCats[idxCopys[sTitle]], [ inpageCats[sOrginal].match[2], sTitle ], inpageCats[sOrginal].match[3], is_hidden);
+                            new CategoryEditor(line, copyCats[idxCopys[sTitle]], [inpageCats[sOrginal].match[2], sTitle], inpageCats[sOrginal].match[3], is_hidden);
                         } else {
                             console.log(sTitle);
                         }
@@ -2428,7 +2426,7 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
         var formContainer = make("div");
         formContainer.style.display = "none";
         document.body.appendChild(formContainer);
-        formContainer.innerHTML = '<form id="hotcatCommitForm" method="post" enctype="multipart/form-data" action="' + conf.wgScript + "?title=" + encodeURIComponent(conf.wgPageName) + '&action=submit">' + '<input type="hidden" name="wpTextbox1">' + '<input type="hidden" name="model" value="' + conf.wgPageContentModel + '">' + '<input type="hidden" name="format" value="text/x-wiki">' + '<input type="hidden" name="wpSummary" value="">' + '<input type="checkbox" name="wpMinoredit" value="1">' + '<input type="checkbox" name="wpWatchthis" value="1">' + '<input type="hidden" name="wpAutoSummary" value="d41d8cd98f00b204e9800998ecf8427e">' + '<input type="hidden" name="wpEdittime">' + '<input type="hidden" name="wpStarttime">' + '<input type="hidden" name="wpDiff" value="wpDiff">' + '<input type="hidden" name="oldid" value="0">' + '<input type="submit" name="hcCommit" value="hcCommit">' + '<input type="hidden" name="wpEditToken">' + '<input type="hidden" name="wpUltimateParam" value="1">' + '<input type="hidden" name="wpChangeTags">' + '<input type="hidden" value="ℳ𝒲♥𝓊𝓃𝒾𝒸ℴ𝒹ℯ" name="wpUnicodeCheck">' + "</form>";
+        formContainer.innerHTML = '<form id="hotcatCommitForm" method="post" enctype="multipart/form-data" action="' + conf.wgScript + "?title=" + encodeURIComponent(conf.wgPageName) + '&action=submit"><input type="hidden" name="wpTextbox1"><input type="hidden" name="model" value="' + conf.wgPageContentModel + '"><input type="hidden" name="format" value="text/x-wiki"><input type="hidden" name="wpSummary" value=""><input type="checkbox" name="wpMinoredit" value="1"><input type="checkbox" name="wpWatchthis" value="1"><input type="hidden" name="wpAutoSummary" value="d41d8cd98f00b204e9800998ecf8427e"><input type="hidden" name="wpEdittime"><input type="hidden" name="wpStarttime"><input type="hidden" name="wpDiff" value="wpDiff"><input type="hidden" name="oldid" value="0"><input type="submit" name="hcCommit" value="hcCommit"><input type="hidden" name="wpEditToken"><input type="hidden" name="wpUltimateParam" value="1"><input type="hidden" name="wpChangeTags"><input type="hidden" value="ℳ𝒲♥𝓊𝓃𝒾𝒸ℴ𝒹ℯ" name="wpUnicodeCheck"></form>';
         commitForm = document.getElementById("hotcatCommitForm");
     }
     function getPage() {

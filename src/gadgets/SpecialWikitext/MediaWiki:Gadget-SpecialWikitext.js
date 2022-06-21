@@ -284,7 +284,7 @@
                 uselang: getLanguage(),
                 useskin: mw.config.get("skin"),
                 title: `${pagename}${subPagename}`,
-                text: `${"{{#invoke" + ":SpecialWikitext/Template|getNotices|"}${pagename}|${subPagename}}}`,
+                text: `${"{{#invoke:SpecialWikitext/Template|getNotices|"}${pagename}|${subPagename}}}`,
                 prop: "text",
                 format: "json",
             });

@@ -136,7 +136,7 @@ $(() => (async () => {
                     blocklogeventsContainerRoot.toggleClass("expand");
                 });
                 const blocklogeventTemplate = $("<tr/>");
-                blocklogeventTemplate.html(`${"<td class=\"style-justify\"></td>" + "<td class=\"style-justify userColumn\"></td>"}${"<td class=\"style-justify\"></td>".repeat(3)}<td></td><td class="word-break-all"></td><td class="style-justify"></td>`);
+                blocklogeventTemplate.html(`${"<td class=\"style-justify\"></td><td class=\"style-justify userColumn\"></td>"}${"<td class=\"style-justify\"></td>".repeat(3)}<td></td><td class="word-break-all"></td><td class="style-justify"></td>`);
                 blocklogevents.forEach(({
                     logid,
                     action,
