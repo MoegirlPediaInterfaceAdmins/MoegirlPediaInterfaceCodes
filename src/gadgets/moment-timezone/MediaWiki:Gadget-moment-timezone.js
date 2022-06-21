@@ -265,8 +265,7 @@
                 }
                 logError(`Moment Timezone found ${intlName} from the Intl api, but did not have that data loaded.`);
             }
-        }
-        catch (e) {
+        } catch (e) {
             // Intl unavailable, fall back to manual guessing.
         }
         let offsets = userOffsets(), offsetsLength = offsets.length, guesses = guessesForUserOffsets(offsets), zoneScores = [], zoneScore, i, j;

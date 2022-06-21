@@ -17,8 +17,7 @@
             switch (mw.config.get("wgNamespaceNumber")) {
                 case 3: // User_talk
                 case 2: // User
-                    return mw.config.get("wgPageName")
-                        .match(/.*?:(.*?)(\/.*)*$/)[1];
+                    return mw.config.get("wgPageName").match(/.*?:(.*?)(\/.*)*$/)[1];
                 case -1: // Special pages
                     try {
                         switch (mw.config.get("wgCanonicalSpecialPageName")) {
@@ -45,8 +44,7 @@
                                 }
                                 break;
                         }
-                    }
-                    catch (ex) { }
+                    } catch (ex) { }
                     break;
             }
         },
@@ -91,16 +89,13 @@
             mw.log.warn(".titleFromImgSrc() is deprecated. Use mw.Title.newFromImg() instead.");
             try {
                 return decodeURIComponent(src).match(/\/[a-f0-9]\/[a-f0-9]{2}\/(\S+\.\S{2,5})\//)[1].replace(/_/g, " ");
-            }
-            catch (ex) {
+            } catch (ex) {
                 try {
                     return decodeURIComponent(src).match(/thumb\.php.*(?:\?|&)f=(\S+\.\S{2,5})(?:&.+)?$/)[1].replace(/_/g, " ");
-                }
-                catch (ex2) {
+                } catch (ex2) {
                     try {
                         return decodeURIComponent(src).match(/\/[a-f0-9]\/[a-f0-9]{2}\/(\S+\.\S{2,5})$/)[1].replace(/_/g, " ");
-                    }
-                    catch (ex3) { }
+                    } catch (ex3) { }
                 }
             }
         },

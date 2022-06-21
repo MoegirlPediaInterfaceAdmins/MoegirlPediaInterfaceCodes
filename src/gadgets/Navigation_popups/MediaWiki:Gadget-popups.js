@@ -318,7 +318,7 @@ $(() => {
         mw.util.escapeRegExp = mw.RegExp.escape;
     }
     function setupTooltips(container, remove, force, popData) {
-        log(`setupTooltips, container=${ container }, remove=${ remove}`);
+        log(`setupTooltips, container=${container}, remove=${remove}`);
         if (!container) {
             if (getValueOf("popupOnEditSelection") && document && document.editform && document.editform.wpTextbox1) {
                 document.editform.wpTextbox1.onmouseup = doSelectionPopup;
@@ -344,13 +344,13 @@ $(() => {
         const finish = begin + howmany;
         const loopend = Math.min(finish, anchors.length);
         let j = loopend - begin;
-        log(`setupTooltips: anchors.length=${ anchors.length }, begin=${ begin }, howmany=${ howmany }, loopend=${ loopend }, remove=${ remove}`);
+        log(`setupTooltips: anchors.length=${anchors.length}, begin=${begin}, howmany=${howmany}, loopend=${loopend}, remove=${remove}`);
         const doTooltip = remove ? removeTooltip : addTooltip;
         if (j > 0) {
             do {
                 const a = anchors[loopend - j];
                 if (typeof a === "undefined" || !a || !a.href) {
-                    log(`got null anchor at index ${ loopend}` - j);
+                    log(`got null anchor at index ${loopend}` - j);
                     continue;
                 }
                 doTooltip(a, popData);
@@ -414,7 +414,7 @@ $(() => {
         const popupMaxWidth = getValueOf("popupMaxWidth");
         if (typeof popupMaxWidth === "number") {
             const setMaxWidth = function () {
-                np.mainDiv.style.maxWidth = `${popupMaxWidth }px`;
+                np.mainDiv.style.maxWidth = `${popupMaxWidth}px`;
                 np.maxWidth = popupMaxWidth;
             };
             np.addHook(setMaxWidth, "unhide", "before");
@@ -467,7 +467,7 @@ $(() => {
         return false;
     }
     function footnotePreview(x, navpop) {
-        setPopupHTML(`<hr />${ x.innerHTML}`, "popupPreview", navpop.idNumber);
+        setPopupHTML(`<hr />${x.innerHTML}`, "popupPreview", navpop.idNumber);
     }
     function modifierPressed(evt) {
         const mod = getValueOf("popupModifier");
@@ -477,7 +477,7 @@ $(() => {
         if (!evt && window.event) {
             evt = window.event;
         }
-        return evt && mod && evt[`${mod.toLowerCase() }Key`];
+        return evt && mod && evt[`${mod.toLowerCase()}Key`];
     }
     function isCorrectModifier(a, evt) {
         if (!getValueOf("popupModifier")) {
@@ -520,7 +520,7 @@ $(() => {
                 const s = document.createElement("span");
                 d.appendChild(s);
                 s.className = "popupPreviewButton";
-                s[`on${ getValueOf("popupPreviewButtonEvent")}`] = function () {
+                s[`on${getValueOf("popupPreviewButtonEvent")}`] = function () {
                     a.simpleNoMore = true;
                     d.style.display = "none";
                     nonsimplePopupContent(a, article);
@@ -549,12 +549,12 @@ $(() => {
             }, 150);
         }
         if (getValueOf("popupRedlinkRemoval") && a.className == "new") {
-            setPopupHTML(`<br>${ popupRedlinkHTML(article)}`, "popupRedlink", a.navpopup.idNumber);
+            setPopupHTML(`<br>${popupRedlinkHTML(article)}`, "popupRedlink", a.navpopup.idNumber);
         }
     }
     function debugData(navpopup) {
         if (getValueOf("popupDebugging") && navpopup.idNumber) {
-            setPopupHTML(`idNumber=${ navpopup.idNumber }, pending=${ navpopup.pending}`, "popupError", navpopup.idNumber);
+            setPopupHTML(`idNumber=${navpopup.idNumber}, pending=${navpopup.pending}`, "popupError", navpopup.idNumber);
         }
     }
     function newNavpopup(a, article) {
@@ -702,7 +702,7 @@ $(() => {
     function insertArticlePreview(download, art, navpop) {
         if (download && typeof download.data === typeof "") {
             if (art.namespaceId() == pg.nsTemplateId && getValueOf("popupPreviewRawTemplates")) {
-                const h = `<hr /><span style="font-family: monospace;">${ download.data.entify().split("\\n").join("<br />\\n") }</span>`;
+                const h = `<hr /><span style="font-family: monospace;">${download.data.entify().split("\\n").join("<br />\\n")}</span>`;
                 setPopupHTML(h, "popupPreview", navpop.idNumber);
             } else {
                 const p = prepPreviewmaker(download.data, art, navpop);
@@ -720,7 +720,7 @@ $(() => {
         if (!anch) {
             return d;
         }
-        const anchRe = RegExp(`(?:=+\\s*${ literalizeRegex(anch).replace(/[_ ]/g, "[_ ]") }\\s*=+|\\{\\{\\s*${ getValueOf("popupAnchorRegexp") }\\s*(?:\\|[^|}]*)*?\\s*${ literalizeRegex(anch) }\\s*(?:\\|[^}]*)?}})`);
+        const anchRe = RegExp(`(?:=+\\s*${literalizeRegex(anch).replace(/[_ ]/g, "[_ ]")}\\s*=+|\\{\\{\\s*${getValueOf("popupAnchorRegexp")}\\s*(?:\\|[^|}]*)*?\\s*${literalizeRegex(anch)}\\s*(?:\\|[^}]*)?}})`);
         const match = d.match(anchRe);
         if (match && match.length > 0 && match[0]) {
             return d.substring(d.indexOf(match[0]));
@@ -825,8 +825,8 @@ $(() => {
         let nx, ny;
         nx = x + (ex - o.lastMouseX) * (o.hmode ? 1 : -1);
         ny = y + (ey - o.lastMouseY) * (o.vmode ? 1 : -1);
-        this.obj.root.style[o.hmode ? "left" : "right"] = `${nx }px`;
-        this.obj.root.style[o.vmode ? "top" : "bottom"] = `${ny }px`;
+        this.obj.root.style[o.hmode ? "left" : "right"] = `${nx}px`;
+        this.obj.root.style[o.vmode ? "top" : "bottom"] = `${ny}px`;
         this.obj.lastMouseX = ex;
         this.obj.lastMouseY = ey;
         this.obj.root.onthis(nx, ny);
@@ -862,7 +862,7 @@ $(() => {
         return "";
     };
     pg.structures.original.popupImage = function (x) {
-        log(`original.popupImage, x.article=${ x.article }, x.navpop.idNumber=${ x.navpop.idNumber}`);
+        log(`original.popupImage, x.article=${x.article}, x.navpop.idNumber=${x.navpop.idNumber}`);
         return imageHTML(x.article, x.navpop.idNumber);
     };
     pg.structures.original.popupRedirTitle = pg.structures.original.popupTitle;
@@ -881,10 +881,10 @@ $(() => {
         str += "if(wikimedia){*<<count|shortcut=#>>}";
         str += "if(ipuser){}else{*<<email|shortcut=E>>}if(admin){*<<block|shortcut=b>>}}";
         const editstr = "<<edit|shortcut=e>>";
-        const editOldidStr = `if(oldid){<<editOld|shortcut=e>>|<<revert|shortcut=v|rv>>|<<edit|cur>>}else{${ editstr }}`;
+        const editOldidStr = `if(oldid){<<editOld|shortcut=e>>|<<revert|shortcut=v|rv>>|<<edit|cur>>}else{${editstr}}`;
         const historystr = "<<history|shortcut=h>>";
         const watchstr = "<<unwatch|unwatchShort>>|<<watch|shortcut=w|watchThingy>>";
-        str += `<br>if(talk){${ editOldidStr }|<<new|shortcut=+>>` + `*${ historystr }*${ watchstr }*` + "<b><<article|shortcut=a>></b>|<<editArticle|edit>>" + `}else{${ editOldidStr }*${ historystr }*${ watchstr }*` + "<b><<talk|shortcut=t>></b>|<<editTalk|edit>>|<<newTalk|shortcut=+|new>>}";
+        str += `<br>if(talk){${editOldidStr}|<<new|shortcut=+>>` + `*${historystr}*${watchstr}*` + "<b><<article|shortcut=a>></b>|<<editArticle|edit>>" + `}else{${editOldidStr}*${historystr}*${watchstr}*` + "<b><<talk|shortcut=t>></b>|<<editTalk|edit>>|<<newTalk|shortcut=+|new>>}";
         str += "<br><<whatLinksHere|shortcut=l>>*<<relatedChanges|shortcut=r>>";
         str += "if(admin){<br>}else{*}<<move|shortcut=m>>";
         str += "if(admin){*<<unprotect|unprotectShort>>|<<protect|shortcut=p>>*" + "<<undelete|undeleteShort>>|<<delete|shortcut=d>>}";
@@ -899,21 +899,21 @@ $(() => {
         const hist = "<<history|shortcut=h|hist>>|<<lastEdit|shortcut=/|last>>|<<editors|shortcut=E|eds>>";
         const watch = "<<unwatch|unwatchShort>>|<<watch|shortcut=w|watchThingy>>";
         const move = "<<move|shortcut=m|move>>";
-        return navlinkStringToHTML("if(talk){" + `<<edit|shortcut=e>>|<<new|shortcut=+|+>>*${ hist }*` + "<<article|shortcut=a>>|<<editArticle|edit>>" + `*${ watch }*${ move }}else{<<edit|shortcut=e>>*${ hist }*<<talk|shortcut=t|>>|<<editTalk|edit>>|<<newTalk|shortcut=+|new>>` + `*${ watch }*${ move }}<br>`, x.article, x.params);
+        return navlinkStringToHTML("if(talk){" + `<<edit|shortcut=e>>|<<new|shortcut=+|+>>*${hist}*` + "<<article|shortcut=a>>|<<editArticle|edit>>" + `*${watch}*${move}}else{<<edit|shortcut=e>>*${hist}*<<talk|shortcut=t|>>|<<editTalk|edit>>|<<newTalk|shortcut=+|new>>` + `*${watch}*${move}}<br>`, x.article, x.params);
     };
     pg.structures.fancy.popupOtherLinks = function (x) {
         const admin = "<<unprotect|unprotectShort>>|<<protect|shortcut=p>>*<<undelete|undeleteShort>>|<<delete|shortcut=d|del>>";
         let user = "<<contribs|shortcut=c>>if(wikimedia){|<<count|shortcut=#|#>>}";
-        user += `if(ipuser){|<<arin>>}else{*<<email|shortcut=E|${ popupString("email") }>>}if(admin){*<<block|shortcut=b>>}`;
+        user += `if(ipuser){|<<arin>>}else{*<<email|shortcut=E|${popupString("email")}>>}if(admin){*<<block|shortcut=b>>}`;
         const normal = "<<whatLinksHere|shortcut=l|links here>>*<<relatedChanges|shortcut=r|related>>";
-        return navlinkStringToHTML(`<br>if(user){${ user }*}if(admin){${ admin }if(user){<br>}else{*}}${ normal}`, x.article, x.params);
+        return navlinkStringToHTML(`<br>if(user){${user}*}if(admin){${admin}if(user){<br>}else{*}}${normal}`, x.article, x.params);
     };
     pg.structures.fancy.popupRedirTitle = pg.structures.fancy.popupTitle;
     pg.structures.fancy.popupRedirTopLinks = pg.structures.fancy.popupTopLinks;
     pg.structures.fancy.popupRedirOtherLinks = pg.structures.fancy.popupOtherLinks;
     copyStructure("fancy", "fancy2");
     pg.structures.fancy2.popupTopLinks = function (x) {
-        return `<br>${ pg.structures.fancy.popupTopLinks(x).replace(RegExp("<br>$", "i"), "")}`;
+        return `<br>${pg.structures.fancy.popupTopLinks(x).replace(RegExp("<br>$", "i"), "")}`;
     };
     pg.structures.fancy2.popupLayout = function () {
         return ["popupError", "popupImage", "popupTitle", "popupUserData", "popupData", "popupTopLinks", "popupOtherLinks", "popupRedir", ["popupWarnRedir", "popupRedirTopLinks", "popupRedirTitle", "popupRedirData", "popupRedirOtherLinks"], "popupMiscTools", ["popupRedlink"], "popupPrePreviewSep", "popupPreview", "popupSecondPreview", "popupPreviewMore", "popupPostPreview", "popupFixDab"];
@@ -928,7 +928,7 @@ $(() => {
         const enddiv = "</div>";
         let hist = "<<history|shortcut=h>>";
         if (!shorter) {
-            hist = `<menurow>${ hist }|<<historyfeed|rss>>|<<editors|shortcut=E>></menurow>`;
+            hist = `<menurow>${hist}|<<historyfeed|rss>>|<<editors|shortcut=E>></menurow>`;
         }
         const lastedit = "<<lastEdit|shortcut=/|show last edit>>";
         const thank = "if(diff){<<thank|send thanks>>}";
@@ -945,11 +945,11 @@ $(() => {
         const editRow = "if(oldid){" + "<menurow><<edit|shortcut=e>>|<<editOld|shortcut=e|this&nbsp;revision>></menurow>" + "<menurow><<revert|shortcut=v>>|<<undo>></menurow>" + "}else{<<edit|shortcut=e>>}";
         const markPatrolled = "if(rcid){<<markpatrolled|mark patrolled>>}";
         const newTopic = "if(talk){<<new|shortcut=+|new topic>>}";
-        const protectDelete = `if(admin){${ protect }${del }}`;
+        const protectDelete = `if(admin){${protect}${del}}`;
         if (getValueOf("popupActionsMenu")) {
-            s.push(`<<mainlink>>*${ dropdiv }${menuTitle("actions")}`);
+            s.push(`<<mainlink>>*${dropdiv}${menuTitle("actions")}`);
         } else {
-            s.push(`${dropdiv }<<mainlink>>`);
+            s.push(`${dropdiv}<<mainlink>>`);
         }
         s.push("<menu>");
         s.push(editRow + markPatrolled + newTopic + hist + lastedit + thank);
@@ -963,36 +963,36 @@ $(() => {
         if (!shorter) {
             s.push(viewOptions);
         }
-        s.push(`<hr />${ watch }${protectDelete}`);
-        s.push("<hr />" + "if(talk){<<article|shortcut=a|view article>><<editArticle|edit article>>}" + "else{<<talk|shortcut=t|talk page>><<editTalk|edit talk>>" + `<<newTalk|shortcut=+|new topic>>}</menu>${ enddiv}`);
+        s.push(`<hr />${watch}${protectDelete}`);
+        s.push("<hr />" + "if(talk){<<article|shortcut=a|view article>><<editArticle|edit article>>}" + "else{<<talk|shortcut=t|talk page>><<editTalk|edit talk>>" + `<<newTalk|shortcut=+|new topic>>}</menu>${enddiv}`);
         const email = "<<email|shortcut=E|email user>>";
         const contribs = "if(wikimedia){<menurow>}<<contribs|shortcut=c|contributions>>if(wikimedia){</menurow>}" + "if(admin){<menurow><<deletedContribs>></menurow>}";
-        s.push(`if(user){*${ dropdiv }${menuTitle("user")}`);
+        s.push(`if(user){*${dropdiv}${menuTitle("user")}`);
         s.push("<menu>");
         s.push("<menurow><<userPage|shortcut=u|user&nbsp;page>>|<<userSpace|space>></menurow>");
         s.push("<<userTalk|shortcut=t|user talk>><<editUserTalk|edit user talk>>" + "<<newUserTalk|shortcut=+|leave comment>>");
         if (!shorter) {
-            s.push(`if(ipuser){<<arin>>}else{${ email }}`);
+            s.push(`if(ipuser){<<arin>>}else{${email}}`);
         } else {
-            s.push(`if(ipuser){}else{${ email }}`);
+            s.push(`if(ipuser){}else{${email}}`);
         }
-        s.push(`<hr />${ contribs }<<userlog|shortcut=L|user log>>`);
+        s.push(`<hr />${contribs}<<userlog|shortcut=L|user log>>`);
         s.push("if(wikimedia){<<count|shortcut=#|edit counter>>}");
         s.push("if(admin){<menurow><<unblock|unblockShort>>|<<block|shortcut=b|block user>></menurow>}");
         s.push("<<blocklog|shortcut=B|block log>>");
-        s.push(`</menu>${ enddiv }}`);
+        s.push(`</menu>${enddiv}}`);
         if (getValueOf("popupSetupMenu") && !x.navpop.hasPopupMenu) {
             x.navpop.hasPopupMenu = true;
-            s.push(`*${ dropdiv }${menuTitle("popupsMenu") }<menu>`);
+            s.push(`*${dropdiv}${menuTitle("popupsMenu")}<menu>`);
             s.push("<<togglePreviews|toggle previews>>");
             s.push("<<purgePopups|reset>>");
             s.push("<<disablePopups|disable>>");
-            s.push(`</menu>${ enddiv}`);
+            s.push(`</menu>${enddiv}`);
         }
         return navlinkStringToHTML(s.join(""), x.article, x.params);
     };
     function menuTitle(s) {
-        return `<a href="#" noPopup=1>${ popupString(s) }</a>`;
+        return `<a href="#" noPopup=1>${popupString(s)}</a>`;
     }
     pg.structures.menus.popupRedirTitle = pg.structures.menus.popupTitle;
     pg.structures.menus.popupRedirTopLinks = pg.structures.menus.popupTopLinks;
@@ -1006,8 +1006,8 @@ $(() => {
         return ["popupTitle", "popupPreview"];
     };
     pg.structures.lite.popupTitle = function (x) {
-        log(`${x.article }: structures.lite.popupTitle`);
-        return `<div><span class="popup_mainlink"><b>${ x.article.toString() }</b></span></div>`;
+        log(`${x.article}: structures.lite.popupTitle`);
+        return `<div><span class="popup_mainlink"><b>${x.article.toString()}</b></span></div>`;
     };
     function substitute(data, cmdBody) {
         const fromRe = RegExp(cmdBody.from, cmdBody.flags);
@@ -1037,7 +1037,7 @@ $(() => {
         return false;
     }
     function unEscape(str, sep) {
-        return str.split("\\\\").join("\\").split(`\\${ sep}`).join(sep).split("\\n").join("\n");
+        return str.split("\\\\").join("\\").split(`\\${sep}`).join(sep).split("\\n").join("\n");
     }
     function parseSubstitute(str) {
         let from, to, flags, tmp;
@@ -1168,7 +1168,7 @@ $(() => {
             setCheckbox("autowatch", document.editform.wpWatchthis);
             const rvid = mw.util.getParamValue("autorv");
             if (rvid) {
-                const url = `${pg.wiki.apiwikibase }?action=query&format=json&formatversion=2&prop=revisions&revids=${ rvid}`;
+                const url = `${pg.wiki.apiwikibase}?action=query&format=json&formatversion=2&prop=revisions&revids=${rvid}`;
                 startDownload(url, null, autoEdit2);
             } else {
                 autoEdit2();
@@ -1216,7 +1216,7 @@ $(() => {
                 const button = document.editform[btn];
                 const msg = tprintf("The %s button has been automatically clicked. Please wait for the next page to load.", [button.value]);
                 bannerMessage(msg);
-                document.title = `(${ document.title })`;
+                document.title = `(${document.title})`;
                 button.click();
             } else {
                 alert(tprintf("Could not find button %s. Please check the settings in your javascript file.", [btn]));
@@ -1227,7 +1227,7 @@ $(() => {
         const headings = document.getElementsByTagName("h1");
         if (headings) {
             const div = document.createElement("div");
-            div.innerHTML = `<font size=+1><b>${ s }</b></font>`;
+            div.innerHTML = `<font size=+1><b>${s}</b></font>`;
             headings[0].parentNode.insertBefore(div, headings[0]);
         }
     }
@@ -1390,7 +1390,7 @@ $(() => {
                 default_thumb_width: 180,
             },
             paths: {
-                articles: `${pg.wiki.articlePath }/`,
+                articles: `${pg.wiki.articlePath}/`,
                 math: "/math/",
                 images: "//upload.wikimedia.org/wikipedia/en/",
                 images_fallback: "//upload.wikimedia.org/wikipedia/commons/",
@@ -1403,8 +1403,8 @@ $(() => {
             },
         };
         Insta.conf.user.name = Insta.conf.user.name || "Wikipedian";
-        Insta.conf.user.signature = `[[${ Insta.conf.locale.user }:${ Insta.conf.user.name }|${ Insta.conf.user.name }]]`;
-        Insta.BLOCK_IMAGE = new RegExp(`^\\[\\[(?:File|Image|${ Insta.conf.locale.image }):.*?\\|.*?(?:frame|thumbnail|thumb|none|right|left|center)`, "i");
+        Insta.conf.user.signature = `[[${Insta.conf.locale.user}:${Insta.conf.user.name}|${Insta.conf.user.name}]]`;
+        Insta.BLOCK_IMAGE = new RegExp(`^\\[\\[(?:File|Image|${Insta.conf.locale.image}):.*?\\|.*?(?:frame|thumbnail|thumb|none|right|left|center)`, "i");
     }
     Insta.dump = function (from, to) {
         if (typeof from === "string") {
@@ -1505,7 +1505,7 @@ $(() => {
                 switch (l_match[1].charAt(l_match[1].length - 1)) {
                     case "*":
                     case "#":
-                        ps(`<li>${ parse_inline_nowiki(l_match[2])}`);
+                        ps(`<li>${parse_inline_nowiki(l_match[2])}`);
                         break;
                     case ";":
                         ps("<dt>");
@@ -1518,7 +1518,7 @@ $(() => {
                         }
                         break;
                     case ":":
-                        ps(`<dd>${ parse_inline_nowiki(l_match[2])}`);
+                        ps(`<dd>${parse_inline_nowiki(l_match[2])}`);
                 }
                 prev = l_match[1];
             }
@@ -1553,7 +1553,7 @@ $(() => {
             if (td_match[1] == "|+") {
                 ps("<caption");
             } else {
-                ps(`<t${ td_match[1] == "|" ? "d" : "h"}`);
+                ps(`<t${td_match[1] == "|" ? "d" : "h"}`);
             }
             if (typeof td_match[3] !== "undefined") {
                 match_i = 4;
@@ -1593,7 +1593,7 @@ $(() => {
         function parse_pre() {
             ps("<pre>");
             do {
-                endl(`${parse_inline_nowiki(ll[0].substring(1)) }\n`);
+                endl(`${parse_inline_nowiki(ll[0].substring(1))}\n`);
             } while (remain() && compareLineStringOrReg(" "));
             ps("</pre>");
         }
@@ -1708,7 +1708,7 @@ $(() => {
                 nestlev = 0;
             let loop, close, open, wiki, html;
             while (-1 != (start = str.indexOf("[[", substart))) {
-                if (str.substr(start + 2).match(RegExp(`^(Image|File|${ Insta.conf.locale.image }):`, "i"))) {
+                if (str.substr(start + 2).match(RegExp(`^(Image|File|${Insta.conf.locale.image}):`, "i"))) {
                     loop = true;
                     substart = start;
                     do {
@@ -1763,12 +1763,12 @@ $(() => {
             let date = new Date();
             let minutes = date.getUTCMinutes();
             if (minutes < 10) {
-                minutes = `0${ minutes}`;
+                minutes = `0${minutes}`;
             }
             date = f("?:?, ? ? ? (UTC)", date.getUTCHours(), minutes, date.getUTCDate(), Insta.conf.locale.months[date.getUTCMonth()], date.getUTCFullYear());
-            return str.replace(/~{5}(?!~)/g, date).replace(/~{4}(?!~)/g, `${Insta.conf.user.name } ${ date}`).replace(/~{3}(?!~)/g, Insta.conf.user.name).replace(RegExp(`\\[\\[:((?:${ Insta.conf.locale.category }|Image|File|${ Insta.conf.locale.image }|${ Insta.conf.wiki.interwiki }):[^|]*?)\\]\\](\\w*)`, "gi"), ($0, $1, $2) => {
+            return str.replace(/~{5}(?!~)/g, date).replace(/~{4}(?!~)/g, `${Insta.conf.user.name} ${date}`).replace(/~{3}(?!~)/g, Insta.conf.user.name).replace(RegExp(`\\[\\[:((?:${Insta.conf.locale.category}|Image|File|${Insta.conf.locale.image}|${Insta.conf.wiki.interwiki}):[^|]*?)\\]\\](\\w*)`, "gi"), ($0, $1, $2) => {
                 return f("<a href='?'>?</a>", Insta.conf.paths.articles + htmlescape_attr($1), htmlescape_text($1) + htmlescape_text($2));
-            }).replace(RegExp(`\\[\\[(?:${ Insta.conf.locale.category }|${ Insta.conf.wiki.interwiki }):.*?\\]\\]`, "gi"), "").replace(RegExp(`\\[\\[:((?:${ Insta.conf.locale.category }|Image|File|${ Insta.conf.locale.image }|${ Insta.conf.wiki.interwiki }):.*?)\\|([^\\]]+?)\\]\\](\\w*)`, "gi"), ($0, $1, $2, $3) => {
+            }).replace(RegExp(`\\[\\[(?:${Insta.conf.locale.category}|${Insta.conf.wiki.interwiki}):.*?\\]\\]`, "gi"), "").replace(RegExp(`\\[\\[:((?:${Insta.conf.locale.category}|Image|File|${Insta.conf.locale.image}|${Insta.conf.wiki.interwiki}):.*?)\\|([^\\]]+?)\\]\\](\\w*)`, "gi"), ($0, $1, $2, $3) => {
                 return f("<a href='?'>?</a>", Insta.conf.paths.articles + htmlescape_attr($1), htmlescape_text($2) + htmlescape_text($3));
             }).replace(/\[\[(\/[^|]*?)\]\]/g, ($0, $1) => {
                 return f("<a href='?'>?</a>", Insta.conf.baseUrl + htmlescape_attr($1), htmlescape_text($1));
@@ -1820,7 +1820,7 @@ $(() => {
                         ps("<p>");
                         p = 1;
                     }
-                    ps(`${parse_inline_nowiki(ll[0]) } `);
+                    ps(`${parse_inline_nowiki(ll[0])} `);
                 }
                 sh();
             }
@@ -1836,15 +1836,15 @@ $(() => {
     }
     function popupFilterCountLinks(data) {
         const num = countLinks(data);
-        return `${String(num) }&nbsp;${ num != 1 ? popupString("wikiLinks") : popupString("wikiLink")}`;
+        return `${String(num)}&nbsp;${num != 1 ? popupString("wikiLinks") : popupString("wikiLink")}`;
     }
     function popupFilterCountImages(data) {
         const num = countImages(data);
-        return `${String(num) }&nbsp;${ num != 1 ? popupString("images") : popupString("image")}`;
+        return `${String(num)}&nbsp;${num != 1 ? popupString("images") : popupString("image")}`;
     }
     function popupFilterCountCategories(data) {
         const num = countCategories(data);
-        return `${String(num) }&nbsp;${ num != 1 ? popupString("categories") : popupString("category")}`;
+        return `${String(num)}&nbsp;${num != 1 ? popupString("categories") : popupString("category")}`;
     }
     function popupFilterLastModified(data, download) {
         const lastmod = download.lastModified;
@@ -1927,7 +1927,7 @@ $(() => {
         return result.replace(/(\d) /g, "$1");
     }
     function addunit(num, str) {
-        return `${ num } ${ num != 1 ? popupString(`${str }s`) : popupString(str)}`;
+        return `${num} ${num != 1 ? popupString(`${str}s`) : popupString(str)}`;
     }
     function runPopupFilters(list, data, download) {
         const ret = [];
@@ -1980,7 +1980,7 @@ $(() => {
         return isDisambig(data, article) ? popupString("disambig") : "";
     }
     function formatBytes(num) {
-        return num > 949 ? Math.round(num / 100) / 10 + popupString("kB") : `${num }&nbsp;${ popupString("bytes")}`;
+        return num > 949 ? Math.round(num / 100) / 10 + popupString("kB") : `${num}&nbsp;${popupString("bytes")}`;
     }
     function Stringwrapper() {
         this.indexOf = function (x) {
@@ -2012,7 +2012,7 @@ $(() => {
     }
     Title.prototype = new Stringwrapper();
     Title.prototype.toString = function (omitAnchor) {
-        return this.value + (!omitAnchor && this.anchor ? `#${ this.anchorString()}` : "");
+        return this.value + (!omitAnchor && this.anchor ? `#${this.anchorString()}` : "");
     };
     Title.prototype.anchorString = function () {
         if (!this.anchor) {
@@ -2060,12 +2060,12 @@ $(() => {
                 contribs[3] = contribs[3].split("+").join(" ");
             }
             const u = new Title(contribs[3]);
-            this.setUtf(this.decodeNasties(`${mw.config.get("wgFormattedNamespaces")[pg.nsUserId] }:${ u.stripNamespace()}`));
+            this.setUtf(this.decodeNasties(`${mw.config.get("wgFormattedNamespaces")[pg.nsUserId]}:${u.stripNamespace()}`));
             return this;
         }
         const email = pg.re.email.exec(h);
         if (email) {
-            this.setUtf(this.decodeNasties(`${mw.config.get("wgFormattedNamespaces")[pg.nsUserId] }:${ new Title(email[3]).stripNamespace()}`));
+            this.setUtf(this.decodeNasties(`${mw.config.get("wgFormattedNamespaces")[pg.nsUserId]}:${new Title(email[3]).stripNamespace()}`));
             return this;
         }
         const backlinks = pg.re.backlinks.exec(h);
@@ -2075,7 +2075,7 @@ $(() => {
         }
         const specialdiff = pg.re.specialdiff.exec(h);
         if (specialdiff) {
-            this.setUtf(this.decodeNasties(new Title(`${mw.config.get("wgFormattedNamespaces")[pg.nsSpecialId] }:Diff`)));
+            this.setUtf(this.decodeNasties(new Title(`${mw.config.get("wgFormattedNamespaces")[pg.nsSpecialId]}:Diff`)));
             return this;
         }
         const m = pg.re.main.exec(h);
@@ -2086,7 +2086,7 @@ $(() => {
             if (fromBotInterface) {
                 m[2] = m[2].split("+").join("_");
             }
-            const extracted = m[2] + (m[3] ? `#${ m[3]}` : "");
+            const extracted = m[2] + (m[3] ? `#${m[3]}` : "");
             if (pg.flag.isSafari && /%25[0-9A-Fa-f]{2}/.test(extracted)) {
                 this.setUtf(decodeURIComponent(unescape(extracted)));
             } else {
@@ -2141,7 +2141,7 @@ $(() => {
             this.value = null;
             return;
         }
-        this.value = (withNs ? `${mw.config.get("wgFormattedNamespaces")[pg.nsUserId] }:` : "") + this.stripNamespace().split("/")[0];
+        this.value = (withNs ? `${mw.config.get("wgFormattedNamespaces")[pg.nsUserId]}:` : "") + this.stripNamespace().split("/")[0];
     };
     Title.prototype.userName = function (withNs) {
         const t = new Title(this.value);
@@ -2162,7 +2162,7 @@ $(() => {
                 if (localizedNamespace === "") {
                     this.value = this.stripNamespace();
                 } else {
-                    this.value = `${localizedNamespace.split(" ").join("_") }:${ this.stripNamespace()}`;
+                    this.value = `${localizedNamespace.split(" ").join("_")}:${this.stripNamespace()}`;
                 }
                 return this.value;
             }
@@ -2209,7 +2209,7 @@ $(() => {
                 if (localizedNamespace === "") {
                     this.value = this.stripNamespace();
                 } else {
-                    this.value = `${localizedNamespace.split(" ").join("_") }:${ this.stripNamespace()}`;
+                    this.value = `${localizedNamespace.split(" ").join("_")}:${this.stripNamespace()}`;
                 }
                 return this.value;
             }
@@ -2275,7 +2275,7 @@ $(() => {
         }
         let v = this.toString(true);
         if (!x.omitAnchor && this.anchor) {
-            v += `#${ this.urlAnchor()}`;
+            v += `#${this.urlAnchor()}`;
         }
         if (!x.keepSpaces) {
             v = v.split(" ").join("_");
@@ -2403,7 +2403,7 @@ $(() => {
             return false;
         }
         const h = a.href;
-        if (h === `${document.location.href }#`) {
+        if (h === `${document.location.href}#`) {
             return false;
         }
         if (!pg.re.basenames.test(h)) {
@@ -2431,7 +2431,7 @@ $(() => {
         $("div.vectorMenu h3:first a:first, div.vector-menu h3:first a:first, nav.vector-menu h3:first a:first").prop("inNopopupSpan", true);
     }
     function getPageWithCaching(url, onComplete, owner) {
-        log(`getPageWithCaching, url=${ url}`);
+        log(`getPageWithCaching, url=${url}`);
         const i = findInPageCache(url);
         let d;
         if (i > -1) {
@@ -2463,7 +2463,7 @@ $(() => {
         return -1;
     }
     function addPageToCache(download) {
-        log(`addPageToCache ${ download.url}`);
+        log(`addPageToCache ${download.url}`);
         const page = {
             url: download.url,
             data: download.data,
@@ -2520,11 +2520,11 @@ $(() => {
                     }
                 }
             } else if (json_ret.error) {
-                errlog(`${json_ret.error.code }: ${ json_ret.error.info}`);
+                errlog(`${json_ret.error.code}: ${json_ret.error.info}`);
             }
             return json_ret;
         } catch (someError) {
-            errlog(`Something went wrong with getJsObj, json=${ json}`);
+            errlog(`Something went wrong with getJsObj, json=${json}`);
             return 1;
         }
     }
@@ -2656,7 +2656,7 @@ $(() => {
         return text.replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
     };
     function retargetDab(newTarget, oldTarget, friendlyCurrentArticleName, titleToEdit) {
-        log(`retargetDab: newTarget=${ newTarget } oldTarget=${ oldTarget}`);
+        log(`retargetDab: newTarget=${newTarget} oldTarget=${oldTarget}`);
         return changeLinkTargetLink({
             newTarget: newTarget,
             text: newTarget.split(" ").join("&nbsp;"),
@@ -2683,7 +2683,7 @@ $(() => {
         }
         ret = rmDupesFromSortedList(ret.sort());
         if (wikPos) {
-            const wikTarget = `wiktionary:${ friendlyCurrentArticleName.replace(RegExp("^(.+)\\s+[(][^)]+[)]\\s*$"), "$1")}`;
+            const wikTarget = `wiktionary:${friendlyCurrentArticleName.replace(RegExp("^(.+)\\s+[(][^)]+[)]\\s*$"), "$1")}`;
             let meth;
             if (wikPos.toLowerCase() == "first") {
                 meth = "unshift";
@@ -2720,7 +2720,7 @@ $(() => {
             log("listLinks returned empty list");
             return null;
         }
-        let html = `<hr />${ popupString("Click to disambiguate this link to:") }<br>`;
+        let html = `<hr />${popupString("Click to disambiguate this link to:")}<br>`;
         html += list.join(popupString("separator"));
         return html;
     }
@@ -2796,7 +2796,7 @@ $(() => {
         };
         const structure = pg.structures[getValueOf("popupStructure")];
         if (typeof structure !== "object") {
-            setPopupHTML("popupError", `Unknown structure (this should never happen): ${ pg.option.popupStructure}`, args.navpopup.idNumber);
+            setPopupHTML("popupError", `Unknown structure (this should never happen): ${pg.option.popupStructure}`, args.navpopup.idNumber);
             return;
         }
         const spans = flatten(pg.misc.layout);
@@ -2817,14 +2817,14 @@ $(() => {
             }
             switch (typeof structurefn) {
                 case "function":
-                    log(`running ${ spans[i] }({article:${ x.article }, hint:${ x.hint }, oldid: ${ x.oldid }})`);
+                    log(`running ${spans[i]}({article:${x.article}, hint:${x.hint}, oldid: ${x.oldid}})`);
                     setfn(structurefn(x), spans[i], args.navpopup.idNumber);
                     break;
                 case "string":
                     setfn(structurefn, spans[i], args.navpopup.idNumber);
                     break;
                 default:
-                    errlog(`unknown thing with label ${ spans[i] } (span index was ${ i })`);
+                    errlog(`unknown thing with label ${spans[i]} (span index was ${i})`);
                     break;
             }
         }
@@ -3073,7 +3073,7 @@ $(() => {
         } else {
             log("makeRegexp failed");
         }
-        log(`makeRegexp: got reStr=${ reStr }, flags=${ flags}`);
+        log(`makeRegexp: got reStr=${reStr}, flags=${flags}`);
         return RegExp(reStr, flags);
     };
     Previewmaker.prototype.killBoxTemplates = function () {
@@ -3096,7 +3096,7 @@ $(() => {
             }
             forbiddenNamespaceAliases.push(_localizedNamespaceLc.split(" ").join("[ _]"));
         });
-        this.kill(RegExp(`[[][[]\\s*(${ forbiddenNamespaceAliases.join("|") })\\s*:`, "i"), /\]\]\s*/, "[", "]");
+        this.kill(RegExp(`[[][[]\\s*(${forbiddenNamespaceAliases.join("|")})\\s*:`, "i"), /\]\]\s*/, "[", "]");
     };
     Previewmaker.prototype.killHTML = function () {
         this.kill(/<ref\b[^/>]*?>/i, /<\/ref>/i);
@@ -3212,7 +3212,7 @@ $(() => {
         let result = "";
         let postfixIndex = 0;
         while (match = reLinks.exec(data)) {
-            result += `${pg.escapeQuotesHTML(data.substring(postfixIndex, match.index)) }<a href="${ Insta.conf.paths.articles }${pg.escapeQuotesHTML(match[1]) }">${ pg.escapeQuotesHTML((match[2] ? match[2] : match[1]) + match[3]) }</a>`;
+            result += `${pg.escapeQuotesHTML(data.substring(postfixIndex, match.index))}<a href="${Insta.conf.paths.articles}${pg.escapeQuotesHTML(match[1])}">${pg.escapeQuotesHTML((match[2] ? match[2] : match[1]) + match[3])}</a>`;
             postfixIndex = reLinks.lastIndex;
         }
         result += pg.escapeQuotesHTML(data.substring(postfixIndex));
@@ -3230,15 +3230,15 @@ $(() => {
             let start = "<span class='autocomment'>";
             let end = "</span>";
             if (prefix.length > 0) {
-                start = `${this.esWiki2HtmlPart(prefix) } ${ start }- `;
+                start = `${this.esWiki2HtmlPart(prefix)} ${start}- `;
             }
             if (postfix.length > 0) {
-                end = `: ${ end }${this.esWiki2HtmlPart(postfix)}`;
+                end = `: ${end}${this.esWiki2HtmlPart(postfix)}`;
             }
             const t = new Title().fromURL(this.baseUrl);
             t.anchorFromUtf(section);
-            const sectionLink = `${Insta.conf.paths.articles + pg.escapeQuotesHTML(t.toString(true)) }#${ pg.escapeQuotesHTML(t.anchor)}`;
-            return `${start }<a href="${ sectionLink }">&rarr;</a> ${ pg.escapeQuotesHTML(section) }${end}`;
+            const sectionLink = `${Insta.conf.paths.articles + pg.escapeQuotesHTML(t.toString(true))}#${pg.escapeQuotesHTML(t.anchor)}`;
+            return `${start}<a href="${sectionLink}">&rarr;</a> ${pg.escapeQuotesHTML(section)}${end}`;
         }
         return this.esWiki2HtmlPart(this.data);
     };
@@ -3257,79 +3257,79 @@ $(() => {
         const p = new Previewmaker(txt, base, pg.current.link.navpopup);
         if (this.owner.article.namespaceId() != pg.nsTemplateId) {
             p.killComments();
-            if (!confirm(`done killComments(). Continue?\n---\n${ p.data}`)) {
+            if (!confirm(`done killComments(). Continue?\n---\n${p.data}`)) {
                 return;
             }
             p.killDivs();
-            if (!confirm(`done killDivs(). Continue?\n---\n${ p.data}`)) {
+            if (!confirm(`done killDivs(). Continue?\n---\n${p.data}`)) {
                 return;
             }
             p.killGalleries();
-            if (!confirm(`done killGalleries(). Continue?\n---\n${ p.data}`)) {
+            if (!confirm(`done killGalleries(). Continue?\n---\n${p.data}`)) {
                 return;
             }
             p.killBoxTemplates();
-            if (!confirm(`done killBoxTemplates(). Continue?\n---\n${ p.data}`)) {
+            if (!confirm(`done killBoxTemplates(). Continue?\n---\n${p.data}`)) {
                 return;
             }
             if (getValueOf("popupPreviewKillTemplates")) {
                 p.killTemplates();
-                if (!confirm(`done killTemplates(). Continue?\n---\n${ p.data}`)) {
+                if (!confirm(`done killTemplates(). Continue?\n---\n${p.data}`)) {
                     return;
                 }
             } else {
                 p.killMultilineTemplates();
-                if (!confirm(`done killMultilineTemplates(). Continue?\n---\n${ p.data}`)) {
+                if (!confirm(`done killMultilineTemplates(). Continue?\n---\n${p.data}`)) {
                     return;
                 }
             }
             p.killTables();
-            if (!confirm(`done killTables(). Continue?\n---\n${ p.data}`)) {
+            if (!confirm(`done killTables(). Continue?\n---\n${p.data}`)) {
                 return;
             }
             p.killImages();
-            if (!confirm(`done killImages(). Continue?\n---\n${ p.data}`)) {
+            if (!confirm(`done killImages(). Continue?\n---\n${p.data}`)) {
                 return;
             }
             p.killHTML();
-            if (!confirm(`done killHTML(). Continue?\n---\n${ p.data}`)) {
+            if (!confirm(`done killHTML(). Continue?\n---\n${p.data}`)) {
                 return;
             }
             p.killChunks();
-            if (!confirm(`done killChunks(). Continue?\n---\n${ p.data}`)) {
+            if (!confirm(`done killChunks(). Continue?\n---\n${p.data}`)) {
                 return;
             }
             p.mopup();
-            if (!confirm(`done mopup(). Continue?\n---\n${ p.data}`)) {
+            if (!confirm(`done mopup(). Continue?\n---\n${p.data}`)) {
                 return;
             }
             p.firstBit();
-            if (!confirm(`done firstBit(). Continue?\n---\n${ p.data}`)) {
+            if (!confirm(`done firstBit(). Continue?\n---\n${p.data}`)) {
                 return;
             }
             p.killBadWhitespace();
-            if (!confirm(`done killBadWhitespace(). Continue?\n---\n${ p.data}`)) {
+            if (!confirm(`done killBadWhitespace(). Continue?\n---\n${p.data}`)) {
                 return;
             }
         }
         p.html = wiki2html(p.data, base);
         p.fixHTML();
-        if (!confirm(`done fixHTML(). Continue?\n---\n${ p.html}`)) {
+        if (!confirm(`done fixHTML(). Continue?\n---\n${p.html}`)) {
             return;
         }
         p.stripLongTemplates();
-        if (!confirm(`done stripLongTemplates(). Continue?\n---\n${ p.html}`)) {
+        if (!confirm(`done stripLongTemplates(). Continue?\n---\n${p.html}`)) {
             return;
         }
-        alert(`finished preview - end result follows.\n---\n${ p.html}`);
+        alert(`finished preview - end result follows.\n---\n${p.html}`);
     }
     Previewmaker.prototype.fixHTML = function () {
         if (!this.html) {
             return;
         }
         let ret = this.html;
-        ret = ret.replace(RegExp(`(<a href="${ pg.wiki.articlePath }/[^"]*)[?](.*?")`, "g"), "$1%3F$2");
-        ret = ret.replace(RegExp(`(<a href='${ pg.wiki.articlePath }/[^']*)[?](.*?')`, "g"), "$1%3F$2");
+        ret = ret.replace(RegExp(`(<a href="${pg.wiki.articlePath}/[^"]*)[?](.*?")`, "g"), "$1%3F$2");
+        ret = ret.replace(RegExp(`(<a href='${pg.wiki.articlePath}/[^']*)[?](.*?')`, "g"), "$1%3F$2");
         this.html = ret;
     };
     Previewmaker.prototype.showPreview = function () {
@@ -3371,52 +3371,52 @@ $(() => {
     };
     function loadAPIPreview(queryType, article, navpop) {
         const art = new Title(article).urlString();
-        let url = `${pg.wiki.apiwikibase }?format=json&formatversion=2&action=query&`;
+        let url = `${pg.wiki.apiwikibase}?format=json&formatversion=2&action=query&`;
         let htmlGenerator = function () {
             alert("invalid html generator");
         };
         let usernameart = "";
         switch (queryType) {
             case "history":
-                url += `titles=${ art }&prop=revisions&rvlimit=${ getValueOf("popupHistoryPreviewLimit")}`;
+                url += `titles=${art}&prop=revisions&rvlimit=${getValueOf("popupHistoryPreviewLimit")}`;
                 htmlGenerator = APIhistoryPreviewHTML;
                 break;
             case "category":
-                url += `list=categorymembers&cmtitle=${ art}`;
+                url += `list=categorymembers&cmtitle=${art}`;
                 htmlGenerator = APIcategoryPreviewHTML;
                 break;
             case "userinfo":
                 var username = new Title(article).userName();
                 usernameart = encodeURIComponent(username);
                 if (pg.re.ipUser.test(username)) {
-                    url += `list=blocks&bkprop=range|restrictions&bkip=${ usernameart}`;
+                    url += `list=blocks&bkprop=range|restrictions&bkip=${usernameart}`;
                 } else {
-                    url += `list=users|usercontribs&usprop=blockinfo|groups|editcount|registration|gender&ususers=${ usernameart }&meta=globaluserinfo&guiprop=groups|unattached&guiuser=${ usernameart }&uclimit=1&ucprop=timestamp&ucuser=${ usernameart}`;
+                    url += `list=users|usercontribs&usprop=blockinfo|groups|editcount|registration|gender&ususers=${usernameart}&meta=globaluserinfo&guiprop=groups|unattached&guiuser=${usernameart}&uclimit=1&ucprop=timestamp&ucuser=${usernameart}`;
                 }
                 htmlGenerator = APIuserInfoPreviewHTML;
                 break;
             case "contribs":
                 usernameart = encodeURIComponent(new Title(article).userName());
-                url += `list=usercontribs&ucuser=${ usernameart }&uclimit=${ getValueOf("popupContribsPreviewLimit")}`;
+                url += `list=usercontribs&ucuser=${usernameart}&uclimit=${getValueOf("popupContribsPreviewLimit")}`;
                 htmlGenerator = APIcontribsPreviewHTML;
                 break;
             case "imagepagepreview":
                 var trail = "";
                 if (getValueOf("popupImageLinks")) {
-                    trail = `&list=imageusage&iutitle=${ art}`;
+                    trail = `&list=imageusage&iutitle=${art}`;
                 }
-                url += `titles=${ art }&prop=revisions|imageinfo&rvprop=content${ trail}`;
+                url += `titles=${art}&prop=revisions|imageinfo&rvprop=content${trail}`;
                 htmlGenerator = APIimagepagePreviewHTML;
                 break;
             case "backlinks":
-                url += `list=backlinks&bltitle=${ art}`;
+                url += `list=backlinks&bltitle=${art}`;
                 htmlGenerator = APIbacklinksPreviewHTML;
                 break;
             case "revision":
                 if (article.oldid) {
-                    url += `revids=${ article.oldid}`;
+                    url += `revids=${article.oldid}`;
                 } else {
-                    url += `titles=${ article.removeAnchor().urlString()}`;
+                    url += `titles=${article.removeAnchor().urlString()}`;
                 }
                 url += "&prop=revisions|pageprops|info|images|categories&rvprop=ids|timestamp|flags|comment|user|content&cllimit=max&imlimit=max";
                 htmlGenerator = APIrevisionPreviewHTML;
@@ -3440,7 +3440,7 @@ $(() => {
         if (navpop.visible || !getValueOf("popupLazyDownloads")) {
             go();
         } else {
-            navpop.addHook(go, "unhide", "before", `DOWNLOAD_${ queryType }_QUERY_DATA`);
+            navpop.addHook(go, "unhide", "before", `DOWNLOAD_${queryType}_QUERY_DATA`);
         }
     }
     function linkList(list) {
@@ -3474,7 +3474,7 @@ $(() => {
                 if (tzComponents.length === 3 && tzComponents[0] === "ZoneInfo") {
                     pg.user.timeZone = tzComponents[2];
                 } else {
-                    errlog(`Unexpected timezone information: ${ tz}`);
+                    errlog(`Unexpected timezone information: ${tz}`);
                 }
             }
         }
@@ -3519,9 +3519,9 @@ $(() => {
         if (reallyContribs) {
             makeFirstColumnLinks = function (currentRevision) {
                 let result = "(";
-                result += `<a href="${ pg.wiki.titlebase }${new Title(currentRevision.title).urlString() }&diff=prev` + `&oldid=${ currentRevision.revid }">${ popupString("diff") }</a>`;
+                result += `<a href="${pg.wiki.titlebase}${new Title(currentRevision.title).urlString()}&diff=prev` + `&oldid=${currentRevision.revid}">${popupString("diff")}</a>`;
                 result += "&nbsp;|&nbsp;";
-                result += `<a href="${ pg.wiki.titlebase }${new Title(currentRevision.title).urlString() }&action=history">${ popupString("hist") }</a>`;
+                result += `<a href="${pg.wiki.titlebase}${new Title(currentRevision.title).urlString()}&action=history">${popupString("hist")}</a>`;
                 result += ")";
                 return result;
             };
@@ -3529,9 +3529,9 @@ $(() => {
             const firstRevid = h[0].revid;
             makeFirstColumnLinks = function (currentRevision) {
                 let result = "(";
-                result += `<a href="${ pg.wiki.titlebase }${new Title(curart).urlString() }&diff=${ firstRevid }&oldid=${ currentRevision.revid }">${ popupString("cur") }</a>`;
+                result += `<a href="${pg.wiki.titlebase}${new Title(curart).urlString()}&diff=${firstRevid}&oldid=${currentRevision.revid}">${popupString("cur")}</a>`;
                 result += "&nbsp;|&nbsp;";
-                result += `<a href="${ pg.wiki.titlebase }${new Title(curart).urlString() }&diff=prev&oldid=${ currentRevision.revid }">${ popupString("last") }</a>`;
+                result += `<a href="${pg.wiki.titlebase}${new Title(curart).urlString()}&diff=prev&oldid=${currentRevision.revid}">${popupString("last")}</a>`;
                 result += ")";
                 return result;
             };
@@ -3551,20 +3551,20 @@ $(() => {
                 day = thisDay;
             }
             if (thisDay) {
-                html.push(`<tr><td colspan=3><span class="popup_history_date">${ thisDay }</span></td></tr>`);
+                html.push(`<tr><td colspan=3><span class="popup_history_date">${thisDay}</span></td></tr>`);
             }
-            html.push(`<tr class="popup_history_row_${ i % 2 ? "odd" : "even" }">`);
-            html.push(`<td>${ makeFirstColumnLinks(h[i]) }</td>`);
-            html.push("<td>" + `<a href="${ pg.wiki.titlebase }${new Title(curart).urlString() }&oldid=${ h[i].revid }">${ thisTime }</a></td>`);
+            html.push(`<tr class="popup_history_row_${i % 2 ? "odd" : "even"}">`);
+            html.push(`<td>${makeFirstColumnLinks(h[i])}</td>`);
+            html.push("<td>" + `<a href="${pg.wiki.titlebase}${new Title(curart).urlString()}&oldid=${h[i].revid}">${thisTime}</a></td>`);
             let col3url = "",
                 col3txt = "";
             if (!reallyContribs) {
                 const user = h[i].user;
                 if (!h[i].userhidden) {
                     if (pg.re.ipUser.test(user)) {
-                        col3url = `${pg.wiki.titlebase + mw.config.get("wgFormattedNamespaces")[pg.nsSpecialId] }:Contributions&target=${ new Title(user).urlString()}`;
+                        col3url = `${pg.wiki.titlebase + mw.config.get("wgFormattedNamespaces")[pg.nsSpecialId]}:Contributions&target=${new Title(user).urlString()}`;
                     } else {
-                        col3url = `${pg.wiki.titlebase + mw.config.get("wgFormattedNamespaces")[pg.nsUserId] }:${ new Title(user).urlString()}`;
+                        col3url = `${pg.wiki.titlebase + mw.config.get("wgFormattedNamespaces")[pg.nsUserId]}:${new Title(user).urlString()}`;
                     }
                     col3txt = pg.escapeQuotesHTML(user);
                 } else {
@@ -3575,7 +3575,7 @@ $(() => {
                 col3url = pg.wiki.titlebase + curart.urlString();
                 col3txt = pg.escapeQuotesHTML(page);
             }
-            html.push(`<td>${ reallyContribs ? minor : "" }<a href="${ col3url }">${ col3txt }</a></td>`);
+            html.push(`<td>${reallyContribs ? minor : ""}<a href="${col3url}">${col3txt}</a></td>`);
             let comment = "";
             const c = h[i].comment || h[i].content;
             if (c) {
@@ -3583,7 +3583,7 @@ $(() => {
             } else if (h[i].commenthidden) {
                 comment = popupString("revdel");
             }
-            html.push(`<td>${ !reallyContribs ? minor : "" }${comment }</td>`);
+            html.push(`<td>${!reallyContribs ? minor : ""}${comment}</td>`);
             html.push("</tr>");
             html = [html.join("")];
         }
@@ -3601,11 +3601,11 @@ $(() => {
     }
     function formattedDateTime(date) {
         if (useTimeOffset()) {
-            return `${formattedDate(date) } ${ formattedTime(date)}`;
+            return `${formattedDate(date)} ${formattedTime(date)}`;
         }
         if (getMWDateFormat() === "ISO 8601") {
             const d2 = convertTimeZone(date, getTimeZone());
-            return `${map(zeroFill, [d2.getFullYear(), d2.getMonth() + 1, d2.getDate()]).join("-") }T${ map(zeroFill, [d2.getHours(), d2.getMinutes(), d2.getSeconds()]).join(":")}`;
+            return `${map(zeroFill, [d2.getFullYear(), d2.getMonth() + 1, d2.getDate()]).join("-")}T${map(zeroFill, [d2.getHours(), d2.getMinutes(), d2.getSeconds()]).join(":")}`;
         }
         const options = getValueOf("popupDateTimeFormatterOptions");
         options.timeZone = getTimeZone();
@@ -3643,12 +3643,12 @@ $(() => {
         const messages = [];
         if (user.groups) {
             user.groups.forEach((groupName) => {
-                messages.push(`group-${ groupName }-member`);
+                messages.push(`group-${groupName}-member`);
             });
         }
         if (queryObj.globaluserinfo && queryObj.globaluserinfo.groups) {
             queryObj.globaluserinfo.groups.forEach((groupName) => {
-                messages.push(`group-${ groupName }-member`);
+                messages.push(`group-${groupName}-member`);
             });
         }
         return getMwApi().loadMessagesIfMissing(messages);
@@ -3697,7 +3697,7 @@ $(() => {
             }
             for (let i = 0; i < list.length; i++) {
                 const t = new Title(list[i].title);
-                html.push(`<a href="${ pg.wiki.titlebase }${t.urlString() }">${ t }</a>`);
+                html.push(`<a href="${pg.wiki.titlebase}${t.urlString()}">${t}</a>`);
             }
             html = html.join(popupString("separator"));
             if (jsObj.continue && jsObj.continue.blcontinue) {
@@ -3733,13 +3733,13 @@ $(() => {
             } catch (e) {
             }
             if (alt) {
-                ret = `${ret }<hr /><b>${ popupString("Alt text:") }</b> ${ pg.escapeQuotesHTML(alt)}`;
+                ret = `${ret}<hr /><b>${popupString("Alt text:")}</b> ${pg.escapeQuotesHTML(alt)}`;
             }
             if (typeof content === "string") {
                 const p = prepPreviewmaker(content, article, navpop);
                 p.makePreview();
                 if (p.html) {
-                    ret += `<hr />${ p.html}`;
+                    ret += `<hr />${p.html}`;
                 }
                 if (getValueOf("popupSummaryData")) {
                     const info = getPageInfo(content, download);
@@ -3749,9 +3749,9 @@ $(() => {
             }
             if (page && page.imagerepository == "shared") {
                 const art = new Title(article);
-                const encart = encodeURIComponent(`File:${ art.stripNamespace()}`);
-                const shared_url = `${pg.wiki.apicommonsbase }?format=json&formatversion=2` + "&callback=pg.fn.APIsharedImagePagePreviewHTML" + `&requestid=${ navpop.idNumber }&action=query&prop=revisions&rvprop=content&titles=${ encart}`;
-                ret = `${ret }<hr />${ popupString("Image from Commons") }: <a href="${ pg.wiki.commonsbase }?title=${ encart }">${ popupString("Description page") }</a>`;
+                const encart = encodeURIComponent(`File:${art.stripNamespace()}`);
+                const shared_url = `${pg.wiki.apicommonsbase}?format=json&formatversion=2` + "&callback=pg.fn.APIsharedImagePagePreviewHTML" + `&requestid=${navpop.idNumber}&action=query&prop=revisions&rvprop=content&titles=${encart}`;
+                ret = `${ret}<hr />${popupString("Image from Commons")}: <a href="${pg.wiki.commonsbase}?title=${encart}">${popupString("Description page")}</a>`;
                 mw.loader.load(shared_url);
             }
             showAPIPreview("imagelinks", APIimagelinksPreviewHTML(article, download), navpop.idNumber, download);
@@ -3772,7 +3772,7 @@ $(() => {
                 if (ret.length === 0) {
                     return popupString("No image links found");
                 }
-                return `<h2>${ popupString("File links") }</h2>${ linkList(ret)}`;
+                return `<h2>${popupString("File links")}</h2>${linkList(ret)}`;
             }
             return popupString("No image links found");
         } catch (someError) {
@@ -3790,7 +3790,7 @@ $(() => {
             if (ret.length === 0) {
                 return popupString("Empty category");
             }
-            ret = `<h2>${ tprintf("Category members (%s shown)", [ret.length]) }</h2>${ linkList(ret)}`;
+            ret = `<h2>${tprintf("Category members (%s shown)", [ret.length])}</h2>${linkList(ret)}`;
             if (jsobj.continue && jsobj.continue.cmcontinue) {
                 ret += popupString(" and more");
             }
@@ -3817,9 +3817,9 @@ $(() => {
             }
             if (user.blockedby) {
                 if (user.blockpartial) {
-                    ret.push(`<b>${ popupString("Has blocks") }</b>`);
+                    ret.push(`<b>${popupString("Has blocks")}</b>`);
                 } else {
-                    ret.push(`<b>${ popupString("BLOCKED") }</b>`);
+                    ret.push(`<b>${popupString("BLOCKED")}</b>`);
                 }
             }
             if (globaluserinfo && ("locked" in globaluserinfo || "hidden" in globaluserinfo)) {
@@ -3832,10 +3832,10 @@ $(() => {
                 }
                 if (lockedSulAccountIsAttachedToThis) {
                     if ("locked" in globaluserinfo) {
-                        ret.push(`<b><i>${ popupString("LOCKED") }</i></b>`);
+                        ret.push(`<b><i>${popupString("LOCKED")}</i></b>`);
                     }
                     if ("hidden" in globaluserinfo) {
-                        ret.push(`<b><i>${ popupString("HIDDEN") }</i></b>`);
+                        ret.push(`<b><i>${popupString("HIDDEN")}</i></b>`);
                     }
                 }
             }
@@ -3856,11 +3856,11 @@ $(() => {
                 const ug = [];
                 user.groups.forEach((groupName) => {
                     if (["*", "user", "autoconfirmed", "extendedconfirmed"].indexOf(groupName) === -1) {
-                        ug.push(pg.escapeQuotesHTML(mw.message(`group-${ groupName }-member`, user.gender).text()));
+                        ug.push(pg.escapeQuotesHTML(mw.message(`group-${groupName}-member`, user.gender).text()));
                     }
                 });
                 if (user.groups.indexOf("autoconfirmed") === -1) {
-                    ug.push(`<b>${ pg.escapeQuotesHTML(popupString("group-no-autoconfirmed")) }</b>`);
+                    ug.push(`<b>${pg.escapeQuotesHTML(popupString("group-no-autoconfirmed"))}</b>`);
                 }
                 if (ug.length === 0) {
                     ug.push(pg.escapeQuotesHTML(mw.message("group-user-member", user.gender).text()));
@@ -3870,7 +3870,7 @@ $(() => {
             if (globaluserinfo && globaluserinfo.groups) {
                 const gug = [];
                 globaluserinfo.groups.forEach((groupName) => {
-                    gug.push(`<i>${ pg.escapeQuotesHTML(mw.message(`group-${ groupName }-member`, user.gender).text()) }</i>`);
+                    gug.push(`<i>${pg.escapeQuotesHTML(mw.message(`group-${groupName}-member`, user.gender).text())}</i>`);
                 });
                 ret.push(gug.join(popupString("separator")));
             }
@@ -3885,11 +3885,11 @@ $(() => {
             ret.push(popupString("IP user"));
             for (let l = 0; l < queryobj.blocks.length; l++) {
                 let rbstr = queryobj.blocks[l].rangestart === queryobj.blocks[l].rangeend ? "BLOCK" : "RANGEBLOCK";
-                rbstr = !Array.isArray(queryobj.blocks[l].restrictions) ? `Has ${ rbstr.toLowerCase() }s` : `${rbstr }ED`;
-                ret.push(`<b>${ popupString(rbstr) }</b>`);
+                rbstr = !Array.isArray(queryobj.blocks[l].restrictions) ? `Has ${rbstr.toLowerCase()}s` : `${rbstr}ED`;
+                ret.push(`<b>${popupString(rbstr)}</b>`);
             }
         }
-        ret = `<hr />${ ret.join(popupString("comma"))}`;
+        ret = `<hr />${ret.join(popupString("comma"))}`;
         return ret;
     }
     function APIcontribsPreviewHTML(article, download, navpop) {
@@ -3937,9 +3937,9 @@ $(() => {
             return false;
         }
         const art = image.urlString();
-        let url = `${pg.wiki.apiwikibase }?format=json&formatversion=2&action=query`;
-        url += `&prop=imageinfo&iiprop=url|mime&iiurlwidth=${ getValueOf("popupImageSizeLarge")}`;
-        url += `&titles=${ art}`;
+        let url = `${pg.wiki.apiwikibase}?format=json&formatversion=2&action=query`;
+        url += `&prop=imageinfo&iiprop=url|mime&iiurlwidth=${getValueOf("popupImageSizeLarge")}`;
+        url += `&titles=${art}`;
         pendingNavpopTask(navpop);
         const callback = function (d) {
             popupsInsertImage(navpop.idNumber, navpop, d);
@@ -3968,7 +3968,7 @@ $(() => {
             log("popupsInsertImage failed :(");
             return;
         }
-        const popupImage = document.getElementById(`popupImg${ id}`);
+        const popupImage = document.getElementById(`popupImg${id}`);
         if (!popupImage) {
             log("could not find insertion point for image");
             return;
@@ -3983,7 +3983,7 @@ $(() => {
         } else {
             log("fullsize imagethumb, but not sure if it's an image");
         }
-        const a = document.getElementById(`popupImageLink${ id}`);
+        const a = document.getElementById(`popupImageLink${id}`);
         if (a === null) {
             return null;
         }
@@ -3991,7 +3991,7 @@ $(() => {
             case "imagepage":
                 if (pg.current.article.namespaceId() != pg.nsImageId) {
                     a.href = imageinfo.descriptionurl;
-                    popTipsSoonFn(`popupImage${ id}`)();
+                    popTipsSoonFn(`popupImage${id}`)();
                     break;
                 }
             case "sizetoggle":
@@ -4036,7 +4036,7 @@ $(() => {
         if (!matched) {
             return null;
         }
-        return `${mw.config.get("wgFormattedNamespaces")[pg.nsImageId] }:${ upcaseFirst(matched)}`;
+        return `${mw.config.get("wgFormattedNamespaces")[pg.nsImageId]}:${upcaseFirst(matched)}`;
     }
     function removeMatchesUnless(str, re1, parencount, re2) {
         const split = str.parenSplit(re1);
@@ -4095,12 +4095,12 @@ $(() => {
             zh: [R, "重定向"],
         };
         const redirList = redirLists[pg.wiki.lang] || [r, R];
-        pg.re.redirect = RegExp(`^\\s*[#](${ redirList.join("|") }).*?\\[{2}([^\\|\\]]*)(|[^\\]]*)?\\]{2}\\s*(.*)`, "i");
+        pg.re.redirect = RegExp(`^\\s*[#](${redirList.join("|")}).*?\\[{2}([^\\|\\]]*)(|[^\\]]*)?\\]{2}\\s*(.*)`, "i");
     }
     function setInterwiki() {
         if (pg.wiki.wikimedia) {
             pg.wiki.interwiki = "aa|ab|ace|af|ak|als|am|an|ang|ar|arc|arz|as|ast|av|ay|az|ba|bar|bat-smg|bcl|be|be-x-old|bg|bh|bi|bjn|bm|bn|bo|bpy|br|bs|bug|bxr|ca|cbk-zam|cdo|ce|ceb|ch|cho|chr|chy|ckb|co|cr|crh|cs|csb|cu|cv|cy|da|de|diq|dsb|dv|dz|ee|el|eml|en|eo|es|et|eu|ext|fa|ff|fi|fiu-vro|fj|fo|fr|frp|frr|fur|fy|ga|gag|gan|gd|gl|glk|gn|got|gu|gv|ha|hak|haw|he|hi|hif|ho|hr|hsb|ht|hu|hy|hz|ia|id|ie|ig|ii|ik|ilo|io|is|it|iu|ja|jbo|jv|ka|kaa|kab|kbd|kg|ki|kj|kk|kl|km|kn|ko|koi|kr|krc|ks|ksh|ku|kv|kw|ky|la|lad|lb|lbe|lg|li|lij|lmo|ln|lo|lt|ltg|lv|map-bms|mdf|mg|mh|mhr|mi|mk|ml|mn|mo|mr|mrj|ms|mt|mus|mwl|my|myv|mzn|na|nah|nap|nds|nds-nl|ne|new|ng|nl|nn|no|nov|nrm|nv|ny|oc|om|or|os|pa|pag|pam|pap|pcd|pdc|pfl|pi|pih|pl|pms|pnb|pnt|ps|pt|qu|rm|rmy|rn|ro|roa-rup|roa-tara|ru|rue|rw|sa|sah|sc|scn|sco|sd|se|sg|sh|si|simple|sk|sl|sm|sn|so|sq|sr|srn|ss|st|stq|su|sv|sw|szl|ta|te|tet|tg|th|ti|tk|tl|tn|to|tpi|tr|ts|tt|tum|tw|ty|udm|ug|uk|ur|uz|ve|vec|vi|vls|vo|wa|war|wo|wuu|xal|xh|yi|yo|za|zea|zh|zh-classical|zh-min-nan|zh-yue|zu";
-            pg.re.interwiki = RegExp(`^${ pg.wiki.interwiki }:`);
+            pg.re.interwiki = RegExp(`^${pg.wiki.interwiki}:`);
         } else {
             pg.wiki.interwiki = null;
             pg.re.interwiki = RegExp("^$");
@@ -4116,7 +4116,7 @@ $(() => {
             imageNamespaceVariants.push(mw.util.escapeRegExp(_localizedNamespaceLc).split(" ").join("[ _]"));
             imageNamespaceVariants.push(mw.util.escapeRegExp(encodeURI(_localizedNamespaceLc)));
         });
-        return `(?:${ imageNamespaceVariants.join("|") })`;
+        return `(?:${imageNamespaceVariants.join("|")})`;
     }
     function nsReImage() {
         return nsRe(pg.nsImageId);
@@ -4319,7 +4319,7 @@ $(() => {
         return this.visible;
     };
     Navpopup.prototype.reposition = function (x, y, noLimitHor) {
-        log(`reposition(${ x },${ y },${ noLimitHor })`);
+        log(`reposition(${x},${y},${noLimitHor})`);
         if (typeof x !== "undefined" && x !== null) {
             this.left = x;
         }
@@ -4327,8 +4327,8 @@ $(() => {
             this.top = y;
         }
         if (typeof this.left !== "undefined" && typeof this.top !== "undefined") {
-            this.mainDiv.style.left = `${this.left }px`;
-            this.mainDiv.style.top = `${this.top }px`;
+            this.mainDiv.style.left = `${this.left}px`;
+            this.mainDiv.style.top = `${this.top}px`;
         }
         if (!noLimitHor) {
             this.limitHorizontalPosition();
@@ -4344,14 +4344,14 @@ $(() => {
         const cWidth = document.body.clientWidth;
         if (x + w >= cWidth || x > 0 && this.maxWidth && this.width < this.maxWidth && this.height > this.width && x > cWidth - this.maxWidth) {
             this.mainDiv.style.left = "-10000px";
-            this.mainDiv.style.width = `${this.maxWidth }px`;
+            this.mainDiv.style.width = `${this.maxWidth}px`;
             const naturalWidth = parseInt(this.mainDiv.offsetWidth, 10);
             let newLeft = cWidth - naturalWidth - 1;
             if (newLeft < 0) {
                 newLeft = 0;
                 this.tooWide = true;
             }
-            log(`limitHorizontalPosition: moving to (${ newLeft },${ this.top });` + ` naturalWidth=${ naturalWidth }, clientWidth=${ cWidth}`);
+            log(`limitHorizontalPosition: moving to (${newLeft},${this.top});` + ` naturalWidth=${naturalWidth}, clientWidth=${cWidth}`);
             this.reposition(newLeft, null, true);
         }
     };
@@ -4369,7 +4369,7 @@ $(() => {
         this.unhide();
     };
     Navpopup.prototype.showSoonIfStable = function (time) {
-        log(`showSoonIfStable, time=${ time}`);
+        log(`showSoonIfStable, time=${time}`);
         if (this.visible) {
             return;
         }
@@ -4549,13 +4549,13 @@ $(() => {
         if (!x.length) {
             return "";
         }
-        return `<del class='popupDiff'>${ x.join("") }</del>`;
+        return `<del class='popupDiff'>${x.join("")}</del>`;
     }
     function insFmt(x) {
         if (!x.length) {
             return "";
         }
-        return `<ins class='popupDiff'>${ x.join("") }</ins>`;
+        return `<ins class='popupDiff'>${x.join("")}</ins>`;
     }
     function countCrossings(a, b, i, eject) {
         if (!b[i].row && b[i].row !== 0) {
@@ -4658,7 +4658,7 @@ $(() => {
     function diffBugAlert(word) {
         if (!diffBugAlert.list[word]) {
             diffBugAlert.list[word] = 1;
-            alert(`Bad word: ${ word }\n\nPlease report this bug.`);
+            alert(`Bad word: ${word}\n\nPlease report this bug.`);
         }
     }
     diffBugAlert.list = {};
@@ -4741,7 +4741,7 @@ $(() => {
         pg.wiki.isLocal = RegExp("^localhost").test(pg.wiki.hostname);
         pg.wiki.commons = pg.wiki.wikimedia && pg.wiki.hostname != "commons.wikimedia.org" ? "commons.wikimedia.org" : null;
         pg.wiki.lang = mw.config.get("wgContentLanguage");
-        const port = location.port ? `:${ location.port}` : "";
+        const port = location.port ? `:${location.port}` : "";
         pg.wiki.sitebase = pg.wiki.hostname + port;
     }
     function setUserInfo() {
@@ -4776,21 +4776,21 @@ $(() => {
         const protocol = window.popupLocalDebug ? "http:" : location.protocol;
         pg.wiki.articlePath = mw.config.get("wgArticlePath").replace(/\/\$1/, "");
         pg.wiki.botInterfacePath = mw.config.get("wgScript");
-        pg.wiki.APIPath = `${mw.config.get("wgScriptPath") }/api.php`;
-        const titletail = `${pg.wiki.botInterfacePath }?title=`;
-        pg.wiki.titlebase = `${protocol }//${ pg.wiki.sitebase }${titletail}`;
-        pg.wiki.wikibase = `${protocol }//${ pg.wiki.sitebase }${pg.wiki.botInterfacePath}`;
-        pg.wiki.apiwikibase = `${protocol }//${ pg.wiki.sitebase }${pg.wiki.APIPath}`;
-        pg.wiki.articlebase = `${protocol }//${ pg.wiki.sitebase }${pg.wiki.articlePath}`;
-        pg.wiki.commonsbase = `${protocol }//${ pg.wiki.commons }${pg.wiki.botInterfacePath}`;
-        pg.wiki.apicommonsbase = `${protocol }//${ pg.wiki.commons }${pg.wiki.APIPath}`;
-        pg.re.basenames = RegExp(`^(${ map(literalizeRegex, [pg.wiki.titlebase, pg.wiki.articlebase]).join("|") })`);
+        pg.wiki.APIPath = `${mw.config.get("wgScriptPath")}/api.php`;
+        const titletail = `${pg.wiki.botInterfacePath}?title=`;
+        pg.wiki.titlebase = `${protocol}//${pg.wiki.sitebase}${titletail}`;
+        pg.wiki.wikibase = `${protocol}//${pg.wiki.sitebase}${pg.wiki.botInterfacePath}`;
+        pg.wiki.apiwikibase = `${protocol}//${pg.wiki.sitebase}${pg.wiki.APIPath}`;
+        pg.wiki.articlebase = `${protocol}//${pg.wiki.sitebase}${pg.wiki.articlePath}`;
+        pg.wiki.commonsbase = `${protocol}//${pg.wiki.commons}${pg.wiki.botInterfacePath}`;
+        pg.wiki.apicommonsbase = `${protocol}//${pg.wiki.commons}${pg.wiki.APIPath}`;
+        pg.re.basenames = RegExp(`^(${map(literalizeRegex, [pg.wiki.titlebase, pg.wiki.articlebase]).join("|")})`);
     }
     function setMainRegex() {
         const reStart = "[^:]*://";
-        let preTitles = `${literalizeRegex(mw.config.get("wgScriptPath")) }/(?:index[.]php|wiki[.]phtml)[?]title=`;
-        preTitles += `|${ literalizeRegex(`${pg.wiki.articlePath }/`)}`;
-        const reEnd = `(${ preTitles })([^&?#]*)[^#]*(?:#(.+))?`;
+        let preTitles = `${literalizeRegex(mw.config.get("wgScriptPath"))}/(?:index[.]php|wiki[.]phtml)[?]title=`;
+        preTitles += `|${literalizeRegex(`${pg.wiki.articlePath}/`)}`;
+        const reEnd = `(${preTitles})([^&?#]*)[^#]*(?:#(.+))?`;
         pg.re.main = RegExp(reStart + literalizeRegex(pg.wiki.sitebase) + reEnd);
     }
     function buildSpecialPageGroup(specialPageObj) {
@@ -4806,30 +4806,30 @@ $(() => {
     function setRegexps() {
         setMainRegex();
         const sp = nsRe(pg.nsSpecialId);
-        pg.re.urlNoPopup = RegExp(`((title=|/)${ sp }(?:%3A|:)|section=[0-9]|^#$)`);
+        pg.re.urlNoPopup = RegExp(`((title=|/)${sp}(?:%3A|:)|section=[0-9]|^#$)`);
         pg.wiki.specialpagealiases.forEach((specialpage) => {
             if (specialpage.realname === "Contributions") {
-                pg.re.contribs = RegExp(`(title=|/)${ sp 
-                }(?:%3A|:)(?:${ buildSpecialPageGroup(specialpage) })` +
-                    `(&target=|/|/${ nsRe(pg.nsUserId) }:)(.*)`, "i");
+                pg.re.contribs = RegExp(`(title=|/)${sp
+                    }(?:%3A|:)(?:${buildSpecialPageGroup(specialpage)})` +
+                    `(&target=|/|/${nsRe(pg.nsUserId)}:)(.*)`, "i");
             } else if (specialpage.realname === "Diff") {
-                pg.re.specialdiff = RegExp(`/${ sp 
-                }(?:%3A|:)(?:${ buildSpecialPageGroup(specialpage) })` +
+                pg.re.specialdiff = RegExp(`/${sp
+                    }(?:%3A|:)(?:${buildSpecialPageGroup(specialpage)})` +
                     "/([^?#]*)", "i");
             } else if (specialpage.realname === "Emailuser") {
-                pg.re.email = RegExp(`(title=|/)${ sp 
-                }(?:%3A|:)(?:${ buildSpecialPageGroup(specialpage) 
-                })` + `(&target=|/|/(?:${ nsRe(pg.nsUserId) }:)?)(.*)`, "i");
+                pg.re.email = RegExp(`(title=|/)${sp
+                    }(?:%3A|:)(?:${buildSpecialPageGroup(specialpage)
+                    })` + `(&target=|/|/(?:${nsRe(pg.nsUserId)}:)?)(.*)`, "i");
             } else if (specialpage.realname === "Whatlinkshere") {
-                pg.re.backlinks = RegExp(`(title=|/)${ sp 
-                }(?:%3A|:)(?:${ buildSpecialPageGroup(specialpage) 
-                })` + "(&target=|/)([^&]*)", "i");
+                pg.re.backlinks = RegExp(`(title=|/)${sp
+                    }(?:%3A|:)(?:${buildSpecialPageGroup(specialpage)
+                    })` + "(&target=|/)([^&]*)", "i");
             }
         });
         const im = nsReImage();
-        pg.re.image = RegExp(`(^|\\[\\[)${ im }: *([^|\\]]*[^|\\] ])` + "([^0-9\\]]*([0-9]+) *px)?|(?:\\n *[|]?|[|]) *" + `(${ getValueOf("popupImageVarsRegexp") })` + ` *= *(?:\\[\\[ *)?(?:${ im }:)?` + "([^|]*?)(?:\\]\\])? *[|]? *\\n", "img");
+        pg.re.image = RegExp(`(^|\\[\\[)${im}: *([^|\\]]*[^|\\] ])` + "([^0-9\\]]*([0-9]+) *px)?|(?:\\n *[|]?|[|]) *" + `(${getValueOf("popupImageVarsRegexp")})` + ` *= *(?:\\[\\[ *)?(?:${im}:)?` + "([^|]*?)(?:\\]\\])? *[|]? *\\n", "img");
         pg.re.imageBracketCount = 6;
-        pg.re.category = RegExp(`\\[\\[${ nsRe(pg.nsCategoryId) }: *([^|\\]]*[^|\\] ]) *`, "i");
+        pg.re.category = RegExp(`\\[\\[${nsRe(pg.nsCategoryId)}: *([^|\\]]*[^|\\] ]) *`, "i");
         pg.re.categoryBracketCount = 1;
         pg.re.ipUser = RegExp("^" + "(?::(?::|(?::[0-9A-Fa-f]{1,4}){1,7})|[0-9A-Fa-f]{1,4}(?::[0-9A-Fa-f]{1,4}){0,6}::|[0-9A-Fa-f]{1,4}(?::[0-9A-Fa-f]{1,4}){7})" + "|(((25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])\\.){3}" + "(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9]))$");
         pg.re.stub = RegExp(getValueOf("popupStubRegexp"), "im");
@@ -4864,7 +4864,7 @@ $(() => {
     }
     function getMwApi() {
         if (!pg.api.client) {
-            pg.api.userAgent = `Navigation popups/1.0 (${ mw.config.get("wgServerName") })`;
+            pg.api.userAgent = `Navigation popups/1.0 (${mw.config.get("wgServerName")})`;
             pg.api.client = new mw.Api({
                 ajax: {
                     headers: {
@@ -4919,16 +4919,16 @@ $(() => {
         str += "if(ipuser){*<<arin>>}if(wikimedia){*<<count|shortcut=#>>}";
         str += "if(ipuser){}else{*<<email|shortcut=E>>}if(admin){*<<block|shortcut=b>>|<<blocklog|log>>}}";
         const editstr = "<<edit|shortcut=e>>";
-        const editOldidStr = `if(oldid){<<editOld|shortcut=e>>|<<revert|shortcut=v|rv>>|<<edit|cur>>}else{${ editstr }}`;
+        const editOldidStr = `if(oldid){<<editOld|shortcut=e>>|<<revert|shortcut=v|rv>>|<<edit|cur>>}else{${editstr}}`;
         const historystr = "<<history|shortcut=h>>|<<editors|shortcut=E|>>";
         const watchstr = "<<unwatch|unwatchShort>>|<<watch|shortcut=w|watchThingy>>";
-        str += `<br>if(talk){${ editOldidStr }|<<new|shortcut=+>>` + `*${ historystr }*${ watchstr }*` + "<b><<article|shortcut=a>></b>|<<editArticle|edit>>" + `}else{${ editOldidStr }*${ historystr }*${ watchstr }*` + "<b><<talk|shortcut=t>></b>|<<editTalk|edit>>|<<newTalk|shortcut=+|new>>}";
+        str += `<br>if(talk){${editOldidStr}|<<new|shortcut=+>>` + `*${historystr}*${watchstr}*` + "<b><<article|shortcut=a>></b>|<<editArticle|edit>>" + `}else{${editOldidStr}*${historystr}*${watchstr}*` + "<b><<talk|shortcut=t>></b>|<<editTalk|edit>>|<<newTalk|shortcut=+|new>>}";
         str += "<br><<whatLinksHere|shortcut=l>>*<<relatedChanges|shortcut=r>>*<<move|shortcut=m>>";
         str += "if(admin){<br><<unprotect|unprotectShort>>|<<protect|shortcut=p>>|<<protectlog|log>>*" + "<<undelete|undeleteShort>>|<<delete|shortcut=d>>|<<deletelog|log>>}";
         return str;
     }
     function navLinksHTML(article, hint, params) {
-        const str = `<span class="popupNavLinks">${ defaultNavlinkSpec() }</span>`;
+        const str = `<span class="popupNavLinks">${defaultNavlinkSpec()}</span>`;
         return navlinkStringToHTML(str, article, params);
     }
     function expandConditionalNavlinkString(s, article, z, recursionCount) {
@@ -5041,7 +5041,7 @@ $(() => {
         return s.split("*").join(getValueOf("popupNavLinkSeparator")).split("<menurow>").join('<li class="popup_menu_row">').split("</menurow>").join("</li>").split("<menu>").join('<ul class="popup_menu">').split("</menu>").join("</ul>");
     }
     function navlinkDepth(magic, s) {
-        return s.split(`<${ magic }>`).length - s.split(`</${ magic }>`).length;
+        return s.split(`<${magic}>`).length - s.split(`</${magic}>`).length;
     }
     function navlinkStringToHTML(s, article, params) {
         const p = navlinkStringToArray(s, article, params);
@@ -5055,7 +5055,7 @@ $(() => {
                 menurowdepth += navlinkDepth("menurow", p[i]);
             } else if (typeof p[i].type !== "undefined" && p[i].type == "navlinkTag") {
                 if (menudepth > 0 && menurowdepth === 0) {
-                    html += `<li class="popup_menu_item">${ p[i].html() }</li>`;
+                    html += `<li class="popup_menu_item">${p[i].html()}</li>`;
                 } else {
                     html += p[i].html();
                 }
@@ -5076,11 +5076,11 @@ $(() => {
             opening = "";
             closing = "";
         } else {
-            opening = `<${ tagType } class="popup_${ this.id }">`;
-            closing = `</${ tagType }>`;
+            opening = `<${tagType} class="popup_${this.id}">`;
+            closing = `</${tagType}>`;
         }
         if (typeof this.print !== "function") {
-            errlog(`Oh dear - invalid print function for a navlinkTag, id=${ this.id}`);
+            errlog(`Oh dear - invalid print function for a navlinkTag, id=${this.id}`);
         } else {
             html = this.print(this);
             if (typeof html !== typeof "") {
@@ -5230,7 +5230,7 @@ $(() => {
             case "unwatch":
             case "watch":
                 this.print = magicWatchLink;
-                this.action = `${this.id }&autowatchlist=1&autoimpl=${ popupString("autoedit_version") }&actoken=${ autoClickToken()}`;
+                this.action = `${this.id}&autowatchlist=1&autoimpl=${popupString("autoedit_version")}&actoken=${autoClickToken()}`;
                 break;
             case "history":
             case "historyfeed":
@@ -5244,7 +5244,7 @@ $(() => {
                 this.action = "delete";
                 if (this.article.namespaceId() == pg.nsImageId) {
                     const img = this.article.stripNamespace();
-                    this.action += `&image=${ img}`;
+                    this.action += `&image=${img}`;
                 }
                 break;
             case "markpatrolled":
@@ -5328,7 +5328,7 @@ $(() => {
                 break;
             case "oldEdit":
                 this.print = titledDiffLink;
-                this.title = `${popupString("Show the edit made to get revision") } ${ this.oldid}`;
+                this.title = `${popupString("Show the edit made to get revision")} ${this.oldid}`;
                 this.from = "prev";
                 this.to = this.oldid;
                 break;
@@ -5379,7 +5379,7 @@ $(() => {
                 break;
             default:
                 this.print = function () {
-                    return `Unknown navlink type: ${ this.id }`;
+                    return `Unknown navlink type: ${this.id}`;
                 };
         }
     };
@@ -5441,17 +5441,17 @@ $(() => {
         if (i < 0) {
             return html;
         }
-        return `${html.substring(0, i) } ${ property }${html.substring(i)}`;
+        return `${html.substring(0, i)} ${property}${html.substring(i)}`;
     }
     function addPopupShortcut(html, key) {
         if (!getValueOf("popupShortcutKeys")) {
             return html;
         }
-        const ret = addLinkProperty(html, `popupkey="${ key }"`);
+        const ret = addLinkProperty(html, `popupkey="${key}"`);
         if (key == " ") {
             key = popupString("spacebar");
         }
-        return ret.replace(RegExp('^(.*?)(title=")(.*?)(".*)$', "i"), `$1$2$3 [${ key }]$4`);
+        return ret.replace(RegExp('^(.*?)(title=")(.*?)(".*)$', "i"), `$1$2$3 [${key}]$4`);
     }
     function loadDiff(article, oldid, diff, navpop) {
         navpop.diffData = {
@@ -5504,8 +5504,8 @@ $(() => {
                 addReviewLink(navpop, "popupMiscTools");
                 const go = function () {
                     pendingNavpopTask(navpop);
-                    let url = `${pg.wiki.apiwikibase }?format=json&formatversion=2&action=query&`;
-                    url += `revids=${ navpop.diffData.oldRev.revid }|${ navpop.diffData.newRev.revid}`;
+                    let url = `${pg.wiki.apiwikibase}?format=json&formatversion=2&action=query&`;
+                    url += `revids=${navpop.diffData.oldRev.revid}|${navpop.diffData.newRev.revid}`;
                     url += "&prop=revisions&rvprop=ids|timestamp|content";
                     getPageWithCaching(url, doneDiff, navpop);
                     return true;
@@ -5686,7 +5686,7 @@ $(() => {
             html += "<hr />";
         }
         html += shortenDiffString(diffString(oldlines2.join("\n"), newlines2.join("\n"), simpleSplit), getValueOf("popupDiffContextCharacters")).join("<hr />");
-        setPopupTipsAndHTML(html.split("\n").join("<br>") + (truncated ? `<hr /><b>${ popupString("Diff truncated for performance reasons") }</b>` : ""), "popupPreview", navpop.idNumber);
+        setPopupTipsAndHTML(html.split("\n").join("<br>") + (truncated ? `<hr /><b>${popupString("Diff truncated for performance reasons")}</b>` : ""), "popupPreview", navpop.idNumber);
     }
     function diffDatesTable(navpop) {
         let html = '<table class="popup_diff_dates">';
@@ -5701,7 +5701,7 @@ $(() => {
         const datePrint = getValueOf("popupDiffDatePrinter");
         txt = formattedDateTime(lastModifiedDate);
         const revlink = generalLink({
-            url: `${mw.config.get("wgScript") }?oldid=${ revision.revid}`,
+            url: `${mw.config.get("wgScript")}?oldid=${revision.revid}`,
             text: label,
             title: label,
         });
@@ -5710,7 +5710,7 @@ $(() => {
     function titledDiffLink(l) {
         return titledWikiLink({
             article: l.article,
-            action: `${l.to }&oldid=${ l.from}`,
+            action: `${l.to}&oldid=${l.from}`,
             newWin: l.newWin,
             noPopup: l.noPopup,
             text: l.text,
@@ -5729,17 +5729,17 @@ $(() => {
         if (!/^(edit|view|revert|render)$|^raw/.test(l.action)) {
             l.oldid = null;
         }
-        let hint = popupString(`${l.action }Hint`);
+        let hint = popupString(`${l.action}Hint`);
         const oldidData = [l.oldid, safeDecodeURI(l.article)];
         let revisionString = tprintf("revision %s of %s", oldidData);
-        log(`revisionString=${ revisionString}`);
+        log(`revisionString=${revisionString}`);
         switch (l.action) {
             case "edit&section=new":
                 hint = popupString("newSectionHint");
                 break;
             case "edit&undo=":
                 if (l.diff && l.diff != "prev" && savedOldid) {
-                    l.action += `${l.diff }&undoafter=${ savedOldid}`;
+                    l.action += `${l.diff}&undoafter=${savedOldid}`;
                 } else if (savedOldid) {
                     l.action += savedOldid;
                 }
@@ -5750,7 +5750,7 @@ $(() => {
                 break;
             case "revert":
                 var p = parseParams(pg.current.link.href);
-                l.action = `edit&autoclick=wpSave&actoken=${ autoClickToken() }&autoimpl=${ popupString("autoedit_version") }&autosummary=${ revertSummary(l.oldid, p.diff)}`;
+                l.action = `edit&autoclick=wpSave&actoken=${autoClickToken()}&autoimpl=${popupString("autoedit_version")}&autosummary=${revertSummary(l.oldid, p.diff)}`;
                 if (p.diff == "prev") {
                     l.action += "&direction=prev";
                     revisionString = tprintf("the revision prior to revision %s of %s", oldidData);
@@ -5761,16 +5761,16 @@ $(() => {
                 if (getValueOf("popupMinorReverts")) {
                     l.action += "&autominor=true";
                 }
-                log(`revisionString is now ${ revisionString}`);
+                log(`revisionString is now ${revisionString}`);
                 break;
             case "nullEdit":
-                l.action = `edit&autoclick=wpSave&actoken=${ autoClickToken() }&autoimpl=${ popupString("autoedit_version") }&autosummary=${ popupString("nullEditSummary")}`;
+                l.action = `edit&autoclick=wpSave&actoken=${autoClickToken()}&autoimpl=${popupString("autoedit_version")}&autosummary=${popupString("nullEditSummary")}`;
                 break;
             case "historyfeed":
                 l.action = "history&feed=rss";
                 break;
             case "markpatrolled":
-                l.action = `markpatrolled&rcid=${ l.rcid}`;
+                l.action = `markpatrolled&rcid=${l.rcid}`;
         }
         if (hint) {
             if (l.oldid) {
@@ -5779,7 +5779,7 @@ $(() => {
                 hint = simplePrintf(hint, [safeDecodeURI(l.article)]);
             }
         } else {
-            hint = safeDecodeURI(`${l.article }&action=${ l.action}`) + l.oldid ? `&oldid=${ l.oldid}` : "";
+            hint = safeDecodeURI(`${l.article}&action=${l.action}`) + l.oldid ? `&oldid=${l.oldid}` : "";
         }
         return titledWikiLink({
             article: l.article,
@@ -5799,7 +5799,7 @@ $(() => {
         } else {
             ret = getValueOf("popupQueriedRevertSummary");
         }
-        return `${ret }&autorv=${ oldid}`;
+        return `${ret}&autorv=${oldid}`;
     }
     function titledWikiLink(l) {
         if (typeof l.article === "undefined" || typeof l.action === "undefined") {
@@ -5812,13 +5812,13 @@ $(() => {
             l.actionName = "action";
         }
         if (l.action != "view") {
-            url = `${base }&${ l.actionName }=${ l.action}`;
+            url = `${base}&${l.actionName}=${l.action}`;
         }
         if (l.action === "edit") {
             url += "&wpChangeTags=Popups%2CAutomation%20tool";
         }
         if (typeof l.oldid !== "undefined" && l.oldid) {
-            url += `&oldid=${ l.oldid}`;
+            url += `&oldid=${l.oldid}`;
         }
         let cssClass = pg.misc.defaultNavlinkClassname;
         if (typeof l.className !== "undefined" && l.className) {
@@ -5851,7 +5851,7 @@ $(() => {
             alert(tprintf("Only found one editor: %s made %s edits", [info.edits[0].editor, info.edits.length]));
             return;
         }
-        const newUrl = `${pg.wiki.titlebase + new Title(stuff.page).urlString() }&diff=cur&oldid=${ info.firstNewEditor.oldid}`;
+        const newUrl = `${pg.wiki.titlebase + new Title(stuff.page).urlString()}&diff=cur&oldid=${info.firstNewEditor.oldid}`;
         displayUrl(newUrl, stuff.newWin);
     }
     pg.fn.getDiffSinceMyEdit = function getDiffSinceMyEdit(wikipage, newWin) {
@@ -5876,7 +5876,7 @@ $(() => {
             alert(tprintf("%s seems to be the last editor to the page %s", [info.userName, friendlyName]));
             return;
         }
-        const newUrl = `${pg.wiki.titlebase + new Title(stuff.page).urlString() }&diff=cur&oldid=${ info.myLastEdit.oldid}`;
+        const newUrl = `${pg.wiki.titlebase + new Title(stuff.page).urlString()}&diff=cur&oldid=${info.myLastEdit.oldid}`;
         displayUrl(newUrl, stuff.newWin);
     }
     function displayUrl(url, newWin) {
@@ -5956,7 +5956,7 @@ $(() => {
                 title = popupString("sinceMeHint");
                 break;
         }
-        jsUrl = `javascript:${ onClick}`;
+        jsUrl = `javascript:${onClick}`;
         onClick += ";return false;";
         return generalNavLink({
             url: jsUrl,
@@ -5984,14 +5984,14 @@ $(() => {
         if (typeof l.specialpage === "undefined" || !l.specialpage) {
             return null;
         }
-        const base = `${pg.wiki.titlebase + mw.config.get("wgFormattedNamespaces")[pg.nsSpecialId] }:${ l.specialpage}`;
+        const base = `${pg.wiki.titlebase + mw.config.get("wgFormattedNamespaces")[pg.nsSpecialId]}:${l.specialpage}`;
         if (typeof l.sep === "undefined" || l.sep === null) {
             l.sep = "&target=";
         }
         let article = l.article.urlString({
             keepSpaces: l.specialpage == "Search",
         });
-        let hint = popupString(`${l.specialpage }Hint`);
+        let hint = popupString(`${l.specialpage}Hint`);
         switch (l.specialpage) {
             case "Log":
                 switch (l.sep) {
@@ -6011,7 +6011,7 @@ $(() => {
                         hint = popupString("deleteLogHint");
                         break;
                     default:
-                        log(`Unknown log type, sep=${ l.sep}`);
+                        log(`Unknown log type, sep=${l.sep}`);
                         hint = "Missing hint (FIXME)";
                 }
                 break;
@@ -6022,7 +6022,7 @@ $(() => {
         if (hint) {
             hint = simplePrintf(hint, [safeDecodeURI(l.article)]);
         } else {
-            hint = safeDecodeURI(`${l.specialpage }:${ l.article}`);
+            hint = safeDecodeURI(`${l.specialpage}:${l.article}`);
         }
         const url = base + l.sep + article;
         return generalNavLink({
@@ -6038,12 +6038,12 @@ $(() => {
             return null;
         }
         const url = l.url.split('"').join("%22");
-        let ret = `<a href="${ url }"`;
+        let ret = `<a href="${url}"`;
         if (typeof l.title !== "undefined" && l.title) {
-            ret += ` title="${ pg.escapeQuotesHTML(l.title) }"`;
+            ret += ` title="${pg.escapeQuotesHTML(l.title)}"`;
         }
         if (typeof l.onclick !== "undefined" && l.onclick) {
-            ret += ` onclick="${ pg.escapeQuotesHTML(l.onclick) }"`;
+            ret += ` onclick="${pg.escapeQuotesHTML(l.onclick)}"`;
         }
         if (l.noPopup) {
             ret += " noPopup=1";
@@ -6058,7 +6058,7 @@ $(() => {
             ret += ' target="_blank"';
         }
         if (typeof l.className !== "undefined" && l.className) {
-            ret += ` class="${ l.className }"`;
+            ret += ` class="${l.className}"`;
         }
         ret += ">";
         if (typeof l.text === typeof "") {
@@ -6073,23 +6073,23 @@ $(() => {
             return null;
         }
         let ret = sp.shift() + sp.shift();
-        ret += `&${ params }"`;
+        ret += `&${params}"`;
         ret += sp.join("");
         return ret;
     }
     function changeLinkTargetLink(x) {
         if (x.newTarget) {
-            log(`changeLinkTargetLink: newTarget=${ x.newTarget}`);
+            log(`changeLinkTargetLink: newTarget=${x.newTarget}`);
         }
         if (x.oldTarget !== decodeURIComponent(x.oldTarget)) {
-            log(`This might be an input problem: ${ x.oldTarget}`);
+            log(`This might be an input problem: ${x.oldTarget}`);
         }
         const cA = mw.util.escapeRegExp(x.oldTarget);
         let chs = cA.charAt(0).toUpperCase();
-        chs = `[${ chs }${chs.toLowerCase() }]`;
+        chs = `[${chs}${chs.toLowerCase()}]`;
         let currentArticleRegexBit = chs + cA.substring(1);
         currentArticleRegexBit = currentArticleRegexBit.split(RegExp("(?:[_ ]+|%20)", "g")).join("(?:[_ ]+|%20)").split("\\(").join("(?:%28|\\()").split("\\)").join("(?:%29|\\))");
-        currentArticleRegexBit = `\\s*(${ currentArticleRegexBit }(?:#[^\\[\\|]*)?)\\s*`;
+        currentArticleRegexBit = `\\s*(${currentArticleRegexBit}(?:#[^\\[\\|]*)?)\\s*`;
         const title = x.title || mw.config.get("wgPageName").split("_").join(" ");
         const lk = titledWikiLink({
             article: new Title(title),
@@ -6104,24 +6104,24 @@ $(() => {
             const t = x.newTarget;
             const s = mw.util.escapeRegExp(x.newTarget);
             if (x.alsoChangeLabel) {
-                cmd += `s~\\[\\[${ currentArticleRegexBit }\\]\\]~[[${ t }]]~g;`;
-                cmd += `s~\\[\\[${ currentArticleRegexBit }[|]~[[${ t }|~g;`;
-                cmd += `s~\\[\\[${ s }\\|${ s }\\]\\]~[[${ t }]]~g`;
+                cmd += `s~\\[\\[${currentArticleRegexBit}\\]\\]~[[${t}]]~g;`;
+                cmd += `s~\\[\\[${currentArticleRegexBit}[|]~[[${t}|~g;`;
+                cmd += `s~\\[\\[${s}\\|${s}\\]\\]~[[${t}]]~g`;
             } else {
-                cmd += `s~\\[\\[${ currentArticleRegexBit }\\]\\]~[[${ t }|$1]]~g;`;
-                cmd += `s~\\[\\[${ currentArticleRegexBit }[|]~[[${ t }|~g;`;
-                cmd += `s~\\[\\[${ s }\\|${ s }\\]\\]~[[${ t }]]~g`;
+                cmd += `s~\\[\\[${currentArticleRegexBit}\\]\\]~[[${t}|$1]]~g;`;
+                cmd += `s~\\[\\[${currentArticleRegexBit}[|]~[[${t}|~g;`;
+                cmd += `s~\\[\\[${s}\\|${s}\\]\\]~[[${t}]]~g`;
             }
         } else {
-            cmd += `s~\\[\\[${ currentArticleRegexBit }\\]\\]~$1~g;`;
-            cmd += `s~\\[\\[${ currentArticleRegexBit }[|](.*?)\\]\\]~$2~g`;
+            cmd += `s~\\[\\[${currentArticleRegexBit}\\]\\]~$1~g;`;
+            cmd += `s~\\[\\[${currentArticleRegexBit}[|](.*?)\\]\\]~$2~g`;
         }
-        cmd = `autoedit=${ encodeURIComponent(cmd)}`;
-        cmd += `&autoclick=${ encodeURIComponent(x.clickButton) }&actoken=${ encodeURIComponent(autoClickToken())}`;
-        cmd += x.minor === null ? "" : `&autominor=${ encodeURIComponent(x.minor)}`;
-        cmd += x.watch === null ? "" : `&autowatch=${ encodeURIComponent(x.watch)}`;
-        cmd += `&autosummary=${ encodeURIComponent(x.summary)}`;
-        cmd += `&autoimpl=${ encodeURIComponent(popupString("autoedit_version"))}`;
+        cmd = `autoedit=${encodeURIComponent(cmd)}`;
+        cmd += `&autoclick=${encodeURIComponent(x.clickButton)}&actoken=${encodeURIComponent(autoClickToken())}`;
+        cmd += x.minor === null ? "" : `&autominor=${encodeURIComponent(x.minor)}`;
+        cmd += x.watch === null ? "" : `&autowatch=${encodeURIComponent(x.watch)}`;
+        cmd += `&autosummary=${encodeURIComponent(x.summary)}`;
+        cmd += `&autoimpl=${encodeURIComponent(popupString("autoedit_version"))}`;
         return appendParamsToLink(lk, cmd);
     }
     function redirLink(redirMatch, article) {
@@ -6130,7 +6130,7 @@ $(() => {
             ret += "<hr />";
             if (getValueOf("popupFixRedirs") && typeof autoEdit !== "undefined" && autoEdit) {
                 ret += popupString("Redirects to: (Fix ");
-                log(`redirLink: newTarget=${ redirMatch}`);
+                log(`redirLink: newTarget=${redirMatch}`);
                 ret += addPopupShortcut(changeLinkTargetLink({
                     newTarget: redirMatch,
                     text: popupString("target"),
@@ -6158,7 +6158,7 @@ $(() => {
                 ret += popupString("Redirects") + popupString(" to ");
             }
             return ret;
-        } return `<br> ${ popupString("Redirects") }${popupString(" to ") }${titledWikiLink({
+        } return `<br> ${popupString("Redirects")}${popupString(" to ")}${titledWikiLink({
             article: new Title().fromWikiText(redirMatch),
             action: "view",
             text: safeDecodeURI(redirMatch),
@@ -6174,7 +6174,7 @@ $(() => {
         }
         const uN = l.article.userName();
         return generalNavLink({
-            url: `http://ws.arin.net/cgi-bin/whois.pl?queryinput=${ encodeURIComponent(uN)}`,
+            url: `http://ws.arin.net/cgi-bin/whois.pl?queryinput=${encodeURIComponent(uN)}`,
             newWin: l.newWin,
             title: tprintf("Look up %s in ARIN whois database", [uN]),
             text: l.text,
@@ -6250,7 +6250,7 @@ $(() => {
             keepSpaces: true,
         });
         return generalNavLink({
-            url: `${base }%22${ article }%22`,
+            url: `${base}%22${article}%22`,
             newWin: l.newWin,
             title: tprintf("googleSearchHint", [safeDecodeURI(l.article)]),
             text: l.text,
@@ -6262,7 +6262,7 @@ $(() => {
             return null;
         }
         const article = l.article.articleFromTalkPage() || l.article;
-        const url = `https://xtools.wmflabs.org/articleinfo/${ encodeURI(pg.wiki.hostname) }/${ article.urlString() }?uselang=${ mw.config.get("wgUserLanguage")}`;
+        const url = `https://xtools.wmflabs.org/articleinfo/${encodeURI(pg.wiki.hostname)}/${article.urlString()}?uselang=${mw.config.get("wgUserLanguage")}`;
         return generalNavLink({
             url: url,
             title: tprintf("editorListHint", [article]),
@@ -6283,9 +6283,9 @@ $(() => {
     }
     function getHistory(wikipage, onComplete) {
         log("getHistory");
-        const url = `${pg.wiki.apiwikibase }?format=json&formatversion=2&action=query&prop=revisions&titles=${ new Title(wikipage).urlString() }&rvlimit=${ getValueOf("popupHistoryLimit")}`;
-        log(`getHistory: url=${ url}`);
-        return startDownload(url, `${pg.idNumber }history`, onComplete);
+        const url = `${pg.wiki.apiwikibase}?format=json&formatversion=2&action=query&prop=revisions&titles=${new Title(wikipage).urlString()}&rvlimit=${getValueOf("popupHistoryLimit")}`;
+        log(`getHistory: url=${url}`);
+        return startDownload(url, `${pg.idNumber}history`, onComplete);
     }
     function processHistory(download) {
         const jsobj = getJsObj(download.data);
@@ -6298,7 +6298,7 @@ $(() => {
                     editor: revisions[i].user,
                 });
             }
-            log(`processed ${ edits.length } edits`);
+            log(`processed ${edits.length} edits`);
             return finishProcessHistory(edits, mw.config.get("wgUserName"));
         } catch (someError) {
             log("Something went wrong with JSON business");
@@ -6717,7 +6717,7 @@ $(() => {
         };
         return function (d, b) {
             if (typeof b !== "function" && b !== null) {
-                throw new TypeError(`Class extends value ${ String(b) } is not a constructor or null`);
+                throw new TypeError(`Class extends value ${String(b)} is not a constructor or null`);
             }
             extendStatics(d, b);
             function __() {
@@ -6736,8 +6736,7 @@ $(() => {
                 if (!Array.isArray(s)) {
                     s = [];
                 }
-            }
-            catch (_) {
+            } catch (_) {
                 s = [];
             }
             _this._push.apply(_this, s);
@@ -6761,7 +6760,7 @@ $(() => {
             }
             this._push(str);
             if (mw.util.getParamValue("debug") === "1") {
-                console.groupCollapsed("Gadget Popups", "can't find the translation of", str, hasDefault ? `, use the default text [${ pg.string[str] }].` : ", and no default text found.");
+                console.groupCollapsed("Gadget Popups", "can't find the translation of", str, hasDefault ? `, use the default text [${pg.string[str]}].` : ", and no default text found.");
                 console.info(new Error().stack);
                 console.groupEnd();
             }
