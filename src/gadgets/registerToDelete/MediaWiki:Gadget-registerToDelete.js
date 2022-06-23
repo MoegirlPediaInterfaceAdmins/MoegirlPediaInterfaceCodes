@@ -1,8 +1,5 @@
 // <pre>
 // From [[Special:固定链接/5030142]]
-// eslint-disable-next-line no-redeclare
-/* global $, OO, mw, wgULS */
-// await mw.loader.using(["oojs-ui", "ext.gadget.LocalObjectStorage"]);
 "use strict";
 $(() => (async () => {
     try {

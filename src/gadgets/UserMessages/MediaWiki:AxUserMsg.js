@@ -8,23 +8,22 @@
         return;
     }
     class ClsUPC {
+        pendingCalls = 0;
+        pendingSetTimeouts = 0;
+        oldValue = "";
+        userNameExists = 2;
         constructor($userInputField, $outputField, stCallBack, callingObject, CBValidChange) {
             this.$userInputField = $userInputField;
             this.$outputField = $outputField;
             this.callingObject = callingObject;
             this.stCallBack = stCallBack;
             this.CBValidChange = CBValidChange;
-            this.pendingCalls = 0;
-            this.pendingSetTimeouts = 0;
-            this.oldValue = "";
-            this.userNameExists = 2;
-            const o = this;
             $userInputField.on("keyup", ( /* e*/) => {
-                const tmpUNE = o.userNameExists;
-                if (o.isValidIP($userInputField.val())) {
-                    o.setToIP(tmpUNE);
+                const tmpUNE = this.userNameExists;
+                if (this.isValidIP($userInputField.val())) {
+                    this.setToIP(tmpUNE);
                 } else {
-                    o.execApiCall(false, $userInputField.val());
+                    this.execApiCall(false, $userInputField.val());
                 }
             });
             $userInputField.on("input", () => {

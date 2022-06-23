@@ -24,7 +24,8 @@
         "oouiDialog": "readonly",
         "echarts": "readonly",
         "AsyncLock": "readonly",
-        "MOE_SKIN_GLOBAL_DATA_REF": "readonly"
+        "MOE_SKIN_GLOBAL_DATA_REF": "readonly",
+        "Cron": "readonly"
     },
     "rules": {
         "no-var": "error",

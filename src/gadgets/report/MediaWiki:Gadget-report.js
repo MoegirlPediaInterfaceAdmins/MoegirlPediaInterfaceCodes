@@ -5,7 +5,6 @@
  * @author [[User:萌娘百科·娜娜奇]] moeskin support
  */
 "use strict";
-// mw.loader.using(["ext.gadget.libBottomRightCorner", "oojs-ui", "oojs-ui-widgets", "oojs-ui.styles.indicators", "oojs-ui.styles.icons-alerts", "mediawiki.util", "ext.gadget.site-lib"]);
 $(() => {
     const wgNamespaceNumber = mw.config.get("wgNamespaceNumber");
     const wgPageName = mw.config.get("wgPageName");
@@ -113,16 +112,15 @@ $(() => {
                 suggestConfirmation: true,
             },
         };
+        wgNamespaceNumber = wgNamespaceNumber;
+        wgPageName = wgPageName;
+        wgIsArticle = wgIsArticle;
+        wgArticleId = wgArticleId;
+        wgCurRevisionId = wgCurRevisionId;
+        wgRevisionId = wgRevisionId;
         constructor(config) {
             // Parent constructor
             super(config);
-
-            this.wgNamespaceNumber = wgNamespaceNumber;
-            this.wgPageName = wgPageName;
-            this.wgIsArticle = wgIsArticle;
-            this.wgArticleId = wgArticleId;
-            this.wgCurRevisionId = wgCurRevisionId;
-            this.wgRevisionId = wgRevisionId;
 
             // Initialize
             this.$element.addClass("MGPReport-root").css("z-index", "100");

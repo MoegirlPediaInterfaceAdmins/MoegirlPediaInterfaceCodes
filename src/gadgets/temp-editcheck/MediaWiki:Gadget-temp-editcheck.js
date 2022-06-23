@@ -19,10 +19,8 @@
     let IPESubmitting = 0;
     let lastIPE;
     class Notify {
-        constructor() {
-            this._random = Math.random().toString(36).substring(2);
-            this._count = 0;
-        }
+        _random = Math.random().toString(36).substring(2);
+        _count = 0;
         _process(text, isJQueryHTML = false) {
             const result = text.replace(/\$count\b/g, this._count);
             return isJQueryHTML ? $(result) : result;

@@ -1,12 +1,9 @@
 "use strict";
 // <pre>
 $(() => {
-    let li =
-        mw.config.get("skin") === "vector"
-            ? $("<li/>").appendTo("#p-personal > ul")
-            : $("<div/>").prependTo("#moe-page-header-container #moe-page-header-top .right-block"),
-        textNode = $("<span/>"),
-        containerNode;
+    const li = mw.config.get("skin") === "vector" ? $("<li/>").appendTo("#p-personal > ul") : $("<div/>").prependTo("#moe-page-header-container #moe-page-header-top .right-block"),
+        textNode = $("<span/>");
+    let containerNode;
     if (mw.config.get("wgNamespaceNumber") === -1) {
         containerNode = $("<span/>");
         containerNode.css({
@@ -16,8 +13,8 @@ $(() => {
         containerNode.append(wgULS("特殊页面（", "特殊頁面（")).append(textNode).append("）");
     } else {
         containerNode = $("<a/>");
-        let statusNode = $("<span/>").text(wgULS("清除页面缓存", "清除頁面快取")),
-            runningStatus = false;
+        const statusNode = $("<span/>").text(wgULS("清除页面缓存", "清除頁面快取"));
+        let runningStatus = false;
         containerNode.attr("href", "javascript:void(0);");
         containerNode.append(statusNode).append("（").append(textNode).append("）");
         containerNode.on("click", () => {

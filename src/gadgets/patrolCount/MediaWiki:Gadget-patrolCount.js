@@ -41,14 +41,15 @@ $(() => {
         // "gadget_definition",
         // "gadget_definition_talk": false
     ];
-    const apiPrefix = `${mw.config.get("wgServer") + mw.config.get("wgScriptPath") }/api.php`;
+    const apiPrefix = `${mw.config.get("wgServer") + mw.config.get("wgScriptPath")}/api.php`;
     const newPageMax = 50;
     const writeCountNum = function (pages, plus) {
         let strCount = "";
+        let page;
         if (pages.length !== 0) {
             const vNum = Math.round(Math.random() * (pages.length - 1));
-            var page = pages[vNum];
-            const link = `${encodeURIComponent(page.title) }&redirect=no&rcid=${ page.rcid}`;
+            page = pages[vNum];
+            const link = `${encodeURIComponent(page.title)}&redirect=no&rcid=${page.rcid}`;
             strCount = pages.length.toString();
             if (plus) {
                 strCount += "+";
@@ -57,10 +58,10 @@ $(() => {
             if (!page.confidence) {
                 title += '" class="patrollListNotConfident';
             }
-            strCount = `(<a id="unpatrollArticle" href="${ mw.config.get("wgServer") }${mw.config.get("wgScriptPath") }/index.php?title=${ link }" title="${ title }">${ strCount }</a>)`;
-            ptPatrollLink.attr("href", `${mw.config.get("wgServer") + mw.config.get("wgScriptPath") }/index.php?title=Special:最新页面&hidepatrolled=1`);
+            strCount = `(<a id="unpatrollArticle" href="${mw.config.get("wgServer")}${mw.config.get("wgScriptPath")}/index.php?title=${link}" title="${title}">${strCount}</a>)`;
+            ptPatrollLink.attr("href", `${mw.config.get("wgServer") + mw.config.get("wgScriptPath")}/index.php?title=Special:最新页面&hidepatrolled=1`);
         } else {
-            ptPatrollLink.attr("href", `${mw.config.get("wgServer") + mw.config.get("wgScriptPath") }/index.php?title=Special:最新页面&hidepatrolled=0`);
+            ptPatrollLink.attr("href", `${mw.config.get("wgServer") + mw.config.get("wgScriptPath")}/index.php?title=Special:最新页面&hidepatrolled=0`);
         }
         $("span#not-patrolled-count").html(strCount);
         generateList(pages);
@@ -73,12 +74,12 @@ $(() => {
         const addItem = function (istart, iend) {
             for (let idx = istart; idx < iend; ++idx) {
                 const page = pages[idx];
-                const link = `${encodeURIComponent(page.title) }&redirect=no&rcid=${ page.rcid}`;
+                const link = `${encodeURIComponent(page.title)}&redirect=no&rcid=${page.rcid}`;
                 let shortTitle = page.title;
                 if (shortTitle.length > 8) {
-                    shortTitle = `${shortTitle.slice(0, 7) }...`;
+                    shortTitle = `${shortTitle.slice(0, 7)}...`;
                 }
-                const item = $("<li></li>").html(`<a href="${ mw.config.get("wgServer") }${mw.config.get("wgScriptPath") }/index.php?title=${ link }" title="${ page.title }">${ shortTitle }</a>`).appendTo($list);
+                const item = $("<li></li>").html(`<a href="${mw.config.get("wgServer")}${mw.config.get("wgScriptPath")}/index.php?title=${link}" title="${page.title}">${shortTitle}</a>`).appendTo($list);
                 if (!page.confidence) {
                     item.addClass("patrollListNotConfident");
                 }
@@ -157,15 +158,15 @@ $(() => {
                 // 气泡样式
                 const cvToolTipCssBtm = "position: absolute; border-color: transparent transparent #A7D7F9 transparent; border-style: dashed dashed solid dashed; border-width: 7px 7px 7px 7px; width: 0; overflow: hidden; right:40px; top:-17px;";
                 const cvToolTipCssTop = "position: absolute; border-color: transparent transparent #A7D7F9 transparent; border-style: dashed dashed solid dashed; border-width: 7px 7px 7px 7px; width: 0; overflow: hidden; right:40px; top:-17px;";
-                let cvToolTipCss = `z-index:713; display:none; position: absolute; border: 3px solid #A7D7F9; background-color: #F3F3F3; line-height:14px; border-radius: 10px; right:${ param.left }px; top:${ param.top }px;`;
+                let cvToolTipCss = `z-index:713; display:none; position: absolute; border: 3px solid #A7D7F9; background-color: #F3F3F3; line-height:14px; border-radius: 10px; right:${param.left}px; top:${param.top}px;`;
                 if (param.width !== 0) {
-                    cvToolTipCss += `width: ${ param.width }px;`;
+                    cvToolTipCss += `width: ${param.width}px;`;
                 }
                 // 气泡显示
-                if (!document.getElementById(`${controlID }Body`)) {
+                if (!document.getElementById(`${controlID}Body`)) {
                     const cvTipsElement = $("<div>");
                     cvTipsElement.attr({
-                        id: `${controlID }Body`,
+                        id: `${controlID}Body`,
                         "class": "cvToolTip",
                         style: cvToolTipCss,
                     });
@@ -176,12 +177,12 @@ $(() => {
                     cvTipsElementTop.attr("style", cvToolTipCssTop);
                     cvTipsElement.append(cvTipsElementTop);
                     const cvTipsElementContent = $("<span>");
-                    cvTipsElementContent.attr("id", `${controlID }Content`);
+                    cvTipsElementContent.attr("id", `${controlID}Content`);
                     cvTipsElementContent.css("float", "left");
                     cvTipsElement.append(cvTipsElementContent);
                     if (param.close) {
                         const cvTipsElementClose = $("<a>");
-                        cvTipsElementClose.attr("id", `${controlID }Close`);
+                        cvTipsElementClose.attr("id", `${controlID}Close`);
                         cvTipsElementClose.css("display", "none");
                         cvTipsElementClose.html('<span style="float:right; font-family:verdana; position: absolute; top:1px; right:5px; font-size:12px; cursor:pointer;">x</span>');
                         cvTipsElement.append(cvTipsElementClose);
@@ -189,11 +190,11 @@ $(() => {
                     $(param.panel).append(cvTipsElement);
                 }
                 // 气泡容器、装载内容的容器
-                const cttBody = $(document.getElementById(`${controlID }Body`));
-                const cttContent = $(document.getElementById(`${controlID }Content`));
-                const cttClose = $(document.getElementById(`${controlID }Close`));
+                const cttBody = $(document.getElementById(`${controlID}Body`));
+                const cttContent = $(document.getElementById(`${controlID}Content`));
+                const cttClose = $(document.getElementById(`${controlID}Close`));
                 cttBody.show();
-                var ctt = {
+                const ctt = {
                     body: cttBody,
                     content: function () {
                         self.show();
@@ -218,7 +219,7 @@ $(() => {
                     timer: null,
                     show: function () {
                         if (cttContent.html() === "") {
-                            cttContent.append(ctt.content()).css("height", `${cttContent[0].scrollHeight }px`).hide().slideDown(param.speed, () => {
+                            cttContent.append(ctt.content()).css("height", `${cttContent[0].scrollHeight}px`).hide().slideDown(param.speed, () => {
                                 cttContent.css("height", "");
                                 cttBody.on({
                                     mouseover: function () {
@@ -246,7 +247,7 @@ $(() => {
         })(jQuery);
     };
     let ttListShow = false;
-    var generateList = function (pages) {
+    const generateList = function (pages) {
         if (ttListShow) {
             prepareList(pages, 10);
         } else {
@@ -321,7 +322,7 @@ $(() => {
         // 查询删除状态
         if (missingQuery.length !== 0) {
             const pagesStr = missingQuery.join("|");
-            const checkMissingURI = `${apiPrefix }?action=query&format=xml&prop=info`;
+            const checkMissingURI = `${apiPrefix}?action=query&format=xml&prop=info`;
             $.post(checkMissingURI, {
                 titles: pagesStr,
             }, (result) => {
@@ -354,7 +355,7 @@ $(() => {
         let checked = false;
         const addlink = function (page) {
             let $patrollinks = $("<a></a>", {
-                href: `index.php?title=${ encodeURIComponent(page.title) }&rcid=${ encodeURIComponent(page.rcid)}`,
+                href: `index.php?title=${encodeURIComponent(page.title)}&rcid=${encodeURIComponent(page.rcid)}`,
                 text: "标记此页面为已巡查",
             });
             const $divPatrolllink = $("<div></div>", {
@@ -367,7 +368,7 @@ $(() => {
                     rcid: page.rcid,
                     token: page.rctoken,
                 };
-                const uri = `${apiPrefix }?format=xml&action=patrol`;
+                const uri = `${apiPrefix}?format=xml&action=patrol`;
                 $patrollinks.text("Marking as patrolled...");
                 $patrollinks = $patrollinks.parent();
                 $.post(uri, data, (data, status) => {
@@ -415,7 +416,7 @@ $(() => {
         // console.log(`[petrolCount] Updating unpatrolled... (${d.toLocaleString()})`);
         lastRequest = d;
         const requestid = d.getTime();
-        const newPages = `${apiPrefix }?action=query&format=xml&list=recentchanges&rctype=new&rcnamespace=${ namespaceWatchList.join("|") }&rcshow=!redirect|!patrolled&rctoken=patrol&rcprop=title|ids|user|tags`;
+        const newPages = `${apiPrefix}?action=query&format=xml&list=recentchanges&rctype=new&rcnamespace=${namespaceWatchList.join("|")}&rcshow=!redirect|!patrolled&rctoken=patrol&rcprop=title|ids|user|tags`;
         $.get(newPages, {
             rclimit: newPageMax,
             requestid: requestid,
@@ -444,7 +445,7 @@ $(() => {
     // setInterval(updateUnpatrolled, 60000);
     updateUnpatrolled();
     // 在"监视列表"右边加入"最新页面"以便巡查
-    var ptPatrollLink = $("<a></a>", {
+    const ptPatrollLink = $("<a></a>", {
         href: "Special:最新页面?hidepatrolled=1",
         title: wgULS("最新页面", "最新頁面"),
         text: wgULS("最新页面", "最新頁面"),

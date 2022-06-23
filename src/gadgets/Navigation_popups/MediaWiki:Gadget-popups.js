@@ -1808,15 +1808,15 @@ $(() => {
     }
     function popupFilterCountLinks(data) {
         const num = countLinks(data);
-        return `${String(num)}&nbsp;${num !== 1 ? popupString("wikiLinks") : popupString("wikiLink")}`;
+        return `${num}&nbsp;${num !== 1 ? popupString("wikiLinks") : popupString("wikiLink")}`;
     }
     function popupFilterCountImages(data) {
         const num = countImages(data);
-        return `${String(num)}&nbsp;${num !== 1 ? popupString("images") : popupString("image")}`;
+        return `${num}&nbsp;${num !== 1 ? popupString("images") : popupString("image")}`;
     }
     function popupFilterCountCategories(data) {
         const num = countCategories(data);
-        return `${String(num)}&nbsp;${num !== 1 ? popupString("categories") : popupString("category")}`;
+        return `${num}&nbsp;${num !== 1 ? popupString("categories") : popupString("category")}`;
     }
     function popupFilterLastModified(data, download) {
         const lastmod = download.lastModified;
@@ -2448,7 +2448,7 @@ $(() => {
         };
         return pg.cache.pages.push(page);
     }
-    if (String("abc".split(/(b)/)) !== "a,b,c") {
+    if (`${"abc".split(/(b)/)}` !== "a,b,c") {
         String.prototype.parenSplit = function (_re) {
             const re = nonGlobalRegex(_re);
             let s = this;
@@ -6579,7 +6579,7 @@ $(() => {
             this._push(s);
         }
         _push(args) {
-            const ret = Array.prototype.push.bind(this).push(args.filter((n) => {
+            const ret = super.push(args.filter((n) => {
                 return !n.includes("&autoimpl=np20140416&actoken=") && !n.endsWith("Hint") && !willBeReplaces.includes(n);
             }));
             localStorage.setItem("popupNoTranslation", JSON.stringify(this));
