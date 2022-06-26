@@ -4615,7 +4615,7 @@ $(() => {
         const port = location.port ? `:${location.port}` : "";
         pg.wiki.sitebase = pg.wiki.hostname + port;
     }
-    function setUserInfo() {
+    async function setUserInfo() {
         const params = {
             action: "query",
             list: "users",
@@ -4624,10 +4624,9 @@ $(() => {
         };
         pg.user.canReview = false;
         if (getValueOf("popupReview")) {
-            getMwApi().get(params).done((data) => {
-                const rights = data.query.users[0].rights;
-                pg.user.canReview = rights.indexOf("review") !== -1;
-            });
+            const data = await getMwApi().get(params);
+            const rights = data.query.users[0].rights;
+            pg.user.canReview = rights.indexOf("review") !== -1;
         }
     }
     function fetchSpecialPageNames() {
@@ -5323,72 +5322,71 @@ $(() => {
         }
         return ret.replace(RegExp('^(.*?)(title=")(.*?)(".*)$', "i"), `$1$2$3 [${key}]$4`);
     }
-    function loadDiff(article, oldid, diff, navpop) {
+    async function loadDiff(article, oldid, diff, navpop) {
         navpop.diffData = {
             oldRev: {},
             newRev: {},
         };
-        mw.loader.using("mediawiki.api").then(() => {
-            const api = getMwApi();
-            const params = {
-                action: "compare",
-                prop: "ids|title",
-            };
-            if (article.title) {
-                params.fromtitle = article.title;
-            }
-            switch (diff) {
-                case "cur":
-                    switch (oldid) {
-                        case null:
-                        case "":
-                        case "prev":
-                            params.torelative = "prev";
-                            break;
-                        default:
-                            params.fromrev = oldid;
-                            params.torelative = "cur";
-                            break;
-                    }
-                    break;
-                case "prev":
-                    if (oldid) {
+        await mw.loader.using("mediawiki.api");
+        const api = getMwApi();
+        const params = {
+            action: "compare",
+            prop: "ids|title",
+        };
+        if (article.title) {
+            params.fromtitle = article.title;
+        }
+        switch (diff) {
+            case "cur":
+                switch (oldid) {
+                    case null:
+                    case "":
+                    case "prev":
+                        params.torelative = "prev";
+                        break;
+                    default:
                         params.fromrev = oldid;
-                    } else {
-                        params.fromtitle;
-                    }
-                    params.torelative = "prev";
-                    break;
-                case "next":
-                    params.fromrev = oldid || 0;
-                    params.torelative = "next";
-                    break;
-                default:
-                    params.fromrev = oldid || 0;
-                    params.torev = diff || 0;
-                    break;
-            }
-            api.get(params).then((data) => {
-                navpop.diffData.oldRev.revid = data.compare.fromrevid;
-                navpop.diffData.newRev.revid = data.compare.torevid;
-                addReviewLink(navpop, "popupMiscTools");
-                const go = function () {
-                    pendingNavpopTask(navpop);
-                    let url = `${pg.wiki.apiwikibase}?format=json&formatversion=2&action=query&`;
-                    url += `revids=${navpop.diffData.oldRev.revid}|${navpop.diffData.newRev.revid}`;
-                    url += "&prop=revisions&rvprop=ids|timestamp|content";
-                    getPageWithCaching(url, doneDiff, navpop);
-                    return true;
-                };
-                if (navpop.visible || !getValueOf("popupLazyDownloads")) {
-                    go();
-                } else {
-                    navpop.addHook(go, "unhide", "before", "DOWNLOAD_DIFFS");
+                        params.torelative = "cur";
+                        break;
                 }
-            });
+                break;
+            case "prev":
+                if (oldid) {
+                    params.fromrev = oldid;
+                } else {
+                    params.fromtitle;
+                }
+                params.torelative = "prev";
+                break;
+            case "next":
+                params.fromrev = oldid || 0;
+                params.torelative = "next";
+                break;
+            default:
+                params.fromrev = oldid || 0;
+                params.torev = diff || 0;
+                break;
+        }
+        api.get(params).then((data) => {
+            navpop.diffData.oldRev.revid = data.compare.fromrevid;
+            navpop.diffData.newRev.revid = data.compare.torevid;
+            addReviewLink(navpop, "popupMiscTools");
+            const go = function () {
+                pendingNavpopTask(navpop);
+                let url = `${pg.wiki.apiwikibase}?format=json&formatversion=2&action=query&`;
+                url += `revids=${navpop.diffData.oldRev.revid}|${navpop.diffData.newRev.revid}`;
+                url += "&prop=revisions&rvprop=ids|timestamp|content";
+                getPageWithCaching(url, doneDiff, navpop);
+                return true;
+            };
+            if (navpop.visible || !getValueOf("popupLazyDownloads")) {
+                go();
+            } else {
+                navpop.addHook(go, "unhide", "before", "DOWNLOAD_DIFFS");
+            }
         });
     }
-    function addReviewLink(navpop, target) {
+    async function addReviewLink(navpop, target) {
         if (!pg.user.canReview) {
             return;
         }
@@ -5401,27 +5399,28 @@ $(() => {
             revids: navpop.diffData.oldRev.revid,
             formatversion: 2,
         };
-        getMwApi().get(params).then((data) => {
-            const stable_revid = data.query.pages[0].flagged && data.query.pages[0].flagged.stable_revid || 0;
-            if (stable_revid === navpop.diffData.oldRev.revid) {
-                const a = document.createElement("a");
-                a.innerHTML = popupString("mark patrolled");
-                a.title = popupString("markpatrolledHint");
-                a.onclick = function () {
-                    const params = {
-                        action: "review",
-                        revid: navpop.diffData.newRev.revid,
-                        comment: tprintf("defaultpopupReviewedSummary", [navpop.diffData.oldRev.revid, navpop.diffData.newRev.revid]),
-                    };
-                    getMwApi().postWithToken("csrf", params).done(() => {
-                        a.style.display = "none";
-                    }).fail(() => {
-                        alert(popupString("Could not marked this edit as patrolled"));
-                    });
+        const data = await getMwApi().get(params);
+
+        const stable_revid = data.query.pages[0].flagged && data.query.pages[0].flagged.stable_revid || 0;
+        if (stable_revid === navpop.diffData.oldRev.revid) {
+            const a = document.createElement("a");
+            a.innerHTML = popupString("mark patrolled");
+            a.title = popupString("markpatrolledHint");
+            a.onclick = async function () {
+                const params = {
+                    action: "review",
+                    revid: navpop.diffData.newRev.revid,
+                    comment: tprintf("defaultpopupReviewedSummary", [navpop.diffData.oldRev.revid, navpop.diffData.newRev.revid]),
                 };
-                setPopupHTML(a, target, navpop.idNumber, null, true);
-            }
-        });
+                try {
+                    await getMwApi().postWithToken("csrf", params);
+                    a.style.display = "none";
+                } catch {
+                    alert(popupString("Could not marked this edit as patrolled"));
+                }
+            };
+            setPopupHTML(a, target, navpop.idNumber, null, true);
+        }
     }
     function doneDiff(download) {
         if (!download.owner || !download.owner.diffData) {
@@ -5790,7 +5789,7 @@ $(() => {
         l.onclick = simplePrintf("pg.fn.modifyWatchlist('%s','%s');return false;", [l.article.toString(true).split("\\").join("\\\\").split("'").join("\\'"), this.id]);
         return wikiLink(l);
     }
-    pg.fn.modifyWatchlist = function modifyWatchlist(title, action) {
+    pg.fn.modifyWatchlist = async function modifyWatchlist(title, action) {
         const reqData = {
             action: "watch",
             formatversion: 2,
@@ -5807,11 +5806,12 @@ $(() => {
         } else {
             messageName = action === "watch" ? "addedwatchtext" : "removedwatchtext";
         }
-        $.when(getMwApi().postWithToken("watch", reqData), mw.loader.using(["mediawiki.api", "mediawiki.jqueryMsg"]).then(() => {
-            return getMwApi().loadMessagesIfMissing([messageName]);
-        })).done(() => {
-            mw.notify(mw.message(messageName, title).parseDom());
-        });
+        await Promise.all([
+            getMwApi().postWithToken("watch", reqData),
+            mw.loader.using(["mediawiki.jqueryMsg"]),
+            getMwApi().loadMessagesIfMissing([messageName]),
+        ]);
+        mw.notify(mw.message(messageName, title).parseDom());
     };
     function magicHistoryLink(l) {
         let jsUrl = "",

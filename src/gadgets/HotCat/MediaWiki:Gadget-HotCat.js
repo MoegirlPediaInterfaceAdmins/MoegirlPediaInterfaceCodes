@@ -15,7 +15,7 @@ List of main authors: https://commons.wikimedia.org/wiki/Help:Gadget-HotCat/Vers
 License: Quadruple licensed GFDL, GPL, LGPL and Creative Commons Attribution 3.0 (CC-BY-3.0)
 */
 window.hotcat_translations_from_commons = false; // 禁止从维基共享获取翻译
-(function () {
+(async () => {
     const conf = new Proxy({}, {
         get: function (_, name) {
             if (name === "wgServer") {
@@ -1881,7 +1881,7 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
         }
     }
     let saveInProgress = false;
-    function initiateEdit(doEdit, failure) {
+    async function initiateEdit(doEdit, failure) {
         if (saveInProgress) {
             return;
         }
@@ -1898,12 +1898,13 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
             }
             failure(...args);
         }
-        $.getJSON(`${conf.wgServer + conf.wgScriptPath}/api.php?format=json&action=query&rawcontinue=&titles=${encodeURIComponent(conf.wgPageName)}&prop=info%7Crevisions%7Clanglinks&inprop=watched&rvprop=content%7Ctimestamp%7Cids%7Cuser&lllimit=500&rvlimit=2&rvdir=newer&rvstartid=${conf.wgCurRevisionId}&meta=siteinfo%7Cuserinfo%7Ctokens&type=csrf&uiprop=options`, (json) => {
+        try {
+            const json = await $.getJSON(`${conf.wgServer + conf.wgScriptPath}/api.php?format=json&action=query&rawcontinue=&titles=${encodeURIComponent(conf.wgPageName)}&prop=info%7Crevisions%7Clanglinks&inprop=watched&rvprop=content%7Ctimestamp%7Cids%7Cuser&lllimit=500&rvlimit=2&rvdir=newer&rvstartid=${conf.wgCurRevisionId}&meta=siteinfo%7Cuserinfo%7Ctokens&type=csrf&uiprop=options`);
             setPage(json);
             doEdit(fail);
-        }).fail((req) => {
+        } catch (req) {
             fail(`${req.status} ${req.statusText}`);
-        });
+        }
     }
     function multiChangeMsg(count) {
         let msg = HC.messages.multi_change;
@@ -2140,7 +2141,7 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
             resolveOne(params.query.pages[p], toResolve);
         }
     }
-    function resolveMulti(toResolve, callback) {
+    async function resolveMulti(toResolve, callback) {
         let i;
         for (i = 0; i < toResolve.length; i++) {
             toResolve[i].dab = null;
@@ -2160,15 +2161,17 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
                 args += "%7C";
             }
         }
-        $.getJSON(`${conf.wgServer + conf.wgScriptPath}/api.php?${args}`, (json) => {
+        try {
+            const json = await $.getJSON(`${conf.wgServer + conf.wgScriptPath}/api.php?${args}`);
             resolveRedirects(toResolve, json);
             callback(toResolve);
-        }).fail((req) => {
+        } catch (req) {
             if (!req) {
+                // eslint-disable-next-line require-atomic-updates
                 noSuggestions = true;
             }
             callback(toResolve);
-        });
+        }
     }
     function makeActive(which) {
         if (which.is_active) {
@@ -3048,6 +3051,10 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
             run();
         });
     }
-    $.when(mw.loader.using("user"), $.ready).always(run);
+    await Promise.all([
+        mw.loader.using(["user"]),
+        $.ready,
+    ]);
+    run();
 })();
 //</nowiki>
