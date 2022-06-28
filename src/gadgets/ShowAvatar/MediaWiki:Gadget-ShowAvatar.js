@@ -1,13 +1,13 @@
 "use strict";
 // <pre>
 $(() => {
-    const commonsUrl = new mw.Uri(`${mw.config.get("wgServer").replace("zh.moegirl", "commons.moegirl") + mw.config.get("wgScriptPath") }/`);
+    const commonsUrl = new mw.Uri(`${mw.config.get("wgServer").replace("zh.moegirl", "commons.moegirl")}${mw.config.get("wgScriptPath")}/`);
     commonsUrl.query.user = mw.config.get("wgPageName").replace(/^user:/i, "");
     commonsUrl.path = "/extensions/Avatar/avatar.php";
     const imgUrl = new mw.Uri(commonsUrl);
     imgUrl.query.user = mw.config.get("wgUserName");
     const img = $("<img>").attr("src", imgUrl);
-    const link = $("<a>").attr("href", `${mw.config.get("wgServer").replace("zh.moegirl", "commons.moegirl") }/Special:UploadAvatar`).append(img);
+    const link = $("<a>").attr("href", `${mw.config.get("wgServer").replace("zh.moegirl", "commons.moegirl")}/Special:UploadAvatar`).append(img);
     $("#pt-userpage").before($('<li id="pt-avatar"></li>').append(link));
     if (mw.config.get("wgNamespaceNumber") === 2 && !mw.config.get("wgPageName").includes("/")) {
         const hrefUrl = new mw.Uri(commonsUrl);

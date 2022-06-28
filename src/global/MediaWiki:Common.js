@@ -142,8 +142,7 @@
         }, 137);
     }
     // 跨站重定向页顶链接
-    function crossDomain_link() {
-        var url = new mw.Uri(new mw.Uri().query.rdfrom);
+    function crossDomain_link(url) {
         var link = url.query.title;
         var domain = url.host;
         var crossDomain = $("<div/>");
@@ -153,8 +152,7 @@
         crossDomain.append(anchor);
         $("#contentSub").prepend(crossDomain);
     }
-    function crossDomain_link_moeskin() {
-        var url = new mw.Uri(new mw.Uri().query.rdfrom);
+    function crossDomain_link_moeskin(url) {
         var link = url.query.title;
         var domain = url.host;
         var crossDomain = $("<div/>");
@@ -264,6 +262,7 @@
     function topNoticeScroll() {
         var siteNotice = $("body.skin-vector > #content > #siteNotice, body.skin-moeskin > #app > #moe-full-container > #moe-main-container > main > #moe-global-sidenav #moe-sidenav-sitenotice");
         var noticeType = {
+            pinnedAnnouncement: "置顶公告",
             newAnnouncement: "7日内新公告",
             discussing: "新的讨论中提案、申请",
             voting: "新的投票中提案、申请",
@@ -304,10 +303,10 @@
             $("#mw-notification-area").appendTo("body");
             var notification = $("<dl>");
             newNotices.forEach(function (newNotice) {
-                notification.append('<dt style="font-weight: 400;">' + newNotice.type + "：</dt>");
+                notification.append('<dt class="mw-parser-output" style="font-weight: 400;">' + newNotice.type + "：</dt>");
                 var dd = $("<dd>");
                 var ul = $("<ul>");
-                ul.addClass("mw-parser-output");
+                dd.css("marginLeft", ".9em");
                 newNotice.links.forEach(function (link) {
                     var li = $("<li>");
                     var a = $("<a>");
@@ -356,12 +355,15 @@
             // 跨站重定向页顶链接
             var rdfrom = new mw.Uri().query.rdfrom;
             if (rdfrom) {
-                var query = new mw.Uri(rdfrom).query;
-                if (query.title && query.redirect === "no") {
-                    if (mw.config.get("skin") === "moeskin") {
-                        crossDomain_link_moeskin();
-                    } else {
-                        crossDomain_link();
+                var rdfromUri = new mw.Uri(rdfrom);
+                if (!rdfromUri.host.includes([104, 109, 111, 101].map(function (n) { return String.fromCharCode(n); }).join(""))) {
+                    var query = rdfromUri.query;
+                    if (query.title && query.redirect === "no") {
+                        if (mw.config.get("skin") === "moeskin") {
+                            crossDomain_link_moeskin(rdfromUri);
+                        } else {
+                            crossDomain_link(rdfromUri);
+                        }
                     }
                 }
             }

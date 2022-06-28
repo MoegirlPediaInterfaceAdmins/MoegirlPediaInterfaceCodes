@@ -7,16 +7,16 @@ $(() => (async () => {
         const pagens = mw.config.get("wgNamespaceNumber");
         const pageid = mw.config.get("wgArticleId");
         const isModule = pagens === 828;
-        if ( pageid === 0 || $(".will2Be2Deleted")[0] || !mw.config.get("wgUserGroups").includes("patroller") && !mw.config.get("wgUserGroups").includes("sysop") || !NS.includes(pagens)) {
+        if (pageid === 0 || $(".will2Be2Deleted")[0] || !mw.config.get("wgUserGroups").includes("patroller") && !mw.config.get("wgUserGroups").includes("sysop") || !NS.includes(pagens)) {
             return;
         }
- 
+
         // RL is unreliable
         await mw.loader.using(["oojs-ui", "mediawiki.api", "mediawiki.notification", "mediawiki.notify"]);
- 
+
         const $body = $("body");
         $("#mw-notification-area").appendTo($body);
- 
+
         const pagename = mw.config.get("wgPageName");
         const convTemplate = function (str, name, val) {
             return str.replaceAll(`$${name}`, val);
@@ -45,13 +45,13 @@ $(() => (async () => {
             initialize() {
                 // Parent method
                 super.initialize();
- 
+
                 this.panelLayout = new OO.ui.PanelLayout({
                     scrollable: false,
                     expanded: false,
                     padded: true,
                 });
- 
+
                 this.reasonBox = new OO.ui.TextInputWidget({
                     value: "内容极少或质量极差",
                     validate: "non-empty",
@@ -60,7 +60,7 @@ $(() => (async () => {
                     value: "提醒：请不要创建低质量页面",
                 });
                 this.notifContentBox = new OO.ui.MultilineTextInputWidget({
-                    value: `您好，您最近创建的“${pagename}”页面由于质量不足，已移动至${isModule ? "[[Module:Sandbox]]下您的[[$2|用户名页面子页面]]" : "您的[[$2|用户页子页面]]"}下。请您以后避免在页面尚未达到最低质量标准的情况下直接在主名字空间创建。您可以待质量达到标准后再[[Help:移动页面|移动]]回主名字空间。感谢您的配合，祝您编辑愉快！`,
+                    value: `您好，您最近创建的“${pagename}”页面由于质量不足，已移动至${isModule ? "[[Module:Sandbox]]下您的[[$2|用户名页面子页面]]" : "您的[[$2|用户页子页面]]"}下。请您以后避免在页面尚未达到最低质量标准的情况下直接在主名字空间创建。您可以先于[[Special:MyPage/sandbox|您的沙盒]]创建，待质量达到标准后再[[Help:移动页面|移动]]回主名字空间。感谢您的配合，祝您编辑愉快！`,
                     autosize: true,
                 });
                 this.noNoticeBox = new OO.ui.CheckboxInputWidget();
@@ -71,7 +71,7 @@ $(() => (async () => {
                 this.watchTalkBox = new OO.ui.CheckboxInputWidget({
                     selected: true,
                 });
- 
+
                 const reasonField = new OO.ui.FieldLayout(this.reasonBox, {
                     label: "打回理由",
                     align: "top",
@@ -100,7 +100,7 @@ $(() => (async () => {
                     label: wgULS("监视创建者讨论页", "監視創建者討論頁"),
                     align: "inline",
                 });
- 
+
                 this.panelLayout.$element.append(
                     reasonField.$element,
                     notifTitleField.$element,
@@ -110,9 +110,9 @@ $(() => (async () => {
                     watchAfterField.$element,
                     watchTalkField.$element,
                 );
- 
+
                 this.noNoticeBox.connect(this, { change: "disableNotif" });
- 
+
                 this.$body.append(this.panelLayout.$element);
             }
             disableNotif(selected) {
@@ -168,7 +168,7 @@ $(() => (async () => {
             }
             async doMove() {
                 const api = new mw.Api();
- 
+
                 const reason = `${isModule ? "移动至创建者模块沙盒" : "移动至创建者用户页"}：${this.reasonBox.getValue()}`;
                 const notifTitle = this.notifTitleBox.getValue();
                 const notifContent = this.notifContentBox.getValue();
@@ -176,7 +176,7 @@ $(() => (async () => {
                 const moveTalk = this.moveTalkBox.isSelected();
                 const watchAfter = this.watchAfterBox.isSelected() ? "watch" : "nochange";
                 const watchTalk = this.watchTalkBox.isSelected() ? "watch" : "nochange";
- 
+
                 // 查询贡献者数量
                 if (!this.warnings.multipleContribs) {
                     const contribs = (await api.get({
@@ -193,7 +193,7 @@ $(() => (async () => {
                         };
                     }
                 }
- 
+
                 // 查询创建者用户名
                 const user = (await api.get({
                     action: "query",
@@ -204,7 +204,7 @@ $(() => (async () => {
                     rvdir: "newer",
                 })).query.pages[pageid].revisions[0].user;
                 const page = isModule ? `Module:Sandbox/${user}/${mw.config.get("wgTitle")}` : `User:${user}/${pagename}`;
- 
+
                 // 移动页面
                 const moveRes = await api.postWithToken("csrf", {
                     action: "move",
@@ -220,7 +220,7 @@ $(() => (async () => {
                 if (moveRes.error) {
                     throw moveRes.error.code;
                 }
- 
+
                 if (!noNotice) {
                     // 留言
                     const notifRes = await api.postWithToken("csrf", {
@@ -239,14 +239,14 @@ $(() => (async () => {
                 }
             }
         }
- 
+
         const windowManager = new OO.ui.WindowManager();
         $body.append(windowManager.$element);
         const mtusDialog = new MTUSWindow({
             size: "large",
         });
         windowManager.addWindows([mtusDialog]);
- 
+
         $(mw.util.addPortletLink("p-cactions", "#", "打回", "ca-lr-ffd", isModule ? wgULS("移动至创建者模块沙盒", "移至創建者模組沙盒") : wgULS("移动至创建者用户页并挂删", "移至創建者用戶頁並掛删"), "d")).on("click", (e) => {
             e.preventDefault();
             windowManager.openWindow(mtusDialog);

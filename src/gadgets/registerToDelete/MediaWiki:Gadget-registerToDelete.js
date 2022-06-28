@@ -1,14 +1,20 @@
 // <pre>
 // From [[Special:固定链接/5030142]]
 "use strict";
-$(() => (async () => {
+(async () => {
     try {
         if ($(".noarticletext")[0] || $(".will2Be2Deleted")[0] || !mw.config.get("wgUserGroups").includes("patroller") && !(new URL(location.href).searchParams.get("AnnTools-debug") || "").split("|").includes("registerToDelete")) {
             return;
         }
 
+        await Promise.all([
+            mw.loader.using(["mediawiki.api"]),
+            $.ready,
+        ]);
+
         const $body = $("body");
         $("#mw-notification-area").appendTo($body);
+        let loadReason = false;
 
         class FFDWindow extends OO.ui.ProcessDialog {
             static static = $.extend(Object.create(super.static), {
@@ -32,7 +38,6 @@ $(() => (async () => {
                 super(config);
 
                 this.storage = config.data.storage;
-                this.localCache = config.data.localCache;
             }
             initialize() {
                 // Parent method
@@ -47,7 +52,11 @@ $(() => (async () => {
                     options: [{
                         data: "",
                         label: "其他（请自行说明理由）",
-                    }, ...this.localCache],
+                    }, {
+                        data: "",
+                        disabled: true,
+                        label: "加载中……",
+                    }],
                 });
                 this.detailsText = new OO.ui.TextInputWidget();
                 this.dbCheckbox = new OO.ui.CheckboxInputWidget();
@@ -87,6 +96,12 @@ $(() => (async () => {
 
                 this.$body.append(this.panelLayout.$element);
             }
+            updateReasons(reasons) {
+                this.reasonsDropdown.setOptions([{
+                    data: "",
+                    label: "其他（请自行说明理由）",
+                }, ...reasons]);
+            }
             setStorage(selected) {
                 this.storage.setItem("enterToSubmit", selected);
             }
@@ -112,10 +127,9 @@ $(() => (async () => {
                 return this.panelLayout.$element.outerHeight(true);
             }
             getReadyProcess(data) {
-                return super.getReadyProcess(data)
-                    .next(() => {
-                        this.reasonsDropdown.focus();
-                    }, this);
+                return super.getReadyProcess(data).next(() => {
+                    this.reasonsDropdown.focus();
+                }, this);
             }
             getActionProcess(action) {
                 const dfd = $.Deferred();
@@ -179,57 +193,48 @@ $(() => (async () => {
         }
 
         const storage = new LocalObjectStorage("AnnTools-registerToDelete");
-        const localCache = await new Promise((resolve) => {
-            const cache = storage.getItem("deletereason-cache");
-            if (Array.isArray(cache)) {
-                resolve(cache);
-                return;
-            }
-            if (storage.getItem("deletereason-fetching")) {
-                const c = setInterval(() => {
-                    if (!storage.getItem("deletereason-fetching")) {
-                        clearInterval(c);
-                        resolve(storage.getItem("deletereason-cache"));
-                    }
-                });
-                return;
-            }
-            storage.setItem("deletereason-fetching", true);
-            $.get(`${mw.config.get("wgServer")}${mw.config.get("wgScriptPath")}/MediaWiki:Deletereason-dropdown?action=raw`, (reasons) => {
-                const cache = [];
-                reasons.split(/\n+/).forEach((reason) => {
-                    if (reason.length === 0 || !reason.startsWith("*")) {
-                        return;
-                    }
-                    if (/^\*[^*]/.test(reason)) {
-                        cache.push({
-                            optgroup: reason.slice(1).trim(),
-                        });
-                    } else if (/^\*\*[^*]/.test(reason)) {
-                        cache.push({
-                            data: reason.slice(2).trim(),
-                            label: reason.slice(2).trim(),
-                        });
-                    }
-                });
-                storage.setItem("deletereason-cache", cache);
-                storage.setItem("deletereason-fetching", false);
-                resolve(cache);
-            });
-        });
 
         const windowManager = new OO.ui.WindowManager();
         $body.append(windowManager.$element);
         const ffdDialog = new FFDWindow({
             size: "medium",
-            data: { storage, localCache },
+            data: { storage },
         });
         windowManager.addWindows([ffdDialog]);
 
-        $(mw.util.addPortletLink("p-cactions", "#", wgULS("挂删", "掛删"), "ca-lr-ffd", `${wgULS("挂删本页", "掛删本頁")}[alt-shift-d]`), "d").on("click", (e) => {
+        $(mw.util.addPortletLink("p-cactions", "#", wgULS("挂删", "掛删"), "ca-lr-ffd", `${wgULS("挂删本页", "掛删本頁")}[alt-shift-d]`), "d").on("click", async (e) => {
             e.preventDefault();
             windowManager.openWindow(ffdDialog);
             $body.css("overflow", "auto");
+            if (loadReason === false) {
+                loadReason = true;
+                const { parse: { text: { ["*"]: html } } } = await new mw.Api().post({
+                    action: "parse",
+                    page: "MediaWiki:Deletereason-dropdown",
+                    prop: "text",
+                });
+                const container = $("<div>");
+                container.html(html);
+                const result = [];
+                const getReason = (ele) => {
+                    result.push({
+                        data: ele.innerText.trim(),
+                        label: ele.innerText.trim(),
+                    });
+                };
+                container.children(".mw-parser-output").children("ul").children("li").each((_, ele) => {
+                    const $ele = $(ele);
+                    if ($ele.children("ul").length > 0) {
+                        result.push({
+                            optgroup: $ele.clone().find("*").remove().end().text().trim(),
+                        });
+                        $ele.children("ul").children("li").each((_, e) => getReason(e));
+                    } else {
+                        getReason(ele);
+                    }
+                });
+                ffdDialog.updateReasons(result);
+            }
         });
     } catch (e) {
         /* eslint-disable */
@@ -256,5 +261,5 @@ $(() => (async () => {
         console.error("[FlagForDeletion] Setup error:", e);
         /* eslint-enable */
     }
-})());
+})();
 // </pre>
