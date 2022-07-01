@@ -210,7 +210,7 @@
                 loadReason = true;
                 const { parse: { text: { ["*"]: html } } } = await new mw.Api().post({
                     action: "parse",
-                    page: "MediaWiki:Deletereason-dropdown",
+                    page: mw.config.get("wgNamespaceNumber") === mw.config.get("wgNamespaceIds").file ? "MediaWiki:Filedelete-reason-dropdown" : "MediaWiki:Deletereason-dropdown",
                     prop: "text",
                 });
                 const container = $("<div>");
