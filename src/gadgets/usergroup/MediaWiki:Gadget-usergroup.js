@@ -177,6 +177,10 @@ $(() => (async () => {
     const hook = async () => {
         const unknownUsernames = new Set();
         $("a.mw-userlink:not(.markrights), .userlink > a:not(.markrights)").each((_, ele) => {
+            const self = $(ele);
+            if (self.closest(".navbox").length) {
+                return;
+            }
             ele.classList.add("markrights");
             const uri = new mw.Uri(ele.href);
             let username;
@@ -188,7 +192,6 @@ $(() => (async () => {
             }
             if (username) {
                 ele.dataset.username = username;
-                const self = $(ele);
                 groupsKey.forEach((group) => {
                     if (cache.groups[group].includes(username)) {
                         self.after(`<sup class="markrights-${group}"></sup>`);
