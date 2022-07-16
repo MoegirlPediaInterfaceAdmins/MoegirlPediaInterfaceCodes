@@ -194,9 +194,9 @@ $(() => {
     submitForm.on("submit.warning", async (e) => {
         e.preventDefault();
         e.stopImmediatePropagation();
-        if (!(flag === false || powerfulUserList.includes(wpTarget.val()) && await oouiDialog.confirm(`您要${wgULS("封禁的用户", "封鎖的使用者", null, null, "封鎖的用戶")}【${wpTarget.val()}】${wgULS("持有“封禁”和“自我解封”权限，您的封禁很可能无效且有可能违反封禁方针，您是否要继续？", "持有「封鎖」和「自我解封」權限，您的封鎖很可能無效且有可能違反封鎖方針，您是否要繼續？")}`, {
+        if (flag === false || powerfulUserList.includes(wpTarget.val()) && await oouiDialog.confirm(`您要${wgULS("封禁的用户", "封鎖的使用者", null, null, "封鎖的用戶")}【${wpTarget.val()}】${wgULS("持有“封禁”和“自我解封”权限，您的封禁很可能无效且有可能违反封禁方针，您是否要继续？", "持有「封鎖」和「自我解封」權限，您的封鎖很可能無效且有可能違反封鎖方針，您是否要繼續？")}`, {
             title: wgULS("封禁辅助工具", "封鎖輔助工具"),
-        }))) {
+        })) {
             submitForm.off("submit.warning").submit();
         }
     });
