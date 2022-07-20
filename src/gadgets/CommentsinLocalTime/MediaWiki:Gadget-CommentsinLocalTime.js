@@ -15,7 +15,6 @@
  * 
  * @author [[User:Mxn]]
  */
-/* global Cron */
 "use strict";
 (async () => {
     const monthsHave31Days = [0, 2, 4, 6, 7, 9, 11];
