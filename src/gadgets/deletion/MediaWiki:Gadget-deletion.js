@@ -11,34 +11,8 @@ $(() => (async () => {
         "library.moegirl.org.cn": "即将删除的页面",
     };
     const sleep = (ms) => new Promise((res) => setTimeout(res, ms));
-    class Thread {
-        array;
-        callback;
-        constructor(array, callback) {
-            this.array = array;
-            this.callback = callback;
-        }
-        async generateThread() {
-            await sleep(Math.ceil(100 * Math.random()));
-            while (this.array.length > 0) {
-                const target = this.array.shift();
-                if (!target) {
-                    continue;
-                }
-                try {
-                    await this.callback(target);
-                } catch (e) {
-                    console.error("Thread ignored Error:", e);
-                }
-            }
-        }
-        // temp throttle start
-        // eslint-disable-next-line no-unused-vars
-        generateThreads(length) {
-            return Array.from({ length: 1 }, () => this.generateThread());
-        }
-        // temp throttle end
-    }
+    const deduplicate = (iterable) => [...new Set(iterable).values()];
+    const generatePageLinkSelector = (title) => deduplicate([encodeURI(title), mw.util.wikiUrlencode(title)]).map((selector) => `a[href$="/${selector}"]`).join("\n");
     await mw.loader.using(["mediawiki.util", "mediawiki.api"]);
     // temp throttle start
     const postMethods = ["post", "postWithToken"];
@@ -127,45 +101,45 @@ $(() => (async () => {
             }
             return result;
         })();
-        await Promise.all(new Thread(await (async () => {
+        const pages = await (async () => {
             const result = [];
             const eol = Symbol();
-            let cmcontinue = undefined;
-            while (cmcontinue !== eol) {
+            let gcmcontinue = undefined;
+            while (gcmcontinue !== eol) {
                 const _result = await api.post({
                     action: "query",
                     format: "json",
-                    list: "categorymembers",
-                    cmtitle: mw.config.get("wgPageName"),
-                    cmprop: "ids|title",
-                    cmtype: "page|subcat|file",
-                    cmlimit: "max",
-                    cmcontinue,
+                    rvprop: "user",
+                    prop: "revisions",
+                    generator: "categorymembers",
+                    gcmtitle: "Category:即将删除的页面",
+                    gcmprop: "ids|title",
+                    gcmtype: "page|subcat|file",
+                    gcmlimit: "max",
+                    gcmcontinue,
                 });
                 if (_result.continue) {
-                    cmcontinue = _result.continue.cmcontinue;
+                    gcmcontinue = _result.continue.gcmcontinue;
                 } else {
-                    cmcontinue = eol;
+                    gcmcontinue = eol;
                 }
-                result.push(..._result.query.categorymembers);
+                result.push(...Object.values(_result.query.pages));
             }
-            return result.filter(({ title }) => document.querySelector(`a[href="/${encodeURI(title)}"], a[href="/${mw.util.wikiUrlencode(title)}"]`));
-        })(), async ({ title, pageid }) => {
+            return result.filter(({ title }) => document.querySelector(generatePageLinkSelector(title)));
+        })();
+        for (const { title, pageid, revisions: [{ user }] } of pages) {
             for (let retryTimes = 0; retryTimes < 3; retryTimes++) {
                 try {
-                    const renderedHTML = await $.get(`${mw.config.get("wgServer")}${mw.config.get("wgScriptPath")}/index.php?action=render&title=${mw.util.rawurlencode(title)}&uselang=zh&_=${Math.random().toString().substring(2)}`);
+                    const renderedHTML = (await api.post({
+                        action: "parse",
+                        pageid,
+                        prop: "text",
+                    })).parse.text["*"];
                     const root = $("<div/>").html(renderedHTML);
                     const reason = root.find(".mw-parser-output > .infoBox.will2Be2Deleted #reason");
                     const actor = root.find(".mw-parser-output > .infoBox.will2Be2Deleted #actor a").first();
-                    const link = $(`a[href="/${encodeURI(title)}"], a[href="/${mw.util.wikiUrlencode(title)}"]`);
+                    const link = $(generatePageLinkSelector(title));
                     if (reason.length === 1 && actor.length === 1) {
-                        const data = await api.post({
-                            action: "query",
-                            rvprop: "user|content",
-                            prop: "revisions",
-                            titles: title,
-                        });
-                        const user = data.query.pages[pageid].revisions[0].user;
                         const isTrusted = user === actor.text() && users.includes(user);
                         pages.push({
                             title,
@@ -188,15 +162,11 @@ $(() => (async () => {
                         });
                         link.after(`<a href="/${mw.util.wikiUrlencode(title)}" target="_blank" class="linksBlank bypass external">${link.html()}</a>  禁止删除：该次挂删不可靠，请手动检查（挂删模板未给出理由或挂删人）`).remove();
                     }
-                    return;
                 } catch (e) {
                     console.error("Deletion.js", e);
                 }
             }
-            await oouiDialog.alert("出现错误，请刷新重试或联系维护人员！", {
-                title: "批量删除分类下页面工具",
-            });
-        }).generateThreads(3));
+        }
         container.find("li a").not(".bypass, .disabled, .undelectable, .checked").each((_, _link) => {
             const link = $(_link);
             link.after(`<a href="${link.attr("href")}" target="_blank" class="linksBlank bypass external">${link.html()}</a>  禁止删除：该页面未被挂删`).remove();
@@ -236,7 +206,7 @@ $(() => (async () => {
             });
             try {
                 statu.text("正在删除，已完成删除的页面将会被删除线划去……");
-                await Promise.all(new Thread(container.find("a").not(".bypass, .disabled, .undelectable").toArray(), async (ele) => {
+                for (const ele of container.find("a").not(".bypass, .disabled, .undelectable").toArray()) {
                     const self = $(ele);
                     if (self.text().trim() === "") { return; }
                     self.css("margin-right", "2em");
@@ -256,7 +226,7 @@ $(() => (async () => {
                     } catch (e) {
                         self.after(`<span class="deletionResult">   删除失败：${e instanceof Error ? `${e} ${e.stack.split("\n")[1].trim()}` : JSON.stringify(e)}</span>`);
                     }
-                }).generateThreads(3));
+                }
                 $("#result_text").text("删除已完成！");
             } catch (e) {
                 statu.text(`发生错误：${e instanceof Error ? `${e} ${e.stack.split("\n")[1].trim()}` : JSON.stringify(e)}`);

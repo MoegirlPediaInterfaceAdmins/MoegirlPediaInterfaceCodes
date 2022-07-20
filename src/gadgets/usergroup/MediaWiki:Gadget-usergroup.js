@@ -172,7 +172,7 @@ $(() => (async () => {
     await localObjectStorage.setItem("blockCache", blockCache);
     const hook = async () => {
         const unknownUsernames = new Set();
-        $("a.mw-userlink:not(.markrights)").each((_, ele) => {
+        $("a.mw-userlink:not(.markrights), .userlink > a:not(.markrights)").each((_, ele) => {
             ele.classList.add("markrights");
             const uri = new mw.Uri(ele.href);
             let username;
