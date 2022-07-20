@@ -20,6 +20,7 @@ $(() => (async () => {
         ["bot", "#00acc1"],
         ["flood", "#00acc1"],
         ["ipblock-exempt", "#009688"],
+        ["manually-confirmed", "#009688"],
         ["goodeditor", "#1aa179"],
     ].reverse();
     // 以下为上方用户组需要显示的文字列表，每个用户组需至少指定`zh`一种语言变种用以fallback，
@@ -84,6 +85,9 @@ $(() => (async () => {
         },
         "ipblock-exempt": {
             zh: "免",
+        },
+        "manually-confirmed": {
+            zh: "手",
         },
         staff: {
             zh: "职",
@@ -173,6 +177,10 @@ $(() => (async () => {
     const hook = async () => {
         const unknownUsernames = new Set();
         $("a.mw-userlink:not(.markrights), .userlink > a:not(.markrights)").each((_, ele) => {
+            const self = $(ele);
+            if (self.closest(".navbox").length) {
+                return;
+            }
             ele.classList.add("markrights");
             const uri = new mw.Uri(ele.href);
             let username;
@@ -184,7 +192,6 @@ $(() => (async () => {
             }
             if (username) {
                 ele.dataset.username = username;
-                const self = $(ele);
                 groupsKey.forEach((group) => {
                     if (cache.groups[group].includes(username)) {
                         self.after(`<sup class="markrights-${group}"></sup>`);

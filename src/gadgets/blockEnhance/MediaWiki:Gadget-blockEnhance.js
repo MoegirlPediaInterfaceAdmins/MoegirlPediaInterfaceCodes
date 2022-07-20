@@ -1,6 +1,7 @@
 // <pre>
 "use strict";
 $(() => {
+    // await mw.loader.using(["ext.gadget.libOOUIDialog"]);
     if (mw.config.get("wgCanonicalSpecialPageName") !== "Block") {
         return;
     }
@@ -177,28 +178,35 @@ $(() => {
     updateCIDRresult();
     $("#mw-checkuser-iplist").on("keyup click", updateCIDRresult);
 
+    const autoBlock = OO.ui.infuse($("#mw-input-wpAutoBlock"));
     if ($("input#mw-input-wpConfirm, input[name=wpConfirm]").val() === "") {
-        const autoBlock = $('input[name="wpAutoBlock"]');
-        autoBlock.prop("checked", false);
-        if (mw.config.get("wgUserGroups").includes("patroller")) {
-            autoBlock.prop("disabled", "true").prop("aria-disabled", "true");
-            $("#mw-input-wpAutoBlock").addClass("oo-ui-widget-disabled").removeClass("oo-ui-widget-enabled").prop("aria-disabled", "true");
-        }
+        autoBlock.setSelected(false);
     }
+    if (mw.config.get("wgUserGroups").includes("patroller")) {
+        autoBlock.setDisabled(true);
+    }
+
     let flag = false;
     const wpTarget = $('[name="wpTarget"]');
     let powerfulUserList = [];
-    const submitButton = $('#mw-content-text [type="submit"]').parent();
-    const submitButtonText = submitButton.text();
-    const submitForm = submitButton.removeClass("oo-ui-widget-enabled oo-ui-flaggedElement-primary oo-ui-flaggedElement-progressive").addClass("oo-ui-widget-disabled").children().attr("disabled", "disabled").text(wgULS("正在加载中……", "正在載入中……")).closest("form");
+    const submitButton = OO.ui.infuse($('#mw-content-text [type="submit"]').parent());
+    const submitForm = submitButton.$element.closest("form");
+    const submitButtonText = submitButton.getLabel();
+    submitButton.setDisabled(true).setLabel(wgULS("正在加载中……", "正在載入中……"));
     submitForm.on("submit.warning", async (e) => {
         e.preventDefault();
         e.stopImmediatePropagation();
-        if (!(flag === false || powerfulUserList.includes(wpTarget.val()) && await oouiDialog.confirm(`您要${wgULS("封禁的用户", "封鎖的使用者", null, null, "封鎖的用戶")}【${wpTarget.val()}】${wgULS("持有“封禁”和“自我解封”权限，您的封禁很可能无效且有可能违反封禁方针，您是否要继续？", "持有「封鎖」和「自我解封」權限，您的封鎖很可能無效且有可能違反封鎖方針，您是否要繼續？")}`, {
-            title: wgULS("封禁辅助工具", "封鎖輔助工具"),
-        }))) {
-            submitForm.off("submit.warning").submit();
+        if (flag == false) {
+            // powerfulUserList has not been loaded yet
+            return;
         }
+        if (powerfulUserList.includes(wpTarget.val()) && !await oouiDialog.confirm(`您要${wgULS("封禁的用户", "封鎖的使用者", null, null, "封鎖的用戶")}【${wpTarget.val()}】${wgULS("持有“封禁”和“自我解封”权限，您的封禁很可能无效且有可能违反封禁方针，您是否要继续？", "持有「封鎖」和「自我解封」權限，您的封鎖很可能無效且有可能違反封鎖方針，您是否要繼續？")}`, {
+            title: wgULS("封禁辅助工具", "封鎖輔助工具"),
+        })) {
+            // User cancelled the action
+            return;
+        }
+        submitForm.off("submit.warning").submit();
     });
     new mw.Api({
         timeout: 5000,
@@ -214,12 +222,12 @@ $(() => {
         }).map((au) => {
             return au.name;
         });
-        submitButton.addClass("oo-ui-widget-enabled oo-ui-flaggedElement-primary oo-ui-flaggedElement-progressive").removeClass("oo-ui-widget-disabled").children().removeAttr("disabled").text(submitButtonText);
+        submitButton.setDisabled(false).setLabel(submitButtonText);
         flag = true;
     }, (error) => {
         console.error(error);
         submitButton.after(`<span class="error">${wgULS("无法获取持有“封禁”和“自我解封”权限的用户列表，请谨慎操作", "無法獲取持有「封鎖」和「自我解封」權限的使用者列表，請謹慎操作", null, null, "無法獲取持有「封鎖」和「自我解封」權限的用戶列表，請謹慎操作")}。</span>`);
-        submitButton.addClass("oo-ui-widget-enabled oo-ui-flaggedElement-primary oo-ui-flaggedElement-progressive").removeClass("oo-ui-widget-disabled").children().removeAttr("disabled").text(submitButtonText);
+        submitButton.setDisabled(true).setLabel(submitButtonText);
         flag = true;
     });
 });
