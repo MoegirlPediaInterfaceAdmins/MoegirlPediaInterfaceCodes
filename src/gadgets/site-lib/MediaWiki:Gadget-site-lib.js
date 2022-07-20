@@ -43,7 +43,7 @@ mw.log.deprecate(window, "getURLParamValue", (...args) => mw.util.getParamValue.
 mw.log.deprecate(window, "hasClass", (element, className) => $(element).hasClass(className), "Use jQuery#hasClass instead");
 
 mw.log.deprecate(window, "importScriptCallback", (page, ready) => $.ajax({
-    url: `${mw.config.get("wgServer") + mw.config.get("wgScript")}?title=${mw.util.wikiUrlencode(page)}&action=raw&ctype=text/javascript`,
+    url: `${mw.config.get("wgServer")}${mw.config.get("wgScript")}?title=${mw.util.wikiUrlencode(page)}&action=raw&ctype=text/javascript`,
     dataType: "script",
     crossDomain: !0,
     cache: !0,

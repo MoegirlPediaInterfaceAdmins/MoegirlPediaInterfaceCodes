@@ -196,7 +196,7 @@ $(() => {
     submitForm.on("submit.warning", async (e) => {
         e.preventDefault();
         e.stopImmediatePropagation();
-        if (flag == false) {
+        if (flag === false) {
             // powerfulUserList has not been loaded yet
             return;
         }

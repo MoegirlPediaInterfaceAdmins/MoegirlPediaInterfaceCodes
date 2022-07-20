@@ -404,7 +404,7 @@
         console.debug(e);
     }
     await Promise.all([
-        mw.loader.using("mediawiki.Uri"),
+        mw.loader.using(["mediawiki.Uri"]),
         $.ready,
     ]);
     tabs();

@@ -15,7 +15,7 @@ $(() => (async () => {
     const isUnderRateLimit = !userRights.includes("noratelimit");
     const isPatrolViewable = userRights.includes("patrol");
     const sleep = (ms = 1000) => new Promise((res) => setTimeout(res, ms));
-    mw.loader.using("jquery.tablesorter");
+    mw.loader.using(["jquery.tablesorter"]);
     const upperFirstCase = (s) => /^[a-z]/.test(s) ? s.substring(0, 1).toUpperCase() + s.substring(1) : s;
     const api = new mw.Api();
     const ns = {
@@ -78,7 +78,7 @@ $(() => (async () => {
         })();
         const nslist = Object.fromEntries(Object.keys(ns).map((key) => [key, { count: 0, patrolled: 0, autopatrolled: 0, "new": 0, distinct: new Set() }]));
         const globalInfo = { patrolled: 0, autopatrolled: 0, "new": 0, distinct: new Set() };
-        await mw.loader.using("jquery.tablesorter");
+        await mw.loader.using(["jquery.tablesorter"]);
         list.forEach((item) => {
             nslist[item.ns].count++;
             if ("patrolled" in item) {

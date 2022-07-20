@@ -41,7 +41,7 @@ $(() => {
         // "gadget_definition",
         // "gadget_definition_talk": false
     ];
-    const apiPrefix = `${mw.config.get("wgServer") + mw.config.get("wgScriptPath")}/api.php`;
+    const apiPrefix = `${mw.config.get("wgServer")}${mw.config.get("wgScriptPath")}/api.php`;
     const newPageMax = 50;
     const writeCountNum = function (pages, plus) {
         let strCount = "";
@@ -59,9 +59,9 @@ $(() => {
                 title += '" class="patrollListNotConfident';
             }
             strCount = `(<a id="unpatrollArticle" href="${mw.config.get("wgServer")}${mw.config.get("wgScriptPath")}/index.php?title=${link}" title="${title}">${strCount}</a>)`;
-            ptPatrollLink.attr("href", `${mw.config.get("wgServer") + mw.config.get("wgScriptPath")}/index.php?title=Special:最新页面&hidepatrolled=1`);
+            ptPatrollLink.attr("href", `${mw.config.get("wgServer")}${mw.config.get("wgScriptPath")}/index.php?title=Special:最新页面&hidepatrolled=1`);
         } else {
-            ptPatrollLink.attr("href", `${mw.config.get("wgServer") + mw.config.get("wgScriptPath")}/index.php?title=Special:最新页面&hidepatrolled=0`);
+            ptPatrollLink.attr("href", `${mw.config.get("wgServer")}${mw.config.get("wgScriptPath")}/index.php?title=Special:最新页面&hidepatrolled=0`);
         }
         $("span#not-patrolled-count").html(strCount);
         generateList(pages);

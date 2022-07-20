@@ -5327,7 +5327,7 @@ $(() => {
             oldRev: {},
             newRev: {},
         };
-        await mw.loader.using("mediawiki.api");
+        await mw.loader.using(["mediawiki.api"]);
         const api = getMwApi();
         const params = {
             action: "compare",

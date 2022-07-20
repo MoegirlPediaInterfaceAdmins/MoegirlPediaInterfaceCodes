@@ -3,7 +3,7 @@
  * https://commons.wikimedia.org/w/index.php?oldid=553484026
  */
 "use strict";
-(async () => {
+(() => {
     if (window.AxUserMsg || !mw.config.get("wgUserGroups").includes("patroller") && !mw.config.get("wgUserGroups").includes("sysop")) {
         return;
     }
@@ -285,7 +285,7 @@
                 if (umFile) {
                     $umMedia.val(decodeURIComponent(umFile).replace(/_/g, " "));
                 }
-                $umUser.on("keyup", (event) => {
+                $umUser.on("keyup", () => {
                     $umUser.val($umUser.val().replace(/<|>|\^/g, ""));
                 });
                 $umUser.autocomplete({
@@ -304,7 +304,7 @@
                     $umMedia.val($umMedia.val().replace(/<|>|\^/g, ""));
                     umsg.umValidateInput(umsg);
                 });
-                $umMedia.on("keyup", (e) => {
+                $umMedia.on("keyup", () => {
                     $umMedia.val($umMedia.val().replace(/<|>|\^/g, ""));
                 });
                 $umMedia.autocomplete({
@@ -316,7 +316,7 @@
                         $umMedia.triggerHandler("input");
                     },
                 });
-                $umRelatedUser.on("keyup", (event) => {
+                $umRelatedUser.on("keyup", () => {
                     $umRelatedUser.val($umRelatedUser.val().replace(/<|>|\^/g, ""));
                     umsg.umValidateInput(umsg);
                 });
@@ -635,7 +635,7 @@
         umNotifyUserExecuteCB: (/* result*/) => {
             let encTitle = umsg.umUserTalkPrefix + $("#umUser").val();
             encTitle = encodeURIComponent(encTitle.replace(/ /g, "_")).replace(/%2F/ig, "/").replace(/%3A/ig, ":");
-            const newLoc = mw.config.get("wgServer") + mw.config.get("wgArticlePath").replace("$1", encTitle);
+            const newLoc = `${mw.config.get("wgServer")}${mw.config.get("wgArticlePath").replace("$1", encTitle)}`;
             if (window.location.pathname === mw.config.get("wgArticlePath").replace("$1", encTitle)) {
                 window.location.hash = "#footer";
                 window.location.reload();
@@ -1007,14 +1007,14 @@
     if ([-1, 2, 3].includes(mw.config.get("wgNamespaceNumber"))) {
         // alternative for jQuery UI autocomplete: jquery.suggestions
         // http://jqueryui.com/demos/autocomplete/ http://svn.wikimedia.org/viewvc/mediawiki/trunk/phase3/resources/jquery/jquery.suggestions.js?view=markup
-        await mw.loader.using([
+        /* await mw.loader.using([
             "ext.gadget.jquery.ui",
             "mediawiki.util",
             "mediawiki.user",
             "user.options", // for sig
             "ext.gadget.libUtil",
             "ext.gadget.libJQuery",
-        ]);
+        ]); */ // load by gadget's dependencies
         const builtinTemplate = [
             /*!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
              * Append new messages at the bottom. Otherwise pre-selection for users will break.

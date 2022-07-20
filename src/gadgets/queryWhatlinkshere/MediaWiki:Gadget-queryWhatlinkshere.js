@@ -3,7 +3,7 @@
 "use strict";
 $(() => (async () => {
     const wgRelevantPageName = mw.config.get("wgRelevantPageName");
-    await mw.loader.using("mediawiki.api");
+    await mw.loader.using(["mediawiki.api"]);
     const upperFirstCase = (s) => /^[a-z]/.test(s) ? s.substring(0, 1).toUpperCase() + s.substring(1) : s;
     const api = new mw.Api();
     const nsids = {
