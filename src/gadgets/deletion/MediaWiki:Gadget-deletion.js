@@ -101,7 +101,7 @@ $(() => (async () => {
             }
             return result;
         })();
-        const pages = await (async () => {
+        const members = await (async () => {
             const result = [];
             const eol = Symbol();
             let gcmcontinue = undefined;
@@ -127,7 +127,7 @@ $(() => (async () => {
             }
             return result.filter(({ title }) => document.querySelector(generatePageLinkSelector(title)));
         })();
-        for (const { title, pageid, revisions: [{ user }] } of pages) {
+        for (const { title, pageid, revisions: [{ user }] } of members) {
             for (let retryTimes = 0; retryTimes < 3; retryTimes++) {
                 try {
                     const renderedHTML = (await api.post({
@@ -162,6 +162,7 @@ $(() => (async () => {
                         });
                         link.after(`<a href="/${mw.util.wikiUrlencode(title)}" target="_blank" class="linksBlank bypass external">${link.html()}</a>  禁止删除：该次挂删不可靠，请手动检查（挂删模板未给出理由或挂删人）`).remove();
                     }
+                    break;
                 } catch (e) {
                     console.error("Deletion.js", e);
                 }
