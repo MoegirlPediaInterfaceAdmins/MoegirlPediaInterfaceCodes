@@ -12,7 +12,7 @@ $(() => (async () => {
     };
     const sleep = (ms) => new Promise((res) => setTimeout(res, ms));
     const deduplicate = (iterable) => [...new Set(iterable).values()];
-    const generatePageLinkSelector = (title) => deduplicate([encodeURI(title), mw.util.wikiUrlencode(title)]).map((selector) => `a[href$="/${selector}"]`).join("\n");
+    const generatePageLinkSelector = (title) => deduplicate([encodeURI(title), mw.util.wikiUrlencode(title)]).map((selector) => `a[href$="/${selector}"]`).join(",");
     await mw.loader.using(["mediawiki.util", "mediawiki.api"]);
     // temp throttle start
     const postMethods = ["post", "postWithToken"];
@@ -211,7 +211,8 @@ $(() => (async () => {
                     const self = $(ele);
                     if (self.text().trim() === "") { return; }
                     self.css("margin-right", "2em");
-                    const link = decodeURIComponent(self.attr("href").replace("/", "")).replace(/_/g, " ");
+                    const url = new URL(self.attr("href"));
+                    const link = decodeURIComponent(url.searchParams.has("title") ? url.searchParams.get("title") : url.pathname.replace(/^\//, "")).replace(/_/g, " ");
                     const page = pages.filter(({ title }) => title === link)[0];
                     try {
                         await api.postWithToken("csrf", {

@@ -6,6 +6,7 @@
         "outDir": "dist/",
         "alwaysStrict": true,
         "strict": true,
+        "downlevelIteration": true
     },
     "include": [
         "src",
