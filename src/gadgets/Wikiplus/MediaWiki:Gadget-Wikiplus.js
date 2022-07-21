@@ -1,10 +1,11 @@
 "use strict";
-$.ajax({
-    url: "https://wikiplus-app.com/Main.js?ver=20210321",
-    dataType: "script",
-    crossDomain: true,
-    cache: true,
-}).then(() => {
+(async () => {
+    await $.ajax({
+        url: "https://wikiplus-app.com/Main.js?ver=20210321",
+        dataType: "script",
+        crossDomain: true,
+        cache: true,
+    });
     console.info("Wikiplus load done.");
     let i = 0;
     const c = setInterval(() => {
@@ -31,4 +32,4 @@ $.ajax({
             console.info("Wikiplus init await.");
         }
     }, 100);
-});
+})();

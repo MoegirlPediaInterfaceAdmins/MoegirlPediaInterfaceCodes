@@ -1,5 +1,1 @@
-/src/js/lib/*.min.*
-/src/js/lib/jquery*
-/src/js/lib/js*
-/src/js/lib/mdui*
-/src/js/lib/defaults-*
+dist/
