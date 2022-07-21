@@ -80,24 +80,6 @@
             // if ($(this).text().length == 2) $(this).prepend('<span style="speak:none;visibility:hidden;color:transparent;">已</span>');
         });
     }
-    // 从MediaWiki拷过来的用于动态修改侧边栏
-    // eslint-disable-next-line no-unused-vars
-    function modifySidebar(action, section, name, link) {
-        try {
-            const target = {
-                languages: "#p-lang",
-                toolbox: "#p-tb",
-            }[section] || `#p-${section}`;
-            if (action === "add") {
-                $(target).find("div:first ul:first").append(`<li class="plainlinks"><a href="${link}">${name}</a></li>`);
-            }
-            if (action === "remove") {
-                $(target).find(`div:first ul:first li a[href="${link}"][title="${name}"]`).parent().hide();
-            }
-        } catch (e) {
-            console.debug("modifySidebar", e); // let's just ignore what's happened
-        }
-    }
     //评论栏管理链接
     function flowthreadAdminLink() {
         const link = $("<div/>", {
