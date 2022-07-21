@@ -9,7 +9,7 @@ $(() => (async () => {
     const api = new mw.Api({ timeout: 5000 });
     const chunkify = (arr, size = 50) => Array.from({ length: Math.ceil(arr.length / size) }, (_, i) => arr.slice(i * size, i * size + size));
     const sleep = (ms = 1000) => new Promise((res) => setTimeout(res, ms));
-    const hasHighLim = (await mw.user.getRights()).includes("apihighlimits");
+    const hasHighLimit = (await mw.user.getRights()).includes("apihighlimits");
     const pageid = mw.config.get("wgArticleId");
     let result = {};
 
@@ -147,7 +147,7 @@ $(() => (async () => {
             }
             console.log("[ACUserPing] Got filtered list of users.", nonMGUsers);
 
-            const validAC = await chunkify(nonMGUsers, hasHighLim && 500 || undefined).reduce(async (acc, chunk, i) => {
+            const validAC = await chunkify(nonMGUsers, hasHighLimit && 500 || undefined).reduce(async (acc, chunk, i) => {
                 this.addStep(wgULS(`正在复核用户条件...（第${i + 1}批）`, `正在複核使用者條件...（第${i + 1}批）`));
                 const prelimRes = (await api.get({
                     action: "query",
