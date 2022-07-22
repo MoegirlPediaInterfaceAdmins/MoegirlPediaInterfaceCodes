@@ -1,7 +1,7 @@
 // <pre>
 "use strict";
 $(() => (async () => {
-    if (!mw.config.get("wgUserGroups").includes("sysop")) {
+    if (!mw.config.get("wgUserGroups").includes("sysop") && !mw.config.get("wgUserGroups").includes("staff")) {
         return;
     }
     if (mw.config.get("wgCanonicalSpecialPageName") !== "AbuseLog") {
@@ -16,7 +16,6 @@ $(() => (async () => {
         return;
     }
     const symbolEnter = (str) => typeof str === "string" ? str.replace(/\n/g, "↵") : str;
-    await mw.loader.using("mediawiki.api");
     const api = new mw.Api();
     const pTable = $("<table/>");
     $("#mw-content-text > fieldset > p:first").after(pTable.css("width", "100%").addClass("wikitable"));
