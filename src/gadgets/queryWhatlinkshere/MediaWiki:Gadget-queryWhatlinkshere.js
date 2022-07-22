@@ -5,7 +5,7 @@ $(() => (async () => {
         return;
     }
     const wgRelevantPageName = mw.config.get("wgRelevantPageName");
-    if (typeof wgRelevantPageName !== "string" || target.length === 0) {
+    if (typeof wgRelevantPageName !== "string" || wgRelevantPageName.length === 0) {
         return;
     }
     const upperFirstCase = (s) => /^[a-z]/.test(s) ? s.substring(0, 1).toUpperCase() + s.substring(1) : s;
