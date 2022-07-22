@@ -1,4 +1,3 @@
-// 开头的判断条件如有更新需要同步到本体里
 //<pre>
 // remake by [[User:Leranjun]]
 "use strict";
