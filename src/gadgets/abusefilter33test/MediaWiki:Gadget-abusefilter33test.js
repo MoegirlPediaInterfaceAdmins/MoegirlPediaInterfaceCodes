@@ -11,7 +11,7 @@ $(() => (async () => {
     const timestampVar = getLogVar("timestamp");
     const user_name = getLogVar("user_name");
     const article_prefixedtext = getLogVar("article_prefixedtext");
-    const filter = [...document.querySelectorAll('a[href^="/Special:%E6%BB%A5%E7%94%A8%E8%BF%87%E6%BB%A4%E5%99%A8/"]')].filter(({ href }) => /%E6%BB%A5%E7%94%A8%E8%BF%87%E6%BB%A4%E5%99%A8\/[1-9]\d*$/.test(href))?.[0]?.href?.match?.(/[1-9]\d*$/)?.[0];
+    const filter = [...document.querySelectorAll('a[href*="/Special:%E6%BB%A5%E7%94%A8%E8%BF%87%E6%BB%A4%E5%99%A8/"]')].filter(({ href }) => /%E6%BB%A5%E7%94%A8%E8%BF%87%E6%BB%A4%E5%99%A8\/[1-9]\d*$/.test(href))?.[0]?.href?.match?.(/[1-9]\d*$/)?.[0];
     if (timestampVar.length === 0 || user_name.length === 0 || article_prefixedtext.length === 0 || typeof filter !== "string") {
         return;
     }
