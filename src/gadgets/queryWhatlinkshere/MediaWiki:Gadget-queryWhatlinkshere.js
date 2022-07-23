@@ -1,13 +1,17 @@
-// 开头的判断条件如有更新需要同步到本体里
 // <pre>
 "use strict";
 $(() => (async () => {
+    if (mw.config.get("wgCanonicalSpecialPageName") !== "Whatlinkshere") {
+        return;
+    }
     const wgRelevantPageName = mw.config.get("wgRelevantPageName");
-    await mw.loader.using(["mediawiki.api"]);
+    if (typeof wgRelevantPageName !== "string" || wgRelevantPageName.length === 0) {
+        return;
+    }
     const upperFirstCase = (s) => /^[a-z]/.test(s) ? s.substring(0, 1).toUpperCase() + s.substring(1) : s;
     const api = new mw.Api();
     const nsids = {
-        0: "（主名字空间）",
+        0: "（主）",
         1: "讨论",
         2: "用户",
         3: "用户讨论",
@@ -15,24 +19,24 @@ $(() => (async () => {
         5: "萌娘百科讨论",
         6: "文件",
         7: "文件讨论",
-        8: "mediawiki",
-        9: "mediawiki讨论",
+        8: "MediaWiki",
+        9: "MediaWiki讨论",
         10: "模板",
         11: "模板讨论",
         12: "帮助",
         13: "帮助讨论",
         14: "分类",
         15: "分类讨论",
-        274: "widget",
-        275: "widget_talk",
-        710: "timedtext",
-        711: "timedtext_talk",
+        274: "Widget",
+        275: "Widget_talk",
+        710: "Timedtext",
+        711: "Timedtext_talk",
         828: "模块",
         829: "模块讨论",
-        2300: "gadget",
-        2301: "gadget_talk",
-        2302: "gadget_definition",
-        2303: "gadget_definition_talk",
+        2300: "Gadget",
+        2301: "Gadget_talk",
+        2302: "Gadget_definition",
+        2303: "Gadget_definition_talk",
     };
     const wgNamespaceIds = {};
     for (const [ns, nsid] of Object.entries(mw.config.get("wgNamespaceIds"))) {

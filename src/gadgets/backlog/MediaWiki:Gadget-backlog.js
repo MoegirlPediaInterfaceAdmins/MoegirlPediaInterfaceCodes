@@ -1,4 +1,3 @@
-// 开头的判断条件如有更新需要同步到本体里
 // <pre>
 "use strict";
 $(() => (async () => {
@@ -85,7 +84,6 @@ $(() => (async () => {
         const container = $("#__anntools__inject__");
         if (!container.length) { return; }
         container.removeAttr("style").empty().html("<div id=\"Anntools-backlog-loading\" style=\"text-align: center;\"><hr>正在加载中……</a>").show();
-        await mw.loader.using(["mediawiki.api", "mediawiki.ForeignApi", "moment", "mediawiki.user"]);
         const now = moment();
         const nowYear = RegExp(`${new Date().getFullYear()}年`, "g");
         const users = new Set();
