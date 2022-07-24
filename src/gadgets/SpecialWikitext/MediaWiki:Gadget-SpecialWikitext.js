@@ -283,7 +283,7 @@
                 oldid: wgRevisionId,
                 prop: "wikitext",
             });
-            const parsedWikitext = data?.parse?.text?.["*"];
+            const parsedWikitext = data?.parse?.wikitext?.["*"];
             if (!parsedWikitext) {
                 return;
             }
