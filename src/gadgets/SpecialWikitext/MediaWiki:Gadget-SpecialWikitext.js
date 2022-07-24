@@ -31,7 +31,9 @@
     function lua_addText(input_str, new_str, _escape) {
         let input_string = input_str;
         if (new_str !== "") {
-            if (input_string !== "") { input_string += "\n"; }
+            if (input_string !== "") {
+                input_string += "\n";
+            }
             let text = new_str;
             if (_escape) {
                 const escape_str = JSON.parse(`[${JSON.stringify(
@@ -48,10 +50,14 @@
         if (test_str) {
             test_str = test_str[0] || "";
             test_str = test_str.substr(0, test_str.length - 2);
-        } else { test_str = str; }
+        } else {
+            test_str = str;
+        }
         const trim_check = getCleanText(test_str);
         const first_char = trim_check.charAt(0);
-        if (first_char === trim_check.charAt(trim_check.length - 1) && (first_char === "'" || first_char === '"')) { return trim_check.substr(1, trim_check.length - 2); }
+        if (first_char === trim_check.charAt(trim_check.length - 1) && (first_char === "'" || first_char === '"')) {
+            return trim_check.substr(1, trim_check.length - 2);
+        }
         return test_str;
     }
     function lua_getContentText(str) {
@@ -61,11 +67,15 @@
                 const temp_text = (/content\s*:\s*[^\n]*/.exec(text) || ["content:"])[0].
                     replace(/^[\s\uFEFF\xA0\t\r\n\f ;}]+|[\s\uFEFF\xA0\t\r\n\f ;}]+$/g, "").
                     replace(/\s*content\s*:\s*/, "");
-                if (wikitext !== "") { wikitext += "\n"; }
+                if (wikitext !== "") {
+                    wikitext += "\n";
+                }
                 wikitext += lua_getString(temp_text);
                 return text;
             });
-        } catch (ex) { return ""; }
+        } catch {
+            return "";
+        }
         return wikitext;
     }
     function lua_getObjText(str) {
@@ -74,17 +84,23 @@
             str.replace(new RegExp(`${wikiTextKey}\\s*[\\=:]\\s*[^\n]*`, "g"), (text) => {
                 const temp_text = text.replace(/^[\s\uFEFF\xA0\t\r\n\f ;}]+|[\s\uFEFF\xA0\t\r\n\f ;}]+$/g, "").
                     replace(new RegExp(`${wikiTextKey}\\s*[\\=:]\\s*`), "");
-                if (wikitext !== "") { wikitext += "\n"; }
+                if (wikitext !== "") {
+                    wikitext += "\n";
+                }
                 wikitext += lua_getString(temp_text);
                 return text;
             });
-        } catch (ex) { return ""; }
+        } catch {
+            return "";
+        }
         return wikitext;
     }
     function lua_getCSSwikitext(input_string) {
         let wikitext = "";
         const css_text = getCleanText(input_string || $("#wpTextbox1").val() || "");
-        if (css_text === "") { return ""; }
+        if (css_text === "") {
+            return "";
+        }
         wikitext = lua_addText(wikitext, lua_getContentText(css_text), true);
         wikitext = lua_addText(wikitext, lua_getObjText(css_text), true);
         return wikitext;
@@ -92,33 +108,39 @@
     function lua_getJSwikitext(input_string) {
         let wikitext = "";
         const js_text = getCleanText(input_string || $("#wpTextbox1").val() || "");
-        if (js_text === "") { return ""; }
+        if (js_text === "") {
+            return "";
+        }
         wikitext = lua_addText(wikitext, lua_getObjText(js_text), true);
         return wikitext;
     }
     function lua_getJSONwikitext(input_string) {
         let wikitext = "";
         const json_text = getCleanText(input_string || $("#wpTextbox1").val() || "");
-        if (json_text === "") { return ""; }
+        if (json_text === "") {
+            return "";
+        }
         try {
             const json_data = JSON.parse(json_text);
             Object.keys(json_data).forEach((key) => {
                 const k = key, v = json_data[key];
-                if (new RegExp(wikiTextKey).exec(k) && typeof v === typeof "") {
+                if (new RegExp(wikiTextKey).exec(k) && typeof v === "string") {
                     wikitext = lua_addText(wikitext, v);
                 }
-                if (typeof v !== typeof "") {
+                if (typeof v !== "string") {
                     for (const prop in v) {
                         if (Object.hasOwnProperty.call(v, prop)) {
                             const testArr_k = prop, testArr_v = v[prop];
-                            if (new RegExp(wikiTextKey).exec(testArr_k) && typeof testArr_v === typeof "") {
+                            if (new RegExp(wikiTextKey).exec(testArr_k) && typeof testArr_v === "string") {
                                 wikitext = lua_addText(wikitext, testArr_v);
                             }
                         }
                     }
                 }
             });
-        } catch (ex) { return ""; }
+        } catch {
+            return "";
+        }
         return wikitext;
     }
     /* 与[[Module:SpecialWikitext]]保持一致 */
@@ -128,7 +150,7 @@
     const wgRevisionId = mw.config.get("wgRevisionId");
     const noticeHTML = {
         loading: `<div class="mw-_addText-preview-loading"><div class="quotebox" style="margin: auto; width: 50%; padding: 6px; border: 1px solid #aaa; font-size: 88%; background-color: #F9F9F9;"><div class="mw-_addText-preview-loading-content" style="background-color: #F9F9F9; color: black; text-align: center; font-size: larger;"><img src="https://img.moegirl.org.cn/common/d/d1/Windows_10_loading.gif" decoding="async" data-file-width="64" data-file-height="64" style="width: 32px; height: 32px;"> ${wgULS("预览加载中...", "預覽載入中...")} </div></div></div>`,
-        fail: `<img src="//upload.wikimedia.org/wikipedia/commons/thumb/e/e9/Gnome-dialog-warning2.svg/32px-Gnome-dialog-warning2.svg.png" decoding="async" srcset="//upload.wikimedia.org/wikipedia/commons/thumb/e/e9/Gnome-dialog-warning2.svg/48px-Gnome-dialog-warning2.svg.png 1.5x, //upload.wikimedia.org/wikipedia/commons/thumb/e/e9/Gnome-dialog-warning2.svg/64px-Gnome-dialog-warning2.svg.png 2x" data-file-width="48" data-file-height="48" width="32" height="32">${wgULS("预览加载失败", "預覽載入失敗")}`,
+        fail: `<img src="https://img.moegirl.org.cn/common/5/5f/Ambox_warning_orange.svg" decoding="async" data-file-width="48" data-file-height="48" width="32" height="32">${wgULS("预览加载失败", "預覽載入失敗")}`,
     };
     const mwConfigIfMatchInLowerCase = (key, preferValues) => {
         const data = getCleanText(mw.config.get(key)).toLowerCase();
