@@ -1,16 +1,11 @@
 // <pre>
 // From [[Special:固定链接/5030142]]
 "use strict";
-(async () => {
+$(() => {
     try {
         if ($(".noarticletext")[0] || $(".will2Be2Deleted")[0] || !mw.config.get("wgUserGroups").includes("patroller") && !(new URL(location.href).searchParams.get("AnnTools-debug") || "").split("|").includes("registerToDelete")) {
             return;
         }
-
-        await Promise.all([
-            mw.loader.using(["mediawiki.api"]),
-            $.ready,
-        ]);
 
         const $body = $("body");
         $("#mw-notification-area").appendTo($body);
@@ -261,5 +256,5 @@
         console.error("[FlagForDeletion] Setup error:", e);
         /* eslint-enable */
     }
-})();
+});
 // </pre>
