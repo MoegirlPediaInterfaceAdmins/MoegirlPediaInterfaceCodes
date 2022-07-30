@@ -232,7 +232,7 @@ $(() => {
             }
             const section = +new mw.Uri($ele.find('.mw-editsection a[href*="action=edit"][href*="section="]').attr("href")).query.section;
             const anchor = $ele.find(".mw-headline").attr("id");
-            const button = $("<a>").attr("href", "#").prop("draggable", false).addClass("lr-qmt-link").text(wgULS("快速移动", "快速移動")).on("click", (e) => {
+            const button = $("<a>").attr("href", "#").prop("draggable", false).addClass("lr-qmt-link").text(wgULS("移动", "移動")).on("click", (e) => {
                 e.preventDefault();
                 windowManager.openWindow(qmtDialog, { section, anchor });
             });
