@@ -1,5 +1,4 @@
 // <pre>
-// From [[Special:固定链接/5030142]]
 "use strict";
 $(() => {
     try {
@@ -236,7 +235,7 @@ $(() => {
                 e.preventDefault();
                 windowManager.openWindow(qmtDialog, { section, anchor });
             });
-            $ele.find(".mw-editsection-bracket").last().before('<span class="mw-editsection-divider"> | </span>').before(button);
+            $ele.find(".mw-editsection-bracket").first().after('<span class="mw-editsection-divider"> | </span>').after(button); // 
         });
     } catch (e) {
         /* eslint-disable */
