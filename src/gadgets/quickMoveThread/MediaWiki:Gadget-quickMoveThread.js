@@ -257,7 +257,7 @@ $(() => {
             }, space).replace(/^"(.*)"$/, "$1");
         };
         oouiDialog.alert("错误信息：<br>" + oouiDialog.sanitize(parseError(e)), {
-            title: "挂删工具发生错误"
+            title: "移动讨论串工具发生错误"
         });
         console.error("[FlagForDeletion] Setup error:", e);
         /* eslint-enable */
