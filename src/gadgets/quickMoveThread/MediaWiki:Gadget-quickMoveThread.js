@@ -187,7 +187,7 @@ $(() => {
                 })).parse.wikitext["*"];
                 const rawTitle = original.match(/^== *([^=\n]+) *==/m)?.[1] || this.anchor;
                 original = original.replace(/^==.*?==/, "").trim();
-                original = `{{movedfrom|${fromAnchor}}}\n${original}`;
+                original = `{{movedfrom|${fromAnchor}}}\n\n${original}`;
 
                 // Move to target
                 console.log("[QuickMoveThread] Moving thread to target page");
@@ -257,9 +257,9 @@ $(() => {
             }, space).replace(/^"(.*)"$/, "$1");
         };
         oouiDialog.alert("错误信息：<br>" + oouiDialog.sanitize(parseError(e)), {
-            title: "移动讨论串工具发生错误"
+            title: "快速移动工具发生错误"
         });
-        console.error("[FlagForDeletion] Setup error:", e);
+        console.error("[QuickMoveThread] Setup error:", e);
         /* eslint-enable */
     }
 });

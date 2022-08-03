@@ -1,5 +1,4 @@
 // <pre>
-// From [[Special:固定链接/5030142]]
 "use strict";
 $(() => {
     try {
