@@ -6564,9 +6564,9 @@ $(() => {
         autoedit_version: "np20140416",
     };
     const willBeReplaces = [];
-    class PopupNoTranslation extends Array {
+    class PopupNoTranslation {
+        popupNoTranslation = [];
         constructor() {
-            super();
             let s;
             try {
                 s = JSON.parse(localStorage.getItem("popupNoTranslation"));
@@ -6576,25 +6576,23 @@ $(() => {
             } catch {
                 s = [];
             }
-            this._push(s);
+            this.#push(...s);
         }
-        _push(args) {
-            const ret = super.push(args.filter((n) => {
-                return !n.includes("&autoimpl=np20140416&actoken=") && !n.endsWith("Hint") && !willBeReplaces.includes(n);
+        #push(...args) {
+            const ret = this.popupNoTranslation.push(args.filter((n) => {
+                return typeof n !== "string" || !n.includes("&autoimpl=np20140416&actoken=") && !n.endsWith("Hint") && !willBeReplaces.includes(n);
             }));
-            localStorage.setItem("popupNoTranslation", JSON.stringify(this));
+            localStorage.setItem("popupNoTranslation", JSON.stringify(this.popupNoTranslation));
             return ret;
         }
         push(str) {
             const hasDefault = !!pg.string[str];
-            if (this.includes(str)) {
+            if (this.popupNoTranslation.includes(str)) {
                 return hasDefault ? pg.string[str] : str;
             }
-            this._push(str);
+            this.#push(str);
             if (mw.util.getParamValue("debug") === "1") {
-                console.groupCollapsed("Gadget Popups", "can't find the translation of", str, hasDefault ? `, use the default text [${pg.string[str]}].` : ", and no default text found.");
-                console.info(new Error().stack);
-                console.groupEnd();
+                console.info("Gadget Popups", "can't find the translation of", str, hasDefault ? `, use the default text [${pg.string[str]}].` : ", and no default text found.", new Error().stack);
             }
             return hasDefault ? pg.string[str] : str;
         }
