@@ -1,4 +1,7 @@
+// <pre>
+"use strict";
 (async () => {
+    /* 函数定义块 */
     const isNewVersion = mw.config.get("wgVersion").slice(0,4) >= 1.35;
     //添加监督原因链接
     function addLink($obj, act) {
@@ -27,3 +30,4 @@
         addLink($(".mw-revdel-editreasons > a"), "隐藏");
     }
 })();
+// </pre>
