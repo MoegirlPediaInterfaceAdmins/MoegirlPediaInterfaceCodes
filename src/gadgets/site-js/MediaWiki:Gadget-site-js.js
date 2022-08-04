@@ -477,6 +477,10 @@
     if (![0, 2].includes(mw.config.get("wgNamespaceNumber")) || mw.config.get("wgNamespaceNumber") === 2 && !mw.config.get("wgPageName").includes("/")) {
         $("#multiboilerplateform").remove();
     }
+    //移除评论区
+    if (!wgUserGroups.includes("staff") && !wgUserGroups.includes("sysop")) {
+        $("#flowthread *").remove();
+    }
     // 水印
     const wgCurRevisionId = mw.config.get("wgCurRevisionId") || -1;
     const wgRevisionId = mw.config.get("wgRevisionId") || -1;
