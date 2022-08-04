@@ -16,10 +16,10 @@
             id: "hideAbuselogLink",
             class: "mw-revdel-editreasons",
             css: {
-              "font-size": "90%",
-              "text-align": "right",
+                "font-size": "90%",
+                "text-align": "right",
             },
-        }).append('<a target="_blank" href="/index.php?title='+ reasonpage + '&action=edit">编辑隐藏原因</a>');
+        }).append(`<a target="_blank" href="/index.php?title=${reasonpage}&action=edit">编辑隐藏原因</a>`);
         $("form[action='/Special:%E6%BB%A5%E7%94%A8%E6%97%A5%E5%BF%97']").append(link);
     }
     /* 函数执行块 */
