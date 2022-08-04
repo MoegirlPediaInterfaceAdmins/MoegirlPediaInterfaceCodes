@@ -123,7 +123,7 @@ $(() => (async () => {
                 page: "Module:UserGroup/data",
                 prop: "wikitext",
             })).parse.wikitext["*"]);
-            const ignoreList = [...Array.from(new Set([...bots, ...MGUsers.bureaucrat, ...MGUsers.sysop, ...MGUsers.patroller, ...MGUsers.staff]))];
+            const ignoreList = Array.from(new Set([...bots, ...MGUsers.bureaucrat, ...MGUsers.sysop, ...MGUsers.patroller, ...MGUsers.staff]));
             const filterResult = (result) => result.query.pages[pageid].contributors.map(c => c.name).filter(c => !ignoreList.includes(c));
             console.log("[ACUserPing] Got ignored user list.", ignoreList);
 
