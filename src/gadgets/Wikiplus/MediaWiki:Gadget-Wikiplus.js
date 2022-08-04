@@ -10,7 +10,7 @@
     let i = 0;
     const c = setInterval(() => {
         if (!window.Wikiplus) {
-            console.info("Wikiplus init starting.");
+            console.info("Wikiplus init running.");
         } else if (window.Wikiplus.kotori && window.Wikiplus.kotori.inited) {
             clearInterval(c);
             console.info("Wikiplus init done.");
