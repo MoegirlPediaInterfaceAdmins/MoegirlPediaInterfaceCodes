@@ -416,7 +416,7 @@ $(() => {
         // console.log(`[petrolCount] Updating unpatrolled... (${d.toLocaleString()})`);
         lastRequest = d;
         const requestid = d.getTime();
-        const newPages = `${apiPrefix}?action=query&format=xml&list=recentchanges&rctype=new&rcnamespace=${namespaceWatchList.join("|")}&rcshow=!redirect|!patrolled&rctoken=patrol&rcprop=title|ids|user|tags`;
+        const newPages = `${apiPrefix}?action=query&format=xml&list=recentchanges&rctype=new&rcnamespace=${namespaceWatchList.join("|")}&rcshow=!redirect|!patrolled&meta=tokens&type=patrol&rcprop=title|ids|user|tags`;
         $.get(newPages, {
             rclimit: newPageMax,
             requestid: requestid,
@@ -429,7 +429,7 @@ $(() => {
                 const t = {
                     title: $self.attr("title"),
                     rcid: $self.attr("rcid"),
-                    rctoken: $self.attr("patroltoken"),
+                    rctoken: jqResult.find("tokens"),
                     confidence: confidence,
                 };
                 pages.push(t);
@@ -450,7 +450,7 @@ $(() => {
         title: wgULS("最新页面", "最新頁面"),
         text: wgULS("最新页面", "最新頁面"),
     });
-    $("body div#mw-head div#p-personal ul li#pt-watchlist").after($("<li></li>", {
+    $("body #p-personal ul li#pt-watchlist").after($("<li></li>", {
         id: "pt-patroll",
     }).append(ptPatrollLink).append($("<span></span>", {
         id: "not-patrolled-count",
