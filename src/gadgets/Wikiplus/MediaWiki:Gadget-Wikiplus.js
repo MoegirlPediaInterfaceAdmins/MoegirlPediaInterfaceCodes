@@ -11,7 +11,9 @@
     for (let i = 0; i < Number.MAX_SAFE_INTEGER; i++) {
         await sleep(100);
         if (!window.Wikiplus) {
-            console.info("Wikiplus init running.");
+            if (i++ % 20 === 0) {
+                console.info("Wikiplus init running.");
+            }
             continue;
         }
         if (window.Wikiplus.kotori && window.Wikiplus.kotori.inited) {
@@ -26,8 +28,10 @@
             }
             return;
         }
-        if (window.Wikiplus.kotori && i++ % 20 === 0) {
-            console.info("Wikiplus init still.");
+        if (window.Wikiplus.kotori) {
+            if (i++ % 20 === 0) {
+                console.info("Wikiplus init still.");
+            }
             continue;
         }
         if (window.Wikiplus.inValidNameSpaces.includes(mw.config.get("wgNamespaceNumber")) || !mw.config.get("wgIsArticle") || mw.config.get("wgAction") !== "view" || !mw.config.get("wgIsProbablyEditable") || !mw.config.get("wgUserGroups").includes("autoconfirmed") && !mw.config.get("wgUserGroups").includes("confirmed")) {
