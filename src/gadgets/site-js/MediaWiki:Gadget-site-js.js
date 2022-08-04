@@ -479,7 +479,7 @@
     }
     //移除评论区
     if (!wgUserGroups.includes("staff") && !wgUserGroups.includes("sysop")) {
-        $("#flowthread *").remove();
+        $("#flowthread *, #ca-flowthreadcontrol").remove();
     }
     // 水印
     const wgCurRevisionId = mw.config.get("wgCurRevisionId") || -1;
