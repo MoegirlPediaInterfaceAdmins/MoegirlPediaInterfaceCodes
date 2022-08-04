@@ -8,9 +8,9 @@
     /* 函数定义块 */
     //添加删除原因链接
     function addLink($obj, act) {
-        const href = $obj.css("margin-right", "1em")[0].href,
+        const href = $obj.css("margin-left", "1em")[0].href,
             reasonPageName = href.slice(href.indexOf("title=") + 6, href.indexOf("&action"));
-        $obj.after(`<a target="_blank" href="/${reasonPageName}">浏览${act}原因</a>`);
+        $obj.before(`<a target="_blank" href="/${reasonPageName}">浏览${act}原因</a>`);
     }
     //防滥用过滤器相关
     // eslint-disable-next-line no-unused-vars
@@ -104,17 +104,20 @@
     }
     /* 函数执行块 */
     await $.ready;
-    //删除保护原因浏览链接
-    if (window.location.href.indexOf("action=delete") !== -1) {
+    //删除、保护、版本删除原因浏览链接
+    if (mw.config.get("wgAction") === "delete") {
         if ($(".mw-delete-editreasons")[0]) {
-            addLink($(".mw-delete-editreasons a"), "删除");
+            addLink($(".mw-delete-editreasons > a"), "删除");
         }
         if ($(".mw-filedelete-editreasons")[0]) {
-            addLink($(".mw-filedelete-editreasons a"), "删除");
+            addLink($(".mw-filedelete-editreasons > a"), "删除");
         }
     }
-    if (window.location.href.indexOf("action=protect") !== -1 && $(".mw-protect-editreasons")[0]) {
-        addLink($(".mw-protect-editreasons a"), "保护");
+    if (/protect$/.test(mw.config.get("wgAction")) && $(".mw-protect-editreasons")[0]) {
+        addLink($(".mw-protect-editreasons > a"), "保护");
+    }
+    if (mw.config.get("wgCanonicalSpecialPageName") === "Revisiondelete" && $(".mw-revdel-editreasons")[0]) {
+        addLink($(".mw-revdel-editreasons > a"), "删除");
     }
     //防滥用过滤器日志
     // abuseLog();
