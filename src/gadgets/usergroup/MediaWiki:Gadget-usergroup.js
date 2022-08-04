@@ -203,7 +203,7 @@ $(() => (async () => {
                         self.addClass("markBlockInfo").removeClass("unknownBlockInfo");
                         if (blockInfo.isBlocked) {
                             self.css("text-decoration", "underline wavy");
-                            self.after(`<sup title="${blockInfo.info}">[封+]</sup>`);
+                            self.after(`<sup class="detailedBlockInfo" title="${blockInfo.info}">[封+]</sup>`);
                         }
                     } else {
                         self.addClass("unknownBlockInfo");
