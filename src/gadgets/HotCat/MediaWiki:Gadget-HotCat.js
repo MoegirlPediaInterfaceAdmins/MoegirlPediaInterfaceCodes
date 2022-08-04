@@ -181,15 +181,15 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
         }
         load(url, callback);
     }
-    loadJS("MediaWiki:Gadget-HotCat.js/local_defaults", loadTrigger.loaded);
+    loadJS("MediaWiki:Gadget-HotCat.js/local_defaults", loadTrigger.loaded.bind(loadTrigger));
     if (conf.wgUserLanguage !== "en") {
         if (window.hotcat_translations_from_commons === undefined) {
             window.hotcat_translations_from_commons = true;
         }
         if (window.hotcat_translations_from_commons && conf.wgServer.indexOf("//commons") < 0) {
-            loadURI(`//commons.wikimedia.org/w/index.php?title=MediaWiki:Gadget-HotCat.js/${conf.wgUserLanguage}&action=raw&ctype=text/javascript`, loadTrigger.loaded);
+            loadURI(`//commons.wikimedia.org/w/index.php?title=MediaWiki:Gadget-HotCat.js/${conf.wgUserLanguage}&action=raw&ctype=text/javascript`, loadTrigger.loaded.bind(loadTrigger));
         } else {
-            loadJS(`MediaWiki:Gadget-HotCat.js/${conf.wgUserLanguage}`, loadTrigger.loaded);
+            loadJS(`MediaWiki:Gadget-HotCat.js/${conf.wgUserLanguage}`, loadTrigger.loaded.bind(loadTrigger));
         }
     } else {
         loadTrigger.loaded();
