@@ -143,7 +143,7 @@ $(() => (async () => {
                                 mw.notify(wgULS("即将刷新……", "即將刷新……"), {
                                     title: "打回成功",
                                     type: "success",
-                                    tag: "lr-ffd",
+                                    tag: "lr-mtus",
                                 });
                                 dfd.resolve();
                                 setTimeout(() => location.reload(), 730);
@@ -247,7 +247,7 @@ $(() => (async () => {
         });
         windowManager.addWindows([mtusDialog]);
 
-        $(mw.util.addPortletLink("p-cactions", "#", "打回", "ca-lr-ffd", isModule ? wgULS("移动至创建者模块沙盒", "移至創建者模組沙盒") : wgULS("移动至创建者用户页并挂删", "移至創建者用戶頁並掛删"), "d")).on("click", (e) => {
+        $(mw.util.addPortletLink("p-cactions", "#", "打回", "ca-lr-mtus", isModule ? wgULS("移动至创建者模块沙盒", "移至創建者模組沙盒") : wgULS("移动至创建者用户页并挂删", "移至創建者用戶頁並掛删"), "d")).on("click", (e) => {
             e.preventDefault();
             windowManager.openWindow(mtusDialog);
             $body.css("overflow", "auto");
