@@ -2,7 +2,7 @@
 // See [[mw:Reference Tooltips]]
 // Source https://en.wikipedia.org/wiki/MediaWiki:Gadget-ReferenceTooltips.js
 
-(function () {
+(() => {
 
     // enwiki settings
     const REF_LINK_SELECTOR = '.reference, a[href^="#CITEREF"]',
@@ -63,7 +63,7 @@
         $window = $(window);
     let settings, enabled, delay, activatedByClick, tooltipsForComments, cursorWaitCss, windowManager;
 
-    function rt($content) {
+    const rt = ($content) => {
         // Popups gadget & Reference Previews
         if (window.pg || mw.config.get("wgPopupsReferencePreviews")) {
             return;
@@ -72,29 +72,27 @@
         let teSelector,
             settingsDialogOpening = false;
 
-        function setSettingsCookie() {
-            mw.cookie.set(
-                "RTsettings",
-                `${+enabled}|${delay}|${+activatedByClick}|${+tooltipsForComments}`,
-                { path: "/", expires: 90 * SECONDS_IN_A_DAY, prefix: "" },
-            );
-        }
+        const setSettingsCookie = () => mw.cookie.set(
+            "RTsettings",
+            `${+enabled}|${delay}|${+activatedByClick}|${+tooltipsForComments}`,
+            { path: "/", expires: 90 * SECONDS_IN_A_DAY, prefix: "" },
+        );
 
-        function enableRt() {
+        const enableRt = () => {
             enabled = true;
             setSettingsCookie();
             $(".rt-enableItem").remove();
             rt($content);
             mw.notify(mw.msg("rt-enabled"));
-        }
+        };
 
-        function disableRt() {
+        const disableRt = () => {
             $content.find(teSelector).removeClass("rt-commentedText").off(".rt");
             $body.off(".rt");
             $window.off(".rt");
-        }
+        };
 
-        function addEnableLink() {
+        const addEnableLink = () => {
             // #footer-places – Vector
             // #f-list – Timeless, Monobook, Modern
             // parent of #footer li – Cologne Blue
@@ -109,13 +107,13 @@
                         $("<a>")
                             .text(mw.msg("rt-enable-footer"))
                             .attr("href", "javascript:")
-                            .click((e) => {
+                            .on("click", (e) => {
                                 e.preventDefault();
                                 enableRt();
                             }),
                     ),
             );
-        }
+        };
 
         class TooltippedElement {
             constructor($element) {
@@ -130,7 +128,7 @@
                         e.preventDefault();
                     }
                     if (!this.noRef) {
-                        showRefArgs = [$(this)];
+                        showRefArgs = [this.$element];
                         if (this.type !== "supRef") {
                             showRefArgs.push(e.pageX, e.pageY);
                         }
@@ -221,7 +219,6 @@
 
                 const reallyShow = () => {
                     let viewportTop, refOffsetTop, teHref;
-
                     if (!this.$ref && !this.comment) {
                         teHref = this.type === "supRef" ?
                             this.$element.find("a").attr("href") :
@@ -491,8 +488,8 @@
                 this.$body.append(this.stackLayout.$element);
             }
             getSetupProcess(data) {
-                return SettingsDialog.super.prototype.getSetupProcess.call(this, data)
-                    .next(function () {
+                return SettingsDialog.super.prototype.getSetupProcess.bind(this)(data)
+                    .next(() => {
                         this.stackLayout.setItem(this.panelSettings);
                         this.actions.setMode("basic");
                     }, this);
@@ -534,39 +531,6 @@
 
         class Tooltip {
             constructor(te) {
-                function openSettingsDialog() {
-
-                    if (cursorWaitCss) {
-                        cursorWaitCss.disabled = true;
-                    }
-
-                    this.upToTopParent(function adjustRightAndHide() {
-                        if (this.isPresent) {
-                            if (this.$element[0].style.right) {
-                                this.$element.css(
-                                    "right",
-                                    `+=${window.innerWidth - $window.width()}`,
-                                );
-                            }
-                            this.te.hideRef(true);
-                        }
-                    });
-
-                    if (!windowManager) {
-                        windowManager = new OO.ui.WindowManager();
-                        $body.append(windowManager.$element);
-                    }
-
-                    const settingsDialog = new SettingsDialog();
-                    windowManager.addWindows([settingsDialog]);
-                    const settingsWindow = windowManager.openWindow(settingsDialog);
-                    settingsWindow.opened.then(() => {
-                        settingsDialogOpening = false;
-                    });
-                    settingsWindow.closed.then(() => {
-                        windowManager.clearWindows();
-                    });
-                }
 
                 // This variable can change: one tooltip can be called from a harvard-style reference link
                 // that is put into different tooltips
@@ -630,29 +594,29 @@
 
                 if (!activatedByClick) {
                     this.$element
-                        .mouseenter(() => {
+                        .on("mouseenter", () => {
                             if (!this.disappearing) {
-                                this.upToTopParent(function () {
-                                    this.show();
+                                this.upToTopParent((tt) => {
+                                    tt.show();
                                 });
                             }
                         })
-                        .mouseleave((e) => {
+                        .on("mouseleave", (e) => {
                             // https://stackoverflow.com/q/47649442 workaround. Relying on relatedTarget
                             // alone has pitfalls: when alt-tabbing, relatedTarget is empty too
                             if (CLIENT_NAME !== "chrome" ||
                                 (!e.originalEvent ||
                                     e.originalEvent.relatedTarget !== null ||
                                     !this.clickedTime ||
-                                    $.now() - this.clickedTime > 50
+                                    Date.now() - this.clickedTime > 50
                                 )) {
-                                this.upToTopParent(function () {
-                                    this.te.hideRef();
+                                this.upToTopParent((tt) => {
+                                    tt.te.hideRef();
                                 });
                             }
                         })
-                        .click(() => {
-                            this.clickedTime = $.now();
+                        .on("click", () => {
+                            this.clickedTime = Date.now();
                         });
                 }
 
@@ -660,7 +624,7 @@
                     $("<div>")
                         .addClass("rt-settingsLink")
                         .attr("title", mw.msg("rt-settings"))
-                        .click(() => {
+                        .on("click", () => {
                             if (settingsDialogOpening) {
                                 return;
                             }
@@ -673,7 +637,39 @@
                                     cursorWaitCss = mw.util.addCSS("body { cursor: wait; }");
                                 }
                             }
-                            mw.loader.using(["oojs", "oojs-ui"], openSettingsDialog);
+                            mw.loader.using(["oojs", "oojs-ui"], () => {
+
+                                if (cursorWaitCss) {
+                                    cursorWaitCss.disabled = true;
+                                }
+
+                                this.upToTopParent((tt) => {
+                                    if (tt.isPresent) {
+                                        if (tt.$element[0].style.right) {
+                                            tt.$element.css(
+                                                "right",
+                                                `+=${window.innerWidth - $window.width()}`,
+                                            );
+                                        }
+                                        tt.te.hideRef(true);
+                                    }
+                                });
+
+                                if (!windowManager) {
+                                    windowManager = new OO.ui.WindowManager();
+                                    $body.append(windowManager.$element);
+                                }
+
+                                const settingsDialog = new SettingsDialog();
+                                windowManager.addWindows([settingsDialog]);
+                                const settingsWindow = windowManager.openWindow(settingsDialog);
+                                settingsWindow.opened.then(() => {
+                                    settingsDialogOpening = false;
+                                });
+                                settingsWindow.closed.then(() => {
+                                    windowManager.clearWindows();
+                                });
+                            });
                         })
                         .prependTo(this.$content);
                 }
@@ -823,7 +819,7 @@
                 let returnValue, currentTooltip = this;
 
                 do {
-                    returnValue = func.apply(currentTooltip, parameters);
+                    returnValue = func.bind(currentTooltip)(currentTooltip, ...parameters);
                     if (stopAtTrue && returnValue) {
                         break;
                     }
@@ -845,10 +841,10 @@
         if (tooltipsForComments) {
             teSelector += `, ${COMMENTED_TEXT_SELECTOR}`;
         }
-        $content.find(teSelector).each(function () {
-            new TooltippedElement($(this));
+        $content.find(teSelector).each((_, ele) => {
+            new TooltippedElement($(ele));
         });
-    }
+    };
 
     const settingsString = mw.cookie.get("RTsettings", "");
     if (settingsString) {
@@ -878,4 +874,4 @@
 
     mw.hook("wikipage.content").add(rt);
 
-}());
+})();
