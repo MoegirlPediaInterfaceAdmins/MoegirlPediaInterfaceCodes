@@ -122,7 +122,7 @@
     //防滥用过滤器日志
     // abuseLog();
     //防滥用过滤器列表
-    if ($(".mw-special-AbuseFilter")[0]) {
+    if (mw.config.get("wgPageName") === "Special:滥用过滤器") {
         AbuseList();
     }
     //i18n语言链接
