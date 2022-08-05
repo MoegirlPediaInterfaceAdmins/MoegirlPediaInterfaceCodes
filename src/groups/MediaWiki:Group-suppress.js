@@ -2,7 +2,7 @@
 "use strict";
 (async () => {
     /* 函数定义块 */
-    const isNewVersion = mw.config.get("wgVersion").slice(0,4) >= 1.35;
+    const isNewVersion = +mw.config.get("wgVersion").slice(0, 4) >= 1.35;
     //添加监督原因链接
     function addLink($obj, act) {
         const href = $obj.css("margin-left", "1em")[0].href,
@@ -14,7 +14,7 @@
         const reasonpage = isNewVersion ? "MediaWiki:Revdelete-reason-dropdown-suppress" : "MediaWiki:Revdelete-reason-dropdown";
         const link = $("<div/>", {
             id: "hideAbuselogLink",
-            class: "mw-revdel-editreasons",
+            "class": "mw-revdel-editreasons",
             css: {
                 "font-size": "90%",
                 "text-align": "right",
