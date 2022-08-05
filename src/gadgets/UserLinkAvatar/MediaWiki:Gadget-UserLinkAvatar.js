@@ -6,8 +6,8 @@
     const loadingImage = "https://img.moegirl.org.cn/common/d/d1/Windows_10_loading.gif";
     $window.on("load.UserLinkAvatar", () => {
         const images = [];
-        $(".mw-userlink:not(.user-avatar-added)").each(() => {
-            const item = $(this);
+        $(".mw-userlink:not(.user-avatar-added)").each((_, ele) => {
+            const item = $(ele);
             const src = `${mw.config.get("wgServer").replace("zh.moegirl", "commons.moegirl")}${mw.config.get("wgScriptPath")}/extensions/Avatar/avatar.php?user=${encodeURIComponent(item.text())}`;
             const img = $("<img/>").on("error", () => {
                 window.setTimeout(() => {
