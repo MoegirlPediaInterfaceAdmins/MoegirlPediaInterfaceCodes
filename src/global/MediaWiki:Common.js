@@ -392,6 +392,14 @@
     if ($(".mw-collapsible")[0] && location.hash !== "") {
         hashJump();
     }
+    noticeActivityClose();
+    // 跨站重定向页顶链接
+    crossDomainDetect();
+    // 修复用户页左侧栏头像链接
+    leftPanelAvatarLink();
+    if (wgUserGroups.includes("user")) {
+        topNoticeScroll();
+    }
     // 以下代码必须在全部内容加载完成后才能正常工作
     $(window).on("load", () => {
         // 语言对应
@@ -401,13 +409,5 @@
             }
         });
     });
-    noticeActivityClose();
-    // 跨站重定向页顶链接
-    crossDomainDetect();
-    // 修复用户页左侧栏头像链接
-    leftPanelAvatarLink();
-    if (wgUserGroups.includes("user")) {
-        topNoticeScroll();
-    }
 })();
 // </nowiki>
