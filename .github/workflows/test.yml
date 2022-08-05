@@ -30,6 +30,6 @@ jobs:
           path: .eslintcache
           key: eslint
       - name: Check eslint environment
-        run: npx eslint --env-info && ls -lh
+        run: npx eslint --env-info && ls -lhA
       - name: Check the linter
         run: npx eslint --exit-on-fatal-error --max-warnings 0 --cache --cache-strategy content --ext js ./src
