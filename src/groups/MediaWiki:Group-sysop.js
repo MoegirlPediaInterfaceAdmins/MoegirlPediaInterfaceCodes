@@ -5,6 +5,7 @@
  */
 "use strict";
 (async () => {
+    const sleep = (ms) => new Promise((res) => setTimeout(res, ms));
     /* 函数定义块 */
     //添加删除原因链接
     function addLink($obj, act) {
@@ -18,8 +19,8 @@
         if ($(".mw-special-AbuseLog")[0]) {
             const rawInput = $('input[name="wpSearchFilter"]').val().split("|");
             const needToggle = new Set();
-            $(".plainlinks li").each(function () {
-                const self = $(this);
+            $(".plainlinks li").each((_, ele) => {
+                const self = $(ele);
                 let id = -1;
                 switch (true) {
                     case self.find('a[href="/Special:%E6%BB%A5%E7%94%A8%E8%BF%87%E6%BB%A4%E5%99%A8/1"]')[0] && !rawInput.includes("1"):
@@ -37,29 +38,30 @@
             if ($(".AbuseFilterNeedHidden")[0]) {
                 mw.loader.addStyleTag("body.AbuseFilterHidden .AbuseFilterNeedHidden { display: none; } ");
                 const lastStatus = localStorage.getItem("AnnTools-abuseLog-hidden") === "true";
-                const bdy = $("body");
-                $('form[action="/Special:%E6%BB%A5%E7%94%A8%E6%97%A5%E5%BF%97"] > fieldset').append("<p/>").find("p").append($("<span/>", {
-                    text: `点击隐藏/显示防滥用过滤器${Array.from(needToggle.values()).join("、").replace(/、(?=[^、]+$)/, "和")}的日志：`,
-                })).append($("<input/>", {
+                const body = $("body");
+                const input = $("<input/>", {
                     val: lastStatus ? "显示" : "隐藏",
-                    on: {
-                        click: function () {
-                            if ($("body").hasClass("AbuseFilterHidden")) {
-                                $(this).val("隐藏");
-                                localStorage.getItem("AnnTools-abuseLog-hidden", "false");
-                            } else {
-                                $(this).val("显示");
-                                localStorage.getItem("AnnTools-abuseLog-hidden", "true");
-                            }
-                            bdy.toggleClass("AbuseFilterHidden");
-                        },
-                    },
                     attr: {
                         type: "button",
                     },
-                }));
+                });
+                input.on({
+                    click: function () {
+                        if ($("body").hasClass("AbuseFilterHidden")) {
+                            input.val("隐藏");
+                            localStorage.getItem("AnnTools-abuseLog-hidden", "false");
+                        } else {
+                            input.val("显示");
+                            localStorage.getItem("AnnTools-abuseLog-hidden", "true");
+                        }
+                        body.toggleClass("AbuseFilterHidden");
+                    },
+                });
+                $('form[action="/Special:%E6%BB%A5%E7%94%A8%E6%97%A5%E5%BF%97"] > fieldset').append("<p/>").find("p").append($("<span/>", {
+                    text: `点击隐藏/显示防滥用过滤器${Array.from(needToggle.values()).join("、").replace(/、(?=[^、]+$)/, "和")}的日志：`,
+                })).append(input);
                 if (lastStatus) {
-                    bdy.addClass("AbuseFilterHidden");
+                    body.addClass("AbuseFilterHidden");
                 }
             }
         }
@@ -67,18 +69,22 @@
     //防滥用过滤器列表
     function AbuseList() {
         const idList = $(".TablePager_col_af_id a"),
-            lvList = $(".TablePager_col_af_hidden"),
+            // lvList = $(".TablePager_col_af_hidden"),
             idLength = idList.last().text().length;
-        idList.each(function () {
+        idList.each((_, ele) => {
+            const $ele = $(ele);
             let zero = "";
-            while ($(this).text().length + zero.length < idLength) {
+            while ($ele.text().length + zero.length < idLength) {
                 zero += "0";
             }
-            $(this).prepend(`<span style="speak:none;visibility:hidden;color:transparent;">${zero}</span>`);
+            $ele.prepend(`<span style="speak:none;visibility:hidden;color:transparent;">${zero}</span>`);
         });
-        lvList.each(() => {
-            // if ($(this).text().length == 2) $(this).prepend('<span style="speak:none;visibility:hidden;color:transparent;">已</span>');
-        });
+        /* lvList.each((_, ele) => {
+            const $ele = $(ele);
+            if ($ele.text().length === 2) {
+                $ele.prepend('<span style="speak:none;visibility:hidden;color:transparent;">已</span>');
+            }
+        }); */
     }
     //评论栏管理链接
     function flowthreadAdminLink() {
@@ -126,13 +132,7 @@
         AbuseList();
     }
     //i18n语言链接
-    //评论管理
-    setInterval(() => {
-        i18nLink();
-        if ($("#flowthread")[0] && !$("#flowthreadAdminLink")[0]) {
-            flowthreadAdminLink();
-        }
-    }, 100);
+    i18nLink();
     //授权巡查默认15天，机器用户授权增加预置时间选项
     if (mw.config.get("wgCanonicalSpecialPageName") === "Userrights") {
         const wpExpiryPatroller = document.querySelector("#mw-input-wpExpiry-patroller");
@@ -151,5 +151,10 @@
             })[0].before(new Option("2小时", "2 hours"), new Option("6小时", "6 hours"), new Option("12小时", "12 hours"));
         }
     }
+    //评论管理，需要置底
+    while (!document.querySelector("#flowthread")) {
+        await sleep(100);
+    }
+    flowthreadAdminLink();
 })();
 // </pre>
