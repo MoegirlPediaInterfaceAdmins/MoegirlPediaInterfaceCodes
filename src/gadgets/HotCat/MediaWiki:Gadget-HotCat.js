@@ -793,12 +793,12 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
                 };
                 list.onchange = function () {
                     self.highlightSuggestion(0);
-                    self.text.focus();
+                    self.text.trigger("focus");
                 };
                 list.onkeyup = function (evt) {
                     if (evt.keyCode === ESC) {
                         self.resetKeySelection();
-                        self.text.focus();
+                        self.text.trigger("focus");
                         window.setTimeout(() => {
                             self.textchange(true);
                         }, HC.suggest_delay);
@@ -821,7 +821,7 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
                     }
                     engineSelector.onchange = function () {
                         self.engine = self.engineSelector.options[self.engineSelector.selectedIndex].value;
-                        self.text.focus();
+                        self.text.trigger("focus");
                         self.textchange(true, true);
                     };
                     this.engineSelector = engineSelector;
@@ -919,7 +919,7 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
             this.form.style.display = "inline";
             this.ok.disabled = false;
             const result = evtKill(evt);
-            this.text.focus();
+            this.text.trigger("focus");
             this.text.readOnly = false;
             checkMultiInput();
             return result;
@@ -1668,7 +1668,7 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
                     return false;
                 }
             }
-            this.text.focus();
+            this.text.trigger("focus");
             this.text.value = newVal + key;
             this.setSelection(actVal.length, newVal.length);
             return true;
@@ -1694,7 +1694,7 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
                 const new_selection = this.text.createTextRange();
                 new_selection.move("character", from);
                 new_selection.moveEnd("character", to - from);
-                new_selection.select();
+                new_selection.trigger("select");
             }
         }
         getSelection() {
@@ -2065,7 +2065,7 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
         if (selfEditConflict) {
             commitForm.oldid.value = `${pageTextRevId || conf.wgCurRevisionId}`;
         }
-        commitForm.hcCommit.click();
+        commitForm.hcCommit.trigger("click");
     }
     function resolveOne(page, toResolve) {
         const cats = page.categories,

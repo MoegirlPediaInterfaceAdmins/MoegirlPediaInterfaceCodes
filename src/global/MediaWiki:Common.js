@@ -94,8 +94,8 @@
             }
         };
         setInterval(() => {
-            $("a.image img[data-file-width], a.image img[data-file-height], .mw-mmv-filepage-buttons a.mw-mmv-view-expanded").not(".multimediaViewerScrollSet").each(function () {
-                this.addEventListener("click", (e) => {
+            $("a.image img[data-file-width], a.image img[data-file-height], .mw-mmv-filepage-buttons a.mw-mmv-view-expanded").not(".multimediaViewerScrollSet").each((_, ele) => {
+                ele.addEventListener("click", (e) => {
                     if ($(e.target).closest(".TabLabelText")[0] || $(e.target).closest("a").closest(".mw-customtoggle")[0]) {
                         e.preventDefault();
                         e.stopPropagation();
@@ -107,14 +107,14 @@
                 }, {
                     capture: true,
                 });
-                $(this).addClass("multimediaViewerScrollSet");
+                $(ele).addClass("multimediaViewerScrollSet");
             });
-            if ($(".mw-mmv-close")[0]) {
+            if (document.querySelector(".mw-mmv-close")) {
                 if (mw.config.get("wgMultimediaViewerInjected") !== "on") {
                     mw.config.set("wgMultimediaViewerInjected", "on");
                     $(".mw-mmv-image").off("click")[0].addEventListener("click", (e) => {
                         if ($(e.target).is("img")) {
-                            window.open($(e.target).attr("src").replace(/(img\.moegirl\.org\.cn\/common\/)thumb\/([a-z\d]+\/[a-z\d]+\/)([^/]+)\/\d+px-\3/i, "$1$2$3"), "_blank").focus();
+                            window.open($(e.target).attr("src").replace(/(img\.moegirl\.org\.cn\/common\/)thumb\/([a-z\d]+\/[a-z\d]+\/)([^/]+)\/\d+px-\3/i, "$1$2$3"), "_blank").trigger("focus");
                             e.preventDefault();
                             e.stopPropagation();
                             e.stopImmediatePropagation();
@@ -122,7 +122,7 @@
                         } else if ($(e.target).closest(".error-box")[0]) {
                             return;
                         }
-                        $(".mw-mmv-close").click();
+                        $(".mw-mmv-close").trigger("click");
                     }, {
                         capture: true,
                     });
@@ -383,9 +383,9 @@
         },
     });
     // 注释内列表
-    $(".reference-text > ul,.reference-text > ol").each(function () {
-        if (this.parentElement.childNodes[0] === this) {
-            $(this).addClass("listInRef");
+    $(".reference-text > ul,.reference-text > ol").each((_, ele) => {
+        if (ele.parentElement.childNodes[0] === ele) {
+            $(ele).addClass("listInRef");
         }
     });
     // 修正hash跳转错误
@@ -395,10 +395,9 @@
     // 以下代码必须在全部内容加载完成后才能正常工作
     $(window).on("load", () => {
         // 语言对应
-        $(".mw-helplink").each(function () {
-            const linkHref = this.href;
-            if (linkHref.indexOf("/zh") !== linkHref.length - 3) {
-                this.href += "/zh";
+        $(".mw-helplink").each((_, ele) => {
+            if (!ele.href.endsWith("/zh")) {
+                ele.href += "/zh";
             }
         });
     });

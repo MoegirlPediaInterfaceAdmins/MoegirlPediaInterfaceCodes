@@ -56,21 +56,21 @@ $(() => (async () => {
         $("#deletionTotalNumber").text($(".mw-category-generated li :checkbox").length);
         $(".mw-category-generated li :checkbox").on("change", () => {
             $("#deletionSelectingNumber").text($(".mw-category-generated li :checkbox:checked").length);
-        }).change();
+        }).trigger("change");
         $(".mw-category-generated > div > p").each((_, ele) => {
             $("<input/>").attr({
                 type: "button",
                 value: "全选本类别页面",
                 "class": "deletionControlButton",
             }).appendTo(ele).on("click", (_, ele) => {
-                $(ele).closest(".mw-category-generated > div").find(":checkbox:not(:disabled)").prop("checked", "checked").first().change();
+                $(ele).closest(".mw-category-generated > div").find(":checkbox:not(:disabled)").prop("checked", "checked").first().trigger("change");
             });
             $("<input/>").attr({
                 type: "button",
                 value: "全不选本类别页面",
                 "class": "deletionControlButton",
             }).appendTo(ele).on("click", (_, ele) => {
-                $(ele).closest(".mw-category-generated > div").find(":checkbox:not(:disabled)").removeAttr("checked").first().change();
+                $(ele).closest(".mw-category-generated > div").find(":checkbox:not(:disabled)").removeAttr("checked").first().trigger("change");
             });
         });
         return false;
@@ -179,9 +179,9 @@ $(() => (async () => {
     $("body").on("click", async ({ target }) => {
         const self = $(target);
         if (self.is("#selectAll")) {
-            container.find("li :checkbox:not(:disabled)").prop("checked", "checked").first().change();
+            container.find("li :checkbox:not(:disabled)").prop("checked", "checked").first().trigger("change");
         } else if (self.is("#selectNone")) {
-            container.find("li :checkbox:not(:disabled)").removeAttr("checked").first().change();
+            container.find("li :checkbox:not(:disabled)").removeAttr("checked").first().trigger("change");
         } else if (self.is("#cancelDeletion")) {
             if (globalDeletionLock) { return false; }
             $("#deletionControl, .deletionControlButton").remove();

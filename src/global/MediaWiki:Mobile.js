@@ -21,20 +21,20 @@
             return;
         }
         const commonBoxContainer = $('<div id="commonBoxContainer"><div id="commonBoxInfo"></div></div>').prependTo(contentParent), commonBoxList = $('<div id="commonBoxList"></div>').appendTo("#commonBoxInfo");
-        commonBoxes.each(() => {
-            const commonBoxButton = $('<div class="commonBoxButton"></div>').appendTo(commonBoxList), commonBox = $(this);
+        commonBoxes.each((_, ele) => {
+            const commonBoxButton = $('<div class="commonBoxButton"></div>').appendTo(commonBoxList), commonBox = $(ele);
             commonBoxButton.data("element", commonBox).css({
                 "border-color": commonBox.css("border-left-color"),
                 "background-image": `url(${commonBox.find("tbody > tr > td:first-child img").prop("src")})`,
             }).on("click", () => {
-                if (commonBox.is(":visible")[0]) {
+                if (commonBox.is(":visible")) {
                     commonBoxes.hide();
-                    $(this).add($(this).siblings()).removeClass("current");
+                    commonBoxButton.add(commonBoxButton.siblings()).removeClass("current");
                     commonBoxList.removeClass("open");
                 } else {
                     commonBoxes.filter(":visible").not(commonBox).hide();
                     commonBox.show();
-                    $(this).toggleClass("current", commonBox.is(":visible")).siblings().removeClass("current");
+                    commonBoxButton.toggleClass("current", commonBox.is(":visible")).siblings().removeClass("current");
                     commonBoxList.toggleClass("open", commonBox.is(":visible"));
                 }
             });

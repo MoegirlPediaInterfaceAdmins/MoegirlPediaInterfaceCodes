@@ -186,7 +186,7 @@ $(() => (async () => {
             } catch (_) {
                 const textarea = $(`<textarea>${ping}</textarea>`).appendTo("body");
                 const textareaDom = textarea[0]/* as HTMLTextAreaElement */; // For TypeScript only
-                textareaDom.select();
+                textareaDom.trigger("select");
                 document.execCommand("copy");
                 textarea.remove();
             }

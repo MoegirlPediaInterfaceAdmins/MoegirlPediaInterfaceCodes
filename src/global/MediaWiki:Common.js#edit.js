@@ -8,9 +8,9 @@ $(() => {
 
     const wpSummary = $('[name="wpSummary"]');
     // $(".mw-summary-preset-item a").closest('.oo-ui-fieldLayout-header').width($('#wpSummary').width());
-    $(".mw-summary-preset-item a").on("click", function () {
-        wpSummary.val(`${wpSummary.val().trim()} ${$(this).text()}`.trim());
-        wpSummary.focus();
+    $(".mw-summary-preset-item a").on("click", ({ target }) => {
+        wpSummary.val(`${wpSummary.val().trim()} ${$(target).text()}`.trim());
+        wpSummary.trigger("focus");
         return false;
     });
 

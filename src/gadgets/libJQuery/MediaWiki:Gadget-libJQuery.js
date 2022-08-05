@@ -6,7 +6,7 @@
     $.extend({
         createIcon: function (iconClass) {
             return $("<span>", {
-                "class": `ui-icon ${ iconClass } jquery-inline-icon`,
+                "class": `ui-icon ${iconClass} jquery-inline-icon`,
                 text: " ",
             });
         },
@@ -14,7 +14,7 @@
             return $("<div>", {
                 "class": "ui-widget",
             }).append($("<div>", {
-                "class": `${state } ui-corner-all`,
+                "class": `${state} ui-corner-all`,
                 style: "margin-top:20px; padding:0.7em;",
             }).append($("<p>").append($.createIcon(icon).css("margin-right", ".3em"), textNode)));
         },
@@ -64,19 +64,22 @@
          */
         _jqInteraction: function () {
             const _this = this;
-            return this.hover(() => {
-                _this.addClass("ui-state-hover");
-            }, () => {
-                _this.removeClass("ui-state-hover").removeClass("ui-state-active");
-            }).focusin(() => {
+            return this.on({
+                mouseenter: () => {
+                    _this.addClass("ui-state-hover");
+                },
+                mouseleave: () => {
+                    _this.removeClass("ui-state-hover").removeClass("ui-state-active");
+                },
+            }).trigger("focusin", () => {
                 _this.addClass("ui-state-focus");
-            }).focusout(() => {
+            }).trigger("focusout", () => {
                 _this.removeClass("ui-state-focus");
-            }).mousedown((e) => {
+            }).trigger("mousedown", (e) => {
                 if (1 === e.which) {
                     _this.addClass("ui-state-active");
                 }
-            }).mouseup(() => {
+            }).trigger("mouseup", () => {
                 _this.removeClass("ui-state-active");
             });
         },

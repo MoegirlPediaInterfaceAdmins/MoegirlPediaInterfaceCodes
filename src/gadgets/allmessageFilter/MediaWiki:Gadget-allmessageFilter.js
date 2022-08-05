@@ -114,7 +114,7 @@
             });
         });
         input.on("keypress", (e) => {
-            if (e.which === 13) { submit.click(); }
+            if (e.key === "Enter") { submit.trigger("click"); }
         });
     }
     if (isCompleted) { run(); } else { $(window).on("load", run); }

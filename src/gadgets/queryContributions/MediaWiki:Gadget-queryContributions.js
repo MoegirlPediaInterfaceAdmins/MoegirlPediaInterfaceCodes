@@ -160,7 +160,7 @@ $(() => (async () => {
                     },
                 ],
             });
-            $(window).on("resize", () => chart.resize());
+            $(window).on("resize", () => chart.trigger("resize"));
         });
     });
     p.find("#cancelQueryContributions").on("click", () => {

@@ -129,7 +129,7 @@ $(() => {
             }
             getReadyProcess(data) {
                 return super.getReadyProcess(data).next(() => {
-                    this.targetText.focus();
+                    this.targetText.trigger("focus");
                 }, this);
             }
             getSetupProcess(data) {

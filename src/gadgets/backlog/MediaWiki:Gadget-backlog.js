@@ -424,17 +424,17 @@ $(() => (async () => {
         $("#Anntools-backlog-loading").remove();
         if (mw.config.exists("useravatar")) {
             mw.config.get("useravatar")();
-            $(window).resize();
+            $(window).trigger("resize");
         }
         $(window).on({
             focus: () => {
-                $(window).resize();
+                $(window).trigger("resize");
             },
             blur: () => {
-                $(window).resize();
+                $(window).trigger("resize");
             },
         });
-        setTimeout(() => { $(window).resize(); }, 100);
+        setTimeout(() => { $(window).trigger("resize"); }, 100);
     } catch (reason) {
         console.error(reason);
         if (reason instanceof Error) {

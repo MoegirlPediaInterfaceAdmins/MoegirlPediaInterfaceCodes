@@ -253,7 +253,7 @@ $(() => (async () => {
         getReadyProcess(data) {
             return super.getReadyProcess(data)
                 .next(() => {
-                    this.ogText.focus();
+                    this.ogText.trigger("focus");
                 }, this);
         }
         getActionProcess(action) {

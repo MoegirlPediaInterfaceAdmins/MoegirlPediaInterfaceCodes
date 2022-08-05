@@ -125,7 +125,7 @@ $(() => (async () => {
             getReadyProcess(data) {
                 return super.getReadyProcess(data)
                     .next(() => {
-                        this.reasonBox.focus();
+                        this.reasonBox.trigger("focus");
                         this.warnings = {};
                     }, this);
             }

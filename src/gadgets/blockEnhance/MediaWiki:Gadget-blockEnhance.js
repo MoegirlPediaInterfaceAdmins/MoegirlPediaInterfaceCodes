@@ -206,7 +206,7 @@ $(() => {
             // User cancelled the action
             return;
         }
-        submitForm.off("submit.warning").submit();
+        submitForm.off("submit.warning").trigger("submit");
     });
     new mw.Api({
         timeout: 5000,

@@ -1226,7 +1226,7 @@ $(() => {
                 const msg = tprintf("The %s button has been automatically clicked. Please wait for the next page to load.", [button.value]);
                 bannerMessage(msg);
                 document.title = `(${document.title})`;
-                button.click();
+                button.trigger("click");
             } else {
                 alert(tprintf("Could not find button %s. Please check the settings in your javascript file.", [btn]));
             }
@@ -5278,7 +5278,7 @@ $(() => {
                 if (evt && evt.preventDefault) {
                     evt.preventDefault();
                 }
-                links[i].focus();
+                links[i].trigger("focus");
                 popupHandleKeypress.lastPopupLinkSelected = links[i];
                 return false;
             }

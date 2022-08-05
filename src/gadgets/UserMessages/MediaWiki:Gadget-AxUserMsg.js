@@ -27,10 +27,10 @@
                 }
             });
             $userInputField.on("input", () => {
-                $userInputField.keyup();
+                $userInputField.trigger("keyup");
             });
             $userInputField.on("selected", () => {
-                $userInputField.keyup();
+                $userInputField.trigger("keyup");
             });
         }
         isValidIP(username) {
@@ -188,7 +188,7 @@
                 o.$tagSelect.val(umsg.umSelect);
             }
             o.umValidateInput(o);
-            o.$tagSelect.change();
+            o.$tagSelect.trigger("change");
         },
         umDlg: () => {
             const $win = $(window);
@@ -347,7 +347,7 @@
                 $umAddText.on("input", () => {
                     umsg.umValidateInput(umsg);
                 });
-                submitButton.focus();
+                submitButton.trigger("focus");
                 $AjaxUmContainer.append(umsg.umInstPrevContainer.clone().text("即时预览为空"));
                 umsg.$tagSelect.on("change", () => {
                     const umType = umsg.umTemplate[$(umsg.$tagSelect).val()][3];
@@ -359,7 +359,7 @@
                     if (umType & umsg.umFlagP2) {
                         $("#umP2Wrapper").show();
                         if (document.activeElement && $umUser.attr("id") !== document.activeElement.id) {
-                            $("#umP2").select();
+                            $("#umP2").trigger("select");
                         }
                     } else {
                         $("#umP2Wrapper").hide();
@@ -367,7 +367,7 @@
                     if (umType & umsg.umFlagP3) {
                         $("#umP3Wrapper").show();
                         if (document.activeElement && $umUser.attr("id") !== document.activeElement.id) {
-                            $("#umP3").select();
+                            $("#umP3").trigger("select");
                         }
                     } else {
                         $("#umP3Wrapper").hide();
@@ -375,7 +375,7 @@
                     if (umType & umsg.umFlagMQ) {
                         $("#umMediaWrapper").show();
                         if (document.activeElement && $umUser.attr("id") !== document.activeElement.id) {
-                            $("#umMedia").select();
+                            $("#umMedia").trigger("select");
                         }
                     } else {
                         $("#umMediaWrapper").hide();
@@ -383,14 +383,14 @@
                     if (umType & umsg.umFlagUQ) {
                         $("#umRelatedUserWrapper").show();
                         if (document.activeElement && $umUser.attr("id") !== document.activeElement.id) {
-                            $("#umMedia").select();
+                            $("#umMedia").trigger("select");
                         }
                     } else {
                         $("#umRelatedUserWrapper").hide();
                     }
                 });
                 umsg.$tagSelect.val(umsg.umSelect);
-                $("#umUser").keyup();
+                $("#umUser").trigger("keyup");
                 $("#umTagToInsert").combobox();
             }
         },
@@ -953,7 +953,7 @@
                         });
                     },
                 }).addClass("ui-widget ui-widget-content ui-corner-left").css("width", `${selectWidth - 70}px`).on("click", () => {
-                    $(input).select();
+                    $(input).trigger("select");
                 }).on("keydown", (e) => {
                     if (self.options.passEnter && 13 === e.which && !isOpen && valid) {
                         const kup = $.Event("keyup");
@@ -986,10 +986,10 @@
                         return;
                     }
                     // work around a bug (likely same cause as #5265)
-                    this.button.blur();
+                    this.button.trigger("blur");
                     // pass empty string as value to search for, displaying all results
                     input.autocomplete("search", "");
-                    input.focus();
+                    input.trigger("focus");
                 });
             },
             destroy: function () {
