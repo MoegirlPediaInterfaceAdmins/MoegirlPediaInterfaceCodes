@@ -71,15 +71,15 @@
                 mouseleave: () => {
                     _this.removeClass("ui-state-hover").removeClass("ui-state-active");
                 },
-            }).trigger("focusin", () => {
+            }).on("focusin", () => {
                 _this.addClass("ui-state-focus");
-            }).trigger("focusout", () => {
+            }).on("focusout", () => {
                 _this.removeClass("ui-state-focus");
-            }).trigger("mousedown", (e) => {
+            }).on("mousedown", (e) => {
                 if (1 === e.which) {
                     _this.addClass("ui-state-active");
                 }
-            }).trigger("mouseup", () => {
+            }).on("mouseup", () => {
                 _this.removeClass("ui-state-active");
             });
         },
