@@ -21,6 +21,9 @@ jobs:
         with:
           node-version: lts/*
           cache: "npm"
-      - run: npm install --location=global eslint@latest
-      - run: npx eslint --env-info
-      - run: npx eslint --exit-on-fatal-error --max-warnings 0  --ext js ./src
+      - name: Install eslint
+        run: npm install --location=global eslint@latest
+      - name: Check eslint installation
+        run: npx eslint --env-info
+      - name: Check the linter
+        run: npx eslint --exit-on-fatal-error --max-warnings 0  --ext js ./src
