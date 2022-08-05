@@ -28,7 +28,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path: .eslintcache
-          key: eslint
+          key: eslintcache
       - name: Check eslint environment
         run: npx eslint --env-info && ls -lhA
       - name: Check the linter
