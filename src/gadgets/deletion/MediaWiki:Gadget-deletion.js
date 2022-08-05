@@ -13,7 +13,7 @@ $(() => (async () => {
     const sleep = (ms) => new Promise((res) => setTimeout(res, ms));
     const deduplicate = (iterable) => [...new Set(iterable).values()];
     const generatePageLinkSelector = (title) => deduplicate([encodeURI(title), mw.util.wikiUrlencode(title)]).map((selector) => `a[href$="/${selector}"]`).join(",");
-    await mw.loader.using(["mediawiki.util", "mediawiki.api"]);
+    // await mw.loader.using(["mediawiki.util", "mediawiki.api"]);
     // temp throttle start
     const postMethods = ["post", "postWithToken"];
     const api = new Proxy(new mw.Api(), {

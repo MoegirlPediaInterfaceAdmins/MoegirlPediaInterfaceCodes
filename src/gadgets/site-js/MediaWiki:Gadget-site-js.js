@@ -4,7 +4,7 @@
  * 版权协定：知识共享 署名-非商业性使用-相同方式共享 3.0
  */
 "use strict";
-(async () => {
+$(() => (async () => {
     /* 检查是否为维护组成员 */
     const wgUserGroups = mw.config.get("wgUserGroups");
     const isMGPMGUser = wgUserGroups.includes("patroller") || wgUserGroups.includes("sysop");
@@ -403,10 +403,10 @@
     } catch (e) {
         console.debug(e);
     }
-    await Promise.all([
-        mw.loader.using(["mediawiki.Uri"]),
-        $.ready,
-    ]);
+    // await Promise.all([
+    //     mw.loader.using(["mediawiki.Uri"]),
+    //     $.ready,
+    // ]);
     tabs();
     //图片地址
     setInterval(() => {
@@ -492,7 +492,7 @@
             const namespacePrefixRegex = getNamespacePrefixRegex(wgNamespaceNumber);
             const displayedTitle = $("#firstHeading, #section_0").first().text().replace(/ /g, "_").replace(namespacePrefixRegex, "").trim();
             if (mw.config.get("wgAction") === "view" && mw.config.get("wgArticleId") > 0 && displayedTitle !== wgPageName.replace(/ /g, "_").replace(namespacePrefixRegex, "").trim()) {
-                await mw.loader.using(["mediawiki.api"]);
+                // await mw.loader.using(["mediawiki.api"]);
                 const result = await new mw.Api().post({
                     action: "query",
                     prop: "info",
@@ -508,5 +508,4 @@
             }
         }
     }
-
-})();
+})());

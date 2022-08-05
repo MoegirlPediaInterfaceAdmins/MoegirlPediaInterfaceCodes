@@ -4744,13 +4744,14 @@ $(() => {
             }
             return;
         }
-        mw.loader.using([
-            "mediawiki.util",
-            "mediawiki.api",
-            "mediawiki.user",
-            "user.options",
-            "mediawiki.jqueryMsg",
-        ].concat(mw.config.get("wgVersion").startsWith("1.31") ? ["mediawiki.api.messages"] : [])).then(fetchSpecialPageNames).then(() => {
+        // mw.loader.using([
+        //     "mediawiki.util",
+        //     "mediawiki.api",
+        //     "mediawiki.user",
+        //     "user.options",
+        //     "mediawiki.jqueryMsg",
+        // ].concat(mw.config.get("wgVersion").startsWith("1.31") ? ["mediawiki.api.messages"] : [])).then(fetchSpecialPageNames).then(() => {
+        fetchSpecialPageNames.then(() => {
             setupDebugging();
             setSiteInfo();
             setTitleBase();
@@ -5322,12 +5323,12 @@ $(() => {
         }
         return ret.replace(RegExp('^(.*?)(title=")(.*?)(".*)$', "i"), `$1$2$3 [${key}]$4`);
     }
-    async function loadDiff(article, oldid, diff, navpop) {
+    function loadDiff(article, oldid, diff, navpop) {
         navpop.diffData = {
             oldRev: {},
             newRev: {},
         };
-        await mw.loader.using(["mediawiki.api"]);
+        // await mw.loader.using(["mediawiki.api"]);
         const api = getMwApi();
         const params = {
             action: "compare",
@@ -5808,7 +5809,7 @@ $(() => {
         }
         await Promise.all([
             getMwApi().postWithToken("watch", reqData),
-            mw.loader.using(["mediawiki.jqueryMsg"]),
+            // mw.loader.using(["mediawiki.jqueryMsg"]),
             getMwApi().loadMessagesIfMissing([messageName]),
         ]);
         mw.notify(mw.message(messageName, title).parseDom());

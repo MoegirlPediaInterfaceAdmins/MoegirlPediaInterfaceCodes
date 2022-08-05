@@ -1,7 +1,7 @@
 // <pre>
 "use strict";
 // wgULS = (...args) => args[0]; await mw.loader.using(["oojs-ui", "mediawiki.api", "mediawiki.notification", "mediawiki.notify"]);
-$(() => (async () => {
+$(() => {
     try {
         const NS = [0, 10, 828];
         const pagens = mw.config.get("wgNamespaceNumber");
@@ -12,7 +12,7 @@ $(() => (async () => {
         }
 
         // RL is unreliable
-        await mw.loader.using(["oojs-ui", "mediawiki.api", "mediawiki.notification", "mediawiki.notify"]);
+        // await mw.loader.using(["oojs-ui", "mediawiki.api", "mediawiki.notification", "mediawiki.notify"]);
 
         const $body = $("body");
         $("#mw-notification-area").appendTo($body);
@@ -277,5 +277,5 @@ $(() => (async () => {
         console.error("[MoveToUserSubpage] Setup error: ", e);
         /* eslint-enable */
     }
-})());
+});
 // </pre>

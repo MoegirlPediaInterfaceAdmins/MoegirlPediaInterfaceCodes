@@ -15,7 +15,7 @@ List of main authors: https://commons.wikimedia.org/wiki/Help:Gadget-HotCat/Vers
 License: Quadruple licensed GFDL, GPL, LGPL and Creative Commons Attribution 3.0 (CC-BY-3.0)
 */
 window.hotcat_translations_from_commons = false; // 禁止从维基共享获取翻译
-(async () => {
+$(() => {
     const conf = new Proxy({}, {
         get: function (_, name) {
             if (name === "wgServer") {
@@ -3051,10 +3051,10 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
             run();
         });
     }
-    await Promise.all([
-        mw.loader.using(["user"]),
-        $.ready,
-    ]);
+    // await Promise.all([
+    //     mw.loader.using(["user"]),
+    //     $.ready,
+    // ]);
     run();
-})();
+});
 //</nowiki>

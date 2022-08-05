@@ -18,7 +18,7 @@ $(() => (async () => {
     if (mw.config.get("wgNamespaceNumber") !== 8 || pagename.includes(".js") || pagename.includes(".css")) {
         return;
     }
-    await mw.loader.using(["mediawiki.api", "oojs-ui"]);
+    // await mw.loader.using(["mediawiki.api", "oojs-ui"]);
 
     $.cachedScript = (url, options) => $.ajax($.extend(options || {}, {
         dataType: "script",

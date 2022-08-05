@@ -1,8 +1,8 @@
 // <pre>
 /* eslint-disable require-atomic-updates */
 "use strict";
-(async () => {
-    await mw.loader.using(["mediawiki.api", "mediawiki.notification", "mediawiki.notify"]);
+$(() => {
+    // await mw.loader.using(["mediawiki.api", "mediawiki.notification", "mediawiki.notify"]);
     const $window = $(window);
     const $body = $("body");
     const api = new mw.Api();
@@ -216,5 +216,5 @@
     $window.on("beforeunload", () => {
         unloading = true;
     });
-})();
+});
 // </pre>

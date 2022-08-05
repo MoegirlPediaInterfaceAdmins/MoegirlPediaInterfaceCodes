@@ -4,7 +4,7 @@ $(() => (async () => {
     if (!mw.config.get("wgTitle").startsWith("提案/讨论中提案/")) {
         return;
     }
-    await mw.loader.using(["mediawiki.api", "oojs-ui-core", "moment"]);
+    // await mw.loader.using(["mediawiki.api", "oojs-ui-core", "moment"]);
 
     const api = new mw.Api({ timeout: 5000 });
     const chunkify = (arr, size = 50) => Array.from({ length: Math.ceil(arr.length / size) }, (_, i) => arr.slice(i * size, i * size + size));

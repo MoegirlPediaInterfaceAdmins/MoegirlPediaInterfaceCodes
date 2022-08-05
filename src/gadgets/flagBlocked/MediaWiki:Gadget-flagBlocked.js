@@ -11,7 +11,7 @@ $(() => {
     const main = async () => {
         working = true;
 
-        //await mw.loader.using(["mediawiki.api", "mediawiki.notification", "mediawiki.notify", "moment"]);
+        // await mw.loader.using(["mediawiki.api", "mediawiki.notification", "mediawiki.notify", "moment"]);
         $("#mw-notification-area").appendTo("body");
 
         const api = new mw.Api();

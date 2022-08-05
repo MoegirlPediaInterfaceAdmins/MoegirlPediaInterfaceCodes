@@ -16,7 +16,7 @@
  * @author [[User:Mxn]]
  */
 "use strict";
-(async () => {
+$(() => {
     const monthsHave31Days = [0, 2, 4, 6, 7, 9, 11];
     function format(then, type) {
         switch (type) {
@@ -210,10 +210,10 @@
             prefixNode = iter.nextNode();
         }
     }
-    await Promise.all([
-        mw.loader.using(["moment"]),
-        $.ready,
-    ]);
+    // await Promise.all([
+    //     mw.loader.using(["moment"]),
+    //     $.ready,
+    // ]);
     $(".mw-parser-output").each(parser);
     mw.hook("wikipage.content").add(($content) => {
         $content.each(parser);
@@ -222,7 +222,7 @@
     if (!window.LocalComments.dynamic) {
         return;
     }
-    await mw.loader.using(["ext.gadget.cron"]);
+    // await mw.loader.using(["ext.gadget.cron"]);
     new Cron.CronJob({
         cronTime: "0 * * * * *",
         start: true,
@@ -230,5 +230,5 @@
             formatTimestamp();
         },
     });
-})();
+});
 //</pre>
