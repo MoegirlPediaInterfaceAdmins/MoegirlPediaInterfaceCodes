@@ -20,10 +20,16 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: lts/*
-          cache: "npm"
+          check-latest: true
+          cache: npm
       - name: Install eslint
         run: npm install --location=global eslint@latest
       - name: Check eslint installation
         run: npx eslint --env-info
+      - name: Reload the cache of eslint
+        uses: actions/cache@v3
+        with:
+          path: .eslintcache
+          key: eslint
       - name: Check the linter
-        run: npx eslint --exit-on-fatal-error --max-warnings 0  --ext js ./src
+        run: npx eslint --exit-on-fatal-error --max-warnings 0 --cache --cache-strategy content --ext js ./src
