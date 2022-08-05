@@ -367,10 +367,6 @@
     if (mw.config.get("wgMainPageTitle") === mw.config.get("wgPageName") && mw.config.get("wgAction") === "view") {
         $("body").addClass("mainpage");
     }
-    // 需要时载入对应的 scripts
-    if (["edit", "submit"].includes(mw.config.get("wgAction"))) {
-        mw.loader.load("/index.php?title=MediaWiki:Common.js/edit.js&action=raw&ctype=text/javascript");
-    }
     // 复制内容版权声明
     if (window.getSelection && !isMGPMGUser && !["edit", "submit"].includes(mw.config.get("wgAction")) && copyRightsNameSpaces.includes(mw.config.get("wgNamespaceNumber"))) {
         copyRights();
