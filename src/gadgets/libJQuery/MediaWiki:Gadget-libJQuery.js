@@ -4,13 +4,13 @@
 "use strict";
 (function ($, mw) {
     $.extend({
-        createIcon: function (iconClass) {
+        createIcon(iconClass) {
             return $("<span>", {
                 "class": `ui-icon ${iconClass} jquery-inline-icon`,
                 text: " ",
             });
         },
-        createNotifyArea: function (textNode, icon, state) {
+        createNotifyArea(textNode, icon, state) {
             return $("<div>", {
                 "class": "ui-widget",
             }).append($("<div>", {
@@ -19,13 +19,13 @@
             }).append($("<p>").append($.createIcon(icon).css("margin-right", ".3em"), textNode)));
         },
         /* @deprecated since 1.26 */
-        ucFirst: function (str) {
+        ucFirst(str) {
             return str.charAt(0).toUpperCase() + str.slice(1);
         },
     });
     mw.messages.set({
         "libjq-cancel-title": "关闭该对话框 [Esc]",
-        "libjq-proceed-title": "Proceed [Enter] in single-line text fields",
+        "libjq-proceed-title": "在单行输入框内按下回车键",
         "libjq-report-title": "报告错误以改进本工具",
     });
     const buttonConfig = {
@@ -46,7 +46,12 @@
         },
     };
     $.extend($.fn, {
-        specialButton: function (which) {
+        /**
+         * @this {JQuery<HTMLElement>}
+         * @param {keyof buttonConfig} which 
+         * @returns 
+         */
+        specialButton(which) {
             return this.button({
                 icons: {
                     primary: buttonConfig[which].icon,
@@ -60,27 +65,27 @@
          *      $('#MyButton')._jqInteraction().show();
          *
          * @context {Object} jQuery instance (jQuery DOM node list)
+         * @this {JQuery<HTMLElement>}
          * @return {Object} jQuery instance (jQuery DOM node list)
          */
-        _jqInteraction: function () {
-            const _this = this;
+        _jqInteraction() {
             return this.on({
                 mouseenter: () => {
-                    _this.addClass("ui-state-hover");
+                    this.addClass("ui-state-hover");
                 },
                 mouseleave: () => {
-                    _this.removeClass("ui-state-hover").removeClass("ui-state-active");
+                    this.removeClass("ui-state-hover").removeClass("ui-state-active");
                 },
             }).on("focusin", () => {
-                _this.addClass("ui-state-focus");
+                this.addClass("ui-state-focus");
             }).on("focusout", () => {
-                _this.removeClass("ui-state-focus");
+                this.removeClass("ui-state-focus");
             }).on("mousedown", (e) => {
-                if (1 === e.which) {
-                    _this.addClass("ui-state-active");
+                if (0 === e.originalEvent.button) {
+                    this.addClass("ui-state-active");
                 }
             }).on("mouseup", () => {
-                _this.removeClass("ui-state-active");
+                this.removeClass("ui-state-active");
             });
         },
     });
