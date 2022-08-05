@@ -23,4 +23,4 @@ jobs:
           cache: "npm"
       - run: npm install eslint@latest -g
       - run: npx eslint --env-info
-      - run: npx eslint --exit-on-fatal-error --ext js ./src
+      - run: npx eslint --exit-on-fatal-error --max-warnings 0  --ext js ./src
