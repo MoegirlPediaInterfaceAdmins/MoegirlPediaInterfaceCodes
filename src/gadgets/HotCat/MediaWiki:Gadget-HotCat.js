@@ -793,12 +793,12 @@ $(() => {
                 };
                 list.onchange = function () {
                     self.highlightSuggestion(0);
-                    self.text.trigger("focus");
+                    self.text.focus();
                 };
                 list.onkeyup = function (evt) {
                     if (evt.keyCode === ESC) {
                         self.resetKeySelection();
-                        self.text.trigger("focus");
+                        self.text.focus();
                         window.setTimeout(() => {
                             self.textchange(true);
                         }, HC.suggest_delay);
@@ -821,7 +821,7 @@ $(() => {
                     }
                     engineSelector.onchange = function () {
                         self.engine = self.engineSelector.options[self.engineSelector.selectedIndex].value;
-                        self.text.trigger("focus");
+                        self.text.focus();
                         self.textchange(true, true);
                     };
                     this.engineSelector = engineSelector;
@@ -919,7 +919,7 @@ $(() => {
             this.form.style.display = "inline";
             this.ok.disabled = false;
             const result = evtKill(evt);
-            this.text.trigger("focus");
+            this.text.focus();
             this.text.readOnly = false;
             checkMultiInput();
             return result;
@@ -1668,7 +1668,7 @@ $(() => {
                     return false;
                 }
             }
-            this.text.trigger("focus");
+            this.text.focus();
             this.text.value = newVal + key;
             this.setSelection(actVal.length, newVal.length);
             return true;

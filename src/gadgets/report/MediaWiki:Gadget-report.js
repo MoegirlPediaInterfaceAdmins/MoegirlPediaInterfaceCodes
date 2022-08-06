@@ -297,7 +297,7 @@ $(() => {
         }
         getReadyProcess(data) {
             return super.getReadyProcess(data).next(() => {
-                this.primaryTypeSelector.trigger("focus");
+                this.primaryTypeSelector.focus();
             }, this);
         }
         getActionProcess(action) {

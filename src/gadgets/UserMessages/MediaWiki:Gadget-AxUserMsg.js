@@ -188,7 +188,7 @@
                 o.$tagSelect.val(umsg.umSelect);
             }
             o.umValidateInput(o);
-            o.$tagSelect.trigger("change");
+            o.$tagSelect.change();
         },
         umDlg: () => {
             const $win = $(window);
@@ -986,10 +986,10 @@
                         return;
                     }
                     // work around a bug (likely same cause as #5265)
-                    this.button.trigger("blur");
+                    this.button.blur();
                     // pass empty string as value to search for, displaying all results
                     input.autocomplete("search", "");
-                    input.trigger("focus");
+                    input.focus();
                 });
             },
             destroy: function () {
