@@ -61,7 +61,8 @@
         CLIENT_NAME = $.client.profile().name,
         $body = $(document.body),
         $window = $(window);
-    let settings, enabled, delay, activatedByClick, tooltipsForComments, cursorWaitCss, windowManager;
+    // let settings, enabled, delay, activatedByClick, tooltipsForComments, cursorWaitCss, windowManager;
+    let settings, enabled, delay, activatedByClick, tooltipsForComments, windowManager;
 
     const rt = ($content) => {
         // Popups gadget & Reference Previews
@@ -630,45 +631,43 @@
                             }
                             settingsDialogOpening = true;
 
-                            if (mw.loader.getState("oojs-ui") !== "ready") {
-                                if (cursorWaitCss) {
-                                    cursorWaitCss.disabled = false;
-                                } else {
-                                    cursorWaitCss = mw.util.addCSS("body { cursor: wait; }");
-                                }
-                            }
-                            mw.loader.using(["oojs", "oojs-ui"], () => {
+                            // if (mw.loader.getState("oojs-ui") !== "ready") {
+                            //     if (cursorWaitCss) {
+                            //         cursorWaitCss.disabled = false;
+                            //     } else {
+                            //         cursorWaitCss = mw.util.addCSS("body { cursor: wait; }");
+                            //     }
+                            // }
 
-                                if (cursorWaitCss) {
-                                    cursorWaitCss.disabled = true;
-                                }
+                            // if (cursorWaitCss) {
+                            //     cursorWaitCss.disabled = true;
+                            // }
 
-                                this.upToTopParent((tt) => {
-                                    if (tt.isPresent) {
-                                        if (tt.$element[0].style.right) {
-                                            tt.$element.css(
-                                                "right",
-                                                `+=${window.innerWidth - $window.width()}`,
-                                            );
-                                        }
-                                        tt.te.hideRef(true);
+                            this.upToTopParent((tt) => {
+                                if (tt.isPresent) {
+                                    if (tt.$element[0].style.right) {
+                                        tt.$element.css(
+                                            "right",
+                                            `+=${window.innerWidth - $window.width()}`,
+                                        );
                                     }
-                                });
-
-                                if (!windowManager) {
-                                    windowManager = new OO.ui.WindowManager();
-                                    $body.append(windowManager.$element);
+                                    tt.te.hideRef(true);
                                 }
+                            });
 
-                                const settingsDialog = new SettingsDialog();
-                                windowManager.addWindows([settingsDialog]);
-                                const settingsWindow = windowManager.openWindow(settingsDialog);
-                                settingsWindow.opened.then(() => {
-                                    settingsDialogOpening = false;
-                                });
-                                settingsWindow.closed.then(() => {
-                                    windowManager.clearWindows();
-                                });
+                            if (!windowManager) {
+                                windowManager = new OO.ui.WindowManager();
+                                $body.append(windowManager.$element);
+                            }
+
+                            const settingsDialog = new SettingsDialog();
+                            windowManager.addWindows([settingsDialog]);
+                            const settingsWindow = windowManager.openWindow(settingsDialog);
+                            settingsWindow.opened.then(() => {
+                                settingsDialogOpening = false;
+                            });
+                            settingsWindow.closed.then(() => {
+                                windowManager.clearWindows();
                             });
                         })
                         .prependTo(this.$content);
