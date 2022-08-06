@@ -4751,7 +4751,7 @@ $(() => {
         //     "user.options",
         //     "mediawiki.jqueryMsg",
         // ].concat(mw.config.get("wgVersion").startsWith("1.31") ? ["mediawiki.api.messages"] : [])).then(fetchSpecialPageNames).then(() => {
-        fetchSpecialPageNames.then(() => {
+        fetchSpecialPageNames().then(() => {
             setupDebugging();
             setSiteInfo();
             setTitleBase();
