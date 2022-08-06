@@ -198,7 +198,7 @@ $(() => {
                     section: "new",
                     sectiontitle: rawTitle,
                     text: original,
-                    summary: `/* ${this.anchor} */ 移动讨论串自[[${fromAnchor}]]`,
+                    summary: `/* ${this.anchor} */ 移动讨论串自[[${fromAnchor}]] !nobot!`,
                     tags: "Automation tool",
                 });
 
@@ -209,7 +209,7 @@ $(() => {
                     title: PAGENAME,
                     section: this.section,
                     text: `== ${rawTitle} ==\n{{movedto|${toAnchor}}}`,
-                    summary: `/* ${this.anchor} */ 移动讨论串至[[${toAnchor}]]`,
+                    summary: `/* ${this.anchor} */ 移动讨论串至[[${toAnchor}]] !nobot!`,
                     tags: "Automation tool",
                 });
             }
