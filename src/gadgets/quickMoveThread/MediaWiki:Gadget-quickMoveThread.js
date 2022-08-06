@@ -1,4 +1,5 @@
 // <pre>
+// await mw.loader.using(["ext.gadget.site-lib", "ext.gadget.libOOUIDialog", "ext.gadget.LocalObjectStorage"])
 "use strict";
 $(() => {
     try {
@@ -129,7 +130,7 @@ $(() => {
             }
             getReadyProcess(data) {
                 return super.getReadyProcess(data).next(() => {
-                    this.targetText.trigger("focus");
+                    this.targetText.focus();
                 }, this);
             }
             getSetupProcess(data) {

@@ -1,6 +1,6 @@
 // <pre>
 "use strict";
-// wgULS = (...args) => args[0]; await mw.loader.using(["oojs-ui", "mediawiki.api", "mediawiki.notification", "mediawiki.notify"]);
+// await mw.loader.using(["ext.gadget.site-lib", "oojs-ui", "mediawiki.api", "mediawiki.notification", "mediawiki.notify"]);
 $(() => {
     try {
         const NS = [0, 10, 828];
@@ -125,7 +125,7 @@ $(() => {
             getReadyProcess(data) {
                 return super.getReadyProcess(data)
                     .next(() => {
-                        this.reasonBox.trigger("focus");
+                        this.reasonBox.focus();
                         this.warnings = {};
                     }, this);
             }
