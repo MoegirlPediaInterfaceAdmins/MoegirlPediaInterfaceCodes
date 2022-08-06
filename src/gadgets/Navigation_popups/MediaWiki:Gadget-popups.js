@@ -3306,12 +3306,11 @@ $(() => {
                 break;
         }
         pendingNavpopTask(navpop);
-        const callback = function (d) {
+        const callback = async (d) => {
             log("callback of API functions was hit");
             if (queryType === "userinfo") {
-                fetchUserGroupNames(d.data).then(() => {
-                    showAPIPreview(queryType, htmlGenerator(article, d, navpop), navpop.idNumber, navpop, d);
-                });
+                await fetchUserGroupNames(d.data);
+                showAPIPreview(queryType, htmlGenerator(article, d, navpop), navpop.idNumber, navpop, d);
                 return;
             }
             showAPIPreview(queryType, htmlGenerator(article, d, navpop), navpop.idNumber, navpop, d);
@@ -4629,7 +4628,7 @@ $(() => {
             pg.user.canReview = rights.indexOf("review") !== -1;
         }
     }
-    function fetchSpecialPageNames() {
+    async function fetchSpecialPageNames() {
         const params = {
             action: "query",
             meta: "siteinfo",
@@ -4638,9 +4637,8 @@ $(() => {
             uselang: "content",
             maxage: 3600,
         };
-        return getMwApi().get(params).then((data) => {
-            pg.wiki.specialpagealiases = data.query.specialpagealiases;
-        });
+        const data = await getMwApi().get(params);
+        pg.wiki.specialpagealiases = data.query.specialpagealiases;
     }
     function setTitleBase() {
         const protocol = window.popupLocalDebug ? "http:" : location.protocol;
@@ -4737,40 +4735,44 @@ $(() => {
         }
         return pg.api.client;
     }
-    function setupPopups(callback) {
+    async function setupPopups(callback) {
         if (setupPopups.completed) {
             if (typeof callback === "function") {
                 callback();
             }
             return;
         }
-        // mw.loader.using([
-        //     "mediawiki.util",
-        //     "mediawiki.api",
-        //     "mediawiki.user",
-        //     "user.options",
-        //     "mediawiki.jqueryMsg",
-        // ].concat(mw.config.get("wgVersion").startsWith("1.31") ? ["mediawiki.api.messages"] : [])).then(fetchSpecialPageNames).then(() => {
-        fetchSpecialPageNames().then(() => {
-            setupDebugging();
-            setSiteInfo();
-            setTitleBase();
-            setOptions();
-            setUserInfo();
-            setNamespaces();
-            setInterwiki();
-            setRegexps();
-            setRedirs();
-            setMisc();
-            setupLivePreview();
-            setupTooltips();
-            log("In setupPopups(), just called setupTooltips()");
-            Navpopup.tracker.enable();
-            setupPopups.completed = true;
-            if (typeof callback === "function") {
-                callback();
-            }
-        });
+        /**
+         * No need to require dependencies by itself
+         * 
+        mw.loader.using([
+             "mediawiki.util",
+             "mediawiki.api",
+             "mediawiki.user",
+             "user.options",
+             "mediawiki.jqueryMsg",
+        ].concat(mw.config.get("wgVersion").startsWith("1.31") ? ["mediawiki.api.messages"] : [])).then(fetchSpecialPageNames).then(() => {
+         */
+        await fetchSpecialPageNames();
+        setupDebugging();
+        setSiteInfo();
+        setTitleBase();
+        setOptions();
+        setUserInfo();
+        setNamespaces();
+        setInterwiki();
+        setRegexps();
+        setRedirs();
+        setMisc();
+        setupLivePreview();
+        setupTooltips();
+        log("In setupPopups(), just called setupTooltips()");
+        Navpopup.tracker.enable();
+        // eslint-disable-next-line require-atomic-updates
+        setupPopups.completed = true;
+        if (typeof callback === "function") {
+            callback();
+        }
     }
     function defaultNavlinkSpec() {
         let str = "";
@@ -5323,7 +5325,7 @@ $(() => {
         }
         return ret.replace(RegExp('^(.*?)(title=")(.*?)(".*)$', "i"), `$1$2$3 [${key}]$4`);
     }
-    function loadDiff(article, oldid, diff, navpop) {
+    async function loadDiff(article, oldid, diff, navpop) {
         navpop.diffData = {
             oldRev: {},
             newRev: {},
@@ -5368,24 +5370,23 @@ $(() => {
                 params.torev = diff || 0;
                 break;
         }
-        api.get(params).then((data) => {
-            navpop.diffData.oldRev.revid = data.compare.fromrevid;
-            navpop.diffData.newRev.revid = data.compare.torevid;
-            addReviewLink(navpop, "popupMiscTools");
-            const go = function () {
-                pendingNavpopTask(navpop);
-                let url = `${pg.wiki.apiwikibase}?format=json&formatversion=2&action=query&`;
-                url += `revids=${navpop.diffData.oldRev.revid}|${navpop.diffData.newRev.revid}`;
-                url += "&prop=revisions&rvprop=ids|timestamp|content";
-                getPageWithCaching(url, doneDiff, navpop);
-                return true;
-            };
-            if (navpop.visible || !getValueOf("popupLazyDownloads")) {
-                go();
-            } else {
-                navpop.addHook(go, "unhide", "before", "DOWNLOAD_DIFFS");
-            }
-        });
+        const data = await api.get(params);
+        navpop.diffData.oldRev.revid = data.compare.fromrevid;
+        navpop.diffData.newRev.revid = data.compare.torevid;
+        addReviewLink(navpop, "popupMiscTools");
+        const go = function () {
+            pendingNavpopTask(navpop);
+            let url = `${pg.wiki.apiwikibase}?format=json&formatversion=2&action=query&`;
+            url += `revids=${navpop.diffData.oldRev.revid}|${navpop.diffData.newRev.revid}`;
+            url += "&prop=revisions&rvprop=ids|timestamp|content";
+            getPageWithCaching(url, doneDiff, navpop);
+            return true;
+        };
+        if (navpop.visible || !getValueOf("popupLazyDownloads")) {
+            go();
+        } else {
+            navpop.addHook(go, "unhide", "before", "DOWNLOAD_DIFFS");
+        }
     }
     async function addReviewLink(navpop, target) {
         if (!pg.user.canReview) {
