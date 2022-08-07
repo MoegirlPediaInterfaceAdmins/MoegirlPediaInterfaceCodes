@@ -1222,11 +1222,14 @@ $(() => {
         const btn = mw.util.getParamValue("autoclick");
         if (btn) {
             if (document.editform && document.editform[btn]) {
+                /**
+                 * @type {HTMLButtonElement | HTMLInputElement}
+                 */
                 const button = document.editform[btn];
                 const msg = tprintf("The %s button has been automatically clicked. Please wait for the next page to load.", [button.value]);
                 bannerMessage(msg);
                 document.title = `(${document.title})`;
-                button.trigger("click");
+                button.click();
             } else {
                 alert(tprintf("Could not find button %s. Please check the settings in your javascript file.", [btn]));
             }
