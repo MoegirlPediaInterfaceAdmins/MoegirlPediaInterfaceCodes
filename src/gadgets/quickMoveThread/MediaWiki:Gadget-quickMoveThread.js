@@ -4,7 +4,7 @@
 $(() => {
     try {
         const NS = mw.config.get("wgNamespaceNumber");
-        if (NS <= 0 || !(NS & 1)) {
+        if (!(NS > 0 && NS & 1)) {
             return;
         }
 
