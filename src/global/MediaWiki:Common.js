@@ -45,7 +45,7 @@
             if (!document.hidden) {
                 $("body > #content > #siteNotice .scrollDiv.scrolling, #moe-sitenotice-container > .moe-sitenotice .scrollDiv.scrolling").each((_, ele) => {
                     const self = $(ele);
-                    if (self.css("font-weight") === 700) {
+                    if (self.css("font-weight") === "700") {
                         return;
                     }
                     const children = self.children();
