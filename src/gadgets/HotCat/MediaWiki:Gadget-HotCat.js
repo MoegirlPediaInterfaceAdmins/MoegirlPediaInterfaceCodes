@@ -16,6 +16,9 @@ License: Quadruple licensed GFDL, GPL, LGPL and Creative Commons Attribution 3.0
 */
 window.hotcat_translations_from_commons = false; // 禁止从维基共享获取翻译
 $(() => {
+    /**
+     * @type {{ wgServer: string, [keys: string]: any }}
+     */
     const conf = new Proxy({}, {
         get: function (_, name) {
             if (name === "wgServer") {
@@ -169,7 +172,7 @@ $(() => {
         document.head.appendChild(s);
     }
     function loadJS(page, callback) {
-        load(`${conf.wgServer + conf.wgScript}?title=${encodeURIComponent(page)}&action=raw&ctype=text/javascript`, callback);
+        load(`${conf.wgServer}${conf.wgScript}?title=${encodeURIComponent(page)}&action=raw&ctype=text/javascript`, callback);
     }
     function loadURI(href, callback) {
         let url = href;
@@ -177,7 +180,7 @@ $(() => {
             url = window.location.protocol + url;
         }
         else if (url.substring(0, 1) === "/") {
-            url = conf.wgServer + url;
+            url = `${conf.wgServer}${url}`;
         }
         load(url, callback);
     }
@@ -259,12 +262,12 @@ $(() => {
             return null;
         }
         const script = `${conf.wgScript}?`;
-        if (href.indexOf(script) === 0 || href.indexOf(conf.wgServer + script) === 0 || conf.wgServer.substring(0, 2) === "//" && href.indexOf(document.location.protocol + conf.wgServer + script) === 0) {
+        if (href.indexOf(script) === 0 || href.indexOf(`${conf.wgServer}${script}`) === 0 || conf.wgServer.substring(0, 2) === "//" && href.indexOf(`${document.location.protocol}${conf.wgServer}${script}`) === 0) {
             return param("title", href);
         }
         let prefix = conf.wgArticlePath.replace("$1", "");
         if (href.indexOf(prefix)) {
-            prefix = conf.wgServer + prefix;
+            prefix = `${conf.wgServer}${prefix}`;
         }
         if (href.indexOf(prefix) && prefix.substring(0, 2) === "//") {
             prefix = document.location.protocol + prefix;
@@ -1357,7 +1360,7 @@ $(() => {
         makeCalls(engines, cb, v, cleanKey) {
             for (let j = 0; j < engines.length; j++) {
                 const engine = suggestionEngines[engines[j]];
-                const url = conf.wgServer + conf.wgScriptPath + engine.uri.replace(/\$1/g, encodeURIComponent(cleanKey));
+                const url = `${conf.wgServer}${conf.wgScriptPath}${engine.uri.replace(/\$1/g, encodeURIComponent(cleanKey))}`;
                 this.makeCall(url, cb, engine, v, cleanKey);
             }
         }
@@ -1694,7 +1697,7 @@ $(() => {
                 const new_selection = this.text.createTextRange();
                 new_selection.move("character", from);
                 new_selection.moveEnd("character", to - from);
-                new_selection.trigger("select");
+                new_selection.select();
             }
         }
         getSelection() {
@@ -1899,7 +1902,7 @@ $(() => {
             failure(...args);
         }
         try {
-            const json = await $.getJSON(`${conf.wgServer + conf.wgScriptPath}/api.php?format=json&action=query&rawcontinue=&titles=${encodeURIComponent(conf.wgPageName)}&prop=info%7Crevisions%7Clanglinks&inprop=watched&rvprop=content%7Ctimestamp%7Cids%7Cuser&lllimit=500&rvlimit=2&rvdir=newer&rvstartid=${conf.wgCurRevisionId}&meta=siteinfo%7Cuserinfo%7Ctokens&type=csrf&uiprop=options`);
+            const json = await $.getJSON(`${conf.wgServer}${conf.wgScriptPath}/api.php?format=json&action=query&rawcontinue=&titles=${encodeURIComponent(conf.wgPageName)}&prop=info%7Crevisions%7Clanglinks&inprop=watched&rvprop=content%7Ctimestamp%7Cids%7Cuser&lllimit=500&rvlimit=2&rvdir=newer&rvstartid=${conf.wgCurRevisionId}&meta=siteinfo%7Cuserinfo%7Ctokens&type=csrf&uiprop=options`);
             setPage(json);
             doEdit(fail);
         } catch (req) {
@@ -1944,7 +1947,7 @@ $(() => {
             action = commitForm.wpDiff;
             if (action) {
                 action.name = action.value = "wpSave";
-                commitForm.wpChangeTags += `,${HC.automationChangeTag}`;
+                commitForm.wpChangeTags.value += `,${HC.automationChangeTag}`;
             }
         } else {
             action = commitForm.wpSave;
@@ -2065,7 +2068,7 @@ $(() => {
         if (selfEditConflict) {
             commitForm.oldid.value = `${pageTextRevId || conf.wgCurRevisionId}`;
         }
-        commitForm.hcCommit.trigger("click");
+        commitForm.hcCommit.click();
     }
     function resolveOne(page, toResolve) {
         const cats = page.categories,
@@ -2162,7 +2165,7 @@ $(() => {
             }
         }
         try {
-            const json = await $.getJSON(`${conf.wgServer + conf.wgScriptPath}/api.php?${args}`);
+            const json = await $.getJSON(`${conf.wgServer}${conf.wgScriptPath}/api.php?${args}`);
             resolveRedirects(toResolve, json);
             callback(toResolve);
         } catch (req) {
@@ -2854,7 +2857,7 @@ $(() => {
             }
             if (chkCats.length && (!is_hidden && !has_hidden || is_hidden)) {
                 const arg_titles = chkCats.join("|");
-                $.getJSON(`${conf.wgServer + conf.wgScriptPath}/api.php?action=query&format=json&titles=${encodeURIComponent(arg_titles)}&redirects=1&converttitles=1`, (json) => {
+                $.getJSON(`${conf.wgServer}${conf.wgScriptPath}/api.php?action=query&format=json&titles=${encodeURIComponent(arg_titles)}&redirects=1&converttitles=1`, (json) => {
                     let converted = json.query.converted;
                     if (!converted || converted.length < chkCats.length) {
                         console.log(arg_titles);
@@ -2930,7 +2933,7 @@ $(() => {
             pageTime = null;
             setup(createCommitForm);
         } else {
-            const url = `${conf.wgServer + conf.wgScriptPath}/api.php?format=json&callback=HotCat.start&action=query&rawcontinue=&titles=${encodeURIComponent(conf.wgPageName)}&prop=info%7Crevisions&rvprop=content%7Ctimestamp%7Cids&meta=siteinfo&rvlimit=1&rvstartid=${conf.wgCurRevisionId}`;
+            const url = `${conf.wgServer}${conf.wgScriptPath}/api.php?format=json&callback=HotCat.start&action=query&rawcontinue=&titles=${encodeURIComponent(conf.wgPageName)}&prop=info%7Crevisions&rvprop=content%7Ctimestamp%7Cids&meta=siteinfo&rvlimit=1&rvstartid=${conf.wgCurRevisionId}`;
             const s = make("script");
             s.src = url;
             HC.start = function (json) {
