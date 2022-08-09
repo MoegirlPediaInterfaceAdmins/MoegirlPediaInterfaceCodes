@@ -214,7 +214,7 @@
                 });
                 return $("<div>").html(message);
             }
-            return mw.message.bind(mw.message, args).toString();
+            return mw.message.apply(mw.message, args).toString();
         };
     }
     //侧边栏
