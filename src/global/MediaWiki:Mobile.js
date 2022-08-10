@@ -210,7 +210,7 @@
                     if (index === 0) {
                         return;
                     }
-                    message = message.replace(RegExp(`\\$${index}`, "g"), arg);
+                    message = message.replace(RegExp(`\\b\\$${index}\\b`, "g"), arg);
                 });
                 return $("<div>").html(message);
             }
