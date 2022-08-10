@@ -386,7 +386,7 @@
     mobilesidebar();
     // 用以临时修复在移动端上AjaxPoll未加载代码块的问题，更新后需要去除
     if ($(".ajaxpoll").length > 0) {
-        mw.loader.load("https://zh.moegirl.org.cn/load.php?modules=ext.ajaxpoll");
+        mw.loader.load("https://zh.moegirl.org.cn/load.php?modules=ext.ajaxpoll&only=scripts");
     }
     // 用以修复移动端切换语言菜单的bug
     document.querySelector("#mw-mf-viewport").addEventListener("click", (e) => {
