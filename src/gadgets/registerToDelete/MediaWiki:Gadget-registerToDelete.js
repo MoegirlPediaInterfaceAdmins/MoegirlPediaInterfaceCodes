@@ -2,7 +2,7 @@
 "use strict";
 $(() => {
     try {
-        if ($(".noarticletext")[0] || $(".will2Be2Deleted")[0] || !mw.config.get("wgUserGroups").includes("patroller") && !(new URL(location.href).searchParams.get("AnnTools-debug") || "").split("|").includes("registerToDelete")) {
+        if ($(".noarticletext")[0] || $(".will2Be2Deleted")[0] || mw.config.get("wgRevisionId") === 0 || !mw.config.get("wgUserGroups").includes("patroller") && !(new URL(location.href).searchParams.get("AnnTools-debug") || "").split("|").includes("registerToDelete")) {
             return;
         }
 
