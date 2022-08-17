@@ -283,7 +283,7 @@ $(() => (async () => {
                 target.css("border", "3px dashed red");
             }
             if (isMGPMGUser && !wgUserGroups.includes("staff") && +mw.user.options.get("gadget-disable-nest-alert", 0) !== 1) {
-                oouiDialog.alert(`本页面含有嵌套使用（混用）以下标签或模板的内容（已用红色虚线边框标识），请检查源码并修改之：<ul><li>删除线：<code>${oouiDialog.sanitize("<s>")}</code>、<code>${oouiDialog.sanitize("<del>")}</code>；</li><li>黑幕：<code>{{黑幕}}</code>、<code>{{Block}}</code>、<code>{{Heimu}}</code>、<code>{{Chide}}</code>；</li><li>彩色幕：<code>{{彩色幕}}</code>；</li><li>胡话：<code>{{胡话}}</code>、<code>{{jk}}</code>，大小写不限。</li></ul>`, {
+                oouiDialog.alert(`本页面含有嵌套使用（混用）以下标签或模板的内容（已用红色虚线边框标识），请检查源码并修改之：<ul><li>删除线：<code>${oouiDialog.sanitize("<s>")}</code>、<code>${oouiDialog.sanitize("<del>")}</code>；</li><li>黑幕：<code>{{黑幕}}</code>、<code>{{Block}}</code>、<code>{{Heimu}}</code>；</li><li>彩色幕：<code>{{彩色幕}}</code>；</li><li>胡话：<code>{{胡话}}</code>、<code>{{jk}}</code>，大小写不限。</li></ul>`, {
                     title: "萌娘百科提醒您",
                     size: "medium",
                 });
