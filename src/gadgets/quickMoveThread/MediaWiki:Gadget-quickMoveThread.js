@@ -5,7 +5,7 @@ $(() => {
     try {
         const NS = mw.config.get("wgNamespaceNumber");
         const PAGENAME = mw.config.get("wgPageName");
-        const RESTRICTION = mw.config.get("wgRestrictionEdit")
+        const RESTRICTION = mw.config.get("wgRestrictionEdit");
         if (!(NS > 0 && NS & 1) || PAGENAME.startsWith("萌娘百科_talk:提案/") || RESTRICTION.includes("sysop")) {
             return;
         }
