@@ -153,7 +153,7 @@
     }
     //替换文本默认不勾选「通过Special:最近更改和监视列表通知这些编辑」
     if (mw.config.get("wgCanonicalSpecialPageName") === "ReplaceText" && $("#doAnnounce")[0]) {
-        $("#doAnnounce").removeAttr("checked");
+        $("#doAnnounce").prop("checked", false);
     }
     //评论管理，需要置底
     while (!document.querySelector("#flowthread")) {
