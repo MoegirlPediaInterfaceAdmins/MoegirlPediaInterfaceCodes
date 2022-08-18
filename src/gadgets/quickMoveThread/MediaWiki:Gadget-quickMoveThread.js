@@ -4,11 +4,12 @@
 $(() => {
     try {
         const NS = mw.config.get("wgNamespaceNumber");
-        if (!(NS > 0 && NS & 1)) {
+        const PAGENAME = mw.config.get("wgPageName");
+        const RESTRICTION = mw.config.get("wgRestrictionEdit")
+        if (!(NS > 0 && NS & 1) || PAGENAME.startsWith("萌娘百科_talk:提案/") || RESTRICTION.includes("sysop")) {
             return;
         }
-
-        const PAGENAME = mw.config.get("wgPageName");
+        
         const PUBLICDB = ["技术实现", "权限变更", "操作申请", "方针政策", "页面相关", "提问求助", "群组信息"].filter(
             (v) => PAGENAME.substring(PAGENAME.lastIndexOf("/") + 1, PAGENAME.length) !== v,
         );
