@@ -184,7 +184,6 @@ $(() => {
         }
         load(url, callback);
     }
-    loadJS("MediaWiki:Gadget-HotCat.js/local_defaults", loadTrigger.loaded.bind(loadTrigger));
     if (conf.wgUserLanguage !== "en") {
         if (window.hotcat_translations_from_commons === undefined) {
             window.hotcat_translations_from_commons = true;
