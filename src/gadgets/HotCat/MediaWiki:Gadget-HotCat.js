@@ -1,3 +1,4 @@
+/* eslint-disable require-atomic-updates */
 "use strict";
 /**
   * https://commons.wikimedia.org/wiki/MediaWiki:Gadget-HotCat.js
@@ -15,7 +16,7 @@ List of main authors: https://commons.wikimedia.org/wiki/Help:Gadget-HotCat/Vers
 License: Quadruple licensed GFDL, GPL, LGPL and Creative Commons Attribution 3.0 (CC-BY-3.0)
 */
 window.hotcat_translations_from_commons = false; // 禁止从维基共享获取翻译
-$(() => {
+(async () => {
     /**
      * @type {{ wgServer: string, [keys: string]: any }}
      */
@@ -156,46 +157,66 @@ $(() => {
         }
     }
     const loadTrigger = new LoadTrigger(2);
-    function load(uri, callback) {
-        const s = document.createElement("script");
-        s.src = uri;
-        let called = false;
-        s.onload = s.onerror = function () {
-            if (!called && callback) {
-                called = true;
-                callback();
-            }
-            if (s.parentNode) {
-                s.parentNode.removeChild(s);
-            }
-        };
-        document.head.appendChild(s);
-    }
-    function loadJS(page, callback) {
-        load(`${conf.wgServer}${conf.wgScript}?title=${encodeURIComponent(page)}&action=raw&ctype=text/javascript`, callback);
-    }
-    function loadURI(href, callback) {
-        let url = href;
-        if (url.substring(0, 2) === "//") {
-            url = window.location.protocol + url;
-        }
-        else if (url.substring(0, 1) === "/") {
-            url = `${conf.wgServer}${url}`;
-        }
-        load(url, callback);
-    }
+    await mw.loader.using(["mediawiki.user"]);
+    const userRights = await mw.user.getRights();
+    const autopatrol = userRights.includes("autopatrol");
+    window.hotcat_no_autocommit = !autopatrol;
+    window.hotcat_del_needs_diff = !autopatrol;
     if (conf.wgUserLanguage !== "en") {
-        if (window.hotcat_translations_from_commons === undefined) {
-            window.hotcat_translations_from_commons = true;
-        }
-        if (window.hotcat_translations_from_commons && conf.wgServer.indexOf("//commons") < 0) {
-            loadURI(`//commons.wikimedia.org/w/index.php?title=MediaWiki:Gadget-HotCat.js/${conf.wgUserLanguage}&action=raw&ctype=text/javascript`, loadTrigger.loaded.bind(loadTrigger));
-        } else {
-            loadJS(`MediaWiki:Gadget-HotCat.js/${conf.wgUserLanguage}`, loadTrigger.loaded.bind(loadTrigger));
-        }
-    } else {
-        loadTrigger.loaded();
+        const local = {
+            messages: {
+                cat_removed: "移除[[分类:$1]]",
+                template_removed: "移除{{[[分类:$1]]}}",
+                cat_added: "添加[[分类:$1]]",
+                cat_keychange: "为[[分类:$1]]设定新索引：“$2”",
+                cat_notFound: "分类“$1”未找到",
+                cat_exists: "分类“$1”已存在，不执行添加操作",
+                cat_resolved: "（已处理[[分类:$1]]的重定向）",
+                uncat_removed: "", //萌百没有Template:Uncategorized
+                separator: "; ",
+                prefix: "",
+                using: "——[[Help:HotCat小工具|HotCat]]",
+                multi_change: "$1个分类",
+                commit: "保存",
+                ok: "确定",
+                cancel: "取消",
+                multi_error: "无法连接到萌百服务器，因此您的分类更改无法保存，由此引发的不便我们深表歉意。",
+                short_catchange: null,
+            },
+            categories: "分类",
+            redir_category: "分类重定向",
+            tooltips: {
+                change: "修改",
+                remove: "移除",
+                add: "新增一个分类",
+                restore: "回退更改",
+                undo: "回退更改",
+                down: "打开以便修改并显示子分类",
+                up: "打开以便修改并显示父分类",
+            },
+            multi_tooltip: "修改多个分类",
+            engine_names: {
+                searchindex: "搜索索引",
+                pagelist: "页面列表",
+                combined: "合并搜索",
+                subcat: "子分类",
+                parentcat: "父分类",
+            },
+            disambig_category: "消歧义页",
+            blacklist: /(?:不可|已)索引页面|(?:调用重复模板参数|有(?:过多高开销解析器函数调用|忽略显示标题|模板循环|脚本错误|投票|参考文献错误)|含有(?:略过模板参数|受损文件链接)|展开模板后长度超过上限|扩展深度超出限制|使用无效自封闭HTML标签|受到保护无法编辑|即将删除)的页面|有错误的Scribunto模块|隐藏分类|页面的节点数超出限制|需要帮助/i,
+            no_autocommit: !autopatrol,
+            del_needs_diff: !autopatrol,
+            existsYes: `${mw.config.get("wgServer").replace("zh.moegirl", "img.moegirl")}/common/thumb/b/be/P_yes.svg/20px-P_yes.svg.png`,
+            existsNo: `${mw.config.get("wgServer").replace("zh.moegirl", "img.moegirl")}/common/thumb/4/42/P_no.svg/20px-P_no.svg.png`,
+            disable: function () {
+                const ns = mw.config.get("wgNamespaceNumber");
+                const nsIds = mw.config.get("wgNamespaceIds");
+                return ns < 0 || ns === nsIds.template || ns === nsIds.module || ns === nsIds.mediawiki || ns === nsIds.file && !mw.config.get("wgArticleId") || ns === nsIds.creator || ns === nsIds.timedtext || ns === nsIds.institution || mw.config.get("wgPageContentModel") !== "wikitext";
+            },
+        };
+        $.extend(HC, local, true);
     }
+    loadTrigger.loaded();
     const wikiTextBlank = "[\\t _\\xA0\\u1680\\u180E\\u2000-\\u200A\\u2028\\u2029\\u202F\\u205F\\u3000]+";
     const wikiTextBlankRE = new RegExp(wikiTextBlank, "g");
     const wikiTextBlankOrBidi = "[\\t _\\xA0\\u1680\\u180E\\u2000-\\u200B\\u200E\\u200F\\u2028-\\u202F\\u205F\\u3000]*";
@@ -3058,5 +3079,5 @@ $(() => {
     //     $.ready,
     // ]);
     run();
-});
+})();
 //</nowiki>
