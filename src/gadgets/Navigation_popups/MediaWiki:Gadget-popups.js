@@ -6568,48 +6568,17 @@ $(() => {
         zxy: "zxy",
         autoedit_version: "np20140416",
     };
-    const willBeReplaces = [];
-    class PopupNoTranslation {
-        popupNoTranslation = [];
-        constructor() {
-            let s;
-            try {
-                s = JSON.parse(localStorage.getItem("popupNoTranslation"));
-                if (!Array.isArray(s)) {
-                    s = [];
-                }
-            } catch {
-                s = [];
-            }
-            this.#push(...s);
-        }
-        #push(...args) {
-            const ret = this.popupNoTranslation.push(args.filter((n) => {
-                return typeof n !== "string" || !n.includes("&autoimpl=np20140416&actoken=") && !n.endsWith("Hint") && !willBeReplaces.includes(n);
-            }));
-            localStorage.setItem("popupNoTranslation", JSON.stringify(this.popupNoTranslation));
-            return ret;
-        }
-        push(str) {
-            const hasDefault = !!pg.string[str];
-            if (this.popupNoTranslation.includes(str)) {
-                return hasDefault ? pg.string[str] : str;
-            }
-            this.#push(str);
-            if (mw.util.getParamValue("debug") === "1") {
-                console.info("Gadget Popups", "can't find the translation of", str, hasDefault ? `, use the default text [${pg.string[str]}].` : ", and no default text found.", new Error().stack);
-            }
-            return hasDefault ? pg.string[str] : str;
-        }
-    }
+    localStorage.removeItem("popupNoTranslation");
     function popupString(str) {
         if (!window.popupNoTranslation) {
-            window.popupNoTranslation = new PopupNoTranslation();
+            window.popupNoTranslation = new Set();
         }
         if (typeof popupStrings !== "undefined" && popupStrings && popupStrings[str]) {
             return popupStrings[str];
         }
-        return window.popupNoTranslation.push(str);
+        window.popupNoTranslation.add(str);
+        console.info("popupNoTranslation", window.popupNoTranslation);
+        return str;
     }
     function tprintf(str, _subs) {
         let subs = _subs;
