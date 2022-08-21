@@ -17,6 +17,7 @@ License: Quadruple licensed GFDL, GPL, LGPL and Creative Commons Attribution 3.0
 */
 window.hotcat_translations_from_commons = false; // 禁止从维基共享获取翻译
 (async () => {
+    await $.ready;
     /**
      * @type {{ wgServer: string, [keys: string]: any }}
      */
