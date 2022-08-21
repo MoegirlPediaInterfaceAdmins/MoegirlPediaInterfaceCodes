@@ -6569,15 +6569,16 @@ $(() => {
         autoedit_version: "np20140416",
     };
     localStorage.removeItem("popupNoTranslation");
+    const popupNoTranslation = new Set();
+    window.popupNoTranslation = popupNoTranslation;
     function popupString(str) {
-        if (!window.popupNoTranslation) {
-            window.popupNoTranslation = new Set();
-        }
         if (typeof popupStrings !== "undefined" && popupStrings && popupStrings[str]) {
             return popupStrings[str];
         }
-        window.popupNoTranslation.add(str);
-        console.info("popupNoTranslation", window.popupNoTranslation);
+        if (!popupNoTranslation.has(str) && (typeof n !== "string" || !str.includes("&autoimpl=np20140416&actoken=") && !str.endsWith("Hint"))) {
+            popupNoTranslation.add(str);
+            console.info("popupNoTranslation", popupNoTranslation);
+        }
         return str;
     }
     function tprintf(str, _subs) {
