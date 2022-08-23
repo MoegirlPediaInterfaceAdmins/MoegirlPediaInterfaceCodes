@@ -4,7 +4,7 @@
  * 版权协定：知识共享 署名-非商业性使用-相同方式共享 3.0
  */
 "use strict";
-$(() => (async () => {
+(async () => {
     /* 检查是否为维护组成员 */
     const wgUserGroups = mw.config.get("wgUserGroups");
     const isMGPMGUser = wgUserGroups.includes("patroller") || wgUserGroups.includes("sysop");
@@ -379,6 +379,9 @@ $(() => (async () => {
             }, 16);
         });
     }
+
+    await $.ready;
+
     /* 反嵌入反反代 */
     try {
         let substHost;
@@ -521,4 +524,4 @@ $(() => (async () => {
     $window.on("load", () => {
         $window.triggerHandler("resize");
     });
-})());
+})();
