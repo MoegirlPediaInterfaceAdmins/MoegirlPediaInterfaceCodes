@@ -8,7 +8,9 @@ $(() => (async () => {
     /* 检查是否为维护组成员 */
     const wgUserGroups = mw.config.get("wgUserGroups");
     const isMGPMGUser = wgUserGroups.includes("patroller") || wgUserGroups.includes("sysop");
+
     const wgNamespaceNumber = mw.config.get("wgNamespaceNumber");
+    const wgAction = mw.config.get("wgAction");
 
     const body = document.body;
     const html = document.documentElement;
@@ -366,6 +368,17 @@ $(() => (async () => {
             $ele.addClass("margin-left-set");
         });
     }
+    // 页面历史表单部分按钮改为 post
+    function historyForm() {
+        const form = $("#mw-history-compare");
+        // form.find('[name="editchangetags"], [name="revisiondelete"]').attr("formmethod", "post"); // 不知为何，该方式不生效
+        form.find('[name="editchangetags"], [name="revisiondelete"]').on("click", () => {
+            form.attr("method", "post");
+            setTimeout(() => {
+                form.removeAttr("method");
+            }, 16);
+        });
+    }
     /* 反嵌入反反代 */
     try {
         let substHost;
@@ -424,13 +437,13 @@ $(() => (async () => {
     // 修复错误嵌套模板
     mw.hook("wikipage.content").add(templateFix);
     // 仅在编辑界面修复验证码
-    if (["edit", "submit"].includes(mw.config.get("wgAction"))) {
+    if (["edit", "submit"].includes(wgAction)) {
         tcc();
     }
-    $window.triggerHandler("resize");
-    $window.on("load", () => {
-        $window.triggerHandler("resize");
-    });
+    // 页面历史表单部分按钮改为 post
+    if (wgAction === "history") {
+        historyForm();
+    }
     const needHashChange = /[)]$/.test(location.pathname + location.search);
     if (needHashChange) {
         const originHash = location.hash;
@@ -504,4 +517,8 @@ $(() => (async () => {
             }
         }
     }
+    $window.triggerHandler("resize");
+    $window.on("load", () => {
+        $window.triggerHandler("resize");
+    });
 })());
