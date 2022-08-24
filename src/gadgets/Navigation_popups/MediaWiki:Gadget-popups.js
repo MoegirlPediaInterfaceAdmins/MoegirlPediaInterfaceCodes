@@ -6575,7 +6575,7 @@ $(() => {
         if (typeof popupStrings !== "undefined" && popupStrings && popupStrings[str]) {
             return popupStrings[str];
         }
-        if (!popupNoTranslation.has(str) && (typeof n !== "string" || !str.includes("&autoimpl=np20140416&actoken=") && !str.endsWith("Hint"))) {
+        if (!popupNoTranslation.has(str) && (typeof str !== "string" || !str.includes("&autoimpl=np20140416&actoken=") && !str.endsWith("Hint"))) {
             popupNoTranslation.add(str);
             console.info("popupNoTranslation", popupNoTranslation);
         }
