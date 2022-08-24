@@ -114,7 +114,7 @@
                     mw.config.set("wgMultimediaViewerInjected", "on");
                     $(".mw-mmv-image").off("click")[0].addEventListener("click", (e) => {
                         if ($(e.target).is("img")) {
-                            window.open($(e.target).attr("src").replace(/(img\.moegirl\.org\.cn\/common\/)thumb\/([a-z\d]+\/[a-z\d]+\/)([^/]+)\/\d+px-\3/i, "$1$2$3"), "_blank").trigger("focus");
+                            window.open($(e.target).attr("src").replace(/(img\.moegirl\.org\.cn\/common\/)thumb\/([a-z\d]+\/[a-z\d]+\/)([^/]+)\/\d+px-\3/i, "$1$2$3"), "_blank").focus();
                             e.preventDefault();
                             e.stopPropagation();
                             e.stopImmediatePropagation();
