@@ -23,7 +23,7 @@ jobs:
           check-latest: true
           cache: npm
       - name: Install eslint
-        run: npm install --location=global eslint@latest
+        run: npm install eslint@latest
       - name: Reload the cache of eslint
         uses: actions/cache@v3
         with:
