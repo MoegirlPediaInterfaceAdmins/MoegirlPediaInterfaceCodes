@@ -164,7 +164,7 @@
                     labelPadding: "2px",
                     labelBorderColor: "#aaa",
                     labelColor: "green",
-                    labelBackgroundColor: $("#content").css("background-color"),
+                    labelBackgroundColor: $("#content").css("background-color") || "rgba(247,251,255,0.8)",
                     textPadding: "20px 30px",
                     textBorderColor: "#aaa",
                     textBackgroundColor: "white",
