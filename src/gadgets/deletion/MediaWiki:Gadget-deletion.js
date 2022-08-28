@@ -211,7 +211,7 @@ $(() => (async () => {
                     const self = $(ele);
                     if (self.text().trim() === "") { return; }
                     self.css("margin-right", "2em");
-                    const url = new URL(self.attr("href"));
+                    const url = new URL(new mw.Uri(self.attr("href")));
                     const link = decodeURIComponent(url.searchParams.has("title") ? url.searchParams.get("title") : url.pathname.replace(/^\//, "")).replace(/_/g, " ");
                     const page = pages.filter(({ title }) => title === link)[0];
                     try {
