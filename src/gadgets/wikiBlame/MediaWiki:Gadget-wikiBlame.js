@@ -1,11 +1,10 @@
+//通过选中文字快速找到编辑者和日期 by User:Bbrabbit
+//注意：此工具会绝赞产生大量API请求，非维护组谨慎使用。维护组：需要WAF豁免。
 "use strict";
 $(() => {
     //dialog classes
     class WikiBlameDialog extends OO.ui.Dialog {
-        static static = {
-            ...super.static,
-            name: "wikiBlameDialog",
-        };
+        static static = { ...super.static, name: "wikiBlameDialog" };
         constructor(config) {
             super(config);
         }
@@ -40,8 +39,7 @@ $(() => {
                     start_month_list.push(new OO.ui.MenuOptionWidget({
                         data: String(i),
                         label: String(i),
-                    }));
-                    end_month_list.push(new OO.ui.MenuOptionWidget({
+                    })); end_month_list.push(new OO.ui.MenuOptionWidget({
                         data: String(i),
                         label: String(i),
                     }));
@@ -53,8 +51,7 @@ $(() => {
                     start_day_list.push(new OO.ui.MenuOptionWidget({
                         data: String(i),
                         label: String(i),
-                    }));
-                    end_day_list.push(new OO.ui.MenuOptionWidget({
+                    })); end_day_list.push(new OO.ui.MenuOptionWidget({
                         data: String(i),
                         label: String(i),
                     }));
@@ -154,7 +151,8 @@ $(() => {
                 new OO.ui.FieldLayout(submit, {
                     align: "right",
                 }),
-                new OO.ui.FieldLayout(progress, {}),
+                new OO.ui.FieldLayout(progress, {
+                }),
             ]);
             this.content = new OO.ui.PanelLayout({
                 padded: true,
@@ -169,12 +167,8 @@ $(() => {
             end_month.getMenu().selectItemByData(String(current_month));
             end_day.getMenu().selectItemByData(String(current_day));
             submit.on("click", () => {
-                const start_date = `${start_year.getMenu().findSelectedItem().getData() }-${ 
-                    `0${ start_month.getMenu().findSelectedItem().getData()}`.slice(-2) }-${ 
-                    `0${ start_day.getMenu().findSelectedItem().getData()}`.slice(-2) }T00:00:00Z`;
-                const end_date = `${end_year.getMenu().findSelectedItem().getData() }-${ 
-                    `0${ end_month.getMenu().findSelectedItem().getData()}`.slice(-2) }-${ 
-                    `0${ end_day.getMenu().findSelectedItem().getData()}`.slice(-2) }T23:59:59Z`;
+                const start_date = `${start_year.getMenu().findSelectedItem().getData()}-${`0${start_month.getMenu().findSelectedItem().getData()}`.slice(-2)}-${`0${start_day.getMenu().findSelectedItem().getData()}`.slice(-2)}T00:00:00Z`;
+                const end_date = `${end_year.getMenu().findSelectedItem().getData()}-${`0${end_month.getMenu().findSelectedItem().getData()}`.slice(-2)}-${`0${end_day.getMenu().findSelectedItem().getData()}`.slice(-2)}T23:59:59Z`;
                 const limit = revision_check.getValue();
                 queryRevisionApi(start_date, end_date, limit, selection);
             });
@@ -193,10 +187,7 @@ $(() => {
     }
 
     class WikiBlameDiffDialog extends OO.ui.Dialog {
-        static static = {
-            ...super.static,
-            name: "wikiBlameDiffDialog",
-        };
+        static static = { ...super.static, name: "wikiBlameDiffDialog" };
         revision_list = undefined;
         constructor(config, revision_list) {
             super(config);
@@ -218,7 +209,7 @@ $(() => {
                         ${r["*"]}
                     </tbody>
                     </table>`;
-                page_list.push(new(bookletLayoutFactory(`${r.user } ${ r.timestamp}`))(r.user + r.revid, undefined, diff_table));
+                page_list.push(new (bookletLayoutFactory(`${r.user} ${r.timestamp}`))(r.user + r.revid, undefined, diff_table));
             }
             this.content = new OO.ui.BookletLayout({
                 outlined: true,
@@ -235,7 +226,7 @@ $(() => {
     }
 
     //helper functions
-    const queryRevisionApi = function(start_date, end_date, limit, selection) {
+    const queryRevisionApi = function (start_date, end_date, limit, selection) {
         const api = new mw.Api();
         const pagename = mw.config.get("wgPageName");
         api.get({
@@ -289,12 +280,12 @@ $(() => {
         }).fail((err) => console.log(err));
     };
 
-    const getSelected = function() {
+    const getSelected = function () {
         let text = "";
         text = window.getSelection().toString();
         return text;
     };
-    const createDialog = function() {
+    const createDialog = function () {
         const myDialog = new WikiBlameDialog({
             id: "wiki-blame-dialog-popup",
             size: "medium",
@@ -308,19 +299,17 @@ $(() => {
         windowManager.openWindow(myDialog);
     };
 
-    const createDiffDialog = function(revisions_list) {
+    const createDiffDialog = function (revisions_list) {
         const windowManager = window.wikiBlameWindowManager;
         if (windowManager.currentWindow &&
-            window.wikiBlameWindowManager.currentWindow.getElementId() === "wiki-blame-dialog-popup") {
-            windowManager.currentWindow.close();
-        }
+            window.wikiBlameWindowManager.currentWindow.getElementId() === "wiki-blame-dialog-popup") { windowManager.currentWindow.close(); }
         const diffDialog = new WikiBlameDiffDialog({
             size: "larger",
         }, revisions_list);
         windowManager.addWindows([diffDialog]);
         windowManager.openWindow(diffDialog);
     };
-    const bookletLayoutFactory = function(label) {
+    const bookletLayoutFactory = function (label) {
         const PageLayout = new Function("name", "config", "diff_table", `
             OO.ui.PageLayout.call(this, name, config);
             this.$element.append($(diff_table));`);
