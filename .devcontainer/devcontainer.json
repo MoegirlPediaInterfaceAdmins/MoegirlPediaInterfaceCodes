@@ -24,7 +24,7 @@
     // Use 'forwardPorts' to make a list of ports inside the container available locally.
     // "forwardPorts": [],
     // Use 'postCreateCommand' to run commands after the container is created.
-    "postCreateCommand": "rm -rf /home/codespace/.nvm /root/.nvm /home/codespace/.nvs /root/.nvs ; sed -i -E \"s/[^\n]*(NVM_DIR|NVS_HOME)[^\n]*//g\" /home/codespace/.bashrc ; sed -i -E \"s/[^\n]*(NVM_DIR|NVS_HOME)[^\n]*//g\" /root/.bashrc ; wget https://raw.githubusercontent.com/tj/n/master/bin/n -O /tmp/n ; N_PRESERVE_NPM=0 bash /tmp/n lts ; rm /tmp/n ; npm install n eslint --location=global ; npm up --location=global ; echo \"export N_PRESERVE_NPM=1\" | sudo tee -a /root/.bashrc /home/codespace/.bashrc",
+    "postCreateCommand": "rm -rf /root/.nvm /root/.nvs ; sed -i -E \"s/[^\n]*(NVM_DIR|NVS_HOME)[^\n]*//g\" /root/.bashrc ; wget https://raw.githubusercontent.com/tj/n/master/bin/n -O /tmp/n ; N_PRESERVE_NPM=0 bash /tmp/n lts ; rm /tmp/n ; npm install n eslint --location=global ; npm up --location=global ; echo \"export N_PRESERVE_NPM=1\" | sudo tee -a /root/.bashrc ; echo \"PATH=$(echo $PATH | tr ':' '\\n' | grep -v 'nvm' | xargs | tr ' ' ':')\" | sudo tee -a /root/.bashrc",
     // Comment out to connect as root instead. More info: https://aka.ms/vscode-remote/containers/non-root.
     //"remoteUser": "node",
     "features": {
