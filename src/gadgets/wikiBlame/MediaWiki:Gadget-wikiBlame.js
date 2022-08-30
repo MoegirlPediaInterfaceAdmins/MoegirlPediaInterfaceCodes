@@ -2,11 +2,14 @@
 $(() => {
     //dialog classes
     class WikiBlameDialog extends OO.ui.Dialog {
-        static static = {...super.static,name: "wikiBlameDialog"};
+        static static = {
+            ...super.static,
+            name: "wikiBlameDialog",
+        };
         constructor(config) {
             super(config);
         }
-    
+
         initialize() {
             super.initialize();
             const selection = getSelection();
@@ -33,24 +36,28 @@ $(() => {
             Array(12)
                 .fill(1)
                 .map((x, y) => x + y)
-                .forEach((i) => {start_month_list.push(new OO.ui.MenuOptionWidget({
-                    data: String(i),
-                    label: String(i),
-                }));end_month_list.push(new OO.ui.MenuOptionWidget({
-                    data: String(i),
-                    label: String(i),
-                }));
+                .forEach((i) => {
+                    start_month_list.push(new OO.ui.MenuOptionWidget({
+                        data: String(i),
+                        label: String(i),
+                    }));
+                    end_month_list.push(new OO.ui.MenuOptionWidget({
+                        data: String(i),
+                        label: String(i),
+                    }));
                 });
             Array(31)
                 .fill(1)
                 .map((x, y) => x + y)
-                .forEach((i) => {start_day_list.push(new OO.ui.MenuOptionWidget({
-                    data: String(i),
-                    label: String(i),
-                }));end_day_list.push(new OO.ui.MenuOptionWidget({
-                    data: String(i),
-                    label: String(i),
-                }));
+                .forEach((i) => {
+                    start_day_list.push(new OO.ui.MenuOptionWidget({
+                        data: String(i),
+                        label: String(i),
+                    }));
+                    end_day_list.push(new OO.ui.MenuOptionWidget({
+                        data: String(i),
+                        label: String(i),
+                    }));
                 });
             const current_selection = new OO.ui.TextInputWidget({
                 value: selection,
@@ -147,8 +154,7 @@ $(() => {
                 new OO.ui.FieldLayout(submit, {
                     align: "right",
                 }),
-                new OO.ui.FieldLayout(progress, {
-                }),
+                new OO.ui.FieldLayout(progress, {}),
             ]);
             this.content = new OO.ui.PanelLayout({
                 padded: true,
@@ -183,11 +189,14 @@ $(() => {
         getBodyHeight() {
             return this.content.$element.outerHeight(true) + 10;
         }
-    
+
     }
 
     class WikiBlameDiffDialog extends OO.ui.Dialog {
-        static static = {...super.static, name: "wikiBlameDiffDialog"};
+        static static = {
+            ...super.static,
+            name: "wikiBlameDiffDialog",
+        };
         revision_list = undefined;
         constructor(config, revision_list) {
             super(config);
@@ -209,7 +218,7 @@ $(() => {
                         ${r["*"]}
                     </tbody>
                     </table>`;
-                page_list.push(new (bookletLayoutFactory(`${r.user } ${ r.timestamp}`))(r.user+r.revid, undefined, diff_table));
+                page_list.push(new(bookletLayoutFactory(`${r.user } ${ r.timestamp}`))(r.user + r.revid, undefined, diff_table));
             }
             this.content = new OO.ui.BookletLayout({
                 outlined: true,
@@ -275,7 +284,7 @@ $(() => {
                             createDiffDialog(revisions_list);
                         }
                     });
-                });                 
+                });
             }
         }).fail((err) => console.log(err));
     };
@@ -302,8 +311,9 @@ $(() => {
     const createDiffDialog = function(revisions_list) {
         const windowManager = window.wikiBlameWindowManager;
         if (windowManager.currentWindow &&
-                window.wikiBlameWindowManager.currentWindow.getElementId() === "wiki-blame-dialog-popup")
-        {windowManager.currentWindow.close();}
+            window.wikiBlameWindowManager.currentWindow.getElementId() === "wiki-blame-dialog-popup") {
+            windowManager.currentWindow.close();
+        }
         const diffDialog = new WikiBlameDiffDialog({
             size: "larger",
         }, revisions_list);
