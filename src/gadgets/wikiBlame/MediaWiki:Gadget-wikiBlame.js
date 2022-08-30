@@ -186,6 +186,18 @@ $(() => {
 
     }
 
+    class PageLayout extends OO.ui.PageLayout {
+        #label;
+        constructor(name, config, diff_table, label) {
+            super(name, config);
+            this.#label = label;
+            this.$element.append($(diff_table));
+        }
+        setupOutlineItem() {
+            this.outlineItem.setLabel(this.#label);
+        }
+    }
+
     class WikiBlameDiffDialog extends OO.ui.Dialog {
         static static = { ...super.static, name: "wikiBlameDiffDialog" };
         revision_list = undefined;
@@ -209,7 +221,7 @@ $(() => {
                         ${r["*"]}
                     </tbody>
                     </table>`;
-                page_list.push(new (bookletLayoutFactory(`${r.user} ${r.timestamp}`))(r.user + r.revid, undefined, diff_table));
+                page_list.push(new PageLayout(r.user + r.revid, undefined, diff_table, `${r.user} ${r.timestamp}`));
             }
             this.content = new OO.ui.BookletLayout({
                 outlined: true,
@@ -221,8 +233,6 @@ $(() => {
         getBodyHeight() {
             return 500;
         }
-
-
     }
 
     //helper functions
@@ -309,17 +319,9 @@ $(() => {
         windowManager.addWindows([diffDialog]);
         windowManager.openWindow(diffDialog);
     };
-    const bookletLayoutFactory = function (label) {
-        const PageLayout = new Function("name", "config", "diff_table", `
-            OO.ui.PageLayout.call(this, name, config);
-            this.$element.append($(diff_table));`);
-        OO.inheritClass(PageLayout, OO.ui.PageLayout);
-        PageLayout.prototype.setupOutlineItem = new Function(`this.outlineItem.setLabel("${label}");`);
-        return PageLayout;
-    };
 
     //处理mouseup事件
-    $("#bodyContent").mouseup((e) => {
+    $("#bodyContent").on("mouseup", (e) => {
         let selection = getSelected();
         if (selection) {
             if ($(".wiki-blame-popup").length === 0) {
