@@ -28,6 +28,9 @@
         "Cron": "readonly"
     },
     "rules": {
+        "no-new-func": "error",
+        "no-new-object": "error",
+        "no-new-wrappers": "error",
         "no-var": "error",
         "prefer-const": "error",
         "no-extra-parens": "error",
