@@ -236,19 +236,20 @@ $(() => {
     }
 
     //helper functions
-    const queryRevisionApi = function (start_date, end_date, limit, selection) {
+    const queryRevisionApi = async (start_date, end_date, limit, selection) => {
         const api = new mw.Api();
         const pagename = mw.config.get("wgPageName");
-        api.get({
-            action: "query",
-            prop: "revisions",
-            rvprop: "ids|flags|timestamp|user|parsedcomment|tags",
-            titles: pagename,
-            rvlimit: limit,
-            rvstart: start_date,
-            rvend: end_date,
-            rvdir: "newer",
-        }).done((data) => {
+        try {
+            const data = await api.get({
+                action: "query",
+                prop: "revisions",
+                rvprop: "ids|flags|timestamp|user|parsedcomment|tags",
+                titles: pagename,
+                rvlimit: limit,
+                rvstart: start_date,
+                rvend: end_date,
+                rvdir: "newer",
+            });
             const page_id = Object.keys(data.query.pages)[0];
             if (page_id) {
                 const revisions = data.query.pages[page_id].revisions;
@@ -257,16 +258,17 @@ $(() => {
                     return;
                 }
                 const revisions_list = [];
-                const processed = [];
                 const parser = new DOMParser();
-                $("#wiki-blame-progress").html(`<p>0/${revisions.length}`);
-                setInterval(() => $("#wiki-blame-progress").html(`<p>${processed.length}/${limit}</p>`), 1000);
-                revisions.forEach((r) => {
-                    api.get({
-                        action: "compare",
-                        fromrev: r.revid,
-                        torelative: "prev",
-                    }).done((rdata) => {
+                const progress = document.createElement("span");
+                progress.innerText = "0";
+                $("#wiki-blame-progress").html(`<p>/${revisions.length}</p>`).find("p").prepend(progress);
+                await Promise.allSettled(revisions.map(async (r) => {
+                    try {
+                        const rdata = await api.post({
+                            action: "compare",
+                            fromrev: r.revid,
+                            torelative: "prev",
+                        });
                         rdata.compare.user = r.user;
                         rdata.compare.revid = rdata.torevid;
                         const edit_date = new Date(r.timestamp);
@@ -279,15 +281,14 @@ $(() => {
                                 break;
                             }
                         }
-                    }).always(() => {
-                        processed.push(1);
-                        if (processed.length === revisions.length) {
-                            createDiffDialog(revisions_list);
-                        }
-                    });
-                });
+                    } catch { }
+                    progress.innerText = `${+progress.innerText + 1}`;
+                }));
+                createDiffDialog(revisions_list);
             }
-        }).fail((err) => console.log(err));
+        } catch (err) {
+            console.log(err);
+        }
     };
 
     const getSelected = function () {
