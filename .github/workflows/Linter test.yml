@@ -22,8 +22,8 @@ jobs:
           node-version: lts/*
           check-latest: true
           cache: npm
-      - name: Install eslint
-        run: npm install eslint@latest
+      - name: Install dependencies
+        run: npm ci
       - name: Reload the cache of eslint
         uses: actions/cache@v3
         with:
