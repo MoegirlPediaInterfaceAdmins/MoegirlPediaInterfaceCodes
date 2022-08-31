@@ -7,6 +7,7 @@ on:
       - "scripts/browserify*.js"
       - "scripts/conventionalCommitsScopesGenerator.js"
       - "scripts/prefetch*.js"
+      - "package-lock.json"
       - ".github/workflows/postCommit.yml"
   workflow_dispatch:
   schedule:
