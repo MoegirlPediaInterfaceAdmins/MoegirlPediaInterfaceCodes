@@ -1,0 +1,12 @@
+{
+    "ResourceLoader": true,
+    "hidden": false,
+    "default": true,
+    "targets": [
+        "desktop"
+    ],
+    "type": "general",
+    "dependencies": [
+        "mediawiki.Uri"
+    ]
+}

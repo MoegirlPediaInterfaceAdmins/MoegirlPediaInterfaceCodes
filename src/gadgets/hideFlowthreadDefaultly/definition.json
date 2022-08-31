@@ -1,0 +1,17 @@
+{
+    "ResourceLoader": true,
+    "hidden": false,
+    "default": false,
+    "targets": [
+        "desktop",
+        "mobile"
+    ],
+    "type": "general",
+    "rights": [
+        "disabled"
+    ],
+    "dependencies": [
+        "ext.gadget.site-lib",
+        "ext.flowthread"
+    ]
+}

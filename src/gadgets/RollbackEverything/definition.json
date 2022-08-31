@@ -1,0 +1,15 @@
+{
+    "ResourceLoader": true,
+    "hidden": true,
+    "default": false,
+    "targets": [
+        "desktop"
+    ],
+    "type": "general",
+    "rights": [
+        "disabled"
+    ],
+    "skins": [
+        "vector"
+    ]
+}

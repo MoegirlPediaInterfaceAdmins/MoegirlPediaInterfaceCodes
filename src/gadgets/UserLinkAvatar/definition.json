@@ -1,0 +1,13 @@
+{
+    "ResourceLoader": true,
+    "hidden": false,
+    "default": true,
+    "targets": [
+        "desktop"
+    ],
+    "type": "general",
+    "dependencies": [
+        "user.options",
+        "ext.gadget.jQueryLazyload"
+    ]
+}

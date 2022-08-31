@@ -1,0 +1,20 @@
+{
+    "ResourceLoader": true,
+    "hidden": true,
+    "default": false,
+    "targets": [
+        "desktop"
+    ],
+    "type": "general",
+    "rights": [
+        "hidden"
+    ],
+    "dependencies": [
+        "ext.gadget.jquery.ui",
+        "mediawiki.util",
+        "mediawiki.user",
+        "user.options",
+        "ext.gadget.libUtil",
+        "ext.gadget.libJQuery"
+    ]
+}

@@ -1,0 +1,16 @@
+{
+    "ResourceLoader": true,
+    "hidden": false,
+    "default": true,
+    "targets": [
+        "desktop"
+    ],
+    "type": "general",
+    "dependencies": [
+        "mediawiki.util",
+        "ext.gadget.site-lib",
+        "mediawiki.cookie",
+        "oojs",
+        "oojs-ui"
+    ]
+}

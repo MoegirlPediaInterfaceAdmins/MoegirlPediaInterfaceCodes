@@ -1,0 +1,13 @@
+{
+    "ResourceLoader": true,
+    "hidden": false,
+    "default": true,
+    "targets": [
+        "desktop"
+    ],
+    "type": "general",
+    "rights": [
+        "abusefilter-modify",
+        "editinterface"
+    ]
+}

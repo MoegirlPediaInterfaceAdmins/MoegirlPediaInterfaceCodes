@@ -1,0 +1,18 @@
+{
+    "ResourceLoader": true,
+    "hidden": false,
+    "default": false,
+    "targets": [
+        "desktop"
+    ],
+    "type": "general",
+    "dependencies": [
+        "ext.gadget.site-lib",
+        "mediawiki.util",
+        "mediawiki.api",
+        "mediawiki.user",
+        "user.options",
+        "mediawiki.jqueryMsg",
+        "mediawiki.api.messages"
+    ]
+}

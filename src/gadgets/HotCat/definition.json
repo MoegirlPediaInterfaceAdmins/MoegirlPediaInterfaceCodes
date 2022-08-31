@@ -1,0 +1,17 @@
+{
+    "ResourceLoader": true,
+    "hidden": false,
+    "default": false,
+    "targets": [
+        "desktop"
+    ],
+    "type": "general",
+    "rights": [
+        "edit",
+        "skipcaptcha"
+    ],
+    "dependencies": [
+        "ext.gadget.libOOUIDialog",
+        "user"
+    ]
+}

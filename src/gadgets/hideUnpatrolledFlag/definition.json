@@ -1,0 +1,13 @@
+{
+    "ResourceLoader": true,
+    "hidden": false,
+    "default": false,
+    "targets": [
+        "desktop",
+        "mobile"
+    ],
+    "type": "styles",
+    "rights": [
+        "patrolmarks"
+    ]
+}

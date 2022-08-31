@@ -1,0 +1,20 @@
+{
+    "ResourceLoader": true,
+    "hidden": false,
+    "default": false,
+    "targets": [
+        "desktop"
+    ],
+    "type": "general",
+    "right": [
+        "autoconfirmed"
+    ],
+    "dependencies": [
+        "moment",
+        "mediawiki.api",
+        "mediawiki.Uri",
+        "mediawiki.user",
+        "ext.gadget.LocalObjectStorage",
+        "ext.gadget.site-lib"
+    ]
+}

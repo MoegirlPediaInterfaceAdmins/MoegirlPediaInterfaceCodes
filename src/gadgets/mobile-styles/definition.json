@@ -1,0 +1,9 @@
+{
+    "ResourceLoader": true,
+    "hidden": true,
+    "default": true,
+    "targets": [
+        "mobile"
+    ],
+    "type": "styles"
+}

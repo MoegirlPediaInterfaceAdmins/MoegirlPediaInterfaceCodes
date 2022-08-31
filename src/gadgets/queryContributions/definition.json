@@ -1,0 +1,18 @@
+{
+    "ResourceLoader": true,
+    "hidden": false,
+    "default": false,
+    "targets": [
+        "desktop"
+    ],
+    "type": "general",
+    "rights": [
+        "noratelimit",
+        "patrolleredit"
+    ],
+    "dependencies": [
+        "mediawiki.api",
+        "mediawiki.user",
+        "jquery.tablesorter"
+    ]
+}
