@@ -487,6 +487,13 @@ var _$asyncLock_1 = _$AsyncLock_2;
 
 var _$input_4 = {};
 (function (global){(function (){
-global["AsyncLock"] = _$asyncLock_1;
+"use strict";
+
+var _asyncLock = _interopRequireDefault(_$asyncLock_1);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+global["AsyncLock"] = _asyncLock.default;
+
 }).call(this)}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 }());

@@ -2137,6 +2137,13 @@ ip.fromLong = function (ipl) {
 
 var _$input_6 = {};
 (function (global){(function (){
-global["libip"] = _$ip_4;
+"use strict";
+
+var _ip = _interopRequireDefault(_$ip_4);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+global["libip"] = _ip.default;
+
 }).call(this)}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 }());
