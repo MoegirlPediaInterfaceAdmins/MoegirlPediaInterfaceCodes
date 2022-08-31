@@ -21,7 +21,7 @@ jobs:
       - name: Install dependencies
         run: npm ci
       - name: Run the generator
-        run: node scripts/browserify.js
+        run: node scripts/browserify.js && echo "git status" && git status
       - uses: EndBug/add-and-commit@v9
         with:
           add: "src"
