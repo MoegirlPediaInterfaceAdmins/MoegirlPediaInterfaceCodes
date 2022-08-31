@@ -26,7 +26,8 @@ const outputPath = "tmp/output.js";
         const inputs = [];
         const hasExports = Array.isArray(exports) && exports.length > 0;
         if (!hasExports) {
-            inputs.push(`global["${entry}"] = require("${module}");`);
+            inputs.push(`import m from "${module}";`);
+            inputs.push(`global["${entry}"] = m`);
         } else {
             inputs.push(`import {${exports.join(",")}} from "${module}";`);
             inputs.push(`global["${entry}"] = {${exports.join(",")}}`);
