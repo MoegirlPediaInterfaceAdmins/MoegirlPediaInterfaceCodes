@@ -19,12 +19,12 @@ import("strip-json-comments").then(async ({
     console.info("types:", types);
     for (const type of types) {
         const prefix = type[0].toUpperCase() + type.slice(1).replace(/s$/, "");
-        console.info(type, "prefix:", prefix);
+        console.info(`[${type}]`, "prefix:", prefix);
         const list = await fsPromises.readdir(path.join("src", type));
         const lowerCaseList = list.map((item) => toLowerFirstCharacter(item));
         lowerCaseList.sort();
         list.sort((a, b) => lowerCaseList.indexOf(toLowerFirstCharacter(a)) - lowerCaseList.indexOf(toLowerFirstCharacter(b)));
-        console.info(type, "list after sorting:", list);
+        console.info(`[${type}]`, "list after sorting:", list);
         const scopes = list.map((_name) => {
             let name;
             switch (prefix) {
@@ -39,10 +39,12 @@ import("strip-json-comments").then(async ({
             }
             return `${prefix}-${name}`;
         });
-        console.info(type, "scopes:", scopes);
+        console.info(`[${type}]`, "scopes:", scopes);
         totalScopes.push(...scopes);
     }
     console.info("totalScopes:", totalScopes);
     settings["conventionalCommits.scopes"] = totalScopes;
     await fsPromises.writeFile(".vscode/settings.json", JSON.stringify(settings, null, 4));
+    console.info("Done.");
+    process.exit(0);
 });

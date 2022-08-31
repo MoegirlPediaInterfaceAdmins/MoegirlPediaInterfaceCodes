@@ -4,6 +4,7 @@ on:
   push:
     paths:
       - "src/**"
+      - "scripts/conventionalCommitsScopesGenerator.js"
   workflow_dispatch:
 
 jobs:
