@@ -40,3 +40,4 @@ jobs:
           committer_name: GitHub Actions
           committer_email: actions@github.com
           default_author: github_actor
+          message: "Auto: Commit from GitHub Actions - post commit CI"
