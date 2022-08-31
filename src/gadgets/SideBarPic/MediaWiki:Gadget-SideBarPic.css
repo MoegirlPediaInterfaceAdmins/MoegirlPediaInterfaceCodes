@@ -1,0 +1,78 @@
+/* 侧边栏logo或左下角图片添加 */
+body.sideBarPic-executed .sidebar-character {
+    position: fixed;
+    left: -3px;
+    z-index: -2;
+}
+
+body.sideBarPic-executed .sidebar-character.top {
+    top: 0;
+}
+
+body.sideBarPic-executed .sidebar-character.bottom {
+    bottom: 0;
+}
+
+body.sideBarPic-executed #wglogo {
+    display: none;
+}
+
+@media screen and (max-width: 600px) {
+
+    /* 低像素设备隐藏 */
+    .sidebar-character {
+        display: none !important;
+    }
+}
+
+body.sideBarPic.skin-vector:not(.DeceasedPerson) div#mw-panel div.portal {
+    background-color: rgba(246, 246, 246, 0.9);
+    /*padding-top: 0;
+    top: 212px*/
+    margin-left: -0.75em;
+    margin-right: 0;
+    padding-left: 1.5em;
+    padding-right: .95em;
+}
+
+body.sideBarPic.skin-vector:not(.DeceasedPerson) div#mw-panel #p-logo+div.portal {
+    padding-top: 1.1em;
+    margin-top: 0;
+}
+
+/* .sideBarPic.skin-vector:not(.DeceasedPerson) #mw-panel div#p-logo {
+    background: rgba(246, 246, 246, 0.73);
+    left: 0;
+    padding: 0 .5em;
+    top: -212px
+} */
+
+body.sideBarPic:not(.DeceasedPerson) .sidebar-character.active {
+    display: block;
+}
+
+body.sideBarPic-executed.show-logo:not(.DeceasedPerson) #mw-panel #p-logo {
+    height: 160px;
+}
+
+body.sideBarPic-executed.show-logo:not(.DeceasedPerson) #mw-panel #p-logo .mw-wiki-logo {
+    background-image: url(https://img.moegirl.org.cn/logo/zhMoegirl15.2.png);
+    height: 160px;
+}
+
+body.sideBarPic:not(.DeceasedPerson) #footer {
+    background-color: rgba(255, 255, 255, .7);
+}
+
+body.sideBarPic:not(.DeceasedPerson) #footer #footer-moegirl .copyright {
+    color: #2f2f2f;
+}
+
+/* For Skin:MoeSkin 机智的小鱼君 2022年4月16日 */
+body.sideBarPic-executed.skin-moeskin #moe-global-footer {
+    z-index: 1;
+}
+
+body.sideBarPic-executed.skin-moeskin #moe-main-container {
+    --theme-card-background-color: rgba(255, 255, 255, 0.85);
+}

@@ -1,0 +1,33 @@
+.deletion .mw-category-generated > div {
+    clear: both;
+}
+
+.deletion .mw-category-generated ul {
+    margin-left: 0;
+}
+
+.deletion .mw-category-generated h3,
+.deletion .mw-category-generated li {
+    clear: both;
+}
+
+.deletion .mw-category-generated ul li {
+    list-style: none;
+}
+
+.deletion .mw-category-generated ul li > * {
+    float: left;
+}
+
+.deletion #deletionControl {
+    border: 1px dashed black;
+    padding: .5em;
+}
+
+.deletion #deletionControl input {
+    margin: 0 .5em;
+}
+
+.deletion .disabled {
+    opacity: .3;
+}

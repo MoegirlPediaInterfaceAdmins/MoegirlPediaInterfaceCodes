@@ -1,0 +1,15 @@
+a.mw-disambig,
+body.heimu_toggle_on .heimu a.mw-disambig,
+body.heimu_toggle_on a.mw-disambig .heimu,
+.heimu:hover a.mw-disambig,
+a.mw-disambig:hover .heimu {
+    color: #ef8850;
+}
+
+a.mw-disambig:visited,
+body.heimu_toggle_on .heimu a.mw-disambig:visited,
+body.heimu_toggle_on a.mw-disambig:visited .heimu,
+.heimu:hover a.mw-disambig:visited,
+a.mw-disambig:visited:hover .heimu {
+    color: #d27138;
+}

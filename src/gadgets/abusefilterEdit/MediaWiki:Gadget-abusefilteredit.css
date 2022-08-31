@@ -1,0 +1,6 @@
+/* 防滥用过滤器编辑页 */
+#mw-abusefilter-warn-parameters fieldset,
+#mw-abusefilter-warn-parameters table {
+    width: 100%;
+    box-sizing: border-box;
+}

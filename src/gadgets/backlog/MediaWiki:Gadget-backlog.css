@@ -1,0 +1,140 @@
+.blocklogevents,
+.abuselogevents {
+    overflow-x: hidden;
+    overflow-y: scroll;
+    padding: 0 0 1px 0;
+    position: relative;
+}
+
+.blocklogevents {
+    max-height: 15em;
+}
+
+.abuselogevents {
+    max-height: 15em;
+}
+
+.blocklogevents.nothing-new,
+.abuselogevents.nothing-new {
+    max-height: 1.5em;
+    overflow-y: hidden;
+}
+
+.blocklogevents .mw-userlink,
+.abuselogevents .mw-userlink {
+    word-break: break-all;
+    max-width: 20em;
+    display: inline-block;
+    white-space: break-spaces;
+}
+
+.blocklogevents.expand,
+.abuselogevents.expand {
+    max-height: unset;
+    overflow-y: unset;
+}
+
+.blocklogevents .blocklogevents-table-caption,
+.abuselogevents .abuselogevents-table-caption {
+    position: sticky;
+    background-color: white;
+    text-align: center;
+    font-weight: 700;
+}
+
+.blocklogevents .blocklogevents-table th,
+.abuselogevents .abuselogevents-table th {
+    white-space: pre;
+}
+
+.blocklogevents-table,
+.abuselogevents-table {
+    min-width: 100%;
+    max-width: unset;
+    width: 100%;
+    margin: 0 !important;
+}
+
+@media (max-width: 1200px) {
+
+    .blocklogevents,
+    .abuselogevents {
+        overflow-x: auto;
+    }
+
+    .blocklogevents-table {
+        width: max-content;
+    }
+}
+
+.blocklogevents .style-justify,
+.abuselogevents .style-justify {
+    white-space: nowrap;
+    text-align: center;
+}
+
+.blocklogevents .word-break-all,
+.abuselogevents .word-break-all {
+    word-break: break-all;
+}
+
+.blocklogevents-ul,
+.abuselogevents-ul {
+    margin-top: 0;
+}
+
+.blocklogevents-flags-nousertalk {
+    text-decoration: underline;
+}
+
+.blocklogevents-flags-autoblock {
+    color: red;
+}
+
+.pageAwaitingDelection {
+    max-height: 10em;
+    padding: 0 0 1px 0;
+}
+
+.pageAwaitingDelection-table {
+    width: 100%;
+    margin: 0 !important;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+}
+
+.pageAwaitingDelection-table .pageAwaitingDelection-caption {
+    width: 100%;
+}
+
+.pageAwaitingDelection-table div {
+    text-align: center;
+    flex: auto;
+}
+
+.pageAwaitingDelection-table .has-page {
+    font-size: 1.5em;
+    font-weight: bold;
+    text-decoration: underline;
+}
+
+.pageAwaitingDelection-table .warning {
+    font-weight: italic;
+    text-decoration: underline;
+}
+
+.pageAwaitingDelection-table .br {
+    flex-basis: 100%;
+    height: 0;
+}
+
+.pageAwaitingDelection-table div:not(.br):not(.pageAwaitingDelection-caption) {
+    border: 1px solid #e0e0e0;
+}
+
+.pageAwaitingDelection-table div:not(.br):not(.has-page) {
+    height: 2.4rem;
+    box-sizing: border-box;
+    padding-top: .6rem;
+}

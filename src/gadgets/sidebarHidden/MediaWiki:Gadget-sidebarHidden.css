@@ -1,0 +1,121 @@
+html.sidebarHiddenOn #sidebarHidden-logo-link {
+    z-index: 999;
+    opacity: 0;
+    pointer-events: none;
+    transition: .37s ease-in-out all;
+    position: absolute;
+    top: 60px;
+    cursor: pointer;
+    height: 40px;
+    width: 0;
+    left: 10em;
+    text-align: center;
+    background-image: linear-gradient(rgba(255, 255, 255, 0), rgba(255, 255, 255, .3) 30%, rgba(255, 255, 255, .5)) !important;
+    background-color: transparent !important;
+    overflow-x: hidden;
+}
+
+html.sidebarHiddenOn body.sidebarHidden #sidebarHidden-logo-link {
+    opacity: 1;
+    pointer-events: all;
+    width: 9em;
+    left: 1em;
+}
+
+@media screen and (min-width: 982px) {
+    html.sidebarHiddenOn #sidebarHidden-logo-link {
+        left: 11em;
+    }
+
+    html.sidebarHiddenOn body.sidebarHidden #sidebarHidden-logo-link {
+        width: 10em;
+        left: 1em;
+    }
+}
+
+html.sidebarHiddenOn #sidebarHidden-logo {
+    transition: .37s ease-in-out all;
+    height: 100%;
+    width: auto;
+    position: absolute;
+    transform: translateX(-50%);
+    left: 50%;
+    bottom: 0;
+}
+
+html.sidebarHiddenOn #sidebarHidden-arrow {
+    transition: .37s ease-in-out all;
+    position: fixed;
+    width: .8em;
+    height: .8em;
+    top: calc(2.5em + 60px + 34px); /* 34px 是 2022 春季版头适配 */
+    cursor: pointer;
+    padding: .3em;
+    border-radius: 50%;
+    text-align: center;
+    border: 1px solid rgb(167, 215, 249);
+    background: rgb(255, 255, 255);
+    z-index: 99;
+    left: 9.3em;
+}
+
+html.sidebarHiddenOn #sidebarHidden-arrow-left,
+html.sidebarHiddenOn #sidebarHidden-arrow-right {
+    position: absolute;
+    top: .3em;
+    left: .3em;
+    right: .3em;
+    bottom: .3em;
+    pointer-events: none;
+    transition: .37s ease-in-out all;
+}
+
+html.sidebarHiddenOn body.sidebarHidden #sidebarHidden-arrow-left,
+html.sidebarHiddenOn body:not(.sidebarHidden) #sidebarHidden-arrow-right {
+    opacity: 0;
+}
+
+html.sidebarHiddenOn body:not(.sidebarHidden) #sidebarHidden-arrow-left,
+html.sidebarHiddenOn body.sidebarHidden #sidebarHidden-arrow-right {
+    opacity: 1;
+}
+
+html.sidebarHiddenOn #sidebarHidden-arrow:hover {
+    background-color: rgb(223, 245, 255);
+}
+
+@media screen and (min-width: 982px) {
+    html.sidebarHiddenOn #sidebarHidden-arrow {
+        left: 10.3em;
+    }
+}
+
+html.sidebarHiddenOn body.sidebarHidden #sidebarHidden-arrow {
+    left: 0.3em;
+}
+
+html.sidebarHiddenOn #content,
+html.sidebarHiddenOn #footer {
+    transition-duration: .37s;
+    transition-timing-function: ease-in-out;
+    transition-property: margin-left;
+}
+
+html.sidebarHiddenOn #mw-panel {
+    transition-duration: .37s;
+    transition-timing-function: ease-in-out;
+    transition-property: z-index, opacity;
+    z-index: 1;
+    opacity: 1;
+}
+
+html.sidebarHiddenOn body.sidebarHidden #content,
+html.sidebarHiddenOn body.sidebarHidden #footer {
+    margin-left: 1em !important;
+}
+
+html.sidebarHiddenOn body.sidebarHidden #mw-panel {
+    z-index: -999;
+    opacity: 0;
+    pointer-events: none;
+}

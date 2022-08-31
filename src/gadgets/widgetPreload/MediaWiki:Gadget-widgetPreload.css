@@ -1,0 +1,4 @@
+/* 禁止空widget使用Wikiplus创建 */
+.noWidget #Wikiplus-Edit-TopBtn {
+    display: none;
+}

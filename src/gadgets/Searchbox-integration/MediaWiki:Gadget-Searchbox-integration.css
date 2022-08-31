@@ -1,0 +1,14 @@
+#p-personal,
+#p-personal ul {
+    float: left;
+}
+#p-personal ul {
+    padding-left: 0;
+}
+#p-search {
+    margin-right: .5em;
+}
+#searchform,
+#simpleSearch {
+    margin-top: 0 !important;
+}

@@ -1,0 +1,43 @@
+.QuickSaveDraftTimer {
+    display: inline-block;
+    line-height: normal;
+    vertical-align: middle;
+    width: auto;
+    margin: 0 .5em;
+}
+.QuickSaveDraftTimerInput{
+    background: transparent;
+    border: 1px solid silver;
+    width: 2.5em!important;
+    text-align: right;
+    margin: 0 2px;
+}
+.QuickSaveDraftPauseButton{
+    margin: 0 7px 0 1px;
+}
+.QuickSaveDraftSaveButton,
+.QuickSaveDraftRecoverButton{
+    margin: 0 1px;
+}
+.QuickSaveDraftRollbackButton{
+    margin: 0 7px 0 1px;
+}
+#QuickSaveDraftTimerSave{
+    -webkit-transition: opacity .37s linear;
+    -moz-transition: opacity .37s linear;
+    transition: opacity .37s linear;
+}
+#QuickSaveDraftTimerSave.disapper{
+    opacity:0;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+}
+.QuickSaveDraftSectionDraft,
+.QuickSaveDraftSectionNow{
+    font-weight: bold;
+}
+.QuickSaveDraftSame,
+.QuickSaveDraftLastRunDiv{
+    display: none;
+}

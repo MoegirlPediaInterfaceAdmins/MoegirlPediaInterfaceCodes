@@ -1,0 +1,21 @@
+/* Fixes for empty icons in New Vector and Minerva 
+.mw-ui-icon-vector-gadget-pt-darkmode::before,
+.mw-ui-icon-portletlink-pt-darkmode::before {
+	background-image: url(/load.php?modules=oojs-ui.styles.icons-accessibility&image=moon);
+}
+
+.mw-ui-icon-portletlink-pt-darkmode::before {
+	opacity: 0.65;
+}
+
+.client-dark-mode .mw-ui-icon-vector-gadget-pt-darkmode::before,
+.client-dark-mode .mw-ui-icon-portletlink-pt-darkmode::before {
+	background-image: url(/load.php?modules=oojs-ui.styles.icons-accessibility&image=bright);
+} */
+
+/* These same rules should also be in [[MediaWiki:Gadget-dark-mode.css]] but with higher specificity. */
+.skin-vector :not(#pt-darkmode) + #pt-watchlist::before {
+	content: "深色模式";
+	visibility: hidden;
+	margin-left: inherit;
+}

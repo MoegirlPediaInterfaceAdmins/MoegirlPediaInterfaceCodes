@@ -1,0 +1,33 @@
+img.userlink-avatar-small {
+    margin-left: 0.2em;
+    margin-right: 0.2em;
+    width: 1.5em;
+    border-radius: 15%;
+    margin-top: -0.2em;
+}
+
+.userlink-avatar-large {
+    display: none;
+    position: absolute;
+    top: 1em;
+    left: 1em;
+    padding: 1.5em;
+    border: solid #A7D7F9 1px;
+    border-radius: 3px;
+    background-color: white;
+}
+
+.userlink-avatar-large img {
+    min-width: 128px;
+}
+
+.userlink-avatar-hover,
+.userlink-avatar-hover .userlink-avatar-small {
+    position: relative;
+    cursor: pointer;
+}
+
+.userlink-avatar-hover:hover .userlink-avatar-large {
+    display: block;
+    z-index: 91;
+}
