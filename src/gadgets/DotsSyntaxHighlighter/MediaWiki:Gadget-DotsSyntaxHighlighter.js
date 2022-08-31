@@ -1,3 +1,6 @@
+/**
+ * 更新至 https://www.mediawiki.org/wiki/_?oldid=5135197
+ */
 /* Based on https://www.mediawiki.org/wiki/User:Remember_the_dot/Syntax_highlighter.js */
 /* https://www.mediawiki.org/wiki/User:NicoV/Syntax_highlighter.js */
 /* This file may be used under the terms of any of the following
@@ -54,24 +57,16 @@
         let css = "";
         let spanNumber = 0;
         let lastColor;
-        let before = true;
 
         function writeText(text, color) {
             if (color !== lastColor) {
-                css += `'}#s${spanNumber}`;
-                if (before) {
-                    css += ":before{";
-                    before = false;
-                } else {
-                    css += ":after{";
-                    before = true;
-                    ++spanNumber;
-                }
+                css += "'}";
                 if (color) {
-                    css += `background-color:${color};`;
+                    css += `#s${spanNumber}{background-color:${color}}`;
                 }
-                css += "content:'";
+                css += `#s${spanNumber}::after{content:'`;
                 lastColor = color;
+                spanNumber++;
             }
             css += text;
         }
@@ -273,7 +268,7 @@
             wpTextbox0.appendChild(fragment);
         }
 
-        syntaxStyleTextNode.nodeValue = `${css.substring(2).replace(/\n/g, "\\A ")}'}`;
+        syntaxStyleTextNode.nodeValue = `${css.substring(2).replace(/\n/g, "\\A ")}'}#wpTextbox0>span::after{visibility:hidden}`;
     }
 
     function syncScrollX() {
@@ -314,6 +309,10 @@
     }
 
     function setup() {
+        wpTextbox1 = document.getElementById("wpTextbox1");
+        if (!wpTextbox1) {
+            return;
+        }
         function configureColor(parameterName, hardcodedFallback, defaultOk) {
             if (typeof syntaxHighlighterConfig[parameterName] === "undefined") {
                 syntaxHighlighterConfig[parameterName] = syntaxHighlighterSiteConfig[parameterName];
@@ -350,7 +349,7 @@
         syntaxHighlighterConfig.nowikiTags = syntaxHighlighterConfig.nowikiTags || syntaxHighlighterSiteConfig.nowikiTags || ["nowiki", "pre"];
         syntaxHighlighterConfig.sourceTags = syntaxHighlighterConfig.sourceTags || syntaxHighlighterSiteConfig.sourceTags || ["math", "syntaxhighlight", "source", "timeline", "hiero", "score"];
         syntaxHighlighterConfig.voidTags = syntaxHighlighterConfig.voidTags || syntaxHighlighterSiteConfig.voidTags || ["br", "hr"];
-        syntaxHighlighterConfig.timeout = syntaxHighlighterConfig.timeout || syntaxHighlighterSiteConfig.timeout || 50;
+        syntaxHighlighterConfig.timeout = syntaxHighlighterConfig.timeout || syntaxHighlighterSiteConfig.timeout || 20;
 
         syntaxHighlighterConfig.nowikiTags.forEach((tagName) => {
             nowikiTagBreakerRegexCache[tagName] = nowikiTagBreakerRegex(tagName);
@@ -368,12 +367,23 @@
 
         wpTextbox0.dir = wpTextbox1.dir;
         wpTextbox0.id = "wpTextbox0";
-        wpTextbox0.lang = wpTextbox1.lang;
+        wpTextbox0.lang = wpTextbox1.lang; //lang determines which font "monospace" is
         wpTextbox0.style.backgroundColor = syntaxHighlighterConfig.backgroundColor;
-        wpTextbox0.style.border = "1px solid transparent";
+        wpTextbox0.style.borderBottomLeftRadius = wpTextbox1Style.borderBottomLeftRadius;
+        wpTextbox0.style.borderBottomRightRadius = wpTextbox1Style.borderBottomRightRadius;
+        wpTextbox0.style.borderBottomStyle = wpTextbox1Style.borderBottomStyle;
+        wpTextbox0.style.borderBottomWidth = wpTextbox1Style.borderBottomWidth;
+        wpTextbox0.style.borderColor = "transparent";
+        wpTextbox0.style.borderLeftStyle = wpTextbox1Style.borderLeftStyle;
+        wpTextbox0.style.borderLeftWidth = wpTextbox1Style.borderLeftWidth;
+        wpTextbox0.style.borderRightStyle = wpTextbox1Style.borderRightStyle;
+        wpTextbox0.style.borderRightWidth = wpTextbox1Style.borderRightWidth;
+        wpTextbox0.style.borderTopLeftRadius = wpTextbox1Style.borderTopLeftRadius;
+        wpTextbox0.style.borderTopRightRadius = wpTextbox1Style.borderTopRightRadius;
+        wpTextbox0.style.borderTopStyle = wpTextbox1Style.borderTopStyle;
+        wpTextbox0.style.borderTopWidth = wpTextbox1Style.borderTopWidth;
         wpTextbox0.style.boxSizing = "border-box";
         wpTextbox0.style.clear = wpTextbox1Style.clear;
-        wpTextbox0.style.color = "transparent";
         wpTextbox0.style.fontFamily = wpTextbox1Style.fontFamily;
         wpTextbox0.style.fontSize = wpTextbox1Style.fontSize;
         wpTextbox0.style.lineHeight = "normal";
@@ -387,25 +397,43 @@
         wpTextbox0.style.tabSize = wpTextbox1Style.tabSize;
         wpTextbox0.style.whiteSpace = "pre-wrap";
         wpTextbox0.style.width = "100%";
-        wpTextbox0.style.wordWrap = "normal";
+        wpTextbox0.style.wordWrap = "normal"; //see below
 
         wpTextbox1.style.backgroundColor = "transparent";
-        wpTextbox1.style.border = "1px inset gray";
+        wpTextbox1.style.borderBottomLeftRadius = wpTextbox1Style.borderBottomLeftRadius;
+        wpTextbox1.style.borderBottomRightRadius = wpTextbox1Style.borderBottomRightRadius;
+        wpTextbox1.style.borderBottomStyle = wpTextbox1Style.borderBottomStyle;
+        wpTextbox1.style.borderBottomWidth = wpTextbox1Style.borderBottomWidth;
+        wpTextbox1.style.borderLeftStyle = wpTextbox1Style.borderLeftStyle;
+        wpTextbox1.style.borderLeftWidth = wpTextbox1Style.borderLeftWidth;
+        wpTextbox1.style.borderRightStyle = wpTextbox1Style.borderRightStyle;
+        wpTextbox1.style.borderRightWidth = wpTextbox1Style.borderRightWidth;
+        wpTextbox1.style.borderTopLeftRadius = wpTextbox1Style.borderTopLeftRadius;
+        wpTextbox1.style.borderTopRightRadius = wpTextbox1Style.borderTopRightRadius;
+        wpTextbox1.style.borderTopStyle = wpTextbox1Style.borderTopStyle;
+        wpTextbox1.style.borderTopWidth = wpTextbox1Style.borderTopWidth;
         wpTextbox1.style.boxSizing = "border-box";
+        wpTextbox1.style.clear = wpTextbox1Style.clear;
         wpTextbox1.style.color = syntaxHighlighterConfig.foregroundColor;
+        wpTextbox1.style.fontFamily = wpTextbox1Style.fontFamily;
         wpTextbox1.style.fontSize = wpTextbox1Style.fontSize;
         wpTextbox1.style.lineHeight = "normal";
-        wpTextbox1.style.marginBottom = wpTextbox1Style.marginBottom;
+        wpTextbox1.style.marginBottom = wpTextbox1Style.marginBottom; //lock to pixel value because the top margin was also locked to a pixel value when it was moved to wpTextbox0
         wpTextbox1.style.marginLeft = "0";
         wpTextbox1.style.marginRight = "0";
         wpTextbox1.style.overflowX = "auto";
         wpTextbox1.style.overflowY = "scroll";
         wpTextbox1.style.padding = "0";
         wpTextbox1.style.resize = resize;
+        wpTextbox1.style.tabSize = wpTextbox1Style.tabSize;
+        wpTextbox1.style.whiteSpace = "pre-wrap";
         wpTextbox1.style.width = "100%";
-        wpTextbox1.style.wordWrap = "normal";
+        wpTextbox1.style.wordWrap = "normal"; //overall more visually appealing
+
+        //lock both heights to pixel values so that the browser zoom feature works better
         wpTextbox1.style.height = wpTextbox0.style.height = `${wpTextbox1.offsetHeight}px`;
 
+        //insert wpTextbox0 underneath wpTextbox1
         wpTextbox1.style.marginTop = `${-wpTextbox1.offsetHeight}px`;
         wpTextbox1.parentNode.insertBefore(wpTextbox0, wpTextbox1);
 
