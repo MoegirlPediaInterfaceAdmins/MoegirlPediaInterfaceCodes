@@ -795,6 +795,6 @@ var _$cron_2 = {};
 
 var _$input_6 = {};
 (function (global){(function (){
-global.Cron = _$cron_2;
+global["Cron"] = _$cron_2;
 }).call(this)}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 }());
