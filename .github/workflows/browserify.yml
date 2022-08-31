@@ -3,7 +3,7 @@ name: Auto browserify generator
 on:
   push:
     paths:
-      - "scripts/browserif*.js"
+      - "scripts/browserify*.js"
   workflow_dispatch:
   schedule:
     - cron: 0 0 * * *
