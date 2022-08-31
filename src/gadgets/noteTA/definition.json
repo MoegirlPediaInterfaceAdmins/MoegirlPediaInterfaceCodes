@@ -1,0 +1,17 @@
+{
+    "ResourceLoader": true,
+    "hidden": false,
+    "default": true,
+    "targets": [
+        "desktop",
+        "mobile"
+    ],
+    "type": "general",
+    "dependencies": [
+        "ext.gadget.jquery.ui",
+        "mediawiki.api",
+        "ext.gadget.site-lib",
+        "jquery.makeCollapsible",
+        "mediawiki.Uri"
+    ]
+}

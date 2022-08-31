@@ -1,0 +1,17 @@
+{
+    "ResourceLoader": true,
+    "hidden": false,
+    "default": false,
+    "targets": [
+        "desktop"
+    ],
+    "type": "general",
+    "rights": [
+        "patrol"
+    ],
+    "dependencies": [
+        "mediawiki.api",
+        "oojs-ui-core",
+        "moment"
+    ]
+}

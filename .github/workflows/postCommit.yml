@@ -1,0 +1,46 @@
+name: post commit CI
+
+on:
+  push:
+    paths:
+      - "src/**"
+      - "scripts/browserify*.js"
+      - "scripts/conventionalCommitsScopesGenerator.js"
+      - "scripts/prefetch*.js"
+      - "package-lock.json"
+      - ".github/workflows/postCommit.yml"
+  workflow_dispatch:
+  schedule:
+    - cron: 0 0 * * *
+
+concurrency: postCommit
+
+jobs:
+  postCommit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Use Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: lts/*
+          check-latest: true
+          cache: npm
+      - uses: technote-space/get-diff-action@v6
+        name: List diff
+      - name: Install dependencies
+        run: npm ci
+      - name: Run "Auto browserify generator"
+        run: node scripts/browserify.js
+      - name: Run "Conventional Commits scopes generator"
+        run: node scripts/conventionalCommitsScopesGenerator.js
+      - name: Run "Auto prefetch"
+        run: node scripts/prefetch.js
+      - name: Show git status
+        run: git status
+      - uses: EndBug/add-and-commit@v9
+        with:
+          committer_name: GitHub Actions
+          committer_email: actions@github.com
+          default_author: github_actor
+          message: "Auto: Commit from GitHub Actions - post commit CI"

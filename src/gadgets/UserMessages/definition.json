@@ -1,0 +1,16 @@
+{
+    "ResourceLoader": true,
+    "hidden": false,
+    "default": false,
+    "targets": [
+        "desktop"
+    ],
+    "type": "general",
+    "rights": [
+        "patrol"
+    ],
+    "dependencies": [
+        "ext.gadget.site-lib",
+        "mediawiki.util"
+    ]
+}

@@ -1,0 +1,18 @@
+{
+    "ResourceLoader": true,
+    "hidden": true,
+    "default": true,
+    "targets": [
+        "desktop",
+        "mobile"
+    ],
+    "type": "general",
+    "rights": [
+        "block"
+    ],
+    "dependencies": [
+        "ext.gadget.libOOUIDialog",
+        "mediawiki.api",
+        "ext.gadget.site-lib"
+    ]
+}

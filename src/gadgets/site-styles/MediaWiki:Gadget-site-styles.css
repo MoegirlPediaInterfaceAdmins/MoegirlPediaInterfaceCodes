@@ -1,0 +1,514 @@
+/* 
+ * 放置于这里的CSS将同时应用于桌面端和移动端
+ * 萌娘百科仅开放Vector和Moeskin皮肤
+ * 请尊重萌娘百科版权，以下代码除非注明均是管理员手敲出来的！！！复制需要注明源自萌娘百科，并且附上URL地址 https://zh.moegirl.org.cn/MediaWiki:Gadget-site-styles.css
+ * 版权协定：知识共享 署名-非商业性使用-相同方式共享 3.0
+ */
+/* Tabs */
+.tab .TabLabelText {
+    padding: 1px;
+    background: #fff;
+    cursor: pointer;
+    flex: none;
+}
+
+.tab .TabLabel {
+    z-index: 2;
+    position: relative;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    -o-user-select: none;
+    user-select: none;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.tab .TabLabelText.selected {
+    padding: 1px;
+    background: white;
+}
+
+.tab .TabContent {
+    background: white;
+    padding: 20px 30px;
+    position: relative;
+    z-index: 1;
+    border: 1px solid #aaa;
+}
+
+.tab .TabContentText {
+    display: none;
+}
+
+.tab .TabContentText.selected {
+    display: block;
+}
+
+.tab .tabLabelTop .TabLabelText {
+    border-top: 3px solid transparent;
+    border-left: 1px solid transparent;
+    border-right: 1px solid transparent;
+}
+
+.tab .tabLabelTop .TabLabelText.selected {
+    border-top: 3px solid green;
+    border-left: 1px solid #aaa;
+    border-right: 1px solid #aaa;
+}
+
+.tab .tabLabelTop.reverse .TabLabelText {
+    border-bottom: 3px solid transparent;
+    border-left: 1px solid transparent;
+    border-right: 1px solid transparent;
+    border-top: 1px solid transparent;
+}
+
+.tab .tabLabelTop.reverse .TabLabelText.selected {
+    border-bottom: 3px solid green;
+    border-left: 1px solid #aaa;
+    border-right: 1px solid #aaa;
+    border-top: 1px solid transparent;
+}
+
+.tab .tabLabelBottom .TabLabelText {
+    border-bottom: 3px solid transparent;
+    border-left: 1px solid transparent;
+    border-right: 1px solid transparent;
+}
+
+.tab .tabLabelBottom .TabLabelText.selected {
+    border-bottom: 3px solid green;
+    border-left: 1px solid #aaa;
+    border-right: 1px solid #aaa;
+}
+
+.tab .tabLabelBottom.reverse .TabLabelText {
+    border-top: 3px solid transparent;
+    border-left: 1px solid transparent;
+    border-right: 1px solid transparent;
+    border-bottom: 1px solid transparent;
+}
+
+.tab .tabLabelBottom.reverse .TabLabelText.selected {
+    border-top: 3px solid green;
+    border-left: 1px solid #aaa;
+    border-right: 1px solid #aaa;
+    border-bottom: 1px solid transparent;
+}
+
+.tab .tabLabelLeft .TabLabelText {
+    border-left: 3px solid transparent;
+    border-top: 1px solid transparent;
+    border-bottom: 1px solid transparent;
+}
+
+.tab .tabLabelLeft .TabLabelText.selected {
+    border-left: 3px solid green;
+    border-top: 1px solid #aaa;
+    border-bottom: 1px solid #aaa;
+}
+
+.tab .tabLabelLeft.reverse .TabLabelText {
+    border-right: 3px solid transparent;
+    border-top: 1px solid transparent;
+    border-bottom: 1px solid transparent;
+    border-left: 1px solid transparent;
+}
+
+.tab .tabLabelLeft.reverse .TabLabelText.selected {
+    border-right: 3px solid green;
+    border-top: 1px solid #aaa;
+    border-bottom: 1px solid #aaa;
+    border-left: 1px solid transparent;
+}
+
+.tab .tabLabelRight .TabLabelText {
+    border-right: 3px solid transparent;
+    border-top: 1px solid transparent;
+    border-bottom: 1px solid transparent;
+}
+
+.tab .tabLabelRight .TabLabelText.selected {
+    border-right: 3px solid green;
+    border-top: 1px solid #aaa;
+    border-bottom: 1px solid #aaa;
+}
+
+.tab .tabLabelRight.reverse .TabLabelText {
+    border-left: 3px solid transparent;
+    border-top: 1px solid transparent;
+    border-bottom: 1px solid transparent;
+    border-right: 1px solid transparent;
+}
+
+.tab .tabLabelRight.reverse .TabLabelText.selected {
+    border-left: 3px solid green;
+    border-top: 1px solid #aaa;
+    border-bottom: 1px solid #aaa;
+    border-right: 1px solid transparent;
+}
+
+.tab .Tabs .TabDivider {
+    width: 100%;
+    order: 2;
+}
+
+.tab .Tabs.reverse .TabDivider {
+    height: 2px;
+}
+
+.tab .Tabs.tabLabelLeft .TabLabel,
+.tab .Tabs.tabLabelRight .TabContent {
+    order: 1;
+}
+
+.tab .Tabs.tabLabelLeft .TabContent,
+.tab .Tabs.tabLabelRight .TabLabel {
+    order: 3;
+}
+
+.tab .Tabs.tabLabelLeft,
+.tab .Tabs.tabLabelRight {
+    display: flex;
+    flex-wrap: nowrap;
+    width: auto;
+}
+
+.tab .Tabs.tabLabelLeft .TabDivider,
+.tab .Tabs.tabLabelRight .TabDivider {
+    height: 100%;
+    width: 0;
+}
+
+.tab .Tabs.tabLabelLeft.reverse .TabDivider,
+.tab .Tabs.tabLabelRight.reverse .TabDivider {
+    width: 1px;
+}
+
+.tab .Tabs.tabLabelLeft .TabLabel,
+.tab .Tabs.tabLabelRight .TabLabel {
+    flex-direction: column;
+}
+
+.tab .Tabs.tabLabelLeft:not(.AutoWidth) .TabContent,
+.tab .Tabs.tabLabelRight:not(.AutoWidth) .TabContent {
+    flex: 1;
+}
+
+.Tabs {
+    max-width: 100%;
+}
+
+.Tabs.AutoWidth {
+    width: max-content;
+    display: flow-root;
+}
+
+.Tabs.FloatLeft {
+    float: left;
+    margin-right: 1em;
+}
+
+.Tabs.FloatRight {
+    float: right;
+    margin-left: 1em;
+}
+
+.Tabs .Tab {
+    border-bottom: 1px solid #aaa;
+}
+
+.Tabs .Tab:first-child {
+    border-top: 1px solid #aaa;
+}
+
+.Tabs .Tab .TabLabelText {
+    padding: 7px;
+}
+
+.Tabs .Tab .TabContentText {
+    padding: 3px;
+}
+
+.infotemplatebox>table td>.Tabs .TabLabel,
+.infotemplatebox>table td>.Tabs .TabContent {
+    margin: 0 -1px;
+}
+
+/*
+ * 感谢[[User:Great Brightstar]]的贡献，源码来自[[special:diff/834104]]
+ * 以下是原注释：
+ * 在这里使用 font-feature-settings 属性会让使用“lang”标签的元素强制使用 OpenType 技术显示本地化的变体字（通过激活 locl 标签，即便浏览器本身不直接激活）。
+ * 如果你使用思源黑体（非 CN、JP、KO、TW 版）、Noto Sans CJK 显示文字的话就有可能看到效果。
+ * 关于上述这个 CSS 属性的用法，参阅：https://developer.mozilla.org/en-US/docs/Web/CSS/font-feature-settings 注意：此文引用的 OpenType Feature Tags list 同样需要关注。
+ * 如有任何问题请即刻禁用之
+ * Nbdd0121: 将原来的[lang]改为span[lang]，这样就不会影响非{{lang}}的[lang]了 (e.g. div#mw-content-text)
+ */
+span[lang] {
+    font-family: initial;
+    font-feature-settings: "locl" on;
+    -webkit-font-feature-settings: "locl" on;
+}
+
+[style*="font:" i] span[lang],
+[style*="font-family:" i] span[lang] {
+    font-family: inherit;
+}
+
+/* 日语斜体 */
+@font-face {
+    font-family: JapaneseItalic;
+    src: local(meiryo);
+}
+
+i span[lang=ja i],
+span[lang=ja i] i,
+[style*=italic i] span[lang=ja i],
+span[lang=ja i] [style*=italic i] {
+    font-family: JapaneseItalic, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+}
+
+[style*="font:" i] i span[lang=ja i],
+[style*="font-family:" i] i span[lang=ja i],
+[style*="font:" i] span[lang=ja i] i,
+[style*="font-family:" i] span[lang=ja i] i,
+[style*="font:" i] [style*=italic i] span[lang=ja i],
+[style*="font-family:" i] [style*=italic i] span[lang=ja i],
+[style*="font:" i] span[lang=ja i] [style*=italic i],
+[style*="font-family:" i] span[lang=ja i] [style*=italic i] {
+    font-family: inherit;
+}
+
+/* 黑幕模板配合CSS */
+.heimu,
+.heimu rt {
+    background-color: #252525;
+}
+
+.heimu,
+.heimu a,
+a .heimu,
+a.new .heimu,
+span.heimu a.new,
+span.heimu a.external,
+span.heimu a.external:visited,
+span.heimu a.extiw,
+span.heimu a.extiw:visited,
+span.heimu a.mw-disambig,
+span.heimu a.mw-redirect {
+    transition: color .13s linear;
+    color: #252525;
+    text-shadow: none;
+}
+
+span.heimu:hover,
+span.heimu:active {
+    color: white;
+}
+
+span.heimu:hover a,
+a:hover span.heimu {
+    color: lightblue;
+}
+
+span.heimu:hover a:visited,
+a:visited:hover span.heimu {
+    color: #c5cae9;
+}
+
+span.heimu:hover a.new,
+a.new:hover span.heimu {
+    color: #fcc;
+}
+
+span.heimu a.new:hover:visited,
+a.new:hover:visited span.heimu {
+    color: #ef9a9a;
+}
+
+span.heimu:hover a.extiw:visited,
+a.extiw:visited:hover span.heimu {
+    color: #d1c4e9;
+}
+
+/* info类模板 */
+.infoBox {
+    margin: 0 auto;
+    width: 80%;
+    box-sizing: border-box;
+}
+
+.infoBoxTitle {
+    margin: 3px auto;
+    padding: 0;
+    text-align: center;
+    font-weight: 700;
+}
+
+.infoBoxIcon {
+    display: table-cell;
+    padding: 2px 0 2px .5em;
+    vertical-align: middle;
+}
+
+.infoBoxText {
+    display: table-cell;
+    padding: .25em .5em .25em 1.3em;
+    width: 100%;
+    vertical-align: middle;
+}
+
+.infoBoxContent {
+    border: 1px solid #ddd;
+    border-left-width: 0;
+    background: #fbfbfb;
+}
+
+.infoBoxBelow {
+    margin: 0 auto;
+    padding: 0;
+    text-align: center;
+}
+
+/* wikitable green */
+table.wikitable-green {
+    background: #c9f6e1
+}
+
+.wikitable-green th {
+    background: #13ec93
+}
+
+.wikitable-green td {
+    background: #f3f3f3
+}
+
+/* 隐藏只供维护人员查看的内容 */
+.patroller-show,
+.checkuser-show,
+.suppress-show,
+.sysop-show,
+.interface-admin-show {
+    display: none !important;
+}
+
+/* 评论区热评 */
+.comment-container-top {
+    background-color: rgba(191, 234, 181, .2);
+}
+
+.comment-container-top>div:first-child {
+    background-color: rgba(18, 152, 34, .47);
+    color: #fff;
+    font-weight: 700;
+}
+
+/* 评论区输入框工具栏 */
+.post-content .comment-text {
+    position: static;
+}
+
+.post-content .comment-toolbar {
+    position: static;
+    display: flex;
+    justify-content: flex-start;
+}
+
+.post-content .flowthread-btn {
+    position: static;
+    margin-top: 3px;
+}
+
+.post-content .comment-submit {
+    position: static;
+    margin: -1px -1px 0 auto;
+}
+
+/* Ruby 模板 */
+rb[data-id="template-ruby"]::before {
+    content: "";
+}
+
+rb[data-id="template-ruby"]::before,
+.template-ruby-hidden {
+    display: inline-block;
+    width: 0;
+    font-size: 0;
+}
+
+/* 修正可能的mmv背景错误 */
+body .mw-mmv-overlay {
+    z-index: 9999;
+}
+
+body .mw-mmv-wrapper {
+    z-index: 99999;
+}
+
+/* Edittool */
+.noconvins>.mw-charinsert-item::before {
+    content: '-{';
+}
+
+.noconvins>.mw-charinsert-item::after {
+    content: '}-';
+}
+
+/* 修复修订滑块悬浮窗层级 */
+.mw-revslider-tooltip {
+    z-index: 7;
+}
+
+/* 滥用过滤器警告消息 */
+.errorbox ul {
+    list-style: none;
+}
+
+/* ajax 投票 */
+body .ajaxpoll {
+    width: max-content;
+    max-width: 100%;
+    min-width: 400px;
+}
+
+/* 隐藏文件说明302 */
+.ns-6 #shared-image-desc {
+    display: none;
+}
+
+/* 侧边栏底图默认隐藏（通过小工具显示） */
+.sidebar-character {
+    display: none;
+}
+
+/* 评论区提示 */
+.ns-0.action-view:not(.page-Mainpage) #bodyContent::after,
+.ns-2.action-view #bodyContent::after,
+.ns-4.action-view #bodyContent::after,
+.ns-12.action-view #bodyContent::after {
+    content: "因系统维护，评论区临时暂停所有功能";
+    border: 1px solid rgba(0, 0, 0, 0.17);
+    text-align: center;
+    font-size: small;
+    padding: 1em;
+    margin-top: 1rem;
+    color: #777;
+    display: block !important;
+    clear: both;
+}
+
+.ns-0.action-view:not(.page-Mainpage) #bodyContent:lang(zh-hant)::after,
+.ns-0.action-view:not(.page-Mainpage) #bodyContent:lang(zh-hk)::after,
+.ns-0.action-view:not(.page-Mainpage) #bodyContent:lang(zh-tw)::after,
+.ns-2.action-view #bodyContent:lang(zh-hant)::after,
+.ns-2.action-view #bodyContent:lang(zh-hk)::after,
+.ns-2.action-view #bodyContent:lang(zh-tw)::after,
+.ns-4.action-view #bodyContent:lang(zh-hant)::after,
+.ns-4.action-view #bodyContent:lang(zh-hk)::after,
+.ns-4.action-view #bodyContent:lang(zh-tw)::after,
+.ns-12.action-view #bodyContent:lang(zh-hant)::after,
+.ns-12.action-view #bodyContent:lang(zh-hk)::after,
+.ns-12.action-view #bodyContent:lang(zh-tw)::after {
+    content: "因系統維護，評論區臨時暫停所有功能"
+}

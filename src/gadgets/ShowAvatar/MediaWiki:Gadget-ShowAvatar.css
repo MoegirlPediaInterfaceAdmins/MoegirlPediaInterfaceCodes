@@ -1,0 +1,23 @@
+#p-personal li {
+    margin-top: 1em;
+    margin-bottom: 0.75em;
+}
+#pt-userpage {
+    background: none !important;
+    padding-left: 0px !important;
+}
+#pt-avatar {
+    margin-top: 0.25em !important;
+    margin-bottom: 0px !important;
+}
+#pt-avatar img {
+    width: 2.5em;
+    border-radius: 50%;
+}
+/* 1.28+ Echo fix */
+#p-personal #pt-notifications-alert, #p-personal #pt-notifications-notice {
+    margin-top: 0.8em;
+}
+#p-personal li {
+    margin-bottom: 0.2em;
+}

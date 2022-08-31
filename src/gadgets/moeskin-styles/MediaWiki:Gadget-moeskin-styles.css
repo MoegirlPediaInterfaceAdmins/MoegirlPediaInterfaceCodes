@@ -1,0 +1,152 @@
+/* 此处放置的 CSS 会影响使用 MoeSkin 皮肤的用户 */
+/* banner image */
+body.skin-moeskin #moe-bg-container {
+    background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0) 80%, var(--theme-background-color)), /* 顶部头图 URL 地址 */ url(//img.moegirl.org.cn/topbar/zhMoegirl_2022Spring.jpg);
+    background-position: left center;
+}
+/* footer */
+body.skin-moeskin #footer-info-copyright {
+    padding: 15px 0 30px 0;
+    min-height: 165px;
+}
+body.skin-moeskin #footer-moegirl {
+    color: #2f2f2f;
+    /* white-space: nowrap; */
+    flex-wrap: wrap;
+    display: flex;
+    gap: 1rem;
+}
+body.skin-moeskin #footer-moegirl h4 {
+    color: #243c4a;
+    font-size: 1.25rem;
+    margin-bottom: 8px;
+    font-weight: 600;
+}
+body.skin-moeskin #footer-moegirl ul {
+    line-height: 1.7;
+    min-width: 120px;
+    font-size: 12pt;
+    flex: 1;
+}
+body.skin-moeskin #footer-moegirl ul a {
+    color: #2f2f2f;
+}
+body.skin-moeskin #footer-moegirl #footer-qrcode-area {
+    display: flex;
+}
+body.skin-moeskin #footer-moegirl #footer-qrcode-area > div {
+    text-align: center;
+    flex: 1;
+}
+body.skin-moeskin #footer-moegirl #footer-qrcode-area > div:not(:last-of-type) {
+    margin-right: 1rem;
+}
+body.skin-moeskin #footer-moegirl #footer-qrcode-area > div span {
+    display: block;
+    font-size: 0.875rem;
+    margin-top: 4px;
+    text-align: center;
+}
+body.skin-moeskin #footer-moegirl #footer-qrcode-area img {
+    width: 100%;
+    margin: 0 auto;
+    display: block;
+    border-radius: 0.5rem;
+    padding: 0.1rem;
+    background-color: #fff;
+    border: 1px solid #ddd;
+}
+/* adjust bg opacity of article area */
+body.skin-moeskin #moe-main-container {
+    --theme-card-background-color: rgba(255, 255, 255, 0.9);
+}
+/* adjust top banner */
+body.skin-moeskin #moe-main-container > #moe-topbanner-container {
+    z-index: 1;
+}
+body.skin-moeskin #moe-main-container > #moe-topbanner-container > #moe-topbanner {
+    padding: 0;
+    line-height: 0;
+    overflow: hidden;
+}
+
+/* @pollify mw.util.addPortletLink */
+aside#moe-global-sidenav #moe-custom-sidenav-block h2 {
+    font-size: 1.2em;
+    margin: 0;
+}
+
+/* @FIXME 临时隐藏 未完成的功能 */
+body.skin-moeskin .editor-central,
+body.skin-moeskin .moegirl-realms {
+    display: none;
+}
+
+/* @fix 被隐藏的目录导致空的侧边栏 */
+body.skin-moeskin #toc-container .toc,
+body.skin-moeskin #toc-container .toc ul {
+    display: revert !important;
+}
+
+/* @fix 标题的显示模式 */
+body.skin-moeskin #moe-page-header-top > div {
+    display: flex;
+}
+
+/* 特定讨论页面隐藏返回按钮 */
+.rootpage-萌娘百科_talk_讨论版 #back-to-subject,
+.rootpage-Talk_讨论版 #back-to-subject,
+.rootpage-Talk_提问求助区 #back-to-subject,
+.rootpage-萌娘百科_talk_提案 #back-to-subject {
+    display: none;
+}
+
+/* @fix [[Special:ApiSandbox]]全屏模式图层顺序bug */
+.mw-apisandbox-fullscreen #mw-apisandbox-ui {
+    z-index: 30;
+}
+.mw-apisandbox-fullscreen .oo-ui-menuSelectWidget {
+    z-index: 31;
+}
+
+/* @fix flashmp3 layer */
+.skin-moeskin #mw-content-text .sm2-bar-ui p {
+    line-height: 1;
+    margin: 0;
+}
+.skin-moeskin #mw-content-text .sm2-bar-ui .sm2-progress input.sm2-progress-track[type="range"] {
+    padding: 0;
+}
+
+/* @fix [[T:区域弹幕]] */
+.skin-moeskin #moe-article .local-danmaku-container {
+  width: calc(100% + 4rem) !important;
+  left: -2rem !important;
+}
+
+/* @fix Monospaced elements */
+body pre,
+body code,
+body tt,
+body kbd,
+body samp,
+.mw-code {
+    font-family: Courier New, Courier, monospace;
+}
+
+/* @fix 灯箱 */
+body.skin-moeskin .mw-mmv-wrapper {
+  box-sizing: content-box;
+}
+
+/* 侧边栏公告 */
+#moe-global-sidenav #moe-sidenav-sitenotice {
+    text-align: left;
+}
+#moe-global-sidenav #moe-sidenav-sitenotice h2 {
+    font-size: 16px;
+    margin: 0;
+}
+#moe-global-sidenav #moe-sidenav-sitenotice h2 .mw-headline-number {
+    display: none;
+}

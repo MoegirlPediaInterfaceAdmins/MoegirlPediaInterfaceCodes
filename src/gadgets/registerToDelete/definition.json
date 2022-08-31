@@ -1,0 +1,17 @@
+{
+    "ResourceLoader": true,
+    "hidden": false,
+    "default": true,
+    "targets": [
+        "desktop"
+    ],
+    "type": "general",
+    "rights": [
+        "patrolleredit"
+    ],
+    "dependencies": [
+        "ext.gadget.libOOUIDialog",
+        "ext.gadget.site-lib",
+        "ext.gadget.LocalObjectStorage"
+    ]
+}

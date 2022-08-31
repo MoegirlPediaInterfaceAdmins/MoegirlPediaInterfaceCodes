@@ -1,0 +1,12 @@
+{
+    "ResourceLoader": true,
+    "hidden": true,
+    "default": true,
+    "targets": [
+        "desktop"
+    ],
+    "type": "styles",
+    "skins": [
+        "moeskin"
+    ]
+}

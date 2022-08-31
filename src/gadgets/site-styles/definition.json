@@ -1,0 +1,10 @@
+{
+    "ResourceLoader": true,
+    "hidden": true,
+    "default": true,
+    "targets": [
+        "desktop",
+        "mobile"
+    ],
+    "type": "styles"
+}

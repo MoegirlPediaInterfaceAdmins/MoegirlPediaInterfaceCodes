@@ -1,0 +1,17 @@
+{
+    "ResourceLoader": true,
+    "hidden": false,
+    "default": true,
+    "targets": [
+        "desktop",
+        "mobile"
+    ],
+    "type": "general",
+    "skins": [
+        "vector"
+    ],
+    "dependencies": [
+        "ext.gadget.LocalObjectStorage",
+        "mediawiki.toc"
+    ]
+}

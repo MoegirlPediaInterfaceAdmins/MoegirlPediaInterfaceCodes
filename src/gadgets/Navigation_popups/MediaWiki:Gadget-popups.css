@@ -1,0 +1,163 @@
+/* From https://en.wikipedia.org/w/index.php?title=MediaWiki:Gadget-navpop.css&oldid=825269631 */
+.popupMoreLink {
+    display: block;
+    text-align: right;
+    cursor: pointer;
+}
+
+ins.popupDiff {
+    background: #afe;
+}
+
+del.popupDiff {
+    background: #ffe6e6;
+}
+
+#selectionPreview {
+    border: 2px solid #ddd;
+    background-color: #eef;
+    padding: 6px;
+}
+
+.navpopup {
+    border: 1px solid #bbb;
+    background-color: #fff;
+    padding: 10px;
+    padding-bottom: 5px;
+    font-size: 11px;
+    box-shadow: 0 3px 8px rgba(50, 50, 50, 0.35);
+    word-wrap: break-word;
+}
+
+.navpopup hr {
+    color: #aaa !important;
+    background-color: #aaa !important;
+}
+
+.popupDrag {
+    background-color: #ffbe20;
+    height: 5px;
+    margin-top: -5px;
+    margin-bottom: 5px;
+}
+
+.popupDragHandle {
+    cursor: move;
+    position: relative;
+}
+
+.popup_menu {
+    display: none;
+    position: absolute;
+    left: 0;
+    margin: 0;
+    margin-top: 1.4em;
+    line-height: 1.25em;
+    top: 0;
+    z-index: 2;
+    width: 10em;
+    background: white;
+    border: 1px solid grey;
+    padding: 0 !important;
+    margin-left: -6px;
+    border-width: 1px 1px 1px 6px;
+}
+
+.popup_menu li {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.popup_menu a {
+    display: block;
+    padding: 3px;
+    color: #555;
+}
+
+.popup_menu_row a {
+    display: inline-block;
+}
+
+.popup_menu_row {
+    color: #aaa;
+}
+
+.popup_drop {
+    display: inline;
+    position: relative;
+}
+
+.popup_drop a,
+.popup_drop a:visited {
+    padding: 3px;
+    margin: 0;
+    font-weight: bold;
+    color: #0645ad;
+}
+
+.popup_drop:hover .popup_menu,
+.popup_drop .popup_menu:hover {
+    display: inline;
+    background: white;
+    padding: 2px;
+    color: #555;
+}
+
+.popup_drop:hover {
+    background: #ccf;
+    color: #44f;
+}
+
+.popup_menu a:hover {
+    background: grey;
+    color: #fff;
+    text-decoration: none;
+}
+
+.popup_mainlink {
+    font-size: 140%;
+    font-weight: bold;
+}
+
+.popup_mainlink a {
+    color: #000;
+}
+
+a.popup_change_title_link {
+    color: #152;
+}
+
+.popup_diff_dates {
+    font-style: italic;
+    background: none;
+}
+
+.popup_menu_item a {
+    display: block;
+}
+
+.popup_history_row_even {
+    background: #eee;
+}
+
+.popup_history_date {
+    font-weight: bold;
+    font-size: 120%;
+}
+
+.popupPreview a.extiw,
+.popupPreview a.extiw:active {
+    color: #36b;
+    background: none;
+    padding: 0;
+}
+
+.popupPreview .external {
+    color: #36b;
+}
+
+.popupPreview .plainlinks a {
+    background: none !important;
+    padding: 0 !important;
+}

@@ -1,0 +1,88 @@
+.comment-check {
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    position: absolute;
+    right: 98px;
+    top: -1px;
+    height: 32px;
+    width: 100px;
+    text-align: center;
+    text-shadow: 0 1px 0 #FFF;
+    color: #555;
+    font-size: 14px;
+    font-weight: bold;
+    border: 1px solid #CCC;
+    background-color: white;
+    transition: all 0.3s ease-out;
+    box-shadow: 0 0 0 white inset, 0 0 0 white;
+    cursor: pointer;
+    margin: 0;
+    padding: 0;
+    border-radius: 0 0 3px 0;
+}
+.comment-check:hover {
+    box-shadow: 0 0 0 white inset, 0 5px 11px 0 rgba(0, 0, 0, 0.18);
+}
+.comment-toolbar > .comment-check:focus,
+.comment-toolbar > .comment-submit:focus {
+    z-index: 9;
+}
+#flowthreadCheckBox {
+    z-index: 200;
+    position: fixed;
+    top: 20%;
+    min-height: 172px;
+    width: 600px;
+    border: 1px solid rgb(167, 215, 249);
+    margin-left: calc(50vw - 300px);
+    background-color: white;
+    display: none;
+    padding: 0 .5em 1em;
+}
+#flowthreadCheckBoxTitle {
+    position: relative;
+    width: 100%;
+    margin: 0;
+    text-align: left;
+    font-size: 15px;
+    padding: 1em;
+    box-sizing: border-box;
+}
+#flowthreadCheckBoxTitleContent {
+    border-bottom: 1px #66ccff solid;
+}
+#flowthreadCheckBoxCloseButton {
+    cursor: pointer;
+    position: absolute;
+    top: .25em;
+    right: .5em;
+    font-size: 20px;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    -o-user-select: none;
+    user-select: none;
+}
+#flowthreadCheckBoxContentBox {
+    margin: 0 10px;
+    z-index: 13;
+    top: 3em;
+    background-color: rgb(246, 246, 246);
+    max-height: 60vh;
+    overflow: auto;
+}
+#flowthreadCheckBoxContentBox table {
+    width: 100%;
+    vertical-align: top;
+    word-break: break-all;
+}
+#flowthreadCheckBoxContentBox table th,
+#flowthreadCheckBoxContentBox table td {
+    border: 1px grey dashed;
+    border-collapse: collapse;
+}
+#flowthreadCheckBoxContentBox table td.first {
+    text-align: right;
+    min-width: 1.5em;
+    padding-right: .5em;
+}

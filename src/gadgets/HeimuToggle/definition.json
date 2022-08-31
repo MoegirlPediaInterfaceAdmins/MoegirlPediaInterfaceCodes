@@ -1,0 +1,14 @@
+{
+    "ResourceLoader": true,
+    "hidden": false,
+    "default": false,
+    "targets": [
+        "desktop"
+    ],
+    "type": "general",
+    "dependencies": [
+        "user.options",
+        "ext.gadget.libBottomRightCorner",
+        "ext.gadget.site-lib"
+    ]
+}

@@ -1,0 +1,13 @@
+{
+    "ResourceLoader": true,
+    "hidden": false,
+    "default": false,
+    "targets": [
+        "desktop"
+    ],
+    "type": "general",
+    "dependencies": [
+        "ext.gadget.UserLinkAvatar",
+        "ext.gadget.jQueryLazyload"
+    ]
+}

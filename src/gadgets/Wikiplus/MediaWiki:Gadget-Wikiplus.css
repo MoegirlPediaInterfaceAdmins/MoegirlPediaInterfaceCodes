@@ -1,0 +1,21 @@
+/* 调整navbar以适应Wikiplus快速编辑 */
+.noprint.plainlinks.hlist.navbar.nomobile {
+    width: 140px !important;
+}
+
+/* 修复MoeSkin上的工具栏快速编辑按钮
+ * 机智的小鱼君 2022/4/16
+ */
+body.skin-moeskin #moe-page-tools #Wikiplus-Edit-TopBtn {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  background-color: var(--theme-accent-link-color);
+  line-height: 2rem;
+  font-size: 0.75rem;
+  text-align: center;
+  box-shadow: var(--theme-card-box-shadow);
+}
+body.skin-moeskin #moe-page-tools #Wikiplus-Edit-TopBtn a {
+  color: var(--theme-button-color);
+}

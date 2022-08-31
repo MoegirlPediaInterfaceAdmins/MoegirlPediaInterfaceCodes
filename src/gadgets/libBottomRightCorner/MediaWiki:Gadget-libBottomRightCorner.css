@@ -1,0 +1,37 @@
+#bottomRightCorner {
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    right: 0;
+    bottom: 100px;
+    cursor: pointer;
+    z-index: 13;
+    user-select: none;
+}
+
+body.overlay-scrollbars.skin-vector #bottomRightCorner {
+    /* 因为无法计算滚动条宽度，只能使用预设值 */
+    right: 20px;
+}
+
+#bottomRightCorner>div {
+    width: 20px;
+    order: 0;
+    font-size: 12px;
+    text-align: center;
+    padding: 5px 0;
+    margin-top: 17px;
+    background-color: #000;
+    color: #fff;
+    opacity: .6;
+}
+
+.mw-mmv-lightbox-open #bottomRightCorner {
+    display: none !important;
+}
+
+@media print {
+    #bottomRightCorner {
+        display: none !important;
+    }
+}

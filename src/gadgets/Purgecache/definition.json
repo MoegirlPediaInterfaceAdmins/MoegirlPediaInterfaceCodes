@@ -1,0 +1,17 @@
+{
+    "ResourceLoader": true,
+    "hidden": false,
+    "default": true,
+    "targets": [
+        "desktop"
+    ],
+    "type": "general",
+    "rights": [
+        "purge"
+    ],
+    "dependencies": [
+        "moment",
+        "ext.gadget.cron",
+        "ext.gadget.site-lib"
+    ]
+}

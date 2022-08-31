@@ -1,0 +1,27 @@
+{
+    "ResourceLoader": true,
+    "hidden": false,
+    "default": false,
+    "targets": [
+        "desktop"
+    ],
+    "type": "general",
+    "skins": [
+        "vector"
+    ],
+    "dependencies": [
+        "mediawiki.util",
+        "mediawiki.api",
+        "mediawiki.api.options",
+        "user.options",
+        "mediawiki.Uri",
+        "mediawiki.storage",
+        "ext.gadget.site-lib"
+    ],
+    "peers": [
+        "dark-mode-toggle-pagestyles"
+    ],
+    "rights": [
+        "techedit"
+    ]
+}

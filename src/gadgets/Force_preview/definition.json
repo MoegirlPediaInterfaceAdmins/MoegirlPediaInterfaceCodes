@@ -1,0 +1,13 @@
+{
+    "ResourceLoader": true,
+    "hidden": true,
+    "default": true,
+    "targets": [
+        "desktop",
+        "mobile"
+    ],
+    "type": "general",
+    "dependencies": [
+        "user.options"
+    ]
+}

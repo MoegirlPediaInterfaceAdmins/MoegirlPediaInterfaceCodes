@@ -1,0 +1,18 @@
+{
+    "ResourceLoader": true,
+    "hidden": false,
+    "default": true,
+    "targets": [
+        "desktop",
+        "mobile"
+    ],
+    "type": "general",
+    "skins": [
+        "vector",
+        "minerva"
+    ],
+    "dependencies": [
+        "ext.gadget.libBottomRightCorner",
+        "ext.gadget.site-lib"
+    ]
+}

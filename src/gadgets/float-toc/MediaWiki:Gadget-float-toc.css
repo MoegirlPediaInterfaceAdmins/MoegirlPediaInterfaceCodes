@@ -1,0 +1,128 @@
+.tocfloat {
+    position: fixed;
+    top: 3rem;
+    width: 20rem;
+    max-width: calc(100vw - 22px - 2rem);
+    right: 0;
+    transform: translateX(100%);
+    transition: transform .37s ease-in-out;
+    max-height: calc(100vh - 7.625rem);
+    z-index: 72;
+    display: flex;
+    align-items: flex-start;
+    align-content: flex-start;
+}
+
+body.overlay-scrollbars.skin-vector .tocfloat {
+    /* 因为无法计算滚动条宽度，只能使用预设值 */
+    transform: translateX(calc(100% - 20px));
+}
+
+
+@media print {
+    .tocfloat {
+        display: none !important;
+    }
+}
+
+.tocfloat:hover,
+.tocfloat:active,
+.tocfloat:focus {
+    transform: none;
+}
+
+body.overlay-scrollbars.skin-vector .tocfloat:hover,
+body.overlay-scrollbars.skin-vector .tocfloat:active,
+body.overlay-scrollbars.skin-vector .tocfloat:focus {
+    /* 因为无法计算滚动条宽度，只能使用预设值 */
+    transform: translate(-20px);
+}
+
+.tocfloatlabel {
+    width: 22px;
+    font-size: 12px;
+    cursor: pointer;
+    border-style: solid;
+    border-width: 1px 0 1px 1px;
+    border-color: #ccc;
+    text-align: center;
+    box-sizing: border-box;
+    user-select: none;
+    padding: 5px 1px 5px 0;
+    position: absolute;
+    top: 3rem;
+    left: -21px;
+    z-index: 2;
+    background-color: rgba(0, 0, 0, 0.6);
+    color: #fff;
+    transition-duration: .37s;
+    transition-timing-function: ease-in-out;
+    transition-property: color, background-color;
+}
+
+.tocfloat:hover .tocfloatlabel {
+    background-color: #fff;
+    color: #000;
+}
+
+.tocfloat .tocfloatcontent {
+    width: 20rem;
+    max-width: calc(100vw - 22px - 2rem);
+    border-top-left-radius: .25rem;
+    border-bottom-left-radius: .25rem;
+    box-sizing: border-box;
+    border-style: solid;
+    border-width: 1px 0 1px 1px;
+    border-color: #ccc;
+    max-height: calc(100vh - 7.625rem);
+    background-color: #fff;
+    padding: 1.5rem 0 1.5rem 1.5rem;
+}
+
+body.overlay-scrollbars .tocfloatcontent {
+    opacity: 0;
+    transition: opacity .37s ease-in-out;
+    pointer-events: none;
+}
+
+body.overlay-scrollbars .tocfloat:hover .tocfloatcontent {
+    opacity: 1;
+    pointer-events: all;
+}
+
+.tocfloat .tocfloatcontent .toctitle {
+    text-align: center;
+    padding: 0 1.5rem
+}
+
+.tocfloat .tocfloatcontent .toctitle h2 {
+    display: inline;
+    border: 0;
+    padding: 0;
+    font-size: 100%;
+    font-weight: 700;
+    font-family: sans-serif;
+}
+
+.tocfloat .tocfloatcontent>ul {
+    width: calc(18.5rem - 20px);
+    max-width: calc(100vw - 42px - 3.5rem);
+    margin: 0 20px 0 0 !important;
+    max-height: calc(100vh - 11.9125rem);
+    overflow: auto;
+    padding: 0;
+    text-align: left;
+}
+
+.tocfloat .tocfloatcontent ul {
+    list-style-type: none;
+    list-style-image: none;
+}
+
+.tocfloat .tocfloatcontent .tocnumber {
+    word-break: keep-all;
+}
+
+.tocfloat .tocfloatcontent .toctext {
+    word-break: break-all;
+}

@@ -1,0 +1,17 @@
+{
+    "ResourceLoader": true,
+    "hidden": true,
+    "default": false,
+    "targets": [
+        "desktop",
+        "mobile"
+    ],
+    "type": "general",
+    "dependencies": [
+        "mediawiki.legacy.wikibits",
+        "mediawiki.util"
+    ],
+    "rights": [
+        "hidden"
+    ]
+}

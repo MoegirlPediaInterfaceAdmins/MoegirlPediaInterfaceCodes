@@ -1,0 +1,3 @@
+body.ns-2 div#catlinks:not(.catlinks-allhidden) { 
+	display: revert !important; 
+}

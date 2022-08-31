@@ -1,0 +1,14 @@
+#ca-editTopSection .mw-editsection {
+    font-family: inherit;
+    font-size: inherit;
+    font-weight: 400;
+    margin-left: 0;
+    vertical-align: inherit;
+    line-height: inherit;
+}
+#ca-editTopSection .mw-editsection-divider {
+    display: none !important;
+}
+#ca-editTopSection .Wikiplus-Edit-SectionBtn::after {
+    content: "序言";
+}

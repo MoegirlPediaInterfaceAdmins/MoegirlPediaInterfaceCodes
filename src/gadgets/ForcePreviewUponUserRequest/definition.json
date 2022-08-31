@@ -1,0 +1,17 @@
+{
+    "ResourceLoader": true,
+    "hidden": false,
+    "default": false,
+    "targets": [
+        "desktop",
+        "mobile"
+    ],
+    "type": "general",
+    "rights": [
+        "edit",
+        "autoconfirmed"
+    ],
+    "dependencies": [
+        "ext.gadget.Force_preview"
+    ]
+}
