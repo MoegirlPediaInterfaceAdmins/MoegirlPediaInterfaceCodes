@@ -12,6 +12,8 @@ on:
   schedule:
     - cron: 0 0 * * *
 
+concurrency: postCommit
+
 jobs:
   postCommit:
     runs-on: ubuntu-latest
