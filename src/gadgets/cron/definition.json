@@ -9,9 +9,5 @@
     "type": "general",
     "rights": [
         "hidden"
-    ],
-    "dependencies": [
-        "moment",
-        "ext.gadget.moment-timezone"
     ]
 }

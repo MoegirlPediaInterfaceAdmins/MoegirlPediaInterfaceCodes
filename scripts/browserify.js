@@ -2,6 +2,7 @@
 const console = require("./console.js");
 console.info("Start initialization...");
 const browserify = require("browserify");
+const minifyStream = require("minify-stream");
 const browserifyTargets = require("./browserifyTargets.js");
 const fs = require("fs");
 const fsPromises = require("fs/promises");
@@ -12,8 +13,8 @@ const outputPath = "tmp/output.js";
     await fsPromises.mkdir("tmp", {
         recursive: true,
     });
-    for (const { module, entry, file } of browserifyTargets) {
-        console.info("target:", { module, entry, file });
+    for (const { module, entry, file, exports } of browserifyTargets) {
+        console.info("target:", { module, entry, file, exports });
         await fsPromises.rm(inputPath, {
             recursive: true,
             force: true,
@@ -22,12 +23,25 @@ const outputPath = "tmp/output.js";
             recursive: true,
             force: true,
         });
-        await fsPromises.writeFile(inputPath, `global.${entry} = require("${module}");`, {});
+        const inputs = [];
+        const hasExports = Array.isArray(exports) && exports.length > 0;
+        if (!hasExports) {
+            inputs.push(`global["${entry}"] = require("${module}");`);
+        } else {
+            inputs.push(`import {${exports.join(",")}} from "${module}";`);
+            inputs.push(`global["${entry}"] = {${exports.join(",")}}`);
+        }
+        await fsPromises.writeFile(inputPath, inputs.join("\n"));
         await new Promise((res) => {
-            const stream = fs.createWriteStream(outputPath);
-            stream.addListener("close", res);
+            const fileStream = fs.createWriteStream(outputPath);
+            fileStream.addListener("close", res);
             console.info(`[${module}]`, "start generating...");
-            browserify(inputPath).transform("unassertify", { global: true }).transform("envify", { global: true }).plugin("common-shakeify").plugin("browser-pack-flat/plugin").bundle().pipe(stream);
+            const codeStream = browserify(inputPath).plugin("esmify").transform("unassertify", { global: true }).transform("envify", { global: true }).plugin("common-shakeify").plugin("browser-pack-flat/plugin").bundle();
+            if (hasExports) {
+                codeStream.pipe(minifyStream()).pipe(fileStream);
+            } else {
+                codeStream.pipe(fileStream);
+            }
         });
         console.info(`[${module}]`, "generated successfully.");
         await fsPromises.rm(file, {
