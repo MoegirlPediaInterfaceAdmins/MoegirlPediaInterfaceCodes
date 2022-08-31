@@ -1,16 +1,19 @@
-name: Conventional Commits scopes generator
+name: post commit CI
 
 on:
   push:
     paths:
       - "src/**"
+      - "scripts/browserify*.js"
       - "scripts/conventionalCommitsScopesGenerator.js"
-      - ".github/workflows/Conventional Commits.yml"
+      - "scripts/prefetch*.js"
+      - ".github/workflows/postCommit.yml"
   workflow_dispatch:
+  schedule:
+    - cron: 0 0 * * *
 
-concurrency: postCommit
 jobs:
-  test:
+  postCommit:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -24,11 +27,16 @@ jobs:
         name: List diff
       - name: Install dependencies
         run: npm ci
-      - name: Run the generator
-        run: node scripts/conventionalCommitsScopesGenerator.js && echo "git status" && git status
+      - name: Run "Auto browserify generator"
+        run: node scripts/browserify.js
+      - name: Run "Conventional Commits scopes generator"
+        run: node scripts/conventionalCommitsScopesGenerator.js
+      - name: Run "Auto prefetch"
+        run: node scripts/prefetch.js
+      - name: Show git status
+        run: git status
       - uses: EndBug/add-and-commit@v9
         with:
-          add: ".vscode"
           committer_name: GitHub Actions
           committer_email: actions@github.com
           default_author: github_actor
