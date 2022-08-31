@@ -1,0 +1,30 @@
+name: Auto browserify generator
+
+on:
+  push:
+    paths:
+      - "scripts/browserif*.js"
+  workflow_dispatch:
+  schedule:
+    - cron: 0 0 * * *
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Use Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: lts/*
+          check-latest: true
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
+      - name: Run the generator
+        run: node scripts/browserify.js
+      - uses: EndBug/add-and-commit@v9
+        with:
+          add: "src"
+          committer_name: GitHub Actions
+          committer_email: actions@github.com
+          default_author: github_actor
