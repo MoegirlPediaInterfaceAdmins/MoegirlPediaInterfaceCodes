@@ -5,5 +5,5 @@ const toLocalTimeZoneStrings = require("./toLocalTimeZoneStrings.js");
  * @type {console}
  */
 module.exports = new Proxy(console, {
-    get: (t, p) => prefixable.includes(p) ? (...args) => t[p].bind(t)(toLocalTimeZoneStrings.ISO(), ...args) : t[p].bind(t),
+    get: (t, p) => prefixable.includes(p) ? (...args) => t[p].bind(t)(`[${toLocalTimeZoneStrings.ISO()}]`, ...args) : t[p].bind(t),
 });
