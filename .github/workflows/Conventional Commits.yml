@@ -5,8 +5,10 @@ on:
     paths:
       - "src/**"
       - "scripts/conventionalCommitsScopesGenerator.js"
+      - ".github/workflows/Conventional Commits.yml"
   workflow_dispatch:
 
+concurrency: postCommit
 jobs:
   test:
     runs-on: ubuntu-latest

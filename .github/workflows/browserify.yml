@@ -4,9 +4,12 @@ on:
   push:
     paths:
       - "scripts/browserify*.js"
+      - ".github/workflows/browserify.yml"
   workflow_dispatch:
   schedule:
     - cron: 0 0 * * *
+
+concurrency: postCommit
 jobs:
   test:
     runs-on: ubuntu-latest
