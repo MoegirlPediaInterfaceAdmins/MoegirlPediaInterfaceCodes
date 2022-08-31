@@ -1,0 +1,5 @@
+{
+    "ignorePatterns": [
+        "MediaWiki:Gadget-DotsSyntaxHighlighter.js"
+    ]
+}
