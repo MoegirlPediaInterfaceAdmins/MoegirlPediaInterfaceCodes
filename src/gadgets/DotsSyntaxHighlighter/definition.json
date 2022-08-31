@@ -8,5 +8,8 @@
     "type": "general",
     "rights": [
         "edit"
+    ],
+    "dependencies": [
+        "jquery.client"
     ]
 }
