@@ -74,7 +74,8 @@
             "enable-nest-highlight",
             "disable-nest-alert",
             "uploader",
-            "temp-editcheck"
+            "temp-editcheck",
+            "wikiBlame"
         ]
     },
     {
