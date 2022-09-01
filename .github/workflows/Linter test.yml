@@ -4,7 +4,8 @@ on:
   push:
     branches: [master]
     paths:
-      - "src/**"
+      - "src/**/*.js"
+      - "src/**/*.css"
       - ".github/workflows/Linter test.yml"
   pull_request:
     branches: [master]
