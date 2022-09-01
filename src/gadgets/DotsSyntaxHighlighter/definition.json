@@ -12,5 +12,5 @@
     "dependencies": [
         "jquery.client"
     ],
-    "section": "editing"
+    "_section": "editing"
 }

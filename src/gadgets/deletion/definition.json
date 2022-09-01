@@ -15,5 +15,5 @@
         "mediawiki.api",
         "mediawiki.Uri"
     ],
-    "section": "administration"
+    "_section": "administration"
 }

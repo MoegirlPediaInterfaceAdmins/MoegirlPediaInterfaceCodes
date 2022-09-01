@@ -13,5 +13,5 @@
     "dependencies": [
         "ext.gadget.libOOUIDialog"
     ],
-    "section": "browsing"
+    "_section": "browsing"
 }

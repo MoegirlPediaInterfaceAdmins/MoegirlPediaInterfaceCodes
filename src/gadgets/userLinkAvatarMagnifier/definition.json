@@ -10,5 +10,5 @@
         "ext.gadget.UserLinkAvatar",
         "ext.gadget.jQueryLazyload"
     ],
-    "section": "user"
+    "_section": "user"
 }

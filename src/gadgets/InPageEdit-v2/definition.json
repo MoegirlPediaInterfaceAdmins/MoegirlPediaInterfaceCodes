@@ -13,5 +13,5 @@
     "dependencies": [
         "mediawiki.api"
     ],
-    "section": "editing"
+    "_section": "editing"
 }

@@ -10,5 +10,5 @@
     "dependencies": [
         "mediawiki.Uri"
     ],
-    "section": "browsing"
+    "_section": "browsing"
 }

@@ -19,30 +19,30 @@ for (const gadgetDirent of fs.readdirSync(gadgetBaseRoot, { withFileTypes: true 
     console.info("gadget:", gadget);
     try {
         /**
-         * @type { { section: string } }
+         * @type { { _section: string } }
          */
-        const { section } = JSON.parse(fs.readFileSync(path.join(gadgetBaseRoot, gadget, "definition.json"), "utf-8"));
-        console.info(`[${gadget}]`, "section:", section);
+        const { _section } = JSON.parse(fs.readFileSync(path.join(gadgetBaseRoot, gadget, "definition.json"), "utf-8"));
+        console.info(`[${gadget}]`, "_section:", _section);
         let sectionExist = false;
         for (const { name, gadgets } of gadgetsDefinitionList) {
-            if (section === name) {
+            if (_section === name) {
                 sectionExist = true;
                 if (!gadgets.includes(gadget)) {
-                    console.info(`[${gadget}]`, `section "${section}" match, gadgets not includes, push`);
+                    console.info(`[${gadget}]`, `_section "${_section}" match, gadgets not includes, push`);
                     gadgets.push(gadget);
                 } else {
-                    console.info(`[${gadget}]`, `section "${section}" match, gadgets includes`);
+                    console.info(`[${gadget}]`, `_section "${_section}" match, gadgets includes`);
                 }
             } else {
                 if (gadgets.includes(gadget)) {
-                    console.info(`[${gadget}]`, `section "${section}" not match, gadgets includes, remove`);
+                    console.info(`[${gadget}]`, `_section "${_section}" not match, gadgets includes, remove`);
                     gadgets.splice(gadgets.indexOf(gadget), 1);
                 }
             }
         }
         if (!sectionExist) {
-            console.info(`[${gadget}]`, "section not existed, push:", { name: section, gadgets: [gadget] });
-            gadgetsDefinitionList.push({ name: section, gadgets: [gadget] });
+            console.info(`[${gadget}]`, "_section not existed, push:", { name: _section, gadgets: [gadget] });
+            gadgetsDefinitionList.push({ name: _section, gadgets: [gadget] });
         }
     } catch (error) {
         console.error(`[${gadget}]`, "error:", error);

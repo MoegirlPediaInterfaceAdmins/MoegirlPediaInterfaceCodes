@@ -12,5 +12,5 @@
     "skins": [
         "vector"
     ],
-    "section": "user"
+    "_section": "user"
 }

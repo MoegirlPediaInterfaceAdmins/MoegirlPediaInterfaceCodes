@@ -15,5 +15,5 @@
         "mediawiki.api",
         "ext.gadget.site-lib"
     ],
-    "section": "administration"
+    "_section": "administration"
 }

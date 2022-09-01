@@ -16,5 +16,5 @@
         "ext.gadget.site-lib",
         "ext.gadget.LocalObjectStorage"
     ],
-    "section": "maintenance"
+    "_section": "maintenance"
 }

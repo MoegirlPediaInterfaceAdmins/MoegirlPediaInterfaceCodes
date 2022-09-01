@@ -16,5 +16,5 @@
         "mediawiki.notify",
         "moment"
     ],
-    "section": "administration"
+    "_section": "administration"
 }

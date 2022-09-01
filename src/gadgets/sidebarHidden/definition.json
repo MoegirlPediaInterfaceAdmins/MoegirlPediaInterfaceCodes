@@ -12,5 +12,5 @@
     "dependencies": [
         "ext.gadget.LocalObjectStorage"
     ],
-    "section": "skin"
+    "_section": "skin"
 }

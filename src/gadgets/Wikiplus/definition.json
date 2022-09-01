@@ -10,5 +10,5 @@
         "edit",
         "skipcaptcha"
     ],
-    "section": "editing"
+    "_section": "editing"
 }

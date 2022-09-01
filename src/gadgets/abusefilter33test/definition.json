@@ -12,5 +12,5 @@
     "dependencies": [
         "mediawiki.api"
     ],
-    "section": "administration"
+    "_section": "administration"
 }

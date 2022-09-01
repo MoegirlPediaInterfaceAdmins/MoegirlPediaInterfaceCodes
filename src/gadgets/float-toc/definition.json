@@ -14,5 +14,5 @@
         "ext.gadget.LocalObjectStorage",
         "mediawiki.toc"
     ],
-    "section": "browsing"
+    "_section": "browsing"
 }

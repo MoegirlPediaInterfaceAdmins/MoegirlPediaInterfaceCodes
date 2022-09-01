@@ -12,5 +12,5 @@
     "dependencies": [
         "ext.gadget.site-lib"
     ],
-    "section": "skin"
+    "_section": "skin"
 }

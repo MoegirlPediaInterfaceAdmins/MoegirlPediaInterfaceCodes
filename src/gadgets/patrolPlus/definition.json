@@ -17,5 +17,5 @@
         "mediawiki.api",
         "mediawiki.Uri"
     ],
-    "section": "maintenance"
+    "_section": "maintenance"
 }

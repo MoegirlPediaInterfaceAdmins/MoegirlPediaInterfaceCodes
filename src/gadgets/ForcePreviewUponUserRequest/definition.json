@@ -14,5 +14,5 @@
     "dependencies": [
         "ext.gadget.Force_preview"
     ],
-    "section": "editing"
+    "_section": "editing"
 }

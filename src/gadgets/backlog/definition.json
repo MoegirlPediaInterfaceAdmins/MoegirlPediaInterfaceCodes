@@ -15,5 +15,5 @@
         "moment",
         "mediawiki.user"
     ],
-    "section": "administration"
+    "_section": "administration"
 }

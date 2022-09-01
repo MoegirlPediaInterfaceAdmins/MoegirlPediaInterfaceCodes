@@ -9,5 +9,5 @@
     "dependencies": [
         "ext.gadget.HeimuToggle"
     ],
-    "section": "browsing"
+    "_section": "browsing"
 }

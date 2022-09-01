@@ -15,5 +15,5 @@
         "mediawiki.notification",
         "mediawiki.notify"
     ],
-    "section": "maintenance"
+    "_section": "maintenance"
 }

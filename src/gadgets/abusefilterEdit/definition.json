@@ -10,5 +10,5 @@
         "abusefilter-modify",
         "editinterface"
     ],
-    "section": "interface"
+    "_section": "interface"
 }

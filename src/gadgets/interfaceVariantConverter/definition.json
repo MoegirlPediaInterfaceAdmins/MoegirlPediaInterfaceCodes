@@ -13,5 +13,5 @@
         "mediawiki.api",
         "oojs-ui"
     ],
-    "section": "interface"
+    "_section": "interface"
 }

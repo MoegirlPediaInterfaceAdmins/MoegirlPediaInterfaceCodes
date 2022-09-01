@@ -15,5 +15,5 @@
         "mediawiki.user",
         "jquery.tablesorter"
     ],
-    "section": "user"
+    "_section": "user"
 }

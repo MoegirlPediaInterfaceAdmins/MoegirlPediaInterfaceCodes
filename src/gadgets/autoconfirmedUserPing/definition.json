@@ -14,5 +14,5 @@
         "oojs-ui-core",
         "moment"
     ],
-    "section": "maintenance"
+    "_section": "maintenance"
 }

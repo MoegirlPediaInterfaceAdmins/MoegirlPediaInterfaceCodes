@@ -14,5 +14,5 @@
     "dependencies": [
         "ext.gadget.libBottomRightCorner"
     ],
-    "section": "browsing"
+    "_section": "browsing"
 }

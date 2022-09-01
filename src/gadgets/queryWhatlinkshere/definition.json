@@ -9,5 +9,5 @@
     "dependencies": [
         "mediawiki.api"
     ],
-    "section": "browsing"
+    "_section": "browsing"
 }

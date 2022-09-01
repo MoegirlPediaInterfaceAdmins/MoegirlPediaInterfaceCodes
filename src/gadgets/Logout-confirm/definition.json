@@ -9,5 +9,5 @@
     "dependencies": [
         "mediawiki.Uri"
     ],
-    "section": "user"
+    "_section": "user"
 }

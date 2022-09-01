@@ -14,5 +14,5 @@
         "mediawiki.util",
         "ext.gadget.site-lib"
     ],
-    "section": "editing"
+    "_section": "editing"
 }

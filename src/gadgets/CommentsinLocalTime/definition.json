@@ -12,5 +12,5 @@
         "moment",
         "ext.gadget.cron"
     ],
-    "section": "user"
+    "_section": "user"
 }
