@@ -12,12 +12,12 @@ const gadgetBaseRoot = "src/gadgets";
 const gadgetsDefinition = JSON.parse(fs.readFileSync(path.join(gadgetBaseRoot, "Gadgets-definition.json"), "utf-8"));
 console.info("gadgetsDefinition:", gadgetsDefinition);
 for (const gadgetDirent of fs.readdirSync(gadgetBaseRoot, { withFileTypes: true })) {
+    if (!gadgetDirent.isDirectory()) {
+        continue;
+    }
+    const gadget = gadgetDirent.name;
+    console.info("gadget:", gadget);
     try {
-        if (!gadgetDirent.isDirectory()) {
-            continue;
-        }
-        const gadget = gadgetDirent.name;
-        console.info("gadget:", gadget);
         /**
          * @type { { section: string } }
          */
@@ -40,10 +40,8 @@ for (const gadgetDirent of fs.readdirSync(gadgetBaseRoot, { withFileTypes: true 
             gadgetsDefinition.push({ name: section, gadgets: [gadget] });
         }
     } catch (error) {
-        throw {
-            gadgetDirent,
-            error,
-        };
+        console.error(`[${gadget}]`, "error:", error);
+        process.exit(1);
     }
 }
 console.info("gadgetsDefinition final:", gadgetsDefinition);
