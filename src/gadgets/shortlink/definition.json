@@ -14,5 +14,6 @@
     ],
     "dependencies": [
         "ext.gadget.site-lib"
-    ]
+    ],
+    "section": "browsing"
 }

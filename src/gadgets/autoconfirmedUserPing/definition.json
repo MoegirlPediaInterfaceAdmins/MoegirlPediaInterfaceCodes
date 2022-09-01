@@ -13,5 +13,6 @@
         "mediawiki.api",
         "oojs-ui-core",
         "moment"
-    ]
+    ],
+    "section": "maintenance"
 }

@@ -9,5 +9,6 @@
     "dependencies": [
         "ext.gadget.UserLinkAvatar",
         "ext.gadget.jQueryLazyload"
-    ]
+    ],
+    "section": "user"
 }

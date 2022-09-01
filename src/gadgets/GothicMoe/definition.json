@@ -6,5 +6,6 @@
         "desktop",
         "mobile"
     ],
-    "type": "styles"
+    "type": "styles",
+    "section": "browsing"
 }

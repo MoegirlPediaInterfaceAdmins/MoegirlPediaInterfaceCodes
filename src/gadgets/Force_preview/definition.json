@@ -9,5 +9,6 @@
     "type": "general",
     "dependencies": [
         "user.options"
-    ]
+    ],
+    "section": "editing"
 }

@@ -14,5 +14,6 @@
         "mediawiki.ForeignApi",
         "moment",
         "mediawiki.user"
-    ]
+    ],
+    "section": "administration"
 }

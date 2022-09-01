@@ -16,5 +16,6 @@
         "mediawiki.user",
         "ext.gadget.LocalObjectStorage",
         "ext.gadget.site-lib"
-    ]
+    ],
+    "section": "user"
 }

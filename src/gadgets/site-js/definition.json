@@ -12,5 +12,6 @@
         "user",
         "mediawiki.api",
         "mediawiki.Uri"
-    ]
+    ],
+    "section": "system"
 }

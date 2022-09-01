@@ -6,5 +6,6 @@
         "desktop",
         "mobile"
     ],
-    "type": "general"
+    "type": "general",
+    "section": "system"
 }

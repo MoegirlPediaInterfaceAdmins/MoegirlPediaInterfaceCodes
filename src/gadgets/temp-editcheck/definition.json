@@ -14,5 +14,6 @@
         "mediawiki.api",
         "mediawiki.notification",
         "mediawiki.notify"
-    ]
+    ],
+    "section": "editing"
 }

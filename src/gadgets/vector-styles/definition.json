@@ -8,5 +8,6 @@
     "type": "styles",
     "skins": [
         "vector"
-    ]
+    ],
+    "section": "system"
 }

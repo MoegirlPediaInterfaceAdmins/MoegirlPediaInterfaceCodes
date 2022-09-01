@@ -13,5 +13,6 @@
         "moment",
         "ext.gadget.cron",
         "ext.gadget.site-lib"
-    ]
+    ],
+    "section": "browsing"
 }

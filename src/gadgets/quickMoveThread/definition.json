@@ -15,5 +15,6 @@
         "mediawiki.Uri",
         "ext.gadget.site-lib",
         "ext.gadget.LocalObjectStorage"
-    ]
+    ],
+    "section": "maintenance"
 }

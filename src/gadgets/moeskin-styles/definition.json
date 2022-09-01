@@ -8,5 +8,6 @@
     "type": "styles",
     "skins": [
         "moeskin"
-    ]
+    ],
+    "section": "system"
 }

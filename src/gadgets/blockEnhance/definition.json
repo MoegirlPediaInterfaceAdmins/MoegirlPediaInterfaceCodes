@@ -14,5 +14,6 @@
         "ext.gadget.libOOUIDialog",
         "mediawiki.api",
         "ext.gadget.site-lib"
-    ]
+    ],
+    "section": "administration"
 }

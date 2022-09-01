@@ -12,5 +12,6 @@
     "dependencies": [
         "mediawiki.api",
         "oojs-ui"
-    ]
+    ],
+    "section": "interface"
 }

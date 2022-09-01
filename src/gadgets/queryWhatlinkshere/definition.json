@@ -8,5 +8,6 @@
     "type": "general",
     "dependencies": [
         "mediawiki.api"
-    ]
+    ],
+    "section": "browsing"
 }

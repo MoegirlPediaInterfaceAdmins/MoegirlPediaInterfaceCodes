@@ -15,5 +15,6 @@
         "mediawiki.api",
         "mediawiki.Uri",
         "ext.gadget.site-lib"
-    ]
+    ],
+    "section": "maintenance"
 }

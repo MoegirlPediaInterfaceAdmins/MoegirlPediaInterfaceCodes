@@ -9,5 +9,6 @@
     "rights": [
         "abusefilter-modify",
         "editinterface"
-    ]
+    ],
+    "section": "interface"
 }

@@ -9,5 +9,6 @@
     "dependencies": [
         "user.options",
         "ext.gadget.jQueryLazyload"
-    ]
+    ],
+    "section": "user"
 }

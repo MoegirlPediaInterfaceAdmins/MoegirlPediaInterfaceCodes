@@ -16,5 +16,6 @@
         "ext.gadget.libOOUIDialog",
         "mediawiki.api",
         "mediawiki.Uri"
-    ]
+    ],
+    "section": "maintenance"
 }

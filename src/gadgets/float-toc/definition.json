@@ -13,5 +13,6 @@
     "dependencies": [
         "ext.gadget.LocalObjectStorage",
         "mediawiki.toc"
-    ]
+    ],
+    "section": "browsing"
 }

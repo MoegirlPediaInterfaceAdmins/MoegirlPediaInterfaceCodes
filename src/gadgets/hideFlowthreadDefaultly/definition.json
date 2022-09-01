@@ -13,5 +13,6 @@
     "dependencies": [
         "ext.gadget.site-lib",
         "ext.flowthread"
-    ]
+    ],
+    "section": "browsing"
 }

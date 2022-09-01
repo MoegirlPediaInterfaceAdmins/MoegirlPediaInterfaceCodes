@@ -12,5 +12,6 @@
     "dependencies": [
         "mediawiki.api",
         "mediawiki.Uri"
-    ]
+    ],
+    "section": "maintenance"
 }

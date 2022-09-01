@@ -9,5 +9,6 @@
     "type": "general",
     "dependencies": [
         "mediawiki.Uri"
-    ]
+    ],
+    "section": "browsing"
 }

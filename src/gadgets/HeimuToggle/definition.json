@@ -10,5 +10,6 @@
         "user.options",
         "ext.gadget.libBottomRightCorner",
         "ext.gadget.site-lib"
-    ]
+    ],
+    "section": "browsing"
 }

@@ -14,5 +14,6 @@
         "user.options",
         "mediawiki.jqueryMsg",
         "mediawiki.api.messages"
-    ]
+    ],
+    "section": "browsing"
 }
