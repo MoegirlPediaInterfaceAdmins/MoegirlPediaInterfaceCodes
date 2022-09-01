@@ -9,7 +9,7 @@ const gadgetBaseRoot = "src/gadgets";
 /**
  * @type { { name: string, gadgets: string[] }[] }
  */
-const gadgetsDefinition = JSON.parse(fs.readFileSync(path.join(gadgetBaseRoot, "Gadgets-definition.json"), "utf-8"));
+const gadgetsDefinition = JSON.parse(fs.readFileSync(path.join(gadgetBaseRoot, "Gadgets-definition-list.json"), "utf-8"));
 console.info("gadgetsDefinition:", gadgetsDefinition);
 for (const gadgetDirent of fs.readdirSync(gadgetBaseRoot, { withFileTypes: true })) {
     if (!gadgetDirent.isDirectory()) {
@@ -50,5 +50,5 @@ for (const gadgetDirent of fs.readdirSync(gadgetBaseRoot, { withFileTypes: true 
     }
 }
 console.info("gadgetsDefinition final:", gadgetsDefinition);
-fs.writeFileSync(path.join(gadgetBaseRoot, "Gadgets-definition.json"), JSON.stringify(gadgetsDefinition, null, 4));
+fs.writeFileSync(path.join(gadgetBaseRoot, "Gadgets-definition-list.json"), JSON.stringify(gadgetsDefinition, null, 4));
 process.exit(0);
