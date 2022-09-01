@@ -65,6 +65,6 @@ jobs:
           message: "auto: Gadgets-definition Generator - commit from GitHub Actions"
           push: false
       - name: Show git status
-        run: git status
+        run: git pull ; git status
       - name: git push
         run: git push
