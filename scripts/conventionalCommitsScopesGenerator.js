@@ -15,9 +15,15 @@ import("strip-json-comments").then(async ({
         trailingCommas: true,
     }));
     const totalScopes = [];
-    const types = await fsPromises.readdir("src");
-    console.info("types:", types);
-    for (const type of types) {
+    const dirents = await fsPromises.readdir("src", {
+        withFileTypes: true,
+    });
+    console.info("dirents:", dirents);
+    for (const dirent of dirents) {
+        if (!dirent.isDirectory()) {
+            continue;
+        }
+        const type = dirent.name;
         const prefix = type[0].toUpperCase() + type.slice(1).replace(/s$/, "");
         console.info(`[${type}]`, "prefix:", prefix);
         const list = await fsPromises.readdir(path.join("src", type));
