@@ -47,4 +47,4 @@ for (const gadgetDirent of fs.readdirSync(gadgetBaseRoot, { withFileTypes: true 
 }
 console.info("gadgetsDefinition final:", gadgetsDefinition);
 fs.writeFileSync(path.join(gadgetBaseRoot, "Gadgets-definition.json"), JSON.stringify(gadgetsDefinition, null, 4));
-process.exit(4);
+process.exit(0);
