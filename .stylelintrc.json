@@ -9,6 +9,31 @@
         "no-missing-end-of-source-newline": null,
         "max-line-length": null,
         "no-descending-specificity": null,
-        "number-max-precision": null
+        "number-max-precision": null,
+        "selector-no-vendor-prefix": null,
+        "value-no-vendor-prefix": null,
+        "at-rule-no-vendor-prefix": null,
+        "media-feature-name-no-vendor-prefix": null,
+        "property-no-vendor-prefix": null,
+        "selector-attribute-quotes": null,
+        "color-hex-case": "upper",
+        "function-no-unknown": [
+            true,
+            {
+                "ignoreFunctions": [
+                    "alpha"
+                ]
+            }
+        ],
+        "comment-empty-line-before": null,
+        "selector-type-no-unknown": [
+            true,
+            {
+                "ignoreTypes": [
+                    "ogvjs"
+                ]
+            }
+        ],
+        "no-duplicate-selectors": null
     }
 }
