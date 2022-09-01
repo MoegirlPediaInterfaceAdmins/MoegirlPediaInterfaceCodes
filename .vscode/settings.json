@@ -109,8 +109,12 @@
         "Global-Mobile",
         "Global-Moeskin",
         "Global-WikiLove",
+        "Group-checkuser",
+        "Group-interface-admin",
+        "Group-patroller",
         "Group-staff",
         "Group-suppress",
-        "Group-sysop"
+        "Group-sysop",
+        "Group-user"
     ]
 }
