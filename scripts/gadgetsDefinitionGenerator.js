@@ -26,11 +26,12 @@ for (const gadgetDirent of fs.readdirSync(gadgetBaseRoot, { withFileTypes: true 
         let sectionExist = false;
         for (const { name, gadgets } of gadgetsDefinition) {
             if (section === name) {
-                console.info(`[${gadget}]`, "section match, gadgets:", gadgets);
                 sectionExist = true;
                 if (!gadgets.includes(gadget)) {
-                    console.info(`[${gadget}]`, "gadgets not includes, push");
+                    console.info(`[${gadget}]`, "section match, gadgets not includes, push");
                     gadgets.push(gadget);
+                } else {
+                    console.info(`[${gadget}]`, "section match, gadgets includes");
                 }
                 break;
             }
