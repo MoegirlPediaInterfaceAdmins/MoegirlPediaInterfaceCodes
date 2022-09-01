@@ -1,5 +1,8 @@
 {
     "extends": "stylelint-config-standard",
+    "ignoreFiles": [
+        "src/gadgets/jquery.ui/MediaWiki:Gadget-jquery.ui.css"
+    ],
     "rules": {
         "indentation": 4,
         "selector-combinator-space-before": null,
