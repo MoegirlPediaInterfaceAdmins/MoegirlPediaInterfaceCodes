@@ -10,7 +10,7 @@
         "oojs-ui-core"
     ],
     "rights": [
-        "edit"
+        "noratelimit"
     ],
-    "section": "editing"
+    "section": "maintenance"
 }

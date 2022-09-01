@@ -28,12 +28,16 @@ for (const gadgetDirent of fs.readdirSync(gadgetBaseRoot, { withFileTypes: true 
             if (section === name) {
                 sectionExist = true;
                 if (!gadgets.includes(gadget)) {
-                    console.info(`[${gadget}]`, "section match, gadgets not includes, push");
+                    console.info(`[${gadget}]`, `section "${section}" match, gadgets not includes, push`);
                     gadgets.push(gadget);
                 } else {
-                    console.info(`[${gadget}]`, "section match, gadgets includes");
+                    console.info(`[${gadget}]`, `section "${section}" match, gadgets includes`);
                 }
-                break;
+            } else {
+                if (gadgets.includes(gadget)) {
+                    console.info(`[${gadget}]`, `section "${section}" not match, gadgets includes, remove`);
+                    gadgets.splice(gadgets.indexOf(gadget), 1);
+                }
             }
         }
         if (!sectionExist) {
