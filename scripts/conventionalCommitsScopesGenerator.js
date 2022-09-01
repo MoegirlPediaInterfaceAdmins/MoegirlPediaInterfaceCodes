@@ -28,12 +28,13 @@ import("strip-json-comments").then(async ({
         const scopes = list.map((_name) => {
             let name;
             switch (prefix) {
-                case "Gadget": {
+                case "Gadget":
+                case "Group": {
                     name = _name;
                     break;
                 }
                 default: {
-                    name = _name.replace(/^MediaWiki:(?:Group-)?|\.js(?=#|$)/g, "");
+                    name = _name.replace(/^MediaWiki:|\.js(?=#|$)/g, "");
                     break;
                 }
             }

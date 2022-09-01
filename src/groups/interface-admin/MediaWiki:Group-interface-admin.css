@@ -1,0 +1,31 @@
+/* 显示仅供界面管理员查看的内容 */
+.interface-admin-show {
+    display: revert !important;
+}
+
+div.vectorMenu li.interface-admin-show {
+    order: 997;
+}
+
+.vectorMenu .interface-admin-show::before {
+    content: " ";
+    display: block;
+    height: 1px;
+    color: #A2A9B1;
+    background-color: #A2A9B1;
+    border: 0;
+    margin: 7px;
+}
+
+.vectorMenu .interface-admin-show~.interface-admin-show::before {
+    display: none;
+}
+
+.vectorMenu .interface-admin-show {
+    cursor: default;
+}
+
+.vectorMenu .interface-admin-show~.interface-admin-show,
+.vectorMenu .interface-admin-show a {
+    cursor: pointer;
+}

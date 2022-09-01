@@ -1,0 +1,6 @@
+/* 放置于这里的CSS将只影响STAFF */
+/* poll-id显示 */
+.ajaxpoll .ajaxpoll-info .ajaxpoll-id-info {
+    color: inherit;
+    float: none;
+}

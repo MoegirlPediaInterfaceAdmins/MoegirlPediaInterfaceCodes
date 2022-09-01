@@ -1,0 +1,10 @@
+/* 这里放置的CSS将只影响注册用户 */
+
+/* [[MediaWiki:Flowthread-ui-cantpost]]
+#flowthread #flowthread-ip {
+	display: none;
+}
+#flowthread #flowthread-user {
+	display: revert!important;
+}
+*/

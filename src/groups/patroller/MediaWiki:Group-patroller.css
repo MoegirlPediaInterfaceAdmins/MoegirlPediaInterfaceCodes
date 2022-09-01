@@ -1,0 +1,52 @@
+/* 显示仅供巡查姬查看的内容 */
+.patroller-show {
+    display: revert !important;
+}
+
+div.vectorMenu li.patroller-show {
+    order: 998;
+}
+
+.vectorMenu .patroller-show::before {
+    content: " ";
+    display: block;
+    height: 1px;
+    color: #A2A9B1;
+    background-color: #A2A9B1;
+    border: 0;
+    margin: 7px;
+}
+
+.vectorMenu .patroller-show~.patroller-show::before {
+    display: none;
+}
+
+.vectorMenu .patroller-show {
+    cursor: default;
+}
+
+.vectorMenu .patroller-show~.patroller-show,
+.vectorMenu .patroller-show a {
+    cursor: pointer;
+}
+
+/* Template:User */
+body[class*="page-萌娘百科_talk_讨论版_"] .userlink .userlink-menu {
+    column-count: 2;
+    column-gap: 1px;
+    column-rule: 1px solid #A2A9B1;
+}
+
+/* poll-id显示 */
+.ajaxpoll .ajaxpoll-info .ajaxpoll-id-info {
+    color: inherit;
+    float: none;
+}
+
+/* AD */
+.adsbygoogle,
+#mys-wrapper,
+.mys-wrapper,
+iframe[src*="baidu.com"] {
+    display: none !important;
+}
