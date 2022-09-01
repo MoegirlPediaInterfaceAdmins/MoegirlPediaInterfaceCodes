@@ -16,7 +16,7 @@ on:
 concurrency: postCommit
 
 jobs:
-  postCommit:
+  startup:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -30,10 +30,43 @@ jobs:
         name: List diff
       - name: Install dependencies
         run: npm ci
+  browserify:
+    needs: startup
+    concurrency: agent
+    runs-on: ubuntu-latest
+    steps:
       - name: Run "Auto browserify generator"
         run: node scripts/browserify.js
+      - name: Show git status
+        run: git status
+      - uses: EndBug/add-and-commit@v9
+        with:
+          committer_name: GitHub Actions
+          committer_email: actions@github.com
+          default_author: github_actor
+          message: "auto: auto browserify - commit from GitHub Actions"
+          push: false
+  conventionalCommits:
+    needs: startup
+    concurrency: agent
+    runs-on: ubuntu-latest
+    steps:
       - name: Run "Conventional Commits scopes generator"
         run: node scripts/conventionalCommitsScopesGenerator.js
+      - name: Show git status
+        run: git status
+      - uses: EndBug/add-and-commit@v9
+        with:
+          committer_name: GitHub Actions
+          committer_email: actions@github.com
+          default_author: github_actor
+          message: "auto: conventional commits scopes generator - commit from GitHub Actions"
+          push: false
+  prefetch:
+    needs: startup
+    concurrency: agent
+    runs-on: ubuntu-latest
+    steps:
       - name: Run "Auto prefetch"
         run: node scripts/prefetch.js
       - name: Show git status
@@ -43,4 +76,13 @@ jobs:
           committer_name: GitHub Actions
           committer_email: actions@github.com
           default_author: github_actor
-          message: "Auto: Commit from GitHub Actions - post commit CI"
+          message: "auto: auto prefetch - commit from GitHub Actions"
+          push: false
+  commit:
+    needs: [browserify, conventionalCommits, prefetch]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Show git status
+        run: git status
+      - name: Show git status
+        run: git push
