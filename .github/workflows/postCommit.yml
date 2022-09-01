@@ -4,9 +4,7 @@ on:
   push:
     paths:
       - "src/**"
-      - "scripts/browserify*.js"
-      - "scripts/conventionalCommitsScopesGenerator.js"
-      - "scripts/prefetch*.js"
+      - "scripts/*.js"
       - "package-lock.json"
       - ".github/workflows/postCommit.yml"
   workflow_dispatch:
