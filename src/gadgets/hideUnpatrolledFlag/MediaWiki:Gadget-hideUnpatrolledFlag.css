@@ -1,3 +1,3 @@
 abbr.unpatrolled {
-  visibility: hidden; /*display: none 会对不齐*/
+    visibility: hidden; /* display: none 会对不齐 */
 }

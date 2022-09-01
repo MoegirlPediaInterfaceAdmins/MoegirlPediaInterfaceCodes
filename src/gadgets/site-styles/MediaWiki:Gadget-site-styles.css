@@ -1,13 +1,14 @@
-/* 
+/*
  * 放置于这里的CSS将同时应用于桌面端和移动端
  * 萌娘百科仅开放Vector和Moeskin皮肤
  * 请尊重萌娘百科版权，以下代码除非注明均是管理员手敲出来的！！！复制需要注明源自萌娘百科，并且附上URL地址 https://zh.moegirl.org.cn/MediaWiki:Gadget-site-styles.css
  * 版权协定：知识共享 署名-非商业性使用-相同方式共享 3.0
  */
+
 /* Tabs */
 .tab .TabLabelText {
     padding: 1px;
-    background: #fff;
+    background: #FFF;
     cursor: pointer;
     flex: none;
 }
@@ -34,7 +35,7 @@
     padding: 20px 30px;
     position: relative;
     z-index: 1;
-    border: 1px solid #aaa;
+    border: 1px solid #AAA;
 }
 
 .tab .TabContentText {
@@ -53,8 +54,8 @@
 
 .tab .tabLabelTop .TabLabelText.selected {
     border-top: 3px solid green;
-    border-left: 1px solid #aaa;
-    border-right: 1px solid #aaa;
+    border-left: 1px solid #AAA;
+    border-right: 1px solid #AAA;
 }
 
 .tab .tabLabelTop.reverse .TabLabelText {
@@ -66,8 +67,8 @@
 
 .tab .tabLabelTop.reverse .TabLabelText.selected {
     border-bottom: 3px solid green;
-    border-left: 1px solid #aaa;
-    border-right: 1px solid #aaa;
+    border-left: 1px solid #AAA;
+    border-right: 1px solid #AAA;
     border-top: 1px solid transparent;
 }
 
@@ -79,8 +80,8 @@
 
 .tab .tabLabelBottom .TabLabelText.selected {
     border-bottom: 3px solid green;
-    border-left: 1px solid #aaa;
-    border-right: 1px solid #aaa;
+    border-left: 1px solid #AAA;
+    border-right: 1px solid #AAA;
 }
 
 .tab .tabLabelBottom.reverse .TabLabelText {
@@ -92,8 +93,8 @@
 
 .tab .tabLabelBottom.reverse .TabLabelText.selected {
     border-top: 3px solid green;
-    border-left: 1px solid #aaa;
-    border-right: 1px solid #aaa;
+    border-left: 1px solid #AAA;
+    border-right: 1px solid #AAA;
     border-bottom: 1px solid transparent;
 }
 
@@ -105,8 +106,8 @@
 
 .tab .tabLabelLeft .TabLabelText.selected {
     border-left: 3px solid green;
-    border-top: 1px solid #aaa;
-    border-bottom: 1px solid #aaa;
+    border-top: 1px solid #AAA;
+    border-bottom: 1px solid #AAA;
 }
 
 .tab .tabLabelLeft.reverse .TabLabelText {
@@ -118,8 +119,8 @@
 
 .tab .tabLabelLeft.reverse .TabLabelText.selected {
     border-right: 3px solid green;
-    border-top: 1px solid #aaa;
-    border-bottom: 1px solid #aaa;
+    border-top: 1px solid #AAA;
+    border-bottom: 1px solid #AAA;
     border-left: 1px solid transparent;
 }
 
@@ -131,8 +132,8 @@
 
 .tab .tabLabelRight .TabLabelText.selected {
     border-right: 3px solid green;
-    border-top: 1px solid #aaa;
-    border-bottom: 1px solid #aaa;
+    border-top: 1px solid #AAA;
+    border-bottom: 1px solid #AAA;
 }
 
 .tab .tabLabelRight.reverse .TabLabelText {
@@ -144,8 +145,8 @@
 
 .tab .tabLabelRight.reverse .TabLabelText.selected {
     border-left: 3px solid green;
-    border-top: 1px solid #aaa;
-    border-bottom: 1px solid #aaa;
+    border-top: 1px solid #AAA;
+    border-bottom: 1px solid #AAA;
     border-right: 1px solid transparent;
 }
 
@@ -216,11 +217,11 @@
 }
 
 .Tabs .Tab {
-    border-bottom: 1px solid #aaa;
+    border-bottom: 1px solid #AAA;
 }
 
 .Tabs .Tab:first-child {
-    border-top: 1px solid #aaa;
+    border-top: 1px solid #AAA;
 }
 
 .Tabs .Tab .TabLabelText {
@@ -251,8 +252,8 @@ span[lang] {
     -webkit-font-feature-settings: "locl" on;
 }
 
-[style*="font:" i] span[lang],
-[style*="font-family:" i] span[lang] {
+[style*="font:"  i] span[lang],
+[style*="font-family:"  i] span[lang] {
     font-family: inherit;
 }
 
@@ -262,21 +263,21 @@ span[lang] {
     src: local(meiryo);
 }
 
-i span[lang=ja i],
-span[lang=ja i] i,
-[style*=italic i] span[lang=ja i],
-span[lang=ja i] [style*=italic i] {
+i span[lang="ja"  i],
+span[lang="ja"  i] i,
+[style*="italic"  i] span[lang="ja"  i],
+span[lang="ja"  i] [style*="italic"  i] {
     font-family: JapaneseItalic, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
 }
 
-[style*="font:" i] i span[lang=ja i],
-[style*="font-family:" i] i span[lang=ja i],
-[style*="font:" i] span[lang=ja i] i,
-[style*="font-family:" i] span[lang=ja i] i,
-[style*="font:" i] [style*=italic i] span[lang=ja i],
-[style*="font-family:" i] [style*=italic i] span[lang=ja i],
-[style*="font:" i] span[lang=ja i] [style*=italic i],
-[style*="font-family:" i] span[lang=ja i] [style*=italic i] {
+[style*="font:"  i] i span[lang="ja"  i],
+[style*="font-family:"  i] i span[lang="ja"  i],
+[style*="font:"  i] span[lang="ja"  i] i,
+[style*="font-family:"  i] span[lang="ja"  i] i,
+[style*="font:"  i] [style*="italic"  i] span[lang="ja"  i],
+[style*="font-family:"  i] [style*="italic"  i] span[lang="ja"  i],
+[style*="font:"  i] span[lang="ja"  i] [style*="italic"  i],
+[style*="font-family:"  i] span[lang="ja"  i] [style*="italic"  i] {
     font-family: inherit;
 }
 
@@ -297,7 +298,7 @@ span.heimu a.extiw,
 span.heimu a.extiw:visited,
 span.heimu a.mw-disambig,
 span.heimu a.mw-redirect {
-    transition: color .13s linear;
+    transition: color 0.13s linear;
     color: #252525;
     text-shadow: none;
 }
@@ -314,22 +315,22 @@ a:hover span.heimu {
 
 span.heimu:hover a:visited,
 a:visited:hover span.heimu {
-    color: #c5cae9;
+    color: #C5CAE9;
 }
 
 span.heimu:hover a.new,
 a.new:hover span.heimu {
-    color: #fcc;
+    color: #FCC;
 }
 
 span.heimu a.new:hover:visited,
 a.new:hover:visited span.heimu {
-    color: #ef9a9a;
+    color: #EF9A9A;
 }
 
 span.heimu:hover a.extiw:visited,
 a.extiw:visited:hover span.heimu {
-    color: #d1c4e9;
+    color: #D1C4E9;
 }
 
 /* info类模板 */
@@ -348,21 +349,21 @@ a.extiw:visited:hover span.heimu {
 
 .infoBoxIcon {
     display: table-cell;
-    padding: 2px 0 2px .5em;
+    padding: 2px 0 2px 0.5em;
     vertical-align: middle;
 }
 
 .infoBoxText {
     display: table-cell;
-    padding: .25em .5em .25em 1.3em;
+    padding: 0.25em 0.5em 0.25em 1.3em;
     width: 100%;
     vertical-align: middle;
 }
 
 .infoBoxContent {
-    border: 1px solid #ddd;
+    border: 1px solid #DDD;
     border-left-width: 0;
-    background: #fbfbfb;
+    background: #FBFBFB;
 }
 
 .infoBoxBelow {
@@ -373,15 +374,15 @@ a.extiw:visited:hover span.heimu {
 
 /* wikitable green */
 table.wikitable-green {
-    background: #c9f6e1
+    background: #C9F6E1;
 }
 
 .wikitable-green th {
-    background: #13ec93
+    background: #13EC93;
 }
 
 .wikitable-green td {
-    background: #f3f3f3
+    background: #F3F3F3;
 }
 
 /* 隐藏只供维护人员查看的内容 */
@@ -395,12 +396,12 @@ table.wikitable-green {
 
 /* 评论区热评 */
 .comment-container-top {
-    background-color: rgba(191, 234, 181, .2);
+    background-color: rgb(191 234 181 / 20%);
 }
 
 .comment-container-top>div:first-child {
-    background-color: rgba(18, 152, 34, .47);
-    color: #fff;
+    background-color: rgb(18 152 34 / 47%);
+    color: #FFF;
     font-weight: 700;
 }
 
@@ -448,11 +449,11 @@ body .mw-mmv-wrapper {
 
 /* Edittool */
 .noconvins>.mw-charinsert-item::before {
-    content: '-{';
+    content: "-{";
 }
 
 .noconvins>.mw-charinsert-item::after {
-    content: '}-';
+    content: "}-";
 }
 
 /* 修复修订滑块悬浮窗层级 */
@@ -488,7 +489,7 @@ body .ajaxpoll {
 .ns-4.action-view #bodyContent::after,
 .ns-12.action-view #bodyContent::after {
     content: "因系统维护，评论区临时暂停所有功能";
-    border: 1px solid rgba(0, 0, 0, 0.17);
+    border: 1px solid rgb(0 0 0 / 17%);
     text-align: center;
     font-size: small;
     padding: 1em;
@@ -510,5 +511,5 @@ body .ajaxpoll {
 .ns-12.action-view #bodyContent:lang(zh-hant)::after,
 .ns-12.action-view #bodyContent:lang(zh-hk)::after,
 .ns-12.action-view #bodyContent:lang(zh-tw)::after {
-    content: "因系統維護，評論區臨時暫停所有功能"
+    content: "因系統維護，評論區臨時暫停所有功能";
 }

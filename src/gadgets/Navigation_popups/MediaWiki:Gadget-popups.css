@@ -6,36 +6,36 @@
 }
 
 ins.popupDiff {
-    background: #afe;
+    background: #AFE;
 }
 
 del.popupDiff {
-    background: #ffe6e6;
+    background: #FFE6E6;
 }
 
 #selectionPreview {
-    border: 2px solid #ddd;
-    background-color: #eef;
+    border: 2px solid #DDD;
+    background-color: #EEF;
     padding: 6px;
 }
 
 .navpopup {
-    border: 1px solid #bbb;
-    background-color: #fff;
+    border: 1px solid #BBB;
+    background-color: #FFF;
     padding: 10px;
     padding-bottom: 5px;
     font-size: 11px;
-    box-shadow: 0 3px 8px rgba(50, 50, 50, 0.35);
+    box-shadow: 0 3px 8px rgb(50 50 50 / 35%);
     word-wrap: break-word;
 }
 
 .navpopup hr {
-    color: #aaa !important;
-    background-color: #aaa !important;
+    color: #AAA !important;
+    background-color: #AAA !important;
 }
 
 .popupDrag {
-    background-color: #ffbe20;
+    background-color: #FFBE20;
     height: 5px;
     margin-top: -5px;
     margin-bottom: 5px;
@@ -80,7 +80,7 @@ del.popupDiff {
 }
 
 .popup_menu_row {
-    color: #aaa;
+    color: #AAA;
 }
 
 .popup_drop {
@@ -93,7 +93,7 @@ del.popupDiff {
     padding: 3px;
     margin: 0;
     font-weight: bold;
-    color: #0645ad;
+    color: #0645AD;
 }
 
 .popup_drop:hover .popup_menu,
@@ -105,13 +105,13 @@ del.popupDiff {
 }
 
 .popup_drop:hover {
-    background: #ccf;
-    color: #44f;
+    background: #CCF;
+    color: #44F;
 }
 
 .popup_menu a:hover {
     background: grey;
-    color: #fff;
+    color: #FFF;
     text-decoration: none;
 }
 
@@ -138,7 +138,7 @@ a.popup_change_title_link {
 }
 
 .popup_history_row_even {
-    background: #eee;
+    background: #EEE;
 }
 
 .popup_history_date {
@@ -148,13 +148,13 @@ a.popup_change_title_link {
 
 .popupPreview a.extiw,
 .popupPreview a.extiw:active {
-    color: #36b;
+    color: #36B;
     background: none;
     padding: 0;
 }
 
 .popupPreview .external {
-    color: #36b;
+    color: #36B;
 }
 
 .popupPreview .plainlinks a {

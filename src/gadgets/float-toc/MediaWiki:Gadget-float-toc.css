@@ -5,7 +5,7 @@
     max-width: calc(100vw - 22px - 2rem);
     right: 0;
     transform: translateX(100%);
-    transition: transform .37s ease-in-out;
+    transition: transform 0.37s ease-in-out;
     max-height: calc(100vh - 7.625rem);
     z-index: 72;
     display: flex;
@@ -17,7 +17,6 @@ body.overlay-scrollbars.skin-vector .tocfloat {
     /* 因为无法计算滚动条宽度，只能使用预设值 */
     transform: translateX(calc(100% - 20px));
 }
-
 
 @media print {
     .tocfloat {
@@ -44,7 +43,7 @@ body.overlay-scrollbars.skin-vector .tocfloat:focus {
     cursor: pointer;
     border-style: solid;
     border-width: 1px 0 1px 1px;
-    border-color: #ccc;
+    border-color: #CCC;
     text-align: center;
     box-sizing: border-box;
     user-select: none;
@@ -53,35 +52,35 @@ body.overlay-scrollbars.skin-vector .tocfloat:focus {
     top: 3rem;
     left: -21px;
     z-index: 2;
-    background-color: rgba(0, 0, 0, 0.6);
-    color: #fff;
-    transition-duration: .37s;
+    background-color: rgb(0 0 0 / 60%);
+    color: #FFF;
+    transition-duration: 0.37s;
     transition-timing-function: ease-in-out;
     transition-property: color, background-color;
 }
 
 .tocfloat:hover .tocfloatlabel {
-    background-color: #fff;
+    background-color: #FFF;
     color: #000;
 }
 
 .tocfloat .tocfloatcontent {
     width: 20rem;
     max-width: calc(100vw - 22px - 2rem);
-    border-top-left-radius: .25rem;
-    border-bottom-left-radius: .25rem;
+    border-top-left-radius: 0.25rem;
+    border-bottom-left-radius: 0.25rem;
     box-sizing: border-box;
     border-style: solid;
     border-width: 1px 0 1px 1px;
-    border-color: #ccc;
+    border-color: #CCC;
     max-height: calc(100vh - 7.625rem);
-    background-color: #fff;
+    background-color: #FFF;
     padding: 1.5rem 0 1.5rem 1.5rem;
 }
 
 body.overlay-scrollbars .tocfloatcontent {
     opacity: 0;
-    transition: opacity .37s ease-in-out;
+    transition: opacity 0.37s ease-in-out;
     pointer-events: none;
 }
 
@@ -92,7 +91,7 @@ body.overlay-scrollbars .tocfloat:hover .tocfloatcontent {
 
 .tocfloat .tocfloatcontent .toctitle {
     text-align: center;
-    padding: 0 1.5rem
+    padding: 0 1.5rem;
 }
 
 .tocfloat .tocfloatcontent .toctitle h2 {

@@ -1,4 +1,4 @@
-/* 
+/*
  * 放置于这里的CSS将应用于移动端
  * 请尊重萌娘百科版权，以下代码除非注明均是管理员手敲出来的！！！复制需要注明源自萌娘百科，并且附上URL地址 https://zh.moegirl.org.cn/MediaWiki:Gadget-mobile-styles.css
  * 版权协定：知识共享 署名-非商业性使用-相同方式共享 3.0
@@ -26,11 +26,11 @@ html>body.skin-minerva #wglogo {
 html>body.skin-minerva #breadcrumb {
     font: bold 18px Arial, Helvetica, sans-serif;
     color: black;
-    border: solid 1px rgb(204, 204, 204);
+    border: solid 1px rgb(204 204 204);
     width: 100%;
     overflow: hidden;
     margin: 0;
-    padding: 0 0 .5em 0;
+    padding: 0 0 0.5em;
 }
 
 html>body.skin-minerva #breadcrumb span {
@@ -39,11 +39,11 @@ html>body.skin-minerva #breadcrumb span {
     padding-left: 10px;
 }
 
-html>body.skin-minerva #breadcrumb span:after {
-    content: "·"
+html>body.skin-minerva #breadcrumb span::after {
+    content: "·";
 }
 
-html>body.skin-minerva #breadcrumb span:last-child:after {
+html>body.skin-minerva #breadcrumb span:last-child::after {
     content: "";
 }
 
@@ -66,12 +66,12 @@ html>body.skin-minerva sup.mobileref {
     display: none;
 }
 
-html>body.skin-minerva sup.mobileref:after {
+html>body.skin-minerva sup.mobileref::after {
     content: " ("attr(title) ")";
     display: inline;
 }
 
-/* 首页适配 
+/* 首页适配
 html>body.skin-minerva.page-Mainpage .gallery div,
 html>body.skin-minerva.page-Mainpage .gallery div img,
 html>body.skin-minerva.page-Mainpage .gallery p {
@@ -81,11 +81,11 @@ html>body.skin-minerva.page-Mainpage .gallery p {
 } */
 
 html>body.skin-minerva.page-Mainpage .mainpage-title {
-    font-family: PingFang SC, sans-serif;
+    font-family: "PingFang SC", sans-serif;
     font-size: larger;
-    color: #228b22;
+    color: #228B22;
     margin: 7px;
-    background: #deede0;
+    background: #DEEDE0;
     font-weight: 400;  /* normal */
     height: 30px;
     line-height: 30px;
@@ -94,15 +94,16 @@ html>body.skin-minerva.page-Mainpage .mainpage-title {
 
 html>body.skin-minerva.page-Mainpage .mainpage-title:lang(zh-hant),
 html>body.skin-minerva.page-Mainpage .mainpage-title:lang(zh-tw) {
-    font-family: PingFang TC, sans-serif;
+    font-family: "PingFang TC", sans-serif;
 }
+
 html>body.skin-minerva.page-Mainpage .mainpage-title:lang(zh-hk) {
-    font-family: PingFang HK, sans-serif;
+    font-family: "PingFang HK", sans-serif;
 }
 
 /* 页顶提示模板相关 */
 html>body.skin-minerva #commonBoxInfo {
-    color: #f00;
+    color: #F00;
     font-weight: bold;
     text-align: center;
 }
@@ -112,14 +113,14 @@ html>body.skin-minerva #commonBoxList>.commonBoxButton {
     border-bottom: 3px solid #000;
     width: 40px;
     height: 40px;
-    background: #fff 50% 50% no-repeat;
+    background: #FFF 50% 50% no-repeat;
     background-size: contain;
     cursor: pointer;
-    transition: opacity .5s;
+    transition: opacity 0.5s;
 }
 
 html>body.skin-minerva #commonBoxList.open>.commonBoxButton {
-    opacity: .1;
+    opacity: 0.1;
 }
 
 html>body.skin-minerva #commonBoxList.open>.commonBoxButton.current {
@@ -134,12 +135,12 @@ html>body.skin-minerva #commonBoxList.open>.commonBoxButton.current {
     }
 
     html>body.skin-minerva .infoBoxIcon {
-        padding-left: .25em;
+        padding-left: 0.25em;
     }
 
     html>body.skin-minerva .infoBoxText {
-        padding-left: .25em;
-        padding-right: .25em;
+        padding-left: 0.25em;
+        padding-right: 0.25em;
     }
 }
 
@@ -155,7 +156,7 @@ html>body.skin-minerva .content .infoBoxIcon img {
 
 /* code 内边距修复 */
 html>body.skin-minerva code {
-    padding: 3px
+    padding: 3px;
 }
 
 /* wikitable border */
@@ -166,7 +167,7 @@ html>body.skin-minerva #content.content table.wikitable {
 /* 大家族模板 */
 html>body.skin-minerva .navbox th,
 html>body.skin-minerva .navbox-group {
-    background: #a5e4a5;
+    background: #A5E4A5;
 }
 
 /* 来个高优先级的 */
@@ -179,16 +180,16 @@ html>body.skin-minerva .navbox .content table {
 }
 
 html>body.skin-minerva .navbox {
-    border: 1px solid #aaa;
+    border: 1px solid #AAA;
     clear: both;
     padding: 1px;
     text-align: center;
     width: 100%;
-    background: #fdfdfd;
+    background: #FDFDFD;
 }
 
 html>body.skin-minerva .navbox-subgroup {
-    background: #fdfdfd;
+    background: #FDFDFD;
 }
 
 html>body.skin-minerva .navbox-group {
@@ -202,7 +203,7 @@ html>body.skin-minerva .navbox table {
 
 html>body.skin-minerva .navbox-subgroup .navbox-group,
 html>body.skin-minerva .navbox-abovebelow {
-    background: #e6f6e6;
+    background: #E6F6E6;
 }
 
 /* Fix by case : Rev 1327309 ([[Special:Permalink/1327309]])
@@ -212,7 +213,6 @@ html>body.skin-minerva .navbox .TabLabel {
 }
 
 @media screen and (max-width: 640px) {
-
     html>body.skin-minerva .navbox-group,
     html>body.skin-minerva .navbox-list,
     html>body.skin-minerva .navbox-title {
@@ -223,11 +223,11 @@ html>body.skin-minerva .navbox .TabLabel {
 
     html>body.skin-minerva .navbox-group+* {
         border-left: 0 !important;
-        border-top: 2px solid #fdfdfd;
+        border-top: 2px solid #FDFDFD;
     }
 
     html>body.skin-minerva .navbox-group+.navbox-list>.navbox-subgroup {
-        border-left: .75em solid transparent;
+        border-left: 0.75em solid transparent;
     }
 
     html>body.skin-minerva .navbox td[rowspan] {
@@ -258,7 +258,7 @@ html>body.skin-minerva .linkConfirmprompt {
     text-align: center;
     width: 300px;
     z-index: 99999;
-    background: rgb(255, 255, 255);
+    background: rgb(255 255 255);
 }
 
 html>body.skin-minerva .linkConfirmpromptTextnode {
@@ -270,10 +270,11 @@ html>body.skin-minerva .linkConfirmpromptTextnode {
 html>body.skin-minerva .linkConfirmprompt a {
     margin: 0 1.5em;
     cursor: pointer;
-    color: #3366cc;
+    color: #36C;
 }
 
 /* 扩展mediawiki.legacy.commonPrint,shared定义的样式 */
+
 /* success and error messages */
 html>body.skin-minerva .error,
 html>body.skin-minerva .warning,
@@ -282,7 +283,7 @@ html>body.skin-minerva .success {
 }
 
 html>body.skin-minerva .error {
-    color: #d33;
+    color: #D33;
 }
 
 html>body.skin-minerva .warning {
@@ -315,26 +316,26 @@ html>body.skin-minerva .successbox h2 {
 }
 
 html>body.skin-minerva .errorbox {
-    color: #d33;
-    border-color: #fac5c5;
-    background-color: #fae3e3;
+    color: #D33;
+    border-color: #FAC5C5;
+    background-color: #FAE3E3;
 }
 
 html>body.skin-minerva .warningbox {
     color: #705000;
-    border-color: #fde29b;
-    background-color: #fdf1d1;
+    border-color: #FDE29B;
+    background-color: #FDF1D1;
 }
 
 html>body.skin-minerva .successbox {
     color: #008000;
-    border-color: #b7fdb5;
-    background-color: #e1fddf;
+    border-color: #B7FDB5;
+    background-color: #E1FDDF;
 }
 
 /* 折叠/展开（或自定义内容）的文字颜色，和桌面版一致，用于提示点击可触发事件。 */
 html>body.skin-minerva a.mw-collapsible-text {
-    color: #3366cc;
+    color: #36C;
 }
 
 /* 编辑界面返回 */
@@ -355,11 +356,10 @@ html>body.skin-minerva .language-overlay .site-link-list.suggested-languages li 
 
 html>body.skin-minerva .language-overlay .site-link-list.suggested-languages a {
     margin: -1px 0 0;
-    border-bottom: 1px solid #eaecf0;
+    border-bottom: 1px solid #EAECF0;
 }
 
 @media screen and (max-width: 720px) {
-
     /* 浮动滚动条 */
     html>body.skin-minerva.overlay-scrollbars #bodyContent {
         margin: 0 24px;
@@ -387,11 +387,11 @@ html>body.skin-minerva .language-overlay .site-link-list.suggested-languages a {
         content: "#";
         display: block;
         user-select: none;
-        color: rgb(107, 199, 114);
-        background-color: rgb(107, 199, 114);
+        color: rgb(107 199 114);
+        background-color: rgb(107 199 114);
         position: absolute;
         left: -0.6em;
-        top: .6em;
+        top: 0.6em;
         width: 6px;
         overflow: hidden;
     }
@@ -415,5 +415,5 @@ html>body.skin-minerva .content ol {
 
 /* 修复广告和侧边栏均z-index为0的问题 */
 .navigation-drawer {
-    z-index: 1
+    z-index: 1;
 }

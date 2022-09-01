@@ -17,27 +17,31 @@
     cursor: pointer;
     margin: 0;
     padding: 0;
-    border-radius: 0 0 3px 0;
+    border-radius: 0 0 3px;
 }
+
 .comment-check:hover {
-    box-shadow: 0 0 0 white inset, 0 5px 11px 0 rgba(0, 0, 0, 0.18);
+    box-shadow: 0 0 0 white inset, 0 5px 11px 0 rgb(0 0 0 / 18%);
 }
+
 .comment-toolbar > .comment-check:focus,
 .comment-toolbar > .comment-submit:focus {
     z-index: 9;
 }
+
 #flowthreadCheckBox {
     z-index: 200;
     position: fixed;
     top: 20%;
     min-height: 172px;
     width: 600px;
-    border: 1px solid rgb(167, 215, 249);
+    border: 1px solid rgb(167 215 249);
     margin-left: calc(50vw - 300px);
     background-color: white;
     display: none;
-    padding: 0 .5em 1em;
+    padding: 0 0.5em 1em;
 }
+
 #flowthreadCheckBoxTitle {
     position: relative;
     width: 100%;
@@ -47,14 +51,16 @@
     padding: 1em;
     box-sizing: border-box;
 }
+
 #flowthreadCheckBoxTitleContent {
-    border-bottom: 1px #66ccff solid;
+    border-bottom: 1px #6CF solid;
 }
+
 #flowthreadCheckBoxCloseButton {
     cursor: pointer;
     position: absolute;
-    top: .25em;
-    right: .5em;
+    top: 0.25em;
+    right: 0.5em;
     font-size: 20px;
     -webkit-user-select: none;
     -khtml-user-select: none;
@@ -63,26 +69,30 @@
     -o-user-select: none;
     user-select: none;
 }
+
 #flowthreadCheckBoxContentBox {
     margin: 0 10px;
     z-index: 13;
     top: 3em;
-    background-color: rgb(246, 246, 246);
+    background-color: rgb(246 246 246);
     max-height: 60vh;
     overflow: auto;
 }
+
 #flowthreadCheckBoxContentBox table {
     width: 100%;
     vertical-align: top;
     word-break: break-all;
 }
+
 #flowthreadCheckBoxContentBox table th,
 #flowthreadCheckBoxContentBox table td {
     border: 1px grey dashed;
     border-collapse: collapse;
 }
+
 #flowthreadCheckBoxContentBox table td.first {
     text-align: right;
     min-width: 1.5em;
-    padding-right: .5em;
+    padding-right: 0.5em;
 }

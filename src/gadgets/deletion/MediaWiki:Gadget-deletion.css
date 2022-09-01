@@ -21,13 +21,13 @@
 
 .deletion #deletionControl {
     border: 1px dashed black;
-    padding: .5em;
+    padding: 0.5em;
 }
 
 .deletion #deletionControl input {
-    margin: 0 .5em;
+    margin: 0 0.5em;
 }
 
 .deletion .disabled {
-    opacity: .3;
+    opacity: 0.3;
 }

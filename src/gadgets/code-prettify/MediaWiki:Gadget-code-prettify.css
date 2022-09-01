@@ -1,6 +1,5 @@
 /* https://github.com/google/code-prettify/blob/master/src/prettify.css */
 
-
 /**
  * @license
  * Copyright (C) 2015 Google Inc.
@@ -72,7 +71,7 @@
 }
 
 @media print,
-projection {
+    projection {
     .str {
         color: #060;
     }
@@ -131,12 +130,12 @@ li.L3,
 li.L5,
 li.L7,
 li.L9 {
-    background: #eee;
+    background: #EEE;
 }
 
 li.linenums-active {
-    background-color: #fff8c5;
-    box-shadow: inset 2px 0 0 #d4a72c66;
+    background-color: #FFF8C5;
+    box-shadow: inset 2px 0 0 #D4A72C66;
 }
 
 /* 优化移动端代码显示 */

@@ -1,4 +1,4 @@
-/* 
+/*
  * 放置于这里的CSS将应用于Vector皮肤
  * 请尊重萌娘百科版权，以下代码除非注明均是管理员手敲出来的！！！复制需要注明源自萌娘百科，并且附上URL地址 https://zh.moegirl.org.cn/MediaWiki:Gadget-vector-styles.css
  * 版权协定：知识共享 署名-非商业性使用-相同方式共享 3.0
@@ -7,7 +7,7 @@
 
 /* 2022春季topbar */
 body.skin-vector {
-    background: url(//img.moegirl.org.cn/topbar/10w.png) no-repeat top left #f6f6f6;
+    background: url("//img.moegirl.org.cn/topbar/10w.png") no-repeat top left #F6F6F6;
 }
 
 /* 侧边栏、顶部栏 */
@@ -40,11 +40,12 @@ div#mw-page-base {
 #left-navigation,
 #right-navigation {
     margin-top: 60px;
+    min-height: 40px;
 }
 
 div#mw-panel {
     top: 0;
-    text-shadow: 1px 1px #f6f6f6;
+    text-shadow: 1px 1px #F6F6F6;
 }
 
 div#mw-panel div.portal {
@@ -56,7 +57,7 @@ div#mw-head div.vectorMenu h4 {
     margin-bottom: 0;
     padding-top: 1.25em;
     padding-bottom: 0;
-    padding-right: .5em;
+    padding-right: 0.5em;
 }
 
 /* 提升背景颜色纯度 */
@@ -73,27 +74,22 @@ div#mw-head div.vectorMenu h3 {
     background-image: none !important;
 }
 
-#left-navigation,
-#right-navigation
-
-/* {
+/* #left-navigation,
+#right-navigation {
     background-image: linear-gradient(rgba(255, 255, 255, 0), rgba(255, 255, 255, .5) 30%, rgba(255, 255, 255, .75))!important;
     background-color: transparent!important;
-}*/
-,
-div.vectorTabs ul li.selected {
-    background-image: linear-gradient(rgba(255, 255, 255, 0), rgba(255, 255, 255, .3) 30%, rgba(255, 255, 255, .5)) !important;
-    background-color: transparent !important;
-}
+} */
 
 #left-navigation,
-#right-navigation {
-    min-height: 40px;
+#right-navigation,
+div.vectorTabs ul li.selected {
+    background-image: linear-gradient(rgb(255 255 255 / 0%), rgb(255 255 255 / 30%) 30%, rgb(255 255 255 / 50%)) !important;
+    background-color: transparent !important;
 }
 
 /* 右上个人链接栏 */
 div#p-personal {
-    background-color: rgba(255, 255, 255, 0.8);
+    background-color: rgb(255 255 255 / 80%);
     padding: 5px 10px 5px 0;
     box-shadow: #666 0 1px 5px;
 }
@@ -104,8 +100,8 @@ div#p-personal {
     text-indent: -99999px;
 }
 
-#pt-notifications-alert .mw-echo-notifications-badge:after,
-#pt-notifications-notice .mw-echo-notifications-badge:after {
+#pt-notifications-alert .mw-echo-notifications-badge::after,
+#pt-notifications-notice .mw-echo-notifications-badge::after {
     text-indent: 0;
 }
 
@@ -117,25 +113,26 @@ div#p-personal {
 /* 调整侧边栏字体 */
 div#mw-panel {
     font-size: 18px;
+
     /* mw-panel的宽度是10em，改了font-size以后也需要修改一下 */
     width: 10.5rem;
 }
 
 /* 页脚 */
 #footer-info-copyright {
-    background: url(//img.moegirl.org.cn/weixin_mengbai.png) 0 15px no-repeat;
-    padding: 15px 0 30px 0;
+    background: url("//img.moegirl.org.cn/weixin_mengbai.png") 0 15px no-repeat;
+    padding: 15px 0 30px;
     font-family: sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
     min-height: 165px;
 }
 
 #footer-moegirl {
     padding-left: 160px;
-    color: #2f2f2f;
+    color: #2F2F2F;
 }
 
 #footer-moegirl h4 {
-    color: #243c4a;
+    color: #243C4A;
     font: normal normal AllerBold, "Helvetica Neue", Arial, Helvetica, Geneva, sans-serif;
     margin-bottom: 8px;
 }
@@ -153,7 +150,7 @@ div#mw-panel {
 }
 
 #footer-moegirl ul a {
-    color: #2f2f2f;
+    color: #2F2F2F;
 }
 
 #footer-moegirl .copyright {
@@ -166,25 +163,25 @@ div#mw-panel {
 /* 标题下划线增强 700 = bold */
 h1 {
     font-weight: 700;
-    border-bottom: 2px solid #0074f9;
+    border-bottom: 2px solid #0074F9;
 }
 
 h2 {
     font-weight: 700;
-    border-bottom: 1px solid #0074f9;
+    border-bottom: 1px solid #0074F9;
 }
 
 /* 名字空间改变背景色 */
 .ns-0 div#content,
 .ns-0 div#p-cactions li a:hover,
 .ns-0 div#p-cactions li.selected a {
-    background-color: rgba(255, 255, 255, 0.8);
+    background-color: rgb(255 255 255 / 80%);
 }
 
 div#content,
 div#p-cactions li a:hover,
 div#p-cactions li.selected a {
-    background-color: rgba(247, 251, 255, 0.8);
+    background-color: rgb(247 251 255 / 80%);
 }
 
 /* vectorMenu 的排序 */

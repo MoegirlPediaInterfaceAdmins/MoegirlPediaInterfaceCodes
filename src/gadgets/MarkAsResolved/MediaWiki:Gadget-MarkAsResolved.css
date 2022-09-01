@@ -6,7 +6,7 @@
     height: 74vh;
     width: 66vw;
     background: white;
-    border: 1px solid #a7d7f9;
+    border: 1px solid #A7D7F9;
     display: none;
     line-height: normal;
     overflow: auto;
@@ -21,7 +21,7 @@
 
 .AnnTools_Frame_Title {
     border-bottom: 1px solid gray;
-    padding: 13px
+    padding: 13px;
 }
 
 .AnnTools_Frame_Close {
@@ -30,20 +30,20 @@
     font-size: 37px;
     position: absolute;
     top: -10%;
-    right: 0
+    right: 0;
 }
 
 .AnnTools_Frame_Close.disable {
     cursor: not-allowed;
-    opacity: .3
+    opacity: 0.3;
 }
 
 .AnnTools_Frame.Content {
-    clear: both
+    clear: both;
 }
 
 .AnnTools_Confirm {
-    border: 1px solid #a7d7f9;
+    border: 1px solid #A7D7F9;
     padding: 0 3rem;
 }
 
@@ -67,22 +67,22 @@
     box-sizing: border-box;
     width: 36%;
     margin: 0 7% 1em;
-    border: 1px solid #a7d7f9;
+    border: 1px solid #A7D7F9;
     padding: 1em 0;
     text-align: center;
-    display: inline-block
+    display: inline-block;
 }
 
 .AnnTools_floatAlert {
     display: none;
     background: white;
-    border: 1px solid #a7d7f9;
+    border: 1px solid #A7D7F9;
     padding: 1em;
-    width: 17em
+    width: 17em;
 }
 
 .AnnTools_Info {
-    display: none
+    display: none;
 }
 
 .AnnTools_ProgressBar {
@@ -90,39 +90,39 @@
     padding: 3px;
     height: 1em;
     width: 73%;
-    border: 1px solid #a7d7f9
+    border: 1px solid #A7D7F9;
 }
 
 .AnnTools_ProgressBar_Finished {
     background: green;
     height: 100%;
-    transition: .73s all ease;
-    width: 0
+    transition: 0.73s all ease;
+    width: 0;
 }
 
 .AnnTools_Notice {
     font-size: 17px;
-    text-align: center
+    text-align: center;
 }
 
 .AnnTools_ProgressBar.error .AnnTools_ProgressBar_Finished {
-    background: red
+    background: red;
 }
 
 .AnnTools_WorkDetail {
-    list-style-type: decimal
+    list-style-type: decimal;
 }
 
 .AnnTools_WorkDetail_Ongoing {
-    color: orange
+    color: orange;
 }
 
 .AnnTools_WorkDetail_Succeed {
-    color: green
+    color: green;
 }
 
 .AnnTools_WorkDetail_Failed {
-    color: red
+    color: red;
 }
 
 #AnnTools_comment,

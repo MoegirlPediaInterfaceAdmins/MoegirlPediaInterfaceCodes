@@ -3,20 +3,24 @@
  */
 
 body.skin-moeskin .moe-flexible-container {
-  margin-left: 1rem;
-  margin-right: 1rem;
-  width: 100%;
+    margin-left: 1rem;
+    margin-right: 1rem;
+    width: 100%;
 }
+
 body.skin-moeskin #moe-main-container main {
-  flex-direction: row-reverse;
+    flex-direction: row-reverse;
 }
+
 body.skin-moeskin #moe-global-footer-top {
-  flex-direction: row;
+    flex-direction: row;
 }
+
 body.skin-moeskin #moe-page-tools-container {
-  left: 0;
-  right: unset;
+    left: 0;
+    right: unset;
 }
+
 body.skin-moeskin #moe-bg-container {
-  height: calc(20vh + 60px);
+    height: calc(20vh + 60px);
 }

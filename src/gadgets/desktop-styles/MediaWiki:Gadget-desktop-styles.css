@@ -1,4 +1,4 @@
-/* 
+/*
  * 放置于这里的CSS将应用于桌面端
  * 请尊重萌娘百科版权，以下代码除非注明均是管理员手敲出来的！！！复制需要注明源自萌娘百科，并且附上URL地址 https://zh.moegirl.org.cn/MediaWiki:Gadget-desktop-styles.css
  * 版权协定：知识共享 署名-非商业性使用-相同方式共享 3.0
@@ -14,7 +14,7 @@ body,
     font-family: sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
 }
 
-/* 主标题字型调整*/
+/* 主标题字型调整 */
 #firstHeading {
     font-weight: 500;
     padding-left: 0.25em;
@@ -22,9 +22,9 @@ body,
 
 /* 对齐搜索按钮 */
 div#simpleSearch button#searchButton {
-    padding-top: .1em;
-    padding-bottom: .2em;
-    padding-right: .1em;
+    padding-top: 0.1em;
+    padding-bottom: 0.2em;
+    padding-right: 0.1em;
 }
 
 /* 2012年12月24日空想之梦做出的首页样式 */
@@ -33,17 +33,19 @@ div#simpleSearch button#searchButton {
     width: 100%;
     text-align: left;
     margin: 0 auto;
+
     /* 居中 */
     max-width: 1030px;
 }
 
 .mainpage-title {
-    font-family: PingFang SC, sans-serif;
+    font-family: "PingFang SC", sans-serif;
     font-size: 1.618em;
-    color: #228b22;
+    color: #228B22;
     margin: 0;
-    background: #deede0;
+    background: #DEEDE0;
     font-weight: 400;
+
     /* 400 = normal */
     height: 30px;
     line-height: 30px;
@@ -53,16 +55,16 @@ div#simpleSearch button#searchButton {
 /* 春节装扮开始
  * 在 #mainpage 上添加 is-sp class 即可
  */
+
 /*
 #mainpage.is-sp .mainpage-title {
     color: #ff4833;
     background: #fee8bb;
 }
 
-
 #mainpage.is-sp .mainpage-title::before,
 #mainpage.is-sp .mainpage-title::after {
-    background-image: url(https://img.moegirl.org.cn/common/f/f2/%E7%81%AF%E7%AC%BC1.png);
+    background-image: url("https://img.moegirl.org.cn/common/f/f2/%E7%81%AF%E7%AC%BC1.png");
     background-size: contain;
     background-repeat: no-repeat;
     content: " ";
@@ -96,11 +98,13 @@ div#simpleSearch button#searchButton {
     }
 }
 */
+
 /* 春节临时装扮结束 */
 
 /* 愚人节装扮开始
  * 在 #mainpage 上添加 is-afd class 即可
  */
+
 /*
 #mainpage.is-afd .mainpage-title {
     color: #2cd5ca;
@@ -108,21 +112,22 @@ div#simpleSearch button#searchButton {
     text-shadow: -1px 0 #073f52, 0 1px #073f52, 1px 0 #073f52, 0 -1px #073f52;
 }
 */
+
 /* 愚人节临时装扮结束 */
 
 .mainpage-title:lang(zh-hant),
 .mainpage-title:lang(zh-tw) {
-    font-family: PingFang TC, sans-serif;
+    font-family: "PingFang TC", sans-serif;
 }
 
 .mainpage-title:lang(zh-hk) {
-    font-family: PingFang HK, sans-serif;
+    font-family: "PingFang HK", sans-serif;
 }
 
 .mainpage-content,
 .mainpage-1stcontent {
     vertical-align: top;
-    padding: .5em .42890625rem;
+    padding: 0.5em 0.42890625rem;
     min-height: 7em;
 }
 
@@ -205,21 +210,15 @@ div#simpleSearch button#searchButton {
 }
 
 .content-box {
-    display: box;
-    display: -moz-box;
-    display: -webkit-box;
+    display: flex;
 }
 
 .parallel .content-box {
-    box-orient: horizontal;
-    -moz-box-orient: horizontal;
-    -webkit-box-orient: horizontal;
+    flex-direction: row;
 }
 
 .parallel .boite {
-    box-flex: 1;
-    -moz-box-flex: 1;
-    -webkit-box-flex: 1;
+    flex-grow: 1;
 }
 
 /* 副标题 */
@@ -227,6 +226,7 @@ div#simpleSearch button#searchButton {
     display: inline;
     font-size: 90%;
     font-weight: 400;
+
     /* 400 = normal */
     font-style: normal;
     text-align: right;
@@ -270,12 +270,12 @@ div#simpleSearch button#searchButton {
 #siteNotice .scrollDiv.scrolling.animation>*,
 #moe-sitenotice-container .scrollDiv.scrolling.animation,
 #moe-sitenotice-container .scrollDiv.scrolling.animation>* {
-    transition: all .37s ease-in-out;
+    transition: all 0.37s ease-in-out;
 }
 
 /* 被点过的外部链接不变色。采取和默认皮肤相同写法，以便override */
 .mw-body a.external:visited {
-    color: #36b;
+    color: #36B;
 }
 
 /* 斜体字右边距加大看以防止文字挤在一起 */
@@ -290,7 +290,7 @@ div#simpleSearch button#searchButton {
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: rgba(0, 0, 0, 0.8);
+    background-color: rgb(0 0 0 / 80%);
     opacity: 0.73;
 }
 
@@ -332,12 +332,12 @@ body .mw-mmv-wrapper {
 
 ul.mw-mmv-image-links li {
     float: left;
-    padding: .3em 1em;
+    padding: 0.3em 1em;
 }
 
 div.mw-mmv-image-desc-div,
 div.mw-mmv-image-links-div {
-    display: block
+    display: block;
 }
 
 div.metadata-panel-is-closed .mw-mmv-image-links li.mw-mmv-license-li {
@@ -346,7 +346,7 @@ div.metadata-panel-is-closed .mw-mmv-image-links li.mw-mmv-license-li {
 }
 
 .mw-mmv-warning-visible .mw-mmv-download-dialog .mw-mmv-dialog-down-arrow {
-    background-color: #ffffff;
+    background-color: #FFF;
 }
 
 .mw-mmv-warning-visible .mw-mmv-dialog-warning,
@@ -356,8 +356,8 @@ div.metadata-panel-is-closed .mw-mmv-image-links li.mw-mmv-license-li {
 
 /* 通用圆角框 */
 .common-box {
-    padding: .2em .4em;
-    border: 1px solid #ddd;
+    padding: 0.2em 0.4em;
+    border: 1px solid #DDD;
     -moz-border-radius: 10px;
     -webkit-border-radius: 10px;
     -khtml-border-radius: 10px;
@@ -377,9 +377,9 @@ div.metadata-panel-is-closed .mw-mmv-image-links li.mw-mmv-license-li {
 
 /* 导航条（完全没有apple风格的apple风面包屑orz） 来源:http://www.jankoatwarpspeed.com/examples/breadcrumb/ */
 #breadcrumb {
-    background-image: url(//img.moegirl.org.cn/breadcrumb/bc_bg.png);
+    background-image: url("//img.moegirl.org.cn/breadcrumb/bc_bg.png");
     color: red;
-    border: solid 1px #cacaca;
+    border: solid 1px #CACACA;
     border-radius: 10px;
     overflow: hidden;
 }
@@ -391,13 +391,13 @@ div.metadata-panel-is-closed .mw-mmv-image-links li.mw-mmv-license-li {
 
 #breadcrumb a {
     display: block;
-    background: url(//img.moegirl.org.cn/breadcrumb/bc_separator.png) no-repeat right;
+    background: url("//img.moegirl.org.cn/breadcrumb/bc_separator.png") no-repeat right;
     padding-right: 15px;
     color: #454545;
 }
 
 #breadcrumb a:hover {
-    color: #35acc5;
+    color: #35ACC5;
 }
 
 /* 信息模板的css */
@@ -406,7 +406,7 @@ div.metadata-panel-is-closed .mw-mmv-image-links li.mw-mmv-license-li {
     width: 280px;
     font-size: 90%;
     margin: 1em 0 1em 1em;
-    background: #f9f9f9;
+    background: #F9F9F9;
     border: 1px #999 solid;
     border-collapse: collapse;
     word-break: break-all;
@@ -415,13 +415,13 @@ div.metadata-panel-is-closed .mw-mmv-image-links li.mw-mmv-license-li {
 
 /* 编辑区样式 */
 .my-buttons {
-    padding: .5em;
+    padding: 0.5em;
 }
 
 .my-buttons a {
     text-decoration: none;
     border: 1px #069 outset;
-    padding: .1em;
+    padding: 0.1em;
 }
 
 .my-buttons a:hover,
@@ -432,20 +432,25 @@ div.metadata-panel-is-closed .mw-mmv-image-links li.mw-mmv-license-li {
 /* 解决pre不换行的问题 */
 pre {
     white-space: pre-wrap;
+
     /* CSS-3 */
     white-space: -moz-pre-wrap;
+
     /* Mozilla, since 1999 */
     white-space: -pre-wrap;
+
     /* Opera 4-6 */
     white-space: -o-pre-wrap;
+
     /* Opera 7 */
     word-wrap: break-word;
+
     /* Internet Explorer 5.5+ */
 }
 
 /* 页面底部导航框（2011年8月16日引自中文维基）(所谓大家族模板) */
 table.navbox {
-    border: 1px solid #aaa;
+    border: 1px solid #AAA;
     clear: both;
     margin: auto;
     padding: 1px;
@@ -472,31 +477,31 @@ table.navbox th {
 
 .navbox,
 .navbox-subgroup {
-    background: none repeat scroll 0 0 #fdfdfd;
+    background: none repeat scroll 0 0 #FDFDFD;
 }
 
 .navbox-list {
-    border-color: #fdfdfd;
+    border-color: #FDFDFD;
 }
 
 .navbox-title,
 table.navbox th {
-    background: none repeat scroll 0 0 #a5e4a5;
+    background: none repeat scroll 0 0 #A5E4A5;
 }
 
 .navbox-abovebelow,
 .navbox-group,
 .navbox-subgroup .navbox-title {
-    background: none repeat scroll 0 0 #c0ecc0;
+    background: none repeat scroll 0 0 #C0ECC0;
 }
 
 .navbox-subgroup .navbox-group,
 .navbox-subgroup .navbox-abovebelow {
-    background: none repeat scroll 0 0 #e6f6e6;
+    background: none repeat scroll 0 0 #E6F6E6;
 }
 
 .navbox-even {
-    background: none repeat scroll 0 0 #f5fcf5;
+    background: none repeat scroll 0 0 #F5FCF5;
 }
 
 .navbox-odd {
@@ -508,7 +513,7 @@ table.navbox th {
     max-width: 100%;
 }
 
-/* 缩略图居中*/
+/* 缩略图居中 */
 .thumb.tcenter {
     float: none;
     clear: both;
@@ -529,7 +534,7 @@ body.ns-2 div#catlinks {
 /* 编辑请求 */
 .editRequest {
     text-align: center;
-    border: 1px solid #ddd;
+    border: 1px solid #DDD;
     border-radius: 3px;
     margin: 1em 2.5em;
     padding: 1em;
@@ -538,15 +543,15 @@ body.ns-2 div#catlinks {
 
 .editRequest .newComment {
     white-space: nowrap;
-    background: #347bff;
-    color: #fff;
-    border: 1px solid #347bff;
-    text-shadow: 0 1px rgba(0, 0, 0, 0.1);
+    background: #347BFF;
+    color: #FFF;
+    border: 1px solid #347BFF;
+    text-shadow: 0 1px rgb(0 0 0 / 10%);
     font-family: inherit;
     font-size: 1em;
     min-width: 4em;
     max-width: 28.75em;
-    padding: .5em 1em;
+    padding: 0.5em 1em;
     margin: 0;
     border-radius: 2px;
     -webkit-box-sizing: border-box;
@@ -574,6 +579,7 @@ body.ns-2 div#catlinks {
  * http://www.opensource.org/licenses/mit-license.php
  * 12/29/2014
  */
+
 /* 以下内容已被萌百格式化，注释已被翻译 */
 .container {
     position: relative;
@@ -595,23 +601,23 @@ body.ns-2 div#catlinks {
 
 /* 适用于屏幕像素宽度大于400px的设备 */
 @media (min-width: 400px) {
-    /*.container {
+    /* .container {
         width: 85%;
         padding: 0;
-    }*/
+    } */
 }
 
 /* 适用于屏幕像素宽度大于800px的设备 */
 @media (min-width: 800px) {
 
-    /*.container {
+    /* .container {
         width: 80%;
-    }*/
+    } */
     .div,
     .divs,
     .column,
     .columns {
-        margin-left: .3%;
+        margin-left: 0.3%;
     }
 
     .div:first-child,
@@ -776,7 +782,7 @@ body.ns-2 div#catlinks {
 
     .offset-by-nine.column,
     .offset-by-nine.columns {
-        margin-left: 78.0%;
+        margin-left: 78%;
     }
 
     .offset-by-ten.column,
@@ -825,6 +831,7 @@ body:not(.ns--1):not(.ns--2) .mw-collapsible:not(.mw-collapsed) > tbody > tr:fir
     float: none;
     margin: 0;
 } */
+
 /* 大家族模板下折叠表格的定位处理
 body:not(.ns--1):not(.ns--2) .navbox .mw-collapsible > tbody > tr:first-child > th:last-child {
     position: relative;
@@ -852,11 +859,12 @@ body:not(.ns--1):not(.ns--2) .navbox .mw-collapsible:not(.mw-collapsed) > tbody 
     float: right;
     margin-right: -3.5em;
 } */
+
 /* wikitable 的 caption */
 .wikitable.mw-collapsible caption {
-    border: 1px solid rgba(170, 170, 170, 0.37);
+    border: 1px solid rgb(170 170 170 / 37%);
     border-bottom-width: 0;
-    background-color: rgb(249, 249, 249);
+    background-color: rgb(249 249 249);
 }
 
 .wikitable.mw-collapsible.mw-collapsed caption {
@@ -901,27 +909,27 @@ body:not(.ns--1):not(.ns--2) .navbox .mw-collapsible:not(.mw-collapsed) > tbody 
     order: 1;
 }
 
-.mw-explainconflict~#editform>h2>.mw-headline:after {
+.mw-explainconflict~#editform>h2>.mw-headline::after {
     content: "（请滚动查看，可拖动右下角斜线符号调整高度）";
 }
 
-.mw-explainconflict~#editform>.diff+h2>.mw-headline:after,
-.mw-explainconflict~#editform>.diff-container+h2>.mw-headline:after {
+.mw-explainconflict~#editform>.diff+h2>.mw-headline::after,
+.mw-explainconflict~#editform>.diff-container+h2>.mw-headline::after {
     content: "（由于技术限制，此处为全文版本，请使用 Ctrl+F | ⌘+F 搜索相关差异，可拖动右下角斜线符号调整高度）";
 }
 
-html[lang="zh-hant"i] .mw-explainconflict~#editform>h2>.mw-headline:after,
-html[lang="zh-hk"i] .mw-explainconflict~#editform>h2>.mw-headline:after,
-html[lang="zh-tw"i] .mw-explainconflict~#editform>h2>.mw-headline:after {
+html[lang="zh-hant"i] .mw-explainconflict~#editform>h2>.mw-headline::after,
+html[lang="zh-hk"i] .mw-explainconflict~#editform>h2>.mw-headline::after,
+html[lang="zh-tw"i] .mw-explainconflict~#editform>h2>.mw-headline::after {
     content: "（請滾動查看，可拖動右下角斜線符號調整高度）";
 }
 
-html[lang="zh-hant"i] .mw-explainconflict~#editform>.diff+h2>.mw-headline:after,
-html[lang="zh-hk"i] .mw-explainconflict~#editform>.diff+h2>.mw-headline:after,
-html[lang="zh-tw"i] .mw-explainconflict~#editform>.diff+h2>.mw-headline:after,
-html[lang="zh-hant"i] .mw-explainconflict~#editform>.diff-container+h2>.mw-headline:after,
-html[lang="zh-hk"i] .mw-explainconflict~#editform>.diff-container+h2>.mw-headline:after,
-html[lang="zh-tw"i] .mw-explainconflict~#editform>.diff-container+h2>.mw-headline:after {
+html[lang="zh-hant"i] .mw-explainconflict~#editform>.diff+h2>.mw-headline::after,
+html[lang="zh-hk"i] .mw-explainconflict~#editform>.diff+h2>.mw-headline::after,
+html[lang="zh-tw"i] .mw-explainconflict~#editform>.diff+h2>.mw-headline::after,
+html[lang="zh-hant"i] .mw-explainconflict~#editform>.diff-container+h2>.mw-headline::after,
+html[lang="zh-hk"i] .mw-explainconflict~#editform>.diff-container+h2>.mw-headline::after,
+html[lang="zh-tw"i] .mw-explainconflict~#editform>.diff-container+h2>.mw-headline::after {
     content: "（由於技術限制，此處為全文版本，請使用 Ctrl+F | ⌘+F 搜索相關差異，可拖動右下角斜線符號調整高度）";
 }
 
@@ -938,7 +946,7 @@ html[lang="zh-tw"i] .mw-explainconflict~#editform>.diff-container+h2>.mw-headlin
     resize: vertical;
 }
 
-.mw-explainconflict~#editform>.wikiEditor-ui:before {
+.mw-explainconflict~#editform>.wikiEditor-ui::before {
     content: "编辑框（最新版本）";
     font-size: 1.5em;
     margin: 1em 0 0.25em;
@@ -946,16 +954,16 @@ html[lang="zh-tw"i] .mw-explainconflict~#editform>.diff-container+h2>.mw-headlin
     line-height: 1.3;
     padding: 0;
     font-weight: 700;
-    border-bottom: 1px solid #0074f9;
+    border-bottom: 1px solid #0074F9;
     color: #000;
     background: none;
     overflow: hidden;
     display: block;
 }
 
-html[lang="zh-hant"i] .mw-explainconflict~#editform>.wikiEditor-ui:before,
-html[lang="zh-hk"i] .mw-explainconflict~#editform>.wikiEditor-ui:before,
-html[lang="zh-tw"i] .mw-explainconflict~#editform>.wikiEditor-ui:before {
+html[lang="zh-hant"i] .mw-explainconflict~#editform>.wikiEditor-ui::before,
+html[lang="zh-hk"i] .mw-explainconflict~#editform>.wikiEditor-ui::before,
+html[lang="zh-tw"i] .mw-explainconflict~#editform>.wikiEditor-ui::before {
     content: "編輯框（最新修訂）";
 }
 

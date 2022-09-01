@@ -2,12 +2,12 @@ a.extiw:not([href*=".moegirl.org.cn"]),
 a.extiw:not([href*=".moegirl.org.cn"]):visited,
 body.heimu_toggle_on span.heimu a.extiw:not([href*=".moegirl.org.cn"]),
 body.heimu_toggle_on a.extiw:not([href*=".moegirl.org.cn"]) span.heimu {
-    color: #00af89;
+    color: #00AF89;
 }
 
 .heimu:hover a.extiw:not([href*=".moegirl.org.cn"]),
 .heimu:hover a.extiw:not([href*=".moegirl.org.cn"]):visited,
 a.extiw:not([href*=".moegirl.org.cn"]):hover .heimu,
 a.extiw:not([href*=".moegirl.org.cn"]):hover:visited .heimu {
-    color: #00d7a8;
+    color: #00D7A8;
 }

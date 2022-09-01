@@ -26,13 +26,14 @@ body.sideBarPic-executed #wglogo {
 }
 
 body.sideBarPic.skin-vector:not(.DeceasedPerson) div#mw-panel div.portal {
-    background-color: rgba(246, 246, 246, 0.9);
-    /*padding-top: 0;
-    top: 212px*/
+    background-color: rgb(246 246 246 / 90%);
+
+    /* padding-top: 0;
+    top: 212px */
     margin-left: -0.75em;
     margin-right: 0;
     padding-left: 1.5em;
-    padding-right: .95em;
+    padding-right: 0.95em;
 }
 
 body.sideBarPic.skin-vector:not(.DeceasedPerson) div#mw-panel #p-logo+div.portal {
@@ -56,16 +57,16 @@ body.sideBarPic-executed.show-logo:not(.DeceasedPerson) #mw-panel #p-logo {
 }
 
 body.sideBarPic-executed.show-logo:not(.DeceasedPerson) #mw-panel #p-logo .mw-wiki-logo {
-    background-image: url(https://img.moegirl.org.cn/logo/zhMoegirl15.2.png);
+    background-image: url("https://img.moegirl.org.cn/logo/zhMoegirl15.2.png");
     height: 160px;
 }
 
 body.sideBarPic:not(.DeceasedPerson) #footer {
-    background-color: rgba(255, 255, 255, .7);
+    background-color: rgb(255 255 255 / 70%);
 }
 
 body.sideBarPic:not(.DeceasedPerson) #footer #footer-moegirl .copyright {
-    color: #2f2f2f;
+    color: #2F2F2F;
 }
 
 /* For Skin:MoeSkin 机智的小鱼君 2022年4月16日 */
@@ -74,5 +75,5 @@ body.sideBarPic-executed.skin-moeskin #moe-global-footer {
 }
 
 body.sideBarPic-executed.skin-moeskin #moe-main-container {
-    --theme-card-background-color: rgba(255, 255, 255, 0.85);
+    --theme-card-background-color: rgb(255 255 255 / 85%);
 }

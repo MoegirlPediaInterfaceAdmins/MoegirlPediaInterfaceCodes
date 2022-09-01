@@ -1,4 +1,4 @@
-/* 
+/*
  * 引自 https://zh.wikipedia.org/wiki/MediaWiki:Gadget-noteTA.css https://zh.wikipedia.org/wiki/MediaWiki:Gadget-noteTAvector.css
  * User:AnnAngela做了整合
  */
@@ -16,9 +16,9 @@
 }
 
 #noteTA-dialog a {
-    color: #3366BB;
+    color: #36B;
 }
 
-[id^="mobile-noteTA-"i] {
-    cursor:pointer;
+[id^="mobile-noteTA-"  i] {
+    cursor: pointer;
 }

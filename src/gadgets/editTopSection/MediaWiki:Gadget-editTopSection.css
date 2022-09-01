@@ -6,9 +6,11 @@
     vertical-align: inherit;
     line-height: inherit;
 }
+
 #ca-editTopSection .mw-editsection-divider {
     display: none !important;
 }
+
 #ca-editTopSection .Wikiplus-Edit-SectionBtn::after {
     content: "序言";
 }

@@ -8,7 +8,7 @@
 body.heimu_toggle_on .heimu,
 body.heimu_toggle_on .heimu rt {
     color: #000;
-    background-color: rgba(37, 37, 37, 0.13);
+    background-color: rgb(37 37 37 / 13%);
 }
 
 body.heimu_toggle_on .heimu:hover,
@@ -20,27 +20,27 @@ body.heimu_toggle_on span.heimu a,
 body.heimu_toggle_on a span.heimu,
 body.heimu_toggle_on span.heimu a.mw-disambig,
 body.heimu_toggle_on span.heimu a.mw-redirect {
-    color: #0645ad;
+    color: #0645AD;
 }
 
 body.heimu_toggle_on span.heimu a:visited,
 body.heimu_toggle_on a:visited span.heimu {
-    color: #0b0080;
+    color: #0B0080;
 }
 
 body.heimu_toggle_on span.heimu a.new,
 body.heimu_toggle_on a.new span.heimu {
-    color: #ba0000;
+    color: #BA0000;
 }
 
 body.heimu_toggle_on span.heimu a.new:visited,
 body.heimu_toggle_on a.new:visited span.heimu {
-    color: #a55858;
+    color: #A55858;
 }
 
 body.heimu_toggle_on span.heimu a.extiw,
 body.heimu_toggle_on a.extiw span.heimu {
-    color: #36b;
+    color: #36B;
 }
 
 body.heimu_toggle_on span.heimu a.extiw:visited,

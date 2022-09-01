@@ -2,7 +2,7 @@
 .abuselogevents {
     overflow-x: hidden;
     overflow-y: scroll;
-    padding: 0 0 1px 0;
+    padding: 0 0 1px;
     position: relative;
 }
 
@@ -56,7 +56,6 @@
 }
 
 @media (max-width: 1200px) {
-
     .blocklogevents,
     .abuselogevents {
         overflow-x: auto;
@@ -93,7 +92,7 @@
 
 .pageAwaitingDelection {
     max-height: 10em;
-    padding: 0 0 1px 0;
+    padding: 0 0 1px;
 }
 
 .pageAwaitingDelection-table {
@@ -129,12 +128,12 @@
     height: 0;
 }
 
-.pageAwaitingDelection-table div:not(.br):not(.pageAwaitingDelection-caption) {
-    border: 1px solid #e0e0e0;
+.pageAwaitingDelection-table div:not(.br, .pageAwaitingDelection-caption) {
+    border: 1px solid #E0E0E0;
 }
 
-.pageAwaitingDelection-table div:not(.br):not(.has-page) {
+.pageAwaitingDelection-table div:not(.br, .has-page) {
     height: 2.4rem;
     box-sizing: border-box;
-    padding-top: .6rem;
+    padding-top: 0.6rem;
 }

@@ -1,15 +1,16 @@
-/** 
+/**
  * 萌娘百科 InPageEdit 本地样式修复
  */
+
 /* [[Template:Navbar]] #53 */
 .navbar .in-page-edit-article-link-group {
-  position: absolute;
-  margin-left: 4px;
+    position: absolute;
+    margin-left: 4px;
 }
- 
+
 /* [[Template:LinkShow]] #53 */
 .linksShow-container .in-page-edit-article-link-group {
-  display: none;
+    display: none;
 }
 
 .noprint.plainlinks.hlist.navbar.nomobile {
@@ -17,8 +18,8 @@
 }
 
 /* [[Special:Interwiki]] */
-.mw-interwikitable-modify .in-page-edit-article-link-group { 
-    display: none; 
+.mw-interwikitable-modify .in-page-edit-article-link-group {
+    display: none;
 }
 
 /* For MoeSkin */
