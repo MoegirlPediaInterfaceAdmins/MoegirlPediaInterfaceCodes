@@ -6,6 +6,7 @@ on:
     paths:
       - "src/**/*.js"
       - "src/**/*.css"
+      - "src/**/*.json"
       - ".github/workflows/Linter test.yml"
   pull_request:
     branches: [master]
