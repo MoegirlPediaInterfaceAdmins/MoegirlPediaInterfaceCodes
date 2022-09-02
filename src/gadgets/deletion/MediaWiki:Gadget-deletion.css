@@ -1,33 +1,28 @@
-.deletion .mw-category-generated > div {
-    clear: both;
-}
-
-.deletion .mw-category-generated ul {
+.batdel-body .mw-category-generated ul {
     margin-left: 0;
 }
 
-.deletion .mw-category-generated h3,
-.deletion .mw-category-generated li {
-    clear: both;
-}
-
-.deletion .mw-category-generated ul li {
+.batdel-body .mw-category-generated ul li {
     list-style: none;
 }
 
-.deletion .mw-category-generated ul li > * {
-    float: left;
-}
-
-.deletion #deletionControl {
+.batdel-body #batdel-control {
     border: 1px dashed black;
     padding: 0.5em;
 }
 
-.deletion #deletionControl input {
+.batdel-body #batdel-control input {
     margin: 0 0.5em;
 }
 
-.deletion .disabled {
+.batdel-body .batdel-disabled {
     opacity: 0.3;
+}
+
+.batdel-error {
+    color: #d32f2f;
+}
+
+.batdel-success {
+    color: #388e3c;
 }
