@@ -95,12 +95,12 @@ $(() => {
         }, 137);
     }
 
+    if (Number.MAX_SAFE_INTEGER > Number.MIN_SAFE_INTEGER) {
+        return; // disable
+    }
     // Customized File Insertion dialog
     // Copyright 2017 The Little Moe New LLC. All rights reserved.
     mw.loader.using(["oojs", "oojs-ui"]).then(() => {
-        if (Number.MAX_SAFE_INTEGER > Number.MIN_SAFE_INTEGER) {
-            return; // disable
-        }
         $("#wpTextbox1").on("wikiEditor-toolbar-doneInitialSections", () => {
             class FileInsertionDialog extends OO.ui.ProcessDialog {
                 static static = {
