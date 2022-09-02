@@ -54,12 +54,16 @@
 所以我们建议你通过以下方式提交贡献：
 
 - 使用 [Linux on Windows with WSL](https://docs.microsoft.com/en-us/windows/wsl/install)；
-- 使用 Linux 类系统（可以是远程服务器等）；
+- 使用 Linux （可以是远程服务器、本地 Docker 容器等）；
 - 使用 [GitHub Codespaces](https://github.com/features/codespaces)（对个人用户免费）。
 
 其次，我们建议你使用 [Visual Studio Code](https://code.visualstudio.com/)，本仓库专为 VSCode 配置。我们也建议你搭配以下 VSCode 扩展以优化体验：
 - [Conventional Commits（约定式提交）](https://www.conventionalcommits.org/)：[Conventional Commits](https://marketplace.visualstudio.com/items?itemName=vivaxy.vscode-conventional-commits)  扩展；
 - [eslint](https://eslint.org/)：[ESLint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint) 扩展；
-- [stylelint](https://stylelint.io/)：[Stylelint](https://marketplace.visualstudio.com/items?itemName=stylelint.vscode-stylelint) 扩展。
+- [stylelint](https://stylelint.io/)：[Stylelint](https://marketplace.visualstudio.com/items?itemName=stylelint.vscode-stylelint) 扩展；
+- 远程开发：
+    - 在 Linux on Windows with WSL 里：[Remote - WSL](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-wsl) 扩展；
+    - 在运行 Linux 的本地 Docker 容器里：[Remote - Containers](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers) 扩展；
+    - 在运行 Linux 的远程服务器里：[Remote - SSH](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-ssh) 扩展和 [Remote - SSH: Editing Configuration Files](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-ssh-edit) 扩展。
 
 然后，很重要的一点，务必阅读并遵守 [CONTRIBUTING.md](CONTRIBUTING.md)，否则你的贡献有可能被拒绝。
