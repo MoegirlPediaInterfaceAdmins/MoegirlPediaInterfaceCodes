@@ -51,7 +51,7 @@
             "title": "targets 指定小工具运行的平台",
             "items": {
                 "type": "string",
-                "title": "平台名称，`desktop` 指定桌面端，`mobile` 指定移动端",
+                "title": "平台名称，\"desktop\" 指定桌面端，\"mobile\" 指定移动端",
                 "examples": [
                     "desktop",
                     "mobile"
@@ -73,7 +73,7 @@
         "type": {
             "type": "string",
             "default": "general",
-            "title": "type 指定小工具类型，`general` 是普通型（JS 和 CSS 会通过 JS 加载），`styles` 是纯 CSS 型（JS 不会被加载，CSS 文件的链接会直接嵌入页面）",
+            "title": "type 指定小工具类型，\"general\" 是普通型（JS 和 CSS 会通过 JS 加载），\"styles\" 是纯 CSS 型（JS 不会被加载，CSS 文件的链接会直接嵌入页面）",
             "examples": [
                 "general",
                 "styles"
@@ -95,7 +95,7 @@
         "dependencies": {
             "type": "array",
             "default": [],
-            "title": "dependencies 指定小工具的依赖项，如无需依赖项可保留空数组，但不能删去，其中引用api时用 `\"mediawiki.api\"`，引用uri时用 `\"mediawiki.Uri\"`",
+            "title": "dependencies 指定小工具的依赖项，如无需依赖项可保留空数组，但不能删去，其中引用api时用 \"mediawiki.api\"，引用uri时用 \"mediawiki.Uri\"",
             "items": {
                 "type": "string",
                 "default": "依赖项的名称",
