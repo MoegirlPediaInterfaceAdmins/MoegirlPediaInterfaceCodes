@@ -53,4 +53,4 @@
 - [eslint](https://eslint.org/)：[ESLint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint) 扩展；
 - [stylelint](https://stylelint.io/)：[Stylelint](https://marketplace.visualstudio.com/items?itemName=stylelint.vscode-stylelint) 扩展。
 
-然后，很重要的一点，务必阅读并遵守 [CONTRIBUTING.md](https://github.com/MoegirlPediaInterfaceAdmins/MoegirlPediaInterfaceCodes/blob/master/CONTRIBUTING.md)。
+然后，很重要的一点，务必阅读并遵守 [CONTRIBUTING.md](CONTRIBUTING.md)。

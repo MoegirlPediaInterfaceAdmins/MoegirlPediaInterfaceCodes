@@ -8,7 +8,7 @@
 
 ## 检查邮件映射表
 
-请在第一次提交你的代码贡献前，或每次当你修改了邮箱后，检查[邮件映射表](https://github.com/MoegirlPediaInterfaceAdmins/MoegirlPediaInterfaceCodes/blob/master/.mailmap)里关于你的萌娘百科用户名与你的邮箱地址的映射关系是否正确，若不正确，请参考邮件映射表的注释修改之。
+请在第一次提交你的代码贡献前，或每次当你修改了邮箱后，检查[邮件映射表](.mailmap)里关于你的萌娘百科用户名与你的邮箱地址的映射关系是否正确，若不正确，请参考邮件映射表的注释修改之。
 
 ## 使用 Conventional Commits（约定式提交）
 
@@ -16,7 +16,7 @@
 
 ## 新建小工具后检查配置
 
-请在新建小工具后，在小工具文件夹下创建一个 `definition.json`，并遵照 VSCode 编辑器指示（如果使用的不是 VSCode，那么请参照[对应的 json schemas](https://github.com/MoegirlPediaInterfaceAdmins/MoegirlPediaInterfaceCodes/blob/master/.vscode/json-schemas/gadget-definition.json)）。
+请在新建小工具后，在小工具文件夹下创建一个 `definition.json`，并遵照 VSCode 编辑器指示（如果使用的不是 VSCode，那么请参照[对应的 json schemas](.vscode/json-schemas/gadget-definition.json)）。
 
 ## 提交问题
 
