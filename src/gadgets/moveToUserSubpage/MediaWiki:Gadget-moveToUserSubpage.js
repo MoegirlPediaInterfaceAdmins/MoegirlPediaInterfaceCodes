@@ -22,7 +22,8 @@ $(() => {
             return str.replaceAll(`$${name}`, val);
         };
         class MTUSWindow extends OO.ui.ProcessDialog {
-            static static = $.extend(Object.create(super.static), {
+            static static = {
+                ...super.static,
                 name: "lr-mtus",
                 title: isModule ? wgULS("打回创建者模块沙盒", "打回創建者模塊沙盒") : wgULS("打回创建者用户页", "打回創建者用戶頁"),
                 actions: [
@@ -37,7 +38,7 @@ $(() => {
                         flags: ["primary", "progressive"],
                     },
                 ],
-            });
+            };
             constructor(config) {
                 // Parent constructor
                 super(config);

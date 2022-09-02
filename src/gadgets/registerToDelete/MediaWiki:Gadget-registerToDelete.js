@@ -11,7 +11,8 @@ $(() => {
         let loadReason = false;
 
         class FFDWindow extends OO.ui.ProcessDialog {
-            static static = $.extend(Object.create(super.static), {
+            static static = {
+                ...super.static,
                 name: "lr-ffd",
                 title: wgULS("挂删", "掛删"),
                 actions: [
@@ -26,7 +27,7 @@ $(() => {
                         flags: ["primary", "progressive"],
                     },
                 ],
-            });
+            };
             constructor(config) {
                 // Parent constructor
                 super(config);

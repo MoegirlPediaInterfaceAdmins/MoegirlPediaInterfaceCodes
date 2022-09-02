@@ -103,7 +103,8 @@ $(() => {
         }
         $("#wpTextbox1").on("wikiEditor-toolbar-doneInitialSections", () => {
             class FileInsertionDialog extends OO.ui.ProcessDialog {
-                static static = $.extend(Object.create(super.static), {
+                static static = {
+                    ...super.static,
                     name: "fileInsertionDialog",
                     title: mw.msg("wikieditor-toolbar-tool-file-title"),
                     actions: [{
@@ -114,7 +115,7 @@ $(() => {
                         flags: "safe",
                         label: mw.msg("wikieditor-toolbar-tool-file-cancel"),
                     }],
-                });
+                };
                 constructor(config) {
                     super(config);
                 }

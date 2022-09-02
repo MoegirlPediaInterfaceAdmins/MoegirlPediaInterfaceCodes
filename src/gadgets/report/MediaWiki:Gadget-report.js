@@ -22,7 +22,8 @@ $(() => {
     const api = new mw.Api();
 
     class MGPReportDialog extends OO.ui.ProcessDialog {
-        static static = $.extend(Object.create(super.static), {
+        static static = {
+            ...super.static,
             name: "mgpReportDialog",
             title: wgULS("页面反馈", "頁面反饋"),
             actions: [
@@ -51,7 +52,7 @@ $(() => {
                     modes: "confirm",
                 },
             ],
-        });
+        };
         static types = {
             placeholder: {
                 option: { data: "placeholder", label: wgULS("请选择一项主要问题", "請選擇一項主要問題") },

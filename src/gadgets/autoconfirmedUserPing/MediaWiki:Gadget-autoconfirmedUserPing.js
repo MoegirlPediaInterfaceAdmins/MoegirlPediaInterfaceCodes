@@ -17,7 +17,8 @@ $(() => (async () => {
     $("#mw-notification-area").appendTo($body);
 
     class ACUPWindow extends OO.ui.ProcessDialog {
-        static static = $.extend(Object.create(super.static), {
+        static static = {
+            ...super.static,
             name: "lr-acup",
             title: wgULS("自动确认用户列表", "自動確認使用者列表"),
             actions: [
@@ -40,7 +41,7 @@ $(() => (async () => {
                     modes: "result",
                 },
             ],
-        });
+        };
         initialize() {
             // Parent method
             super.initialize();

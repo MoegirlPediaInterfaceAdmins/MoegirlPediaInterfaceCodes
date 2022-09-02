@@ -333,7 +333,8 @@
         }
 
         class SettingsDialog extends OO.ui.ProcessDialog {
-            static static = $.extend(Object.create(super.static), {
+            static static = {
+                ...super.static,
                 name: "settingsDialog",
                 title: "参考文献提示工具",
                 actions: [
@@ -361,7 +362,7 @@
                         ],
                     },
                 ],
-            });
+            };
             constructor() {
                 super();
             }

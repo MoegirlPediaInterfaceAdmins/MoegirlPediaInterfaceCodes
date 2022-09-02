@@ -132,7 +132,8 @@ $(() => (async () => {
     };
 
     class AIVCWindow extends OO.ui.ProcessDialog {
-        static static = $.extend(Object.create(super.static), {
+        static static = {
+            ...super.static,
             name: "lr-aivc",
             title: wgULS("自动繁简转换工具", "自動繁簡轉換工具"),
             actions: [
@@ -161,7 +162,7 @@ $(() => (async () => {
                     modes: "confirm",
                 },
             ],
-        });
+        };
         constructor(config) {
             // Parent constructor
             super(config);

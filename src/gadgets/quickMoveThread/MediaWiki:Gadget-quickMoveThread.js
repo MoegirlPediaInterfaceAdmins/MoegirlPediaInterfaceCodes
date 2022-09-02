@@ -13,7 +13,7 @@ $(() => {
         if (PAGENAME.startsWith("萌娘百科_talk:提案/") || RESTRICTION.includes("sysop")) {
             return;
         }
-        
+
         const PUBLICDB = ["技术实现", "权限变更", "操作申请", "方针政策", "页面相关", "提问求助", "群组信息"].filter(
             (v) => PAGENAME.substring(PAGENAME.lastIndexOf("/") + 1, PAGENAME.length) !== v,
         );
@@ -22,7 +22,8 @@ $(() => {
         $("#mw-notification-area").appendTo($body);
 
         class QMTWindow extends OO.ui.ProcessDialog {
-            static static = $.extend(Object.create(super.static), {
+            static static = {
+                ...super.static,
                 name: "lr-qmt",
                 title: wgULS("快速移动讨论串", "快速移動討論串"),
                 actions: [
@@ -37,7 +38,7 @@ $(() => {
                         flags: ["primary", "progressive"],
                     },
                 ],
-            });
+            };
             constructor(config) {
                 // Parent constructor
                 super(config);
