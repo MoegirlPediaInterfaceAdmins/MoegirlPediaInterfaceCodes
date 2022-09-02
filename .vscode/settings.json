@@ -3,6 +3,14 @@
     "[javascript]": {
         "editor.defaultFormatter": "vscode.typescript-language-features"
     },
+    "json.schemas": [
+        {
+            "fileMatch": [
+                "src/gadgets/*/definition.json"
+            ],
+            "url": "./.vscode/json-schemas/gadget-definition.json"
+        }
+    ],
     "conventionalCommits.scopes": [
         "Gadget-abusefilter33test",
         "Gadget-abusefilterEdit",

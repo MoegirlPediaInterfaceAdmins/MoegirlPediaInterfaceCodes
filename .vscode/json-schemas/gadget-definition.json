@@ -1,0 +1,147 @@
+{
+    "$id": "https://github.com/MoegirlPediaInterfaceAdmins/MoegirlPediaInterfaceCodes/blob/master/.vscode/json-schemas/gadget-definition.json",
+    "type": "object",
+    "default": {},
+    "title": "小工具定义",
+    "required": [
+        "ResourceLoader",
+        "hidden",
+        "default",
+        "targets",
+        "type",
+        "rights",
+        "dependencies",
+        "_section"
+    ],
+    "properties": {
+        "ResourceLoader": {
+            "type": "boolean",
+            "default": false,
+            "title": "ResourceLoader 在绝大多数情况下应该为 true",
+            "examples": [
+                true,
+                false
+            ]
+        },
+        "hidden": {
+            "type": "boolean",
+            "default": false,
+            "title": "hidden 为 true 时用户不会在其参数设置中看到该小工具",
+            "examples": [
+                false,
+                true
+            ]
+        },
+        "default": {
+            "type": "boolean",
+            "default": false,
+            "title": "default 为 true 时用户默认开启该小工具",
+            "examples": [
+                false,
+                true
+            ]
+        },
+        "targets": {
+            "type": "array",
+            "default": [
+                [
+                    "desktop"
+                ]
+            ],
+            "title": "targets 指定小工具运行的平台",
+            "items": {
+                "type": "string",
+                "title": "平台名称，`desktop` 指定桌面端，`mobile` 指定移动端",
+                "examples": [
+                    "desktop",
+                    "mobile"
+                ]
+            },
+            "examples": [
+                [
+                    "desktop"
+                ],
+                [
+                    "desktop",
+                    "mobile"
+                ],
+                [
+                    "mobile"
+                ]
+            ]
+        },
+        "type": {
+            "type": "string",
+            "default": "general",
+            "title": "type 指定小工具类型，`general` 是普通型（JS 和 CSS 会通过 JS 加载），`styles` 是纯 CSS 型（JS 不会被加载，CSS 文件的链接会直接嵌入页面）",
+            "examples": [
+                "general",
+                "styles"
+            ]
+        },
+        "rights": {
+            "type": "array",
+            "default": [],
+            "title": "rights 指定用户所需要的权限，如无需权限可保留空数组，但不能删去",
+            "items": {
+                "type": "string",
+                "title": "每个权限一个元素",
+                "examples": []
+            },
+            "examples": [
+                []
+            ]
+        },
+        "dependencies": {
+            "type": "array",
+            "default": [],
+            "title": "dependencies 指定小工具的依赖项，如无需依赖项可保留空数组，但不能删去，其中引用api时用 `\"mediawiki.api\"`，引用uri时用 `\"mediawiki.Uri\"`",
+            "items": {
+                "type": "string",
+                "default": "依赖项的名称",
+                "title": "A Schema",
+                "examples": [
+                    "mediawiki.api"
+                ]
+            },
+            "examples": [
+                [
+                    "mediawiki.api"
+                ]
+            ]
+        },
+        "_section": {
+            "type": "string",
+            "title": "_section 规定了小工具在 MediaWiki:Gadgets-definition 里所处的章节名",
+            "examples": [
+                "browsing",
+                "skin",
+                "user",
+                "editing",
+                "maintenance",
+                "interface",
+                "administration",
+                "system"
+            ]
+        }
+    },
+    "examples": [
+        {
+            "ResourceLoader": true,
+            "hidden": false,
+            "default": false,
+            "targets": [
+                "desktop",
+                "mobile"
+            ],
+            "type": "general",
+            "rights": [
+                "abusefilter-log-private"
+            ],
+            "dependencies": [
+                "mediawiki.api"
+            ],
+            "_section": "administration"
+        }
+    ]
+}
