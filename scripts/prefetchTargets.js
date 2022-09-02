@@ -10,7 +10,7 @@ module.exports = [
     },
     {
         name: "InPageEdit-v2",
-        url: "https://fastly.jsdelivr.net/npm/mediawiki-inpageedit",
+        url: "https://cdn.jsdelivr.net/npm/mediawiki-inpageedit",
         file: "src/gadgets/InPageEdit-v2/MediaWiki:Gadget-InPageEdit-v2.js",
     },
     {
