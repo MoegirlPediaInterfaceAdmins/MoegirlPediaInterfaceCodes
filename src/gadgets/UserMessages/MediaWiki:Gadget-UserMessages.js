@@ -17,37 +17,7 @@
         "ext.gadget.libUtil",
         "ext.gadget.libJQuery",
     ]); */ // load by gadget's dependencies
-    const builtinTemplate = [
-        /*!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-         * Append new messages at the bottom. Otherwise pre-selection for users will break.
-         !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!*/
-        //  ['Template name',             "Name in Sidebar", "Detailed text",                                                                          Type/Prompt statement,           'Talk summary'];
-        ["UserMessages/Welcome", "Welcome", "欢迎新用户～", umsg.umFlagUM, "Welcome to Moegirlpedia~"],
-        ["UserMessages/MovedToUserSubpage", "MovedToUserSubpage", "可收录的页面打回至用户子页面（1=页面名，2=原因）", umsg.umFlagP2 + umsg.umFlagP3, "页面打回通知"],
-        ["UserMessages/MovedToUserSubpage2", "MovedToUserSubpage", "不在收录范围内的页面打回至用户子页面（1=页面名，2=原因）", umsg.umFlagP2 + umsg.umFlagP3, "页面打回通知"],
-        ["UserMessages/ArticleCopyright", "ArticleCopyrightInfringement", "著作权侵犯（1=页面名，2=选填站点）", umsg.umFlagP2 + umsg.umFlagP3, "请勿侵犯著作权"],
-        ["UserMessages/FalseInformation", "AddFalseInformation", "添加不实信息（1=页面名）", umsg.umFlagP2, "请勿添加不实信息"],
-        ["UserMessages/CutAndPasteMoving", "C&Pmoving", "剪贴移动提醒（1=页面名）", umsg.umFlagP2, "请勿剪切移动页面"],
-        ["UserMessages/EditUserPage", "EditUserPage", "编辑他人用户页面（1=页面名）", umsg.umFlagP2, "请勿编辑他人用户页面"],
-        ["UserMessages/HumorTemplate", "HumorTemplate", "违规字词转换（1=选填页面名，2=选填行为）", umsg.umFlagP2 + umsg.umFlagP3, "关于幽默模板的使用"],
-        ["UserMessages/ConversionViolation", "ConversionViolation", "违规字词转换（1=选填页面名，2=选填行为）", umsg.umFlagP2 + umsg.umFlagP3, "关于您近期的编辑"],
-        ["UserMessages/FileLicense", "IncorrrectFileLicense", "文件授权协议错误（1=文件名）", umsg.umFlagMQ, "关于您近期上传的文件"],
-        ["UserMessages/FileLicense2", "IncorrrectFileLicense2", "截图文件授权协议错误（1=文件名）", umsg.umFlagMQ, "关于您近期上传的截图文件"],
-        ["UserMessages/UserFile", "UserFile", "用户文件（请在额外信息处填写文件列表）", umsg.umFlagUM, "关于您上传的文件"],
-        ["UserMessages/DiscussionViolation", "DiscussionViolation", "修改历史发言（1=选填页面名或差异）", umsg.umFlagP2, "关于您在讨论区的发言"],
-        ["UserMessages/DiscussionViolation2", "DiscussionViolation2", "违反讨论区管理方针（1=页面名或差异，2=原因）", umsg.umFlagP2 + umsg.umFlagP3, "关于您在讨论区的发言"],
-        ["UserMessages/DiscussionViolation3", "DiscussionViolation3", "删除历史发言（1=选填页面名或差异）", umsg.umFlagP2, "关于您在讨论区的行为"],
-        ["UserMessages/PersonalAttacks", "PersonalAttacks", "人身攻击提醒（1=页面名，2=选填用户）", umsg.umFlagP2 + umsg.umFlagP3, "请勿人身攻击"],
-        ["UserMessages/PersonalAttacks2", "PersonalAttacks", "人身攻击警告（仅适用于讨论区人身攻击）", umsg.umFlagUM, "人身攻击警告"],
-        ["UserMessages/Signature", "NoSignature", "讨论时未签名（1=页面名）", umsg.umFlagP2, "关于您的签名"],
-        ["UserMessages/Signature2", "WrongSignature", "签名违反讨论区管理方针", umsg.umFlagP2, "关于您的签名"],
-        ["UserMessages/CommentViolation", "CommentViolation", "发布违规评论（1=页面名，2=选填原因）", umsg.umFlagP2 + umsg.umFlagP3, "请勿发布违规评论"],
-        ["UserMessages/EditWar", "EditWar", "通知编辑战参与者（1=页面名）", umsg.umFlagP2, "提醒您参与讨论"],
-        ["UserMessages/EditWar2", "EditWar", "提醒即将构成编辑战（1=页面名）", umsg.umFlagP2, "编辑战提醒"],
-        ["UserMessages/EditWar3", "EditWar", "警告编辑战用户（1=页面名，2=选填原因）", umsg.umFlagP2 + umsg.umFlagP3, "编辑战警告"],
-        ["UserMessages/FinalWarning", "FinalWarning", "忍耐是有限的（1/2=选填原因，推荐在额外信息填写）", umsg.umFlagP2 + umsg.umFlagP3, "警告：忍耐是有限的"],
-    ];
-    const placeholderTemplate = ["", "请选择一个模板（本选项不可使用）", "给你的新留言~", 0];
+    // 内置模板请在页中查找（搜索 `builtinTemplate`）
     class ClsUPC {
         pendingCalls = 0;
         pendingSetTimeouts = 0;
@@ -850,6 +820,37 @@
         umUserTalkPrefix: `${mw.config.get("wgFormattedNamespaces")[3]}:`,
         apiURL: mw.util.wikiScript("api"),
     };
+    const builtinTemplate = [
+        /*!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+         * Append new messages at the bottom. Otherwise pre-selection for users will break.
+         !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!*/
+        //  ['Template name',             "Name in Sidebar", "Detailed text",                                                                          Type/Prompt statement,           'Talk summary'];
+        ["UserMessages/Welcome", "Welcome", "欢迎新用户～", umsg.umFlagUM, "Welcome to Moegirlpedia~"],
+        ["UserMessages/MovedToUserSubpage", "MovedToUserSubpage", "可收录的页面打回至用户子页面（1=页面名，2=原因）", umsg.umFlagP2 + umsg.umFlagP3, "页面打回通知"],
+        ["UserMessages/MovedToUserSubpage2", "MovedToUserSubpage", "不在收录范围内的页面打回至用户子页面（1=页面名，2=原因）", umsg.umFlagP2 + umsg.umFlagP3, "页面打回通知"],
+        ["UserMessages/ArticleCopyright", "ArticleCopyrightInfringement", "著作权侵犯（1=页面名，2=选填站点）", umsg.umFlagP2 + umsg.umFlagP3, "请勿侵犯著作权"],
+        ["UserMessages/FalseInformation", "AddFalseInformation", "添加不实信息（1=页面名）", umsg.umFlagP2, "请勿添加不实信息"],
+        ["UserMessages/CutAndPasteMoving", "C&Pmoving", "剪贴移动提醒（1=页面名）", umsg.umFlagP2, "请勿剪切移动页面"],
+        ["UserMessages/EditUserPage", "EditUserPage", "编辑他人用户页面（1=页面名）", umsg.umFlagP2, "请勿编辑他人用户页面"],
+        ["UserMessages/HumorTemplate", "HumorTemplate", "违规字词转换（1=选填页面名，2=选填行为）", umsg.umFlagP2 + umsg.umFlagP3, "关于幽默模板的使用"],
+        ["UserMessages/ConversionViolation", "ConversionViolation", "违规字词转换（1=选填页面名，2=选填行为）", umsg.umFlagP2 + umsg.umFlagP3, "关于您近期的编辑"],
+        ["UserMessages/FileLicense", "IncorrrectFileLicense", "文件授权协议错误（1=文件名）", umsg.umFlagMQ, "关于您近期上传的文件"],
+        ["UserMessages/FileLicense2", "IncorrrectFileLicense2", "截图文件授权协议错误（1=文件名）", umsg.umFlagMQ, "关于您近期上传的截图文件"],
+        ["UserMessages/UserFile", "UserFile", "用户文件（请在额外信息处填写文件列表）", umsg.umFlagUM, "关于您上传的文件"],
+        ["UserMessages/DiscussionViolation", "DiscussionViolation", "修改历史发言（1=选填页面名或差异）", umsg.umFlagP2, "关于您在讨论区的发言"],
+        ["UserMessages/DiscussionViolation2", "DiscussionViolation2", "违反讨论区管理方针（1=页面名或差异，2=原因）", umsg.umFlagP2 + umsg.umFlagP3, "关于您在讨论区的发言"],
+        ["UserMessages/DiscussionViolation3", "DiscussionViolation3", "删除历史发言（1=选填页面名或差异）", umsg.umFlagP2, "关于您在讨论区的行为"],
+        ["UserMessages/PersonalAttacks", "PersonalAttacks", "人身攻击提醒（1=页面名，2=选填用户）", umsg.umFlagP2 + umsg.umFlagP3, "请勿人身攻击"],
+        ["UserMessages/PersonalAttacks2", "PersonalAttacks", "人身攻击警告（仅适用于讨论区人身攻击）", umsg.umFlagUM, "人身攻击警告"],
+        ["UserMessages/Signature", "NoSignature", "讨论时未签名（1=页面名）", umsg.umFlagP2, "关于您的签名"],
+        ["UserMessages/Signature2", "WrongSignature", "签名违反讨论区管理方针", umsg.umFlagP2, "关于您的签名"],
+        ["UserMessages/CommentViolation", "CommentViolation", "发布违规评论（1=页面名，2=选填原因）", umsg.umFlagP2 + umsg.umFlagP3, "请勿发布违规评论"],
+        ["UserMessages/EditWar", "EditWar", "通知编辑战参与者（1=页面名）", umsg.umFlagP2, "提醒您参与讨论"],
+        ["UserMessages/EditWar2", "EditWar", "提醒即将构成编辑战（1=页面名）", umsg.umFlagP2, "编辑战提醒"],
+        ["UserMessages/EditWar3", "EditWar", "警告编辑战用户（1=页面名，2=选填原因）", umsg.umFlagP2 + umsg.umFlagP3, "编辑战警告"],
+        ["UserMessages/FinalWarning", "FinalWarning", "忍耐是有限的（1/2=选填原因，推荐在额外信息填写）", umsg.umFlagP2 + umsg.umFlagP3, "警告：忍耐是有限的"],
+    ];
+    const placeholderTemplate = ["", "请选择一个模板（本选项不可使用）", "给你的新留言~", 0];
     Object.defineProperties(umsg, {
         umTemplate: {
             get: () => {
