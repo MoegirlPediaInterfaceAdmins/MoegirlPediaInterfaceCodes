@@ -10,31 +10,31 @@
 
 ## 仓库架构
 
-- `.github` 文件夹用以保存 GitHub Dependabot 和 GitHub Actions 所需配置文件，其中：
-    - `.github/workflows/Linter test.yml` 用以使用 [eslint](https://eslint.org/) 和 [stylelint](https://stylelint.io/) 保存代码测试流程，该流程成功完成时会触发[机器人](https://zh.moegirl.org.cn/User:AnnAngela-dbot) [编译流程](#编译流程)；
-    - `.github/workflows/postCommit.yml` 用以保存自动化流程，包含自动配置 Conventional Commits（约定式提交）所需 scope（作用域）信息、自动导入来自 npm 和指定页面的代码和自动补全小工具列表。
-- `.vscode/settings.json` 用来保存 Conventional Commits（约定式提交）所需 scope（作用域）信息；
-- `scripts` 文件夹用以保存流程所需代码，其中：
-    - `scripts/browserify.js` 用来通过 [browserify](https://browserify.org/) 库导入来自 npm 的代码，其目标在 `scripts/browserifyTargets.js` 中定义；
-    - `scripts/prefetch.js` 用来导入来自指定页面的代码，其目标在 `scripts/prefetchTargets.js` 中定义；
-    - `scripts/conventionalCommitsScopesGenerator.js` 用来自动配置 Conventional Commits（约定式提交）所需 scope（作用域）信息；
-    - `scripts/gadgetsDefinitionGenerator.js` 用来自动补全小工具列表，当发现新增小工具时，该代码会自动将对应小工具插入到 `src/gadgets/Gadgets-definition-list.json` 的响应列表的末尾；
+- [`.github`](.github) 文件夹用以保存 GitHub Dependabot 和 GitHub Actions 所需配置文件，其中：
+    - [`.github/workflows/Linter test.yml`](.github/workflows/Linter_test.yml) 用以使用 [eslint](https://eslint.org/) 和 [stylelint](https://stylelint.io/) 保存代码测试流程，该流程成功完成时会触发[机器人](https://zh.moegirl.org.cn/User:AnnAngela-dbot) [编译流程](#编译流程)；
+    - [`.github/workflows/postCommit.yml`](.github/workflows/postCommit.yml) 用以保存自动化流程，包含自动配置 Conventional Commits（约定式提交）所需 scope（作用域）信息、自动导入来自 npm 和指定页面的代码和自动补全小工具列表。
+- [`.vscode/settings.json`](.vscode/settings.json) 用来保存 Conventional Commits（约定式提交）所需 scope（作用域）信息；
+- [`scripts`](scripts) 文件夹用以保存流程所需代码，其中：
+    - [`scripts/browserify.js`](scripts/browserify.js) 用来通过 [browserify](https://browserify.org/) 库导入来自 npm 的代码，其目标在 [`scripts/browserifyTargets.js`](scripts/browserifyTargets.js) 中定义；
+    - [`scripts/prefetch.js`](scripts/prefetch.js) 用来导入来自指定页面的代码，其目标在 [`scripts/prefetchTargets.js`](scripts/prefetchTargets.js) 中定义；
+    - [`scripts/conventionalCommitsScopesGenerator.js`](scripts/conventionalCommitsScopesGenerator.js) 用来自动配置 Conventional Commits（约定式提交）所需 scope（作用域）信息；
+    - [`scripts/gadgetsDefinitionGenerator.js`](scripts/gadgetsDefinitionGenerator.js) 用来自动补全小工具列表，当发现新增小工具时，该代码会自动将对应小工具插入到 [`src/gadgets/Gadgets-definition-list.json`](src/gadgets/Gadgets-definition-list.json) 的响应列表的末尾；
 - 自动化工具的配置文件：
-    - `.eslintrc` 配置 eslint，由于所有 Javascript 代码都需经过编译，故其 `parserOptions.ecmaVersion` 被指定为 `latest` 以便充分利用最新标准；
-    - `.stylelintrc.json` 配置 stylelint；
-    - `.browserslistrc` 配置 [autoprifixer](https://github.com/postcss/autoprefixer) 所使用的 [browserslist](https://github.com/browserslist/browserslist)，目前暂定锚定为 [`defaults`](https://github.com/browserslist/browserslist#full-list) 的基础上添加 `Chrome >= 70` 以适应萌百用户群体；
-    - `install.sh` 检测到当前环境为 [GitHub Codespaces](https://github.com/features/codespaces) 时自动配置最新的 Node.js LTS 和 npm 版本；
+    - [`.eslintrc`](.eslintrc) 配置 eslint，由于所有 Javascript 代码都需经过编译，故其 `parserOptions.ecmaVersion` 被指定为 `latest` 以便充分利用最新标准；
+    - [`.stylelintrc.json`](.stylelintrc.json) 配置 stylelint；
+    - [`.browserslistrc`](.browserslistrc) 配置 [autoprifixer](https://github.com/postcss/autoprefixer) 所使用的 [browserslist](https://github.com/browserslist/browserslist)，目前暂定锚定为 [`defaults`](https://github.com/browserslist/browserslist#full-list) 的基础上添加 `Chrome >= 70` 以适应萌百用户群体；
+    - [`install.sh`](install.sh) 检测到当前环境为 [GitHub Codespaces](https://github.com/features/codespaces) 时自动配置最新的 Node.js LTS 和 npm 版本；
 - 代码部分：
-    - `src/gadgets` 以文件夹形式保存小工具，每一个文件夹都是一个小工具，里面包含以下内容：
-        - `definition.json` 保存小工具配置，包括依赖项、所需权限等，以 `_` 开头的是其他配置，如小工具所在的章节等；
-        - `.eslintrc` 用以阻止 eslint 在某些文件上进行检查，常见于来自 npm 和指定页面的代码；
+    - [`src/gadgets`](src/gadgets) 以文件夹形式保存小工具，每一个文件夹都是一个小工具，里面包含以下内容：
+        - `definition.json` 保存小工具配置，包括依赖项、所需权限等，以 `_` 开头的键值对是其他配置，如小工具所在的章节等；
+        - `.eslintrc` （可选）用以阻止 eslint 在某些文件上进行检查，常见于来自 npm 和指定页面的代码；
         - `*.js` 和 `*.css` 为小工具代码，文件名为萌娘百科上对应页面的页面名；
-    - `src/groups` 以文件夹形式保存用户组级别代码，每一个文件夹都对应一个用户组，里面包含 `*.js` 和 `*.css` 等代码，文件名为萌娘百科上对应页面的页面名；
-    - `src/global` 保存全站代码，里面包含 `*.js` 和 `*.css` 等代码，文件名为萌娘百科上对应页面的页面名。
+    - [`src/groups`](src/groups) 以文件夹形式保存用户组级别代码，每一个文件夹都对应一个用户组，里面包含 `*.js` 和 `*.css` 等代码，文件名为萌娘百科上对应页面的页面名；
+    - [`src/global`](src/global) 保存全站代码，里面包含 `*.js` 和 `*.css` 等代码，文件名为萌娘百科上对应页面的页面名。
 
 ## 自动化流程
 
-- 每天 00:00 UTC 时会自动触发一次 postCommit CI，这是为了执行 `scripts/prefetch.js` 以自动更新来自指定页面的代码；
+- 每天 00:00 UTC 时会自动触发一次 postCommit CI，这是为了执行 [`scripts/prefetch.js`](scripts/prefetch.js) 以自动更新来自指定页面的代码；
 - 每提交一次 commit（包括提交 pull request 和在 pull request 里提交新的 commit），postCommit CI 也会触发，这是为了执行所有任务以确保内容是最新的；
 - 每向 master 分支提交一次 commit，会自动触发一次 Linter test，这是为了确保最终合并到萌百的代码不会犯能被检查出来的问题。
 
