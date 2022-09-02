@@ -98,6 +98,7 @@ $(() => {
     if (Number.MAX_SAFE_INTEGER > Number.MIN_SAFE_INTEGER) {
         return; // disable
     }
+
     // Customized File Insertion dialog
     // Copyright 2017 The Little Moe New LLC. All rights reserved.
     mw.loader.using(["oojs", "oojs-ui"]).then(() => {
