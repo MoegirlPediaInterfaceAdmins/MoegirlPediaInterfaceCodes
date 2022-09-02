@@ -34,7 +34,7 @@
 
 ## 自动化流程
 
-- 每天 00:00 UTC 时会自动触发一次 postCommit CI，这是为了执行 [`scripts/prefetch.js`](scripts/prefetch.js) 以自动更新来自指定页面的代码；
+- 每天 00:00 UTC（但愿，Github Actions的 cron 延迟真的好高 \_(:з」∠)_）时会自动触发一次 postCommit CI，这是为了执行 [`scripts/prefetch.js`](scripts/prefetch.js) 以自动更新来自指定页面的代码；
 - 每提交一次 commit（包括提交 pull request 和在 pull request 里提交新的 commit），postCommit CI 也会触发，这是为了执行所有任务以确保内容是最新的；
 - 每向 master 分支提交一次 commit，会自动触发一次 Linter test，这是为了确保最终合并到萌百的代码不会犯能被检查出来的问题。
 
