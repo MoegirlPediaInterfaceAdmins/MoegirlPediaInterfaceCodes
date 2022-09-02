@@ -35,7 +35,7 @@
 
         const extended = {};
         const deep = typeof _deep === "boolean" ? _deep : false;
-        const args = [...typeof _deep === "boolean" ? [_deep] : [], ..._args];
+        const args = [...typeof _deep !== "boolean" ? [_deep] : [], ..._args];
 
         /* Merge the object into the extended object */
         const merge = function (obj) {
