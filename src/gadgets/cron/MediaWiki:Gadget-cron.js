@@ -1,4 +1,4 @@
-const require = () => global.luxon;
+const require = () => window.luxon;
 (function(){
 var createModuleFactory = function createModuleFactory(t){var e;return function(r){return e||t(e={exports:{},parent:r},e.exports),e.exports}};
 var _$CronJob_3 = createModuleFactory(function (module, exports) {
