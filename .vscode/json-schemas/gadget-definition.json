@@ -57,9 +57,7 @@
         },
         "targets": {
             "type": "array",
-            "default": [
-                "desktop"
-            ],
+            "default": [],
             "title": "targets 指定小工具运行的平台，\"desktop\" 指定桌面端，\"mobile\" 指定移动端",
             "items": {
                 "type": "string",
@@ -70,6 +68,7 @@
                 ]
             },
             "examples": [
+                [],
                 [
                     "desktop"
                 ],
@@ -84,9 +83,7 @@
         },
         "skins": {
             "type": "array",
-            "default": [
-                "vector"
-            ],
+            "default": [],
             "title": "skins 指定小工具运行的皮肤，包括 \"vector\"、\"moeskin\"、\"mineral\"",
             "items": {
                 "type": "string",
@@ -97,6 +94,7 @@
                 ]
             },
             "examples": [
+                [],
                 [
                     "vector"
                 ],

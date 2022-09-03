@@ -6,9 +6,7 @@
     "targets": [
         "mobile"
     ],
-    "skins": [
-        "vector"
-    ],
+    "skins": [],
     "actions": [],
     "type": "styles",
     "package": false,
