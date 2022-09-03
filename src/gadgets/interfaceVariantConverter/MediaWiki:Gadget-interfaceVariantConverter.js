@@ -28,7 +28,7 @@ $(() => (async () => {
 
     const pageid = mw.config.get("wgArticleId");
     const basepage = pagename.replace(/\/.*?$/, "");
-    const api = new mw.Api();
+    const api = new mw.Api(), zhAPI = location.hostname === "zh.moegirl.org.cn" ? api : new mw.ForeignApi("https://zh.moegirl.org.cn/api.php", { anonymous: true });
 
     const lr_aivc = $.extend({
         main: ["zh-cn", "zh-tw", "zh-hk"],
@@ -368,7 +368,7 @@ $(() => (async () => {
                     continue;
                 }
                 const text = `{{NoteTA|${this.config.noteTAStr}}}<pre id="converted">-{}-${replaced}</pre>`;
-                const parsed = $($.parseHTML((await api.post({
+                const parsed = $($.parseHTML((await zhAPI.post({
                     action: "parse",
                     text,
                     contentmodel: "wikitext",
