@@ -3,7 +3,9 @@
     "hidden": true,
     "default": true,
     "supportsUrlLoad": false,
-    "targets": [],
+    "targets": [
+        "desktop"
+    ],
     "skins": [
         "moeskin"
     ],

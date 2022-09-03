@@ -7,7 +7,9 @@
         "desktop",
         "mobile"
     ],
-    "skins": [],
+    "skins": [
+        "vector"
+    ],
     "actions": [],
     "type": "general",
     "package": false,

@@ -3,8 +3,12 @@
     "hidden": true,
     "default": true,
     "supportsUrlLoad": false,
-    "targets": [],
-    "skins": [],
+    "targets": [
+        "desktop"
+    ],
+    "skins": [
+        "vector"
+    ],
     "actions": [],
     "type": "styles",
     "package": false,
