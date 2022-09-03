@@ -141,7 +141,8 @@
             "libPolyfill",
             "sidebaricons",
             "libip",
-            "libAsyncLock"
+            "libAsyncLock",
+            "luxon"
         ]
     }
 ]
