@@ -4,7 +4,6 @@ console.info("Start initialization...");
 const browserify = require("browserify");
 const minifyStream = require("minify-stream");
 const browserifyTargets = require("./browserifyTargets.js");
-const fs = require("fs");
 const fsPromises = require("fs/promises");
 const inputPath = "tmp/input.js";
 const outputPath = "tmp/output.js";
@@ -34,12 +33,7 @@ const outputPath = "tmp/output.js";
             inputs.push(`global["${entry}"] = {${exports.join(",")}}`);
         }
         await fsPromises.writeFile(inputPath, inputs.join("\n"));
-        await new Promise((res) => {
-            const fileStream = fs.createWriteStream(outputPath);
-            fileStream.addListener("close", res);
-            if (typeof prependCode === "string") {
-                fileStream.write(`${prependCode}\n`);
-            }
+        const codes = await new Promise((res, rej) => {
             console.info(`[${module}]`, "start generating...");
             const plugins = new Set([
                 "esmify",
@@ -55,13 +49,23 @@ const outputPath = "tmp/output.js";
             for (const plugin of plugins) {
                 codeObject = codeObject.plugin(plugin);
             }
-            const codeStream = codeObject.bundle();
+            let codeStream = codeObject.bundle();
             if (hasExports) {
-                codeStream.pipe(minifyStream()).pipe(fileStream);
-            } else {
-                codeStream.pipe(fileStream);
+                codeStream = codeStream.pipe(minifyStream({
+                    sourceMap: false,
+                }));
             }
+            const chunks = [];
+            codeStream.on("data", (chunk) => chunks.push(Buffer.from(chunk)));
+            codeStream.on("error", (err) => rej(err));
+            codeStream.on("end", () => res(Buffer.concat(chunks).toString("utf8")));
         });
+        const output = [];
+        if (typeof prependCode === "string") {
+            output.push(prependCode);
+        }
+        output.push(codes.trim(), "");
+        await fsPromises.writeFile(outputPath, output.join("\n"));
         console.info(`[${module}]`, "generated successfully.");
         await fsPromises.rm(file, {
             recursive: true,
