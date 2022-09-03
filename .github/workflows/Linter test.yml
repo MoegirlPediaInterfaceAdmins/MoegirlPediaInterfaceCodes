@@ -2,18 +2,17 @@ name: Linter test
 
 on:
   push:
-    branches: [master]
     paths:
-      - "src/**/*.js"
-      - "src/**/*.css"
-      - "src/**/definition.json"
-      - ".github/workflows/Linter test.yml"
+      - src/**/*.js
+      - src/**/*.css
+      - src/**/definition.json
+      - src/gadgets/Gadgets-definition-list.json
+      - .github/workflows/Linter test.yml
   pull_request:
-    branches: [master]
     paths:
-      - "src/**/*.js"
-      - "src/**/*.css"
-      - "src/**/definition.json"
+      - src/**/*.js
+      - src/**/*.css
+      - src/**/definition.json
   workflow_dispatch:
 
 jobs:
@@ -35,7 +34,7 @@ jobs:
           path: .cache
           key: cache
       - name: Check eslint environment
-        run: npx eslint --env-info && ls -lhA
+        run: npx eslint --env-info && ls -lhA .cache
       - uses: technote-space/get-diff-action@v6
         name: List diff
       - name: Run eslint

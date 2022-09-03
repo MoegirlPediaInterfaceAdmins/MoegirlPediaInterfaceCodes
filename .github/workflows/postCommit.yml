@@ -3,21 +3,22 @@ name: post commit CI
 on:
   push:
     paths:
-      - "src/**/*.js"
-      - "src/**/*.css"
-      - "src/**/*.json"
       - "scripts/*.js"
       - "package-lock.json"
       - ".github/workflows/postCommit.yml"
   workflow_dispatch:
   schedule:
     - cron: 0 0 * * *
+  workflow_run:
+    workflows: [Linter test]
+    types: [completed]
 
 concurrency: postCommit
 
 jobs:
   postCommit:
     runs-on: ubuntu-latest
+    if: github.event.workflow_run == null || github.event.workflow_run.conclusion == 'success'
     steps:
       - uses: actions/checkout@v3
       - name: Use Node.js
