@@ -5,10 +5,14 @@
     "targets": [
         "desktop"
     ],
+    "skins": [
+        "vector"
+    ],
     "type": "general",
     "rights": [
         "edit"
     ],
+    "peers": [],
     "dependencies": [],
     "_section": "system"
 }

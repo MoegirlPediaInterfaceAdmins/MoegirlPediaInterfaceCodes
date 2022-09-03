@@ -5,10 +5,14 @@
     "targets": [
         "desktop"
     ],
+    "skins": [
+        "vector"
+    ],
     "type": "styles",
     "rights": [
         "patrol"
     ],
+    "peers": [],
     "dependencies": [],
     "_section": "maintenance"
 }

@@ -5,11 +5,15 @@
     "targets": [
         "desktop"
     ],
+    "skins": [
+        "vector"
+    ],
     "type": "general",
     "rights": [
         "abusefilter-modify",
         "editinterface"
     ],
+    "peers": [],
     "dependencies": [],
     "_section": "interface"
 }

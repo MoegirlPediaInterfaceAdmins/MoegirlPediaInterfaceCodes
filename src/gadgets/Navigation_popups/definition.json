@@ -5,8 +5,12 @@
     "targets": [
         "desktop"
     ],
+    "skins": [
+        "vector"
+    ],
     "type": "general",
     "rights": [],
+    "peers": [],
     "dependencies": [
         "ext.gadget.site-lib",
         "mediawiki.util",

@@ -5,11 +5,15 @@
     "targets": [
         "desktop"
     ],
+    "skins": [
+        "vector"
+    ],
     "type": "general",
     "rights": [
         "noratelimit",
         "patrolleredit"
     ],
+    "peers": [],
     "dependencies": [
         "mediawiki.api",
         "mediawiki.user",

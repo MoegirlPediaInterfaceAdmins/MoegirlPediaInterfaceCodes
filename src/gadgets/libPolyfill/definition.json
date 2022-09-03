@@ -6,8 +6,12 @@
         "desktop",
         "mobile"
     ],
+    "skins": [
+        "vector"
+    ],
     "type": "general",
     "rights": [],
+    "peers": [],
     "dependencies": [],
     "_section": "system"
 }

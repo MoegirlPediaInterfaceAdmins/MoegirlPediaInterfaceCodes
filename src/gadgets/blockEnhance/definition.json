@@ -6,10 +6,14 @@
         "desktop",
         "mobile"
     ],
+    "skins": [
+        "vector"
+    ],
     "type": "general",
     "rights": [
         "block"
     ],
+    "peers": [],
     "dependencies": [
         "ext.gadget.libOOUIDialog",
         "mediawiki.api",

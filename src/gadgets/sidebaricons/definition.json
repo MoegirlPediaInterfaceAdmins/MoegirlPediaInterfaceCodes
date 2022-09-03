@@ -5,10 +5,14 @@
     "targets": [
         "mobile"
     ],
+    "skins": [
+        "vector"
+    ],
     "type": "styles",
     "rights": [
         "hidden"
     ],
+    "peers": [],
     "dependencies": [],
     "_section": "system"
 }

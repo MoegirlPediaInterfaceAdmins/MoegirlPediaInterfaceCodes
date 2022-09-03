@@ -5,10 +5,14 @@
     "targets": [
         "desktop"
     ],
+    "skins": [
+        "vector"
+    ],
     "type": "general",
     "rights": [
         "skipcaptcha"
     ],
+    "peers": [],
     "dependencies": [
         "mediawiki.api",
         "ext.gadget.site-lib"

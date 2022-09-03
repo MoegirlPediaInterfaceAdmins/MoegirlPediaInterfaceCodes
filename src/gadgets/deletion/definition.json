@@ -5,10 +5,14 @@
     "targets": [
         "desktop"
     ],
+    "skins": [
+        "vector"
+    ],
     "type": "general",
     "rights": [
         "delete"
     ],
+    "peers": [],
     "dependencies": [
         "ext.gadget.site-lib",
         "ext.gadget.libOOUIDialog",

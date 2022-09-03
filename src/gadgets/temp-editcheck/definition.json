@@ -5,11 +5,15 @@
     "targets": [
         "desktop"
     ],
+    "skins": [
+        "vector"
+    ],
     "type": "general",
     "rights": [
         "edit",
         "skipcaptcha"
     ],
+    "peers": [],
     "dependencies": [
         "mediawiki.api",
         "mediawiki.notification",

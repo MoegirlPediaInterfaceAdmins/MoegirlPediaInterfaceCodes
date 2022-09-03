@@ -6,8 +6,12 @@
         "desktop",
         "mobile"
     ],
+    "skins": [
+        "vector"
+    ],
     "type": "general",
     "rights": [],
+    "peers": [],
     "dependencies": [
         "ext.gadget.LocalObjectStorage",
         "mediawiki.toc"

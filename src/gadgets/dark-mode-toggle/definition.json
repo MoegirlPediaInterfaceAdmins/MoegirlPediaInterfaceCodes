@@ -5,9 +5,15 @@
     "targets": [
         "desktop"
     ],
+    "skins": [
+        "vector"
+    ],
     "type": "general",
     "rights": [
         "techedit"
+    ],
+    "peers": [
+        "dark-mode-toggle-pagestyles"
     ],
     "dependencies": [
         "mediawiki.util",

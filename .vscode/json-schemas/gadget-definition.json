@@ -8,8 +8,10 @@
         "hidden",
         "default",
         "targets",
+        "skins",
         "type",
         "rights",
+        "peers",
         "dependencies",
         "_section"
     ],
@@ -46,7 +48,7 @@
             "default": [
                 "desktop"
             ],
-            "title": "targets 指定小工具运行的平台",
+            "title": "targets 指定小工具运行的平台，\"desktop\" 指定桌面端，\"mobile\" 指定移动端",
             "items": {
                 "type": "string",
                 "title": "平台名称，\"desktop\" 指定桌面端，\"mobile\" 指定移动端",
@@ -65,6 +67,49 @@
                 ],
                 [
                     "mobile"
+                ]
+            ]
+        },
+        "skins": {
+            "type": "array",
+            "default": [
+                "vector"
+            ],
+            "title": "skins 指定小工具运行的皮肤，包括 \"vector\"、\"moeskin\"、\"mineral\"",
+            "items": {
+                "type": "string",
+                "title": "皮肤名称，包括 \"vector\"、\"moeskin\"、\"mineral\"",
+                "examples": [
+                    "vector",
+                    "moeskin"
+                ]
+            },
+            "examples": [
+                [
+                    "vector"
+                ],
+                [
+                    "moeskin"
+                ],
+                [
+                    "mineral"
+                ],
+                [
+                    "vector",
+                    "moeskin"
+                ],
+                [
+                    "vector",
+                    "mineral"
+                ],
+                [
+                    "moeskin",
+                    "mineral"
+                ],
+                [
+                    "vector",
+                    "moeskin",
+                    "mineral"
                 ]
             ]
         },
@@ -88,6 +133,24 @@
             },
             "examples": [
                 []
+            ]
+        },
+        "peers": {
+            "type": "array",
+            "default": [],
+            "title": "peers 指定小工具所依赖的小工具，该小工具将只加载其 CSS 部分，如无需可保留空数组，但不能删去",
+            "items": {
+                "type": "string",
+                "default": "依赖项的名称",
+                "title": "A Schema",
+                "examples": [
+                    "dark-mode-toggle-pagestyles"
+                ]
+            },
+            "examples": [
+                [
+                    "dark-mode-toggle-pagestyles"
+                ]
             ]
         },
         "dependencies": {
@@ -129,13 +192,14 @@
             "hidden": false,
             "default": false,
             "targets": [
-                "desktop",
-                "mobile"
+                "desktop"
+            ],
+            "skins": [
+                "vector"
             ],
             "type": "general",
-            "rights": [
-                "abusefilter-log-private"
-            ],
+            "rights": [],
+            "peers": [],
             "dependencies": [
                 "mediawiki.api"
             ],

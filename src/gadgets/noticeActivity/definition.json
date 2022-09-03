@@ -5,8 +5,12 @@
     "targets": [
         "desktop"
     ],
+    "skins": [
+        "vector"
+    ],
     "type": "styles",
     "rights": [],
+    "peers": [],
     "dependencies": [],
     "_section": "browsing"
 }

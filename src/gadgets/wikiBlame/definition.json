@@ -5,10 +5,14 @@
     "targets": [
         "desktop"
     ],
+    "skins": [
+        "vector"
+    ],
     "type": "general",
     "rights": [
         "noratelimit"
     ],
+    "peers": [],
     "dependencies": [
         "oojs",
         "oojs-ui",

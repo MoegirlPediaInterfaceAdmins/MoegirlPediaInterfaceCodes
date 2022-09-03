@@ -5,10 +5,14 @@
     "targets": [
         "desktop"
     ],
+    "skins": [
+        "vector"
+    ],
     "type": "general",
     "rights": [
         "purge"
     ],
+    "peers": [],
     "dependencies": [
         "moment",
         "ext.gadget.cron",

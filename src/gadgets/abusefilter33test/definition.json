@@ -5,10 +5,14 @@
     "targets": [
         "desktop"
     ],
+    "skins": [
+        "vector"
+    ],
     "type": "general",
     "rights": [
         "abusefilter-log-private"
     ],
+    "peers": [],
     "dependencies": [
         "mediawiki.api"
     ],

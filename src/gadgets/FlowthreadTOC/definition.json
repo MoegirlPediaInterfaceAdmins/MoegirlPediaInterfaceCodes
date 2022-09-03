@@ -5,10 +5,14 @@
     "targets": [
         "desktop"
     ],
+    "skins": [
+        "vector"
+    ],
     "type": "general",
     "rights": [
         "disabled"
     ],
+    "peers": [],
     "dependencies": [
         "ext.gadget.site-lib",
         "ext.flowthread"

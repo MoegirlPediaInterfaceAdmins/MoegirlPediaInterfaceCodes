@@ -5,8 +5,12 @@
     "targets": [
         "desktop"
     ],
+    "skins": [
+        "moeskin"
+    ],
     "type": "styles",
     "rights": [],
+    "peers": [],
     "dependencies": [],
     "_section": "system"
 }

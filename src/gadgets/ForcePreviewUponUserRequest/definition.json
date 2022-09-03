@@ -6,11 +6,15 @@
         "desktop",
         "mobile"
     ],
+    "skins": [
+        "vector"
+    ],
     "type": "general",
     "rights": [
         "edit",
         "autoconfirmed"
     ],
+    "peers": [],
     "dependencies": [
         "ext.gadget.Force_preview"
     ],

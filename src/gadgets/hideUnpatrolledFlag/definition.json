@@ -6,10 +6,14 @@
         "desktop",
         "mobile"
     ],
+    "skins": [
+        "vector"
+    ],
     "type": "styles",
     "rights": [
         "patrolmarks"
     ],
+    "peers": [],
     "dependencies": [],
     "_section": "browsing"
 }

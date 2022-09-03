@@ -6,8 +6,13 @@
         "desktop",
         "mobile"
     ],
+    "skins": [
+        "vector",
+        "minerva"
+    ],
     "type": "general",
     "rights": [],
+    "peers": [],
     "dependencies": [
         "ext.gadget.libBottomRightCorner",
         "ext.gadget.site-lib"

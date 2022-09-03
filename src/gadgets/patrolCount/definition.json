@@ -5,10 +5,14 @@
     "targets": [
         "desktop"
     ],
+    "skins": [
+        "vector"
+    ],
     "type": "general",
     "rights": [
         "patrol"
     ],
+    "peers": [],
     "dependencies": [
         "ext.gadget.site-lib"
     ],

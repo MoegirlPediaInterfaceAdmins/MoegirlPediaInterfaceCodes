@@ -5,10 +5,14 @@
     "targets": [
         "desktop"
     ],
+    "skins": [
+        "vector"
+    ],
     "type": "general",
     "rights": [
         "patrolleredit"
     ],
+    "peers": [],
     "dependencies": [
         "ext.gadget.libOOUIDialog",
         "mediawiki.api",
