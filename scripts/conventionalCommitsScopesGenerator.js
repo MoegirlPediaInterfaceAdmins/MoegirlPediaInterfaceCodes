@@ -51,7 +51,7 @@ import("strip-json-comments").then(async ({
     }
     console.info("totalScopes:", totalScopes);
     settings["conventionalCommits.scopes"] = totalScopes;
-    await fsPromises.writeFile(".vscode/settings.json", JSON.stringify(settings, null, 4));
+    await fsPromises.writeFile(".vscode/settings.json", `${JSON.stringify(settings, null, 4)}\n`);
     console.info("Done.");
     process.exit(0);
 });
