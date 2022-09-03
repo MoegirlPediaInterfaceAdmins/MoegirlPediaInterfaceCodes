@@ -1,6 +1,6 @@
 "use strict";
 /**
- * @type {{ url: string, file: string}[]}
+ * @type {{ name: string, url: string, file: string, appendCode?: string }[]}
  */
 module.exports = [
     {
@@ -12,6 +12,7 @@ module.exports = [
         name: "luxon",
         url: "https://cdn.jsdelivr.net/npm/luxon@3",
         file: "src/gadgets/luxon/MediaWiki:Gadget-luxon.js",
+        appendCode: "window.luxon = luxon;",
     },
     /* {
         name: "InPageEdit-v2",
