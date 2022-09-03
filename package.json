@@ -8,6 +8,7 @@
         "node": ">=16.17"
     },
     "dependencies": {
+        "@financial-times/js-features-analyser": "^0.4.3",
         "@types/cron": "^2.0.0",
         "@types/jquery": "^3.5.14",
         "@types/moment": "^2.13.0",
