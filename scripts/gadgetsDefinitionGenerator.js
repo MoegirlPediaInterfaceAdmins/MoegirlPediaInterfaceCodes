@@ -50,5 +50,5 @@ for (const gadgetDirent of fs.readdirSync(gadgetBaseRoot, { withFileTypes: true 
     }
 }
 console.info("gadgetsDefinitionList final:", gadgetsDefinitionList);
-fs.writeFileSync(path.join(gadgetBaseRoot, "Gadgets-definition-list.json"), JSON.stringify(gadgetsDefinitionList, null, 4));
+fs.writeFileSync(path.join(gadgetBaseRoot, "Gadgets-definition-list.json"), `${JSON.stringify(gadgetsDefinitionList, null, 4)}\n`);
 process.exit(0);
