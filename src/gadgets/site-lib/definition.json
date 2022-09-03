@@ -7,12 +7,12 @@
         "mobile"
     ],
     "type": "general",
+    "rights": [
+        "hidden"
+    ],
     "dependencies": [
         "mediawiki.legacy.wikibits",
         "mediawiki.util"
-    ],
-    "rights": [
-        "hidden"
     ],
     "_section": "system"
 }

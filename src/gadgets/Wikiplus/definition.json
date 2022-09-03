@@ -10,5 +10,6 @@
         "edit",
         "skipcaptcha"
     ],
+    "dependencies": [],
     "_section": "editing"
 }

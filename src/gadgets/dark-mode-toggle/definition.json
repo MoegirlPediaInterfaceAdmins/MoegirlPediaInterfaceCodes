@@ -6,8 +6,8 @@
         "desktop"
     ],
     "type": "general",
-    "skins": [
-        "vector"
+    "rights": [
+        "techedit"
     ],
     "dependencies": [
         "mediawiki.util",
@@ -17,12 +17,6 @@
         "mediawiki.Uri",
         "mediawiki.storage",
         "ext.gadget.site-lib"
-    ],
-    "peers": [
-        "dark-mode-toggle-pagestyles"
-    ],
-    "rights": [
-        "techedit"
     ],
     "_section": "skin"
 }

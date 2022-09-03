@@ -6,9 +6,7 @@
         "desktop"
     ],
     "type": "general",
-    "right": [
-        "autoconfirmed"
-    ],
+    "rights": [],
     "dependencies": [
         "moment",
         "mediawiki.api",

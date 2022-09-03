@@ -6,8 +6,7 @@
         "desktop"
     ],
     "type": "general",
-    "skins": [
-        "vector"
-    ],
+    "rights": [],
+    "dependencies": [],
     "_section": "skin"
 }

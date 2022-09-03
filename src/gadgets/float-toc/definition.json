@@ -7,9 +7,7 @@
         "mobile"
     ],
     "type": "general",
-    "skins": [
-        "vector"
-    ],
+    "rights": [],
     "dependencies": [
         "ext.gadget.LocalObjectStorage",
         "mediawiki.toc"

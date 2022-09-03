@@ -44,9 +44,7 @@
         "targets": {
             "type": "array",
             "default": [
-                [
-                    "desktop"
-                ]
+                "desktop"
             ],
             "title": "targets 指定小工具运行的平台",
             "items": {

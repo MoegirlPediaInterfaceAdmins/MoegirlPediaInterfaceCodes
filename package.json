@@ -17,12 +17,14 @@
     "hash-wasm": "^4.9.0",
     "ip": "^1.1.8",
     "localforage": "^1.10.0",
+    "mega-linter-runner": "^6.7.1",
     "minify-stream": "^2.1.0",
     "postcss": "^8.4.16",
     "postcss-cli": "^10.0.0",
     "strip-json-comments": "^5.0.0",
     "stylelint": "^14.11.0",
     "stylelint-config-standard": "^28.0.0",
-    "unassertify": "^3.0.1"
+    "unassertify": "^3.0.1",
+    "v8r": "^0.13.0"
   }
 }

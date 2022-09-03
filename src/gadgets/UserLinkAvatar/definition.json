@@ -6,6 +6,7 @@
         "desktop"
     ],
     "type": "general",
+    "rights": [],
     "dependencies": [
         "user.options",
         "ext.gadget.jQueryLazyload"

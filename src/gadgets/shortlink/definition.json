@@ -9,9 +9,6 @@
     "rights": [
         "read"
     ],
-    "skins": [
-        "vector"
-    ],
     "dependencies": [
         "ext.gadget.site-lib"
     ],

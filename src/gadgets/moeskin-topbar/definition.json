@@ -6,9 +6,7 @@
         "desktop"
     ],
     "type": "general",
-    "skins": [
-        "moeskin"
-    ],
+    "rights": [],
     "dependencies": [
         "ext.gadget.site-lib"
     ],

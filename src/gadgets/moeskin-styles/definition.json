@@ -6,8 +6,7 @@
         "desktop"
     ],
     "type": "styles",
-    "skins": [
-        "moeskin"
-    ],
+    "rights": [],
+    "dependencies": [],
     "_section": "system"
 }

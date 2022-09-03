@@ -6,12 +6,12 @@
         "desktop"
     ],
     "type": "general",
+    "rights": [
+        "edit"
+    ],
     "dependencies": [
         "ext.gadget.libOOUIDialog",
         "mediawiki.util"
-    ],
-    "rights": [
-        "edit"
     ],
     "_section": "editing"
 }

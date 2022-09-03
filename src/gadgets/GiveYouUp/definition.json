@@ -7,10 +7,7 @@
         "mobile"
     ],
     "type": "general",
-    "skins": [
-        "vector",
-        "minerva"
-    ],
+    "rights": [],
     "dependencies": [
         "ext.gadget.libBottomRightCorner",
         "ext.gadget.site-lib"

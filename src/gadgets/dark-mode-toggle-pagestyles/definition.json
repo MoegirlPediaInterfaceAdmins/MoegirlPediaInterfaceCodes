@@ -6,11 +6,9 @@
         "desktop"
     ],
     "type": "general",
-    "skins": [
-        "vector"
-    ],
     "rights": [
         "techedit"
     ],
+    "dependencies": [],
     "_section": "skin"
 }

@@ -6,5 +6,7 @@
         "desktop"
     ],
     "type": "general",
+    "rights": [],
+    "dependencies": [],
     "_section": "browsing"
 }

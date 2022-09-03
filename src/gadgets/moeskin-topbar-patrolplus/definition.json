@@ -9,8 +9,6 @@
     "rights": [
         "patrol"
     ],
-    "skins": [
-        "moeskin"
-    ],
+    "dependencies": [],
     "_section": "skin"
 }

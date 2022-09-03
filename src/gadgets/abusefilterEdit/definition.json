@@ -10,5 +10,6 @@
         "abusefilter-modify",
         "editinterface"
     ],
+    "dependencies": [],
     "_section": "interface"
 }

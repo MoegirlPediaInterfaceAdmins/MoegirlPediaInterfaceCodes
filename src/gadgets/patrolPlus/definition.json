@@ -9,9 +9,6 @@
     "rights": [
         "patrol"
     ],
-    "skins": [
-        "vector"
-    ],
     "dependencies": [
         "ext.gadget.libOOUIDialog",
         "mediawiki.api",

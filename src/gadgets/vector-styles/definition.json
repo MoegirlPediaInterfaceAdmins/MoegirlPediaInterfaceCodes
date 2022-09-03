@@ -6,8 +6,7 @@
         "desktop"
     ],
     "type": "styles",
-    "skins": [
-        "vector"
-    ],
+    "rights": [],
+    "dependencies": [],
     "_section": "system"
 }

@@ -7,15 +7,15 @@
         "mobile"
     ],
     "type": "general",
+    "rights": [
+        "hidden"
+    ],
     "dependencies": [
         "oojs-ui",
         "oojs-ui-widgets",
         "oojs-ui.styles.indicators",
         "oojs-ui.styles.icons-alerts",
         "ext.gadget.libPolyfill"
-    ],
-    "rights": [
-        "hidden"
     ],
     "_section": "system"
 }

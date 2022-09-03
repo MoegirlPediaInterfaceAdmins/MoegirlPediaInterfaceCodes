@@ -6,11 +6,9 @@
         "desktop"
     ],
     "type": "styles",
-    "skins": [
-        "moeskin"
-    ],
     "rights": [
         "disabled"
     ],
+    "dependencies": [],
     "_section": "skin"
 }

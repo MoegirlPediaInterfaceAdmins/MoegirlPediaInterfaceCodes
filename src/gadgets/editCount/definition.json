@@ -9,8 +9,6 @@
     "rights": [
         "edit"
     ],
-    "skins": [
-        "vector"
-    ],
+    "dependencies": [],
     "_section": "user"
 }

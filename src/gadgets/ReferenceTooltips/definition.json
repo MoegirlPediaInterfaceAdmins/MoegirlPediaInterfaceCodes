@@ -6,6 +6,7 @@
         "desktop"
     ],
     "type": "general",
+    "rights": [],
     "dependencies": [
         "mediawiki.util",
         "ext.gadget.site-lib",

@@ -7,5 +7,7 @@
         "mobile"
     ],
     "type": "general",
+    "rights": [],
+    "dependencies": [],
     "_section": "system"
 }

@@ -6,11 +6,11 @@
         "desktop"
     ],
     "type": "general",
-    "dependencies": [
-        "oojs-ui-core"
-    ],
     "rights": [
         "edit"
+    ],
+    "dependencies": [
+        "oojs-ui-core"
     ],
     "_section": "editing"
 }

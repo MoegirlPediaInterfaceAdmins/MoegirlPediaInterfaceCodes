@@ -6,13 +6,13 @@
         "desktop"
     ],
     "type": "general",
+    "rights": [
+        "noratelimit"
+    ],
     "dependencies": [
         "oojs",
         "oojs-ui",
         "oojs-ui-core"
-    ],
-    "rights": [
-        "noratelimit"
     ],
     "_section": "maintenance"
 }
