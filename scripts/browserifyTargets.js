@@ -3,13 +3,14 @@
  * @file 在这里添加lib之前记得先`npm i`安装一下，否则会报错“找不到库”
  */
 /**
- * @type {{ module: string; entry: string; file: string; exports?: string[] }[]}
+ * @type {{ module: string; entry: string; file: string; exports?: string[], removePlugins?: string[], prependCode?: string }[]}
  */
 module.exports = [
     {
         module: "cron",
         entry: "Cron",
         file: "src/gadgets/cron/MediaWiki:Gadget-cron.js",
+        prependCode: "const require = () => global.luxon;", // 避免出现无法加载 luxon 的问题
     },
     {
         module: "async-lock",

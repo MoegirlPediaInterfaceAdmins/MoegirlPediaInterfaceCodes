@@ -13,8 +13,9 @@ const outputPath = "tmp/output.js";
     await fsPromises.mkdir("tmp", {
         recursive: true,
     });
-    for (const { module, entry, file, exports } of browserifyTargets) {
-        console.info("target:", { module, entry, file, exports });
+    for (const browserifyTarget of browserifyTargets) {
+        console.info("target:", browserifyTarget);
+        const { module, entry, file, exports, removePlugins, prependCode } = browserifyTarget;
         await fsPromises.rm(inputPath, {
             recursive: true,
             force: true,
@@ -36,8 +37,25 @@ const outputPath = "tmp/output.js";
         await new Promise((res) => {
             const fileStream = fs.createWriteStream(outputPath);
             fileStream.addListener("close", res);
+            if (typeof prependCode === "string") {
+                fileStream.write(`${prependCode}\n`);
+            }
             console.info(`[${module}]`, "start generating...");
-            const codeStream = browserify(inputPath).plugin("esmify").transform("unassertify", { global: true }).transform("envify", { global: true }).plugin("common-shakeify").plugin("browser-pack-flat/plugin").bundle();
+            const plugins = new Set([
+                "esmify",
+                "common-shakeify",
+                "browser-pack-flat/plugin",
+            ]);
+            if (Array.isArray(removePlugins)) {
+                for (const removePlugin of removePlugins) {
+                    plugins.delete(removePlugin);
+                }
+            }
+            let codeObject = browserify(inputPath).transform("unassertify", { global: true }).transform("envify", { global: true });
+            for (const plugin of plugins) {
+                codeObject = codeObject.plugin(plugin);
+            }
+            const codeStream = codeObject.bundle();
             if (hasExports) {
                 codeStream.pipe(minifyStream()).pipe(fileStream);
             } else {
