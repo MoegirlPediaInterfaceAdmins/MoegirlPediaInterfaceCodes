@@ -1,4 +1,7 @@
-// <nowiki>
+/**
+ * @source https://commons.wikimedia.org/wiki/_?oldid=494706072
+ * 更新后请同步更新上面链接到最新版本
+ */
 /**
  * https://commons.wikimedia.org/w/index.php?oldid=494706072
  */

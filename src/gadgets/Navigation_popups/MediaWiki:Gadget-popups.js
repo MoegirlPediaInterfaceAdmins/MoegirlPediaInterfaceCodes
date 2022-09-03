@@ -1,3 +1,7 @@
+/**
+ * @source https://en.wikipedia.org/wiki/_?oldid=1086319046
+ * 更新后请同步更新上面链接到最新版本
+ */
 /* global wikEdUseWikEd, WikEdUpdateFrame */
 /*
  * 全部内容引自 https://en.wikipedia.org/wiki/MediaWiki:Gadget-popups.js

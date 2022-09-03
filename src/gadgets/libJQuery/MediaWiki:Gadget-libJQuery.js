@@ -1,5 +1,6 @@
 /**
- * https://commons.wikimedia.org/w/index.php?oldid=574492095
+ * @source https://commons.wikimedia.org/wiki/_?oldid=574492095
+ * 更新后请同步更新上面链接到最新版本
  */
 "use strict";
 (function ($, mw) {

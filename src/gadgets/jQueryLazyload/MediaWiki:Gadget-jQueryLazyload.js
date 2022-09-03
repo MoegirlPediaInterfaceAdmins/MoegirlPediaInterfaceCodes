@@ -1,3 +1,7 @@
+/**
+ * @source https://github.com/tuupola/lazyload
+ * 更新后请同步更新上面链接到最新版本
+ */
 /*!
  * Lazy Load - JavaScript plugin for lazy loading images
  *

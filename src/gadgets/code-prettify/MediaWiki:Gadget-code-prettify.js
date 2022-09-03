@@ -1,6 +1,10 @@
 "use strict";
 /**
- * @file 引自 https://github.com/google/code-prettify/blob/master/src/prettify.js，遵守 APL2.0 协议，Copyright (C) 2006 Google Inc.
+ * @source https://github.com/google/code-prettify/blob/master/src/prettify.js
+ * 更新后请同步更新上面链接到最新版本
+ */
+/**
+ * @file 引自 https://github.com/google/code-prettify，遵守 APL2.0 协议，Copyright (C) 2006 Google Inc.
  */
 // 使用本js只是为了方便无法获得Google的js的用户使用，本文件各项权利按下列声明归各自所有者所有
 // 595行追加了加行号id属性功能

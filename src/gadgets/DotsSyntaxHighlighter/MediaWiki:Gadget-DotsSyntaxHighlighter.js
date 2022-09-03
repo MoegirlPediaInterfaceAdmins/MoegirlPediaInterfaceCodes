@@ -1,5 +1,6 @@
 /**
- * 更新至 https://www.mediawiki.org/wiki/_?oldid=5135197
+ * @source https://www.mediawiki.org/wiki/_?oldid=5135197
+ * 更新后请同步更新上面链接到最新版本
  */
 /* Based on https://www.mediawiki.org/wiki/User:Remember_the_dot/Syntax_highlighter.js */
 /* https://www.mediawiki.org/wiki/User:NicoV/Syntax_highlighter.js */

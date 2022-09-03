@@ -1,4 +1,8 @@
 /**
+ * @source https://en.wikipedia.org/wiki/_?oldid=1084628333
+ * 更新后请同步更新上面链接到最新版本
+ */
+/**
  * Enables or disables the dark-mode gadget.
  *
  * Authors: [[User:SD0001]], [[User:Nardog]]

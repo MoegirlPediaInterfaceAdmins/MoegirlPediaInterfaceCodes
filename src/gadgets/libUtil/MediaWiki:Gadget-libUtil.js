@@ -1,14 +1,15 @@
 /**
- * https://commons.wikimedia.org/w/index.php?oldid=574282150
+ * @source https://commons.wikimedia.org/wiki/_?oldid=574282150
+ * 更新后请同步更新上面链接到最新版本
  */
 "use strict";
-(function () {
+(() => {
     if (!mw.libs.commons) {
         mw.libs.commons = {};
     }
     const lc = mw.libs.commons;
     $.extend(mw.libs.commons, {
-        guessUser: function () {
+        guessUser: () => {
             const user = mw.config.get("wgRelevantUserName");
             let title, target;
             if (user) {
@@ -16,9 +17,10 @@
             }
             switch (mw.config.get("wgNamespaceNumber")) {
                 case 3: // User_talk
-                case 2: // User
+                case 2: { // User
                     return mw.config.get("wgPageName").match(/.*?:(.*?)(\/.*)*$/)[1];
-                case -1: // Special pages
+                }
+                case -1: {// Special pages
                     try {
                         switch (mw.config.get("wgCanonicalSpecialPageName")) {
                             case "CentralAuth": // T131740
@@ -44,11 +46,13 @@
                                 }
                                 break;
                         }
-                    } catch { } break;
+                    } catch { }
+                    break;
+                }
             }
         },
         monthNamesInSiteLang: ["", "一月", "二月", "三月", "四月", "五月", "六月", "七月", "八月", "九月", "十月", "十一月", "十二月"],
-        formatDate: function (fmt, _date, fallbackDate) {
+        formatDate: (fmt, _date, fallbackDate) => {
             const pad0 = function (s) {
                 return s > 9 ? s : `0${s}`;
             }; // zero-pad to two digits
@@ -62,7 +66,7 @@
             str = str.replace(/DAY/g, date);
             return str;
         },
-        getTalkPageFromTitle: function (_title) {
+        getTalkPageFromTitle: (_title) => {
             const rens = /^(.+):/;
             let pref = _title.match(rens), nsid = -1;
             let title = _title;
@@ -84,14 +88,14 @@
             }
             return title;
         },
-        titleFromImgSrc: function (src) {
+        titleFromImgSrc: (src) => {
             mw.log.warn(".titleFromImgSrc() is deprecated. Use mw.Title.newFromImg() instead.");
             try {
                 return decodeURIComponent(src).match(/\/[a-f0-9]\/[a-f0-9]{2}\/(\S+\.\S{2,5})\//)[1].replace(/_/g, " ");
-            } catch (ex) {
+            } catch {
                 try {
                     return decodeURIComponent(src).match(/thumb\.php.*(?:\?|&)f=(\S+\.\S{2,5})(?:&.+)?$/)[1].replace(/_/g, " ");
-                } catch (ex2) {
+                } catch {
                     try {
                         return decodeURIComponent(src).match(/\/[a-f0-9]\/[a-f0-9]{2}\/(\S+\.\S{2,5})$/)[1].replace(/_/g, " ");
                     } catch { }
@@ -99,4 +103,4 @@
             }
         },
     });
-}());
+})();
