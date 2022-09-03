@@ -14,6 +14,7 @@
     "peers": [],
     "dependencies": [
         "ext.gadget.site-lib",
+        "ext.gadget.libUtil",
         "mediawiki.util"
     ],
     "_section": "maintenance"
