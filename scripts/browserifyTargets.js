@@ -10,7 +10,7 @@ module.exports = [
         module: "cron",
         entry: "Cron",
         file: "src/gadgets/cron/MediaWiki:Gadget-cron.js",
-        prependCode: "const require = () => global.luxon;", // 避免出现无法加载 luxon 的问题
+        prependCode: "const require = () => window.luxon;", // 避免出现无法加载 luxon 的问题
     },
     {
         module: "async-lock",
