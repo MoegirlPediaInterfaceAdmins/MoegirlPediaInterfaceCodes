@@ -77,7 +77,7 @@ jobs:
         run: git push
         if: steps.ifChange.output.GIT_DIFF_FILTERED[0] != null
       - name: trigger linter test
-        if: steps.ifChange.output.GIT_DIFF_FILTERED[0] != null && gihub.ref_name == "master"
+        if: steps.ifChange.output.GIT_DIFF_FILTERED[0] != null && github.ref_name == "master"
         uses: benc-uk/workflow-dispatch@v1
         with:
           workflow: Linter test
