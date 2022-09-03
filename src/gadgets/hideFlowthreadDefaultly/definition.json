@@ -2,6 +2,7 @@
     "ResourceLoader": true,
     "hidden": false,
     "default": false,
+    "supportsUrlLoad": false,
     "targets": [
         "desktop",
         "mobile"
@@ -9,7 +10,9 @@
     "skins": [
         "vector"
     ],
+    "actions": [],
     "type": "general",
+    "package": false,
     "rights": [
         "disabled"
     ],

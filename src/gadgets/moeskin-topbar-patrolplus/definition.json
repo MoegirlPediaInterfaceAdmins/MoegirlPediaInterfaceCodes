@@ -2,13 +2,16 @@
     "ResourceLoader": true,
     "hidden": false,
     "default": false,
+    "supportsUrlLoad": false,
     "targets": [
         "desktop"
     ],
     "skins": [
         "moeskin"
     ],
+    "actions": [],
     "type": "general",
+    "package": false,
     "rights": [
         "patrol"
     ],

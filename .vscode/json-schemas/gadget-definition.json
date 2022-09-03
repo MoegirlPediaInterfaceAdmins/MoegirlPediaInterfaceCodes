@@ -7,9 +7,12 @@
         "ResourceLoader",
         "hidden",
         "default",
+        "supportsUrlLoad",
         "targets",
         "skins",
+        "actions",
         "type",
+        "package",
         "rights",
         "peers",
         "dependencies",
@@ -38,6 +41,15 @@
             "type": "boolean",
             "default": false,
             "title": "default 为 true 时用户默认开启该小工具",
+            "examples": [
+                false,
+                true
+            ]
+        },
+        "supportsUrlLoad": {
+            "type": "boolean",
+            "default": false,
+            "title": "【尚未实装】supportsUrlLoad 为 true 时用户可通过在页面地址中加入 \"withgadget\" 参数并指定该小工具 ID 的方式临时加载该小工具",
             "examples": [
                 false,
                 true
@@ -113,6 +125,17 @@
                 ]
             ]
         },
+        "actions": {
+            "type": "array",
+            "default": [],
+            "title": "【暂未实装】actions 指定小工具在显示特定操作页面时加载，例如\"edit\" 指定在编辑、预览、查看编辑差异时加载",
+            "items": {
+                "type": "string",
+                "title": "【暂未实装】操作名称",
+                "examples": []
+            },
+            "examples": []
+        },
         "type": {
             "type": "string",
             "default": "general",
@@ -121,6 +144,12 @@
                 "general",
                 "styles"
             ]
+        },
+        "package": {
+            "type": "boolean",
+            "default": false,
+            "title": "【暂未实装】package 指定小工具作为可被其他代码直接加载的包，此时仅能在小工具文件夹下保留一个 js 或 json 文件，其他代码可通过 \"require\" 函数加载该小工具，该小工具在该状态下被允许使用 json 文件",
+            "examples": []
         },
         "rights": {
             "type": "array",

@@ -2,6 +2,7 @@
     "ResourceLoader": true,
     "hidden": false,
     "default": false,
+    "supportsUrlLoad": false,
     "targets": [
         "desktop",
         "mobile"
@@ -10,7 +11,9 @@
         "vector",
         "minerva"
     ],
+    "actions": [],
     "type": "general",
+    "package": false,
     "rights": [],
     "peers": [],
     "dependencies": [

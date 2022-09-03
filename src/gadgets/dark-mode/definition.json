@@ -2,13 +2,16 @@
     "ResourceLoader": true,
     "hidden": false,
     "default": false,
+    "supportsUrlLoad": false,
     "targets": [
         "desktop"
     ],
     "skins": [
         "vector"
     ],
+    "actions": [],
     "type": "styles",
+    "package": false,
     "rights": [
         "techedit"
     ],
