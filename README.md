@@ -4,14 +4,14 @@
 
 [![Linter test](https://github.com/MoegirlPediaInterfaceAdmins/MoegirlPediaInterfaceCodes/actions/workflows/Linter%20test.yml/badge.svg)](https://github.com/MoegirlPediaInterfaceAdmins/MoegirlPediaInterfaceCodes/actions/workflows/Linter%20test.yml)
 
-欢迎来到萌娘百科界面代码库，本仓库由[萌娘百科界面管理员](https://zh.moegirl.org.cn/%E8%90%8C%E5%A8%98%E7%99%BE%E7%A7%91:%E7%95%8C%E9%9D%A2%E7%AE%A1%E7%90%86%E5%91%98) [团队](https://zh.moegirl.org.cn/Special:Listusers/interface-admin)维护，旨在以自动化的方式减轻维护界面代码的复杂度。
+欢迎来到萌娘百科界面代码库，本仓库由[萌娘百科界面管理员](https://zh.moegirl.org.cn/%E8%90%8C%E5%A8%98%E7%99%BE%E7%A7%91:%E7%95%8C%E9%9D%A2%E7%AE%A1%E7%90%86%E5%91%98)所组成的[团队](https://github.com/MoegirlPediaInterfaceAdmins)维护，旨在以自动化的方式减轻维护界面代码的复杂度。
 
-目前只有萌娘百科的界面管理员拥有本仓库的读写权限，如果你是萌娘百科的界面管理员，你可以向 U:AnnAngela 获取本仓库的读写权限；但如果你不是，我们也欢迎你以[下列方式](#参与维护)参与到本仓库的维护工作中来。
+目前只有[萌娘百科的界面管理员](https://zh.moegirl.org.cn/Special:Listusers/interface-admin)可以拥有本仓库的读写权限，如果你是萌娘百科的界面管理员但没有权限，你可以向 U:AnnAngela 获取本仓库的读写权限；不过如果你尚不是界面管理员，我们也欢迎你以[下列方式](#参与维护)参与到本仓库的维护工作中来。
 
 ## 仓库架构
 
 - [`.github`](.github) 文件夹用以保存 GitHub Dependabot 和 GitHub Actions 所需配置文件，其中：
-    - [`.github/workflows/Linter test.yml`](.github/workflows/Linter_test.yml) 用以使用 [eslint](https://eslint.org/) 和 [stylelint](https://stylelint.io/) 保存代码测试流程，该流程成功完成时会触发[机器人](https://zh.moegirl.org.cn/User:AnnAngela-dbot) [编译流程](#编译流程)；
+    - [`.github/workflows/Linter test.yml`](.github/workflows/Linter_test.yml) 用以保存使用 [eslint](https://eslint.org/)、[stylelint](https://stylelint.io/) 和 [v8r](https://github.com/chris48s/v8r) 进行代码测试流程，该流程成功完成时会触发[机器人](https://zh.moegirl.org.cn/User:AnnAngela-dbot)的[编译流程](#编译流程)；
     - [`.github/workflows/postCommit.yml`](.github/workflows/postCommit.yml) 用以保存自动化流程，包含自动配置 Conventional Commits（约定式提交）所需 scope（作用域）信息、自动导入来自 npm 和指定页面的代码和自动补全小工具列表。
 - [`.vscode/settings.json`](.vscode/settings.json) 用来保存 Conventional Commits（约定式提交）所需 scope（作用域）信息；
 - [`scripts`](scripts) 文件夹用以保存流程所需代码，其中：
@@ -37,6 +37,14 @@
 - 每天 00:00 UTC（但愿，Github Actions的 cron 延迟真的好高 \_(:з」∠)_）时会自动触发一次 postCommit CI，这是为了执行 [`scripts/prefetch.js`](scripts/prefetch.js) 以自动更新来自指定页面的代码；
 - 每提交一次 commit（包括提交 pull request 和在 pull request 里提交新的 commit），postCommit CI 也会触发，这是为了执行所有任务以确保内容是最新的；
 - 每向 master 分支提交一次 commit，会自动触发一次 Linter test，这是为了确保最终合并到萌百的代码不会犯能被检查出来的问题。
+
+## 编译流程
+
+机器人通过以下流程编译代码，然后提交到萌百：
+
+- 执行 `tsc --build --verbose` 以编译 `*.js` 代码；
+- 执行 `npx postcss src/**/*.css --no-map --base src/ --use autoprefixer -d dist/ --verbose` 以编译 `*.css` 代码；
+- 根据模板生成 `MediaWiki:Gadgets-definition` 页面。
 
 ## 参与维护
 
