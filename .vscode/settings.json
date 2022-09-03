@@ -14,6 +14,7 @@
             "url": "./.vscode/json-schemas/gadget-definition.json"
         }
     ],
+    "files.insertFinalNewline": true,
     "conventionalCommits.scopes": [
         "Gadget-abusefilter33test",
         "Gadget-abusefilterEdit",
