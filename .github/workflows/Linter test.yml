@@ -42,5 +42,7 @@ jobs:
         run: npx eslint --exit-on-fatal-error --max-warnings 0 --cache --cache-strategy content --cache-location ".cache/" --ext js ./src
       - name: Run stylelint
         run: npx stylelint --max-warnings 0 --cache --cache-location ".cache/" "src/**/*.css"
+      - name: Install v8r
+        run: npm i v8r
       - name: Run v8r
         run: npx v8r src/**/definition.json --schema .vscode/json-schemas/gadget-definition.json
