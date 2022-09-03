@@ -78,6 +78,4 @@ jobs:
           push: false
       - name: Show git status & push
         run: |
-          git pull
-          git status
-          git push
+          git pull && git status && git push || echo failed silently
