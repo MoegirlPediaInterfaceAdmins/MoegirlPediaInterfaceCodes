@@ -68,5 +68,17 @@ jobs:
           push: false
       - name: Show git status
         run: git pull ; git status
+      - uses: technote-space/get-diff-action@v6
+        name: List diff again
+        id: ifChange
+        with:
+          PATTERNS: src/**
       - name: git push
         run: git push
+        if: steps.ifChange.output.GIT_DIFF_FILTERED[0] != null
+      - name: trigger linter test
+        if: steps.ifChange.output.GIT_DIFF_FILTERED[0] != null && gihub.ref_name == "master"
+        uses: benc-uk/workflow-dispatch@v1
+        with:
+          workflow: Linter test
+          token: ${{ secrets.PAT }}
