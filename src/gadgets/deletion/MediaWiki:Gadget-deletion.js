@@ -1,7 +1,9 @@
 // <pre>
 "use strict";
 $(() => (async () => {
-    if (mw.config.get("wgNamespaceNumber") !== 14 || !mw.config.get("wgIsArticle") || !mw.config.get("wgUserGroups").includes("sysop")) { return; }
+    if (mw.config.get("wgNamespaceNumber") !== 14 || !mw.config.get("wgIsArticle") || !mw.config.get("wgUserGroups").includes("sysop") || !$(".mw-category-generated > div")[0]) {
+        return;
+    }
 
     // await mw.loader.using(["ext.gadget.site-lib", "mediawiki.util", "mediawiki.api", "ext.gadget.libOOUIDialog"]);
 
@@ -18,7 +20,7 @@ $(() => (async () => {
     };
     const PAGENAME = mw.config.get("wgPageName");
     // Make sure that all links open in a new tab when locked
-    $("body").on("click", "a", (e) => globalDeletionLock && window.open(e.target.href, "_blank") && false);
+    $("body").on("click", "a", (e) => globalDeletionLock ? window.open(e.target.href, "_blank") && false : null);
 
     const api = new mw.Api();
     const $root = $(".mw-category-generated"), $items = $root.find("li");
@@ -145,13 +147,13 @@ $(() => (async () => {
     }
 
     // Deletion buttons
-    const selectedNum = $("<span>0</span>"), totalNum = $("<span>?</span>");
     $portlet.addClass("sysop-show").on("click", () => {
         if ($("#batdel-control")[0] || globalDeletionLock) {
             return;
         }
 
         // Initialise UI
+        const selectedNum = $("<span>0</span>"), totalNum = $("<span>?</span>");
         const toggleSelection = $(`<button>${wgULS("全选/全不选", "全選/全不選")}</button>`),
             runDeletion = $("<button>提交</button>"),
             cancelDeletion = $("<button>取消</button>");
@@ -178,7 +180,7 @@ $(() => (async () => {
 
         // Functional code for buttons
         toggleSelection.on("click", () => {
-            checkboxes.each((_, ele) => $(ele).prop("checked", !ele.checked)).trigger("change");
+            $items.find(".batdel-select:not(:disabled)").each((_, ele) => $(ele).prop("checked", !ele.checked)).trigger("change");
         });
         cancelDeletion.on("click", () => {
             if (globalDeletionLock) {
