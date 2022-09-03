@@ -21,7 +21,7 @@ const toLocalTimeZoneStrings = require("./toLocalTimeZoneStrings.js");
         for (const [k, v] of Object.entries(prefetchTarget)) {
             code.push(` *     ${k}: ${JSON.stringify(v, null, 1).replace(/\n */g, " ")}`);
         }
-        code.push(data);
+        code.push(" */", data);
         if (typeof appendCode === "string") {
             code.push(appendCode);
         }
