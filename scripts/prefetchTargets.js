@@ -8,6 +8,11 @@ module.exports = [
         url: "https://cdn.jsdelivr.net/npm/wikiplus-highlight",
         file: "src/gadgets/wikiplus-highlight/MediaWiki:Gadget-wikiplus-highlight.js",
     },
+    {
+        name: "luxon",
+        url: "https://cdn.jsdelivr.net/npm/luxon@3",
+        file: "src/gadgets/luxon/MediaWiki:Gadget-luxon.js",
+    },
     /* {
         name: "InPageEdit-v2",
         url: "https://cdn.jsdelivr.net/npm/mediawiki-inpageedit",

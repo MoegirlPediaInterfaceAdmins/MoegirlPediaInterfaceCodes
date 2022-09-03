@@ -10,8 +10,5 @@
     "rights": [
         "hidden"
     ],
-    "dependencies": [
-        "ext.gadget.luxon"
-    ],
     "_section": "system"
 }
