@@ -16,7 +16,8 @@
         "mediawiki.Uri",
         "mediawiki.user",
         "ext.gadget.LocalObjectStorage",
-        "ext.gadget.site-lib"
+        "ext.gadget.site-lib",
+        "ext.gadget.libPolyfill"
     ],
     "_section": "user"
 }

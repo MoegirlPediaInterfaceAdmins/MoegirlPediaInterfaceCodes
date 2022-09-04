@@ -13,7 +13,8 @@
     ],
     "peers": [],
     "dependencies": [
-        "oojs-ui-core"
+        "oojs-ui-core",
+        "ext.gadget.libPolyfill"
     ],
     "_section": "editing"
 }

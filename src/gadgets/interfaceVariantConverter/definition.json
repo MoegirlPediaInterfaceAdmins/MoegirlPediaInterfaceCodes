@@ -15,7 +15,8 @@
     "dependencies": [
         "mediawiki.api",
         "mediawiki.ForeignApi",
-        "oojs-ui"
+        "oojs-ui",
+        "ext.gadget.libPolyfill"
     ],
     "_section": "interface"
 }

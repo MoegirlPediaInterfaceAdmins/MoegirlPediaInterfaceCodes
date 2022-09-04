@@ -14,7 +14,8 @@
     "peers": [],
     "dependencies": [
         "mediawiki.api",
-        "ext.gadget.site-lib"
+        "ext.gadget.site-lib",
+        "ext.gadget.libPolyfill"
     ],
     "_section": "browsing"
 }

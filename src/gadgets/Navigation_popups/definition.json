@@ -17,7 +17,8 @@
         "mediawiki.user",
         "user.options",
         "mediawiki.jqueryMsg",
-        "mediawiki.api.messages"
+        "mediawiki.api.messages",
+        "ext.gadget.libPolyfill"
     ],
     "_section": "browsing"
 }

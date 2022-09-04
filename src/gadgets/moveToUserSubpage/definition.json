@@ -16,7 +16,8 @@
         "ext.gadget.libOOUIDialog",
         "mediawiki.api",
         "mediawiki.notification",
-        "mediawiki.notify"
+        "mediawiki.notify",
+        "ext.gadget.libPolyfill"
     ],
     "_section": "maintenance"
 }

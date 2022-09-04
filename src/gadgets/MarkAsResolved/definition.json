@@ -14,7 +14,8 @@
     "peers": [],
     "dependencies": [
         "mediawiki.api",
-        "mediawiki.Uri"
+        "mediawiki.Uri",
+        "ext.gadget.libPolyfill"
     ],
     "_section": "maintenance"
 }
