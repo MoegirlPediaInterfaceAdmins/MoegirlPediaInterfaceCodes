@@ -10,7 +10,7 @@ const targetUA = `Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (
 
 (async () => {
     try {
-        const unflappableFeatures = [];
+        const unflaggableFeatures = [];
         await fsPromises.mkdir("tmp", {
             recursive: true,
         });
@@ -34,11 +34,11 @@ const targetUA = `Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (
             const { data } = await axios.get(`${url}`);
             console.info("\tDone.");
             const match = data.match(/(?<=\n \* These features were not recognised:\n \* - )[^\n]+?(?=\s*\*\/)/)?.[0]?.split?.(/,-\s*/);
-            unflappableFeatures.push(...match);
+            unflaggableFeatures.push(...match);
             i++;
         }
-        await fsPromises.writeFile("tmp/unflappableFeatures.json", `${JSON.stringify(unflappableFeatures, null, 4)}\n`);
-        console.info("left", clone.length - unflappableFeatures.length);
+        await fsPromises.writeFile("tmp/unflaggableFeatures.json", `${JSON.stringify(unflaggableFeatures, null, 4)}\n`);
+        console.info("left", clone.length - unflaggableFeatures.length);
         process.exit(0);
     } catch (e) {
         console.error(e);
