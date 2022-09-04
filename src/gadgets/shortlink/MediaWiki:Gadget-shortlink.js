@@ -66,7 +66,7 @@ $(() => {
         });
     }
     $mwPanel.append(`<div class="portal" role="navigation" id="p-sl" aria-labelledby="p-sl-label" style="position: sticky; top: 0;"><h3 lang="zh-CN" dir="ltr" id="p-sl-label">${wgULS("短链接", "短網址")}</h3><div class="body"><ul>${links.map((l) => `<li id="sl-${l.id}"><a href="${mw.config.get("wgServer")}${mw.config.get("wgScriptPath")}/_?${l.href}" title="${l.title}">${l.text}</a><br><span>（<a data-copy-content="${l.wikitext}" data-type="wikitext" href="javascript:void(0);"></a>）</span><br><span>（<a data-copy-content="${mw.config.get("wgServer")}${mw.config.get("wgScriptPath")}/_?${l.href}" data-type="${wgULS("短链接", "短網址")}" href="javascript:void(0);"></a>）</span></li>`).join("\n")}</ul></div></div>`);
-    const markStatus = (ele, status) => ele.innerText = status ? `${ele.dataset.type}${wgULS("复制成功", "複製成功")}` : `${wgULS("复制对应", "複製對應")}${ele.dataset.type}`;
+    const markStatus = (ele, status) => ele.innerText = status ? `${ele.dataset.type}${wgULS("复制成功", "複製成功")}` : `${wgULS("复制", "複製")}${ele.dataset.type}`;
     $("#mw-panel a[data-type]").each((_, ele) => {
         markStatus(ele, false);
     });
