@@ -1,3 +1,7 @@
+/**
+ * @source https://commons.wikimedia.org/wiki/_?oldid=578342698
+ * 更新后请同步更新上面链接到最新版本
+ */
 /* eslint-disable require-atomic-updates */
 "use strict";
 /**
@@ -163,7 +167,8 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
     const autopatrol = userRights.includes("autopatrol");
     window.hotcat_no_autocommit = !autopatrol;
     window.hotcat_del_needs_diff = !autopatrol;
-    if (conf.wgUserLanguage !== "en") {
+    loadTrigger.loaded(); // 原本要加载 MediaWiki:Gadget-HotCat.js/local_defaults 后才执行的，被删除了就直接执行了
+    if (conf.wgUserLanguage !== "en") { // 原本要异步加载翻译的，直接内嵌了
         const local = {
             messages: {
                 cat_removed: "移除[[分类:$1]]",
@@ -217,7 +222,7 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
         };
         $.extend(HC, local, true);
     }
-    loadTrigger.loaded();
+    loadTrigger.loaded(); // 原本要加载完翻译才执行的，直接内嵌了就直接执行了
     const wikiTextBlank = "[\\t _\\xA0\\u1680\\u180E\\u2000-\\u200A\\u2028\\u2029\\u202F\\u205F\\u3000]+";
     const wikiTextBlankRE = new RegExp(wikiTextBlank, "g");
     const wikiTextBlankOrBidi = "[\\t _\\xA0\\u1680\\u180E\\u2000-\\u200B\\u200E\\u200F\\u2028-\\u202F\\u205F\\u3000]*";
