@@ -19,7 +19,7 @@ $(() => {
         text: wgULS("本页短链", "本頁短網址"),
         wikitext: `[[Special:重定向/page/${wgArticleId}]]`,
     }, {
-        id: "currev",
+        id: "newrev",
         href: `oldid=${wgCurRevisionId}`,
         title: wgULS("本页面最新版本的短链接（版本ID）", "本頁面最新修訂的短網址（版本ID）"),
         text: wgULS("最新版本", "最新修訂"),
