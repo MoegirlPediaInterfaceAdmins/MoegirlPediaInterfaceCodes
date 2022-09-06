@@ -23,7 +23,7 @@ $(() => {
     // .wikiEditor-ui-controls 颜色修正
     $(".wikiEditor-ui-controls").css("background-color", $("#content").css("background-color"));
 
-    //编辑提示检查
+    // 编辑提示检查
     if ($(".mw-summary-preset")[0]) {
         $(".CheckNewSectionOn").hide();
     } else {
@@ -42,7 +42,7 @@ $(() => {
             size: "medium",
         });
     }
-    //编辑请求
+    // 编辑请求
     const prefixNumber = function (num) {
         let result = `${num}`;
         if (result.length === 1) {
