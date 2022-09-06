@@ -50,7 +50,7 @@ $(() => {
         }
         return result;
     };
-    if ($('ul.permissions-errors').find('a[href*="MoeAuth"]').length && !!$(".permissions-errors, #wpTextbox1[readonly]")[1] && mw.config.get("wgUserName") && !$(".newComment")[0]) {
+    if ($("ul.permissions-errors").find('a[href*="MoeAuth"]').length && !!$(".permissions-errors, #wpTextbox1[readonly]")[1] && mw.config.get("wgUserName") && !$(".newComment")[0]) {
         const wgNamespaceNumber = mw.config.get("wgNamespaceNumber"),
             ns = [];
         if (wgNamespaceNumber < 0 || wgNamespaceNumber % 2 === 1) {
