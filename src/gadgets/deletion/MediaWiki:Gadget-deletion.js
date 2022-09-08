@@ -25,7 +25,7 @@ $(() => (async () => {
     const api = new mw.Api();
     const $root = $(".mw-category-generated"), $items = $root.find("li");
     const $control = $("<p id='batdel-control'>");
-    const $portlet = $(mw.util.addPortletLink("p-cactions", "#", wgULS("批量删除本分类下页面", "批量刪除本分類下頁面"), "ca-batdel", wgULS("批量删除本分类下页面", "批量刪除本分類下頁面"))), $portletAnchor = $portlet.find("a");
+    const $portlet = $(mw.util.addPortletLink("p-cactions", "#", wgULS("批量删除本分类下页面", "批量刪除本分類下頁面"), "ca-batdel", wgULS("批量删除本分类下页面", "批量刪除本分類下頁面"))).addClass("sysop-show"), $portletAnchor = $portlet.find("a");
     const pages = [];
 
     // Auto load flag status (for delcats)
@@ -147,7 +147,7 @@ $(() => (async () => {
     }
 
     // Deletion buttons
-    $portlet.addClass("sysop-show").on("click", () => {
+    $portlet.on("click", () => {
         if ($("#batdel-control")[0] || globalDeletionLock) {
             return;
         }
@@ -199,6 +199,27 @@ $(() => (async () => {
             })) {
                 return;
             }
+
+            let deletionReason = isDelCat ? "" : await oouiDialog.prompt(`${wgULS("请输入删除理由", "請輸入刪除理由")}`, {
+                title: wgULS("批量删除分类页面工具", "批量刪除分類頁面工具"),
+                size: "medium",
+                required: true,
+            });
+
+            // Temporary fix, remove after libOOUIDialog is fixed
+            while (!isDelCat && deletionReason === "") {
+                deletionReason = await oouiDialog.prompt(`${wgULS("请输入删除理由", "請輸入刪除理由")}`, {
+                    title: wgULS("批量删除分类页面工具", "批量刪除分類頁面工具"),
+                    size: "medium",
+                    required: true,
+                });
+            }
+
+            if (deletionReason === null) {
+                return;
+            }
+            deletionReason = deletionReason ? `（${deletionReason}）` : "";
+
             // eslint-disable-next-line require-atomic-updates
             globalDeletionLock = true;
 
@@ -230,7 +251,7 @@ $(() => (async () => {
                             format: "json",
                             title: target,
                             tags: "Automation tool",
-                            reason: `批量删除【${PAGENAME}】下的页面${isDelCat && page.isTrusted && page.reason && page.user ? `（[[User_talk:${page.user}|${page.user}]]的挂删理由：${page.reason} ）` : ""}`,
+                            reason: `批量删除【${PAGENAME}】下的页面${isDelCat && page.isTrusted && page.reason && page.user ? `（[[User_talk:${page.user}|${page.user}]]的挂删理由：${page.reason} ）` : deletionReason}`,
                         }, {
                             timeout: 99999,
                         });
