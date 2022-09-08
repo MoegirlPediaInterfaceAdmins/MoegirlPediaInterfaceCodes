@@ -2,6 +2,10 @@
 //注意：此工具会绝赞产生大量API请求，非维护组谨慎使用。维护组：需要WAF豁免。
 "use strict";
 $(() => {
+    if (!mw.config.get("wgIsArticle")) {
+        return;
+    }
+
     //dialog classes
     class WikiBlameDialog extends OO.ui.Dialog {
         static static = { ...super.static, name: "wikiBlameDialog" };
