@@ -4,61 +4,68 @@
     let running = false;
     const resArray = [];
     const sizes = ["small", "medium", "large", "larger"];
-    window.oouiDialog = Object.fromEntries(["alert", "confirm", "prompt"].map((method) => {
-        return [method, (text_jQuery, _option) => {
-            const option = $.isPlainObject(_option) ? _option : {};
-            const textInput = $.extend({
+    window.oouiDialog = Object.fromEntries(["alert", "confirm", "prompt"].map((method) => [method, async (text_jQuery, _option) => {
+        const option = $.isPlainObject(_option) ? _option : {};
+        const base = {
+            size: "medium",
+        };
+        if (option.allowFullscreen !== true) {
+            const { rect } = OO.ui.Element.static.getDimensions(window);
+            const windowWidth = rect.right - rect.left;
+            const acceptableSize = sizes.filter((s) => OO.ui.WindowManager.static.sizes[s].width < windowWidth);
+            base.size = sizes.includes(option.size) ? acceptableSize.length > 0 ? acceptableSize.includes(option.size) ? option.size : acceptableSize[acceptableSize.length - 1] : "small" : "small";
+        } else {
+            base.size = [...sizes, "full"].includes(option.size) ? option.size : "small";
+        }
+        let required = false;
+        if (method === "prompt") {
+            base.textInput = $.extend({
                 autocomplete: false,
             }, $.isPlainObject(option.textInput) ? option.textInput : {});
-            if (textInput.required || option.required) {
-                textInput.required = true;
-                if (!("indicator" in textInput)) {
-                    textInput.indicator = "required";
+            if (base.textInput.required || option.required) {
+                base.textInput.required = true;
+                required = true;
+                if (!("indicator" in base.textInput)) {
+                    base.textInput.indicator = "required";
                 }
-                if (!("validate" in textInput)) {
-                    textInput.validate = "not-empty";
+                if (!("validate" in base.textInput)) {
+                    base.textInput.validate = "not-empty";
                 }
             }
-            let size;
-            if (option.allowFullscreen !== true) {
-                const { rect } = OO.ui.Element.static.getDimensions(window);
-                const windowWidth = rect.right - rect.left;
-                const acceptableSize = sizes.filter((s) => OO.ui.WindowManager.static.sizes[s].width < windowWidth);
-                size = sizes.includes(option.size) ? acceptableSize.length > 0 ? acceptableSize.includes(option.size) ? option.size : acceptableSize[acceptableSize.length - 1] : "small" : "small";
+        }
+        await new Promise((res) => {
+            if (running) {
+                resArray.push(res);
             } else {
-                size = [...sizes, "full"].includes(option.size) ? option.size : "small";
+                running = true;
+                res();
             }
-            return new Promise((res) => {
-                if (running) {
-                    resArray.push(res);
-                } else {
-                    running = true;
-                    res();
-                }
-            }).then(() => {
-                return OO.ui[method](text_jQuery instanceof $ ? text_jQuery : $("<p>").html(text_jQuery), $.extend({
+        });
+        try {
+            let result;
+            while (Number.MAX_SAFE_INTEGER > Number.MIN_SAFE_INTEGER) {
+                result = await OO.ui[method](text_jQuery instanceof $ ? text_jQuery : $("<p>").html(text_jQuery), $.extend({
                     title: "萌娘百科提醒您",
-                }, option, {
-                    size,
-                    textInput: textInput,
-                }));
-            }).catch((e) => {
-                if (resArray.length > 0) {
-                    resArray.shift()();
+                }, option, base));
+                if (required && !result) {
+                    await OO.ui.alert($("<p>").html("您没有在刚才的输入框内填写必要的信息，请重新填写！"), $.extend({}, option, base, {
+                        title: "未填写必要信息",
+                        textInput: null,
+                    }));
+                    continue;
                 } else {
-                    running = false;
+                    break;
                 }
-                throw e;
-            }).then((result) => {
-                if (resArray.length > 0) {
-                    resArray.shift()();
-                } else {
-                    running = false;
-                }
-                return result;
-            });
-        }];
-    }));
+            }
+            return result;
+        } finally {
+            if (resArray.length > 0) {
+                resArray.shift()();
+            } else {
+                running = false;
+            }
+        }
+    }]));
     const sanity = $("<span>");
     window.oouiDialog.sanitize = function (text) {
         return sanity.text(text).html();
