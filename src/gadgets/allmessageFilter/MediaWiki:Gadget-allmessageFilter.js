@@ -91,27 +91,29 @@
         submit.text("搜索");
         $("<td/>").addClass("mw-input").append(submit).appendTo(table.find("tr:last"));
         const input = $("#mw-allmessages-filter");
-        submit.on("click", () => {
+        submit.on("click", async () => {
             if (!input.val()) { return oouiDialog.alert("请输入内容以搜索系统消息"); }
             $("#mw-allmessages-filter-status").remove();
             init();
             filter = input.val();
             rfilter = RegExp(filter, "i");
             containter.append('<div id="mw-allmessages-filter-status">正在加载中……</div>');
-            api.post({
-                action: "query",
-                format: "json",
-                meta: "allmessages",
-                amfilter: filter,
-            }).then((data) => {
+            try {
+                const data = await api.post({
+                    action: "query",
+                    format: "json",
+                    meta: "allmessages",
+                    amfilter: filter,
+                });
                 am = data.query.allmessages;
                 index = 0;
                 $("#mw-allmessages-filter-status").remove();
                 load(am.slice(index, index + length));
-            }, () => {
+            } catch (e) {
+                console.error(e);
                 $("#mw-allmessages-filter-status").remove();
                 containter.append('<div id="mw-allmessages-filter-status">发生错误，请重试！</div>');
-            });
+            }
         });
         input.on("keypress", (e) => {
             if (e.key === "Enter") { submit.trigger("click"); }

@@ -69,7 +69,7 @@
         $block.find("#moe-custom-sidenav-block-list").append($li);
         return $li.get(0);
     }
-    function polyfill() {
+    async function polyfill() {
         // assign functions
         try {
             /**
@@ -88,12 +88,11 @@
         } catch (e) {
             console.warn("[MoeSkin] addPortletLink", "Faild to bind global variables", e);
         }
-        mw.loader.using(["mediawiki.util"]).then(() => {
-            Object.defineProperty(mw.util, "addPortletLink", {
-                value: addPortletLink,
-            });
-            mw.hook("moeskin.addPortletLink").fire({ addPortletLink, useCustomSidenavBlock });
+        await mw.loader.using(["mediawiki.util"]);
+        Object.defineProperty(mw.util, "addPortletLink", {
+            value: addPortletLink,
         });
+        mw.hook("moeskin.addPortletLink").fire({ addPortletLink, useCustomSidenavBlock });
     }
     /* PageTools */
     function PageTools() {

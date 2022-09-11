@@ -359,13 +359,6 @@
             return false;
         }
     });
-    //Template:hide
-    if ($(".mw-collapsible")[0]) {
-        mw.loader.using(["jquery.makeCollapsible"]).then(() => {
-            //console.debug('jquery.makeCollapsible is loaded.');
-            $(".mw-collapsible").makeCollapsible();
-        });
-    }
     //链接提示
     linkConfirm();
     //移动版编辑界面强制跳转
@@ -397,5 +390,11 @@
     }, {
         capture: true,
     });
+    // Template:hide
+    if ($(".mw-collapsible")[0]) {
+        await mw.loader.using(["jquery.makeCollapsible"]);
+        // console.debug('jquery.makeCollapsible is loaded.');
+        $(".mw-collapsible").makeCollapsible();
+    }
 })(); //立即执行匿名函数并传递原始变量
 //</pre>

@@ -184,26 +184,27 @@ mw.hook("wikipage.content").add(() => {
             if (!("variant" in url.query || "uselang" in url.query) && !url.path.startsWith("/index.php") && name.includes(wgUserVariant)) {
                 $("body").append(`<div id="noteTA-lang" style="background: #3366CC; color: white; text-align: center; padding: .5rem; position: fixed; top: 0; left: 0; right: 0; z-index: 9999;"><p>检测到您当前使用的<b>内容</b>语言变体 ${wgUserVariant}${map[wgUserVariant]}会导致繁简转换无法正常工作，我们建议您切换到以下三种<b>内容</b>语言变体之一：</p><p><span class="noteTA-lang-changer mw-ui-button" data-lang="zh-cn">zh-cn（中国大陆）</span> <span class="noteTA-lang-changer mw-ui-button" data-lang="zh-hk">zh-hk（中国香港）</span> <span class="noteTA-lang-changer mw-ui-button" data-lang="zh-tw">zh-tw（台湾地区）</span> | <span id="noteTA-lang-explainer" class="mw-ui-button">了解更多</span> <span id="noteTA-lang-disable" class="mw-ui-button mw-ui-destructive">不再提示</span></div>`);
                 const container = $("#noteTA-lang");
-                $(".noteTA-lang-changer").on("click", (e) => {
+                $(".noteTA-lang-changer").on("click", async (e) => {
                     const target = e.target;
                     const text = target.innerText;
                     const lang = target.dataset.lang;
                     container.html(`<p>正在切换至 ${text} ……</p>`);
-                    api.postWithToken("csrf", {
-                        action: "options",
-                        optionname: "variant",
-                        optionvalue: lang,
-                    }).then((result) => {
+                    try {
+                        const result = await api.postWithToken("csrf", {
+                            action: "options",
+                            optionname: "variant",
+                            optionvalue: lang,
+                        });
                         if (result.options === "success") {
                             container.html("<p>切换成功，正在刷新页面！</p>");
                             location.pathname = location.pathname.replace(replaceReg, "");
                         } else {
                             throw result;
                         }
-                    }).catch((reason) => {
+                    } catch (reason) {
                         console.info("noteTA-lang-changer:", reason);
                         container.html(`<p class="mw-parser-output">发生错误，无法切换，请手动访问<b>【<a href="https://zh.moegirl.org.cn/Special:Preferences#mw-prefsection-personal-i18n" target="_blank" class="external text">设置页面 - 语言</a> - 内容语言变种】处</b>修改您的内容语言变种为 ${text}</p>`);
-                    });
+                    }
                 }).filter(`[data-lang="${wgUserVariant}"]`).addClass("mw-ui-progressive");
                 $("#noteTA-lang-explainer").on("click", () => {
                     //open(mw.config.get("wgServer") + mw.config.get("wgScriptPath") +,"_blank");

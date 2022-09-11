@@ -85,18 +85,15 @@ $(() => (async () => {
                     this.close({ action });
                 }, this);
             } else if (action === "continue") {
-                return new OO.ui.Process(() => {
-                    const dfd = $.Deferred();
+                return new OO.ui.Process(async () => {
                     // First time?
-                    this.getPing().then((res) => {
-                        result = res;
+                    try {
+                        result = await this.getPing();
                         this.displayResults(result);
-                        dfd.resolve();
-                    }).catch((e) => {
+                    } catch (e) {
                         console.error("[ACUserPing] Error:", e);
-                        dfd.reject(new OO.ui.Error(e));
-                    });
-                    return dfd.promise();
+                        throw new OO.ui.Error(e);
+                    }
                 }, this);
             }
             // Fallback to parent handler

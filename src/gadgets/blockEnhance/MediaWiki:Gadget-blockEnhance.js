@@ -1,10 +1,11 @@
 // <pre>
 "use strict";
-$(() => {
+(async () => {
     // await mw.loader.using(["ext.gadget.libOOUIDialog"]);
     if (mw.config.get("wgCanonicalSpecialPageName") !== "Block") {
         return;
     }
+    await $.ready;
     const showResults = (size, cidr) => {
         $("#mw-checkuser-cidr-res").val(cidr);
         $("#mw-checkuser-ipnote").text(size);
@@ -208,23 +209,23 @@ $(() => {
         }
         submitForm.off("submit.warning").trigger("submit");
     });
-    new mw.Api({
-        timeout: 5000,
-    }).post({
-        action: "query",
-        list: "allusers",
-        aurights: "block|unblockself",
-        aulimit: "max",
-        auprop: "rights",
-    }).then((result) => {
+    try {
+        const result = await new mw.Api({
+            timeout: 5000,
+        }).post({
+            action: "query",
+            list: "allusers",
+            aurights: "block|unblockself",
+            aulimit: "max",
+            auprop: "rights",
+        });
         powerfulUserList = result.query.allusers.filter((au) => au.rights.includes("block") && au.rights.includes("unblockself")).map((au) => au.name);
-        submitButton.setDisabled(false).setLabel(submitButtonText);
-        flag = true;
-    }, (error) => {
+    } catch (error) {
         console.error(error);
         submitButton.after(`<span class="error">${wgULS("无法获取持有“封禁”和“自我解封”权限的用户列表，请谨慎操作", "無法獲取持有「封鎖」和「自我解封」權限的使用者列表，請謹慎操作", null, null, "無法獲取持有「封鎖」和「自我解封」權限的用戶列表，請謹慎操作")}。</span>`);
+    } finally {
         submitButton.setDisabled(true).setLabel(submitButtonText);
         flag = true;
-    });
-});
+    }
+})();
 // </pre>

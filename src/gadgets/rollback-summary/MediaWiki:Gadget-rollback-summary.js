@@ -72,21 +72,22 @@ $(() => {
             mw.config.set("wgRollbacking", true);
             const summary = rollbackSummary ? `${rollbackSummary} //Rollback` : "//Rollback";
             if (uri.query.from) {
-                api.post({
-                    title: uri.query.title,
-                    user: uri.query.from,
-                    summary,
-                    token: uri.query.token,
-                    action: "rollback",
-                    format: "json",
-                }).then(() => {
+                try {
+                    await api.post({
+                        title: uri.query.title,
+                        user: uri.query.from,
+                        summary,
+                        token: uri.query.token,
+                        action: "rollback",
+                        format: "json",
+                    });
                     rbing.css("color", "green").html(`成功！${wgULS("将在", "將在")}<span id="rbcount">3</span>秒${wgULS("内刷新", "內重新整理")}`);
-                    exit();
-                }, (e) => {
+                } catch (e) {
                     const errorText = e instanceof Error ? `${e} ${e.stack.split("\n")[1].trim()}` : $.isPlainObject(e) ? JSON.stringify(e) : typeof e === "string" && e in possibleError ? possibleError[e] : `${e}`;
                     rbing.css("color", "red").html(`${wgULS("错误", "錯誤")}：${errorText}。${wgULS("将在", "將在")}<span id="rbcount">3</span>${wgULS("秒内刷新", "秒內重新整理")}`);
+                } finally {
                     exit();
-                });
+                }
             } else {
                 uri.query.summary = summary;
                 window.open(uri.toString(), "_self");

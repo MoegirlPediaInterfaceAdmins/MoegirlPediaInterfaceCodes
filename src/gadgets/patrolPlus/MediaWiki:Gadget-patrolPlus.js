@@ -9,33 +9,26 @@ $(() => {
     const list = [];
 
     let running = false;
-    const handlePatroll = async (title, _revid) => api.postWithToken("patrol", {
+    const handlePatroll = async (title, _revid) => await api.postWithToken("patrol", {
         action: "patrol",
         format: "json",
-        revid: await new Promise((res, rej) => {
+        revid: await (async () => {
             if (typeof _revid !== "number") {
-                api.post({
+                const data = await api.post({
                     action: "query",
                     prop: "revisions",
                     rvprop: "ids",
                     rvlimit: 1,
                     rvdir: "newer",
                     titles: title,
-                }).then((data) => {
-                    if ("error" in data) {
-                        rej(data.error);
-                    }
-                    else {
-                        res(Object.entries(data.query.pages)[0][1].revisions[0].revid);
-                    }
-                }, (error) => {
-                    rej(error);
                 });
+                if ("error" in data) {
+                    throw data.error;
+                }
+                return Object.entries(data.query.pages)[0][1].revisions[0].revid;
             }
-            else {
-                res(_revid);
-            }
-        }),
+            return _revid;
+        })(),
     });
     $("abbr.unpatrolled").each((_, ele) => {
         let self = $(ele);
@@ -80,7 +73,8 @@ $(() => {
             });
             self.after(textStatus).hide();
             running = true;
-            await handlePatroll(title, revid).then((data) => {
+            try {
+                const data = await handlePatroll(title, revid);
                 if ("error" in data) {
                     throw data.error;
                 }
@@ -113,17 +107,16 @@ $(() => {
                         }
                     }, typeof revid === "number" ? 16 : 3000);
                 }, 50);
-                patrolling = false;
-                $("a.patrolLink").removeAttr("style");
-            }, (error) => {
+            } catch (error) {
                 textStatus.text(`[标记失败：${error instanceof Error ? error.name : error.code}，请在3秒后重试]`);
                 window.setTimeout(() => {
                     textStatus.remove();
                     self.show();
                 }, 3000);
-                patrolling = false;
-                $("a.patrolLink").removeAttr("style");
-            });
+            }
+            $("a.patrolLink").removeAttr("style");
+            // eslint-disable-next-line require-atomic-updates
+            patrolling = false;
             running = false;
         });
     });
