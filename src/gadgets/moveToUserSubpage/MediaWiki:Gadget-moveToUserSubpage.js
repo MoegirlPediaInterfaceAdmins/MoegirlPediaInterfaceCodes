@@ -131,36 +131,37 @@ $(() => {
                     }, this);
             }
             getActionProcess(action) {
+                const dfd = $.Deferred();
                 if (action === "cancel") {
                     return new OO.ui.Process(() => {
                         this.close({ action });
                     }, this);
                 } else if (action === "submit") {
-                    return new OO.ui.Process(async () => {
-                        try {
-                            await this.reasonBox.getValidity();
-                        } catch {
-                            throw new OO.ui.Error(wgULS("请输入打回理由", "請輸入打回理由"));
-                        }
-                        try {
-                            await this.doMove();
-                            this.close({ action });
-                            mw.notify(wgULS("即将刷新……", "即將刷新……"), {
-                                title: "打回成功",
-                                type: "success",
-                                tag: "lr-mtus",
+                    return new OO.ui.Process(() => {
+                        this.reasonBox.getValidity().then(() => {
+                            this.doMove().then(() => {
+                                this.close({ action });
+                                mw.notify(wgULS("即将刷新……", "即將刷新……"), {
+                                    title: "打回成功",
+                                    type: "success",
+                                    tag: "lr-mtus",
+                                });
+                                dfd.resolve();
+                                setTimeout(() => location.reload(), 730);
+                            }).catch((e) => {
+                                if (e.warning && !this.warnings[e.code]) {
+                                    this.warnings[e.code] = true;
+                                    console.warn(`[MoveToUserSubpage] Warning (${e.code}): ${e.msg}`);
+                                    dfd.reject(new OO.ui.Error(e.msg, { warning: true }));
+                                } else {
+                                    console.error("[MoveToUserSubpage] Error:", e);
+                                    dfd.reject(new OO.ui.Error(e));
+                                }
                             });
-                            setTimeout(() => location.reload(), 730);
-                        } catch (e) {
-                            if (e.warning && !this.warnings[e.code]) {
-                                this.warnings[e.code] = true;
-                                console.warn(`[MoveToUserSubpage] Warning (${e.code}): ${e.msg}`);
-                                throw new OO.ui.Error(e.msg, { warning: true });
-                            } else {
-                                console.error("[MoveToUserSubpage] Error:", e);
-                                throw new OO.ui.Error(e);
-                            }
-                        }
+                        }).catch(() => {
+                            dfd.reject(new OO.ui.Error(wgULS("请输入打回理由", "請輸入打回理由")));
+                        });
+                        return dfd.promise();
                     }, this);
                 }
                 // Fallback to parent handler

@@ -302,14 +302,14 @@ $(() => {
             }, this);
         }
         getActionProcess(action) {
+            const dfd = $.Deferred();
             if (action === "cancel") {
                 return new OO.ui.Process(() => {
                     this.close({ action: action });
                 }, this);
             } else if (action === "continue") {
-                return new OO.ui.Process(async () => {
-                    try {
-                        await this.validateFeedback();
+                return new OO.ui.Process(() => {
+                    this.validateFeedback().then(() => {
                         const details = [
                             `${wgULS("反馈页面", "反饋頁面")}：${this.wgPageName}`,
                             `主要${wgULS("问题", "問題")}：${this.primaryType}`,
@@ -328,18 +328,19 @@ $(() => {
                         this.actions.setMode("confirm");
                         this.stackLayout.setItem(this.confirmPanel);
                         this.updateSize();
-                    } catch (e) {
-                        throw new OO.ui.Error(e, { recoverable: false });
-                    }
+                        dfd.resolve();
+                    }).catch((e) => {
+                        dfd.reject(new OO.ui.Error(e, { recoverable: false }));
+                    });
+                    return dfd.promise();
                 }, this);
             } else if (action === "back") {
                 this.actions.setMode("feedback");
                 this.stackLayout.setItem(this.feedbackPanel);
                 this.updateSize();
             } else if (action === "submit") {
-                return new OO.ui.Process(async () => {
-                    try {
-                        await this.postMessageToBackend();
+                return new OO.ui.Process(() => {
+                    this.postMessageToBackend().then(() => {
                         this.close({ action: action });
                         mw.notify(wgULS("感谢您的反馈！", "感謝您的反饋！"), {
                             title: wgULS("反馈提交成功", "反饋提交成功"),
@@ -347,9 +348,12 @@ $(() => {
                         });
                         this.primaryTypeSelector.setValue("placeholder");
                         this.reasonTextarea.setValue("");
-                    } catch (e) {
-                        throw new OO.ui.Error(e);
-                    }
+                        this.emailInput.setValue("");
+                        dfd.resolve();
+                    }).catch((e) => {
+                        dfd.reject(new OO.ui.Error(e));
+                    });
+                    return dfd.promise();
                 }, this);
             }
             // Fallback to parent handler
@@ -376,9 +380,11 @@ $(() => {
                 });
                 const confirmBody = $("<div>").text(wgULS("您的反馈已提交到提问求助区，是否前往查看？", "您的反饋已提交到提問求助區，是否前往檢視？"));
                 confirmBody.append("<br>").append(goToTalkBoardInputField.$element);
-                if (await oouiDialog.confirm(confirmBody, oouiDialogConfig)) {
-                    window.open("/%E8%90%8C%E5%A8%98%E7%99%BE%E7%A7%91_talk:%E8%AE%A8%E8%AE%BA%E7%89%88/%E6%8F%90%E9%97%AE%E6%B1%82%E5%8A%A9#footer", "_blank");
-                }
+                oouiDialog.confirm(confirmBody, oouiDialogConfig).then((result) => {
+                    if (result) {
+                        open("/%E8%90%8C%E5%A8%98%E7%99%BE%E7%A7%91_talk:%E8%AE%A8%E8%AE%BA%E7%89%88/%E6%8F%90%E9%97%AE%E6%B1%82%E5%8A%A9#footer", "_blank");
+                    }
+                });
                 return;
             }
             const body = new URLSearchParams();

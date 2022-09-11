@@ -258,12 +258,13 @@ $(() => (async () => {
                 }, this);
         }
         getActionProcess(action) {
+            const dfd = $.Deferred();
             if (action === "cancel") {
                 return new OO.ui.Process(() => {
                     this.close({ action: action });
                 }, this);
             } else if (action === "continue") {
-                return new OO.ui.Process(async () => {
+                return new OO.ui.Process(() => {
                     this.config = $.extend(this.config, {
                         main: this.mainVariants.getValue().split(";"),
                         dependent: Object.fromEntries(this.depVariants.getValue().split(";").map((v) => v.split(":"))),
@@ -272,46 +273,50 @@ $(() => (async () => {
                         dependentInv: {},
                     });
                     if (this.config.main.includes("(main)")) {
-                        throw new OO.ui.Error(wgULS("主页面不得作为主要变体", "主頁面不得作為主要變体"));
+                        dfd.reject(new OO.ui.Error(wgULS("主页面不得作为主要变体", "主頁面不得作為主要變体")));
+                        return dfd.promise();
                     }
                     this.config.main.forEach((v) => this.config.dependentInv[v] = [v]);
                     try {
                         Object.entries(this.config.dependent).forEach(([k, v]) => this.config.dependentInv[v/* as string */].push(k));
                     } catch {
                         console.error("[VariantConverter] Error: Key not found in dependentInv. Config dump:", this.config);
-                        throw new OO.ui.Error(wgULS("依赖变体格式错误，请检查控制台", "依賴變体格式錯誤，請檢查控制臺"));
+                        dfd.reject(new OO.ui.Error(wgULS("依赖变体格式错误，请检查控制台", "依賴變体格式錯誤，請檢查控制臺")));
+                        return dfd.promise();
                     }
                     this.textInputs = {};
                     this.confirmPanel.$element.empty();
-                    try {
-                        await this.getVariants(this.ogText.getValue());
+                    this.getVariants(this.ogText.getValue()).then(() => {
                         this.actions.setMode("confirm");
                         this.stackLayout.setItem(this.confirmPanel);
                         this.updateSize();
-                    } catch (e) {
+                        dfd.resolve();
+                    }).catch((e) => {
                         console.error("[VariantConverter] Error:", e);
-                        throw new OO.ui.Error(e);
-                    }
+                        dfd.reject(new OO.ui.Error(e));
+                    });
+                    return dfd.promise();
                 }, this);
             } else if (action === "back") {
                 this.actions.setMode("config");
                 this.stackLayout.setItem(this.configPanel);
                 this.updateSize();
             } else if (action === "submit") {
-                return new OO.ui.Process(async () => {
-                    try {
-                        await this.saveChanges();
+                return new OO.ui.Process(() => {
+                    this.saveChanges().then(() => {
                         this.close({ action: action });
                         mw.notify("保存成功！", {
                             title: wgULS("自动繁简转换工具", "自動繁簡轉換工具"),
                             type: "success",
                             tag: "lr-aivc",
                         });
+                        dfd.resolve();
                         setTimeout(() => location.reload(), 730);
-                    } catch (e) {
+                    }).catch((e) => {
                         console.error("[VariantConverter] Error:", e);
-                        throw new OO.ui.Error(e);
-                    }
+                        dfd.reject(new OO.ui.Error(e));
+                    });
+                    return dfd.promise();
                 }, this);
             }
             // Fallback to parent handler
