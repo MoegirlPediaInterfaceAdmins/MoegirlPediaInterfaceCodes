@@ -18,12 +18,13 @@
             base.size = [...sizes, "full"].includes(option.size) ? option.size : "small";
         }
         if (method === "prompt") {
-            base.textInput = $.extend({
+            const config = $.extend({
                 autocomplete: false,
             }, $.isPlainObject(option.textInput) ? option.textInput : {});
+            base.textInput = new OO.ui.TextInputWidget(config);
             if (option.required) {
-                base.textInput.setIndicator(option.indicator || "required");
-                base.textInput.setValidation(option.validate || "not-empty");
+                base.textInput.setIndicator(config.indicator || "required");
+                base.textInput.setValidation(config.validate || "non-empty");
             }
         }
         await new Promise((res) => {
@@ -40,14 +41,17 @@
                 result = await OO.ui[method](text_jQuery instanceof $ ? text_jQuery : $("<p>").html(text_jQuery), $.extend({
                     title: "萌娘百科提醒您",
                 }, option, base));
-                if (base.textInput && !await base.textInput.getValidity()) {
+                try {
+                    if (base.textInput) {
+                        await base.textInput.getValidity();
+                    }
+                    break;
+                } catch {
                     await OO.ui.alert($("<p>").html("您没有在刚才的输入框内填写符合要求的信息，请重新填写！"), $.extend({}, option, base, {
                         title: "未填写符合要求的信息",
                         textInput: null,
                     }));
                     continue;
-                } else {
-                    break;
                 }
             }
             return result;
