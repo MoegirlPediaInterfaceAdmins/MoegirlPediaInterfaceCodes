@@ -94,9 +94,7 @@ $(() => {
             const table = checkBox.content.append(`您的评论触发以下黑名单（使用正则表达式<sup><a rel="nofollow" target="_blank" class="external text" href="http://baike${dot}baidu.com/view/94238.htm">解释</a></sup>）：`).append($("<table/>")).find("table");
             table.append("<tr><th>No.</th>" /* + '<th>黑名单</th>' */ + "<th>命中字符串</th></tr>");
             errorText.forEach((n) => {
-                table.append($("<tr/>").append($("<td/>").addClass("first").text(table.find("tr").length))/* .append($('<td/>').text(n[0])) */.append($("<td/>").append(n[1].map((t) => {
-                    return `<code>${$("<span/>").text(t).html()}</code>`;
-                }).join("<br/>"))));
+                table.append($("<tr/>").append($("<td/>").addClass("first").text(table.find("tr").length))/* .append($('<td/>').text(n[0])) */.append($("<td/>").append(n[1].map((t) => `<code>${$("<span/>").text(t).html()}</code>`).join("<br/>"))));
             });
         }
     }

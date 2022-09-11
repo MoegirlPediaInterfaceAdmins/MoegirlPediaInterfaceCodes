@@ -191,9 +191,7 @@ $(() => {
                     }
                 }
             }
-            ranges.sort((a, b) => {
-                return a[0] - b[0] || b[1] - a[1];
-            });
+            ranges.sort((a, b) => a[0] - b[0] || b[1] - a[1]);
             const consolidatedRanges = [];
             let lastRange = [];
             for (let i = 0; i < ranges.length; ++i) {

@@ -404,9 +404,7 @@ $(() => {
     // 定时抓取未巡查的页面数量
     // 新版本：仅当鼠标移动到巡查列表上、且距上次抓取时间超过10秒时才抓取
     const namespaceList = mw.config.get("wgNamespaceIds");
-    const namespaceWatchList = namespaceWatched.map((i) => {
-        return namespaceList[i === "(main)" ? "" : i];
-    });
+    const namespaceWatchList = namespaceWatched.map((i) => namespaceList[i === "(main)" ? "" : i]);
     let lastRequest = 0;
     const updateUnpatrolled = function () {
         const d = new Date();

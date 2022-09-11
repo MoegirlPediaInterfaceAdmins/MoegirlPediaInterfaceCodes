@@ -283,9 +283,7 @@ $(() => {
                     }
                     options = [fileSize, fileFormat, fileFloat];
                     // Filter empty values
-                    options = $.grep(options, (val) => {
-                        return val.length && val !== "default";
-                    });
+                    options = $.grep(options, (val) => val.length && val !== "default");
                     if (caption.length) {
                         options.push(caption);
                     }

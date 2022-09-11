@@ -7,9 +7,7 @@ $(() => {
             if (regex.test(mw.config.get("wgPageName"))) {
                 window.onbeforeunload = undefined;
                 $(window).off("beforeunload");
-                location.replace(`${mw.config.get("wgServer")}${mw.config.get("wgScriptPath")}/index.php?action=edit&title=${mw.config.get("wgPageName").replace(/ |_/g, "").replace(/^([^/]*)[/\\].*$/i, "$1").split(regex).map((n) => {
-                    return toUpperFirstCase(n);
-                }).join("")}`);
+                location.replace(`${mw.config.get("wgServer")}${mw.config.get("wgScriptPath")}/index.php?action=edit&title=${mw.config.get("wgPageName").replace(/ |_/g, "").replace(/^([^/]*)[/\\].*$/i, "$1").split(regex).map((n) => toUpperFirstCase(n)).join("")}`);
                 return;
             }
             const flag = `wg${mw.config.get("wgTitle")}`.replace(/ /g, "");

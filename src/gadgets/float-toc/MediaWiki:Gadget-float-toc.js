@@ -26,9 +26,7 @@ $(async () => {
                 if (c.length < 2) {
                     return;
                 }
-                c.sort((a, b) => {
-                    return +b - +a;
-                });
+                c.sort((a, b) => +b - +a);
                 c.splice(0, 1);
                 c.forEach((cid) => {
                     delete cache[`${aid}-${cid}`];

@@ -95,9 +95,7 @@ $(() => {
                         self.show().replaceWith("");
                         if (global) {
                             running = true;
-                            const t = $(`a.patrolLink[data-title="${list.indexOf(title)}"][data-revid]`).filter((_, ele) => {
-                                return +ele.dataset.revid < revid;
-                            }).toArray();
+                            const t = $(`a.patrolLink[data-title="${list.indexOf(title)}"][data-revid]`).filter((_, ele) => +ele.dataset.revid < revid).toArray();
                             t.forEach((e) => {
                                 $(e).after('<img src="https://img.moegirl.org.cn/common/d/d1/Windows_10_loading.gif" style="height: 1em; margin-top: -.25em;">').hide();
                             });

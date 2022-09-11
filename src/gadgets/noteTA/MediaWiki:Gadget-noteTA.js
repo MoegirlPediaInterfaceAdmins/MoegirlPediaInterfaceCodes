@@ -116,9 +116,7 @@ mw.hook("wikipage.content").add(() => {
                                     for (let i = 0, l = variants.length; i < l; i++) {
                                         variantText_1[variants[i]] = null;
                                     }
-                                    const variantsName = variants.map((variant) => {
-                                        return `-{R|{{MediaWiki:Variantname-${variant}}}}-`;
-                                    }).join("、");
+                                    const variantsName = variants.map((variant) => `-{R|{{MediaWiki:Variantname-${variant}}}}-`).join("、");
                                     multititle.push(`${variantsName}：-{R|${text}}-`);
                                 }
                                 multititleText += multititle.join("；");

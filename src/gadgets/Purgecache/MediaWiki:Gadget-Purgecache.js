@@ -36,9 +36,7 @@ $(() => {
                 return new Promise((res) => {
                     setTimeout(res, 370);
                 });
-            }).then(() => {
-                return api.post(opt);
-            }).then(() => {
+            }).then(() => api.post(opt)).then(() => {
                 statusNode.text(wgULS("清除页面缓存成功！", "清除頁面快取成功！"));
                 setTimeout(location.reload.bind(location), 1000);
             }).catch(() => {

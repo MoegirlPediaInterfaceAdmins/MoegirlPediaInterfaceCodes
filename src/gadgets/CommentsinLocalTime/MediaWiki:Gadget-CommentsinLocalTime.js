@@ -101,11 +101,7 @@ $(() => {
             "[ISO 8601式：]YYYY-MM-DDTHH:mmZ",
         ],
         dynamic: true,
-        excludeNamespaces: Object.keys(mw.config.get("wgFormattedNamespaces")).map((ns) => {
-            return +ns;
-        }).filter((ns) => {
-            return ns < 0 || ns % 2 === 0;
-        }),
+        excludeNamespaces: Object.keys(mw.config.get("wgFormattedNamespaces")).map((ns) => +ns).filter((ns) => ns < 0 || ns % 2 === 0),
         proseTags: ["dd", "li", "p", "td"],
         codeTags: ["code", "input", "pre", "textarea", "#mw-content-text > .diff"],
         parseFormat: ["YYYY-MM-DD HH:mm"],
@@ -150,9 +146,7 @@ $(() => {
                 }
             }
             elt.innerText = text;
-            elt.title = window.LocalComments.tooltipFormats.map((fmt) => {
-                return formatMoment(then, fmt, elt.dataset.originalText);
-            }).join("\n");
+            elt.title = window.LocalComments.tooltipFormats.map((fmt) => formatMoment(then, fmt, elt.dataset.originalText)).join("\n");
         });
     }
     /**

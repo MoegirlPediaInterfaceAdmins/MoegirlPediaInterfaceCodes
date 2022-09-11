@@ -217,11 +217,7 @@ $(() => {
         aulimit: "max",
         auprop: "rights",
     }).then((result) => {
-        powerfulUserList = result.query.allusers.filter((au) => {
-            return au.rights.includes("block") && au.rights.includes("unblockself");
-        }).map((au) => {
-            return au.name;
-        });
+        powerfulUserList = result.query.allusers.filter((au) => au.rights.includes("block") && au.rights.includes("unblockself")).map((au) => au.name);
         submitButton.setDisabled(false).setLabel(submitButtonText);
         flag = true;
     }, (error) => {

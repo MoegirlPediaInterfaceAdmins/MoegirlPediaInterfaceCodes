@@ -764,9 +764,7 @@
                         return umsg.fail(e);
                     }
                 },
-                error: (x, status, error) => {
-                    return umsg.fail(`API 请求遭遇网络错误：状态码为 【${x.status}】，状态文本为 【${status}】，错误信息为 【${error}】`);
-                },
+                error: (x, status, error) => umsg.fail(`API 请求遭遇网络错误：状态码为 【${x.status}】，状态文本为 【${status}】，错误信息为 【${error}】`),
             });
         },
         fail: (_err) => {
@@ -1038,9 +1036,7 @@
                 if (selectLabels) {
                     selectLabels.attr("for", ownId);
                 }
-                input.data("autocomplete")._renderItem = (ul, item) => {
-                    return $("<li>").data("item.autocomplete", item).append(`<a>${item.label}</a>`).appendTo(ul);
-                };
+                input.data("autocomplete")._renderItem = (ul, item) => $("<li>").data("item.autocomplete", item).append(`<a>${item.label}</a>`).appendTo(ul);
                 this.button = $("<button>", {
                     tabIndex: -1,
                     type: "button",

@@ -137,18 +137,14 @@
     if (mw.config.get("wgCanonicalSpecialPageName") === "Userrights") {
         const wpExpiryPatroller = document.querySelector("#mw-input-wpExpiry-patroller");
         if (wpExpiryPatroller) {
-            Array.from(wpExpiryPatroller.options).filter((ele) => {
-                return ele.value === "1 week";
-            })[0].after(new Option("15天", "15 days"));
+            Array.from(wpExpiryPatroller.options).filter((ele) => ele.value === "1 week")[0].after(new Option("15天", "15 days"));
             if (!["infinite", "existing"].includes(wpExpiryPatroller.value)) {
                 wpExpiryPatroller.value = "15 days";
             }
         }
         const wpExpiryFlood = document.querySelector("#mw-input-wpExpiry-flood");
         if (wpExpiryFlood) {
-            Array.from(wpExpiryFlood.options).filter((ele) => {
-                return ele.value === "1 day";
-            })[0].before(new Option("2小时", "2 hours"), new Option("6小时", "6 hours"), new Option("12小时", "12 hours"));
+            Array.from(wpExpiryFlood.options).filter((ele) => ele.value === "1 day")[0].before(new Option("2小时", "2 hours"), new Option("6小时", "6 hours"), new Option("12小时", "12 hours"));
         }
     }
     //替换文本默认不勾选「通过Special:最近更改和监视列表通知这些编辑」

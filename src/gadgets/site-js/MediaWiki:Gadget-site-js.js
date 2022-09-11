@@ -157,9 +157,7 @@
                 if (self.children(".TabLabel")[0]) {
                     return true;
                 }
-                const classList = Array.from(this.classList).filter((n) => {
-                    return n in defaultStyle;
-                });
+                const classList = Array.from(this.classList).filter((n) => n in defaultStyle);
                 const data = $.extend({
                     labelPadding: "2px",
                     labelBorderColor: "#aaa",
@@ -333,11 +331,7 @@
     }
     /* 获取特定名字空间前缀正则表达式 */
     function getNamespacePrefixRegex(namespaceNumber) {
-        return RegExp(`^(?:${Object.entries(mw.config.get("wgNamespaceIds")).filter((config) => {
-            return config[1] === namespaceNumber;
-        }).map((config) => {
-            return config[0].toLowerCase();
-        }).join("|")}):`, "i");
+        return RegExp(`^(?:${Object.entries(mw.config.get("wgNamespaceIds")).filter((config) => config[1] === namespaceNumber).map((config) => config[0].toLowerCase()).join("|")}):`, "i");
     }
     // 列表侧边距
     function listMarginLeft() {
@@ -511,9 +505,7 @@
                     inprop: "varianttitles",
                     titles: wgPageName,
                 });
-                const matchTitles = Object.values(result.query.pages[mw.config.get("wgArticleId")].varianttitles).filter((title) => {
-                    return displayedTitle === title.replace(/ /g, "_").replace(namespacePrefixRegex, "").trim();
-                });
+                const matchTitles = Object.values(result.query.pages[mw.config.get("wgArticleId")].varianttitles).filter((title) => displayedTitle === title.replace(/ /g, "_").replace(namespacePrefixRegex, "").trim());
                 if (matchTitles.length === 0) {
                     watermark("用户页面，非正式条目<br/>不代表萌娘百科立场", 300);
                 }
