@@ -9,9 +9,6 @@ on:
   workflow_dispatch:
   schedule:
     - cron: 0 0 * * *
-  workflow_run:
-    workflows: [Linter test]
-    types: [completed]
 
 concurrency: postCommit
 

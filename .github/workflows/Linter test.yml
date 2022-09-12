@@ -14,6 +14,11 @@ on:
       - src/**/*.css
       - src/**/definition.json
   workflow_dispatch:
+    inputs:
+      from:
+        description: Don't use this input manually
+        required: false
+        type: string
 
 jobs:
   test:
@@ -43,3 +48,14 @@ jobs:
         run: npx stylelint --max-warnings 0 --cache --cache-location ".cache/" "src/**/*.css"
       - name: Run v8r
         run: npx -y v8r@latest src/**/definition.json --schema .vscode/json-schemas/gadget-definition.json
+      - name: Trigger post commit CI
+        if: inputs.from != 'postCommit'
+        uses: actions/github-script@v6
+        with:
+          script: |
+            github.rest.actions.createWorkflowDispatch({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: 'postCommit.yml',
+              ref: context.ref,
+            })

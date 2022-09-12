@@ -58,11 +58,11 @@ const targetUA = `Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (
             if (Array.isArray(match)) {
                 newunflaggableFeatures.push(...match);
             } else {
-                console.info(`::warning title=New unflaggable features found::There are some new unflaggable features that have been detected, but unparsable, please try it yourself: ${url}`);
+                console.info(`::error title=New unflaggable features found::There are some new unflaggable features that have been detected, but unparsable, please try it yourself: ${url}`);
             }
         }
         if (newunflaggableFeatures.length > 0) {
-            console.info(`::warning title=New unflaggable features detected::There are some new unflaggable features that have been detected: ${newunflaggableFeatures.join(", ")}`);
+            console.info(`::error title=New unflaggable features detected::There are some new unflaggable features that have been detected: ${newunflaggableFeatures.join(", ")}`);
         }
         process.exit(0);
     } catch (e) {
