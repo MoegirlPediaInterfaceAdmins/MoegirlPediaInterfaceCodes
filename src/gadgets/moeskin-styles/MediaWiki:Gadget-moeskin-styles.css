@@ -97,6 +97,12 @@ body.skin-moeskin .moegirl-realms {
     display: none;
 }
 
+/* @FIXME 粗体字兼容性问题 */
+body.skin-moeskin b,
+body.skin-moeskin strong {
+    font-weight: 700;
+}
+
 /* @fix 被隐藏的目录导致空的侧边栏 */
 body.skin-moeskin #toc-container .toc,
 body.skin-moeskin #toc-container .toc ul {
