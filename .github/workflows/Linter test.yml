@@ -49,7 +49,7 @@ jobs:
       - name: Run v8r
         run: npx -y v8r@latest src/**/definition.json --schema .vscode/json-schemas/gadget-definition.json
       - name: Trigger post commit CI
-        if: inputs.from != 'postCommit'
+        if: inputs.from != 'postCommit' && context.event_name == 'push'
         uses: actions/github-script@v6
         with:
           script: |
