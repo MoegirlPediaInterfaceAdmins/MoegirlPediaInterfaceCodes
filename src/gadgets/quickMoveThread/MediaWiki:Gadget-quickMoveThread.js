@@ -146,37 +146,33 @@ $(() => {
                 }, this);
             }
             getActionProcess(action) {
-                const dfd = $.Deferred();
                 if (action === "cancel") {
                     return new OO.ui.Process(() => {
                         this.close({ action });
                     }, this);
                 } else if (action === "submit") {
-                    return new OO.ui.Process(() => {
+                    return new OO.ui.Process($.when((async () => {
                         this.target = this.targetDropdown.getValue() || this.targetText.getValue();
                         if (!this.target) {
-                            dfd.reject(new OO.ui.Error(wgULS("请填写目标页面", "請填寫目標頁面")));
-                            return dfd.promise();
+                            throw new OO.ui.Error(wgULS("请填写目标页面", "請填寫目標頁面"));
                         }
                         if (this.target === PAGENAME) {
-                            dfd.reject(new OO.ui.Error(wgULS("目标页面不得与当前页面相同", "目標頁面不得與當前頁面相同")));
-                            return dfd.promise();
+                            throw new OO.ui.Error(wgULS("目标页面不得与当前页面相同", "目標頁面不得與當前頁面相同"));
                         }
-                        this.doMove().then(() => {
+                        try {
+                            await this.doMove();
                             this.close({ action });
                             mw.notify(wgULS("即将刷新……", "即將刷新……"), {
                                 title: wgULS("移动成功", "移動成功"),
                                 type: "success",
                                 tag: "lr-qmt",
                             });
-                            dfd.resolve();
                             setTimeout(() => location.reload(), 730);
-                        }).catch((e) => {
+                        } catch (e) {
                             console.error("[QuickMoveThread] Error:", e);
-                            dfd.reject(new OO.ui.Error(e));
-                        });
-                        return dfd.promise();
-                    }, this);
+                            throw new OO.ui.Error(e);
+                        }
+                    })()).promise(), this);
                 }
                 // Fallback to parent handler
                 return super.getActionProcess(action);

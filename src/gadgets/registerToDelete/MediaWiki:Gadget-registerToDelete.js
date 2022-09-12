@@ -127,18 +127,16 @@ $(() => {
                 }, this);
             }
             getActionProcess(action) {
-                const dfd = $.Deferred();
                 if (action === "cancel") {
                     return new OO.ui.Process(() => {
                         this.close({ action });
                     }, this);
                 } else if (action === "submit") {
-                    return new OO.ui.Process(() => {
+                    return new OO.ui.Process($.when((async () => {
                         this.reason = this.reasonsDropdown.getValue();
                         this.detail = this.detailsText.getValue();
                         if (!this.reason && !this.detail) {
-                            dfd.reject(new OO.ui.Error("请填写理由或详情"));
-                            return dfd.promise();
+                            throw new OO.ui.Error("请填写理由或详情");
                         }
                         // if (reason) {
                         //     reason += detail ? (reason ? "：" : "") + detail : "";
@@ -149,21 +147,20 @@ $(() => {
                         //     reason = `讨论版申请：${reason}`;
                         // }
                         this.reason = `${this.dbCheckbox.isSelected() ? "讨论版申请：" : ""}${this.reason ? `${this.reason}${this.detail ? `：${this.detail}` : ""}` : this.detail}`; // 压行
-                        this.flagTemplate().then(() => {
+                        try {
+                            await this.flagTemplate();
                             this.close({ action });
                             mw.notify(wgULS("即将刷新……", "即將刷新……"), {
                                 title: wgULS("挂删成功", "掛删成功"),
                                 type: "success",
                                 tag: "lr-ffd",
                             });
-                            dfd.resolve();
                             setTimeout(() => location.reload(), 730);
-                        }).catch((e) => {
+                        } catch (e) {
                             console.error("[FlagForDeletion] Error:", e);
-                            dfd.reject(new OO.ui.Error(e));
-                        });
-                        return dfd.promise();
-                    }, this);
+                            throw new OO.ui.Error(e);
+                        }
+                    })()).promise(), this);
                 }
                 // Fallback to parent handler
                 return super.getActionProcess(action);
