@@ -77,5 +77,4 @@ jobs:
           message: "auto: Gadget-polyfill generator - commit from GitHub Actions"
           push: false
       - name: Show git status & push
-        run: |
-          git pull && git status && git push || echo failed silently
+        run: node scripts/git.js
