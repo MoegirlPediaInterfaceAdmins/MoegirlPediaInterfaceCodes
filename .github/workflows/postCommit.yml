@@ -73,4 +73,6 @@ jobs:
           message: "auto: Gadget-polyfill generator - commit from GitHub Actions"
           push: false
       - name: Show git status & push
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: node scripts/git.js
