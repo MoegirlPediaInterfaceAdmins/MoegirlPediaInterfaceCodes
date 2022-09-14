@@ -53,9 +53,7 @@
         },
         monthNamesInSiteLang: ["", "一月", "二月", "三月", "四月", "五月", "六月", "七月", "八月", "九月", "十月", "十一月", "十二月"],
         formatDate: (fmt, _date, fallbackDate) => {
-            const pad0 = function (s) {
-                return s > 9 ? s : `0${s}`;
-            }; // zero-pad to two digits
+            const pad0 = (n) => `${n}`.padStart(2, "0"); // zero-pad to two digits
             let date = _date || fallbackDate || new Date();
             const month = date.getUTCMonth() + 1;
             let str = fmt.replace(/YYYY/g, date.getUTCFullYear());

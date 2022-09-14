@@ -2567,19 +2567,10 @@ $(() => {
         return x instanceof RegExp;
     }
     function isArray(x) {
-        return x instanceof Array;
+        return Array.isArray(x);
     }
-    function repeatString(s, mult) {
-        let ret = "";
-        for (let i = 0; i < mult; ++i) {
-            ret += s;
-        }
-        return ret;
-    }
-    function zeroFill(s, _min) {
-        const min = _min || 2;
-        const t = s.toString();
-        return repeatString("0", min - t.length) + t;
+    function zeroFill(n, l = 2) {
+        return `${n}`.padStart(l, "0");
     }
     function map(f, o) {
         if (isArray(o)) {

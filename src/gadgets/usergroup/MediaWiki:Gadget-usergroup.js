@@ -108,13 +108,7 @@ $(() => (async () => {
     let cache;
     const api = new mw.Api();
     const eol = Symbol();
-    const fixZero = (n, l = 2) => {
-        let r = `${n}`;
-        while (r.length < l) {
-            r = `0${r}`;
-        }
-        return r;
-    };
+    const fixZero = (n, l = 2) => `${n}`.padStart(l, "0");
     const toLocalTimeZoneString = (date = new Date()) => `${date.getFullYear()}/${fixZero(date.getMonth() + 1)}/${fixZero(date.getDate())} ${fixZero(date.getHours())}:${fixZero(date.getMinutes())}:${fixZero(date.getSeconds())}.${fixZero(date.getMilliseconds(), 3)}`;
     try {
         cache = await localObjectStorage.getItem("cache");
