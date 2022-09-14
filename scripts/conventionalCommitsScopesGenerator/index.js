@@ -1,5 +1,5 @@
 "use strict";
-const console = require("./console.js");
+const console = require("../modules/console.js");
 console.info("Start initialization...");
 const fsPromises = require("fs/promises");
 const path = require("path");

@@ -1,9 +1,9 @@
 "use strict";
-const console = require("./console.js");
+const console = require("../modules/console.js");
 console.info("Start initialization...");
 const browserify = require("browserify");
 const minifyStream = require("minify-stream");
-const browserifyTargets = require("./browserifyTargets.js");
+const browserifyTargets = require("./targets.js");
 const fsPromises = require("fs/promises");
 
 const inputPath = "tmp/input.js";

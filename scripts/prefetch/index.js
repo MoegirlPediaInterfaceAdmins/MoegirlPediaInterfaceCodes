@@ -1,8 +1,8 @@
 "use strict";
-const console = require("./console.js");
+const console = require("../modules/console.js");
 console.info("Start initialization...");
-const axios = require("./axios.js");
-const prefetchTargets = require("./prefetchTargets.js");
+const axios = require("../modules/axios.js");
+const prefetchTargets = require("./targets.js");
 const fsPromises = require("fs/promises");
 
 (async () => {

@@ -1,8 +1,8 @@
 "use strict";
-const consoleWithTime = require("./console.js");
+const consoleWithTime = require("../modules/console.js");
 consoleWithTime.info("Start initialization...");
-const exec = require("./exec.js");
-const axios = require("./axios.js");
+const exec = require("../modules/exec.js");
+const axios = require("../modules/axios.js");
 const fsPromises = require("fs/promises");
 const unflaggableFeatures = require("./unflaggableFeatures.js");
 

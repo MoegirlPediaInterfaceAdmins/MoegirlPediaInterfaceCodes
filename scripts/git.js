@@ -1,7 +1,7 @@
 "use strict";
-const consoleWithTime = require("./console.js");
+const consoleWithTime = require("./modules/console.js");
 consoleWithTime.info("Start initialization...");
-const exec = require("./exec.js");
+const exec = require("./modules/exec.js");
 (async () => {
     try {
         consoleWithTime.info("Start checking unpushed commits...");

@@ -1,8 +1,8 @@
 "use strict";
-const console = require("./console.js");
+const console = require("./modules/console.js");
 console.info("Start initialization...");
-const exec = require("./exec.js");
-const axios = require("./axios.js");
+const exec = require("./modules/exec.js");
+const axios = require("./modules/axios.js");
 const fsPromises = require("fs/promises");
 
 const targetChromiumVersion = "70.0.3538.0";
