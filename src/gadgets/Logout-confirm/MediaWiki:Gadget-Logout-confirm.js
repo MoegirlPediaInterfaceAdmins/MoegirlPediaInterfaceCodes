@@ -3,7 +3,7 @@
 (function () {
     $("#pt-logout > a[href*=logoutToken]").each((_, ele) => {
         const uri = new mw.Uri(ele.href);
-        delete uri.query.logoutToken;
+        Reflect.deleteProperty(uri.query, "logoutToken");
         ele.href = uri;
     });
     if (mw.config.get("wgCanonicalSpecialPageName") === "Userlogout") {

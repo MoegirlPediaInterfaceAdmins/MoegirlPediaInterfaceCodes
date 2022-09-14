@@ -129,7 +129,7 @@
                 }
                 if (typeof v !== "string") {
                     for (const prop in v) {
-                        if (Object.hasOwnProperty.call(v, prop)) {
+                        if (Object.hasOwnProperty.bind(v)(prop)) {
                             const testArr_k = prop, testArr_v = v[prop];
                             if (new RegExp(wikiTextKey).exec(testArr_k) && typeof testArr_v === "string") {
                                 wikitext = lua_addText(wikitext, testArr_v);

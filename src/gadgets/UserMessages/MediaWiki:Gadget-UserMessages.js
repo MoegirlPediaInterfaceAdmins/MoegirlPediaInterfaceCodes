@@ -914,7 +914,7 @@
                         break;
                 }
                 // In jQuery UI 1.8, you have to manually invoke the _setOption method from the base widget
-                $.Widget.prototype._setOption.apply(this, [key, value, ...args]);
+                $.Widget.prototype._setOption.bind(this)(key, value, ...args);
             },
             _create: function () {
                 if (this.options.shutOff) {
@@ -1069,7 +1069,7 @@
                 this.portMessure.remove();
                 this.button.remove();
                 this.element.show();
-                $.Widget.prototype.destroy.call(this);
+                $.Widget.prototype.destroy.bind(this)();
             },
         });
     };

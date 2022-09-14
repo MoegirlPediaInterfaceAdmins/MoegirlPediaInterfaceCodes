@@ -524,7 +524,7 @@
                 } else if (action === "deactivated") {
                     this.close();
                 }
-                return SettingsDialog.super.prototype.getActionProcess.call(this, action);
+                return SettingsDialog.super.prototype.getActionProcess.bind(this)(action);
             }
             getBodyHeight() {
                 return this.stackLayout.getCurrentItem().$element.outerHeight(true);

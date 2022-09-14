@@ -52,7 +52,7 @@ $(() => {
     });
     let captureSupported = false;
     try {
-        const options = Object.defineProperty({}, "capture", {
+        const options = Reflect.defineProperty({}, "capture", {
             get: function () {
                 captureSupported = true;
                 return undefined;

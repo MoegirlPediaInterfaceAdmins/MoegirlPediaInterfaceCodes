@@ -2874,7 +2874,7 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
                     new CategoryEditor(line, copyCats[idxCopys[normalized]], inpageCats[i].match[2], inpageCats[i].match[3], is_hidden);
                     if (is_hidden && Reflect.has(inpIndex, normalized)) {
                         chkCats.splice(chkCats.indexOf(`${HC.category_canonical}:${normalized}`), 1);
-                        delete inpIndex[normalized];
+                        Reflect.deleteProperty(inpIndex, normalized);
                     }
                 } else if (!is_hidden && line) {
                     chkCats.push(`${HC.category_canonical}:${normalized}`);

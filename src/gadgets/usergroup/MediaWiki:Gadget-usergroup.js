@@ -164,7 +164,7 @@ $(() => (async () => {
     const now = Date.now();
     for (const [username, { timestamp, isBlocked }] of Object.entries(blockCache)) {
         if (typeof username !== "string" || typeof timestamp !== "number" || typeof isBlocked !== "boolean" || now - timestamp > 30 * 60 * 1000) {
-            delete blockCache[username];
+            Reflect.deleteProperty(blockCache, username);
         }
     }
     await localObjectStorage.setItem("blockCache", blockCache);

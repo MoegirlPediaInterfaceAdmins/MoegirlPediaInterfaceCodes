@@ -10,8 +10,8 @@ $(() => {
     checkBox.node.appendTo("body");
 
     function addCheckButton() {
-        $(".comment-submit").each(function () {
-            const submitButton = $(this);
+        $(".comment-submit").each((_, ele) => {
+            const submitButton = $(ele);
             if (submitButton.data("addCheckButton") === true) {
                 return;
             }
@@ -19,9 +19,7 @@ $(() => {
             checkButton.on("click", showCheckBox);
             submitButton.before(checkButton).data("addCheckButton", true);
         });
-        const container = $(".comment-container, .comment-container-top").map(function () {
-            return (($(this).find('[href^="/"]')[0] || {}).onmouseover || {}).name !== "mouseOverWikiLink" ? this : undefined;
-        }).filter((_, e) => e);
+        const container = $(".comment-container, .comment-container-top").map((_, ele) => (($(ele).find('[href^="/"]')[0] || {}).onmouseover || {}).name !== "mouseOverWikiLink" ? ele : undefined).filter((_, e) => e);
         if (container.length > 0) {
             mw.hook("wikipage.content").fire(container);
         }
@@ -35,9 +33,8 @@ $(() => {
         return checkBox.node.fadeOut(370).delay(370);
     }
 
-    function showCheckBox() {
-        const self = this,
-            text = $(self).closest(".comment-replybox").find("textarea").val();
+    function showCheckBox(_, ele) {
+        const text = $(ele).closest(".comment-replybox").find("textarea").val();
         if (/\s{1307,}/.test(text)) {
             return oouiDialog.alert("输入内容有误，请不要输入那么多空格", {
                 title: "评论检查工具",
@@ -71,7 +68,7 @@ $(() => {
                     checkText(text);
                 },
                 error: function () {
-                    showCheckBox.call(self);
+                    showCheckBox.bind(ele)();
                 },
             });
         } else {

@@ -782,7 +782,7 @@ $(() => {
             const dragObj = this;
             this.obj = o;
             o.onmousedown = function (e) {
-                dragObj.start.apply(dragObj, [e]);
+                dragObj.start.bind(dragObj)(e);
             };
             o.dragging = false;
             o.popups_draggable = true;
@@ -815,10 +815,10 @@ $(() => {
             o.onmousemoveDefault = document.onmousemove;
             o.dragging = true;
             document.onmousemove = function (e) {
-                dragObj.drag.apply(dragObj, [e]);
+                dragObj.drag.bind(dragObj)(e);
             };
             document.onmouseup = function (e) {
-                dragObj.end.apply(dragObj, [e]);
+                dragObj.end.bind(dragObj)(e);
             };
             return false;
         }
@@ -1349,7 +1349,7 @@ $(() => {
         }
         const f = function () {
             if (d.getReadyState() === 4) {
-                delete pg.misc.downloadsInProgress[this.id];
+                Reflect.deleteProperty(pg.misc.downloadsInProgress, this.id);
                 try {
                     if (d.getStatus() === 200) {
                         d.data = d.getData();
@@ -1389,7 +1389,7 @@ $(() => {
             try {
                 pg.misc.downloadsInProgress[x].aborted = true;
                 pg.misc.downloadsInProgress[x].abort();
-                delete pg.misc.downloadsInProgress[x];
+                Reflect.deleteProperty(pg.misc.downloadsInProgress, x);
             } catch { }
         }
     }
@@ -4131,7 +4131,7 @@ $(() => {
             this.savedHandler = document.onmousemove;
             const savedThis = this;
             document.onmousemove = function (e) {
-                savedThis.track.apply(savedThis, [e]);
+                savedThis.track.bind(savedThis)(e);
             };
             if (this.loopDelay) {
                 this.timer = setInterval(() => {
@@ -4146,7 +4146,7 @@ $(() => {
             if (typeof this.savedHandler === "function") {
                 document.onmousemove = this.savedHandler;
             } else {
-                delete document.onmousemove;
+                Reflect.deleteProperty(document, "onmousemove");
             }
             if (this.timer) {
                 clearInterval(this.timer);
@@ -4245,9 +4245,9 @@ $(() => {
                 if (dx * dx <= fuzz2 && dy * dy <= fuzz2) {
                     log("mouse is stable");
                     clearInterval(this.showSoonStableTimer);
-                    this.reposition.apply(this, [new_x + 2, new_y + 2]);
-                    this.show.apply(this, []);
-                    this.limitHorizontalPosition.apply(this, []);
+                    this.reposition.bind(this)(new_x + 2, new_y + 2);
+                    this.show.bind(this)();
+                    this.limitHorizontalPosition.bind(this)();
                     return;
                 }
                 this.stable_x = new_x;
@@ -4272,9 +4272,9 @@ $(() => {
             const len = keyHooks.length;
             for (let i = 0; i < len; ++i) {
                 if (keyHooks[i] && keyHooks[i].when === when) {
-                    if (keyHooks[i].hook.apply(this, [])) {
+                    if (keyHooks[i].hook.bind(this)()) {
                         if (keyHooks[i].hookId) {
-                            delete this.hookIds[keyHooks[i].hookId];
+                            Reflect.deleteProperty(this.hookIds, keyHooks[i].hookId);
                         }
                         keyHooks[i] = null;
                     }
@@ -4992,7 +4992,7 @@ $(() => {
                 case "pagelog":
                 case "deletelog":
                 case "protectlog":
-                    delete this.oldid;
+                    Reflect.deleteProperty(this, "oldid");
             }
             if (this.id === "editMonobook" || this.id === "monobook") {
                 this.article.append("/monobook.js");
@@ -5104,7 +5104,7 @@ $(() => {
                     break;
                 case "markpatrolled":
                 case "edit": {
-                    delete this.oldid;
+                    Reflect.deleteProperty(this, "oldid");
                     // falls through
                 }
                 case "view":
@@ -5146,7 +5146,7 @@ $(() => {
                 case "monobook":
                 case "editMonobook":
                 case "editArticle":
-                    delete this.oldid;
+                    Reflect.deleteProperty(this, "oldid");
                     this.article = this.article.articleFromTalkOrArticle();
                     this.print = wikiLink;
                     if (this.id.indexOf("edit") === 0) {
@@ -5158,7 +5158,7 @@ $(() => {
                 case "userTalk":
                 case "talk":
                     this.article = this.article.talkPage();
-                    delete this.oldid;
+                    Reflect.deleteProperty(this, "oldid");
                     this.print = wikiLink;
                     this.action = "view";
                     break;
@@ -5213,7 +5213,7 @@ $(() => {
                     break;
                 case "editUserTalk":
                 case "editTalk":
-                    delete this.oldid;
+                    Reflect.deleteProperty(this, "oldid");
                     this.article = this.article.talkPage();
                     this.action = "edit";
                     this.print = wikiLink;

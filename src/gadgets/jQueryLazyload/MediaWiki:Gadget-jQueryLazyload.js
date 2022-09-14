@@ -44,9 +44,9 @@
         /* Merge the object into the extended object */
         const merge = function (obj) {
             for (const prop in obj) {
-                if (Object.prototype.hasOwnProperty.call(obj, prop)) {
+                if (Object.prototype.hasOwnProperty.bind(obj)(prop)) {
                     /* If deep merge and property is an object, merge properties */
-                    if (deep && Object.prototype.toString.call(obj[prop]) === "[object Object]") {
+                    if (deep && Object.prototype.toString.bind(obj[prop])() === "[object Object]") {
                         extended[prop] = extend(true, extended[prop], obj[prop]);
                     } else {
                         extended[prop] = obj[prop];
@@ -86,7 +86,7 @@
             };
 
             this.observer = new IntersectionObserver((entries) => {
-                Array.prototype.forEach.call(entries, (entry) => {
+                Array.prototype.forEach.bind(entries)((entry) => {
                     if (entry.isIntersecting) {
                         self.observer.unobserve(entry.target);
                         const src = entry.target.getAttribute(self.settings.src);
@@ -105,7 +105,7 @@
                 });
             }, observerConfig);
 
-            Array.prototype.forEach.call(this.images, (image) => {
+            Array.prototype.forEach.bind(this.images)((image) => {
                 self.observer.observe(image);
             });
         }
@@ -122,7 +122,7 @@
             }
 
             const self = this;
-            Array.prototype.forEach.call(this.images, (image) => {
+            Array.prototype.forEach.bind(this.images)((image) => {
                 const src = image.getAttribute(self.settings.src);
                 const srcset = image.getAttribute(self.settings.srcset);
                 if ("img" === image.tagName.toLowerCase()) {

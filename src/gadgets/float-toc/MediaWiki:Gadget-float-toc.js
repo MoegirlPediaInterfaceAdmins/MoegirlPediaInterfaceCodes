@@ -16,7 +16,7 @@ $(async () => {
             const sameArticleId = {};
             Object.keys(cache).forEach((i) => {
                 if (!/^\d+-\d+/.test(i) || !Array.isArray(cache[i])) {
-                    delete cache[i];
+                    Reflect.deleteProperty(cache, i);
                 }
                 const articleIdAndCurRevisionId = i.match(/\d+/g);
                 (sameArticleId[articleIdAndCurRevisionId[0]] = sameArticleId[articleIdAndCurRevisionId[0]] || []).push(articleIdAndCurRevisionId[1]);
@@ -29,7 +29,7 @@ $(async () => {
                 c.sort((a, b) => +b - +a);
                 c.splice(0, 1);
                 c.forEach((cid) => {
-                    delete cache[`${aid}-${cid}`];
+                    Reflect.deleteProperty(cache, `${aid}-${cid}`);
                 });
             });
         } catch (e) {

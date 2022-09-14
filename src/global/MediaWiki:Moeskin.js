@@ -89,7 +89,7 @@
             console.warn("[MoeSkin] addPortletLink", "Faild to bind global variables", e);
         }
         await mw.loader.using(["mediawiki.util"]);
-        Object.defineProperty(mw.util, "addPortletLink", {
+        Reflect.defineProperty(mw.util, "addPortletLink", {
             value: addPortletLink,
         });
         mw.hook("moeskin.addPortletLink").fire({ addPortletLink, useCustomSidenavBlock });

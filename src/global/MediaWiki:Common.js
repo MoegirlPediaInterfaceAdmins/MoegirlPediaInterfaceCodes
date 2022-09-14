@@ -78,7 +78,7 @@
     /* MediaViewer#populateStatsFromXhr 错误屏蔽 */
     const getResponseHeader = XMLHttpRequest.prototype.getResponseHeader;
     XMLHttpRequest.prototype.getResponseHeader = function (name) {
-        return `\n${this.getAllResponseHeaders().toLowerCase()}`.includes(`\n${name.toLowerCase()}: `) ? getResponseHeader.call(this, name) : (console.info(`Refused to get unsafe header "${name}"\n`, this, "\n", new Error().stack), null);
+        return `\n${this.getAllResponseHeaders().toLowerCase()}`.includes(`\n${name.toLowerCase()}: `) ? getResponseHeader.bind(this)(name) : (console.info(`Refused to get unsafe header "${name}"\n`, this, "\n", new Error().stack), null);
     };
     // Extension:MultimediaViewer的半透明化修改，用于保持背景文字处于原位，本应修改插件达成的，暂时先用JavaScript应急处理下
     function multimediaViewer() {
