@@ -27,52 +27,16 @@ jobs:
         name: List diff
       - name: Install dependencies
         run: npm ci
-      - name: Run "Auto browserify generator"
-        run: node scripts/browserify.js
+      - name: Run actions
+        run: node scripts/workflows/postCommit.js
       - uses: EndBug/add-and-commit@v9
         with:
           committer_name: GitHub Actions
           committer_email: actions@github.com
           default_author: github_actor
-          message: "auto: auto browserify - commit from GitHub Actions"
-          push: false
-      - name: Run "Conventional Commits scopes generator"
-        run: node scripts/conventionalCommitsScopesGenerator.js
-      - uses: EndBug/add-and-commit@v9
-        with:
-          committer_name: GitHub Actions
-          committer_email: actions@github.com
-          default_author: github_actor
-          message: "auto: conventional commits scopes generator - commit from GitHub Actions"
-          push: false
-      - name: Run "Auto prefetch"
-        run: node scripts/prefetch.js
-      - uses: EndBug/add-and-commit@v9
-        with:
-          committer_name: GitHub Actions
-          committer_email: actions@github.com
-          default_author: github_actor
-          message: "auto: auto prefetch - commit from GitHub Actions"
-          push: false
-      - name: Run "Gadgets-definition Generator"
-        run: node scripts/gadgetsDefinitionGenerator.js
-      - uses: EndBug/add-and-commit@v9
-        with:
-          committer_name: GitHub Actions
-          committer_email: actions@github.com
-          default_author: github_actor
-          message: "auto: Gadgets-definition Generator - commit from GitHub Actions"
-          push: false
-      - name: Run "Gadget-polyfill generator"
-        run: node scripts/generatePolyfill.js
-      - uses: EndBug/add-and-commit@v9
-        with:
-          committer_name: GitHub Actions
-          committer_email: actions@github.com
-          default_author: github_actor
-          message: "auto: Gadget-polyfill generator - commit from GitHub Actions"
+          message: "auto: post Commit CI - commit from GitHub Actions"
           push: false
       - name: Show git status & push
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: node scripts/git.js
+        run: node scripts/postCommit/push.js
