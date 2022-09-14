@@ -238,12 +238,12 @@ $(() => (async () => {
                             info += wgULS("持续时间为无限期", "持續時間為不限期");
                         }
                         info += `\n    ${wgULS("额外限制", "額外限制")}：`;
-                        if (!("allowusertalk" in blockInfo)) {
+                        if (!Reflect.has(blockInfo, "allowusertalk")) {
                             blockInfo.nousertalk = true;
                         }
                         const flags = [];
                         for (const [flag, comment] of blocklogFlags) {
-                            if (flag in blockInfo) {
+                            if (Reflect.has(blockInfo, flag)) {
                                 flags.push(comment);
                             }
                         }

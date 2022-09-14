@@ -116,12 +116,12 @@ $(() => (async () => {
             2303: { count: 0, redirect: 0 },
         };
         const global = { redirect: 0 };
-        whatlinkshere.text(`共有${list.length}个页面含有到本页面的站内链接（不考虑嵌入），其中有${list.filter((item) => "redirect" in item).length}个重定向页面。`);
+        whatlinkshere.text(`共有${list.length}个页面含有到本页面的站内链接（不考虑嵌入），其中有${list.filter((item) => Reflect.has(item, "redirect")).length}个重定向页面。`);
         if (list.length > 0) { whatlinkshere.append("按名字空间划分如下："); }
         const ul = $("<ul/>");
         list.forEach((item) => {
             nslist[item.ns].count++;
-            if ("redirect" in item) {
+            if (Reflect.has(item, "redirect")) {
                 nslist[item.ns].redirect++;
                 global.redirect++;
             }

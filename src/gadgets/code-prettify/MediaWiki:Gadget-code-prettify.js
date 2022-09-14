@@ -39,13 +39,13 @@ $(() => {
         mw: "wiki",
     };
     const wgPageContentModel = mw.config.get("wgPageContentModel", "").toLowerCase();
-    if (wgPageContentModel in acceptsLangs) {
+    if (Reflect.has(acceptsLangs, wgPageContentModel)) {
         $(".mw-code").addClass(`prettyprint lang-${acceptsLangs[wgPageContentModel]}`);
     }
     $("pre[lang]").each(function () {
         const self = $(this);
         const lang = self.attr("lang").toLowerCase();
-        if (lang in acceptsLangs) {
+        if (Reflect.has(acceptsLangs, lang)) {
             self.addClass(`prettyprint lang-${acceptsLangs[lang]}`);
         }
     });

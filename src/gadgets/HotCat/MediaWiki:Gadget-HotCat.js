@@ -2870,9 +2870,9 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
                 if (HC.capitalizePageNames) {
                     normalized = normalized.substr(0, 1).toUpperCase() + normalized.substr(1);
                 }
-                if (normalized in idxCopys && line) {
+                if (Reflect.has(idxCopys, normalized) && line) {
                     new CategoryEditor(line, copyCats[idxCopys[normalized]], inpageCats[i].match[2], inpageCats[i].match[3], is_hidden);
-                    if (is_hidden && normalized in inpIndex) {
+                    if (is_hidden && Reflect.has(inpIndex, normalized)) {
                         chkCats.splice(chkCats.indexOf(`${HC.category_canonical}:${normalized}`), 1);
                         delete inpIndex[normalized];
                     }
@@ -2894,7 +2894,7 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
                     for (i = 0; i < converted.length; i++) {
                         const sTitle = converted[i].to.replace(`${HC.category_canonical}:`, "");
                         const sOrginal = inpIndex[converted[i].from.replace(`${HC.category_canonical}:`, "")];
-                        if (sTitle in idxCopys && line) {
+                        if (Reflect.has(idxCopys, sTitle) && line) {
                             // eslint-disable-next-line no-new
                             new CategoryEditor(line, copyCats[idxCopys[sTitle]], [inpageCats[sOrginal].match[2], sTitle], inpageCats[sOrginal].match[3], is_hidden);
                         } else {

@@ -92,7 +92,7 @@ $(() => {
                 pageid: mw.config.get("wgArticleId"),
                 prop: "sections",
             })).parse.sections.map(({ anchor, index }) => [anchor, index]));
-            if (!(hash in toclist)) {
+            if (!Reflect.has(toclist, hash)) {
                 throw new Error("请移除该标题内的模板后再行操作……");
             }
             const section = toclist[hash];

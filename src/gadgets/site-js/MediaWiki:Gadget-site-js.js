@@ -157,7 +157,7 @@
                 if (self.children(".TabLabel")[0]) {
                     return true;
                 }
-                const classList = Array.from(this.classList).filter((n) => n in defaultStyle);
+                const classList = Array.from(this.classList).filter((n) => Reflect.has(defaultStyle, n));
                 const data = $.extend({
                     labelPadding: "2px",
                     labelBorderColor: "#aaa",
@@ -177,7 +177,7 @@
                     tabContent = self.append('<div class="TabContent"></div>').children(".TabContent"),
                     labelPadding = data.labelPadding,
                     labelColor = data.labelColor,
-                    labelSide = data.labelSide in sides ? data.labelSide : "top",
+                    labelSide = Reflect.has(sides, data.labelSide) ? data.labelSide : "top",
                     side = sides[labelSide],
                     labelColorSideReverse = truthy.includes(data.labelColorSideReverse),
                     dividerSize = parseInt(data.dividerSize);
@@ -399,7 +399,7 @@
             }
             const detectedHost = currentHostFlag ? location.host : substHost;
             const now = new Date().getTime();
-            if (!(detectedHost in reverseProxyhostAlerted) || typeof reverseProxyhostAlerted[detectedHost] !== "number" || reverseProxyhostAlerted[detectedHost] < now - 24 * 60 * 60 * 1000) {
+            if (!Reflect.has(reverseProxyhostAlerted, detectedHost) || typeof reverseProxyhostAlerted[detectedHost] !== "number" || reverseProxyhostAlerted[detectedHost] < now - 24 * 60 * 60 * 1000) {
                 reverseProxyhostAlerted[detectedHost] = now;
                 oouiDialog.alert(`<p>您当前是在${currentHostFlag ? "非萌百域名" : "嵌套窗口"}访问，请注意不要在此域名下输入您的用户名或密码，以策安全！</p><p>${detectedHost ? `${currentHostFlag ? "当前" : "顶层窗口"}域名为 <code>${detectedHost}</code>，` : ""}萌百域名是以 <code>${mw.config.get("wgServer").replace(/^(?:(?:https?:)?\/\/[^.]+)?/, "")}</code> 结尾的。</p>`, {
                     title: "萌娘百科提醒您",

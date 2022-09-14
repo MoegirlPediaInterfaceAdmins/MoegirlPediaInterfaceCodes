@@ -58,7 +58,7 @@ $(async () => {
         };
     } else if (mw.config.get("wgArticleId") <= 0 || mw.config.get("wgCurRevisionId") <= 0 || /action=(?!view)|(?:direction|diffonly)=/i.test(location.search) || mw.config.get("wgCurRevisionId") !== mw.config.get("wgRevisionId")) {
         return;
-    } else if (key in cache) {
+    } else if (Reflect.has(cache, key)) {
         r = {
             result: {
                 parse: {

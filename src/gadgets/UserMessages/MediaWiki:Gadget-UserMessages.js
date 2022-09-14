@@ -662,12 +662,12 @@
             // Local Cache
             if (params.list) {
                 if ("allusers" === params.list) {
-                    if (params.auprefix in umsg.umUserCache) {
+                    if (Reflect.has(umsg.umUserCache, params.auprefix)) {
                         umsg[callback](umsg.umUserCache[params.auprefix], pCallback);
                         return;
                     }
                 } else if ("allimages" === params.list) {
-                    if (params.aiprefix in umsg.umFileCache) {
+                    if (Reflect.has(umsg.umFileCache, params.aiprefix)) {
                         umsg[callback](umsg.umFileCache[params.aiprefix], pCallback);
                         return;
                     }
@@ -724,7 +724,7 @@
         doAPICall: (params, callback) => {
             if (params.action) {
                 if ("parse" === params.action) {
-                    if (params.text in umsg.umParserCache) {
+                    if (Reflect.has(umsg.umParserCache, params.text)) {
                         umsg[callback](umsg.umParserCache[params.text]);
                         return;
                     }

@@ -3690,7 +3690,7 @@ $(() => {
                     ret.push(`<b>${popupString("BLOCKED")}</b>`);
                 }
             }
-            if (globaluserinfo && ("locked" in globaluserinfo || "hidden" in globaluserinfo)) {
+            if (globaluserinfo && (Reflect.has(globaluserinfo, "locked") || Reflect.has(globaluserinfo, "hidden"))) {
                 let lockedSulAccountIsAttachedToThis = true;
                 for (let i = 0; globaluserinfo.unattached && i < globaluserinfo.unattached.length; i++) {
                     if (globaluserinfo.unattached[i].wiki === mw.config.get("wgDBname")) {
@@ -3699,10 +3699,10 @@ $(() => {
                     }
                 }
                 if (lockedSulAccountIsAttachedToThis) {
-                    if ("locked" in globaluserinfo) {
+                    if (Reflect.has(globaluserinfo, "locked")) {
                         ret.push(`<b><i>${popupString("LOCKED")}</i></b>`);
                     }
-                    if ("hidden" in globaluserinfo) {
+                    if (Reflect.has(globaluserinfo, "hidden")) {
                         ret.push(`<b><i>${popupString("HIDDEN")}</i></b>`);
                     }
                 }

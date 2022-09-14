@@ -154,7 +154,7 @@ $(() => {
      * @param {HTMLElement} root
      */
     function parser(_, root) {
-        if (!root || !("createNodeIterator" in document)) {
+        if (!root || !Reflect.has(document, "createNodeIterator")) {
             return;
         }
         const iter = document.createNodeIterator(root, NodeFilter.SHOW_TEXT, {
@@ -181,7 +181,7 @@ $(() => {
             const timezoneAbbr = Array.from(result).slice(1).filter(abbr => !!abbr)[0];
             const then = moment.utc(result[0], window.LocalComments.parseFormat);
             if (then.isValid()) {
-                if (timezoneAbbr in timezoneAbbrs) {
+                if (Reflect.has(timezoneAbbrs, timezoneAbbr)) {
                     then.utcOffset(timezoneAbbrs[timezoneAbbr], true);
                 }
                 const timeElt = document.createElement("time");

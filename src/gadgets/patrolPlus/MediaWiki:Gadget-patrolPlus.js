@@ -22,7 +22,7 @@ $(() => {
                     rvdir: "newer",
                     titles: title,
                 });
-                if ("error" in data) {
+                if (Reflect.has(data, "error")) {
                     throw data.error;
                 }
                 return Object.entries(data.query.pages)[0][1].revisions[0].revid;
@@ -75,7 +75,7 @@ $(() => {
             running = true;
             try {
                 const data = await handlePatroll(title, revid);
-                if ("error" in data) {
+                if (Reflect.has(data, "error")) {
                     throw data.error;
                 }
                 textStatus.text("[标记成功]");

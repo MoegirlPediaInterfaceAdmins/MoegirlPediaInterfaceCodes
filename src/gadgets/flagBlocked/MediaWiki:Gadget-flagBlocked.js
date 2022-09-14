@@ -37,7 +37,7 @@ $(() => {
             } else {
                 blockTime = moment(blockTime).utcOffset(8).format("YYYY年MM月DD日"); // 精确到日
             }
-            if (data.params.flags.includes("hiddenname") || "suppressed" in data) {
+            if (data.params.flags.includes("hiddenname") || Reflect.has(data, "suppressed")) {
                 throw new Error("用户名被隐藏或日志被监督！");
             }
             const template = `{{永久封禁|time=${blockTime}|reason=${comment}${/Abuse|长期破坏者|a\s*\d+/ig.test(comment) ? `|abuse=${comment.replace(/\D*/g, "")}` : ""}}}`;

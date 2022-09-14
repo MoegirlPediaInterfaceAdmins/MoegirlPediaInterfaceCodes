@@ -77,15 +77,15 @@ $(() => (async () => {
         const globalInfo = { patrolled: 0, autopatrolled: 0, "new": 0, distinct: new Set() };
         list.forEach((item) => {
             nslist[item.ns].count++;
-            if ("patrolled" in item) {
+            if (Reflect.has(item, "patrolled")) {
                 nslist[item.ns].patrolled++;
                 globalInfo.patrolled++;
             }
-            if ("autopatrolled" in item) {
+            if (Reflect.has(item, "autopatrolled")) {
                 nslist[item.ns].autopatrolled++;
                 globalInfo.autopatrolled++;
             }
-            if ("new" in item) {
+            if (Reflect.has(item, "new")) {
                 nslist[item.ns].new++;
                 globalInfo.new++;
             }

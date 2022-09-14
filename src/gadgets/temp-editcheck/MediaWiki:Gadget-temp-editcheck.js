@@ -112,7 +112,7 @@ $(() => {
             } catch (e) {
                 error = e;
             }
-            if (_apiResult && "error" in _apiResult) {
+            if (_apiResult && Reflect.has(_apiResult, "error")) {
                 notify.update(`<div>第$count次检测：服务器返回数据有误……<pre>${JSON.stringify(_apiResult, null, 4)}</pre></div>`, true);
                 await sleep(1000);
                 continue;

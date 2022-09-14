@@ -69,7 +69,7 @@ $(() => {
     }, captureSupported ? {
         capture: true,
     } : true);
-    if ("MutationObserver" in window) {
+    if (Reflect.has(window, "MutationObserver")) {
         const observer = new MutationObserver(() => {
             if (!isPreviewedLive) {
                 if (saveButton.is(":enabled")) {
