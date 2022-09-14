@@ -143,7 +143,7 @@
         const truthy = ["1", "on", "true", "yes"];
         $body.addClass("tab");
         function getOwnPropertyNamesLength(obj) {
-            return Reflect.getOwnPropertyNames(obj).length;
+            return Reflect.ownKeys(obj).length;
         }
         function toLowerFirstCase(str) {
             return str.substring(0, 1).toLowerCase() + str.substring(1);
