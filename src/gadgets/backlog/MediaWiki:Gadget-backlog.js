@@ -73,6 +73,15 @@ $(() => (async () => {
         }
         return result.replace(/(\d) /g, "$1").replace(/^(?:0\D+)+$/, "").replace(/(\D)(?:0\D+)+$/, "$1");
     };
+    const autoRetryAsyncFunction = async (asyncFunction, retryTimes = 3) => {
+        for (let i = retryTimes; i > 0; i--) {
+            try {
+                return await asyncFunction();
+            } catch (e) {
+                console.error(`autoRetryAsyncFunction [${retryTimes - i + 1}/${retryTimes}`, e);
+            }
+        }
+    };
     try {
         let wheeled = false;
         $(window).one("wheel", () => {
@@ -89,12 +98,12 @@ $(() => (async () => {
         const users = new Set();
         const loghiddenMsg = "<i><b>（日志被隐藏）</b></i>";
         const userhiddenMsg = "<i><b>（用户名被隐藏）</b></i>";
-        const userRights = await mw.user.getRights();
+        const userRights = await autoRetryAsyncFunction(async () => await mw.user.getRights());
         const hasSuppressionlogRight = userRights.includes("suppressionlog");
         const hasDeletelogentryRight = userRights.includes("deletelogentry");
         let scrollFlag = false;
         const api = new mw.Api();
-        const blockLogResult = await api.post({
+        const blockLogResult = await autoRetryAsyncFunction(async () => await api.post({
             action: "query",
             format: "json",
             list: "logevents",
@@ -102,7 +111,7 @@ $(() => (async () => {
             letype: "block",
             leend: moment().startOf("day").subtract(7, "days").toISOString(),
             lelimit: "10",
-        });
+        }));
         if (blockLogResult && blockLogResult.query && blockLogResult.query.logevents) {
             const blocklogevents = blockLogResult.query.logevents;
             container.append("<hr>");
@@ -236,14 +245,13 @@ $(() => (async () => {
                 container.append("<div style=\"text-align: center;\">最近7天内无封禁记录=。=</div>");
             }
         }
-        const abuseLogQuest = {
+        const abuseLogResult = await autoRetryAsyncFunction(async () => await api.post({
             action: "query",
             format: "json",
             list: "abuselog",
             afllimit: "500",
             aflprop: "timestamp|user|action|filter|result|ids|title",
-        };
-        const abuseLogResult = await api.post(abuseLogQuest);
+        }));
         if (abuseLogResult && abuseLogResult.query && abuseLogResult.query.abuselog) {
             const veryFirstAbuselogId = abuseLogResult.query.abuselog.slice(-1)[0].id;
             const abuseLogAcceptedFlags = ["block", "blockautopromote", "degroup"];
@@ -364,26 +372,29 @@ $(() => (async () => {
             let count = 0;
             const eol = Symbol();
             let cmcontinue = undefined;
+            const f = async () => await $.ajax({
+                url: `https://${domain}/api.php`,
+                data: {
+                    action: "query",
+                    format: "json",
+                    list: "categorymembers",
+                    cmtitle,
+                    cmprop: "ids",
+                    cmtype: "page|subcat|file",
+                    cmlimit: "max",
+                    cmcontinue,
+                },
+                dataType: "jsonp",
+                type: "GET",
+            });
             while (cmcontinue !== eol) {
-                const _result = await $.ajax({
-                    url: `https://${domain}/api.php`,
-                    data: {
-                        action: "query",
-                        format: "json",
-                        list: "categorymembers",
-                        cmtitle,
-                        cmprop: "ids",
-                        cmtype: "page|subcat|file",
-                        cmlimit: "max",
-                        cmcontinue,
-                    },
-                    dataType: "jsonp",
-                    type: "GET",
-                });
+                const _result = await autoRetryAsyncFunction(f);
                 if (_result.query) {
                     if (_result.continue) {
+                        // eslint-disable-next-line require-atomic-updates
                         cmcontinue = _result.continue.cmcontinue;
                     } else {
+                        // eslint-disable-next-line require-atomic-updates
                         cmcontinue = eol;
                     }
                     count += _result.query.categorymembers.length;
@@ -421,6 +432,21 @@ $(() => (async () => {
                 scrollTop: $("#mw-content-text").offset().top,
             }, 730);
         }
+    } catch (reason) {
+        console.error(reason);
+        const errorInfoNode = $("<div>").css({
+            border: "2px solid rgb(0, 0, 0)",
+            margin: "14px 40px 10px",
+            padding: "10px 15px",
+            "background-color": "rgb(254, 237, 232)",
+        });
+        $("#__anntools__inject__").after(errorInfoNode);
+        if (reason instanceof Error) {
+            errorInfoNode.html(`<p>日志查核工具发生错误：</p><dl><dt>错误类型：</dt><dd>${$("<span/>").text(reason.name).html()}</dd><dt>错误信息：</dt><dd><pre>${$("<span/>").text(`${reason.toString()}\n${reason.stack.split("\n").slice(1).join("\n")}`).html()}</pre></dd></dl>`);
+        } else {
+            errorInfoNode.html(`<p>日志查核工具发生错误：</p><pre>${$("<span/>").text(JSON.stringify(reason, undefined, 4)).html()}</pre>`);
+        }
+    } finally {
         $("#Anntools-backlog-loading").remove();
         if (mw.config.exists("useravatar")) {
             mw.config.get("useravatar")();
@@ -435,23 +461,6 @@ $(() => (async () => {
             },
         });
         setTimeout(() => { $(window).trigger("resize"); }, 100);
-    } catch (reason) {
-        console.error(reason);
-        if (reason instanceof Error) {
-            $("#__anntools__inject__").css({
-                border: "2px solid rgb(0, 0, 0)",
-                margin: "14px 40px 10px",
-                padding: "10px 15px",
-                "background-color": "rgb(254, 237, 232)",
-            }).html(`<p>日志查核工具发生错误：</p><dl><dt>错误类型：</dt><dd>${$("<span/>").text(reason.name).html()}</dd><dt>错误信息：</dt><dd><pre>${$("<span/>").text(`${reason.toString()}\n${reason.stack.split("\n").slice(1).join("\n")}`).html()}</pre></dd></dl>`);
-        } else {
-            $("#__anntools__inject__").css({
-                border: "2px solid rgb(0, 0, 0)",
-                margin: "14px 40px 10px",
-                padding: "10px 15px",
-                "background-color": "rgb(254, 237, 232)",
-            }).html(`<p>日志查核工具发生错误：</p><pre>${$("<span/>").text(JSON.stringify(reason, undefined, 4)).html()}</pre>`);
-        }
     }
 })());
 // </pre>
