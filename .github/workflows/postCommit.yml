@@ -3,7 +3,7 @@ name: post commit CI
 on:
   push:
     paths:
-      - "scripts/*.js"
+      - "scripts/**/*.js"
       - "package-lock.json"
       - ".github/workflows/postCommit.yml"
   workflow_dispatch:
