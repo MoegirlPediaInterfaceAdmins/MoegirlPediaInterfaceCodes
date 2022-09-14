@@ -11,12 +11,12 @@ const exec = require("./exec.js");
             process.exit(0);
         }
         consoleWithTime.info("Found unpushed commits:", unpushedCommits.split("\n"));
+        consoleWithTime.info("Pulling new commits...");
+        consoleWithTime.info("Successfully pulled the commits:", await exec("git pull"));
         consoleWithTime.info("Pushing these commits...");
-        const result = await exec("git push");
-        consoleWithTime.info("Successfully pushed the commits:", result);
+        consoleWithTime.info("Successfully pushed the commits:", await exec("git push"));
         consoleWithTime.info("Start triggering linter test...");
-        const result2 = await exec("gh workflow run \"Linter test\" --field from=postCommit");
-        consoleWithTime.info("Successfully triggered the linter test:", result2);
+        consoleWithTime.info("Successfully triggered the linter test:", await exec("gh workflow run \"Linter test\" --field from=postCommit"));
         process.exit(0);
     } catch (e) {
         consoleWithTime.error(e);
