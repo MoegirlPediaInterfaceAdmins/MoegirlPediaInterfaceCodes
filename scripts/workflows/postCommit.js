@@ -38,7 +38,7 @@ Promise.all(actions.map(async ({ name, command }) => {
     for (const { name, result, error } of results) {
         console.info(`::group::[${toLocalTimeZoneStrings.ISO()}]`, name);
         if (result) {
-            consoleWithTimestamp.info(result);
+            console.info(result);
         } else {
             consoleWithTimestamp.error(error);
             exitCode = 1;
