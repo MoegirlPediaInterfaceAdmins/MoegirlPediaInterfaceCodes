@@ -224,7 +224,7 @@
         console.error(error);
         submitButton.after(`<span class="error">${wgULS("无法获取持有“封禁”和“自我解封”权限的用户列表，请谨慎操作", "無法獲取持有「封鎖」和「自我解封」權限的使用者列表，請謹慎操作", null, null, "無法獲取持有「封鎖」和「自我解封」權限的用戶列表，請謹慎操作")}。</span>`);
     } finally {
-        submitButton.setDisabled(true).setLabel(submitButtonText);
+        submitButton.setDisabled(false).setLabel(submitButtonText);
         flag = true;
     }
 })();
