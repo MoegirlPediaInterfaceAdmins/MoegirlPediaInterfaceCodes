@@ -1,8 +1,5 @@
 "use strict";
-const consoleWithTimestamp = require("../modules/console.js");
-const toLocalTimeZoneStrings = require("../modules/toLocalTimeZoneStrings.js");
-consoleWithTimestamp.info("Start initialization...");
-const exec = require("../modules/exec.js");
+const base = require("./base.js");
 const actions = [
     {
         name: "Check eslint environment",
@@ -21,25 +18,4 @@ const actions = [
         command: "npx -y v8r@latest src/**/definition.json --schema .vscode/json-schemas/gadget-definition.json",
     },
 ];
-consoleWithTimestamp.info("Start executing commands...");
-Promise.all(actions.map(async ({ name, command }) => {
-    try {
-        return { name, result: await exec(command) || "(empty string)" };
-    } catch (error) {
-        return { name, error };
-    }
-})).then((results) => {
-    consoleWithTimestamp.info("Commands executed:");
-    let exitCode = 0;
-    for (const { name, result, error } of results) {
-        console.info(`::group::[${toLocalTimeZoneStrings.ISO()}]`, name);
-        if (result) {
-            console.info(result);
-        } else {
-            consoleWithTimestamp.error(error);
-            exitCode = 1;
-        }
-        console.info("::endgroup::");
-    }
-    process.exit(exitCode);
-});
+base(actions);
