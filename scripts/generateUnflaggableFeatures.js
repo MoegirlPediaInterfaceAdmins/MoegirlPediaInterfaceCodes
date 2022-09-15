@@ -37,7 +37,7 @@ const targetUA = `Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (
             unflaggableFeatures.push(...match);
             i++;
         }
-        await fsPromises.writeFile("tmp/unflaggableFeatures.json", `${JSON.stringify(unflaggableFeatures, null, 4)}\n`);
+        await fsPromises.writeFile("scripts/generatePolyfill/unflaggableFeatures.js", `"use strict";\nmodule.exports = ${JSON.stringify(unflaggableFeatures, null, 4).replace(/\n\]$/, ",\n]")};\n`);
         console.info("left", clone.length - unflaggableFeatures.length);
         process.exit(0);
     } catch (e) {

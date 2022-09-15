@@ -30,7 +30,13 @@ const targetUA = `Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (
         const url = new URL("https://polyfill.io/v3/polyfill.js");
         url.searchParams.set("features", features.join(","));
         url.searchParams.set("ua", targetUA);
-        const { data } = await axios.get(`${url}`);
+        const { data } = await axios({
+            url: `${url}`,
+            method: "GET",
+            headers: {
+                "user-agent": targetUA,
+            },
+        });
         consoleWithTime.info("\tDone.");
         consoleWithTime.info("Start write polyfill file to gadget-libPolyfill...");
         const code = [
@@ -47,12 +53,6 @@ const targetUA = `Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (
         await fsPromises.writeFile("src/gadgets/libPolyfill/MediaWiki:Gadget-libPolyfill.js", code.join("\n"));
         consoleWithTime.info("\tDone.");
         const newunflaggableFeatures = [];
-        for (const feature of features) {
-            const match = data.match(RegExp(`\\b${feature.replaceAll(".", "\\.")}\\b`, "g"));
-            if (!Array.isArray(match) || match.length === 1) {
-                newunflaggableFeatures.push(feature);
-            }
-        }
         if (data.includes("These features were not recognised")) {
             const match = data.match(/(?<=\n \* These features were not recognised:\n \* - )[^\n]+?(?=\s*\*\/)/)?.[0]?.split?.(/,-\s*/);
             if (Array.isArray(match)) {
