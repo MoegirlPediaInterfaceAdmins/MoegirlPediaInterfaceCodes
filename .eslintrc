@@ -31,7 +31,14 @@
         "Cron": "readonly"
     },
     "rules": {
-        "prefer-reflect": "error",
+        "prefer-reflect": [
+            "error",
+            {
+                "exceptions": [
+                    "getOwnPropertyNames"
+                ]
+            }
+        ],
         "no-new-func": "error",
         "no-new-object": "error",
         "no-new-wrappers": "error",
