@@ -30,3 +30,7 @@ div.vectorMenu li.checkuser-show {
 .vectorMenu .checkuser-show a {
     cursor: pointer;
 }
+
+.copyUsername {
+    margin-left: 0.5rem;
+}
