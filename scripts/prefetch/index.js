@@ -35,7 +35,7 @@ const path = require("path");
         });
         await fs.promises.writeFile(file, code.join("\n"));
         if (path.extname(file) === ".js") {
-            const eslintrc = JSON.parse(await fs.promises.readFile(eslintrcName, "utf-8") || {});
+            const eslintrc = JSON.parse(await fs.promises.readFile(eslintrcName, "utf-8").catch(() => "{}"));
             if (!Array.isArray(eslintrc.ignorePatterns)) {
                 eslintrc.ignorePatterns = [];
             }

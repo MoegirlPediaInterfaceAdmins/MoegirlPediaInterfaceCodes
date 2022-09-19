@@ -79,7 +79,7 @@ const inputPath = "tmp/input.js";
         if (path.extname(file) === ".js") {
             const filename = path.basename(file);
             const eslintrcName = path.join(path.dirname(file), ".eslintrc");
-            const eslintrc = JSON.parse(await fs.promises.readFile(eslintrcName, "utf-8") || {});
+            const eslintrc = JSON.parse(await fs.promises.readFile(eslintrcName, "utf-8").catch(() => "{}"));
             if (!Array.isArray(eslintrc.ignorePatterns)) {
                 eslintrc.ignorePatterns = [];
             }
