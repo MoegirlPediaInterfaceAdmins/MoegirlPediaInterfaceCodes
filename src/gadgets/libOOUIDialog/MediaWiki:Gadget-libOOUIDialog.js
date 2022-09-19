@@ -42,7 +42,7 @@
                     title: "萌娘百科提醒您",
                 }, option, base));
                 try {
-                    if (base.textInput) {
+                    if (base.textInput && result !== null) {
                         await base.textInput.getValidity();
                     }
                     break;
