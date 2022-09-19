@@ -27,10 +27,23 @@ const path = require("path");
             code.push(appendCode);
         }
         code.push("");
-        await fs.promises.mkdir(path.dirname(file), {
+        const folder = path.dirname(file);
+        const filename = path.basename(file);
+        const eslintrcName = path.join(folder, ".eslintrc");
+        await fs.promises.mkdir(folder, {
             recursive: true,
         });
         await fs.promises.writeFile(file, code.join("\n"));
+        if (path.extname(file) === ".js") {
+            const eslintrc = JSON.parse(await fs.promises.readFile(eslintrcName, "utf-8") || {});
+            if (!Array.isArray(eslintrc.ignorePatterns)) {
+                eslintrc.ignorePatterns = [];
+            }
+            if (!eslintrc.ignorePatterns.includes(filename)) {
+                eslintrc.ignorePatterns.push(filename);
+                await fs.promises.writeFile(eslintrcName, JSON.stringify(eslintrc, null, 4));
+            }
+        }
     }
     console.info("Done.");
     process.exit(0);

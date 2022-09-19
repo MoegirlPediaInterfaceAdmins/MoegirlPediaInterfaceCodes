@@ -5,9 +5,9 @@ const browserify = require("browserify");
 const minifyStream = require("minify-stream");
 const browserifyTargets = require("./targets.js");
 const fs = require("fs");
+const path = require("path");
 
 const inputPath = "tmp/input.js";
-const outputPath = "tmp/output.js";
 
 (async () => {
     console.info("browserifyTargets:", browserifyTargets);
@@ -18,10 +18,6 @@ const outputPath = "tmp/output.js";
         console.info("target:", browserifyTarget);
         const { module, entry, file, exports, removePlugins, prependCode } = browserifyTarget;
         await fs.promises.rm(inputPath, {
-            recursive: true,
-            force: true,
-        });
-        await fs.promises.rm(outputPath, {
             recursive: true,
             force: true,
         });
@@ -75,13 +71,24 @@ const outputPath = "tmp/output.js";
             output.push(prependCode);
         }
         output.push(codes.trim(), "");
-        await fs.promises.writeFile(outputPath, output.join("\n"));
-        console.info(`[${module}]`, "generated successfully.");
         await fs.promises.rm(file, {
             recursive: true,
             force: true,
         });
-        await fs.promises.cp(outputPath, file);
+        await fs.promises.writeFile(file, output.join("\n"));
+        if (path.extname(file) === ".js") {
+            const filename = path.basename(file);
+            const eslintrcName = path.join(path.dirname(file), ".eslintrc");
+            const eslintrc = JSON.parse(await fs.promises.readFile(eslintrcName, "utf-8") || {});
+            if (!Array.isArray(eslintrc.ignorePatterns)) {
+                eslintrc.ignorePatterns = [];
+            }
+            if (!eslintrc.ignorePatterns.includes(filename)) {
+                eslintrc.ignorePatterns.push(filename);
+                await fs.promises.writeFile(eslintrcName, JSON.stringify(eslintrc, null, 4));
+            }
+        }
+        console.info(`[${module}]`, "generated successfully.");
     }
     console.info("Done.");
     process.exit(0);
