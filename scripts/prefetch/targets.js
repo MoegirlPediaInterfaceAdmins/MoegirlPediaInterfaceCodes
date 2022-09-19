@@ -29,4 +29,9 @@ module.exports = [
         url: "https://zh.wikipedia.org/w/load.php?debug=true&lang=zh-cn&modules=jquery.ui&skin=vector&only=styles",
         file: "src/gadgets/jquery.ui/MediaWiki:Gadget-jquery.ui.css",
     },
+    {
+        name: "libJSON5",
+        url: "https://cdn.jsdelivr.net/npm/json5@2",
+        file: "src/gadgets/libJSON5/MediaWiki:Gadget-libJSON5.js",
+    },
 ];

@@ -142,7 +142,8 @@
             "sidebaricons",
             "libip",
             "libAsyncLock",
-            "luxon"
+            "luxon",
+            "libJSON5"
         ]
     }
 ]
