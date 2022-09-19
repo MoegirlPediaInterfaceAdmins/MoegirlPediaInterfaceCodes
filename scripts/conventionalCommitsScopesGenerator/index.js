@@ -1,7 +1,7 @@
 "use strict";
 const console = require("../modules/console.js");
 console.info("Start initialization...");
-const fsPromises = require("fs/promises");
+const fs = require("fs");
 const path = require("path");
 /**
  * @param {string} str 
@@ -11,11 +11,11 @@ const toLowerFirstCharacter = (str) => str[0].toLowerCase() + str.slice(1);
 import("strip-json-comments").then(async ({
     "default": stripJsonComments,
 }) => {
-    const settings = JSON.parse(stripJsonComments(await fsPromises.readFile(".vscode/settings.json", "utf-8"), {
+    const settings = JSON.parse(stripJsonComments(await fs.promises.readFile(".vscode/settings.json", "utf-8"), {
         trailingCommas: true,
     }));
     const totalScopes = [];
-    const dirents = await fsPromises.readdir("src", {
+    const dirents = await fs.promises.readdir("src", {
         withFileTypes: true,
     });
     console.info("dirents:", dirents);
@@ -26,7 +26,7 @@ import("strip-json-comments").then(async ({
         const type = dirent.name;
         const prefix = type[0].toUpperCase() + type.slice(1).replace(/s$/, "");
         console.info(`[${type}]`, "prefix:", prefix);
-        const list = await fsPromises.readdir(path.join("src", type));
+        const list = await fs.promises.readdir(path.join("src", type));
         const lowerCaseList = list.map((item) => toLowerFirstCharacter(item));
         lowerCaseList.sort();
         list.sort((a, b) => lowerCaseList.indexOf(toLowerFirstCharacter(a)) - lowerCaseList.indexOf(toLowerFirstCharacter(b)));
@@ -51,7 +51,7 @@ import("strip-json-comments").then(async ({
     }
     console.info("totalScopes:", totalScopes);
     settings["conventionalCommits.scopes"] = totalScopes;
-    await fsPromises.writeFile(".vscode/settings.json", `${JSON.stringify(settings, null, 4)}\n`);
+    await fs.promises.writeFile(".vscode/settings.json", `${JSON.stringify(settings, null, 4)}\n`);
     console.info("Done.");
     process.exit(0);
 });

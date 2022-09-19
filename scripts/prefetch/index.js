@@ -3,7 +3,8 @@ const console = require("../modules/console.js");
 console.info("Start initialization...");
 const axios = require("../modules/axios.js");
 const prefetchTargets = require("./targets.js");
-const fsPromises = require("fs/promises");
+const fs = require("fs");
+const path = require("path");
 
 (async () => {
     console.info("prefetchTargets:", prefetchTargets);
@@ -26,7 +27,10 @@ const fsPromises = require("fs/promises");
             code.push(appendCode);
         }
         code.push("");
-        await fsPromises.writeFile(file, code.join("\n"));
+        await fs.promises.mkdir(path.dirname(file), {
+            recursive: true,
+        });
+        await fs.promises.writeFile(file, code.join("\n"));
     }
     console.info("Done.");
     process.exit(0);

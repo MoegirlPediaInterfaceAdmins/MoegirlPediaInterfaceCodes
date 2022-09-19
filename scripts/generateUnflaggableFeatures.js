@@ -3,7 +3,7 @@ const console = require("./modules/console.js");
 console.info("Start initialization...");
 const exec = require("./modules/exec.js");
 const axios = require("./modules/axios.js");
-const fsPromises = require("fs/promises");
+const fs = require("fs");
 
 const targetChromiumVersion = "70.0.3538.0";
 const targetUA = `Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/${targetChromiumVersion} Safari/537.36`;
@@ -11,7 +11,7 @@ const targetUA = `Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (
 (async () => {
     try {
         const unflaggableFeatures = [];
-        await fsPromises.mkdir("tmp", {
+        await fs.promises.mkdir("tmp", {
             recursive: true,
         });
         console.info("Start compile src/ to temporary bundle file...");
@@ -37,7 +37,7 @@ const targetUA = `Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (
             unflaggableFeatures.push(...match);
             i++;
         }
-        await fsPromises.writeFile("scripts/generatePolyfill/unflaggableFeatures.js", `"use strict";\nmodule.exports = ${JSON.stringify(unflaggableFeatures, null, 4).replace(/\n\]$/, ",\n]")};\n`);
+        await fs.promises.writeFile("scripts/generatePolyfill/unflaggableFeatures.js", `"use strict";\nmodule.exports = ${JSON.stringify(unflaggableFeatures, null, 4).replace(/\n\]$/, ",\n]")};\n`);
         console.info("left", clone.length - unflaggableFeatures.length);
         process.exit(0);
     } catch (e) {

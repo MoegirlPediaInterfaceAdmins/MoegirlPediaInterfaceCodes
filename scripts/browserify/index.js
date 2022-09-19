@@ -4,24 +4,24 @@ console.info("Start initialization...");
 const browserify = require("browserify");
 const minifyStream = require("minify-stream");
 const browserifyTargets = require("./targets.js");
-const fsPromises = require("fs/promises");
+const fs = require("fs");
 
 const inputPath = "tmp/input.js";
 const outputPath = "tmp/output.js";
 
 (async () => {
     console.info("browserifyTargets:", browserifyTargets);
-    await fsPromises.mkdir("tmp", {
+    await fs.promises.mkdir("tmp", {
         recursive: true,
     });
     for (const browserifyTarget of browserifyTargets) {
         console.info("target:", browserifyTarget);
         const { module, entry, file, exports, removePlugins, prependCode } = browserifyTarget;
-        await fsPromises.rm(inputPath, {
+        await fs.promises.rm(inputPath, {
             recursive: true,
             force: true,
         });
-        await fsPromises.rm(outputPath, {
+        await fs.promises.rm(outputPath, {
             recursive: true,
             force: true,
         });
@@ -34,7 +34,7 @@ const outputPath = "tmp/output.js";
             inputs.push(`import {${exports.join(",")}} from "${module}";`);
             inputs.push(`global["${entry}"] = {${exports.join(",")}}`);
         }
-        await fsPromises.writeFile(inputPath, inputs.join("\n"));
+        await fs.promises.writeFile(inputPath, inputs.join("\n"));
         const codes = await new Promise((res, rej) => {
             console.info(`[${module}]`, "start generating...");
             const plugins = new Set([
@@ -75,13 +75,13 @@ const outputPath = "tmp/output.js";
             output.push(prependCode);
         }
         output.push(codes.trim(), "");
-        await fsPromises.writeFile(outputPath, output.join("\n"));
+        await fs.promises.writeFile(outputPath, output.join("\n"));
         console.info(`[${module}]`, "generated successfully.");
-        await fsPromises.rm(file, {
+        await fs.promises.rm(file, {
             recursive: true,
             force: true,
         });
-        await fsPromises.cp(outputPath, file);
+        await fs.promises.cp(outputPath, file);
     }
     console.info("Done.");
     process.exit(0);

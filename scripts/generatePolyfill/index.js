@@ -3,7 +3,7 @@ const consoleWithTime = require("../modules/console.js");
 consoleWithTime.info("Start initialization...");
 const exec = require("../modules/exec.js");
 const axios = require("../modules/axios.js");
-const fsPromises = require("fs/promises");
+const fs = require("fs");
 const unflaggableFeatures = require("./unflaggableFeatures.js");
 
 const targetChromiumVersion = "70.0.3538.0";
@@ -11,11 +11,11 @@ const targetUA = `Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (
 
 (async () => {
     try {
-        await fsPromises.rm("tmp", {
+        await fs.promises.rm("tmp", {
             recursive: true,
             force: true,
         });
-        await fsPromises.mkdir("tmp", {
+        await fs.promises.mkdir("tmp", {
             recursive: true,
         });
         consoleWithTime.info("Start compile src/ to temporary bundle file...");
@@ -50,7 +50,7 @@ const targetUA = `Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (
             " */",
         ];
         code.push(data, "");
-        await fsPromises.writeFile("src/gadgets/libPolyfill/MediaWiki:Gadget-libPolyfill.js", code.join("\n"));
+        await fs.promises.writeFile("src/gadgets/libPolyfill/MediaWiki:Gadget-libPolyfill.js", code.join("\n"));
         consoleWithTime.info("\tDone.");
         const newunflaggableFeatures = [];
         if (data.includes("These features were not recognised")) {
