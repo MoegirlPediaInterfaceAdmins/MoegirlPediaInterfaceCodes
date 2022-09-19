@@ -64,6 +64,7 @@
         "Gadget-libBottomRightCorner",
         "Gadget-libHashwasm",
         "Gadget-libJQuery",
+        "Gadget-libJSON5",
         "Gadget-libOOUIDialog",
         "Gadget-libPolyfill",
         "Gadget-libUtil",
