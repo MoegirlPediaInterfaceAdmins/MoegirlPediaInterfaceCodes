@@ -2582,4 +2582,13 @@ module.exports = [
     "location.pathname",
     "open",
     "top",
+    "DOMMatrix.prototype.f",
+    "DOMMatrixReadOnly.prototype.f",
+    "Function.prototype",
+    "SVGMatrix.prototype.f",
+    "SyntaxError",
+    "SyntaxError.prototype.constructor",
+    "SyntaxError.prototype.message",
+    "SyntaxError.prototype.name",
+    "SyntaxError.prototype.toString",
 ];
