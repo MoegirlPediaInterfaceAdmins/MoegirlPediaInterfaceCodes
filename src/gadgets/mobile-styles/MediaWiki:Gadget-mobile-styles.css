@@ -430,10 +430,10 @@ img.userlink-avatar-small {
 /* 移动版缺失class=center样式 */
 .center {
     width: 100%;
-    text-align: center
+    text-align: center;
 }
 
 *.center * {
     margin-left: auto;
-    margin-right: auto
+    margin-right: auto;
 }
