@@ -15,7 +15,8 @@
     "dependencies": [
         "oojs",
         "oojs-ui",
-        "oojs-ui-core"
+        "oojs-ui-core",
+        "mediawiki.diff.styles"
     ],
     "_section": "maintenance"
 }
