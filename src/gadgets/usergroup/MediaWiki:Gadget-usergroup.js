@@ -14,6 +14,7 @@ $(() => (async () => {
         ["sysop", "#ec407a"],
         ["patroller", "#f44336"],
         ["honoredmaintainer", "#ff9800"],
+        ["file-maintainer", "#fbd940"],
         ["interface-admin", "#3f51b5"],
         ["scripteditor", "#1e88e5"],
         ["techeditor", "#039be5"],
@@ -67,6 +68,12 @@ $(() => (async () => {
             "zh-hant": "榮",
             "zh-tw": "榮",
             "zh-hk": "榮",
+        },
+        "file-maintainer": {
+            zh: "档",
+            "zh-hant": "檔",
+            "zh-tw": "檔",
+            "zh-hk": "檔",
         },
         "interface-admin": {
             zh: "界",
