@@ -15,7 +15,7 @@ $(() => {
 
         initialize() {
             super.initialize();
-            const selection = getSelection();
+            const selection = getSelected();
             const current_date = new Date();
             const current_year = current_date.getFullYear();
             const current_month = current_date.getMonth() + 1;
