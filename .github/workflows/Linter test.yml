@@ -8,17 +8,13 @@ on:
       - src/**/definition.json
       - src/gadgets/Gadgets-definition-list.json
       - .github/workflows/Linter test.yml
+      - package-lock.json
   pull_request:
     paths:
       - src/**/*.js
       - src/**/*.css
       - src/**/definition.json
   workflow_dispatch:
-    inputs:
-      from:
-        description: Don't use this input manually
-        required: false
-        type: string
 
 jobs:
   test:
@@ -43,7 +39,7 @@ jobs:
       - name: Run actions
         run: node scripts/workflows/linterTest.js
       - name: Trigger post commit CI
-        if: inputs.from != 'postCommit' && github.event_name == 'push'
+        if: github.event_name == 'push'
         uses: actions/github-script@v6
         with:
           script: |
