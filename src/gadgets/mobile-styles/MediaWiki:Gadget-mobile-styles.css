@@ -417,3 +417,23 @@ html>body.skin-minerva .content ol {
 .navigation-drawer {
     z-index: 1;
 }
+
+/* 移动版小头像样式 */
+img.userlink-avatar-small {
+    margin-left: 0.2em;
+    margin-right: 0.2em;
+    width: 1.5em;
+    border-radius: 15%;
+    margin-top: -0.2em;
+}
+
+/* 移动版缺失class=center样式 */
+.center {
+    width: 100%;
+    text-align: center
+}
+
+*.center * {
+    margin-left: auto;
+    margin-right: auto
+}
