@@ -39,7 +39,7 @@ jobs:
       - name: Run actions
         run: node scripts/workflows/linterTest.js
       - name: Trigger post commit CI
-        if: github.event_name == 'push' && github.ref == 'ref/heads/master'
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         uses: actions/github-script@v6
         with:
           script: |
