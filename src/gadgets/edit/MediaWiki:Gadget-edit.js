@@ -83,7 +83,7 @@ $(() => {
             "class": "editRequest",
         });
         const now = new Date();
-        container.append("您虽然无权编辑本页面，但您可以点击右侧按钮在本页的讨论页提出编辑请求，让可以编辑的人代为编辑：");
+        container.append("虽然您无权编辑本页面，但您可以点击右侧按钮在本页的讨论页提出编辑请求，让可以编辑的人代为编辑：");
         $("<span/>").addClass("newComment").text("提出编辑请求").on("click", () => {
             window.open(`${mw.config.get("wgServer")}${mw.config.get("wgScriptPath")}/index.php?action=edit&preload=Template:编辑请求/${/^MediaWiki:Conversiontable\/zh-[a-z]+$/.test(wgPageName) ? page : "comment"}&preloadtitle=编辑请求 - ${encodeURIComponent(`${mw.config.get("wgUserName")} - ${now.getFullYear()}.${prefixNumber(now.getMonth() + 1)}.${prefixNumber(now.getDate())}`)}&section=new&title=${encodeURIComponent(talkpage)}`, "_blank");
         }).appendTo(container);
