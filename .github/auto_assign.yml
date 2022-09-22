@@ -3,13 +3,7 @@ addReviewers: true
 addAssignees: true
 
 reviewers:
-  - MoegirlPediaInterfaceAdmins/bureaucrat
-  - MoegirlPediaInterfaceAdmins/sysop
-
-numberOfReviewers: 0
+  - AnnAngela
 
 assignees:
-  - MoegirlPediaInterfaceAdmins/bureaucrat
-  - MoegirlPediaInterfaceAdmins/sysop
-
-numberOfAssignees: 0
+  - AnnAngela
