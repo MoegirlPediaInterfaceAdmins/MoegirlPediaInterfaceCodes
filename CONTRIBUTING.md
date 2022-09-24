@@ -18,6 +18,20 @@
 
 请在新建小工具后，在小工具文件夹下创建一个 `definition.json`，并遵照 VSCode 编辑器指示（如果使用的不是 VSCode，那么请参照[对应的 json schemas](.vscode/json-schemas/gadget-definition.json)）。
 
+也不要忘记在 [`src/gadgets/Gadgets-definition-list.json`](src/gadgets/Gadgets-definition-list.json) 里指定其位置。
+
 ## 提交问题
 
 我们建议在[萌娘百科技术实现讨论版](https://zh.moegirl.org.cn/%E8%90%8C%E5%A8%98%E7%99%BE%E7%A7%91_talk:%E8%AE%A8%E8%AE%BA%E7%89%88/%E6%8A%80%E6%9C%AF%E5%AE%9E%E7%8E%B0)讨论相关问题，或是提交 Pull Request 以解决问题。当然也可以通过 issue 讨论。
+
+# 自动化相关
+
+如果需要添加自动化生成的内容，需要检查以下情况
+
+## 自动化 js 代码
+
+没啥好检查的，添加到对应自动化工具的目标列表后，工具会自己处理（记得遵循[§ 新建小工具后检查配置](#新建小工具后检查配置)一节）。
+
+## 自动化 css 代码
+
+1. 记得将对应文件路径添加到 [`.stylelintrc.json`](.stylelintrc.json) 的 `"ignoreFiles"` 配置项中。
