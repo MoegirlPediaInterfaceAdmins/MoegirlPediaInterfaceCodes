@@ -153,7 +153,7 @@ $(() => (async () => {
             }) => {
                 groups.forEach((group) => {
                     if (groupsKey.includes(group)) {
-                        result[group] = result[group] || [];
+                        result[group] ||= [];
                         if (!result[group].includes(name)) {
                             result[group].push(name);
                         }

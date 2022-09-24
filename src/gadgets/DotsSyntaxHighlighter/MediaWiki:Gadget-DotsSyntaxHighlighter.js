@@ -28,8 +28,8 @@
     let attributeObserver;
     let parentObserver;
 
-    const syntaxHighlighterSiteConfig = window.syntaxHighlighterSiteConfig = window.syntaxHighlighterSiteConfig || {};
-    const syntaxHighlighterConfig = window.syntaxHighlighterConfig = window.syntaxHighlighterConfig || {};
+    const syntaxHighlighterSiteConfig = window.syntaxHighlighterSiteConfig ||= {};
+    const syntaxHighlighterConfig = window.syntaxHighlighterConfig ||= {};
 
     const wgUrlProtocols = mw.config.get("wgUrlProtocols");
     const entityRegexBase = "&(?:(?:n(?:bsp|dash)|m(?:dash|inus)|lt|e[mn]sp|thinsp|amp|quot|gt|shy|zwn?j|lrm|rlm|Alpha|Beta|Epsilon|Zeta|Eta|Iota|Kappa|[Mm]u|micro|Nu|[Oo]micron|[Rr]ho|Tau|Upsilon|Chi)|#x[0-9a-fA-F]+);\n*";

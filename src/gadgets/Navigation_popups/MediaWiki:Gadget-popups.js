@@ -1416,7 +1416,7 @@ $(() => {
                 months: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
             },
         };
-        Insta.conf.user.name = Insta.conf.user.name || "Wikipedian";
+        Insta.conf.user.name ||= "Wikipedian";
         Insta.conf.user.signature = `[[${Insta.conf.locale.user}:${Insta.conf.user.name}|${Insta.conf.user.name}]]`;
         Insta.BLOCK_IMAGE = new RegExp(`^\\[\\[(?:File|Image|${Insta.conf.locale.image}):.*?\\|.*?(?:frame|thumbnail|thumb|none|right|left|center)`, "i");
     }
@@ -2826,7 +2826,7 @@ $(() => {
         if (!classname) {
             classname = emptySpanHTML.classAliases[name];
         }
-        classname = classname || name;
+        classname ||= name;
         if (name === getValueOf("popupDragHandle")) {
             classname += " popupDragHandle";
         }
@@ -4075,7 +4075,7 @@ $(() => {
         }
         track(_e) {
             let e = _e;
-            e = e || window.event;
+            e ||= window.event;
             let x, y;
             if (e) {
                 if (e.pageX) {

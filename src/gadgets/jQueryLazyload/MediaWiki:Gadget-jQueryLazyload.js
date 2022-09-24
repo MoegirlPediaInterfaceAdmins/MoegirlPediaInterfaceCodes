@@ -154,7 +154,7 @@
     if (window.jQuery) {
         jQuery.fn.lazyload = function (_options) {
             const options = _options || {};
-            options.attribute = options.attribute || "data-src";
+            options.attribute ||= "data-src";
             new LazyLoad(this.toArray(), options);
             return this;
         };

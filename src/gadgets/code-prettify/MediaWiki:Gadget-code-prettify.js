@@ -605,7 +605,7 @@ $(() => {
 
     function recombineTagsAndDecorations(job) {
         let isIE8OrEarlier = /\bMSIE\s(\d+)/.exec(navigator.userAgent);
-        isIE8OrEarlier = isIE8OrEarlier && +isIE8OrEarlier[1] <= 8;
+        isIE8OrEarlier &&= +isIE8OrEarlier[1] <= 8;
         const newlineRe = /\n/g;
         const source = job.sourceCode;
         const sourceLength = source.length;

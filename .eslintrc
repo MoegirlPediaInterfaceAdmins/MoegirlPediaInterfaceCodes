@@ -31,6 +31,7 @@
         "Cron": "readonly"
     },
     "rules": {
+        "logical-assignment-operators": "error",
         "prefer-reflect": [
             "error",
             {

@@ -116,7 +116,7 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
             if (!map) {
                 return;
             }
-            window.HotCat.shortcuts = window.HotCat.shortcuts || {};
+            window.HotCat.shortcuts ||= {};
             for (let k in map) {
                 if (!Object.prototype.hasOwnProperty.bind(map)(k) || typeof k !== "string") {
                     continue;
@@ -2804,7 +2804,7 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
             window.clearTimeout(setupTimeout);
             setupTimeout = null;
         }
-        catLine = catLine || document.getElementById("mw-normal-catlinks");
+        catLine ||= document.getElementById("mw-normal-catlinks");
         const hiddenCats = document.getElementById("mw-hidden-catlinks");
         if (!catLine) {
             let footer = null;

@@ -19,7 +19,7 @@ $(async () => {
                     Reflect.deleteProperty(cache, i);
                 }
                 const articleIdAndCurRevisionId = i.match(/\d+/g);
-                (sameArticleId[articleIdAndCurRevisionId[0]] = sameArticleId[articleIdAndCurRevisionId[0]] || []).push(articleIdAndCurRevisionId[1]);
+                (sameArticleId[articleIdAndCurRevisionId[0]] ||= []).push(articleIdAndCurRevisionId[1]);
             });
             Object.keys(sameArticleId).forEach((aid) => {
                 const c = sameArticleId[aid];

@@ -589,7 +589,7 @@
             if (mw.user && mw.user.tokens) {
                 umsg.editToken = mw.user.tokens.get("csrfToken");
             }
-            umsg.editToken = umsg.editToken || (mw.user.isAnon() ? "+\\" : "");
+            umsg.editToken ||= mw.user.isAnon() ? "+\\" : "";
             if (umsg.editToken) {
                 return;
             }
