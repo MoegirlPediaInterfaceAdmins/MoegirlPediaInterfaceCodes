@@ -26,8 +26,16 @@ jobs:
         name: List diff
       - name: Install dependencies
         run: npm ci
-      - name: Run actions
-        run: node scripts/workflows/postCommit.js
+      - name: Auto browserify generator
+        run: node scripts/browserify/index.js
+      - name: Conventional Commits scopes generator
+        run: node scripts/conventionalCommitsScopesGenerator/index.js
+      - name: Auto prefetch
+        run: node scripts/prefetch/index.js
+      - name: Gadgets-definition Generator
+        run: node scripts/gadgetsDefinitionGenerator/index.js
+      - name: Gadget-polyfill generator
+        run: node scripts/generatePolyfill/index.js
       - uses: EndBug/add-and-commit@v9
         with:
           committer_name: GitHub Actions
