@@ -16,7 +16,7 @@ const exec = require("../modules/exec.js");
         consoleWithTime.info("Pushing these commits...");
         consoleWithTime.info("Successfully pushed the commits:", await exec("git push"));
         consoleWithTime.info("Start triggering linter test...");
-        consoleWithTime.info("Successfully triggered the linter test:", await exec("gh workflow run \"Linter test\" --field from=postCommit"));
+        consoleWithTime.info("Successfully triggered the linter test:", await exec("gh workflow run \"Linter test\""));
         process.exit(0);
     } catch (e) {
         consoleWithTime.error(e);
