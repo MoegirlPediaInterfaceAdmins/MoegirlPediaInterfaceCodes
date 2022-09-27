@@ -3,9 +3,6 @@
     "[javascript]": {
         "editor.defaultFormatter": "vscode.typescript-language-features"
     },
-    "[css]": {
-        "editor.defaultFormatter": "stylelint.vscode-stylelint"
-    },
     "json.schemas": [
         {
             "fileMatch": [

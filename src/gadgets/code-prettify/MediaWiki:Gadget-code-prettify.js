@@ -24,6 +24,7 @@ $(() => {
         javascript: "js",
         json: "json",
         css: "css",
+        "sanitized-css": "css",
         htm: "html",
         html: "html",
         xml: "xml",
