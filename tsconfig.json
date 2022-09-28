@@ -6,7 +6,9 @@
         "outDir": "dist/",
         "alwaysStrict": true,
         "strict": true,
-        "downlevelIteration": true
+        "downlevelIteration": true,
+        "incremental": true,
+        "tsBuildInfoFile": ".cache/.tsbuildinfo"
     },
     "include": [
         "src",
