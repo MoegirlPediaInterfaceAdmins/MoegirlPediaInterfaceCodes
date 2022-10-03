@@ -819,7 +819,7 @@
                 let returnValue, currentTooltip = this;
 
                 do {
-                    returnValue = func.apply(currentTooltip)(currentTooltip, parameters);
+                    returnValue = func.apply(currentTooltip, parameters);
                     if (stopAtTrue && returnValue) {
                         break;
                     }
