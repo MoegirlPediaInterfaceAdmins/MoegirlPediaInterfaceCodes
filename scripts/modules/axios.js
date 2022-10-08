@@ -1,5 +1,8 @@
 "use strict";
-const axios = require("axios").default;
+/**
+ * @type {axios.AxiosStatic}
+ */
+const axios = require("axios");
 const http = require("http");
 const https = require("https");
 const httpAgent = new http.Agent({ keepAlive: true });
