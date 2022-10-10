@@ -69,31 +69,29 @@
         $block.find("#moe-custom-sidenav-block-list").append($li);
         return $li.get(0);
     }
-    async function polyfill() {
-        // assign functions
-        try {
-            /**
-             * @desc MediaWiki 似乎会将 window.addPortletLink 设置为只读
-             *       至于原因我暂且蒙古里
-             * @by 机智的小鱼君 2022年4月24日
-             */
-            Object.defineProperties(window, {
-                addPortletLink: {
-                    value: addPortletLink,
-                },
-                useCustomSidenavBlock: {
-                    value: useCustomSidenavBlock,
-                },
-            });
-        } catch (e) {
-            console.warn("[MoeSkin] addPortletLink", "Faild to bind global variables", e);
-        }
-        await mw.loader.using(["mediawiki.util"]);
-        Reflect.defineProperty(mw.util, "addPortletLink", {
-            value: addPortletLink,
+    // assign functions
+    try {
+        /**
+         * @desc MediaWiki 似乎会将 window.addPortletLink 设置为只读
+         *       至于原因我暂且蒙古里
+         * @by 机智的小鱼君 2022年4月24日
+         */
+        Object.defineProperties(window, {
+            addPortletLink: {
+                value: addPortletLink,
+            },
+            useCustomSidenavBlock: {
+                value: useCustomSidenavBlock,
+            },
         });
-        mw.hook("moeskin.addPortletLink").fire({ addPortletLink, useCustomSidenavBlock });
+    } catch (e) {
+        console.warn("[MoeSkin] addPortletLink", "Faild to bind global variables", e);
     }
+    await mw.loader.using(["mediawiki.util"]);
+    Reflect.defineProperty(mw.util, "addPortletLink", {
+        value: addPortletLink,
+    });
+    mw.hook("moeskin.addPortletLink").fire({ addPortletLink, useCustomSidenavBlock });
     /* PageTools */
     function PageTools() {
         /**
@@ -128,7 +126,6 @@
 
             return $button;
         }
-
         mw.hook("moeskin.pagetools").fire({
             usePageTools,
             usePageToolsButton,
@@ -139,8 +136,6 @@
     await $.ready;
     /* fixWikiLove */
     fixWikiLove();
-    /* polyfill */
-    polyfill();
     /* PageTools */
     PageTools();
 })();
