@@ -5,8 +5,9 @@ body.skin-moeskin #moe-bg-container {
     background-image: linear-gradient(to bottom, rgb(255 255 255 / 0%) 80%, var(--theme-background-color)), /* 顶部头图 URL 地址 */ url("//img.moegirl.org.cn/topbar/zhMoegirl_2022Spring.jpg");
     background-position: left center;
 }
+
 body.skin-moeskin #moe-bgCover-container {
-    --background-url: url(https://app.moegirl.org.cn/background/ZhMoegirl_12ndAnniversary/moeskin.jpg);
+    --background-url: url("https://app.moegirl.org.cn/background/ZhMoegirl_12ndAnniversary/moeskin.jpg");
 }
 
 /* footer */
