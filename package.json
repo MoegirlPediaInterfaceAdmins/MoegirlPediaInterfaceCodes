@@ -27,7 +27,7 @@
         "ip": "^1.1.8",
         "localforage": "^1.10.0",
         "minify-stream": "^2.1.0",
-        "postcss": "^8.4.17",
+        "postcss": "^8.4.18",
         "postcss-cli": "^10.0.0",
         "postcss-discard-comments": "^5.1.2",
         "strip-json-comments": "^5.0.0",
