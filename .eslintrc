@@ -32,14 +32,6 @@
     },
     "rules": {
         "logical-assignment-operators": "error",
-        "prefer-reflect": [
-            "error",
-            {
-                "exceptions": [
-                    "getOwnPropertyNames"
-                ]
-            }
-        ],
         "no-new-func": "error",
         "no-new-object": "error",
         "no-new-wrappers": "error",
