@@ -4,7 +4,7 @@
     /* 函数定义体 */
     // 一键复制用户名
     function copyUsername() {
-        $('a[href^="/User:" i], a[href*="?title=User:" i], a[href*="&title=User:" i]').after('<button class="copyUsername">复制用户名</button');
+        $('a[href^="/User:" i], a[href*="?title=User:" i], a[href*="&title=User:" i]').after('<button class="copyUsername">复制用户名</button>');
         for (const node of document.querySelectorAll(".copyUsername")) {
             node.addEventListener("click", async () => {
                 const usernameNode = $(node).prev();
