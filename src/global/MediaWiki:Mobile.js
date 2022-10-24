@@ -265,7 +265,7 @@
                     generateMenuLi({ href: "/Category:组织", iconName: "doubleChevronEnd", text: wgULS("组织", "組織") }),
                     generateMenuLi({ href: "/Category:概念用语", iconName: "doubleChevronEnd", text: wgULS("概念用语", "概念用語") }),
                     generateMenuLi({ href: "/Category:设定", iconName: "doubleChevronEnd", text: wgULS("设定", "設定") }),
-                    generateMenuLi({ href: "/Category:软件", iconName: "doubleChevronEnd", text: wgULS("软件", "軟體") }),
+                    generateMenuLi({ href: "/Category:软件", iconName: "doubleChevronEnd", text: wgULS("软件", "軟體", null, null,"軟件") }),
                     generateMenuLi({ href: "/Category:活动", iconName: "doubleChevronEnd", text: wgULS("活动", "活動") }),
                     "</ul>",
                     "</ul>",
