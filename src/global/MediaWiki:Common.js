@@ -396,8 +396,6 @@
     if (wgUserGroups.includes("user")) {
         topNoticeScroll();
     }
-    // 加载全站弹窗公告
-    mw.loader.load("https://app.moegirl.org.cn/site-wide-message/index.global.js");
     // 以下代码必须在全部内容加载完成后才能正常工作
     $(window).on("load", () => {
         // 语言对应
