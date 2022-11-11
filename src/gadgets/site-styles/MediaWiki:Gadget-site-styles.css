@@ -199,6 +199,7 @@
 
 .Tabs {
     max-width: 100%;
+    display:flow-root;
 }
 
 .Tabs.AutoWidth {
