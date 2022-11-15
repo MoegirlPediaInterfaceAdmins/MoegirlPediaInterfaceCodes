@@ -1,7 +1,7 @@
 "use strict";
 const console = require("../modules/console.js");
 console.info("Start initialization...");
-const axios = require("../modules/axios.js");
+const fetch = require("../modules/fetch.js");
 const prefetchTargets = require("./targets.js");
 const fs = require("fs");
 const path = require("path");
@@ -12,7 +12,9 @@ const path = require("path");
         console.info("target:", prefetchTarget);
         const { name, url, file, appendCode } = prefetchTarget;
         console.info(`[${name}]`, "Start fetching...");
-        const { data } = await axios.get(url);
+        const data = await fetch.text(url, {
+            method: "GET",
+        });
         console.info(`[${name}]`, "Successfully fetched.");
         const code = [
             "/**",

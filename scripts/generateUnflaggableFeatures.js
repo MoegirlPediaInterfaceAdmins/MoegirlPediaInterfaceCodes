@@ -2,7 +2,7 @@
 const console = require("./modules/console.js");
 console.info("Start initialization...");
 const exec = require("./modules/exec.js");
-const axios = require("./modules/axios.js");
+const fetch = require("./modules/fetch.js");
 const fs = require("fs");
 
 const targetChromiumVersion = "70.0.3538.0";
@@ -31,7 +31,9 @@ const targetUA = `Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (
             const url = new URL("https://polyfill.io/v3/polyfill.js");
             url.searchParams.set("features", piece.join(","));
             url.searchParams.set("ua", targetUA);
-            const { data } = await axios.get(`${url}`);
+            const data = await fetch.text(`${url}`, {
+                method: "GET",
+            });
             console.info("\tDone.");
             const match = data.match(/(?<=\n \* These features were not recognised:\n \* - )[^\n]+?(?=\s*\*\/)/)?.[0]?.split?.(/,-\s*/);
             unflaggableFeatures.push(...match);

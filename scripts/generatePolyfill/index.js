@@ -2,7 +2,7 @@
 const consoleWithTime = require("../modules/console.js");
 consoleWithTime.info("Start initialization...");
 const exec = require("../modules/exec.js");
-const axios = require("../modules/axios.js");
+const fetch = require("../modules/fetch.js");
 const fs = require("fs");
 const unflaggableFeatures = require("./unflaggableFeatures.js");
 
@@ -30,8 +30,7 @@ const targetUA = `Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (
         const url = new URL("https://polyfill.io/v3/polyfill.js");
         url.searchParams.set("features", features.join(","));
         url.searchParams.set("ua", targetUA);
-        const { data } = await axios({
-            url: `${url}`,
+        const data = await fetch.text(url, {
             method: "GET",
             headers: {
                 "user-agent": targetUA,
