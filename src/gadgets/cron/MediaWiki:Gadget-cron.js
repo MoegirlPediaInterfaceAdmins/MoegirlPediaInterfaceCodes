@@ -807,9 +807,7 @@ var _$input_6 = {};
 "use strict";
 
 var _cron = _interopRequireDefault(_$cron_2);
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
 global["Cron"] = _cron.default;
 
 }).call(this)}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})

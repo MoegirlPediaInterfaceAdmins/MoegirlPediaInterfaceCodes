@@ -2832,9 +2832,7 @@ var _$input_2 = {};
 "use strict";
 
 var _localforage = _interopRequireDefault(_$localforage_1);
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
 global["localforage"] = _localforage.default;
 
 }).call(this)}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
