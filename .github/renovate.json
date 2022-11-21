@@ -17,14 +17,14 @@
         "branchTopic": "lock-file-maintenance",
         "commitMessageAction": "Lock file maintenance",
         "schedule": [
-            "* 9 * * *"
+            "* 5-10 * * *"
         ],
         "prBodyDefinitions": {
             "Change": "All locks refreshed"
         }
     },
     "schedule": [
-        "* 8 * * *"
+        "* 0-5 * * *"
     ],
     "timezone": "Asia/Shanghai"
 }
