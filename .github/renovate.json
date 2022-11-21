@@ -8,6 +8,8 @@
     ],
     "commitBodyTable": true,
     "configMigration": true,
+    "dependencyDashboard": true,
+    "dependencyDashboardTitle": "Dependency Dashboard from renovate",
     "lockFileMaintenance": {
         "enabled": true,
         "recreateClosed": false,
