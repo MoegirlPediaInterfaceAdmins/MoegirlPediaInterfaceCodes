@@ -67,22 +67,22 @@ $(() => {
     function display(then) {
         return then.calendar(null, {
             sameDay: function () {
-                return `今天${format(then, "HourMinuteTimezone")}`;
+                return `[今天${format(then, "HourMinuteTimezone")}]`;
             },
             nextDay: function () {
-                return `明天${format(then, "HourMinuteTimezone")}`;
+                return `[明天${format(then, "HourMinuteTimezone")}]`;
             },
             nextWeek: function () {
-                return `${format(then, "YearMonthDayDayofweek")} (${format(then, "fromToNow")}) ${format(then, "HourMinuteTimezone")}`;
+                return `[${format(then, "YearMonthDayDayofweek")} (${format(then, "fromToNow")}) ${format(then, "HourMinuteTimezone")}]`;
             },
             lastDay: function () {
-                return `昨天${format(then, "HourMinuteTimezone")}`;
+                return `[昨天${format(then, "HourMinuteTimezone")}]`;
             },
             lastWeek: function () {
-                return `${format(then, "YearMonthDayDayofweek")} (${format(then, "fromToNow")}) ${format(then, "HourMinuteTimezone")}`;
+                return `[${format(then, "YearMonthDayDayofweek")} (${format(then, "fromToNow")}) ${format(then, "HourMinuteTimezone")}]`;
             },
             sameElse: function () {
-                return `${format(then, "YearMonthDayDayofweek")} (${format(then, "fromToNow")}) ${format(then, "HourMinuteTimezone")}`;
+                return `[${format(then, "YearMonthDayDayofweek")} (${format(then, "fromToNow")}) ${format(then, "HourMinuteTimezone")}]`;
             },
         });
     }
