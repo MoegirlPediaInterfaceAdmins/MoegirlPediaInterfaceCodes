@@ -411,6 +411,7 @@ html>body.skin-minerva .content {
 /* 修复列表对齐问题 */
 html>body.skin-minerva .content ol {
     list-style-position: outside;
+    padding-left: 2.25em;
 }
 
 /* 修复广告和侧边栏均z-index为0的问题 */
