@@ -412,6 +412,7 @@ html>body.skin-minerva .content {
 html>body.skin-minerva .content ol {
     list-style-position: outside;
 }
+
 html>body.skin-minerva .content ol:not(.margin-left-set) {
     padding-left: 2.25em;
 }
