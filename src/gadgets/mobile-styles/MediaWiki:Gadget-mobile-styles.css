@@ -411,6 +411,8 @@ html>body.skin-minerva .content {
 /* 修复列表对齐问题 */
 html>body.skin-minerva .content ol {
     list-style-position: outside;
+}
+html>body.skin-minerva .content ol:not(.margin-left-set) {
     padding-left: 2.25em;
 }
 
