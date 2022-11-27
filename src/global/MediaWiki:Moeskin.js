@@ -79,9 +79,11 @@
         Object.defineProperties(window, {
             addPortletLink: {
                 value: addPortletLink,
+                configurable: true,
             },
             useCustomSidenavBlock: {
                 value: useCustomSidenavBlock,
+                configurable: true,
             },
         });
     } catch (e) {
@@ -90,6 +92,7 @@
     await mw.loader.using(["mediawiki.util"]);
     Reflect.defineProperty(mw.util, "addPortletLink", {
         value: addPortletLink,
+        configurable: true,
     });
     mw.hook("moeskin.addPortletLink").fire({ addPortletLink, useCustomSidenavBlock });
     /* PageTools */
