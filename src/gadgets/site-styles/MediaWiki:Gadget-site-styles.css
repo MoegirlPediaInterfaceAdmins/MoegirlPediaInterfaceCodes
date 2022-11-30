@@ -7,7 +7,7 @@
 
 /* 2022年11月30日 全站临时黑白 */
 body.page-Mainpage {
-    filter: grayscale(1);
+    filter: grayscale(1) !important;
 }
 
 /* Tabs */
