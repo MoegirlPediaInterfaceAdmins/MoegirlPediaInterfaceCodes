@@ -27,7 +27,7 @@
      * @returns {JQuery<HTMLDivElement>}
      */
     function useCustomSidenavBlock() {
-        let $block = $("aside#moe-global-sidenav #moe-custom-sidenav-block");
+        let $block = $("aside#moe-global-siderail #moe-custom-sidenav-block");
         if (!$block.length) {
             $block = $("<div>", {
                 "class": "moe-card",
@@ -38,7 +38,7 @@
                     "class": "mw-parser-output",
                 }).append($("<h2>", { text: "自定义工具" }), $("<ul>", { id: "moe-custom-sidenav-block-list" })),
             );
-            $("aside#moe-global-sidenav .moe-siderail-sticky").before($block);
+            $("aside#moe-global-siderail .moe-siderail-sticky").before($block);
         }
         return $block;
     }
