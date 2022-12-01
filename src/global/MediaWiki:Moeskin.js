@@ -38,7 +38,7 @@
                     "class": "mw-parser-output",
                 }).append($("<h2>", { text: "自定义工具" }), $("<ul>", { id: "moe-custom-sidenav-block-list" })),
             );
-            $("aside#moe-global-sidenav .moe-sidenav-sticky-rail").before($block);
+            $("aside#moe-global-sidenav .moe-siderail-sticky").before($block);
         }
         return $block;
     }
