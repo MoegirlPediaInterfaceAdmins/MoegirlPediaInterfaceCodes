@@ -90,7 +90,7 @@ body.skin-moeskin #moe-main-container > #moe-topbanner-container > #moe-topbanne
 }
 
 /* @pollify mw.util.addPortletLink */
-aside#moe-global-sidenav #moe-custom-sidenav-block h2 {
+aside#moe-global-siderail #moe-custom-sidenav-block h2 {
     font-size: 1.2em;
     margin: 0;
 }
@@ -167,16 +167,16 @@ body.skin-moeskin .mw-mmv-wrapper {
 }
 
 /* 侧边栏公告 */
-#moe-global-sidenav #moe-sidenav-sitenotice {
+#moe-global-siderail #moe-siderail-sitenotice {
     text-align: left;
 }
 
-#moe-global-sidenav #moe-sidenav-sitenotice h2 {
+#moe-global-siderail #moe-siderail-sitenotice h2 {
     font-size: 16px;
     margin: 0;
 }
 
-#moe-global-sidenav #moe-sidenav-sitenotice h2 .mw-headline-number {
+#moe-global-siderail #moe-siderail-sitenotice h2 .mw-headline-number {
     display: none;
 }
 
