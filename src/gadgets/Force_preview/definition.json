@@ -11,7 +11,9 @@
     "actions": [],
     "type": "general",
     "package": false,
-    "rights": ["edit"],
+    "rights": [
+        "edit"
+    ],
     "peers": [],
     "dependencies": [
         "user.options"
