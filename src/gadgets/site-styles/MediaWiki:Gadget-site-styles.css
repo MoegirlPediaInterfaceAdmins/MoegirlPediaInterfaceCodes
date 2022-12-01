@@ -5,11 +5,6 @@
  * 版权协定：知识共享 署名-非商业性使用-相同方式共享 3.0
  */
 
-/* 2022年11月30日 全站临时黑白 */
-body.page-Mainpage {
-    filter: grayscale(1) !important;
-}
-
 /* Tabs */
 .tab .TabLabelText {
     padding: 1px;
