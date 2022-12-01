@@ -179,3 +179,7 @@ body.skin-moeskin .mw-mmv-wrapper {
 #moe-global-sidenav #moe-sidenav-sitenotice h2 .mw-headline-number {
     display: none;
 }
+
+#mw-content-text table img {
+    max-width: unset;
+}
