@@ -11,7 +11,7 @@ $(() => {
             `<li>萌娘百科_talk:讨论版/方针政策|${wgULS("方针政策", "方針政策")}</li>\n` +
             `<li>萌娘百科_talk:讨论版/页面相关|${wgULS("页面相关", "頁面相關")}</li>\n` +
             `<li>萌娘百科_talk:讨论版/提问求助|${wgULS("提问求助", "提問求助")}</li>\n` +
-            `<li>萌娘百科_talk:讨论版/群组信息|${wgULS("群组信息", "群組資訊")}</li></ul></li>`
+            `<li>萌娘百科_talk:讨论版/群组信息|${wgULS("群组信息", "群組資訊")}</li></ul></li>`,
             );
     if (+mw.user.options.get("gadget-moeskin-topbar-patrolplus", 0) === 1) {
         moetopbarplus = moetopbarplus
