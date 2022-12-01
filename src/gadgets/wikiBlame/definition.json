@@ -9,7 +9,7 @@
     "type": "general",
     "package": false,
     "rights": [
-        "noratelimit"
+        "patrol"
     ],
     "peers": [],
     "dependencies": [
