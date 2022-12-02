@@ -46,16 +46,16 @@ body.skin-moeskin #footer-moegirl #footer-qrcode-area {
     display: flex;
 }
 
-body.skin-moeskin #footer-moegirl #footer-qrcode-area > div {
+body.skin-moeskin #footer-moegirl #footer-qrcode-area>div {
     text-align: center;
     flex: 1;
 }
 
-body.skin-moeskin #footer-moegirl #footer-qrcode-area > div:not(:last-of-type) {
+body.skin-moeskin #footer-moegirl #footer-qrcode-area>div:not(:last-of-type) {
     margin-right: 1rem;
 }
 
-body.skin-moeskin #footer-moegirl #footer-qrcode-area > div span {
+body.skin-moeskin #footer-moegirl #footer-qrcode-area>div span {
     display: block;
     font-size: 0.875rem;
     margin-top: 4px;
@@ -79,11 +79,11 @@ body.skin-moeskin #moe-main-container {
 }
 
 /* adjust top banner */
-body.skin-moeskin #moe-main-container > #moe-topbanner-container {
+body.skin-moeskin #moe-main-container>#moe-topbanner-container {
     /* z-index: 1; */
 }
 
-body.skin-moeskin #moe-main-container > #moe-topbanner-container > #moe-topbanner {
+body.skin-moeskin #moe-main-container>#moe-topbanner-container>#moe-topbanner {
     padding: 0;
     line-height: 0;
     overflow: hidden;
@@ -114,7 +114,7 @@ body.skin-moeskin #toc-container .toc ul {
 }
 
 /* @fix 标题的显示模式 */
-body.skin-moeskin #moe-page-header-top > div {
+body.skin-moeskin #moe-page-header-top>div {
     display: flex;
 }
 
@@ -186,17 +186,23 @@ body.skin-moeskin .mw-mmv-wrapper {
 
 /* 移动设备优化 */
 @media (max-width: 576px) {
-    .infoBox {
-        width: 100% !important;
-    }
 
-    .infotemplatebox {
-        width: 100%;
-        float: none;
-        margin: 1rem 0;
-    }
-
+    /* 清除浮动 */
     #mw-content-text * {
         float: unset !important;
+    }
+
+    /* 首页 */
+    .mainpage-container {
+        flex-direction: column;
+    }
+
+    .mainpage-container .mainpage-box,
+    .mainpage-container .mainpage-newsbox {
+        width: 100%;
+    }
+
+    .mainpage-container .moegirlSister_container {
+        margin-right: 1rem;
     }
 }
