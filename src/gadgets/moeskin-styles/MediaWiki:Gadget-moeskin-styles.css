@@ -189,11 +189,13 @@ body.skin-moeskin .mw-mmv-wrapper {
     .infoBox {
         width: 100% !important;
     }
+
     .infotemplatebox {
         width: 100%;
         float: none;
         margin: 1rem 0;
     }
+
     #mw-content-text * {
         float: unset !important;
     }
