@@ -189,7 +189,7 @@ body.skin-moeskin .mw-mmv-wrapper {
 
     /* 清除浮动 */
     body.skin-moeskin #mw-content-text * {
-        float: unset !important;
+        float: none !important;
     }
 
     /* [[T:Infobox]] */
@@ -199,6 +199,5 @@ body.skin-moeskin .mw-mmv-wrapper {
         width: 100% !important;
         float: none !important;
         margin: 1rem 0 !important;
-        float: unset !important;
     }
 }
