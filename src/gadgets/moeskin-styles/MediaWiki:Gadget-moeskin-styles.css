@@ -135,6 +135,11 @@ body.skin-moeskin #moe-page-header-top>div {
     z-index: 31;
 }
 
+/* @fix OO.ui.Dialog的图层顺序不应低于#moe-global-header */
+.oo-ui-windowManager-modal > div.oo-ui-dialog {
+    z-index: 20;
+}
+
 /* @fix flashmp3 layer */
 .skin-moeskin #mw-content-text .sm2-bar-ui p {
     line-height: 1;
