@@ -13,6 +13,7 @@ $(() => (async () => {
     let globalDeletionLock = false;
     const DELCATS = {
         "zh.moegirl.org.cn": "即将删除的页面",
+        "mzh.moegirl.org.cn": "即将删除的页面",
         "commons.moegirl.org.cn": "即将删除的页面",
         "en.moegirl.org.cn": "Pages awaiting deletion",
         "ja.moegirl.org.cn": "削除依頼中のページ",
