@@ -24,6 +24,7 @@ $(() => {
         class QMTWindow extends OO.ui.ProcessDialog {
             static static = {
                 ...super.static,
+                tagName: "div",
                 name: "lr-qmt",
                 title: wgULS("快速移动讨论串", "快速移動討論串"),
                 actions: [
