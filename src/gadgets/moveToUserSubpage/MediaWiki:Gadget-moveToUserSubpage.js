@@ -24,6 +24,7 @@ $(() => {
         class MTUSWindow extends OO.ui.ProcessDialog {
             static static = {
                 ...super.static,
+                tagName: "div",
                 name: "lr-mtus",
                 title: isModule ? wgULS("打回创建者模块沙盒", "打回創建者模塊沙盒") : wgULS("打回创建者用户页", "打回創建者用戶頁"),
                 actions: [

@@ -13,6 +13,7 @@ $(() => {
         class FFDWindow extends OO.ui.ProcessDialog {
             static static = {
                 ...super.static,
+                tagName: "div",
                 name: "lr-ffd",
                 title: wgULS("挂删", "掛删"),
                 actions: [
