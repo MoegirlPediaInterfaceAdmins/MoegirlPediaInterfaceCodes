@@ -374,9 +374,6 @@
         });
     }
 
-    // 加载全站弹窗公告
-    mw.loader.load("https://app.moegirl.org.cn/site-wide-message/index.global.js");
-
     await $.ready;
 
     /* 反嵌入反反代 */
