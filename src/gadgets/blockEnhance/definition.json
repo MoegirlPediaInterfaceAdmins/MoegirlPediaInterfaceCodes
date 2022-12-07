@@ -3,10 +3,7 @@
     "hidden": true,
     "default": true,
     "supportsUrlLoad": false,
-    "targets": [
-        "desktop",
-        "mobile"
-    ],
+    "targets": [],
     "skins": [],
     "actions": [],
     "type": "general",
