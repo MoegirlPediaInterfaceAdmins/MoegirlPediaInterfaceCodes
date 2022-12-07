@@ -24,6 +24,7 @@ $(() => {
     class MGPReportDialog extends OO.ui.ProcessDialog {
         static static = {
             ...super.static,
+            tagName: "div",
             name: "mgpReportDialog",
             title: wgULS("页面反馈", "頁面反饋"),
             actions: [
@@ -124,7 +125,7 @@ $(() => {
             super(config);
 
             // Initialize
-            this.$element.addClass("MGPReport-root").css("z-index", "100");
+            this.$element.addClass("MGPReport-root");
         }
         initialize() {
             // Parent method

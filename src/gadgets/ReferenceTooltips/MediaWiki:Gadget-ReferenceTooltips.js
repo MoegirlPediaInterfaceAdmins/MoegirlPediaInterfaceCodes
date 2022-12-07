@@ -335,6 +335,7 @@
         class SettingsDialog extends OO.ui.ProcessDialog {
             static static = {
                 ...super.static,
+                tagName: "div",
                 name: "settingsDialog",
                 title: "参考文献提示工具",
                 actions: [

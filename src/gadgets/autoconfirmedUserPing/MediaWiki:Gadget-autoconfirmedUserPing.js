@@ -19,6 +19,7 @@ $(() => (async () => {
     class ACUPWindow extends OO.ui.ProcessDialog {
         static static = {
             ...super.static,
+            tagName: "div",
             name: "lr-acup",
             title: wgULS("自动确认用户列表", "自動確認使用者列表"),
             actions: [

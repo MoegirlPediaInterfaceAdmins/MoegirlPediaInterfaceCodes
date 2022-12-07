@@ -24,6 +24,7 @@ $(() => {
         class MTUSWindow extends OO.ui.ProcessDialog {
             static static = {
                 ...super.static,
+                tagName: "div",
                 name: "lr-mtus",
                 title: isModule ? wgULS("打回创建者模块沙盒", "打回創建者模塊沙盒") : wgULS("打回创建者用户页", "打回創建者用戶頁"),
                 actions: [
@@ -247,7 +248,7 @@ $(() => {
         });
         windowManager.addWindows([mtusDialog]);
 
-        $(mw.util.addPortletLink("p-cactions", "#", "打回", "ca-lr-mtus", isModule ? wgULS("移动至创建者模块沙盒", "移至創建者模組沙盒") : wgULS("移动至创建者用户页并挂删", "移至創建者用戶頁並掛删"), "d")).on("click", (e) => {
+        $(mw.util.addPortletLink("p-cactions", "#", "打回", "ca-lr-mtus", isModule ? wgULS("移动至创建者模块沙盒", "移至創建者模組沙盒") : wgULS("移动至创建者用户页并挂删", "移至創建者用戶頁並掛删"), "m")).on("click", (e) => {
             e.preventDefault();
             windowManager.openWindow(mtusDialog);
             $body.css("overflow", "auto");
