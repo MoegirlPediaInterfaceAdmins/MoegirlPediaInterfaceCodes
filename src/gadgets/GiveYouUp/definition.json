@@ -3,13 +3,9 @@
     "hidden": false,
     "default": true,
     "supportsUrlLoad": false,
-    "targets": [
-        "desktop",
-        "mobile"
-    ],
+    "targets": [],
     "skins": [
-        "vector",
-        "minerva"
+        "vector"
     ],
     "actions": [],
     "type": "general",
