@@ -26,6 +26,23 @@
         url.query.title = `${mw.config.get("wgCanonicalNamespace")}:${mw.config.get("wgCanonicalSpecialPageName")}`;
         location.replace(url);
     }
+    /* 浮动滚动条 */
+    const forbiddenScroll = ["hidden", "clip"];
+    $window.on("resize", () => {
+        const innerWidth = window.innerWidth;
+        let scrollbarWidth;
+        if (!forbiddenScroll.includes(getComputedStyle(body).overflowY)) {
+            scrollbarWidth = innerWidth - body.clientWidth;
+        } else if (!forbiddenScroll.includes(getComputedStyle(html).overflowY)) {
+            scrollbarWidth = innerWidth - html.clientWidth;
+        } else {
+            const backup = body.style.overflowY;
+            body.style.overflowY = "scroll";
+            scrollbarWidth = innerWidth - body.clientWidth;
+            body.style.overflowY = backup;
+        }
+        $body[scrollbarWidth <= 0 ? "addClass" : "removeClass"]("overlay-scrollbars");
+    }).trigger("resize");
     /* Tabs */
     function tabs() {
         const defaultStyle = {
