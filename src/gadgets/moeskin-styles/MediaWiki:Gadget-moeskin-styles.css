@@ -193,8 +193,8 @@ body.skin-moeskin .mw-mmv-wrapper {
 @media (max-width: 576px) {
 
     /* 清除浮动 */
-    body.skin-moeskin #mw-content-text * {
-        float: none !important;
+    body.skin-moeskin .mw-parser-output > * {
+        float: unset !important;
     }
 
     /* [[T:Infobox]] */
@@ -202,7 +202,7 @@ body.skin-moeskin .mw-mmv-wrapper {
     body.skin-moeskin table.infobox,
     body.skin-moeskin table.infoboxSpecial {
         width: 100% !important;
-        float: none !important;
+        float: unset !important;
         margin: 1rem 0 !important;
     }
 }
