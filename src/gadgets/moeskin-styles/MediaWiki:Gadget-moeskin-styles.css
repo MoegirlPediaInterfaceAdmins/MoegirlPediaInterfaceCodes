@@ -16,12 +16,7 @@ body.skin-moeskin #footer-moegirl {
     flex-wrap: wrap;
     display: flex;
     gap: 1rem;
-}
-
-@media (max-width: 576px) {
-    body.skin-moeskin #footer-moegirl {
-        flex-direction: column;
-    }
+    overflow: hidden;
 }
 
 body.skin-moeskin #footer-moegirl h4 {
@@ -36,6 +31,11 @@ body.skin-moeskin #footer-moegirl ul {
     min-width: 120px;
     font-size: 12pt;
     flex: 1;
+}
+
+body.skin-moeskin #footer-moegirl li {
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 body.skin-moeskin #footer-moegirl ul a {
@@ -76,11 +76,6 @@ body.skin-moeskin #footer-moegirl #footer-qrcode-area img {
 /* adjust bg opacity of article area */
 body.skin-moeskin #moe-main-container {
     --theme-card-background-color: rgb(255 255 255 / 90%);
-}
-
-/* adjust top banner */
-body.skin-moeskin #moe-main-container>#moe-topbanner-container {
-    /* z-index: 1; */
 }
 
 body.skin-moeskin #moe-main-container>#moe-topbanner-container>#moe-topbanner {
@@ -136,7 +131,7 @@ body.skin-moeskin #moe-page-header-top>div {
 }
 
 /* @fix OO.ui.Dialog的图层顺序不应低于#moe-global-header */
-.oo-ui-windowManager-modal > div.oo-ui-dialog {
+.oo-ui-windowManager-modal>div.oo-ui-dialog {
     z-index: 20;
 }
 
@@ -193,7 +188,7 @@ body.skin-moeskin .mw-mmv-wrapper {
 @media (max-width: 576px) {
 
     /* 清除浮动 */
-    body.skin-moeskin .mw-parser-output > * {
+    body.skin-moeskin .mw-parser-output>* {
         float: unset !important;
     }
 
