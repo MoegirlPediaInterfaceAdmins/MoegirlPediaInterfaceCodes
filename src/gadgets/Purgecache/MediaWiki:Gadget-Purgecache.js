@@ -1,7 +1,7 @@
 "use strict";
 // <pre>
 $(() => {
-    const li = mw.config.get("skin") === "vector" ? $("<li/>").appendTo("#p-personal > ul") : $("<div/>").prependTo("#moe-page-header-container #moe-page-header-top .right-block"),
+    const li = mw.config.get("skin") === "vector" ? $("<li/>").appendTo("#p-personal > ul") : $("<div/>").prependTo("#moe-article-header-container #moe-article-header-top .right-block"),
         textNode = $("<span/>");
     let containerNode;
     if (mw.config.get("wgNamespaceNumber") === -1) {
