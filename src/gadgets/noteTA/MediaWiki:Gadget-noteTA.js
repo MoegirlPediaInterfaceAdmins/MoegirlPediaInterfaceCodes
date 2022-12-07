@@ -22,9 +22,23 @@ mw.hook("wikipage.content").add(() => {
         if (noteTAIndicator.length === 0) {
             return;
         }
-        const noteTAIndicatorImg = noteTAIndicator.find("img");
+        const $noteTAIndicatorImg = noteTAIndicator.find("img");
         let $dialog = null;
-        const $this = $("#p-variants").length === 0 ? $("[id^=mobile-noteTA-].mobileonly").show() : $("<div/>").html(`<ul><li class="selected"><span><a href="#">${noteTAIndicatorImg[0].outerHTML}</a></span></li></ul>`).addClass("vector-menu vector-menu-tabs vectorTabs").css("float", "left").attr("id", "noteTA-vector-menu-tabs").insertAfter("#p-variants");
+        const $this = $("#p-variants").length === 0
+            ? $("[id^=mobile-noteTA-].mobileonly").show()
+            : $("<div/>", {
+                class: 'vector-menu vector-menu-tabs vectorTabs',
+                id: 'noteTA-vector-menu-tabs',
+                style: 'float: left'
+            }).append(
+                $('<ul>').append(
+                    $('<li>', { class: 'selected' }).append(
+                        $('<span>').append(
+                            $('<a>', { href: 'javascript:;' }).append($noteTAIndicatorImg).get(0)
+                        )
+                    )
+                )
+            ).insertAfter("#p-variants");
         const hash = noteTAIndicator.attr("id").replace(/^(?:mw-indicator|mobile)-noteTA-/, "");
         $this.on("click", () => {
             if ($dialog === null) {
