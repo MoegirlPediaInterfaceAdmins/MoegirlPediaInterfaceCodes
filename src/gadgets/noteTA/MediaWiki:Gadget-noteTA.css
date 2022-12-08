@@ -6,19 +6,6 @@
  * 引自 https://zh.wikipedia.org/wiki/MediaWiki:Gadget-noteTA.css https://zh.wikipedia.org/wiki/MediaWiki:Gadget-noteTAvector.css
  * User:AnnAngela做了整合
  */
-.noteTA-topicon {
-    padding-left: 0;
-}
-
-.noteTA-topicon ul li.icon span a {
-    background-image: url("//img.moegirl.org.cn/wikipedia/commons/thumb/c/cd/Zh_conversion_icon_m.svg/34px-Zh_conversion_icon_m.svg.png");
-    width: 46px;
-    height: 0;
-    overflow: hidden;
-    padding: 3.1em 0 0;
-    background-position: 5px 75%;
-}
-
 #noteTA-dialog a {
     color: #36B;
 }
