@@ -20,180 +20,183 @@ mw.hook("wikipage.content").add(() => {
         $("#p-variants").nextAll('.noteTA-menu, [class*="mw-indicator"], [id*="mw-indicator"]').remove();
         const skinname = mw.config.get("skin");
         let noteTAIndicator;
-        if (skinname == "vector") noteTAIndicator = $('[id^=mw-indicator-noteTA-]').hide();
-        //moeskin的'.mw-indicator'因故丢失
-        else noteTAIndicator = $('[id^=mobile-noteTA-]').hide();
+        if (skinname === "vector") {
+            noteTAIndicator = $('[id^=mw-indicator-noteTA-]').hide();
+    }
+        else {
+        noteTAIndicator = $('[id^=mobile-noteTA-]').hide();
+    }//moeskin的'.mw-indicator'因故丢失
         if (noteTAIndicator.length === 0) {
             return;
         }
-		noteTAIndicator.each(function (_, ele){
-			const noteTAImg = $(ele).find("img");
-			const hash = $(ele).attr('id').replace(/^(?:mw-indicator|mobile)-noteTA-/, "");
-			let $dialog = null, $this;
-			//vector皮肤按钮调整
-			if (skinname == "vector"){
-				$this = $('<div/>').html('<ul><li class="selected"><span><a href="#">'+ noteTAImg[0].outerHTML +"</a></span></li></ul>");
-				$this.removeAttr('style').attr("id", "noteTA-vector-menu-tabs")
-				.addClass("vectorTabs").css('float','left').insertAfter("#p-variants");
-			}else{
-				$this = $('<div/>').attr({"id": "p-noteTA-moeskin","role":"navigation"});
-				$this.append(noteTAImg).insertAfter("#p-variants");
-			}
-			//open noteTAViewer
-			$this.click( function() {
-				if ( $dialog === null ) {
-					$dialog = init(hash);
-				} else {
-					$dialog.dialog('open');
-				}
-			});
-		});
+        noteTAIndicator.each((_, ele) => {
+        const noteTAImg = $(ele).find("img");
+        const hash = $(ele).attr('id').replace(/^(?:mw-indicator|mobile)-noteTA-/, "");
+        let $dialog = null, $this;
+        //vector皮肤按钮调整
+        if (skinname === "vector"){
+                $this = $('<div/>').html('<ul><li class="selected"><span><a href="#">'+ noteTAImg[0].outerHTML +'</a></span></li></ul>');
+                $this.removeAttr('style').attr("id", "noteTA-vector-menu-tabs")
+                .addClass("vectorTabs").css('float','left').insertAfter("#p-variants");
+            }else{
+                $this = $('<div/>').attr({"id": "p-noteTA-moeskin","role":"navigation"});
+                $this.append(noteTAImg).insertAfter("#p-variants");
+            }
+            //open noteTAViewer
+            $this.click(() => {
+                if ( $dialog === null ) {
+                    $dialog = init(hash);
+                } else {
+                    $dialog.dialog('open');
+                }
+            });
+        });
     });
-	var init = function(hash){
-		$dialog = $('<div class="noteTA-dialog" />');
-		$dialog.html('<div class="mw-ajax-loader" style="margin-top: 48px;" />');
-		$dialog.dialog({
-			title: wgULS("字词转换", "字詞轉換"),
-		});
-		let wikitext_1 = "";
-		const $dom = $(`#noteTA-${hash}`);
-		let collapse_1 = true;
-		const actualTitle_1 = mw.config.get("wgPageName").replace(/_/g, " ");
+    var init = (hash) => {
+        $dialog = $('<div class="noteTA-dialog" />');
+        $dialog.html('<div class="mw-ajax-loader" style="margin-top: 48px;" />');
+        $dialog.dialog({
+            title: wgULS("字词转换", "字詞轉換"),
+        });
+        let wikitext_1 = "";
+        const $dom = $(`#noteTA-${hash}`);
+        let collapse_1 = true;
+        const actualTitle_1 = mw.config.get("wgPageName").replace(/_/g, " ");
 
-		const parse = async () => {
-			try {
-				const results = await api.post({
-					action: "parse",
-					title: "Template:CGroup/____SAND_BOX____",
-					text: wikitext_1,
-					prop: "text",
-					variant: mw.config.get("wgUserVariant"),
-				});
-				$dialog.html(results.parse.text["*"]);
-				if (collapse_1) {
-					$dialog.find(".mw-collapsible").makeCollapsible();
-					$dialog.find(".mw-collapsible-toggle").on("click.mw-collapse", async (_, ele) => {
-						const $collapsibleContent = $(ele).parent(".mw-collapsible").find(".mw-collapsible-content");
-						await $collapsibleContent.promise();
-						$dialog.dialog("option", "position", "center");
-					});
-				}
-				$dialog.dialog("option", "width", Math.round($(window).width() * 0.8));
-				$dialog.css("max-height", `${Math.round($(window).height() * 0.8)}px`);
-				$dialog.dialog("option", "position", "center");
-			} catch {
-				return parse();
-			}
-		};
-		let maybeTitle_1 = parse;
-		const $noteTAtitle = $dom.find(".noteTA-title");
-		if ($noteTAtitle.length) {
-			const titleConv = $noteTAtitle.attr("data-noteta-code");
-			let titleDesc = $noteTAtitle.attr("data-noteta-desc");
-			if (titleDesc) {
-				titleDesc = `（${titleDesc}）`;
-			} else {
-				titleDesc = "";
-			}
-			wikitext_1 += `<span style="float: right;">{{edit|${actualTitle_1}|section=0}}</span>\n`;
-			wikitext_1 += "; 本文使用[[Help:繁简转换|标题手工转换]]\n";
-			wikitext_1 += `* 转换标题为：-{D|${titleConv}}-${titleDesc}\n`;
-			wikitext_1 += `* 实际标题为：-{R|${actualTitle_1}}-；当前显示为：-{|${titleConv}}-\n`;
-		} else {
-			maybeTitle_1 = async () => {
-				try {
-					const results = await api.post({
-						action: "parse",
-						title: actualTitle_1,
-						text: `{{noteTA/multititle|${actualTitle_1}}}`,
-						prop: "text",
-						variant: "zh",
-					});
-					const $multititle = $(results.parse.text["*"]).find(".noteTA-multititle");
-					if ($multititle.length) {
-						const textVariant_1 = {};
-						const variantText_1 = {};
-						let multititleText = "";
-						$multititle.children().each((_, ele) => {
-							const $li = $(ele);
-							const variant = $li.attr("data-noteta-multititle-variant");
-							const text = $li.text();
-							variantText_1[variant] = text;
-							if (textVariant_1[text]) {
-								textVariant_1[text].push(variant);
-							} else {
-								textVariant_1[text] = [variant];
-							}
-						});
-						multititleText += "; 本文[[Help:繁简转换|标题可能经过转换]]\n";
-						multititleText += "* 转换标题为：";
-						const multititle = [],
-							titleConverted = variantText_1[mw.config.get("wgUserVariant")];
-						for (const variant in variantText_1) {
-							const text = variantText_1[variant];
-							if (text === null) {
-								continue;
-							}
-							const variants = textVariant_1[text];
-							for (let i = 0, l = variants.length; i < l; i++) {
-								variantText_1[variants[i]] = null;
-							}
-							const variantsName = variants.map((variant) => `-{R|{{MediaWiki:Variantname-${variant}}}}-`).join("、");
-							multititle.push(`${variantsName}：-{R|${text}}-`);
-						}
-						multititleText += multititle.join("；");
-						multititleText += `\n* 实际标题为：-{R|${actualTitle_1}}-；当前显示为：-{R|${titleConverted}}-\n`;
-						wikitext_1 = multititleText + wikitext_1;
-					}
-					parse();
-				} catch {
-					return maybeTitle_1();
-				}
-			};
-		}
-		const $noteTAgroups = $dom.find(".noteTA-group > *[data-noteta-group]");
-		if ($noteTAgroups.length > 1) {
-			collapse_1 = true;
-		}
-		$noteTAgroups.each((_, ele) => {
-			const $this = $(ele);
-			switch ($this.attr("data-noteta-group-source")) {
-				case "template":
-					wikitext_1 += `{{CGroup/${$this.attr("data-noteta-group")}}}\n`;
-					break;
-				case "module":
-					wikitext_1 += `{{#invoke:CGroupViewer|dialog|${$this.attr("data-noteta-group")}}}\n`;
-					break;
-				case "none":
-					wikitext_1 += `; 本文使用的公共转换组“${$this.attr("data-noteta-group")}”尚未创建\n`;
-					wikitext_1 += `* {{edit|Module:CGroup/${$this.attr("data-noteta-group")}|创建公共转换组“${$this.attr("data-noteta-group")}”}}\n`;
-					break;
-				default:
-					wikitext_1 += `; 未知公共转换组“${$this.attr("data-noteta-group")}”来源“${$this.attr("data-noteta-group-source")}”\n`;
-			}
-		});
-		const $noteTAlocal = $dom.find(".noteTA-local");
-		if ($noteTAlocal.length) {
-			collapse_1 = true;
-			wikitext_1 += `<span style="float: right;">{{edit|${actualTitle_1}|section=0}}</span>\n`;
-			wikitext_1 += "; 本文使用[[Help:繁简转换|全文手工转换]]\n";
-			const $noteTAlocals = $noteTAlocal.children("*[data-noteta-code]");
-			$noteTAlocals.each((_, ele) => {
-				const $this = $(ele);
-				const localConv = $this.attr("data-noteta-code");
-				let localDesc = $this.attr("data-noteta-desc");
-				if (localDesc) {
-					localDesc = `<br>说明：${localDesc}`;
-				} else {
-					localDesc = "";
-				}
-				wikitext_1 += `* -{D|${localConv}}-当前显示为：-{${localConv}}-${localDesc}\n`;
-			});
-		}
-		wikitext_1 += "{{noteTA/footer}}\n";
-		maybeTitle_1();
-		return $dialog;
-	}
+        const parse = async () => {
+            try {
+                const results = await api.post({
+                    action: "parse",
+                    title: "Template:CGroup/____SAND_BOX____",
+                    text: wikitext_1,
+                    prop: "text",
+                    variant: mw.config.get("wgUserVariant"),
+                });
+                $dialog.html(results.parse.text["*"]);
+                if (collapse_1) {
+                    $dialog.find(".mw-collapsible").makeCollapsible();
+                    $dialog.find(".mw-collapsible-toggle").on("click.mw-collapse", async (_, ele) => {
+                        const $collapsibleContent = $(ele).parent(".mw-collapsible").find(".mw-collapsible-content");
+                        await $collapsibleContent.promise();
+                        $dialog.dialog("option", "position", "center");
+                    });
+                }
+                $dialog.dialog("option", "width", Math.round($(window).width() * 0.8));
+                $dialog.css("max-height", `${Math.round($(window).height() * 0.8)}px`);
+                $dialog.dialog("option", "position", "center");
+            } catch {
+                return parse();
+            }
+        };
+        let maybeTitle_1 = parse;
+        const $noteTAtitle = $dom.find(".noteTA-title");
+        if ($noteTAtitle.length) {
+            const titleConv = $noteTAtitle.attr("data-noteta-code");
+            let titleDesc = $noteTAtitle.attr("data-noteta-desc");
+            if (titleDesc) {
+                titleDesc = `（${titleDesc}）`;
+            } else {
+                titleDesc = "";
+            }
+            wikitext_1 += `<span style="float: right;">{{edit|${actualTitle_1}|section=0}}</span>\n`;
+            wikitext_1 += "; 本文使用[[Help:繁简转换|标题手工转换]]\n";
+            wikitext_1 += `* 转换标题为：-{D|${titleConv}}-${titleDesc}\n`;
+            wikitext_1 += `* 实际标题为：-{R|${actualTitle_1}}-；当前显示为：-{|${titleConv}}-\n`;
+        } else {
+            maybeTitle_1 = async () => {
+                try {
+                    const results = await api.post({
+                        action: "parse",
+                        title: actualTitle_1,
+                        text: `{{noteTA/multititle|${actualTitle_1}}}`,
+                        prop: "text",
+                        variant: "zh",
+                    });
+                    const $multititle = $(results.parse.text["*"]).find(".noteTA-multititle");
+                    if ($multititle.length) {
+                        const textVariant_1 = {};
+                        const variantText_1 = {};
+                        let multititleText = "";
+                        $multititle.children().each((_, ele) => {
+                            const $li = $(ele);
+                            const variant = $li.attr("data-noteta-multititle-variant");
+                            const text = $li.text();
+                            variantText_1[variant] = text;
+                            if (textVariant_1[text]) {
+                                textVariant_1[text].push(variant);
+                            } else {
+                                textVariant_1[text] = [variant];
+                            }
+                        });
+                        multititleText += "; 本文[[Help:繁简转换|标题可能经过转换]]\n";
+                        multititleText += "* 转换标题为：";
+                        const multititle = [],
+                            titleConverted = variantText_1[mw.config.get("wgUserVariant")];
+                        for (const variant in variantText_1) {
+                            const text = variantText_1[variant];
+                            if (text === null) {
+                                continue;
+                            }
+                            const variants = textVariant_1[text];
+                            for (let i = 0, l = variants.length; i < l; i++) {
+                                variantText_1[variants[i]] = null;
+                            }
+                            const variantsName = variants.map((variant) => `-{R|{{MediaWiki:Variantname-${variant}}}}-`).join("、");
+                            multititle.push(`${variantsName}：-{R|${text}}-`);
+                        }
+                        multititleText += multititle.join("；");
+                        multititleText += `\n* 实际标题为：-{R|${actualTitle_1}}-；当前显示为：-{R|${titleConverted}}-\n`;
+                        wikitext_1 = multititleText + wikitext_1;
+                    }
+                    parse();
+                } catch {
+                    return maybeTitle_1();
+                }
+            };
+        }
+        const $noteTAgroups = $dom.find(".noteTA-group > *[data-noteta-group]");
+        if ($noteTAgroups.length > 1) {
+            collapse_1 = true;
+        }
+        $noteTAgroups.each((_, ele) => {
+            const $this = $(ele);
+            switch ($this.attr("data-noteta-group-source")) {
+                case "template":
+                    wikitext_1 += `{{CGroup/${$this.attr("data-noteta-group")}}}\n`;
+                    break;
+                case "module":
+                    wikitext_1 += `{{#invoke:CGroupViewer|dialog|${$this.attr("data-noteta-group")}}}\n`;
+                    break;
+                case "none":
+                    wikitext_1 += `; 本文使用的公共转换组“${$this.attr("data-noteta-group")}”尚未创建\n`;
+                    wikitext_1 += `* {{edit|Module:CGroup/${$this.attr("data-noteta-group")}|创建公共转换组“${$this.attr("data-noteta-group")}”}}\n`;
+                    break;
+                default:
+                    wikitext_1 += `; 未知公共转换组“${$this.attr("data-noteta-group")}”来源“${$this.attr("data-noteta-group-source")}”\n`;
+            }
+        });
+        const $noteTAlocal = $dom.find(".noteTA-local");
+        if ($noteTAlocal.length) {
+            collapse_1 = true;
+            wikitext_1 += `<span style="float: right;">{{edit|${actualTitle_1}|section=0}}</span>\n`;
+            wikitext_1 += "; 本文使用[[Help:繁简转换|全文手工转换]]\n";
+            const $noteTAlocals = $noteTAlocal.children("*[data-noteta-code]");
+            $noteTAlocals.each((_, ele) => {
+                const $this = $(ele);
+                const localConv = $this.attr("data-noteta-code");
+                let localDesc = $this.attr("data-noteta-desc");
+                if (localDesc) {
+                    localDesc = `<br>说明：${localDesc}`;
+                } else {
+                    localDesc = "";
+                }
+                wikitext_1 += `* -{D|${localConv}}-当前显示为：-{${localConv}}-${localDesc}\n`;
+            });
+        }
+        wikitext_1 += "{{noteTA/footer}}\n";
+        maybeTitle_1();
+        return $dialog;
+    }
     $(() => {
         $("#ca-varlang-1, #ca-varlang-2").remove();
         const wgUserId = mw.config.get("wgUserId");
