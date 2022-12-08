@@ -189,3 +189,8 @@ div.vectorMenu ul {
     display: flex;
     flex-flow: column;
 }
+
+/* 仅手机版显示支持 */
+.mobileonly {
+    display: none !important;
+}

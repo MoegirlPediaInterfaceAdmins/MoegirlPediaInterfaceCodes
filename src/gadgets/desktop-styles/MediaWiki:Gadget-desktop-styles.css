@@ -526,11 +526,6 @@ body.ns-2 div#catlinks {
     display: none !important;
 }
 
-/* 仅手机版显示支持 */
-.mobileonly {
-    display: none !important;
-}
-
 /* 编辑请求 */
 .editRequest {
     text-align: center;
