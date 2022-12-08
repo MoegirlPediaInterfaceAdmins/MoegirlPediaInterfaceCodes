@@ -3,9 +3,7 @@
     "hidden": true,
     "default": true,
     "supportsUrlLoad": false,
-    "targets": [
-        "desktop"
-    ],
+    "targets": [],
     "skins": [],
     "actions": [],
     "type": "styles",
