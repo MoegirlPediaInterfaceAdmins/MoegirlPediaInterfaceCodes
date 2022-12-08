@@ -22,22 +22,30 @@ mw.hook("wikipage.content").add(() => {
         let noteTAIndicator;
         if (skinname === "vector") {
             noteTAIndicator = $('[id^=mw-indicator-noteTA-]').hide();
-    }
+        }
         else {
-        noteTAIndicator = $('[id^=mobile-noteTA-]').hide();
-    }//moeskin的'.mw-indicator'因故丢失
+            noteTAIndicator = $('[id^=mobile-noteTA-]').hide();
+        }//moeskin的'.mw-indicator'因故丢失
         if (noteTAIndicator.length === 0) {
             return;
         }
         noteTAIndicator.each((_, ele) => {
-        const noteTAImg = $(ele).find("img");
-        const hash = $(ele).attr('id').replace(/^(?:mw-indicator|mobile)-noteTA-/, "");
-        let $dialog = null, $this;
-        //vector皮肤按钮调整
-        if (skinname === "vector"){
-                $this = $('<div/>').html('<ul><li class="selected"><span><a href="#">'+ noteTAImg[0].outerHTML +'</a></span></li></ul>');
+            const noteTAImg = $(ele).find("img");
+            const hash = $(ele).attr('id').replace(/^(?:mw-indicator|mobile)-noteTA-/, "");
+            let $dialog = null, $this;
+            //vector皮肤按钮调整
+            if (skinname === "vector"){
+                $this = $('<div/>').append(
+                $("<ul>").append(
+                    $("<li>", { "class": "selected" }).append(
+                        $("<span>").append(
+                            $("<a>", { href: "javascript:;" }).append(noteTAImg[0].outerHTML),
+                        ),
+                    ),
+                ),
+            )
                 $this.removeAttr('style').attr("id", "noteTA-vector-menu-tabs")
-                .addClass("vectorTabs").css('float','left').insertAfter("#p-variants");
+                    .addClass("vectorTabs").css('float','left').insertAfter("#p-variants");
             }else{
                 $this = $('<div/>').attr({"id": "p-noteTA-moeskin","role":"navigation"});
                 $this.append(noteTAImg).insertAfter("#p-variants");
@@ -52,8 +60,8 @@ mw.hook("wikipage.content").add(() => {
             });
         });
     });
-    var init = (hash) => {
-        $dialog = $('<div class="noteTA-dialog" />');
+    let init = (hash) => {
+        let $dialog = $('<div class="noteTA-dialog" />');
         $dialog.html('<div class="mw-ajax-loader" style="margin-top: 48px;" />');
         $dialog.dialog({
             title: wgULS("字词转换", "字詞轉換"),
@@ -196,7 +204,7 @@ mw.hook("wikipage.content").add(() => {
         wikitext_1 += "{{noteTA/footer}}\n";
         maybeTitle_1();
         return $dialog;
-    }
+    };
     $(() => {
         $("#ca-varlang-1, #ca-varlang-2").remove();
         const wgUserId = mw.config.get("wgUserId");
