@@ -36,14 +36,14 @@ mw.hook("wikipage.content").add(() => {
             //vector皮肤按钮调整
             if (skinname === "vector"){
                 $this = $('<div/>').append(
-                $("<ul>").append(
-                    $("<li>", { "class": "selected" }).append(
-                        $("<span>").append(
-                            $("<a>", { href: "javascript:;" }).append(noteTAImg[0].outerHTML),
+                    $("<ul>").append(
+                        $("<li>", { "class": "selected" }).append(
+                            $("<span>").append(
+                                $("<a>", { href: "javascript:;" }).append(noteTAImg[0].outerHTML),
+                            ),
                         ),
                     ),
-                ),
-            )
+                );
                 $this.removeAttr('style').attr("id", "noteTA-vector-menu-tabs")
                     .addClass("vectorTabs").css('float','left').insertAfter("#p-variants");
             }else{
@@ -60,8 +60,8 @@ mw.hook("wikipage.content").add(() => {
             });
         });
     });
-    let init = (hash) => {
-        let $dialog = $('<div class="noteTA-dialog" />');
+    const init = (hash) => {
+        const $dialog = $('<div class="noteTA-dialog" />');
         $dialog.html('<div class="mw-ajax-loader" style="margin-top: 48px;" />');
         $dialog.dialog({
             title: wgULS("字词转换", "字詞轉換"),
