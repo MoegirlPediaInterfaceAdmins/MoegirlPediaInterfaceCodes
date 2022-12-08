@@ -27,17 +27,17 @@ mw.hook("wikipage.content").add(() => {
         const $this = $("#p-variants").length === 0
             ? $("[id^=mobile-noteTA-].mobileonly").show()
             : $("<div/>", {
-                class: 'vector-menu vector-menu-tabs vectorTabs',
-                id: 'noteTA-vector-menu-tabs',
-                style: 'float: left'
+                "class": "vector-menu vector-menu-tabs vectorTabs",
+                id: "noteTA-vector-menu-tabs",
+                style: "float: left",
             }).append(
-                $('<ul>').append(
-                    $('<li>', { class: 'selected' }).append(
-                        $('<span>').append(
-                            $('<a>', { href: 'javascript:;' }).append($noteTAIndicatorImg).get(0)
-                        )
-                    )
-                )
+                $("<ul>").append(
+                    $("<li>", { "class": "selected" }).append(
+                        $("<span>").append(
+                            $("<a>", { href: "javascript:;" }).append($noteTAIndicatorImg).get(0),
+                        ),
+                    ),
+                ),
             ).insertAfter("#p-variants");
         const hash = noteTAIndicator.attr("id").replace(/^(?:mw-indicator|mobile)-noteTA-/, "");
         $this.on("click", () => {
