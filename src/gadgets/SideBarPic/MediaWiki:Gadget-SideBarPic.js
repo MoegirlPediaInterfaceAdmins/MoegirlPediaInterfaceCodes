@@ -5,7 +5,7 @@
 
     await $.ready;
 
-    const sidebarSelector = mw.config.get("skin") === "moeskin" ? "html > body > #app > #moe-full-container > #moe-main-container > main" : "html > body > #mw-navigation";
+    const sidebarSelector = mw.config.get("skin") === "moeskin" ? "html > body > #app #moe-full-container > #moe-main-container > main" : "html > body > #mw-navigation";
 
     let $sidebar = $(sidebarSelector);
     while ($sidebar.length === 0) {
