@@ -18,7 +18,8 @@
         "mediawiki.api",
         "ext.gadget.site-lib",
         "jquery.makeCollapsible",
-        "mediawiki.Uri"
+        "mediawiki.Uri",
+        "jquery.ui.dialog"
     ],
     "_section": "browsing"
 }
