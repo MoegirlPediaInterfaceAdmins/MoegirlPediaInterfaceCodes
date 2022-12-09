@@ -2,7 +2,7 @@
 
 /* background image */
 body.skin-moeskin #moe-global-background {
-    --theme-background-color: rgb(15, 15, 18);
+    --theme-background-color: rgb(15 15 18);
     --background-url: url("https://app.moegirl.org.cn/background/ZhMoegirl_12ndAnniversary/moeskin.jpg");
 }
 
@@ -78,7 +78,6 @@ body.skin-moeskin #footer-moegirl #footer-qrcode-area img {
     max-width: 80px;
     width: 100%;
 }
-
 
 @media (min-width: 768px) {
 
