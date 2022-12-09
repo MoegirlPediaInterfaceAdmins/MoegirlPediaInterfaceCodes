@@ -215,7 +215,7 @@ $(() => (async () => {
                         isIPAddressOrRange || loghidden ? `<span title="${_target}">${target}</span>` : `<a href="/User:${encodeURIComponent(target)}" class="mw-userlink" title="${_target}"><bdi>${target}</bdi></a><br><span class="mw-usertoollinks">（<a href="/User_talk:${encodeURIComponent(target)}" class="mw-usertoollinks-talk" title="User talk:${target}">讨论</a> | <a href="/Special:%E7%94%A8%E6%88%B7%E8%B4%A1%E7%8C%AE/${encodeURIComponent(target)}" class="mw-usertoollinks-contribs" title="Special:用户贡献/${target}">贡献</a><span class="checkuser-show"> | <a href="/Special:用户查核/${encodeURIComponent(target)}" class="mw-usertoollinks-checkuser" title="Special:用户查核/${target}">查核</a></span>）</span>`,
                         actions[action] || action,
                         endTime,
-                        flags ? flags.length > 0 ? `<ul class="blocklogevents-ul">${flags.map(f => `<li class="blocklogevents-flags-${f}" ${blocklogFlags[f] ? "" : "style=\"font-style: italic;\""} title="${f}">${blocklogFlags[f] || f}</li>`).join("")}</ul>` : "（无）" : "-",
+                        flags ? flags.length > 0 ? `<ul class="blocklogevents-ul">${flags.map((f) => `<li class="blocklogevents-flags-${f}" ${blocklogFlags[f] ? "" : "style=\"font-style: italic;\""} title="${f}">${blocklogFlags[f] || f}</li>`).join("")}</ul>` : "（无）" : "-",
                         (comment || "（无）") + (tags.length ? `<br>（<a href="/Special:%E6%A0%87%E7%AD%BE" title="Special:标签">${tags.length}个标签</a>：${tags.join("、")}）` : ""),
                         (action === "unblock" ? "-" : loghidden ? loghiddenMsg : `<span class="mw-logevent-actionlink"><a href="/Special:%E8%A7%A3%E9%99%A4%E5%B0%81%E7%A6%81/${encodeURIComponent(target)}" title="Special:解除封禁/${target}">解封</a> | <a href="/Special:%E5%B0%81%E7%A6%81/${encodeURIComponent(target)}" title="Special:封禁/${target}">更改封禁</a></span>`) + (hasDeletelogentryRight ? `<hr style="margin: 2px 7px;"><a href="/index.php?action=historysubmit&type=logging&revisiondelete=1&ids%5B${encodeURIComponent(logid)}%5D=1" title="删除/还原版本">显示/隐藏选择的版本</a>` : ""),
                     ].forEach((data, index) => {
@@ -310,7 +310,7 @@ $(() => (async () => {
                         lastTimestamp = time;
                     } */
                     const action = abuselogActions[_action] || _action;
-                    const result = _result.split(",").map(r => abuselogFlags[r] || r);
+                    const result = _result.split(",").map((r) => abuselogFlags[r] || r);
                     const abuselogevent = abuselogeventTemplate.clone();
                     [
                         `<span title="${timestamp}">${moment(timestamp).format("YYYY[年]M[月]D[日 (]dd[) ]HH[:]mm[:]ss").replace(nowYear, "")}</span>`,

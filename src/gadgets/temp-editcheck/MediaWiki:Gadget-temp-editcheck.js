@@ -186,7 +186,7 @@ $(() => {
         }
         const jqXHR = ajax.bind($)(option, ...args);
         if (needFailWatcher) {
-            jqXHR.then(data => {
+            jqXHR.then((data) => {
                 if (data?.edit?.result !== "Success") {
                     failed = true;
                 }

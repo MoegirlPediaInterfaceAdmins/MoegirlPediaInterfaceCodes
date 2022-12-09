@@ -116,14 +116,14 @@ $(() => (async () => {
                 list: "allusers",
                 augroup: "bot",
                 aulimit: "max",
-            })).query.allusers.map(u => u.name);
+            })).query.allusers.map((u) => u.name);
             const MGUsers = JSON.parse((await api.get({
                 action: "parse",
                 page: "Module:UserGroup/data",
                 prop: "wikitext",
             })).parse.wikitext["*"]);
             const ignoreList = Array.from(new Set([...bots, ...MGUsers.bureaucrat, ...MGUsers.sysop, ...MGUsers.patroller, ...MGUsers.staff]));
-            const filterResult = (result) => result.query.pages[pageid].contributors.map(c => c.name).filter(c => !ignoreList.includes(c));
+            const filterResult = (result) => result.query.pages[pageid].contributors.map((c) => c.name).filter((c) => !ignoreList.includes(c));
             console.log("[ACUserPing] Got ignored user list.", ignoreList);
 
             this.addStep(wgULS("正在获取发言用户名单...", "正在獲取發言使用者名稱單..."));
@@ -153,7 +153,7 @@ $(() => (async () => {
                     list: "users",
                     ususers: chunk.join("|"),
                     usprop: "implicitgroups|blockinfo|registration",
-                })).query.users.filter(u => u.implicitgroups.includes("autoconfirmed") && !u.blockedby && moment().diff(moment(u.registration), "days") > 30).map(u => u.name);
+                })).query.users.filter((u) => u.implicitgroups.includes("autoconfirmed") && !u.blockedby && moment().diff(moment(u.registration), "days") > 30).map((u) => u.name);
                 console.log(`[ACUserPing] Chunk ${i + 1}: Got preliminary result.`, prelimRes);
                 const lastEdit = (await Promise.all(prelimRes.map(async (u) => {
                     await sleep();
@@ -174,7 +174,7 @@ $(() => (async () => {
             }, []);
 
             this.addStep(wgULS("正在合并结果...", "正在合併結果..."));
-            const plain = validAC.join("\n"), ping = chunkify(validAC).map(c => `{{ping|${c.join("|")}}}`).join("\n");
+            const plain = validAC.join("\n"), ping = chunkify(validAC).map((c) => `{{ping|${c.join("|")}}}`).join("\n");
             console.log("[ACUserPing] Success!", plain, ping);
 
             return { plain, ping };

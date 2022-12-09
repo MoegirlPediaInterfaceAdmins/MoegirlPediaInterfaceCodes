@@ -178,7 +178,7 @@ $(() => {
             }
             const dateNode = prefixNode.splitText(result.index);
             dateNode.splitText(result[0].length);
-            const timezoneAbbr = Array.from(result).slice(1).filter(abbr => !!abbr)[0];
+            const timezoneAbbr = Array.from(result).slice(1).filter((abbr) => !!abbr)[0];
             const then = moment.utc(result[0], window.LocalComments.parseFormat);
             if (then.isValid()) {
                 if (Reflect.has(timezoneAbbrs, timezoneAbbr)) {
