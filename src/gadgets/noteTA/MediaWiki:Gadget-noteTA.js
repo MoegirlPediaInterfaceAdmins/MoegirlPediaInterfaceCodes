@@ -47,7 +47,7 @@ mw.hook("wikipage.content").add(() => {
                     title: wgULS("字词转换", "字詞轉換"),
                 });
                 let wikitext_1 = "";
-                const $dom = $(`#mw-content-text .mw-parser-output`);
+                const $dom = $("#mw-content-text .mw-parser-output");
                 let collapse_1 = true;
                 const actualTitle_1 = mw.config.get("wgPageName").replace(/_/g, " ");
 
