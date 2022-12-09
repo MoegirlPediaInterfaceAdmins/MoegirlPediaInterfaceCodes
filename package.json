@@ -4,8 +4,14 @@
         "type": "git",
         "url": "https://github.com/MoegirlPediaInterfaceAdmins/MoegirlPediaInterfaceCodes.git"
     },
+    "license": "",
+    "private": true,
     "engines": {
-        "node": ">=16.17"
+        "node": ">=16"
+    },
+    "scripts": {
+        "test": "eslint src && stylelint src/**/*.css",
+        "format": "eslint src --fix && stylelint src/**/*.css --fix"
     },
     "dependencies": {
         "@financial-times/js-features-analyser": "^0.4.3",
