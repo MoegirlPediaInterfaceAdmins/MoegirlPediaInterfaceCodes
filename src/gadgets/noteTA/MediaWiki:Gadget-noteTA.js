@@ -146,7 +146,7 @@ mw.hook("wikipage.content").add(() => {
                 if ($noteTAgroups.length > 1) {
                     collapse_1 = true;
                 }
-                for (const json of new Set([...$noteTAgroups].map(ele => JSON.stringify([$(ele).data("noteta-group-source"), $(ele).data("noteta-group")])))) {
+                for (const json of new Set($noteTAgroups.map((_, ele) => JSON.stringify([$(ele).data("noteta-group-source"), $(ele).data("noteta-group")])))) {
                     const [source, group] = JSON.parse(json);
                     switch (source) {
                         case "template":
@@ -169,7 +169,7 @@ mw.hook("wikipage.content").add(() => {
                     wikitext_1 += `<span style="float: right;">{{edit|${actualTitle_1}|section=0}}</span>\n`;
                     wikitext_1 += "; 本文使用[[Help:繁简转换|全文手工转换]]\n";
                     const $noteTAlocals = $noteTAlocal.children("*[data-noteta-code]");
-                    for (const json of new Set([...$noteTAlocals].map(ele => JSON.stringify([$(ele).data("noteta-code"), $(ele).data("noteta-desc")])))) {
+                    for (const json of new Set($noteTAlocals.map((_, ele) => JSON.stringify([$(ele).data("noteta-code"), $(ele).data("noteta-desc")])))) {
                         const [localConv, desc] = JSON.parse(json),
                             localDesc = desc ? `<br>说明：${localDesc}` : "";
                         wikitext_1 += `* -{D|${localConv}}-当前显示为：-{${localConv}}-${localDesc}\n`;
