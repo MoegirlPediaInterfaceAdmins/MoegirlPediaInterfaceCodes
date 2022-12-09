@@ -39,7 +39,6 @@ mw.hook("wikipage.content").add(() => {
                     ),
                 ),
             ).insertAfter("#p-variants");
-        const hash = noteTAIndicator.attr("id").replace(/^(?:mw-indicator|mobile)-noteTA-/, "");
         $this.on("click", () => {
             if ($dialog === null) {
                 $dialog = $('<div class="noteTA-dialog" />');
@@ -48,7 +47,7 @@ mw.hook("wikipage.content").add(() => {
                     title: wgULS("字词转换", "字詞轉換"),
                 });
                 let wikitext_1 = "";
-                const $dom = $(`#noteTA-${hash}`);
+                const $dom = $(`#mw-content-text .mw-parser-output`);
                 let collapse_1 = true;
                 const actualTitle_1 = mw.config.get("wgPageName").replace(/_/g, " ");
 
