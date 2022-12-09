@@ -2,7 +2,13 @@
 
 /* background image */
 body.skin-moeskin #moe-global-background {
+    --theme-background-color: rgb(15, 15, 18);
     --background-url: url("https://app.moegirl.org.cn/background/ZhMoegirl_12ndAnniversary/moeskin.jpg");
+}
+
+/* @FIX 临时修复 chromium 浏览器中轴线上的缝隙 */
+body.skin-moeskin #moe-global-background::after {
+    width: 50%;
 }
 
 /* footer */
@@ -73,9 +79,13 @@ body.skin-moeskin #footer-moegirl #footer-qrcode-area img {
     width: 100%;
 }
 
-/* adjust bg opacity of article area */
-body.skin-moeskin #moe-main-container {
-    --theme-card-background-color: rgb(255 255 255 / 90%);
+
+@media (min-width: 768px) {
+
+    /* adjust bg opacity of article area */
+    body.skin-moeskin #moe-main-container {
+        --theme-card-background-color: rgb(255 255 255 / 90%);
+    }
 }
 
 body.skin-moeskin #moe-main-container>#moe-topbanner-container>#moe-topbanner {
