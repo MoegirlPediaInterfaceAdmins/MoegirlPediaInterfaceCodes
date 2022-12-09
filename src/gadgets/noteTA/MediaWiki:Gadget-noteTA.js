@@ -1,4 +1,5 @@
 "use strict";
+
 // <pre>
 /*
  * 引自 https://zh.wikipedia.org/wiki/MediaWiki:Gadget-noteTA.js https://zh.wikipedia.org/wiki/MediaWiki:Gadget-noteTAvector.js
@@ -18,37 +19,29 @@ mw.hook("wikipage.content").add(() => {
             return;
         }
         $("#p-variants").nextAll('.noteTA-menu, [class*="mw-indicator"], [id*="mw-indicator"]').remove();
-        const skinname = mw.config.get("skin");
-        let noteTAIndicator = "";
-        if (skinname === "vector") {
-            noteTAIndicator = $("[id^=mw-indicator-noteTA-]").hide();
-        }
-        else {
-            noteTAIndicator = $("[id^=mobile-noteTA-]").hide();
-        }//moeskin的'.mw-indicator'因故丢失
-        if (noteTAIndicator.length === 0) {
+        const skinName = mw.config.get("skin");
+        const noteTAIndicator = skinName === "vector" ? $("[id^=mw-indicator-noteTA-]") : $("[id^=mobile-noteTA-]"); //moeskin的'.mw-indicator'因故丢失
+        if (!noteTAIndicator[0]) {
             return;
         }
         noteTAIndicator.each((_, ele) => {
             const noteTAImg = $(ele).find("img");
             const hash = $(ele).attr("id").replace(/^(?:mw-indicator|mobile)-noteTA-/, "");
             let $dialog = null, $this = null;
-            //vector皮肤按钮调整
-            if (skinname === "vector"){
-                $this = $("<div/>").html(`<ul><li class="selected"><span><a href="#">${noteTAImg[0].outerHTML}</a></span></li></ul>`);
-                $this.removeAttr("style").attr("id", "noteTA-vector-menu-tabs")
-                    .addClass("vectorTabs").css("float","left").insertAfter("#p-variants");
+            // vector皮肤按钮调整
+            if (skinName === "vector") {
+                $this = $(`<div id='noteTA-vector-menu-tabs' style='float:left'><ul><li class="selected"><span><a href="#">${noteTAImg[0].outerHTML}</a></span></li></ul></div>`);
             } else {
-                $this = $('<div id="p-noteTA-moeskin" role="navigation"/>').append(noteTAImg).insertAfter("#p-variants");
+                $this = $(['<div id="p-noteTA-moeskin" role="navigation">', noteTAImg, "</div>"]);
             }
-            //open noteTAViewer
-            $this.click(() => {
-                if ( $dialog === null ) {
+            // open noteTAViewer
+            $this.on("click", () => {
+                if ($dialog === null) {
                     $dialog = init(hash);
                 } else {
                     $dialog.dialog("open");
                 }
-            });
+            }).insertAfter("#p-variants");
         });
     });
     const init = (hash) => {
