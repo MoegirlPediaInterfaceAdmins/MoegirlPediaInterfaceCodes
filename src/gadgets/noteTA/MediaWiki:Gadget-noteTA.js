@@ -34,7 +34,7 @@ mw.hook("wikipage.content").add(() => {
                 $("<ul>").append(
                     $("<li>", { "class": "selected" }).append(
                         $("<span>").append(
-                            $("<a>", { href: "javascript:;" }).append($noteTAIndicatorImg).get(0),
+                            $("<a>", { href: "javascript:;" }).append($noteTAIndicatorImg[0]),
                         ),
                     ),
                 ),
