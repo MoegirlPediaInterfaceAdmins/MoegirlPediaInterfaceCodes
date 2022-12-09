@@ -19,7 +19,7 @@ mw.hook("wikipage.content").add(() => {
         }
         $("#p-variants").nextAll('.noteTA-menu, [class*="mw-indicator"], [id*="mw-indicator"]').remove();
         const skinname = mw.config.get("skin");
-        let noteTAIndicator;
+        let noteTAIndicator = "";
         if (skinname === "vector") {
             noteTAIndicator = $('[id^=mw-indicator-noteTA-]').hide();
         }
@@ -32,23 +32,14 @@ mw.hook("wikipage.content").add(() => {
         noteTAIndicator.each((_, ele) => {
             const noteTAImg = $(ele).find("img");
             const hash = $(ele).attr('id').replace(/^(?:mw-indicator|mobile)-noteTA-/, "");
-            let $dialog = null, $this;
+            let $dialog = null, $this = null;
             //vector皮肤按钮调整
             if (skinname === "vector"){
-                $this = $('<div/>').append(
-                    $("<ul>").append(
-                        $("<li>", { "class": "selected" }).append(
-                            $("<span>").append(
-                                $("<a>", { href: "javascript:;" }).append(noteTAImg[0].outerHTML),
-                            ),
-                        ),
-                    ),
-                );
+                $this = $('<div/>').html(`<ul><li class="selected"><span><a href="#">${noteTAImg[0].outerHTML}</a></span></li></ul>`);
                 $this.removeAttr('style').attr("id", "noteTA-vector-menu-tabs")
                     .addClass("vectorTabs").css('float','left').insertAfter("#p-variants");
-            }else{
-                $this = $('<div/>').attr({"id": "p-noteTA-moeskin","role":"navigation"});
-                $this.append(noteTAImg).insertAfter("#p-variants");
+            } else {
+                $this = $('<div id="p-noteTA-moeskin" role="navigation"/>').append(noteTAImg).insertAfter("#p-variants");
             }
             //open noteTAViewer
             $this.click(() => {
