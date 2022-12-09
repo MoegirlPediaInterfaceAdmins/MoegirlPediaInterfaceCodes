@@ -79,8 +79,8 @@ mw.hook("wikipage.content").add(() => {
                 let maybeTitle_1 = parse;
                 const $noteTAtitle = $dom.find(".noteTA-title");
                 if ($noteTAtitle.length) {
-                    const titleConv = $noteTAtitle.attr("data-noteta-code");
-                    let titleDesc = $noteTAtitle.attr("data-noteta-desc");
+                    const titleConv = $noteTAtitle.last().data("noteta-code");
+                    let titleDesc = $noteTAtitle.last().data("noteta-desc");
                     if (titleDesc) {
                         titleDesc = `（${titleDesc}）`;
                     } else {
@@ -107,7 +107,7 @@ mw.hook("wikipage.content").add(() => {
                                 let multititleText = "";
                                 $multititle.children().each((_, ele) => {
                                     const $li = $(ele);
-                                    const variant = $li.attr("data-noteta-multititle-variant");
+                                    const variant = $li.data("noteta-multititle-variant");
                                     const text = $li.text();
                                     variantText_1[variant] = text;
                                     if (textVariant_1[text]) {
@@ -146,40 +146,34 @@ mw.hook("wikipage.content").add(() => {
                 if ($noteTAgroups.length > 1) {
                     collapse_1 = true;
                 }
-                $noteTAgroups.each((_, ele) => {
-                    const $this = $(ele);
-                    switch ($this.attr("data-noteta-group-source")) {
+                for (const json of new Set($noteTAgroups.map((_, ele) => JSON.stringify([$(ele).data("noteta-group-source"), $(ele).data("noteta-group")])))) {
+                    const [source, group] = JSON.parse(json);
+                    switch (source) {
                         case "template":
-                            wikitext_1 += `{{CGroup/${$this.attr("data-noteta-group")}}}\n`;
+                            wikitext_1 += `{{CGroup/${group}}}\n`;
                             break;
                         case "module":
-                            wikitext_1 += `{{#invoke:CGroupViewer|dialog|${$this.attr("data-noteta-group")}}}\n`;
+                            wikitext_1 += `{{#invoke:CGroupViewer|dialog|${group}}}\n`;
                             break;
                         case "none":
-                            wikitext_1 += `; 本文使用的公共转换组“${$this.attr("data-noteta-group")}”尚未创建\n`;
-                            wikitext_1 += `* {{edit|Module:CGroup/${$this.attr("data-noteta-group")}|创建公共转换组“${$this.attr("data-noteta-group")}”}}\n`;
+                            wikitext_1 += `; 本文使用的公共转换组“${group}”尚未创建\n`;
+                            wikitext_1 += `* {{edit|Module:CGroup/${group}|创建公共转换组“${group}”}}\n`;
                             break;
                         default:
-                            wikitext_1 += `; 未知公共转换组“${$this.attr("data-noteta-group")}”来源“${$this.attr("data-noteta-group-source")}”\n`;
+                            wikitext_1 += `; 未知公共转换组“${group}”来源“${source}”\n`;
                     }
-                });
+                }
                 const $noteTAlocal = $dom.find(".noteTA-local");
                 if ($noteTAlocal.length) {
                     collapse_1 = true;
                     wikitext_1 += `<span style="float: right;">{{edit|${actualTitle_1}|section=0}}</span>\n`;
                     wikitext_1 += "; 本文使用[[Help:繁简转换|全文手工转换]]\n";
                     const $noteTAlocals = $noteTAlocal.children("*[data-noteta-code]");
-                    $noteTAlocals.each((_, ele) => {
-                        const $this = $(ele);
-                        const localConv = $this.attr("data-noteta-code");
-                        let localDesc = $this.attr("data-noteta-desc");
-                        if (localDesc) {
-                            localDesc = `<br>说明：${localDesc}`;
-                        } else {
-                            localDesc = "";
-                        }
+                    for (const json of new Set($noteTAlocals.map((_, ele) => JSON.stringify([$(ele).data("noteta-code"), $(ele).data("noteta-desc")])))) {
+                        const [localConv, desc] = JSON.parse(json),
+                            localDesc = desc ? `<br>说明：${localDesc}` : "";
                         wikitext_1 += `* -{D|${localConv}}-当前显示为：-{${localConv}}-${localDesc}\n`;
-                    });
+                    }
                 }
                 wikitext_1 += "{{noteTA/footer}}\n";
                 maybeTitle_1();
