@@ -191,6 +191,7 @@ div.vectorMenu ul {
 }
 
 /* 仅手机版显示支持 */
+.mobile-only,
 .mobileonly {
     display: none !important;
 }
