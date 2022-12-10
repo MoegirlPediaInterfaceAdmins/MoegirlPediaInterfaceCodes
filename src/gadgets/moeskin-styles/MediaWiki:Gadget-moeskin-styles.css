@@ -210,3 +210,16 @@ body.skin-moeskin .mw-mmv-wrapper {
         margin: 1rem 0 !important;
     }
 }
+
+/* 临时修复 */
+@media (min-width: 768px) {
+    .mobile-only,.mobileonly {
+        display:none !important;
+    }
+}
+
+@media (max-width: 768px) {
+    .desktop-only,.nomobile {
+        display:none !important;
+    }
+}
