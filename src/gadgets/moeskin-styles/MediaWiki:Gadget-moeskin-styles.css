@@ -213,13 +213,15 @@ body.skin-moeskin .mw-mmv-wrapper {
 
 /* 临时修复 */
 @media (min-width: 768px) {
-    .mobile-only,.mobileonly {
-        display:none !important;
+    .mobile-only,
+    .mobileonly {
+        display: none !important;
     }
 }
 
 @media (max-width: 768px) {
-    .desktop-only,.nomobile {
-        display:none !important;
+    .desktop-only,
+    .nomobile {
+        display: none !important;
     }
 }
