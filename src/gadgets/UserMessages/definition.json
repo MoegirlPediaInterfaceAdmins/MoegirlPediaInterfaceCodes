@@ -15,6 +15,7 @@
     "dependencies": [
         "ext.gadget.site-lib",
         "ext.gadget.libUtil",
+        "ext.gadget.jquery.ui",
         "mediawiki.util"
     ],
     "_section": "maintenance"
