@@ -38,7 +38,7 @@ $(() => (async () => {
             "zh-hant": "zh-tw",
         },
         noteTA: {
-            G1: "Interface",
+            G1: "MediaWiki",
         },
         autoPopulate: true,
         useOpenCC: true,
