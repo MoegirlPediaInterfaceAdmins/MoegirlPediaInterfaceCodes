@@ -1,7 +1,7 @@
 "use strict";
 // <pre>
 $(() => {
-    const commonsUrl = new mw.Uri("https://commons.moegirl.org.cn");
+    const commonsUrl = new mw.Uri("https://commons.moegirl.org.cn/");
     commonsUrl.query.user = mw.config.get("wgPageName").replace(/^user:/i, "");
     commonsUrl.path = "/extensions/Avatar/avatar.php";
     const imgUrl = new mw.Uri(commonsUrl);
