@@ -7,7 +7,7 @@ $(() => {
     const imgUrl = new mw.Uri(commonsUrl);
     imgUrl.query.user = mw.config.get("wgUserName");
     const img = $("<img>").attr({
-        "src": imgUrl,
+        src: imgUrl,
         title: "上传头像",
     });
     const link = $("<a>").attr("href", "https://commons.moegirl.org.cn/Special:UploadAvatar").append(img);
@@ -20,8 +20,8 @@ $(() => {
             href: hrefUrl,
             title: "查看头像",
         }).prepend($("<img/>").attr({
-            "src": srcUrl,
-            "id": "user-rootpage-avatar",
+            src: srcUrl,
+            id: "user-rootpage-avatar",
         }).css({
             width: "1.2em",
             height: "1.2em",
