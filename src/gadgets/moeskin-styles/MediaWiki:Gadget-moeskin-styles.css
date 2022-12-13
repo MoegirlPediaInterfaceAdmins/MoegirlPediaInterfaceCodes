@@ -283,12 +283,12 @@ body.skin-moeskin .mw-mmv-wrapper {
 
 /* 临时修复 */
 fieldset {
-    border: 1px solid #2a4b8d !important;
-    margin: 1em 0 1em 0 !important;
+    border: 1px solid #2A4B8D !important;
+    margin: 1em 0 !important;
     padding: 0 1em 1em !important;
 }
 
 fieldset.nested {
-    margin: 0 0 0.5em 0 !important;
+    margin: 0 0 0.5em !important;
     padding: 0 0.5em 0.5em !important;
 }
