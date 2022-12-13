@@ -8,7 +8,7 @@
         const images = [];
         $(".mw-userlink:not(.user-avatar-added)").each((_, ele) => {
             const item = $(ele);
-            const src = `${mw.config.get("wgServer").replace("zh.moegirl", "commons.moegirl")}${mw.config.get("wgScriptPath")}/extensions/Avatar/avatar.php?user=${encodeURIComponent(item.text())}`;
+            const src = `https://commons.moegirl.org.cn/extensions/Avatar/avatar.php?user=${encodeURIComponent(item.text())}`;
             const img = $("<img/>").on("error", () => {
                 window.setTimeout(() => {
                     img.closest(".userlink-avatar").remove();
@@ -37,7 +37,7 @@
                 });
                 images.push(magnifierImg[0]);
                 bigAvatar.on("click", () => {
-                    window.open(`${mw.config.get("wgServer").replace("zh.moegirl", "commons.moegirl")}${mw.config.get("wgScriptPath")}/index.php?title=Special%3A查看头像&user=${encodeURIComponent(item.text())}`, "_blank");
+                    window.open(`https://commons.moegirl.org.cn/index.php?title=Special%3A查看头像&user=${encodeURIComponent(item.text())}`, "_blank");
                     return false;
                 }).append($("<div/>", {
                     attr: {
