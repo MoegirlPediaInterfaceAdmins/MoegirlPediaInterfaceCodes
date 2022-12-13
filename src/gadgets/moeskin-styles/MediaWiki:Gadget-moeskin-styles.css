@@ -225,3 +225,59 @@ body.skin-moeskin .mw-mmv-wrapper {
         display: none !important;
     }
 }
+
+/* Navbox */
+@media (max-width: 768px) {
+    html>body.skin-moeskin .navbox {
+        border: 1px solid #AAA;
+        clear: both;
+        padding: 1px;
+        text-align: center;
+        width: 100%;
+        background: #FDFDFD;
+    }
+
+    html>body.skin-moeskin .navbox-subgroup {
+        background: #FDFDFD;
+    }
+
+    html>body.skin-moeskin .navbox-group {
+        white-space: nowrap;
+    }
+
+    html>body.skin-moeskin .navbox table {
+        width: 100% !important;
+        margin: 0 !important;
+    }
+
+    html>body.skin-moeskin .navbox-subgroup .navbox-group,
+    html>body.skin-moeskin .navbox-abovebelow {
+        background: #E6F6E6;
+    }
+    
+    html>body.skin-moeskin .navbox .TabLabel {
+        text-align: left;
+    }
+    
+    html>body.skin-moeskin .navbox-group,
+    html>body.skin-moeskin .navbox-list,
+    html>body.skin-moeskin .navbox-title {
+        display: block;
+        width: 100% !important;
+        box-sizing: border-box;
+    }
+
+    html>body.skin-moeskin .navbox-group+* {
+        border-left: 0 !important;
+        border-top: 2px solid #FDFDFD;
+    }
+
+    html>body.skin-moeskin .navbox-group+.navbox-list>.navbox-subgroup {
+        border-left: 0.75em solid transparent;
+    }
+
+    html>body.skin-moeskin .navbox td[rowspan] {
+        display: none;
+    }
+}
+
