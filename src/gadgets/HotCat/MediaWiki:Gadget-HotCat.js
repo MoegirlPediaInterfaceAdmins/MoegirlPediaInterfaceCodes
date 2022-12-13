@@ -212,8 +212,8 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
             blacklist: /(?:不可|已)索引页面|(?:调用重复模板参数|有(?:过多高开销解析器函数调用|忽略显示标题|模板循环|脚本错误|投票|参考文献错误)|含有(?:略过模板参数|受损文件链接)|展开模板后长度超过上限|扩展深度超出限制|使用无效自封闭HTML标签|受到保护无法编辑|即将删除)的页面|有错误的Scribunto模块|隐藏分类|页面的节点数超出限制|需要帮助/i,
             no_autocommit: !autopatrol,
             del_needs_diff: !autopatrol,
-            existsYes: `${mw.config.get("wgServer").replace("zh.moegirl", "img.moegirl")}/common/thumb/b/be/P_yes.svg/20px-P_yes.svg.png`,
-            existsNo: `${mw.config.get("wgServer").replace("zh.moegirl", "img.moegirl")}/common/thumb/4/42/P_no.svg/20px-P_no.svg.png`,
+            existsYes: "https://img.moegirl.org.cn/common/thumb/b/be/P_yes.svg/20px-P_yes.svg.png",
+            existsNo: "https://img.moegirl.org.cn/common/thumb/4/42/P_no.svg/20px-P_no.svg.png",
             disable: function () {
                 const ns = mw.config.get("wgNamespaceNumber");
                 const nsIds = mw.config.get("wgNamespaceIds");
