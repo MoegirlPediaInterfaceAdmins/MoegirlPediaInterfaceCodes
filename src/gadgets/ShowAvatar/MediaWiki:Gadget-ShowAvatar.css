@@ -18,6 +18,17 @@
     border-radius: 50%;
 }
 
+.skin-vector #user-rootpage-avatar {
+    border-radius: 10px;
+    padding: 4px;
+}
+
+.skin-moeskin #user-rootpage-avatar {
+    border-radius: 5px;
+    top: 8px;
+    position: relative;
+}
+
 /* 1.28+ Echo fix */
 #p-personal #pt-notifications-alert,
 #p-personal #pt-notifications-notice {
