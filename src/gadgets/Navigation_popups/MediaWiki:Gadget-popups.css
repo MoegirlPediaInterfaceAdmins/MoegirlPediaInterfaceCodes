@@ -27,6 +27,7 @@ del.popupDiff {
     font-size: 11px;
     box-shadow: 0 3px 8px rgb(50 50 50 / 35%);
     word-wrap: break-word;
+    line-height: normal;
 }
 
 .navpopup hr {
