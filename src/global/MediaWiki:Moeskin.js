@@ -22,6 +22,45 @@
             $.wikiLove.openDialog();
         });
     }
+    /**
+     * fix a few image issues by extending mw.Title.newFromImg
+     * examples including gallery-slideshow and MultiMediaViewer
+     */
+    async function fixImage() {
+        await mw.loader.using("mediawiki.Title");
+        mw.Title.newFromImg = function(img) {
+            let matches, i, regex;
+            const thumbPhpRegex = /thumb\.php/,
+                regexes = [
+                    /\/[a-f0-9]\/[a-f0-9]{2}\/([^\s/]+)\/[^\s/]+-[^\s/]*$/,
+                    /\/[a-f0-9]\/[a-f0-9]{2}\/([^\s/]+)$/,
+                    /\/([^\s/]+)\/[^\s/]+-(?:\1|thumbnail)[^\s/]*$/,
+                    /\/([^\s/]+)$/,
+                ],
+                recount = regexes.length,
+                src = img.jquery ? img[0].src || img[0].dataset.lazySrc : img.src || img.dataset.lazySrc;
+            matches = src.match(thumbPhpRegex);
+            if (matches) {
+                return mw.Title.newFromText(`File:${mw.util.getParamValue("f", src)}`);
+            }
+            const decodedSrc = decodeURIComponent(src);
+            for (i = 0; i < recount; i++) {
+                regex = regexes[i];
+                matches = decodedSrc.match(regex);
+                if (matches && matches[1]) {
+                    return mw.Title.newFromText(`File:${matches[1]}`);
+                }
+            }
+            return null;
+        };
+        $.proxy(mw.mmv.bootstrap, "processThumbs")(mw.util.$content);
+        if (mw.loader.getState("mediawiki.page.gallery.slideshow") === "ready") {
+            $("li.gallerycarousel").remove();
+            mw.util.$content.find(".mw-gallery-slideshow").each(function() {
+                new mw.GallerySlideshow(this);
+            });
+        }
+    }
     /* polyfill */
     /**
      * @returns {JQuery<HTMLDivElement>}
@@ -139,6 +178,8 @@
     await $.ready;
     /* fixWikiLove */
     fixWikiLove();
+    /* fixImage */
+    fixImage();
     /* PageTools */
     PageTools();
 })();
