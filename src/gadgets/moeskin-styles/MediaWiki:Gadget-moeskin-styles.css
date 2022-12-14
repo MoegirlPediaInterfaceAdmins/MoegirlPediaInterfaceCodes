@@ -285,7 +285,7 @@ body.skin-moeskin .mw-mmv-wrapper {
 .skin-moeskin fieldset:not(.prefsection) {
     display: block;
     padding: 1em;
-    border: 1px solid rgba(0, 0, 0, 0.1);
+    border: 1px solid rgb(0 0 0 / 10%);
     border-radius: 0.5rem;
 }
 
