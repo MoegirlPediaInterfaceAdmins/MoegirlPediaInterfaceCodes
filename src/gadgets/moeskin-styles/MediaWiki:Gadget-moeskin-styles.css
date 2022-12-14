@@ -283,15 +283,15 @@ body.skin-moeskin .mw-mmv-wrapper {
 
 /* @fix fieldset */
 .skin-moeskin fieldset:not(.prefsection) {
-  display: block;
-  padding: 1em;
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  border-radius: 0.5rem;
+    display: block;
+    padding: 1em;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 0.5rem;
 }
 
 .skin-moeskin legend {
-  font-size: 1.2rem;
-  padding: 0 0.5em;
-  margin: 0 -0.5em;
-  font-weight: 700;
+    font-size: 1.2rem;
+    padding: 0 0.5em;
+    margin: 0 -0.5em;
+    font-weight: 700;
 }
