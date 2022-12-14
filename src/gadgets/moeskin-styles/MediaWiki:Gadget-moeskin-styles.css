@@ -281,19 +281,17 @@ body.skin-moeskin .mw-mmv-wrapper {
     }
 }
 
-/* 临时修复 */
-fieldset {
-    border: 1px solid #2A4B8D !important;
-    margin: 1em 0 !important;
-    padding: 0 1em 1em !important;
+/* @fix fieldset */
+.skin-moeskin fieldset:not(.prefsection) {
+  display: block;
+  padding: 1em;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 0.5rem;
 }
 
-fieldset.nested {
-    margin: 0 0 0.5em !important;
-    padding: 0 0.5em 0.5em !important;
-}
-
-legend {
-    padding: 0.5em !important;
-    font-size: 95% !important;
+.skin-moeskin legend {
+  font-size: 1.2rem;
+  padding: 0 0.5em;
+  margin: 0 -0.5em;
+  font-weight: 700;
 }
