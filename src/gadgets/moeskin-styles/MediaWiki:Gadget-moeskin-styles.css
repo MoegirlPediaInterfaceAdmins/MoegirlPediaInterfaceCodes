@@ -300,23 +300,27 @@ body.skin-moeskin .mw-mmv-wrapper {
 .skin-moeskin #mw-search-top-table {
     display: flex;
 }
+
 .skin-moeskin #mw-search-top-table > div:first-of-type {
     float: unset !important;
     flex: 1;
 }
+
 @media (max-width: 768px) {
     .skin-moeskin #mw-search-top-table {
         flex-direction: column;
     }
     .skin-moeskin .mw-search-profile-tabs {
         margin-top: 0;
-    }  
+    }
 }
+
 @media (min-width: 768px) {
     .skin-moeskin #mw-search-top-table {
         justify-content: space-between;
-    }  
+    }
 }
+
 .skin-moeskin #mw-content-text .search-types ul,
 .skin-moeskin #mw-content-text ul.mw-search-results {
     list-style: none;
