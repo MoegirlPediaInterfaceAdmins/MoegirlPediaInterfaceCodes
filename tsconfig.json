@@ -8,7 +8,8 @@
         "strict": true,
         "downlevelIteration": true,
         "incremental": true,
-        "tsBuildInfoFile": ".cache/.tsbuildinfo"
+        "tsBuildInfoFile": ".cache/.tsbuildinfo",
+        "lib": ["ESNext", "DOM"]
     },
     "include": [
         "src",

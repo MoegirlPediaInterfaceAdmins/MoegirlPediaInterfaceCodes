@@ -1,11 +1,11 @@
 "use strict";
-/* 这里的任何JavaScript将在 MoeSkin 皮肤下加载
+/**
+ * 这里的任何JavaScript将在 MoeSkin 皮肤下加载
  * 请尊重萌娘百科版权，以下代码复制需要注明原自萌娘百科，并且附上URL地址http://zh.moegirl.org.cn/MediaWiki:MoeSkin.js
  * 版权协定：知识共享 署名-非商业性使用-相同方式共享 3.0
  *  loader模块 写法参见 https://www.mediawiki.org/wiki/ResourceLoader/Modules#mw.loader.load
  */
 (async () => {
-    /* 函数定义体 */
     /**
      * fixWikiLove
      * @FIXME WikiLove
@@ -22,6 +22,7 @@
             $.wikiLove.openDialog();
         });
     }
+
     /* polyfill */
     /**
      * @returns {JQuery<HTMLDivElement>}
@@ -95,8 +96,9 @@
         configurable: true,
     });
     mw.hook("moeskin.addPortletLink").fire({ addPortletLink, useCustomSidenavBlock });
-    /* PageTools */
-    function PageTools() {
+
+    /* applyPageTools */
+    function applyPageTools() {
         /**
          * @returns {JQuery<HTMLDivElement>}
          */
@@ -135,123 +137,46 @@
             addPageToolsButton,
         });
     }
-    //uuid
-    function uuidv4() {
-        let result;
-        do {
-            result = ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, (c) => (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16));
-        } while (document.querySelector(`a[data-linkid="${result}"]`));
-        return result;
-    }
-    //链接提示
-    async function linkConfirm() {
-        await mw.loader.using(["mediawiki.Uri", "ext.gadget.site-lib"]);
-        if ($("body").css("position") === "static") {
-            $("body").css("position", "relative");
-        }
-        const prompt = $("<div/>").attr("class", "linkConfirmprompt");
-        prompt.css("max-width", $("#mw-content-text").width() - 4);
-        const textnode = $("<div/>").attr("class", "linkConfirmpromptTextnode");
-        const text = $("<span/>");
-        textnode.append(text);
-        const ifSupported = window.CSS && CSS.supports && CSS.supports("-webkit-line-clamp", "2");
-        if (ifSupported) {
-            text.css({
-                display: "-webkit-box",
-                "-webkit-line-clamp": "2",
-                "-webkit-box-orient": "vertical",
-                "word-break": "break-all",
-                "text-overflow": "ellipsis",
-                overflow: "hidden",
-            });
-        }
-        prompt.append(wgULS("您点击了一个链接，地址为：", "您點擊了一條連結，網址為："))
-            .append(textnode)
-            .append($("<div/>").attr("class", "linkConfirmpromptAlert").append(wgULS("此网页不属于本网站，不保证其安全性", "該網頁不屬於本網站，不保證其安全性")).hide());
-        prompt.append($("<a/>").text(wgULS("继续访问", "繼續前往")).on("click", () => {
-            //window.open(prompt.data('href'), '_blank', "noopener,noreferrer");
-            window.open("javascript:window.name;", `<script>location.replace("${prompt.data("href")}");/* ${Math.random()} */</script>`);
-        })).append($("<a/>").text("取消")).on("click", (e) => {
-            if (!$(e.target).is("a")) {
-                return false;
-            }
-            prompt.fadeOut(137);
-        });
-        prompt.appendTo("body");
-        $("body").on("click", (e) => {
-            const self = $(e.target);
-            if (!self.is("#mw-content-text a, .comment-text a")) {
+
+    /** 外部链接提示 */
+    async function externalLinkConfirm() {
+        await mw.loader.using(["ext.gadget.site-lib", "oojs-ui-windows", "oojs-ui-core"]);
+        /** @param {URL} url */
+        const getConfirmMessage = (url) => {
+            const $wrapper = $("<div>", { style: "text-align: center" });
+            $wrapper.append($("<div>", { text: wgULS("您点击了一个外部链接：", "您點選了一個外部連結：") }));
+            $wrapper.append($("<strong>", { text: url.href }));
+            $wrapper.append($("<div>", { text: wgULS("此网页不属于萌娘百科，我们不保证其安全性，请谨慎选择是否继续访问。", "此網頁不屬於萌娘百科，我們不保證其安全性，請謹慎選擇是否繼續訪問。") }));
+            return $wrapper;
+        };
+        document.getElementById("mw-content-text")?.addEventListener("click", async (e) => {
+            if (e.target.tagName !== "A") {
                 return;
             }
-            if (!e.target.href || /^javascript:/.test(e.target.href) || $(e.target).is(".image")) {
-                return true;
+            /** @type {HTMLAnchorElement} */
+            const anchor = e.target;
+            const hrefText = anchor.getAttribute("href");
+            if (!hrefText || hrefText.startsWith("#") || hrefText.startsWith("javascript:") || anchor.classList.contains("image")) {
+                return;
             }
-            if (!e.target.dataset.linkid) {
-                e.target.dataset.linkid = uuidv4();
+            const hrefURL = new URL(anchor.href);
+            if (hrefURL.host.endsWith("moegirl.org.cn") || hrefURL.host.endsWith("moegirl.org")) {
+                return;
             }
-            if (prompt.is(":visible") && prompt.data("linkid") === e.target.dataset.linkid) {
-                return false;
-            }
-            prompt.fadeOut(137);
-            const uri = new mw.Uri(e.target.href);
-            if (/\.moegirl\.org(?:\.cn)?$/.test(uri.host)) {
-                if (!self.closest(".heimu")[0] && !self.find(".heimu")[0] || self.parent().is(".reference")) {
-                    return true;
-                }
-                text.text(decodeURI(e.target.href));
-                $(".linkConfirmpromptAlert").hide();
-            } else {
-                text.text(decodeURI(e.target.href));
-                $(".linkConfirmpromptAlert").show();
-            }
-            let promptTop = 0, promptLeft = 0;
-            let offsetParent = self;
-            do {
-                promptTop += offsetParent.offset().top;
-                promptLeft += offsetParent.offset().left;
-                offsetParent = offsetParent.offsetParent();
-            } while (!offsetParent.is("html, body"));
-            promptTop += self.outerHeight() + 3;
-            promptLeft += self.outerWidth() / 2 - prompt.outerWidth() / 2;
-            if (promptTop + prompt.outerHeight() > $(document).height() - 3) {
-                promptTop = $(document).height() - prompt.outerHeight() - 3;
-            }
-            if (promptLeft + prompt.outerWidth() > $(window).width() - 3) {
-                promptLeft = $(window).width() - prompt.outerWidth() - 3;
-            }
-            if (promptLeft < 0) {
-                promptLeft = 3;
-            }
-            prompt.css({
-                top: `${promptTop}px`,
-                left: `${promptLeft}px`,
-            });
-            if (!ifSupported) {
-                window.setTimeout(() => {
-                    if (text.height() > 44.8) {
-                        text.text(`${text.text()}……`);
-                        while (text.height() > 44.8) {
-                            text.text(`${text.text().slice(0, -3)}……`);
-                        }
-                    }
-                }, 0);
-            }
-            prompt.data({
-                href: e.target.href,
-                linkid: self[0].dataset.linkid,
-            });
-            prompt.fadeIn(137);
-            return false;
+            e.preventDefault();
+            const response = await OO.ui.confirm(getConfirmMessage(hrefURL));
+            response && window.open(hrefURL.href);
         });
     }
-    /* 函数执行体 */
+
+    /* 等待 document 加载完毕 */
     await $.ready;
     /* fixWikiLove */
     fixWikiLove();
     /* PageTools */
-    PageTools();
+    applyPageTools();
     /* linkConfirm */
-    if ("ontouchstart" in document) {
-        linkConfirm();
+    if ("ontouchstart" in document && !location.host.startsWith("mobile")) {
+        externalLinkConfirm();
     }
 })();
