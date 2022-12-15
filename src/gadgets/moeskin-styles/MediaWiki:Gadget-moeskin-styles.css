@@ -329,11 +329,7 @@ body.skin-moeskin .mw-mmv-wrapper {
 }
 
 /* 优化表格在窄屏设备的效果 */
-.skin-moeskin table.wikitable th:first-of-type {
-    white-space: nowrap;
-}
-
-.skin-moeskin table.wikitable th:not(:first-of-type) {
+.skin-moeskin table.wikitable th {
     min-width: 5rem;
 }
 
@@ -347,28 +343,4 @@ body.skin-moeskin .mw-mmv-wrapper {
         content: " ("attr(title) ")";
         display: inline;
     }
-}
-
-/* 链接提示 */
-html>body.skin-moeskin .linkConfirmprompt {
-    border: 1px solid black;
-    display: none;
-    padding: 3px 7px;
-    position: absolute;
-    text-align: center;
-    width: 300px;
-    z-index: 99999;
-    background: rgb(255 255 255);
-}
-
-html>body.skin-moeskin .linkConfirmpromptTextnode {
-    max-height: 2.5em;
-    text-align: left;
-    word-break: break-all;
-}
-
-html>body.skin-moeskin .linkConfirmprompt a {
-    margin: 0 1.5em;
-    cursor: pointer;
-    color: #36C;
 }
