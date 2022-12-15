@@ -303,3 +303,12 @@ body.skin-moeskin .mw-mmv-wrapper {
     list-style: none;
     margin-left: 0;
 }
+
+/* 优化表格在窄屏设备的效果 */
+.skin-moeskin table th:first-of-type {
+  white-space: nowrap;
+}
+
+.skin-moeskin table th:not(:first-of-type) {
+  min-width: 5rem;
+}
