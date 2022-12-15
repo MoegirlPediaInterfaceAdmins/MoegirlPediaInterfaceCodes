@@ -1,4 +1,45 @@
 /* 放置于这里的CSS将只影响STAFF */
+.patroller-show,
+.sysop-show{
+    display:revert !important;
+}
+
+div.vectorMenu li.patroller-show{
+    order:998;
+}
+
+div.vectorMenu li.sysop-show{
+    order:999;
+}
+
+.vectorMenu .patroller-show::before,
+.vectorMenu .sysop-show::before{
+    content:" ";
+    display:block;
+    height:1px;
+    color:#A2A9B1;
+    background-color:#A2A9B1;
+    border:0;
+    margin:7px;
+}
+
+.vectorMenu .patroller-show~.patroller-show::before,
+.vectorMenu .sysop-show~.sysop-show::before{
+    display:none;
+}
+
+.vectorMenu .patroller-show,
+.vectorMenu .sysop-show{
+    cursor:default;
+}
+
+.vectorMenu .patroller-show~.patroller-show,
+.vectorMenu .patroller-show a,
+.vectorMenu .sysop-show~.sysop-show,
+.vectorMenu .sysop-show a{
+    cursor:pointer;
+}
+
 /* poll-id显示 */
 .ajaxpoll .ajaxpoll-info .ajaxpoll-id-info {
     color: inherit;
