@@ -295,3 +295,11 @@ body.skin-moeskin .mw-mmv-wrapper {
     margin: 0 -0.5em;
     font-weight: 700;
 }
+
+/* 搜索结果不需要边距 */
+/* https://app.moegirl.org.cn/wiki/skins/MoeSkin/dist/style.css */
+.skin-moeskin .search-types ul,
+.skin-moeskin .mw-search-results ul {
+    list-style: none;
+    margin-left: 0;
+}
