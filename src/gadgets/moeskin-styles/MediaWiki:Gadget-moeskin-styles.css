@@ -298,8 +298,8 @@ body.skin-moeskin .mw-mmv-wrapper {
 
 /* 搜索结果不需要边距 */
 /* https://app.moegirl.org.cn/wiki/skins/MoeSkin/dist/style.css */
-.skin-moeskin .search-types ul,
-.skin-moeskin .mw-search-results ul {
+.skin-moeskin #mw-content-text .search-types ul,
+.skin-moeskin #mw-content-text ul.mw-search-results {
     list-style: none;
     margin-left: 0;
 }
