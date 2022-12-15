@@ -145,7 +145,7 @@
     }
     //链接提示
     async function linkConfirm() {
-        await mw.loader.using(["mediawiki.Uri"]);
+        await mw.loader.using(["mediawiki.Uri", "ext.gadget.site-lib"]);
         if ($("body").css("position") === "static") {
             $("body").css("position", "relative");
         }
