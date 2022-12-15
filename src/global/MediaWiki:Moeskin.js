@@ -1,11 +1,11 @@
 "use strict";
-/* 这里的任何JavaScript将在 MoeSkin 皮肤下加载
+/**
+ * 这里的任何JavaScript将在 MoeSkin 皮肤下加载
  * 请尊重萌娘百科版权，以下代码复制需要注明原自萌娘百科，并且附上URL地址http://zh.moegirl.org.cn/MediaWiki:MoeSkin.js
  * 版权协定：知识共享 署名-非商业性使用-相同方式共享 3.0
  *  loader模块 写法参见 https://www.mediawiki.org/wiki/ResourceLoader/Modules#mw.loader.load
  */
 (async () => {
-    /* 函数定义体 */
     /**
      * fixWikiLove
      * @FIXME WikiLove
@@ -22,6 +22,7 @@
             $.wikiLove.openDialog();
         });
     }
+
     /**
      * fix a few image issues by extending mw.Title.newFromImg
      * examples including gallery-slideshow and MultiMediaViewer
@@ -68,6 +69,7 @@
             });
         }
     }
+
     /* polyfill */
     /**
      * @returns {JQuery<HTMLDivElement>}
@@ -141,8 +143,9 @@
         configurable: true,
     });
     mw.hook("moeskin.addPortletLink").fire({ addPortletLink, useCustomSidenavBlock });
-    /* PageTools */
-    function PageTools() {
+
+    /* applyPageTools */
+    function applyPageTools() {
         /**
          * @returns {JQuery<HTMLDivElement>}
          */
@@ -181,12 +184,48 @@
             addPageToolsButton,
         });
     }
-    /* 函数执行体 */
+
+    /** 外部链接提示 */
+    async function externalLinkConfirm() {
+        await mw.loader.using(["ext.gadget.site-lib", "oojs-ui-windows", "oojs-ui-core"]);
+        /** @param {URL} url */
+        const getConfirmMessage = (url) => {
+            const $wrapper = $("<div>", { style: "text-align: center" });
+            $wrapper.append($("<div>", { text: wgULS("您点击了一个外部链接：", "您點選了一個外部連結：") }));
+            $wrapper.append($("<strong>", { text: url.href }));
+            $wrapper.append($("<div>", { text: wgULS("此网页不属于萌娘百科，我们不保证其安全性，请谨慎选择是否继续访问。", "此網頁不屬於萌娘百科，我們不保證其安全性，請謹慎選擇是否繼續訪問。") }));
+            return $wrapper;
+        };
+        document.getElementById("mw-content-text")?.addEventListener("click", async (e) => {
+            if (e.target.tagName !== "A") {
+                return;
+            }
+            /** @type {HTMLAnchorElement} */
+            const anchor = e.target;
+            const hrefText = anchor.getAttribute("href");
+            if (!hrefText || hrefText.startsWith("#") || hrefText.startsWith("javascript:") || anchor.classList.contains("image")) {
+                return;
+            }
+            const hrefURL = new URL(anchor.href);
+            if (hrefURL.host.endsWith("moegirl.org.cn") || hrefURL.host.endsWith("moegirl.org")) {
+                return;
+            }
+            e.preventDefault();
+            const response = await OO.ui.confirm(getConfirmMessage(hrefURL));
+            response && window.open(hrefURL.href);
+        });
+    }
+
+    /* 等待 document 加载完毕 */
     await $.ready;
     /* fixWikiLove */
     fixWikiLove();
     /* fixImage */
     fixImage();
     /* PageTools */
-    PageTools();
+    applyPageTools();
+    /* linkConfirm */
+    if ("ontouchstart" in document && !location.host.startsWith("mobile")) {
+        externalLinkConfirm();
+    }
 })();
