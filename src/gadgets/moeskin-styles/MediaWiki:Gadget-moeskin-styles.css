@@ -336,3 +336,41 @@ body.skin-moeskin .mw-mmv-wrapper {
 .skin-moeskin table th:not(:first-of-type) {
     min-width: 5rem;
 }
+
+/* 注释文字 */
+@media (max-width: 768px) {
+    html>body.skin-moeskin sup.mobileref {
+        display: none;
+    }
+
+    html>body.skin-moeskin sup.mobileref::after {
+        content: " ("attr(title) ")";
+        display: inline;
+    }
+}
+
+/* 链接提示 */
+@media (max-width: 768px) {
+    html>body.skin-moeskin .linkConfirmprompt {
+        border: 1px solid black;
+        display: none;
+        padding: 3px 7px;
+        position: absolute;
+        text-align: center;
+        width: 300px;
+        z-index: 99999;
+        background: rgb(255 255 255);
+    }
+
+    html>body.skin-moeskin .linkConfirmpromptTextnode {
+        max-height: 2.5em;
+        text-align: left;
+        word-break: break-all;
+    }
+
+    html>body.skin-moeskin .linkConfirmprompt a {
+        margin: 0 1.5em;
+        cursor: pointer;
+        color: #36C;
+    }
+}

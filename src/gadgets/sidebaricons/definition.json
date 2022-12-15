@@ -11,7 +11,7 @@
     "type": "styles",
     "package": false,
     "rights": [
-        "hidden"
+        "disabled"
     ],
     "peers": [],
     "dependencies": [],

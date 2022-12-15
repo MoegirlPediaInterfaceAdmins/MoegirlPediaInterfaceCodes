@@ -10,7 +10,9 @@
     "actions": [],
     "type": "styles",
     "package": false,
-    "rights": [],
+    "rights": [
+        "disabled"
+    ],
     "peers": [],
     "dependencies": [],
     "_section": "system"
