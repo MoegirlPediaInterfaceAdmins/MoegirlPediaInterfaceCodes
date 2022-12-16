@@ -185,7 +185,7 @@ $(() => (async () => {
             ele.classList.add("markrights");
             const uri = new mw.Uri(ele.href);
             let username;
-            const path = decodeURI(uri.path);
+            const path = decodeURIComponent(uri.path);
             if (/^\/User:[^/]+/.test(path)) {
                 username = path.match(/^\/User:([^/]+)/)[1].replace(/_/g, " ");
             } else if (/^User:[^/]+/.test(uri.query.title)) {
