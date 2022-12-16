@@ -54,7 +54,8 @@
             }
             return null;
         };
-        $.proxy(mw.mmv.bootstrap, "processThumbs")(mw.util.$content);
+        
+        /* gallery-slideshow */
         if (mw.loader.getState("mediawiki.page.gallery.slideshow") === "ready") {
             const {getImageInfo} = mw.GallerySlideshow.prototype;
             mw.GallerySlideshow.prototype.getImageInfo = function($img) {
@@ -68,6 +69,10 @@
                 new mw.GallerySlideshow(this);
             });
         }
+        
+        /* MultiMediaViewer */
+        await mw.loader.using("mmv.bootstrap");
+        $.proxy(mw.mmv.bootstrap, "processThumbs")(mw.util.$content);
     }
 
     /* polyfill */
