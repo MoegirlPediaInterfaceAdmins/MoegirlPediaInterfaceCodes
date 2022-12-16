@@ -172,7 +172,7 @@
     /**
      * 修复 lazyload 与 MultimediaViewer 不兼容的问题
      */
-    function fixMultimediaViewer() {
+    async function fixMultimediaViewer() {
         /** @type {NodeListOf<HTMLImageElement>} */
         const thumbs = document.getElementById("mw-content-text")?.querySelectorAll([
             ".gallery .image img",
@@ -180,9 +180,12 @@
             'figure[typeof*="mw:Image"] > *:first-child > img',
             'span[typeof*="mw:Image"] img',
         ].join(","));
+
         if (!thumbs) {
             return;
         }
+        await mw.loader.using("mmv.bootstrap");
+
         thumbs.forEach((el) => {
             if (el.src) {
                 return mw?.mmv?.bootstrap?.processThumb(el);
