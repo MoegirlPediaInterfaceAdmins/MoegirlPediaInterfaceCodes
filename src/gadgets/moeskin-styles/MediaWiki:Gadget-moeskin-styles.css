@@ -219,7 +219,6 @@ body.skin-moeskin .mw-parser-output img {
 
 /* 临时修复 */
 @media (min-width: 768px) {
-
     .mobile-only,
     .mobileonly {
         display: none !important;
@@ -227,7 +226,6 @@ body.skin-moeskin .mw-parser-output img {
 }
 
 @media (max-width: 768px) {
-
     .desktop-only,
     .nomobile {
         display: none !important;
