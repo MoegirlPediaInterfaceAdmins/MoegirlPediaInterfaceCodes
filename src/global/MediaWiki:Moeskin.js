@@ -180,7 +180,13 @@
             'figure[typeof*="mw:Image"] > *:first-child > img',
             'span[typeof*="mw:Image"] img',
         ].join(","));
+        if (!thumbs) {
+            return;
+        }
         thumbs.forEach((el) => {
+            if (el.src) {
+                return mw?.mmv?.bootstrap?.processThumb(el);
+            }
             const observer = new MutationObserver((entries) => {
                 /** @type {HTMLImageElement} */
                 const img = entries[0].target;
@@ -189,7 +195,7 @@
                     observer.disconnect();
                 }
             });
-            observer.observe(el, { attributes: true, attributeFilter: ["data-lazy-state", "src"] });
+            observer.observe(el, { attributes: true, attributeFilter: ["src"] });
         });
     }
 
