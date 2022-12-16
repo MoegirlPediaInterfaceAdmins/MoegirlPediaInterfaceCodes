@@ -189,8 +189,14 @@ body.skin-moeskin .mw-mmv-wrapper {
     display: none;
 }
 
-#mw-content-text table img {
+/* @FIX 临时修复图片元素的 max-width 问题 */
+body.skin-moeskin #mw-content-text img,
+body.skin-moeskin .mw-parser-output img {
     max-width: unset;
+}
+
+#mw-content-text>.mw-parser-output>img {
+    max-width: 100%;
 }
 
 /* 移动设备优化 */
@@ -213,6 +219,7 @@ body.skin-moeskin .mw-mmv-wrapper {
 
 /* 临时修复 */
 @media (min-width: 768px) {
+
     .mobile-only,
     .mobileonly {
         display: none !important;
@@ -220,6 +227,7 @@ body.skin-moeskin .mw-mmv-wrapper {
 }
 
 @media (max-width: 768px) {
+
     .desktop-only,
     .nomobile {
         display: none !important;
@@ -301,7 +309,7 @@ body.skin-moeskin .mw-mmv-wrapper {
     display: flex;
 }
 
-.skin-moeskin #mw-search-top-table > div:first-of-type {
+.skin-moeskin #mw-search-top-table>div:first-of-type {
     float: unset !important;
     flex: 1;
 }
@@ -340,7 +348,7 @@ body.skin-moeskin .mw-mmv-wrapper {
     }
 
     html>body.skin-moeskin sup.mobileref::after {
-        content: " ("attr(title) ")";
+        content: " (" attr(title) ")";
         display: inline;
     }
 }
