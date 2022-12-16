@@ -169,13 +169,39 @@
         });
     }
 
-    /* 等待 document 加载完毕 */
+    /**
+     * 修复 lazyload 与 MultimediaViewer 不兼容的问题
+     */
+    function fixMultimediaViewer() {
+        /** @type {NodeListOf<HTMLImageElement>} */
+        const thumbs = document.getElementById("mw-content-text")?.querySelectorAll([
+            ".gallery .image img",
+            "a.image img", "#file a img",
+            'figure[typeof*="mw:Image"] > *:first-child > img',
+            'span[typeof*="mw:Image"] img',
+        ].join(","));
+        thumbs.forEach((el) => {
+            const observer = new MutationObserver((entries) => {
+                /** @type {HTMLImageElement} */
+                const img = entries[0].target;
+                if (img.src) {
+                    mw?.mmv?.bootstrap?.processThumb(img);
+                    observer.disconnect();
+                }
+            });
+            observer.observe(el, { attributes: true, attributeFilter: ["data-lazy-state", "src"] });
+        });
+    }
+
+    /** 等待 document 加载完毕 */
     await $.ready;
-    /* fixWikiLove */
+    /** fixWikiLove */
     fixWikiLove();
-    /* PageTools */
+    /** PageTools */
     applyPageTools();
-    /* linkConfirm */
+    /** fixMultimediaViewer */
+    fixMultimediaViewer();
+    /** linkConfirm */
     if ("ontouchstart" in document && !location.host.startsWith("mobile")) {
         externalLinkConfirm();
     }
