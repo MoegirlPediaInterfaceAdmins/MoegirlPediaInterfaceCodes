@@ -1,12 +1,12 @@
 /* 此处放置的 CSS 会影响使用 MoeSkin 皮肤的用户 */
 
-/* background image */
+/* 全局背景图片 */
 body.skin-moeskin #moe-global-background {
     --theme-background-color: rgb(15 15 18);
     --background-url: url("https://app.moegirl.org.cn/background/ZhMoegirl_12ndAnniversary/moeskin.jpg");
 }
 
-/* footer */
+/* 全局页脚导航 */
 body.skin-moeskin #footer-info-copyright {
     padding: 15px 0 30px;
     min-height: 165px;
@@ -74,14 +74,14 @@ body.skin-moeskin #footer-moegirl #footer-qrcode-area img {
     width: 100%;
 }
 
+/* 在常规屏幕设备上使文章区域略微透明，以便展示背景图片 */
 @media (min-width: 768px) {
-
-    /* adjust bg opacity of article area */
     body.skin-moeskin #moe-main-container {
         --theme-card-background-color: rgb(255 255 255 / 90%);
     }
 }
 
+/* 修复全局顶部活动展示区的图片缝隙 */
 body.skin-moeskin #moe-main-container>#moe-topbanner-container>#moe-topbanner {
     padding: 0;
     line-height: 0;
@@ -147,8 +147,13 @@ body.skin-moeskin .mw-mmv-wrapper {
     box-sizing: content-box;
 }
 
-/* 侧边栏公告 */
-#moe-global-siderail #moe-siderail-sitenotice h3 .mw-headline-number {
+/* 修正侧边栏公告二级标题 */
+#moe-global-siderail #moe-siderail-sitenotice h2 {
+    font-size: 1.2rem;
+    margin: 0;
+}
+
+#moe-global-siderail #moe-siderail-sitenotice h2 .mw-headline-number {
     display: none;
 }
 
@@ -170,7 +175,7 @@ body.skin-moeskin .mw-mmv-wrapper {
     }
 }
 
-/* Navbox */
+/* 优化[[T:Navbox]]在窄屏设备的体验 */
 @media (max-width: 768px) {
     html>body.skin-moeskin .navbox {
         border: 1px solid #AAA;
@@ -282,7 +287,7 @@ img {
     min-width: 5rem;
 }
 
-/* 注释文字 */
+/* 优化[[T:注解]]在窄屏设备的体验 */
 @media (max-width: 768px) {
     html>body.skin-moeskin sup.mobileref {
         display: none;
@@ -298,3 +303,4 @@ img {
 #mw-content-text .mw-changeslist-line td {
     vertical-align: baseline;
 }
+
