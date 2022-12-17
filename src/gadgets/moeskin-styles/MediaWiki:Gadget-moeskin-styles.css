@@ -277,6 +277,11 @@ body.skin-moeskin .mw-mmv-wrapper {
     font-weight: 700;
 }
 
+/* @fix 临时修复 img 元素的高度 */
+img {
+    height: auto;
+}
+
 /* 搜索页样式 */
 .skin-moeskin #mw-search-top-table {
     display: flex;
