@@ -189,16 +189,6 @@ body.skin-moeskin .mw-mmv-wrapper {
     display: none;
 }
 
-/* @FIX 临时修复图片元素的 max-width 问题 */
-body.skin-moeskin #mw-content-text img,
-body.skin-moeskin .mw-parser-output img {
-    max-width: unset;
-}
-
-#mw-content-text>.mw-parser-output>img {
-    max-width: 100%;
-}
-
 /* 移动设备优化 */
 @media (max-width: 576px) {
 
@@ -214,21 +204,6 @@ body.skin-moeskin .mw-parser-output img {
         width: 100% !important;
         float: unset !important;
         margin: 1rem 0 !important;
-    }
-}
-
-/* 临时修复 */
-@media (min-width: 768px) {
-    .mobile-only,
-    .mobileonly {
-        display: none !important;
-    }
-}
-
-@media (max-width: 768px) {
-    .desktop-only,
-    .nomobile {
-        display: none !important;
     }
 }
 
