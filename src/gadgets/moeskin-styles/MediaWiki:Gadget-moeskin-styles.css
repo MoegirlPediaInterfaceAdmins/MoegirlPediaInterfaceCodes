@@ -6,11 +6,6 @@ body.skin-moeskin #moe-global-background {
     --background-url: url("https://app.moegirl.org.cn/background/ZhMoegirl_12ndAnniversary/moeskin.jpg");
 }
 
-/* @FIX 临时修复 chromium 浏览器中轴线上的缝隙 */
-body.skin-moeskin #moe-global-background::after {
-    width: 50%;
-}
-
 /* footer */
 body.skin-moeskin #footer-info-copyright {
     padding: 15px 0 30px;
@@ -99,29 +94,6 @@ aside#moe-global-siderail #moe-custom-sidenav-block h2 {
     margin: 0;
 }
 
-/* @FIXME 临时隐藏 未完成的功能 */
-body.skin-moeskin .editor-central,
-body.skin-moeskin .moegirl-realms {
-    display: none;
-}
-
-/* @FIXME 粗体字兼容性问题 */
-body.skin-moeskin b,
-body.skin-moeskin strong {
-    font-weight: 700;
-}
-
-/* @fix 被隐藏的目录导致空的侧边栏 */
-body.skin-moeskin #toc-container .toc,
-body.skin-moeskin #toc-container .toc ul {
-    display: revert !important;
-}
-
-/* @fix 标题的显示模式 */
-body.skin-moeskin #moe-page-header-top>div {
-    display: flex;
-}
-
 /* 特定讨论页面隐藏返回按钮 */
 .rootpage-萌娘百科_talk_讨论版 #back-to-subject,
 .rootpage-Talk_讨论版 #back-to-subject,
@@ -176,16 +148,7 @@ body.skin-moeskin .mw-mmv-wrapper {
 }
 
 /* 侧边栏公告 */
-#moe-global-siderail #moe-siderail-sitenotice {
-    text-align: left;
-}
-
-#moe-global-siderail #moe-siderail-sitenotice h2 {
-    font-size: 16px;
-    margin: 0;
-}
-
-#moe-global-siderail #moe-siderail-sitenotice h2 .mw-headline-number {
+#moe-global-siderail #moe-siderail-sitenotice h3 .mw-headline-number {
     display: none;
 }
 
@@ -329,4 +292,9 @@ img {
         content: " (" attr(title) ")";
         display: inline;
     }
+}
+
+/* @fix 临时修复 更改日志表格文字对齐 */
+#mw-content-text .mw-changeslist-line td {
+    vertical-align: baseline;
 }
