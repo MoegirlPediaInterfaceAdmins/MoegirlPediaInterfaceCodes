@@ -3879,8 +3879,8 @@ $(() => {
     }
     function getValidImageFromWikiText(wikiText) {
         let matched = null;
-        let match = pg.re.image.exec(t);
         const t = removeMatchesUnless(wikiText, RegExp("(<!--[\\s\\S]*?-->)"), 1, RegExp("^<!--[^[]*popup", "i"));
+        let match = pg.re.image.exec(t);
         while (match) {
             const m = match[2] || match[6];
             if (isValidImageName(m)) {
