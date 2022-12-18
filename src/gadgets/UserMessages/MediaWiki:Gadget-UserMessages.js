@@ -831,6 +831,7 @@
         ["UserMessages/MovedToUserSubpage2", "MovedToUserSubpage", "不在收录范围内的页面打回至用户子页面（1=页面名，2=原因）", umsg.umFlagP2 + umsg.umFlagP3, "页面打回通知"],
         ["UserMessages/ArticleCopyright", "ArticleCopyrightInfringement", "著作权侵犯（1=页面名，2=选填站点）", umsg.umFlagP2 + umsg.umFlagP3, "请勿侵犯著作权"],
         ["UserMessages/FalseInformation", "AddFalseInformation", "添加不实信息（1=页面名）", umsg.umFlagP2, "请勿添加不实信息"],
+        ["UserMessages/WikiMarkupLanguage", "WikiMarkupLanguage", "需要学习Wiki语法", umsg.umFlagUM, "关于Wiki语法"],
         ["UserMessages/CutAndPasteMoving", "C&Pmoving", "剪贴移动提醒（1=页面名）", umsg.umFlagP2, "请勿剪切移动页面"],
         ["UserMessages/EditUserPage", "EditUserPage", "编辑他人用户页面（1=页面名）", umsg.umFlagP2, "请勿编辑他人用户页面"],
         ["UserMessages/HumorTemplate", "HumorTemplate", "违规字词转换（1=选填页面名，2=选填行为）", umsg.umFlagP2 + umsg.umFlagP3, "关于幽默模板的使用"],
