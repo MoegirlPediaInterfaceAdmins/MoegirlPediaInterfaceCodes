@@ -85,9 +85,6 @@ body[class*="page-萌娘百科_talk_讨论版_"] .userlink .userlink-menu {
 }
 
 /* AD */
-.adsbygoogle,
-#mys-wrapper,
-.mys-wrapper,
-iframe[src*="baidu.com"] {
+.ezoicAds {
     display: none !important;
 }
