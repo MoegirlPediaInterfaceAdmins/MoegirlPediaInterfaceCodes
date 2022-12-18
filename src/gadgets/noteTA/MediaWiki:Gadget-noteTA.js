@@ -171,7 +171,7 @@ mw.hook("wikipage.content").add(() => {
                     const $noteTAlocals = $noteTAlocal.children("*[data-noteta-code]");
                     for (const json of new Set($noteTAlocals.map((_, ele) => JSON.stringify([$(ele).data("noteta-code"), $(ele).data("noteta-desc")])))) {
                         const [localConv, desc] = JSON.parse(json),
-                            localDesc = desc ? `<br>说明：${localDesc}` : "";
+                            localDesc = desc ? `<br>说明：${desc}` : "";
                         wikitext_1 += `* -{D|${localConv}}-当前显示为：-{${localConv}}-${localDesc}\n`;
                     }
                 }
