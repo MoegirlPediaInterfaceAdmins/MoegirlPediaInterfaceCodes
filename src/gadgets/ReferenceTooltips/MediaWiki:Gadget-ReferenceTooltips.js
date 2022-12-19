@@ -1,6 +1,7 @@
 "use strict";
 // See [[mw:Reference Tooltips]]
 // Source https://en.wikipedia.org/wiki/MediaWiki:Gadget-ReferenceTooltips.js
+/* eslint-disable no-use-before-define */
 
 (() => {
 

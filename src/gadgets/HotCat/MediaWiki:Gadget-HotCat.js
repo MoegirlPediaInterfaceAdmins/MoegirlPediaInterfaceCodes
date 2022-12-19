@@ -2,7 +2,7 @@
  * @source https://commons.wikimedia.org/wiki/_?oldid=578342698
  * 更新后请同步更新上面链接到最新版本
  */
-/* eslint-disable require-atomic-updates */
+/* eslint-disable require-atomic-updates, no-use-before-define */
 "use strict";
 /**
   * https://commons.wikimedia.org/wiki/MediaWiki:Gadget-HotCat.js

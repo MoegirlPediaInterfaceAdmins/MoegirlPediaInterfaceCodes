@@ -1,5 +1,6 @@
 //通过选中文字快速找到编辑者和日期 by User:Bbrabbit
 //注意：此工具会绝赞产生大量API请求，非维护组谨慎使用。维护组：需要WAF豁免。
+/* eslint-disable no-use-before-define */
 "use strict";
 $(() => {
     if (!mw.config.get("wgIsArticle")) {

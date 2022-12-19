@@ -1,4 +1,5 @@
 "use strict";
+/* eslint-disable no-use-before-define */
 /**
  * @source https://github.com/google/code-prettify/blob/master/src/prettify.js
  * 更新后请同步更新上面链接到最新版本

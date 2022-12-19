@@ -3,6 +3,7 @@
  * 更新后请同步更新上面链接到最新版本
  */
 /* global wikEdUseWikEd, WikEdUpdateFrame */
+/* eslint-disable no-use-before-define */
 /*
  * 全部内容引自 https://en.wikipedia.org/wiki/MediaWiki:Gadget-popups.js
  * 当前版本修改自 https://en.wikipedia.org/w/index.php?title=MediaWiki:Gadget-popups.js&oldid=1086319046

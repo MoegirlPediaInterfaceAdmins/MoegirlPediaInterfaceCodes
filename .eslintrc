@@ -129,6 +129,7 @@
         "prefer-rest-params": "error",
         "prefer-exponentiation-operator": "error",
         "require-await": "error",
-        "arrow-parens": "error"
+        "arrow-parens": "error",
+        "no-use-before-define": "error"
     }
 }

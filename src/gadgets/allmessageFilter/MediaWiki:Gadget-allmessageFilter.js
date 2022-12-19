@@ -40,23 +40,6 @@
                 enableNextLink(false);
             }
         };
-        const init = function init() {
-            if (!$("#mw-allmessages-form")[0]) { return; }
-            $("#mw-allmessages-form").remove();
-            $(".TablePager_nav td").remove();
-            $(".TablePager_nav tr").append('<td style="width: 50%;" class="TablePager_nav-prev"><div class="TablePager_nav-disabled">上一页</div></td><td style="width: 50%;" class="TablePager_nav-next"><div class="TablePager_nav-disabled">下一页</div></td>');
-            $(".TablePager_nav-prev div").on("click", function () {
-                if ($(this).hasClass("TablePager_nav-disabled")) { return false; }
-                index -= length;
-                if (index < 0) { index = 0; }
-                load(am.slice(index, index + length));
-            });
-            $(".TablePager_nav-next div").on("click", function () {
-                if ($(this).hasClass("TablePager_nav-disabled")) { return false; }
-                index += length;
-                load(am.slice(index, index + length));
-            });
-        };
         const load = (_am) => {
             check(am);
             const head = $("#mw-allmessagestable thead");
@@ -77,6 +60,23 @@
                 }).html(name.replace(rfilter, `<span style="font-weight: bold;">${filter}</span>`)).appendTo(row.find(".am_title"));
                 row.find(".am_default").text(text);
                 list.append(row);
+            });
+        };
+        const init = function init() {
+            if (!$("#mw-allmessages-form")[0]) { return; }
+            $("#mw-allmessages-form").remove();
+            $(".TablePager_nav td").remove();
+            $(".TablePager_nav tr").append('<td style="width: 50%;" class="TablePager_nav-prev"><div class="TablePager_nav-disabled">上一页</div></td><td style="width: 50%;" class="TablePager_nav-next"><div class="TablePager_nav-disabled">下一页</div></td>');
+            $(".TablePager_nav-prev div").on("click", function () {
+                if ($(this).hasClass("TablePager_nav-disabled")) { return false; }
+                index -= length;
+                if (index < 0) { index = 0; }
+                load(am.slice(index, index + length));
+            });
+            $(".TablePager_nav-next div").on("click", function () {
+                if ($(this).hasClass("TablePager_nav-disabled")) { return false; }
+                index += length;
+                load(am.slice(index, index + length));
             });
         };
         $("#mw-allmessages-form").after(containter);

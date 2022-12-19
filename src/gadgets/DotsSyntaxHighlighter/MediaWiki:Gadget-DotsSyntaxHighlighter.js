@@ -50,6 +50,14 @@
     const tagBreakerRegexCache = {};
     const nowikiTagBreakerRegexCache = {};
 
+    function syncScrollX() {
+        wpTextbox0.scrollLeft = wpTextbox1.scrollLeft;
+    }
+
+    function syncScrollY() {
+        wpTextbox0.scrollTop = wpTextbox1.scrollTop;
+    }
+
     function highlightSyntax() {
         lastText = wpTextbox1.value;
         const text = `${lastText.replace(/['\\]/g, "\\$&")}\n`;
@@ -270,14 +278,6 @@
         }
 
         syntaxStyleTextNode.nodeValue = `${css.substring(2).replace(/\n/g, "\\A ")}'}#wpTextbox0>span::after{visibility:hidden}`;
-    }
-
-    function syncScrollX() {
-        wpTextbox0.scrollLeft = wpTextbox1.scrollLeft;
-    }
-
-    function syncScrollY() {
-        wpTextbox0.scrollTop = wpTextbox1.scrollTop;
     }
 
     function syncTextDirection() {

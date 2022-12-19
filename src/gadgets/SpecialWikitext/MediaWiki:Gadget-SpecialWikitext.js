@@ -11,23 +11,6 @@
 
     /* 与[[Module:SpecialWikitext]]保持一致 */
     const wikiTextKey = "_addText";
-    function lua_check(input_string, content_model) {
-        const contentModel = `${content_model || mw.config.get("wgPageContentModel")}`.toLowerCase();
-        switch (contentModel) {
-            case "json":
-                return lua_getJSONwikitext(input_string);
-            case "js":
-            case "javascript":
-            case "text":
-            case "wiki":
-                return lua_getJSwikitext(input_string);
-            case "css":
-            case "sanitized-css":
-                return lua_getCSSwikitext(input_string);
-            default:
-                return "";
-        }
-    }
     function lua_addText(input_str, new_str, _escape) {
         let input_string = input_str;
         if (new_str !== "") {
@@ -143,6 +126,23 @@
         }
         return wikitext;
     }
+    function lua_check(input_string, content_model) {
+        const contentModel = `${content_model || mw.config.get("wgPageContentModel")}`.toLowerCase();
+        switch (contentModel) {
+            case "json":
+                return lua_getJSONwikitext(input_string);
+            case "js":
+            case "javascript":
+            case "text":
+            case "wiki":
+                return lua_getJSwikitext(input_string);
+            case "css":
+            case "sanitized-css":
+                return lua_getCSSwikitext(input_string);
+            default:
+                return "";
+        }
+    }
     /* 与[[Module:SpecialWikitext]]保持一致 */
 
     const api = new mw.Api();
@@ -166,7 +166,6 @@
         }
         return lang;
     };
-    const addLoadingNotice = () => addParsedWikitext(noticeHTML.loading);
     const loadingFailNotice = () => $(".mw-_addText-preview-loading-content").html(noticeHTML.fail);
     const removeLoadingNotice = () => $(".mw-_addText-preview-loading").empty();
     const addParsedWikitext = (html) => {
@@ -184,6 +183,7 @@
             }
         }
     };
+    const addLoadingNotice = () => addParsedWikitext(noticeHTML.loading);
     const ifNeedPreview = () => document.body.innerHTML.includes("_addText");
     const mwAddWikiText = async (wikitext, pagename, isPreview) => {
         const text = getCleanText(wikitext);

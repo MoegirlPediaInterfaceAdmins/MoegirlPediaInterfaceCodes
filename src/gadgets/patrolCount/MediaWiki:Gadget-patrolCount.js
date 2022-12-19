@@ -1,4 +1,5 @@
 "use strict";
+/* eslint-disable no-use-before-define */
 // <pre>
 /**
    Author: ZUO Haocheng from ZHWikipedia
