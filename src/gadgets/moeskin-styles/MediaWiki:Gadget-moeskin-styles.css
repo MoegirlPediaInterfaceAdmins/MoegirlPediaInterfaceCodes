@@ -245,9 +245,19 @@ body.skin-moeskin .mw-mmv-wrapper {
     font-weight: 700;
 }
 
-/* @fix 临时修复 img 元素的高度 */
+/* @fix 临时修复 img 元素的宽高 */
 img {
+    width: auto;
     height: auto;
+}
+
+a>img {
+    max-width: 100%;
+}
+
+.noresize a>img,
+.infoBoxIcon a>img {
+    max-width: unset;
 }
 
 /* 搜索页样式 */
