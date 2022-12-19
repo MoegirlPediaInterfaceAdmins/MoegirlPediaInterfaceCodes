@@ -247,7 +247,6 @@ body.skin-moeskin .mw-mmv-wrapper {
 
 /* @fix 临时修复 img 元素的宽高 */
 img {
-    width: auto;
     height: auto;
 }
 
