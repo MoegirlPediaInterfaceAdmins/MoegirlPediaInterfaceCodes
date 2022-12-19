@@ -129,14 +129,6 @@ $.wikiLoveOptions.types.mgpSpecial = {
             title: "巡回星章",
             image: "Pilgrimage_Barnstar_Hires.png",
         },
-        trophy: {
-            fields: ["message"],
-            option: "汤姆斯·陈独秀先生的奖杯",
-            descr: "汤姆斯·陈独秀先生的奖杯用于表彰在某个条目或系列条目上有重大贡献，其编辑态度值得所有萌百人效仿的编辑者。",
-            header: "给您一个星章！",
-            title: "汤姆斯·陈独秀先生的奖杯",
-            image: "Trophy.jpg",
-        },
         arknights: {
             fields: ["message"],
             option: "罗德岛图书馆萌百分馆干员编辑勋章",
