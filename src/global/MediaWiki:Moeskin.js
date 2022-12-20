@@ -23,6 +23,58 @@
         });
     }
 
+    /**
+     * fix a few image issues by extending mw.Title.newFromImg
+     * examples including gallery-slideshow and MultiMediaViewer
+     */
+    async function fixImage() {
+        await mw.loader.using("mediawiki.Title");
+        mw.Title.newFromImg = function(img) {
+            let matches, i, regex;
+            const thumbPhpRegex = /thumb\.php/,
+                regexes = [
+                    /\/[a-f0-9]\/[a-f0-9]{2}\/([^\s/]+)\/[^\s/]+-[^\s/]*$/,
+                    /\/[a-f0-9]\/[a-f0-9]{2}\/([^\s/]+)$/,
+                    /\/([^\s/]+)\/[^\s/]+-(?:\1|thumbnail)[^\s/]*$/,
+                    /\/([^\s/]+)$/,
+                ],
+                recount = regexes.length,
+                src = img.jquery ? img[0].src || img[0].dataset.lazySrc : img.src || img.dataset.lazySrc;
+            matches = src.match(thumbPhpRegex);
+            if (matches) {
+                return mw.Title.newFromText(`File:${mw.util.getParamValue("f", src)}`);
+            }
+            const decodedSrc = decodeURIComponent(src);
+            for (i = 0; i < recount; i++) {
+                regex = regexes[i];
+                matches = decodedSrc.match(regex);
+                if (matches && matches[1]) {
+                    return mw.Title.newFromText(`File:${matches[1]}`);
+                }
+            }
+            return null;
+        };
+        
+        /* gallery-slideshow */
+        if (mw.loader.getState("mediawiki.page.gallery.slideshow") === "ready") {
+            const {getImageInfo} = mw.GallerySlideshow.prototype;
+            mw.GallerySlideshow.prototype.getImageInfo = function($img) {
+                if ($img.attr("src") === undefined) {
+                    $img.attr("src", $img.data("lazy-src"));
+                }
+                return getImageInfo.call(this, $img);
+            };
+            $("li.gallerycarousel").remove();
+            mw.util.$content.find(".mw-gallery-slideshow").each(function() {
+                new mw.GallerySlideshow(this);
+            });
+        }
+        
+        /* MultiMediaViewer */
+        await mw.loader.using("mmv.bootstrap");
+        $.proxy(mw.mmv.bootstrap, "processThumbs")(mw.util.$content);
+    }
+
     /* polyfill */
     /**
      * @returns {JQuery<HTMLDivElement>}
@@ -173,6 +225,8 @@
     await $.ready;
     /* fixWikiLove */
     fixWikiLove();
+    /* fixImage */
+    fixImage();
     /* PageTools */
     applyPageTools();
     /* linkConfirm */
