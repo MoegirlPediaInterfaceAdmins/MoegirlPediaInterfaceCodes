@@ -56,7 +56,7 @@
         };
         
         /* gallery-slideshow */
-        if (mw.loader.getState("mediawiki.page.gallery.slideshow") === "ready") {
+        if (["loading", "loaded", "executing", "ready"].includes(mw.loader.getState("mediawiki.page.gallery.slideshow"))) {
             const {getImageInfo} = mw.GallerySlideshow.prototype;
             mw.GallerySlideshow.prototype.getImageInfo = function($img) {
                 if ($img.attr("src") === undefined) {
