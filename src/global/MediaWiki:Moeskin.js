@@ -71,8 +71,10 @@
         }
         
         /* MultiMediaViewer */
-        await mw.loader.using("mmv.bootstrap");
-        $.proxy(mw.mmv.bootstrap, "processThumbs")(mw.util.$content);
+        if (mw.config.get("wgMediaViewerOnClick")) {
+            await mw.loader.using("mmv.bootstrap");
+            $.proxy(mw.mmv.bootstrap, "processThumbs")(mw.util.$content);
+        }
     }
 
     /* polyfill */
