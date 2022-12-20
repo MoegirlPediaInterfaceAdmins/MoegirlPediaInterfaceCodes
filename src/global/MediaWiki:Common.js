@@ -156,7 +156,7 @@
     }
     // 复制修改内容
     async function copyRights() {
-        await mw.loader.using('mediawiki.util');
+        await mw.loader.using("mediawiki.util");
         const div =
             $("<div>", {
                 css: {
