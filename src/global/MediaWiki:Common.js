@@ -155,7 +155,8 @@
         $("#tagline").after(crossDomain);
     }
     // 复制修改内容
-    function copyRights() {
+    async function copyRights() {
+        await mw.loader.using("mediawiki.util");
         const div =
             $("<div>", {
                 css: {
