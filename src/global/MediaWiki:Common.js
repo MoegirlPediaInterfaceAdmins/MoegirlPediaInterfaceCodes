@@ -1,7 +1,7 @@
 // <nowiki>
 /* 这里的任何JavaScript将在全站加载
  * 请尊重萌娘百科版权，以下代码复制需要注明原自萌娘百科，并且附上URL地址http://zh.moegirl.org.cn/MediaWiki:Common.js
- * 版权协定：知识共享 署名-非商业性使用-相同方式共享 3.0
+ * 版权协定：知识共享 署名-非商业性使用-相同方式共享 3.0 中国大陆
  *  loader模块 写法参见 https://www.mediawiki.org/wiki/ResourceLoader/Modules#mw.loader.load
  */
 "use strict";
@@ -140,7 +140,7 @@
         const crossDomain = $("<div/>");
         const anchor = $("<a/>");
         crossDomain.text("＜");
-        anchor.attr("href", `${url}`).text(`${link}【来自 ${domain}】的跨站重定向`);
+        anchor.attr("href", `${url}`).text(`${link} 【来自 ${domain} 的跨站重定向】`);
         crossDomain.append(anchor);
         $("#contentSub").prepend(crossDomain);
     }
@@ -150,7 +150,7 @@
         const crossDomain = $("<div/>");
         const anchor = $("<a/>");
         crossDomain.html('<span class="xicon"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 256 512"><path d="M31.7 239l136-136c9.4-9.4 24.6-9.4 33.9 0l22.6 22.6c9.4 9.4 9.4 24.6 0 33.9L127.9 256l96.4 96.4c9.4 9.4 9.4 24.6 0 33.9L201.7 409c-9.4 9.4-24.6 9.4-33.9 0l-136-136c-9.5-9.4-9.5-24.6-.1-34z" fill="currentColor"></path></svg></span>');
-        anchor.attr("href", `${url}`).text(`${link}【来自 ${domain}】的跨站重定向`);
+        anchor.attr("href", `${url}`).text(`${link} 【来自 ${domain} 的跨站重定向】`);
         crossDomain.append(anchor);
         $("#tagline").after(crossDomain);
     }
@@ -164,7 +164,7 @@
                     left: "-99999px",
                     "z-index": "-99999",
                 },
-                html: `<pre></pre><br>\n阅读更多：${/%/.test(mw.util.wikiUrlencode(mw.config.get("wgPageName"))) ? `${mw.config.get("wgPageName")}（${mw.config.get("wgServer")}${mw.config.get("wgScriptPath")}/${encodeURIComponent(mw.config.get("wgPageName"))} ）` : `${mw.config.get("wgServer")}${mw.config.get("wgScriptPath")}/${mw.config.get("wgPageName")}`}<br>\n本文引自萌娘百科(${mw.config.get("wgServer").replace(/^\/\//, "https://")} )，文字内容默认使用《知识共享 署名-非商业性使用-相同方式共享 3.0》协议。`,
+                html: `<pre></pre><br>\n阅读更多：${/%/.test(mw.util.wikiUrlencode(mw.config.get("wgPageName"))) ? `${mw.config.get("wgPageName")}（${mw.config.get("wgServer")}${mw.config.get("wgScriptPath")}/${encodeURIComponent(mw.config.get("wgPageName"))} ）` : `${mw.config.get("wgServer")}${mw.config.get("wgScriptPath")}/${mw.config.get("wgPageName")}`}<br>\n本文引自萌娘百科(${mw.config.get("wgServer").replace(/^\/\//, "https://")} )，文字内容默认使用《知识共享 署名-非商业性使用-相同方式共享 3.0 中国大陆》协议。`,
             }).appendTo("body"),
             valueNode = div.find("pre");
         $("#mw-content-text").on("copy", () => {
