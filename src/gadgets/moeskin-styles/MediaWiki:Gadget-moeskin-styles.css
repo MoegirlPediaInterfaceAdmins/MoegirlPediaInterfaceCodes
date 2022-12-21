@@ -312,3 +312,14 @@ a>img {
 #mw-content-text .mw-changeslist-line td {
     vertical-align: baseline;
 }
+
+/**
+ * @fix 临时修复 旧版安卓webview上显示不全
+ * @url https://caniuse.com/css-revert-value
+ *      CSS revert value: Chrome >= 84
+ */
+@media screen and (max-width: 1224px) {
+    .skin-moeskin .moe-flexible-container {
+        align-self: unset;
+    }
+}
