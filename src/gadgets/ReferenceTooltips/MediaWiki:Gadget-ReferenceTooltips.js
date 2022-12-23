@@ -116,6 +116,32 @@
                     ),
             );
         };
+        
+        function onBodyClick(e) {
+            if (!this.tooltip && !this.$ref.hasClass("rt-target")) {
+                return;
+            }
+
+            let $current = $(e.target);
+
+            const contextMatchesParameter = (parameter) => this === parameter;
+
+            // The last condition is used to determine cases when a clicked tooltip is the current
+            // element's tooltip or one of its descendants
+            while ($current.length &&
+                (!$current.hasClass("rt-tooltip") ||
+                    !$current.data("tooltip") ||
+                    !$current.data("tooltip").upToTopParent(
+                        contextMatchesParameter, [this.tooltip],
+                        true,
+                    )
+                )) {
+                $current = $current.parent();
+            }
+            if (!$current.length) {
+                this.hideRef();
+            }
+        }
 
         class TooltippedElement {
             constructor($element) {
@@ -292,7 +318,7 @@
                         return;
                     }
                     setTimeout(() => {
-                        $body.on("click.rt touchstart.rt", this.onBodyClick.bind(this));
+                        $body.on("click.rt touchstart.rt", this.onBodyClick);
                     }, 0);
 
                 }
@@ -303,31 +329,7 @@
                     this.showTimer = setTimeout(reallyShow, delay);
                 }
             }
-            onBodyClick(e) {
-                if (!this.tooltip && !this.$ref.hasClass("rt-target")) {
-                    return;
-                }
-
-                let $current = $(e.target);
-
-                const contextMatchesParameter = (parameter) => this === parameter;
-
-                // The last condition is used to determine cases when a clicked tooltip is the current
-                // element's tooltip or one of its descendants
-                while ($current.length &&
-                    (!$current.hasClass("rt-tooltip") ||
-                        !$current.data("tooltip") ||
-                        !$current.data("tooltip").upToTopParent(
-                            contextMatchesParameter, [this.tooltip],
-                            true,
-                        )
-                    )) {
-                    $current = $current.parent();
-                }
-                if (!$current.length) {
-                    this.hideRef();
-                }
-            }
+            onBodyClick = onBodyClick.bind(this);
             onWindowResize() {
                 this.tooltip.calculatePosition();
             }
