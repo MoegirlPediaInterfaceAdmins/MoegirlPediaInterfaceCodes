@@ -292,7 +292,7 @@
                         return;
                     }
                     setTimeout(() => {
-                        $body.on("click.rt touchstart.rt", this.onBodyClick.bind(this));
+                        $body.on("click.rt touchstart.rt", this.onBodyClick);
                     }, 0);
 
                 }
@@ -303,14 +303,16 @@
                     this.showTimer = setTimeout(reallyShow, delay);
                 }
             }
-            onBodyClick(e) {
+            onBodyClick = (e) => {
                 if (!this.tooltip && !this.$ref.hasClass("rt-target")) {
                     return;
                 }
 
                 let $current = $(e.target);
 
-                const contextMatchesParameter = (parameter) => this === parameter;
+                const contextMatchesParameter = function(parameter) {
+                    return this === parameter;
+                };
 
                 // The last condition is used to determine cases when a clicked tooltip is the current
                 // element's tooltip or one of its descendants
@@ -327,7 +329,7 @@
                 if (!$current.length) {
                     this.hideRef();
                 }
-            }
+            };
             onWindowResize() {
                 this.tooltip.calculatePosition();
             }
@@ -365,9 +367,6 @@
                     },
                 ],
             };
-            constructor() {
-                super();
-            }
             initialize(...args) {
                 super.initialize(...args);
 
