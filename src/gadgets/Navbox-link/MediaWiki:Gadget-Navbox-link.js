@@ -14,7 +14,7 @@ $(() => {
         href: "javascript:void(0)",
         title: wgULS("强制刷新", "強制重新整理"),
         id: "not-listed-articles-refresh",
-        text: wgULS("未添加本模版的条目（点击刷新）", "未新增本模版的條目（點選重新整理）", null, null, "未新增本模版的條目（點擊重新整理）"),
+        text: wgULS("未添加本模板的条目（点击刷新）", "未新增本模板的條目（點選重新整理）", null, null, "未新增本模板的條目（點擊重新整理）"),
     });
     targetLoc.append("<hr>");
     $("#catlinks").append(targetLoc);
