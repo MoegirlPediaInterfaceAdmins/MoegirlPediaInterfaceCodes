@@ -343,7 +343,9 @@ $(() => {
     }
     function defaultPopupsContainer() {
         if (getValueOf("popupOnlyArticleLinks")) {
-            return document.getElementById("mw_content") || document.getElementById("content") || document.getElementById("article") || document;
+            return document.getElementById("mw_content") || document.getElementById("content") || document.getElementById("article") ||
+                document.getElementById("mw-body") // moeskin
+                || document;
         }
         return document;
     }
