@@ -71,8 +71,8 @@
         }
         
         /* MultiMediaViewer */
-        if (mw.config.get("wgMediaViewerOnClick")) {
-            await mw.loader.using("mmv.bootstrap");
+        if (mw.config.get("wgMediaViewerOnClick") && ["loading", "loaded", "executing", "ready", "error"].includes(mw.loader.getState("mmv.bootstrap.autostart"))) {
+            await mw.loader.using("mmv.bootstrap.autostart");
             $.proxy(mw.mmv.bootstrap, "processThumbs")(mw.util.$content);
         }
     }
