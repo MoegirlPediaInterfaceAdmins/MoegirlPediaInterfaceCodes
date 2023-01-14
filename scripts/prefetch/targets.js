@@ -5,7 +5,7 @@
 module.exports = [
     {
         name: "wikiplus-highlight",
-        url: "https://unpkg.com/wikiplus-highlight/dist/main.min.js",
+        url: "https://cdn.jsdelivr.net/npm/wikiplus-highlight",
         file: "src/gadgets/wikiplus-highlight/MediaWiki:Gadget-wikiplus-highlight.js",
     },
     {
