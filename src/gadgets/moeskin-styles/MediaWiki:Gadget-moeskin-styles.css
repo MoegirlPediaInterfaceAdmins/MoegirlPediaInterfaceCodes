@@ -323,3 +323,13 @@ a>img {
         align-self: unset;
     }
 }
+
+/*
+ * @author 萌娘百科·娜娜奇 2023年1月16日
+ * @FIXME  临时修复 in-content广告在宽屏中无法回避浮动元素
+ *         由于工期原因，暂时无法研究最佳解决方案
+ *         勿动，之后修
+ */
+.mw-parser-output [data-v-app] {
+    clear: both;
+}
