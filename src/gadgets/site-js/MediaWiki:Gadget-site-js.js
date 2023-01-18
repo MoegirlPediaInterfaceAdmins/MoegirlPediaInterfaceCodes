@@ -5,11 +5,6 @@
  */
 "use strict";
 (async () => {
-    /** 2023新年抽签活动 */
-    mw.loader.using(["mediawiki.util", "mediawiki.user"], () => {
-        mw.loader.load("https://app.moegirl.org.cn/draw-lots/index.js");
-    });
-
     /* 检查是否为维护组成员 */
     const wgUserGroups = mw.config.get("wgUserGroups");
     const isMGPMGUser = wgUserGroups.includes("patroller") || wgUserGroups.includes("sysop");
@@ -522,3 +517,8 @@
         $window.triggerHandler("resize");
     });
 })();
+
+/** 2023新年抽签活动 */
+mw.loader.using(["mediawiki.util", "mediawiki.user"]).then(() => {
+    import("https://app.moegirl.org.cn/draw-lots/index.js");
+});
