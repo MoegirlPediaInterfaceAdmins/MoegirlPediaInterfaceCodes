@@ -7,7 +7,7 @@
 (async () => {
     /** 2023新年抽签活动 */
     mw.loader.using(["mediawiki.util", "mediawiki.user"], () => {
-        import("https://app.moegirl.org.cn/draw-lots/index.js");
+        mw.loader.load("https://app.moegirl.org.cn/draw-lots/index.js");
     });
 
     /* 检查是否为维护组成员 */
