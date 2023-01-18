@@ -2,8 +2,8 @@
 
 /* 全局背景图片 */
 body.skin-moeskin #moe-global-background {
-    --theme-background-color: rgb(15 15 18);
-    --background-url: url("https://app.moegirl.org.cn/background/ZhMoegirl_12ndAnniversary/moeskin.jpg");
+    --theme-background-color: rgb(20 17 29);
+    --background-url: url("https://app.moegirl.org.cn/background/2023NewYear/moeskin.jpg");
 }
 
 /* 全局页脚导航 */
