@@ -13,9 +13,7 @@ $.when($.ready, mw.loader.using( 'oojs-ui-core' )).then(function() {
 		mw.loader.load('//fastly.jsdelivr.net/gh/bhsd-harry/codemirror-mediawiki@1.1.6/mediawiki.min.css', 'text/css');
 		mw.loader.addStyleTag( '#wikiEditor-ui-toolbar .menu { position: relative; z-index: 5; }' +
 			'.CodeMirror pre { font-family: Monaco, Menlo, "Ubuntu Mono", Consolas, "source-code-pro", monospace; }' +
-			'.skin-vector #wpTextbox1:not([readonly]) + .CodeMirror { font-size: 13px; line-height: 1.5; }' +
-			'#wpTextbox1[readonly] + .CodeMirror,' +
-			'.skin-minerva #wpTextbox1 + .CodeMirror { font-size: 16px; line-height: 1.2; border: 1px solid #c8ccd1; }' +
+			'#wpTextbox1 + .CodeMirror { font-size: 13px; line-height: 1.5; }' +
 			'.CodeMirror-matchingbracket { box-shadow: 0 0 0 2px #9aef98; }' +
 			'.CodeMirror-nonmatchingbracket { box-shadow: 0 0 0 2px #eace64; }'
 		);
