@@ -37,7 +37,7 @@ jobs:
       - uses: technote-space/get-diff-action@v6
         name: List diff
       - name: Check eslint environment
-        run: npx eslint --env-info && ls -lhA .cache
+        run: npx eslint --env-info && mkdir -p .cache && ls -lhA .cache
       - name: Run eslint
         run: npx eslint --exit-on-fatal-error --max-warnings 0 --cache --cache-strategy content --cache-location ".cache/" --ext js ./src
       - name: Run stylelint
