@@ -517,14 +517,3 @@
         $window.triggerHandler("resize");
     });
 })();
-
-/** 2023新年抽签活动 */
-if (!location.hostname.startsWith("mobile")) {
-    mw.loader.using(["mediawiki.util", "mediawiki.user"]).then(() => {
-        const script = document.createElement("script");
-        script.type = "module";
-        script.async = true;
-        script.src = "https://app.moegirl.org.cn/draw-lots/index.js";
-        document.body.appendChild(script);
-    });
-}
