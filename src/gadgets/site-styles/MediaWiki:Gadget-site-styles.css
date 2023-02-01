@@ -248,12 +248,12 @@
  */
 span[lang] {
     font-family: initial;
-    font-feature-settings: "locl" on;
-    -webkit-font-feature-settings: "locl" on;
+    font-feature-settings: "locl"on;
+    -webkit-font-feature-settings: "locl"on;
 }
 
-[style*="font:"  i] span[lang],
-[style*="font-family:"  i] span[lang] {
+[style*="font:"i] span[lang],
+[style*="font-family:"i] span[lang] {
     font-family: inherit;
 }
 
@@ -263,21 +263,13 @@ span[lang] {
     src: local(meiryo);
 }
 
-i span[lang="ja"  i],
-span[lang="ja"  i] i,
-[style*="italic"  i] span[lang="ja"  i],
-span[lang="ja"  i] [style*="italic"  i] {
+:is(i, [style*="italic"i]) span[lang="ja"i],
+span[lang="ja"i] :is(i, [style*="italic"i]) {
     font-family: JapaneseItalic, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
 }
 
-[style*="font:"  i] i span[lang="ja"  i],
-[style*="font-family:"  i] i span[lang="ja"  i],
-[style*="font:"  i] span[lang="ja"  i] i,
-[style*="font-family:"  i] span[lang="ja"  i] i,
-[style*="font:"  i] [style*="italic"  i] span[lang="ja"  i],
-[style*="font-family:"  i] [style*="italic"  i] span[lang="ja"  i],
-[style*="font:"  i] span[lang="ja"  i] [style*="italic"  i],
-[style*="font-family:"  i] span[lang="ja"  i] [style*="italic"  i] {
+:is([style*="font:"i], [style*="font-family:"i]) :is(i, [style*="italic"i]) span[lang="ja"i],
+:is([style*="font:"i], [style*="font-family:"i]) span[lang="ja"i] :is(i, [style*="italic"i]) {
     font-family: inherit;
 }
 
@@ -291,13 +283,7 @@ span[lang="ja"  i] [style*="italic"  i] {
 .heimu a,
 a .heimu,
 a.new .heimu,
-span.heimu a.new,
-span.heimu a.external,
-span.heimu a.external:visited,
-span.heimu a.extiw,
-span.heimu a.extiw:visited,
-span.heimu a.mw-disambig,
-span.heimu a.mw-redirect {
+span.heimu :is(a.new, a.external, a.external:visited, a.extiw, a.extiw:visited, a.mw-disambig, a.mw-redirect) {
     transition: color 0.13s linear;
     color: #252525;
     text-shadow: none;
@@ -427,10 +413,7 @@ table.wikitable-green {
 */
 
 /* 评论区提示 */
-.ns-0.action-view:not(.page-Mainpage) #bodyContent::after,
-.ns-2.action-view #bodyContent::after,
-.ns-4.action-view #bodyContent::after,
-.ns-12.action-view #bodyContent::after {
+.action-view:is(.ns-0:not(.page-Mainpage), .ns-2, .ns-4, .ns-12)#bodyContent::after {
     content: "因系统维护，评论区临时暂停所有功能";
     border: 1px solid rgb(0 0 0 / 17%);
     text-align: center;
@@ -442,18 +425,7 @@ table.wikitable-green {
     clear: both;
 }
 
-.ns-0.action-view:not(.page-Mainpage) #bodyContent:lang(zh-hant)::after,
-.ns-0.action-view:not(.page-Mainpage) #bodyContent:lang(zh-hk)::after,
-.ns-0.action-view:not(.page-Mainpage) #bodyContent:lang(zh-tw)::after,
-.ns-2.action-view #bodyContent:lang(zh-hant)::after,
-.ns-2.action-view #bodyContent:lang(zh-hk)::after,
-.ns-2.action-view #bodyContent:lang(zh-tw)::after,
-.ns-4.action-view #bodyContent:lang(zh-hant)::after,
-.ns-4.action-view #bodyContent:lang(zh-hk)::after,
-.ns-4.action-view #bodyContent:lang(zh-tw)::after,
-.ns-12.action-view #bodyContent:lang(zh-hant)::after,
-.ns-12.action-view #bodyContent:lang(zh-hk)::after,
-.ns-12.action-view #bodyContent:lang(zh-tw)::after {
+.action-view:is(.ns-0:not(.page-Mainpage), .ns-2, .ns-4, .ns-12)#bodyContent:is(:lang(zh-hant), :lang(zh-hk), :lang(zh-tw))::after {
     content: "因系統維護，評論區臨時暫停所有功能";
 }
 
@@ -792,12 +764,7 @@ div#simpleSearch button#searchButton {
     opacity: 0.73;
 }
 
-body.mediawiki.mw-mmv-lightbox-open #mw-page-base,
-body.mediawiki.mw-mmv-lightbox-open #mw-head-base,
-body.mediawiki.mw-mmv-lightbox-open #mw-navigation,
-body.mediawiki.mw-mmv-lightbox-open #content,
-body.mediawiki.mw-mmv-lightbox-open #footer,
-body.mediawiki.mw-mmv-lightbox-open #globalWrapper {
+body.mediawiki.mw-mmv-lightbox-open :is(#mw-page-base, #mw-head-base, #mw-navigation, #content, #footer, #globalWrapper) {
     display: inherit;
 }
 
@@ -1051,6 +1018,7 @@ body.ns-2 div#catlinks {
     -moz-box-sizing: border-box;
     box-sizing: border-box;
     -webkit-appearance: none;
+    appearance: none;
     zoom: 1;
     vertical-align: middle;
     text-align: center;
@@ -1376,7 +1344,6 @@ body:not(.ns--1):not(.ns--2) .navbox .mw-collapsible:not(.mw-collapsed) > tbody 
 .mw-category-group:nth-child(1):nth-last-child(2),
 /* 只有两个列表时 */
 .mw-category-group:nth-child(2):nth-last-child(1) {
-    /* 只有两个列表时 */
     -webkit-column-break-inside: auto;
     page-break-inside: auto;
     break-inside: auto;
@@ -1411,18 +1378,11 @@ body:not(.ns--1):not(.ns--2) .navbox .mw-collapsible:not(.mw-collapsed) > tbody 
     content: "（由于技术限制，此处为全文版本，请使用 Ctrl+F | ⌘+F 搜索相关差异，可拖动右下角斜线符号调整高度）";
 }
 
-html[lang="zh-hant"i] .mw-explainconflict~#editform>h2>.mw-headline::after,
-html[lang="zh-hk"i] .mw-explainconflict~#editform>h2>.mw-headline::after,
-html[lang="zh-tw"i] .mw-explainconflict~#editform>h2>.mw-headline::after {
+:is(html[lang="zh-hant"i], html[lang="zh-hk"i], html[lang="zh-tw"i]) .mw-explainconflict~#editform>h2>.mw-headline::after {
     content: "（請滾動查看，可拖動右下角斜線符號調整高度）";
 }
 
-html[lang="zh-hant"i] .mw-explainconflict~#editform>.diff+h2>.mw-headline::after,
-html[lang="zh-hk"i] .mw-explainconflict~#editform>.diff+h2>.mw-headline::after,
-html[lang="zh-tw"i] .mw-explainconflict~#editform>.diff+h2>.mw-headline::after,
-html[lang="zh-hant"i] .mw-explainconflict~#editform>.diff-container+h2>.mw-headline::after,
-html[lang="zh-hk"i] .mw-explainconflict~#editform>.diff-container+h2>.mw-headline::after,
-html[lang="zh-tw"i] .mw-explainconflict~#editform>.diff-container+h2>.mw-headline::after {
+:is(html[lang="zh-hant"i], html[lang="zh-hk"i], html[lang="zh-tw"i]) .mw-explainconflict~#editform>:is(.diff, .diff-container)+h2>.mw-headline::after {
     content: "（由於技術限制，此處為全文版本，請使用 Ctrl+F | ⌘+F 搜索相關差異，可拖動右下角斜線符號調整高度）";
 }
 
@@ -1454,9 +1414,7 @@ html[lang="zh-tw"i] .mw-explainconflict~#editform>.diff-container+h2>.mw-headlin
     display: block;
 }
 
-html[lang="zh-hant"i] .mw-explainconflict~#editform>.wikiEditor-ui::before,
-html[lang="zh-hk"i] .mw-explainconflict~#editform>.wikiEditor-ui::before,
-html[lang="zh-tw"i] .mw-explainconflict~#editform>.wikiEditor-ui::before {
+:is(html[lang="zh-hant"i], html[lang="zh-hk"i], html[lang="zh-tw"i]) .mw-explainconflict~#editform>.wikiEditor-ui::before {
     content: "編輯框（最新修訂）";
 }
 
