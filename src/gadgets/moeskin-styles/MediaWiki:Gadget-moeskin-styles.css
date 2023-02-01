@@ -259,6 +259,11 @@ a>img {
     max-width: unset;
 }
 
+:is(.image-box, .image-clip, .fit-image) img.lazyload[data-lazy-state="pending"] {
+    height: 100vh !important;
+    width: 100vw !important;
+}
+
 /* 搜索页样式 */
 .skin-moeskin #mw-search-top-table {
     display: flex;
@@ -313,20 +318,9 @@ a>img {
     vertical-align: baseline;
 }
 
-/**
- * @fix 临时修复 旧版安卓webview上显示不全
- * @url https://caniuse.com/css-revert-value
- *      CSS revert value: Chrome >= 84
- */
-@media screen and (max-width: 1224px) {
-    .skin-moeskin .moe-flexible-container {
-        align-self: unset;
-    }
-}
-
 /*
  * @author 萌娘百科·娜娜奇 2023年1月16日
- * @FIXME  临时修复 in-content广告在宽屏中无法回避浮动元素
+ * @FIXME  临时修复 in-content 广告在宽屏中无法回避浮动元素
  *         由于工期原因，暂时无法研究最佳解决方案
  *         勿动，之后修
  */
