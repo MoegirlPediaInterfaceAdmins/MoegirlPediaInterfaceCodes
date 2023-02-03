@@ -66,7 +66,7 @@
 
 - 使用 [Linux on Windows with WSL](https://docs.microsoft.com/en-us/windows/wsl/install)；
 - 使用 Linux 系统（可以是远程服务器、本地 Docker 容器等）；
-- 使用 [GitHub Codespaces](https://github.com/features/codespaces)（对个人用户免费）。
+- 使用 [GitHub Codespaces](https://github.com/features/codespaces)（对个人用户有免费额度）。
 
 然后，我们建议你使用 [Visual Studio Code](https://code.visualstudio.com/)，本仓库专为 VSCode 配置。我们也建议你搭配以下 VSCode 扩展结合本仓库提供的配置以优化体验：
 - [Conventional Commits（约定式提交）](https://www.conventionalcommits.org/)：[Conventional Commits](https://marketplace.visualstudio.com/items?itemName=vivaxy.vscode-conventional-commits)  扩展；
