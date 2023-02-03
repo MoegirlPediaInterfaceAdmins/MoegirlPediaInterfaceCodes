@@ -30,7 +30,7 @@
         "eslint": "^8.28.0",
         "esmify": "^2.1.1",
         "hash-wasm": "^4.9.0",
-        "ip": "^1.1.8",
+        "ip": "^2.0.0",
         "localforage": "^1.10.0",
         "minify-stream": "^2.1.0",
         "postcss": "^8.4.19",
