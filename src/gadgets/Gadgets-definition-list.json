@@ -55,7 +55,8 @@
             "UserLinkAvatar",
             "userLinkAvatarMagnifier",
             "usergroup",
-            "queryContributions"
+            "queryContributions",
+            "userpageDelete"
         ]
     },
     {
