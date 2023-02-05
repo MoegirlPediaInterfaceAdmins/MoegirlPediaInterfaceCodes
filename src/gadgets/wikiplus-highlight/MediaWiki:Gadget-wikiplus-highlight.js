@@ -13,6 +13,7 @@
  */
 
 (async () => {
+	/* eslint es-x/no-regexp-u-flag: 2 */
 	/* eslint-disable require-unicode-regexp */
 	'use strict';
 
@@ -21,7 +22,7 @@
 	}
 	mw.libs.wphl = mw.libs.wphl || {}; // 开始加载
 
-	const version = '2.48.2',
+	const version = '2.48.7',
 		newAddon = 0;
 
 	/** @type {typeof mw.storage} */
@@ -106,7 +107,7 @@
 	const CDN = '//fastly.jsdelivr.net',
 		CM_CDN = 'npm/codemirror@5.65.3',
 		MW_CDN = 'gh/bhsd-harry/codemirror-mediawiki@1.1.6',
-		PARSER_CDN = 'gh/bhsd-harry/wikiparser-node@0.7.2-b',
+		PARSER_CDN = 'gh/bhsd-harry/wikiparser-node@0.7.4-b',
 		REPO_CDN = `npm/wikiplus-highlight@${majorVersion}`;
 
 	const {config: {values: {
@@ -226,10 +227,17 @@
 			}
 			return encodeURIComponent(str);
 		}),
+		escapeHash = convert(str => {
+			try {
+				return decodeURIComponent(str.replace(/\.([\da-f]{2})/gi, '%$1'));
+			} catch (e) {
+				return str;
+			}
+		}),
 		/** @type {(cm: typeof CodeMirror) => boolean} */ isPc = ({keyMap}) => keyMap.default === keyMap.pcDefault,
 		/** @type {(cm: typeof CodeMirror) => Record<string, (doc: CodeMirror.Editor) => void} */ extraKeys = CM => {
 			const ctrl = isPc(CM) ? 'Ctrl' : 'Cmd';
-			return {[`${ctrl}-/`]: escapeHTML, [`${ctrl}-\\`]: escapeURI};
+			return {[`${ctrl}-/`]: escapeHTML, [`${ctrl}-\\`]: escapeURI, [`Shift-${ctrl}-\\`]: escapeHash};
 		};
 
 	/**
@@ -733,11 +741,12 @@
 			$target.textSelection('register', cmTextSelection);
 		}
 
+		const ctrl = isPc(CodeMirror) ? 'Ctrl' : 'Cmd';
 		if (addons.has('wikiEditor')) {
 			const context = $target.data('wikiEditorContext');
-			CodeMirror.commands.find = /** 替代CodeMirror的搜索功能 */ () => {
+			cm.addKeyMap({/** 替代CodeMirror的搜索功能 */ [`${ctrl}-F`]() {
 				$.wikiEditor.modules.dialogs.api.openDialog(context, 'search-and-replace');
-			};
+			}});
 		}
 
 		handleContextMenu(cm, mode);
@@ -761,7 +770,6 @@
 					$('#Wikiplus-Quickedit-MinorEdit').click();
 					$('#Wikiplus-Quickedit-Submit').triggerHandler('click');
 				};
-			const ctrl = isPc(CodeMirror) ? 'Ctrl' : 'Cmd';
 			cm.addKeyMap($.extend(
 				{[`${ctrl}-S`]: submit, [`Shift-${ctrl}-S`]: submitMinor},
 				escToExitQuickEdit === true || escToExitQuickEdit === 'true'
