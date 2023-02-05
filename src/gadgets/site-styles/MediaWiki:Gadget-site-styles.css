@@ -283,7 +283,13 @@ span[lang="ja"i] :is(i, [style*="italic"i]) {
 .heimu a,
 a .heimu,
 a.new .heimu,
-span.heimu :is(a.new, a.external, a.external:visited, a.extiw, a.extiw:visited, a.mw-disambig, a.mw-redirect) {
+span.heimu a.new,
+span.heimu a.external,
+span.heimu a.external:visited,
+span.heimu a.extiw,
+span.heimu a.extiw:visited,
+span.heimu a.mw-disambig,
+span.heimu a.mw-redirect {
     transition: color 0.13s linear;
     color: #252525;
     text-shadow: none;
