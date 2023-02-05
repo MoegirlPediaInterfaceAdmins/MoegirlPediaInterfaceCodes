@@ -9,7 +9,7 @@
     "type": "general",
     "package": false,
     "rights": [
-        "edit"
+        "disabled"
     ],
     "peers": [],
     "dependencies": [
