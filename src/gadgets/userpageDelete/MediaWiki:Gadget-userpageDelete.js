@@ -2,7 +2,7 @@
 "use strict";
 $(() => {
     try {
-        if ($(".noarticletext")[0] || !$(".ns-2")[0] || mw.config.get("wgRevisionId") === 0 || mw.config.get("wgTitle").replace(/\/.+$/, "") !== mw.config.get("wgUserName") || mw.config.get("wgUserGroups").includes("sysop")) {
+        if (!$(".ns-2")[0] || mw.config.get("wgRevisionId") === 0 || mw.config.get("wgTitle").replace(/\/.+$/, "") !== mw.config.get("wgUserName") || mw.config.get("wgUserGroups").includes("sysop")) {
             return;
         }
 
