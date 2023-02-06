@@ -34,7 +34,7 @@ $(() => {
 
                 // TODO 添加台湾繁体、香港繁体支持
                 this.$body.append(
-                    '<p style="margin:0.5em 1em">请注意：</p><ul style="margin:0.5em 1.6em"><li>只能用于用户名字空间（namespace=2）</li><li>页面创建者必须与用户页所有者一致</li><li>页面编辑历史须只包含用户页所有者、维护人员或机器人</li><li>如遇API WAF，请手动悬挂 <code>{{Ns2d}}</code> 模板</li></ul>',
+                    '<p style="margin:0.5em 1em">请注意：</p><ul style="margin:0.5em 1.6em 1em"><li>只能用于用户名字空间（namespace=2）</li><li>页面创建者必须与用户页所有者一致</li><li>页面编辑历史须只包含用户页所有者、维护人员或机器人</li><li>如遇API WAF，请手动悬挂 <code>{{Ns2d}}</code> 模板</li></ul>',
                 );
             }
 
