@@ -5,13 +5,8 @@
         "dist/**/*.css"
     ],
     "rules": {
-        "indentation": 4,
-        "selector-combinator-space-before": null,
-        "selector-combinator-space-after": null,
         "selector-id-pattern": null,
         "selector-class-pattern": null,
-        "no-missing-end-of-source-newline": null,
-        "max-line-length": null,
         "no-descending-specificity": null,
         "number-max-precision": null,
         "selector-no-vendor-prefix": null,

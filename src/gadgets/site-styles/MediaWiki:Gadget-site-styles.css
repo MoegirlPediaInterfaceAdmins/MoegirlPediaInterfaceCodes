@@ -248,12 +248,12 @@
  */
 span[lang] {
     font-family: initial;
-    font-feature-settings: "locl"on;
-    -webkit-font-feature-settings: "locl"on;
+    font-feature-settings: "locl" on;
+    -webkit-font-feature-settings: "locl" on;
 }
 
-[style*="font:"i] span[lang],
-[style*="font-family:"i] span[lang] {
+[style*="font:" i] span[lang],
+[style*="font-family:" i] span[lang] {
     font-family: inherit;
 }
 
@@ -263,13 +263,13 @@ span[lang] {
     src: local(meiryo);
 }
 
-:is(i, [style*="italic"i]) span[lang="ja"i],
-span[lang="ja"i] :is(i, [style*="italic"i]) {
+:is(i, [style*="italic" i]) span[lang="ja" i],
+span[lang="ja" i] :is(i, [style*="italic" i]) {
     font-family: JapaneseItalic, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
 }
 
-:is([style*="font:"i], [style*="font-family:"i]) :is(i, [style*="italic"i]) span[lang="ja"i],
-:is([style*="font:"i], [style*="font-family:"i]) span[lang="ja"i] :is(i, [style*="italic"i]) {
+:is([style*="font:" i], [style*="font-family:" i]) :is(i, [style*="italic" i]) span[lang="ja" i],
+:is([style*="font:" i], [style*="font-family:" i]) span[lang="ja" i] :is(i, [style*="italic" i]) {
     font-family: inherit;
 }
 
@@ -903,20 +903,7 @@ div.metadata-panel-is-closed .mw-mmv-image-links li.mw-mmv-license-li {
 /* 解决pre不换行的问题 */
 pre {
     white-space: pre-wrap;
-
-    /* CSS-3 */
-    white-space: -moz-pre-wrap;
-
-    /* Mozilla, since 1999 */
-    white-space: -pre-wrap;
-
-    /* Opera 4-6 */
-    white-space: -o-pre-wrap;
-
-    /* Opera 7 */
     word-wrap: break-word;
-
-    /* Internet Explorer 5.5+ */
 }
 
 /* 页面底部导航框（2011年8月16日引自中文维基）(所谓大家族模板) */
@@ -1384,11 +1371,11 @@ body:not(.ns--1):not(.ns--2) .navbox .mw-collapsible:not(.mw-collapsed) > tbody 
     content: "（由于技术限制，此处为全文版本，请使用 Ctrl+F | ⌘+F 搜索相关差异，可拖动右下角斜线符号调整高度）";
 }
 
-:is(html[lang="zh-hant"i], html[lang="zh-hk"i], html[lang="zh-tw"i]) .mw-explainconflict~#editform>h2>.mw-headline::after {
+:is(html[lang="zh-hant" i], html[lang="zh-hk" i], html[lang="zh-tw" i]) .mw-explainconflict~#editform>h2>.mw-headline::after {
     content: "（請滾動查看，可拖動右下角斜線符號調整高度）";
 }
 
-:is(html[lang="zh-hant"i], html[lang="zh-hk"i], html[lang="zh-tw"i]) .mw-explainconflict~#editform>:is(.diff, .diff-container)+h2>.mw-headline::after {
+:is(html[lang="zh-hant" i], html[lang="zh-hk" i], html[lang="zh-tw" i]) .mw-explainconflict~#editform>:is(.diff, .diff-container)+h2>.mw-headline::after {
     content: "（由於技術限制，此處為全文版本，請使用 Ctrl+F | ⌘+F 搜索相關差異，可拖動右下角斜線符號調整高度）";
 }
 
@@ -1420,7 +1407,7 @@ body:not(.ns--1):not(.ns--2) .navbox .mw-collapsible:not(.mw-collapsed) > tbody 
     display: block;
 }
 
-:is(html[lang="zh-hant"i], html[lang="zh-hk"i], html[lang="zh-tw"i]) .mw-explainconflict~#editform>.wikiEditor-ui::before {
+:is(html[lang="zh-hant" i], html[lang="zh-hk" i], html[lang="zh-tw" i]) .mw-explainconflict~#editform>.wikiEditor-ui::before {
     content: "編輯框（最新修訂）";
 }
 
