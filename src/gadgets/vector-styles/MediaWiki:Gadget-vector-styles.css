@@ -133,7 +133,7 @@ div#mw-panel {
 
 #footer-moegirl h4 {
     color: #243C4A;
-    font: normal normal AllerBold, "Helvetica Neue", Arial, Helvetica, Geneva, sans-serif;
+    font-family: AllerBold, "Helvetica Neue", Arial, Helvetica, Geneva, sans-serif;
     margin-bottom: 8px;
 }
 

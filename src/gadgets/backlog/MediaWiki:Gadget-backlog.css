@@ -119,7 +119,7 @@
 }
 
 .pageAwaitingDelection-table .warning {
-    font-weight: italic;
+    font-style: italic;
     text-decoration: underline;
 }
 
