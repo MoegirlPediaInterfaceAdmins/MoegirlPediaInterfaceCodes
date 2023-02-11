@@ -89,35 +89,35 @@ $(() => {
         });
         windowManager.addWindows([ns2dDialog]);
 
-        $(mw.util.addPortletLink( "p-cactions", "#", wgULS("自助删除", "自助刪除"), "ca-lr-ns2d", `${wgULS("自助删除用户页面", "自助刪除使用者頁面", null, null, "自助刪除用戶頁面")}`)).on("click", (e) => {
+        $(mw.util.addPortletLink("p-cactions", "#", wgULS("自助删除", "自助刪除"), "ca-lr-ns2d", `${wgULS("自助删除用户页面", "自助刪除使用者頁面", null, null, "自助刪除用戶頁面")}`)).on("click", (e) => {
             e.preventDefault();
             windowManager.openWindow(ns2dDialog);
             $body.css("overflow", "auto");
         });
     } catch (e) {
-    /* eslint-disable */
-    var parseError = function (errLike, space) {
-        if (space === void 0) { space = 4; }
-        return JSON.stringify(errLike, function (_, v) {
-            if (v instanceof Error) {
-                var stack = [];
-                if (v.stack) {
-                    stack.push.apply(stack, v.stack.split("\n").map(function (n) { return n.trim(); }).filter(function (n) { var _a; return ((_a = n === null || n === void 0 ? void 0 : n.length) !== null && _a !== void 0 ? _a : -1) > 0; }));
+        /* eslint-disable */
+        var parseError = function (errLike, space) {
+            if (space === void 0) { space = 4; }
+            return JSON.stringify(errLike, function (_, v) {
+                if (v instanceof Error) {
+                    var stack = [];
+                    if (v.stack) {
+                        stack.push.apply(stack, v.stack.split("\n").map(function (n) { return n.trim(); }).filter(function (n) { var _a; return ((_a = n === null || n === void 0 ? void 0 : n.length) !== null && _a !== void 0 ? _a : -1) > 0; }));
+                    }
+                    var keys = Object.keys(v).filter(function (key) { return !(Reflect.has(Error.prototype, key)); });
+                    if (keys.length) {
+                        stack.push(JSON.stringify(Object.fromEntries(keys.map(function (key) { return [key, v[key]]; })), null, space));
+                    }
+                    return stack.join("\n").trim() || "";
                 }
-                var keys = Object.keys(v).filter(function (key) { return !(Reflect.has(Error.prototype, key)); });
-                if (keys.length) {
-                    stack.push(JSON.stringify(Object.fromEntries(keys.map(function (key) { return [key, v[key]]; })), null, space));
-                }
-                return stack.join("\n").trim() || "";
-            }
-            return v;
-        }, space).replace(/^"(.*)"$/, "$1");
-    };
-    oouiDialog.alert("错误信息：<br>" + oouiDialog.sanitize(parseError(e)), {
-        title: "自助删除工具发生错误",
-    });
-    console.error("[Ns2d] Setup error:", e);
-    /* eslint-enable */
+                return v;
+            }, space).replace(/^"(.*)"$/, "$1");
+        };
+        oouiDialog.alert("错误信息：<br>" + oouiDialog.sanitize(parseError(e)), {
+            title: "自助删除工具发生错误",
+        });
+        console.error("[Ns2d] Setup error:", e);
+        /* eslint-enable */
     }
 });
 // </pre>
