@@ -20,7 +20,6 @@
         "media-feature-name-no-vendor-prefix": null,
         "property-no-vendor-prefix": null,
         "selector-attribute-quotes": null,
-        "color-hex-case": "upper",
         "function-no-unknown": [
             true,
             {
@@ -38,6 +37,7 @@
                 ]
             }
         ],
-        "no-duplicate-selectors": null
+        "no-duplicate-selectors": null,
+        "declaration-property-value-no-unknown": true
     }
 }
