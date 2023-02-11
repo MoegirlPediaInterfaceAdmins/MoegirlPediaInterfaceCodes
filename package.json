@@ -27,7 +27,7 @@
         "common-shakeify": "^1.1.2",
         "cron": "^2.1.0",
         "envify": "^4.1.0",
-        "eslint": "^8.28.0",
+        "eslint": "^8.34.0",
         "esmify": "^2.1.1",
         "hash-wasm": "^4.9.0",
         "ip": "^2.0.0",
