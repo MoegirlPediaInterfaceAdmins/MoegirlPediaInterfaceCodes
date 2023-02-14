@@ -16,8 +16,8 @@
         "ext.gadget.site-lib",
         "ext.gadget.libUtil",
         "jquery.ui.dialog", 
-		"jquery.ui.autocomplete", 
-		"jquery.ui.resizable",
+        "jquery.ui.autocomplete", 
+        "jquery.ui.resizable",
         "mediawiki.util"
     ],
     "_section": "maintenance"
