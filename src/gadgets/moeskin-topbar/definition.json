@@ -10,7 +10,9 @@
     "actions": [],
     "type": "general",
     "package": false,
-    "rights": [],
+    "rights": [
+        "patrol"
+    ],
     "peers": [],
     "dependencies": [
         "ext.gadget.site-lib"
