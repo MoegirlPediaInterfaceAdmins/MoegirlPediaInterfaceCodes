@@ -15,7 +15,9 @@
     "dependencies": [
         "ext.gadget.site-lib",
         "ext.gadget.libUtil",
-        "ext.gadget.jquery.ui",
+        "jquery.ui.dialog", 
+        "jquery.ui.autocomplete", 
+        "jquery.ui.resizable",
         "mediawiki.util"
     ],
     "_section": "maintenance"
