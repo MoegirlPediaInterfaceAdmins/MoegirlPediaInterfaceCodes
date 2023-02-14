@@ -136,7 +136,6 @@
             "cron",
             "jQueryLazyload",
             "libHashwasm",
-            "jquery.ui",
             "libJQuery",
             "libUtil",
             "libPolyfill",
