@@ -2,7 +2,7 @@
 
 /* 全局背景图片 */
 body.skin-moeskin #moe-global-background {
-    --theme-background-color: rgb(20 17 29);
+    --theme-background-color: rgb(246 245 252);
     --background-url: url("https://app.moegirl.org.cn/background/2023ValentinesDay/moeskin.jpg");
 }
 
