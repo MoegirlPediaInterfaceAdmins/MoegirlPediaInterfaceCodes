@@ -83,9 +83,9 @@ const findPolyfillFiles = async () => (await fs.promises.readdir("src/gadgets/li
             }
         }
         consoleWithTime.info("Start to generate .eslintrc ...");
-        const eslintrc = await fs.promises.readFile("src/gadgets/libPolyfill/.eslintrc", {
+        const eslintrc = JSON.parse(await fs.promises.readFile("src/gadgets/libPolyfill/.eslintrc", {
             encoding: "utf-8",
-        });
+        }));
         eslintrc.ignorePatterns = await findPolyfillFiles();
         consoleWithTime.info("New .eslintrc:", eslintrc);
         await fs.promises.writeFile("src/gadgets/libPolyfill/.eslintrc", JSON.stringify(eslintrc, null, 4), {
