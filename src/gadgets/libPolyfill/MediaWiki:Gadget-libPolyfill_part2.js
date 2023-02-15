@@ -4,7 +4,7 @@
  *     targetChromiumVersion: "70.0.3538.0"
  *     targetUA: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.0 Safari/537.36"
  *     unflaggableFeatures: "scripts/unflaggableFeatures.js"
- *     flaggableFeatures: "String.prototype.padStart,Intl.DateTimeFormat,Intl,String.prototype.endsWith,console.info,DocumentFragment.prototype.prepend,Element.prototype.prepend,Object.defineProperties,Number.isSafeInteger,Array.prototype.flat,Array.prototype.reduce,String.prototype.repeat,console.warn,URL.prototype.toJSON,Element.prototype.matches,matchMedia,URL,Object.entries,Node.prototype.contains,IntersectionObserver,Number.isInteger,Array.prototype.reduceRight,globalThis,Uint8Array,ArrayBuffer.isView,ArrayBuffer,DataView,String.prototype.codePointAt,String.fromCodePoint,Symbol.species"
+ *     flaggableFeatures: [ "String.prototype.padStart", "Intl.DateTimeFormat", "Intl", "String.prototype.endsWith", "console.info", "DocumentFragment.prototype.prepend", "Element.prototype.prepend", "Object.defineProperties", "Number.isSafeInteger", "Array.prototype.flat", "Array.prototype.reduce", "String.prototype.repeat", "console.warn", "URL.prototype.toJSON", "Element.prototype.matches", "matchMedia", "URL", "Object.entries", "Node.prototype.contains", "IntersectionObserver", "Number.isInteger", "Array.prototype.reduceRight", "globalThis", "Uint8Array", "ArrayBuffer.isView", "ArrayBuffer", "DataView", "String.prototype.codePointAt", "String.fromCodePoint", "Symbol.species" ]
  */
 /* Polyfill service v3.111.0
  * For detailed credits and licence information see https://github.com/financial-times/polyfill-service.

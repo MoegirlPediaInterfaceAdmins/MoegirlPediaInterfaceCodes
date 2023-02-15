@@ -4,7 +4,7 @@
  *     targetChromiumVersion: "70.0.3538.0"
  *     targetUA: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.0 Safari/537.36"
  *     unflaggableFeatures: "scripts/unflaggableFeatures.js"
- *     flaggableFeatures: "Array.prototype.indexOf,Date.now,MutationObserver,String.prototype.trim,Function.prototype.bind,Function.prototype.name,Element.prototype.after,Array.isArray,Reflect.defineProperty,Element.prototype.animate,Reflect.deleteProperty,console.log,console,Array.prototype.sort,Set,JSON,Array.prototype.values,Map,Array.prototype.entries,Object.defineProperty,localStorage,String.prototype.startsWith,console.error,WeakMap,Object.fromEntries,String.prototype.anchor,Object.values,String.prototype.link,RegExp.prototype.flags,XMLHttpRequest"
+ *     flaggableFeatures: [ "Array.prototype.indexOf", "Date.now", "MutationObserver", "String.prototype.trim", "Function.prototype.bind", "Function.prototype.name", "Element.prototype.after", "Array.isArray", "Reflect.defineProperty", "Element.prototype.animate", "Reflect.deleteProperty", "console.log", "console", "Array.prototype.sort", "Set", "JSON", "Array.prototype.values", "Map", "Array.prototype.entries", "Object.defineProperty", "localStorage", "String.prototype.startsWith", "console.error", "WeakMap", "Object.fromEntries", "String.prototype.anchor", "Object.values", "String.prototype.link", "RegExp.prototype.flags", "XMLHttpRequest" ]
  */
 /* Polyfill service v3.111.0
  * For detailed credits and licence information see https://github.com/financial-times/polyfill-service.

@@ -4,7 +4,7 @@
  *     targetChromiumVersion: "70.0.3538.0"
  *     targetUA: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.0 Safari/537.36"
  *     unflaggableFeatures: "scripts/unflaggableFeatures.js"
- *     flaggableFeatures: "Symbol.toPrimitive,Array.prototype.fill,Array.prototype.lastIndexOf,Array.prototype.copyWithin,fetch,Blob,atob,Int8Array,Uint8ClampedArray,Int16Array,Uint16Array,Int32Array,Uint32Array,Float32Array,Float64Array,Symbol.prototype.description,Object.getPrototypeOf,Reflect.construct,Intl.ListFormat,Intl.NumberFormat,Intl.RelativeTimeFormat,Object.getOwnPropertyNames,String.prototype.fixed,Math.trunc,Number.isNaN,Object.is,Math.sign,String.prototype.normalize,Array.prototype.findIndex,Array.prototype.every"
+ *     flaggableFeatures: [ "Symbol.toPrimitive", "Array.prototype.fill", "Array.prototype.lastIndexOf", "Array.prototype.copyWithin", "fetch", "Blob", "atob", "Int8Array", "Uint8ClampedArray", "Int16Array", "Uint16Array", "Int32Array", "Uint32Array", "Float32Array", "Float64Array", "Symbol.prototype.description", "Object.getPrototypeOf", "Reflect.construct", "Intl.ListFormat", "Intl.NumberFormat", "Intl.RelativeTimeFormat", "Object.getOwnPropertyNames", "String.prototype.fixed", "Math.trunc", "Number.isNaN", "Object.is", "Math.sign", "String.prototype.normalize", "Array.prototype.findIndex", "Array.prototype.every" ]
  */
 /* Polyfill service v3.111.0
  * For detailed credits and licence information see https://github.com/financial-times/polyfill-service.
