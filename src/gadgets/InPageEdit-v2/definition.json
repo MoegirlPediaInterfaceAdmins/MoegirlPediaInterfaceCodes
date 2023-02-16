@@ -16,5 +16,10 @@
     "dependencies": [
         "mediawiki.api"
     ],
-    "_section": "editing"
+    "_section": "editing",
+    "_files": [
+        "MediaWiki:Gadget-InPageEdit-v2-hook.js",
+        "MediaWiki:Gadget-InPageEdit-v2.css",
+        "MediaWiki:Gadget-InPageEdit-v2.js"
+    ]
 }

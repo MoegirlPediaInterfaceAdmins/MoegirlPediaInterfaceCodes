@@ -16,5 +16,8 @@
         "ext.gadget.site-lib",
         "ext.flowthread"
     ],
-    "_section": "browsing"
+    "_section": "browsing",
+    "_files": [
+        "MediaWiki:Gadget-hideFlowthreadDefaultly.js"
+    ]
 }

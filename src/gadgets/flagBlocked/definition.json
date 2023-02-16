@@ -19,5 +19,8 @@
         "mediawiki.notify",
         "moment"
     ],
-    "_section": "administration"
+    "_section": "administration",
+    "_files": [
+        "MediaWiki:Gadget-flagBlocked.js"
+    ]
 }

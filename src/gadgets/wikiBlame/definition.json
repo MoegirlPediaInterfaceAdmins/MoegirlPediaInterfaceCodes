@@ -18,5 +18,8 @@
         "oojs-ui-core",
         "mediawiki.diff.styles"
     ],
-    "_section": "maintenance"
+    "_section": "maintenance",
+    "_files": [
+        "MediaWiki:Gadget-wikiBlame.js"
+    ]
 }

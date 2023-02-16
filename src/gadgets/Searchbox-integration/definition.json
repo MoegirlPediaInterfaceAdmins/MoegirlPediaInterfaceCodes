@@ -13,5 +13,9 @@
     "rights": [],
     "peers": [],
     "dependencies": [],
-    "_section": "skin"
+    "_section": "skin",
+    "_files": [
+        "MediaWiki:Gadget-Searchbox-integration.css",
+        "MediaWiki:Gadget-Searchbox-integration.js"
+    ]
 }

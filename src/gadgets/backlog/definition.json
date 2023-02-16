@@ -18,5 +18,9 @@
         "moment",
         "mediawiki.user"
     ],
-    "_section": "administration"
+    "_section": "administration",
+    "_files": [
+        "MediaWiki:Gadget-backlog.css",
+        "MediaWiki:Gadget-backlog.js"
+    ]
 }

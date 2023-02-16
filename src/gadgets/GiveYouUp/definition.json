@@ -16,5 +16,8 @@
         "ext.gadget.libBottomRightCorner",
         "ext.gadget.site-lib"
     ],
-    "_section": "browsing"
+    "_section": "browsing",
+    "_files": [
+        "MediaWiki:Gadget-GiveYouUp.js"
+    ]
 }

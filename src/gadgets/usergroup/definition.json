@@ -19,5 +19,8 @@
         "ext.gadget.site-lib",
         "ext.gadget.libPolyfill"
     ],
-    "_section": "user"
+    "_section": "user",
+    "_files": [
+        "MediaWiki:Gadget-usergroup.js"
+    ]
 }

@@ -14,5 +14,8 @@
         "ext.gadget.UserLinkAvatar",
         "ext.gadget.jQueryLazyload"
     ],
-    "_section": "user"
+    "_section": "user",
+    "_files": [
+        "MediaWiki:Gadget-UserLinkAvatarMagnifier.css"
+    ]
 }

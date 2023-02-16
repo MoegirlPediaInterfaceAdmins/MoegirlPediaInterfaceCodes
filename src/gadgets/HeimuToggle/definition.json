@@ -15,5 +15,9 @@
         "ext.gadget.libBottomRightCorner",
         "ext.gadget.site-lib"
     ],
-    "_section": "browsing"
+    "_section": "browsing",
+    "_files": [
+        "MediaWiki:Gadget-heimu-toggle.css",
+        "MediaWiki:Gadget-heimu-toggle.js"
+    ]
 }

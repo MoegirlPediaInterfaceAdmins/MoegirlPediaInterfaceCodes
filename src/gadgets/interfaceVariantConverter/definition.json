@@ -18,5 +18,8 @@
         "oojs-ui",
         "ext.gadget.libPolyfill"
     ],
-    "_section": "interface"
+    "_section": "interface",
+    "_files": [
+        "MediaWiki:Gadget-interfaceVariantConverter.js"
+    ]
 }

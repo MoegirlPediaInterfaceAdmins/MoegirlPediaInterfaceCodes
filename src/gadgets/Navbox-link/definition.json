@@ -17,5 +17,8 @@
         "ext.gadget.site-lib",
         "ext.gadget.libPolyfill"
     ],
-    "_section": "browsing"
+    "_section": "browsing",
+    "_files": [
+        "MediaWiki:Gadget-Navbox-link.js"
+    ]
 }

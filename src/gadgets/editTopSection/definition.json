@@ -17,5 +17,9 @@
     "dependencies": [
         "ext.gadget.site-lib"
     ],
-    "_section": "editing"
+    "_section": "editing",
+    "_files": [
+        "MediaWiki:Gadget-editTopSection.css",
+        "MediaWiki:Gadget-editTopSection.js"
+    ]
 }

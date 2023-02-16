@@ -17,5 +17,8 @@
         "oojs-ui-core",
         "moment"
     ],
-    "_section": "maintenance"
+    "_section": "maintenance",
+    "_files": [
+        "MediaWiki:Gadget-autoconfirmedUserPing.js"
+    ]
 }

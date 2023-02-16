@@ -16,5 +16,8 @@
         "oojs-ui-core",
         "ext.gadget.libPolyfill"
     ],
-    "_section": "editing"
+    "_section": "editing",
+    "_files": [
+        "MediaWiki:Gadget-wikieditor-highlight.js"
+    ]
 }

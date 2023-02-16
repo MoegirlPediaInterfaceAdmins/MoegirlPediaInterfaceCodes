@@ -11,5 +11,8 @@
     "rights": [],
     "peers": [],
     "dependencies": [],
-    "_section": "browsing"
+    "_section": "browsing",
+    "_files": [
+        "MediaWiki:Gadget-extiw.css"
+    ]
 }

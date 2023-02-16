@@ -13,5 +13,9 @@
     ],
     "peers": [],
     "dependencies": [],
-    "_section": "maintenance"
+    "_section": "maintenance",
+    "_files": [
+        "MediaWiki:Gadget-widgetPreload.css",
+        "MediaWiki:Gadget-widgetPreload.js"
+    ]
 }

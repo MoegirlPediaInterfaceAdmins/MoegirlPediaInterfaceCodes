@@ -15,5 +15,8 @@
     "dependencies": [
         "mediawiki.api"
     ],
-    "_section": "administration"
+    "_section": "administration",
+    "_files": [
+        "MediaWiki:Gadget-abusefilter33test.js"
+    ]
 }

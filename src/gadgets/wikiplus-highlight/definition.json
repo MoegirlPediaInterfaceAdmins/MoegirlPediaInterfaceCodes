@@ -17,5 +17,8 @@
         "ext.gadget.libPolyfill",
         "mediawiki.util"
     ],
-    "_section": "editing"
+    "_section": "editing",
+    "_files": [
+        "MediaWiki:Gadget-wikiplus-highlight.js"
+    ]
 }

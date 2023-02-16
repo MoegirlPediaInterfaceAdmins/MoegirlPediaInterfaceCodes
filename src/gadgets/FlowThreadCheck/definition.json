@@ -16,5 +16,9 @@
     "dependencies": [
         "ext.gadget.libOOUIDialog"
     ],
-    "_section": "browsing"
+    "_section": "browsing",
+    "_files": [
+        "MediaWiki:Gadget-FlowThreadCheck.css",
+        "MediaWiki:Gadget-FlowThreadCheck.js"
+    ]
 }

@@ -18,5 +18,8 @@
         "mediawiki.Uri",
         "ext.gadget.site-lib"
     ],
-    "_section": "maintenance"
+    "_section": "maintenance",
+    "_files": [
+        "MediaWiki:Gadget-rollback-summary.js"
+    ]
 }

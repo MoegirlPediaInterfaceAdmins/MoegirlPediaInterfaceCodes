@@ -15,5 +15,8 @@
     "dependencies": [
         "ext.gadget.site-lib"
     ],
-    "_section": "skin"
+    "_section": "skin",
+    "_files": [
+        "MediaWiki:Gadget-mwPanel.js"
+    ]
 }

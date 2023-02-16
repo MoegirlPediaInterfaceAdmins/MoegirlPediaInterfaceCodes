@@ -19,5 +19,8 @@
         "mediawiki.api",
         "mediawiki.Uri"
     ],
-    "_section": "maintenance"
+    "_section": "maintenance",
+    "_files": [
+        "MediaWiki:Gadget-patrolPlus.js"
+    ]
 }

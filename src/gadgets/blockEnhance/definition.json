@@ -17,5 +17,8 @@
         "mediawiki.api",
         "ext.gadget.site-lib"
     ],
-    "_section": "administration"
+    "_section": "administration",
+    "_files": [
+        "MediaWiki:Gadget-blockEnhance.js"
+    ]
 }

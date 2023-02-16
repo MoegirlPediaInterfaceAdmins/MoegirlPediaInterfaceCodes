@@ -19,5 +19,8 @@
         "mediawiki.notify",
         "ext.gadget.libPolyfill"
     ],
-    "_section": "maintenance"
+    "_section": "maintenance",
+    "_files": [
+        "MediaWiki:Gadget-moveToUserSubpage.js"
+    ]
 }

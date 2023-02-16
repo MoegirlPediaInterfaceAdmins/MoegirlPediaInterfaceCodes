@@ -15,5 +15,8 @@
     "dependencies": [
         "ext.gadget.libBottomRightCorner"
     ],
-    "_section": "browsing"
+    "_section": "browsing",
+    "_files": [
+        "MediaWiki:Gadget-LetYouDown.js"
+    ]
 }

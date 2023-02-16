@@ -15,5 +15,8 @@
         "moment",
         "ext.gadget.cron"
     ],
-    "_section": "user"
+    "_section": "user",
+    "_files": [
+        "MediaWiki:Gadget-CommentsinLocalTime.js"
+    ]
 }

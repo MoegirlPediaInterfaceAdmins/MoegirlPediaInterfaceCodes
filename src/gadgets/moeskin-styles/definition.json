@@ -13,5 +13,8 @@
     "rights": [],
     "peers": [],
     "dependencies": [],
-    "_section": "system"
+    "_section": "system",
+    "_files": [
+        "MediaWiki:Gadget-moeskin-styles.css"
+    ]
 }

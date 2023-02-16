@@ -17,5 +17,9 @@
         "mediawiki.Uri",
         "jquery.ui.dialog"
     ],
-    "_section": "browsing"
+    "_section": "browsing",
+    "_files": [
+        "MediaWiki:Gadget-noteTA.css",
+        "MediaWiki:Gadget-noteTA.js"
+    ]
 }

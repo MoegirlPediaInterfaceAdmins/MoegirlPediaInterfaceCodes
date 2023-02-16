@@ -16,5 +16,8 @@
         "mediawiki.api",
         "mediawiki.Uri"
     ],
-    "_section": "system"
+    "_section": "system",
+    "_files": [
+        "MediaWiki:Gadget-site-js.js"
+    ]
 }

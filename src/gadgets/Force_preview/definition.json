@@ -15,5 +15,8 @@
     "dependencies": [
         "user.options"
     ],
-    "_section": "editing"
+    "_section": "editing",
+    "_files": [
+        "MediaWiki:Gadget-Force_preview.js"
+    ]
 }
