@@ -11,7 +11,8 @@
     "rights": [],
     "peers": [],
     "dependencies": [
-        "mediawiki.Uri"
+        "mediawiki.Uri",
+        "ext.gadget.site-lib"
     ],
     "_section": "user",
     "_files": [
