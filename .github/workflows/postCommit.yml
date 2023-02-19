@@ -34,6 +34,7 @@ jobs:
         run: node scripts/generatePolyfill/index.js
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ACTIONS_RUNTIME_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Gadgets-definition Generator
         run: node scripts/gadgetsDefinitionGenerator/index.js
       - name: Conventional Commits scopes generator
