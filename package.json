@@ -14,8 +14,11 @@
         "format": "eslint src --fix && stylelint src/**/*.css --fix"
     },
     "dependencies": {
+        "@actions/artifact": "^1.1.1",
         "@csstools/postcss-is-pseudo-class": "^3.1.0",
         "@financial-times/js-features-analyser": "^0.4.3",
+        "@octokit/plugin-retry": "^4.1.2",
+        "@octokit/rest": "^19.0.7",
         "@types/cron": "^2.0.0",
         "@types/jquery": "^3.5.14",
         "@types/moment": "^2.13.0",

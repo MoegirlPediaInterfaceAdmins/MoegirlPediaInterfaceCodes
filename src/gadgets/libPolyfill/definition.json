@@ -13,8 +13,6 @@
     "dependencies": [],
     "_section": "system",
     "_files": [
-        "MediaWiki:Gadget-libPolyfill_part1.js",
-        "MediaWiki:Gadget-libPolyfill_part2.js",
-        "MediaWiki:Gadget-libPolyfill_part3.js"
+        "MediaWiki:Gadget-libPolyfill.js"
     ]
 }
