@@ -48,7 +48,7 @@ const findPolyfillFiles = async () => (await fs.promises.readdir("src/gadgets/li
         await exec(`npx tsc --project tsconfig.json --outFile ${bundlePath}`);
         consoleWithTime.info("\tDone.");
         consoleWithTime.info("Start to analyse the temporary bundle file...");
-        const analysisReport = [...new Set(JSON.parse(await exec(`npx @financial-times/js-features-analyser analyse --file ${bundlePath}`)))];
+        const analysisReport = [...new Set(JSON.parse(await exec(`npx @financial-times/js-features-analyser analyse --file ${path.relative(".", bundlePath)}`)))];
         const features = analysisReport.filter((feature) => !unflaggableFeatures.includes(feature));
         consoleWithTime.info("\tDone.");
         consoleWithTime.info("\tfeatures", JSON.stringify(features, null, 4));
