@@ -111,7 +111,7 @@ const findPolyfillFiles = async () => (await fs.promises.readdir("src/gadgets/li
         }
         consoleWithTime.info("Start to write polyfill file to gadget-libPolyfill ...");
         const flaggableFeatures = features.filter((feature) => !newUnrecognizableFeatures.includes(feature));
-        await fs.promises.writeFile("src/gadgets/libPolyfill/MediaWiki:Gadget-libPolyfill.js", `${await fs.promises.readFile("scripts/generatePolyfill/template.js")}`.replace("$$$TARGET_CHROMIUM_VERSION$$$", TARGET_CHROMIUM_VERSION).replace("$$$TARGET_UA$$$", TARGET_UA).replace("$$$FLAGGABLE_FEATURES$$$", JSON.stringify(flaggableFeatures, null, 1).replace(/\n */g, " ")).replace("$$$UA$$$", encodeURIComponent(TARGET_UA)).replace("$$$FEATURES$$$", encodeURIComponent(flaggableFeatures.join(","))));
+        await fs.promises.writeFile("src/gadgets/libPolyfill/MediaWiki:Gadget-libPolyfill.js", `${await fs.promises.readFile("scripts/generatePolyfill/template.js")}`.replace("$$$TARGET_CHROMIUM_VERSION$$$", TARGET_CHROMIUM_VERSION).replace("$$$TARGET_UA$$$", TARGET_UA).replace("$$$FLAGGABLE_FEATURES$$$", JSON.stringify(flaggableFeatures, null, 1).replace(/\n */g, " ")).replace("$$$FEATURES$$$", encodeURIComponent(flaggableFeatures.join(","))));
         consoleWithTime.info("\tDone.");
         consoleWithTime.info("Start to generate .eslintrc ...");
         const eslintrc = JSON.parse(await fs.promises.readFile("src/gadgets/libPolyfill/.eslintrc", {
