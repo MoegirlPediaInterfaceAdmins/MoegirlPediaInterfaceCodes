@@ -17,6 +17,7 @@
         "@actions/artifact": "^1.1.1",
         "@csstools/postcss-is-pseudo-class": "^3.1.0",
         "@financial-times/js-features-analyser": "^0.4.3",
+        "@octokit/auth-action": "^2.0.3",
         "@octokit/plugin-retry": "^4.1.2",
         "@octokit/rest": "^19.0.7",
         "@types/cron": "^2.0.0",

@@ -9,7 +9,9 @@ const path = require("path");
 const unflaggableFeatures = require("./unflaggableFeatures.js");
 const { Octokit } = require("@octokit/rest");
 const { retry } = require("@octokit/plugin-retry");
-const octokit = new (Octokit.plugin(retry))({});
+const octokit = new (Octokit.plugin(retry))({
+    authStrategy: require("@octokit/auth-action").createActionAuth(),
+});
 const octokitBaseOptions = {
     owner: process.env.GITHUB_REPOSITORY_OWNER,
     repo: process.env.GITHUB_REPOSITORY.split("/")[1],
