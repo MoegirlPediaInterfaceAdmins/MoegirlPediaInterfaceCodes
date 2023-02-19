@@ -7,6 +7,17 @@ const crypto = require("crypto");
 const fs = require("fs");
 const path = require("path");
 const unflaggableFeatures = require("./unflaggableFeatures.js");
+const { Octokit } = require("@octokit/rest");
+const { retry } = require("@octokit/plugin-retry");
+const octokit = new (Octokit.plugin(retry))({});
+const octokitBaseOptions = {
+    owner: process.env.GITHUB_REPOSITORY_OWNER,
+    repo: process.env.GITHUB_REPOSITORY.split("/")[1],
+};
+octokit.hook.wrap("request", (request, options) => request({
+    ...octokitBaseOptions,
+    ...options,
+}));
 
 const TARGET_CHROMIUM_VERSION = "70.0.3538.0";
 const TARGET_UA = `Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/${TARGET_CHROMIUM_VERSION} Safari/537.36`;
@@ -15,11 +26,12 @@ const findPolyfillFiles = async () => (await fs.promises.readdir("src/gadgets/li
 
 (async () => {
     try {
-        await fs.promises.rm("tmp", {
-            recursive: true,
-            force: true,
-        });
-        await fs.promises.mkdir("tmp", {
+        consoleWithTime.log("process.env.GITHUB_REF:", process.env.GITHUB_REF);
+        consoleWithTime.log("process.env.GITHUB_RUN_ID:", process.env.GITHUB_RUN_ID);
+        consoleWithTime.log("octokitBaseOptions:", octokitBaseOptions);
+        const tempPath = path.join(process.env.RUNNER_TEMP, crypto.randomUUID());
+        consoleWithTime.log("tempPath:", tempPath);
+        await fs.promises.mkdir(tempPath, {
             recursive: true,
         });
         consoleWithTime.info("Start to delete old polyfill files:");
@@ -32,10 +44,11 @@ const findPolyfillFiles = async () => (await fs.promises.readdir("src/gadgets/li
             consoleWithTime.info("\tDeleteting", file, "done.");
         }
         consoleWithTime.info("Start to compile src/ to temporary bundle file...");
-        await exec("npx tsc --project tsconfig.json --outFile tmp/bundle.js");
+        const bundlePath = path.join(tempPath, "bundle.js");
+        await exec(`npx tsc --project tsconfig.json --outFile ${bundlePath}`);
         consoleWithTime.info("\tDone.");
         consoleWithTime.info("Start to analyse the temporary bundle file...");
-        const analysisReport = [...new Set(JSON.parse(await exec("npx @financial-times/js-features-analyser analyse --file tmp/bundle.js")))];
+        const analysisReport = [...new Set(JSON.parse(await exec(`npx @financial-times/js-features-analyser analyse --file ${bundlePath}`)))];
         const features = analysisReport.filter((feature) => !unflaggableFeatures.includes(feature));
         consoleWithTime.info("\tDone.");
         consoleWithTime.info("\tfeatures", JSON.stringify(features, null, 4));
@@ -50,6 +63,12 @@ const findPolyfillFiles = async () => (await fs.promises.readdir("src/gadgets/li
                 "user-agent": TARGET_UA,
             },
         });
+        const codeFilePath = path.join(tempPath, "polyfillGeneratedCode.js");
+        await fs.promises.writeFile(codeFilePath, data, {
+            encoding: "utf-8",
+        });
+        const artifactClient = require("@actions/artifact").create();
+        await artifactClient.uploadArtifact("polyfillGeneratedCode.js", [codeFilePath], tempPath);
         consoleWithTime.info("\tDone.");
         consoleWithTime.info("Start to find unrecognized features...");
         let isUnrecognised = false;
@@ -61,14 +80,6 @@ const findPolyfillFiles = async () => (await fs.promises.readdir("src/gadgets/li
                 isUnrecognised = true;
             }
         }
-        const { Octokit } = require("@octokit/rest");
-        const { retry } = require("@octokit/plugin-retry");
-        const octokit = new (Octokit.plugin(retry))({});
-        octokit.hook.wrap("request", (request, options) => request({
-            owner: process.env.GITHUB_REPOSITORY_OWNER,
-            repo: process.env.GITHUB_REPOSITORY.split("/")[1],
-            ...options,
-        }));
         if (newUnflaggableFeatures.length === 0 && !isUnrecognised) {
             consoleWithTime.info("\tNone, done.");
         } else {
@@ -82,16 +93,6 @@ const findPolyfillFiles = async () => (await fs.promises.readdir("src/gadgets/li
                 }
             }
             if (isUnrecognised) {
-                const codePath = path.join(process.env.RUNNER_TEMP, crypto.randomUUID());
-                await fs.promises.mkdir(codePath, {
-                    recursive: true,
-                });
-                const codeFilePath = path.join(codePath, "polyfillGeneratedCode.js");
-                await fs.promises.writeFile(codeFilePath, data, {
-                    encoding: "utf-8",
-                });
-                const artifactClient = require("@actions/artifact").create();
-                await artifactClient.uploadArtifact("polyfillGeneratedCode.js", [codeFilePath], codePath);
                 consoleWithTime.info("New unrecognised unflaggable features found, uploaded as artifact.");
                 if (process.env.GITHUB_REF === "refs/heads/master") {
                     const workflowRun = await octokit.rest.actions.getWorkflowRun({
