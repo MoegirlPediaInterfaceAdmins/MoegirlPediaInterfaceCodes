@@ -117,7 +117,6 @@ const findPolyfillFiles = async () => (await fs.promises.readdir("src/gadgets/li
             " */",
             `${await fs.promises.readFile("scripts/generatePolyfill/template.js")}`.replace("$$$UA$$$", encodeURIComponent(TARGET_UA)).replace("$$$FEATURES$$$", encodeURIComponent(flaggableFeatures.join(","))),
         ];
-        code.push(data, "");
         await fs.promises.writeFile("src/gadgets/libPolyfill/MediaWiki:Gadget-libPolyfill.js", code.join("\n"));
         consoleWithTime.info("\tDone.");
         consoleWithTime.info("Start to generate .eslintrc ...");
