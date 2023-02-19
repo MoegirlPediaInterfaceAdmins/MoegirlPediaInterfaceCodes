@@ -32,6 +32,8 @@ jobs:
         run: node scripts/prefetch/index.js
       - name: Gadget-polyfill generator
         run: node scripts/generatePolyfill/index.js
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Gadgets-definition Generator
         run: node scripts/gadgetsDefinitionGenerator/index.js
       - name: Conventional Commits scopes generator
