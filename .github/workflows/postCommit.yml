@@ -30,11 +30,12 @@ jobs:
         run: node scripts/browserify/index.js
       - name: Auto prefetch
         run: node scripts/prefetch/index.js
+      - name: Expose GitHub Runtime
+        uses: crazy-max/ghaction-github-runtime@v2
       - name: Gadget-polyfill generator
         run: node scripts/generatePolyfill/index.js
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          ACTIONS_RUNTIME_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Gadgets-definition Generator
         run: node scripts/gadgetsDefinitionGenerator/index.js
       - name: Conventional Commits scopes generator
