@@ -32,9 +32,14 @@ $(() => {
             initialize() {
                 super.initialize();
 
-                // TODO 添加台湾繁体、香港繁体支持
                 this.$body.append(
-                    '<p style="margin:0.5em 1em">请注意：</p><ul style="margin:0.5em 1.6em 1em"><li>只能用于用户名字空间（namespace=2）</li><li>页面创建者必须与用户页所有者一致</li><li>页面编辑历史须只包含用户页所有者、维护人员或机器人</li><li>如遇API WAF，请手动悬挂 <code>{{Ns2d}}</code> 模板</li></ul>',
+                    wgULS(
+                        '<p style="margin:0.5em 1em">请注意：</p><ul style="margin:0.5em 1.6em 1em"><li>只能用于用户名字空间（namespace=2）</li><li>页面创建者必须与用户页所有者一致</li><li>页面编辑历史须只包含用户页所有者、维护人员或机器人</li><li>如遇API WAF，请手动悬挂 <code>{{Ns2d}}</code> 模板</li></ul>',
+                        '<p style="margin:0.5em 1em">請注意：</p><ul style="margin:0.5em 1.6em 1em"><li>只能用於使用者命名空間（namespace=2）</li><li>頁面建立者必須與使用者頁面所有者一致</li><li>頁面編輯歷史須只包含使用者頁面所有者、維護人員或機器人</li><li>如遇API WAF，請手動懸掛 <code>{{Ns2d}}</code> 模板</li></ul>',
+                        null,
+                        null,
+                        '<p style="margin:0.5em 1em">請注意：</p><ul style="margin:0.5em 1.6em 1em"><li>只能用於用戶命名空間（namespace=2）</li><li>頁面建立者必須與用戶頁面所有者一致</li><li>頁面編輯歷史須只包含用戶頁面所有者、維護人員或機器人</li><li>如遇API WAF，請手動懸掛 <code>{{Ns2d}}</code> 模板</li></ul>',
+                    ),
                 );
             }
 
