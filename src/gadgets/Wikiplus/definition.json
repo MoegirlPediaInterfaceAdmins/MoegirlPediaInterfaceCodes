@@ -16,8 +16,8 @@
     "dependencies": [],
     "_section": "editing",
     "_files": [
+        "MediaWiki:Gadget-Wikiplus-button.js",
         "MediaWiki:Gadget-Wikiplus.css",
-        "MediaWiki:Gadget-Wikiplus.js",
-        "MediaWiki:Gadget-Wikiplus-button.js"
+        "MediaWiki:Gadget-Wikiplus.js"
     ]
 }
