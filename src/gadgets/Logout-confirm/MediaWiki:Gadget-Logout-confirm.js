@@ -1,7 +1,7 @@
 "use strict";
 // <pre>
 (function () {
-    $("#pt-logout > a[href*=logoutToken]").each((_, ele) => {
+    $("#pt-logout > a[href*=logoutToken], .moe-user-dropdown-inner #logout").each((_, ele) => {
         const uri = new mw.Uri(ele.href);
         Reflect.deleteProperty(uri.query, "logoutToken");
         ele.href = uri;
