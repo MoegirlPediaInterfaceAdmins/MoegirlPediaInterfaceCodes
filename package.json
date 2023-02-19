@@ -7,7 +7,7 @@
     "license": "",
     "private": true,
     "engines": {
-        "node": "16.* || >=18.*"
+        "node": "16.* || 18.*"
     },
     "scripts": {
         "test": "eslint src && stylelint src/**/*.css",
