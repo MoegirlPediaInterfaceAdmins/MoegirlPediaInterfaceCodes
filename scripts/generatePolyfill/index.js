@@ -107,7 +107,7 @@ const findPolyfillFiles = async () => (await fs.promises.readdir("src/gadgets/li
             " *     unflaggableFeatures: \"scripts/generatePolyfill/unflaggableFeatures.js\"",
             ` *     flaggableFeatures: ${JSON.stringify(flaggableFeatures, null, 1).replace(/\n */g, " ")}`,
             " */",
-            `${await fs.promises.readFile("./template.js")}`.replace("$$$UA$$$", encodeURIComponent(TARGET_UA)).replace("$$$FEATURES$$$", encodeURIComponent(flaggableFeatures.join(","))),
+            `${await fs.promises.readFile("scripts/generatePolyfill/template.js")}`.replace("$$$UA$$$", encodeURIComponent(TARGET_UA)).replace("$$$FEATURES$$$", encodeURIComponent(flaggableFeatures.join(","))),
         ];
         code.push(data, "");
         await fs.promises.writeFile("src/gadgets/libPolyfill/MediaWiki:Gadget-libPolyfill.js", code.join("\n"));
