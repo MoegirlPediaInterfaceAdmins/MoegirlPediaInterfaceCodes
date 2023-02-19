@@ -1,5 +1,4 @@
-"use strict";
-module.exports = [
+[
     "Array",
     "Array.prototype.length",
     "Array.prototype.push",
@@ -2590,5 +2589,5 @@ module.exports = [
     "SyntaxError.prototype.constructor",
     "SyntaxError.prototype.message",
     "SyntaxError.prototype.name",
-    "SyntaxError.prototype.toString",
-];
+    "SyntaxError.prototype.toString"
+]

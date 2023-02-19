@@ -6,7 +6,7 @@ const fetch = require("../modules/fetch.js");
 const crypto = require("crypto");
 const fs = require("fs");
 const path = require("path");
-const unflaggableFeatures = require("./unflaggableFeatures.js");
+const unrecognizableFeatures = require("./unrecognizableFeatures.json");
 const { Octokit } = require("@octokit/rest");
 const { retry } = require("@octokit/plugin-retry");
 const octokit = new (Octokit.plugin(retry))({
@@ -47,14 +47,15 @@ const findPolyfillFiles = async () => (await fs.promises.readdir("src/gadgets/li
         }
         consoleWithTime.info("Start to compile src/ to temporary bundle file...");
         const bundlePath = path.join(tempPath, "bundle.js");
+        consoleWithTime.log("bundlePath:", bundlePath);
         await exec(`npx tsc --project tsconfig.json --outFile ${bundlePath}`);
         consoleWithTime.info("\tDone.");
         consoleWithTime.info("Start to analyse the temporary bundle file...");
         const analysisReport = [...new Set(JSON.parse(await exec(`npx @financial-times/js-features-analyser analyse --file ${path.relative(".", bundlePath)}`)))];
-        const features = analysisReport.filter((feature) => !unflaggableFeatures.includes(feature));
+        const features = analysisReport.filter((feature) => !unrecognizableFeatures.includes(feature));
         consoleWithTime.info("\tDone.");
         consoleWithTime.info("\tfeatures", JSON.stringify(features, null, 4));
-        const newUnflaggableFeatures = [];
+        const newUnrecognizableFeatures = [];
         consoleWithTime.info("Start to download polyfill file...");
         const url = new URL("https://polyfill.io/v3/polyfill.js");
         url.searchParams.set("features", features.join(","));
@@ -72,55 +73,45 @@ const findPolyfillFiles = async () => (await fs.promises.readdir("src/gadgets/li
         const artifactClient = require("@actions/artifact").create();
         await artifactClient.uploadArtifact("polyfillGeneratedCode.js", [codeFilePath], tempPath);
         consoleWithTime.info("\tDone.");
-        consoleWithTime.info("Start to find unrecognized features...");
-        let isUnrecognised = false;
+        consoleWithTime.info("Start to find unrecognizable features...");
+        let hasUnparsableUnrecognizableFeatures = false;
         if (data.includes("These features were not recognised")) {
             const match = data.match(/(?<=\n \* These features were not recognised:\n \* - )[^\n]+?(?=\s*\*\/)/)?.[0]?.split?.(/,-\s*/);
             if (Array.isArray(match)) {
-                newUnflaggableFeatures.push(...match);
+                newUnrecognizableFeatures.push(...match);
             } else {
-                isUnrecognised = true;
+                hasUnparsableUnrecognizableFeatures = true;
             }
         }
-        if (newUnflaggableFeatures.length === 0 && !isUnrecognised) {
+
+        if (newUnrecognizableFeatures.length === 0 && !hasUnparsableUnrecognizableFeatures) {
             consoleWithTime.info("\tNone, done.");
         } else {
-            if (newUnflaggableFeatures.length > 0) {
-                consoleWithTime.info("New unflaggable features found:", newUnflaggableFeatures);
+            if (newUnrecognizableFeatures.length > 0) {
+                consoleWithTime.info("New unrecognizable features found:", newUnrecognizableFeatures);
                 if (process.env.GITHUB_REF === "refs/heads/master") {
                     await octokit.rest.issues.create({
-                        title: "New unflaggable features detected from polyfill.io",
-                        body: `These new unflaggable features detected from polyfill.io:\n\`\`\` json\n${JSON.stringify(newUnflaggableFeatures, null, 4)}\n\`\`\``,
+                        title: "New unrecognizable features detected from polyfill.io",
+                        body: `These new unrecognizable features detected from polyfill.io:\n\`\`\` json\n${JSON.stringify(newUnrecognizableFeatures, null, 4)}\n\`\`\``,
                     });
                 }
             }
-            if (isUnrecognised) {
-                consoleWithTime.info("New unrecognised unflaggable features found, uploaded as artifact.");
+            if (hasUnparsableUnrecognizableFeatures) {
+                consoleWithTime.info("New unparsable unrecognizable features found.");
                 if (process.env.GITHUB_REF === "refs/heads/master") {
                     const workflowRun = await octokit.rest.actions.getWorkflowRun({
                         run_id: process.env.GITHUB_RUN_ID,
                     });
                     await octokit.rest.issues.create({
-                        title: "New unrecognised unflaggable features detected from polyfill.io",
-                        body: `Found new unrecognised unflaggable features detected from polyfill.io, please check it manually: ${workflowRun.data.html_url}`,
+                        title: "New unparsable unrecognizable features detected from polyfill.io",
+                        body: `Found new unparsable unrecognizable features detected from polyfill.io, please check it manually: ${workflowRun.data.html_url}`,
                     });
                 }
             }
         }
         consoleWithTime.info("Start to write polyfill file to gadget-libPolyfill ...");
-        const flaggableFeatures = features.filter((feature) => !newUnflaggableFeatures.includes(feature));
-        const code = [
-            "/**",
-            " * Generated by scripts/generatePolyfill.js",
-            " * Options:",
-            ` *     targetChromiumVersion: "${TARGET_CHROMIUM_VERSION}"`,
-            ` *     targetUA: "${TARGET_UA}"`,
-            " *     unflaggableFeatures: \"scripts/generatePolyfill/unflaggableFeatures.js\"",
-            ` *     flaggableFeatures: ${JSON.stringify(flaggableFeatures, null, 1).replace(/\n */g, " ")}`,
-            " */",
-            `${await fs.promises.readFile("scripts/generatePolyfill/template.js")}`.replace("$$$UA$$$", encodeURIComponent(TARGET_UA)).replace("$$$FEATURES$$$", encodeURIComponent(flaggableFeatures.join(","))),
-        ];
-        await fs.promises.writeFile("src/gadgets/libPolyfill/MediaWiki:Gadget-libPolyfill.js", code.join("\n"));
+        const flaggableFeatures = features.filter((feature) => !newUnrecognizableFeatures.includes(feature));
+        await fs.promises.writeFile("src/gadgets/libPolyfill/MediaWiki:Gadget-libPolyfill.js", `${await fs.promises.readFile("scripts/generatePolyfill/template.js")}`.replace("$$$TARGET_CHROMIUM_VERSION$$$", TARGET_CHROMIUM_VERSION).replace("$$$TARGET_UA$$$", TARGET_UA).replace("$$$FLAGGABLE_FEATURES$$$", JSON.stringify(flaggableFeatures, null, 1).replace(/\n */g, " ")).replace("$$$UA$$$", encodeURIComponent(TARGET_UA)).replace("$$$FEATURES$$$", encodeURIComponent(flaggableFeatures.join(","))));
         consoleWithTime.info("\tDone.");
         consoleWithTime.info("Start to generate .eslintrc ...");
         const eslintrc = JSON.parse(await fs.promises.readFile("src/gadgets/libPolyfill/.eslintrc", {
