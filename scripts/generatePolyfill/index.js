@@ -69,31 +69,33 @@ const findPolyfillFiles = async () => (await fs.promises.readdir("src/gadgets/li
             repo: process.env.GITHUB_REPOSITORY.split("/")[1],
             ...options,
         }));
-        if (newUnflaggableFeatures.length > 0) {
-            consoleWithTime.info("New unflaggable features found:", newUnflaggableFeatures);
-            await octokit.rest.issues.create({
-                title: "New unflaggable features detected from polyfill.io",
-                body: `These new unflaggable features detected from polyfill.io:\n\`\`\` json\n${JSON.stringify(newUnflaggableFeatures, null, 4)}\n\`\`\``,
-            });
-        }
-        if (isUnrecognised) {
-            const codePath = path.join(process.env.RUNNER_TEMP, crypto.randomUUID());
-            await fs.promises.mkdir(codePath, {
-                recursive: true,
-            });
-            const codeFilePath = path.join(codePath, "polyfillGeneratedCode.js");
-            await fs.promises.writeFile(codeFilePath, data, {
-                encoding: "utf-8",
-            });
-            const artifactClient = require("@actions/artifact").create();
-            await artifactClient.uploadArtifact("polyfillGeneratedCode.js", [codeFilePath], codePath);
-            const workflowRun = await octokit.rest.actions.getWorkflowRun({
-                run_id: process.env.GITHUB_RUN_ID,
-            });
-            await octokit.rest.issues.create({
-                title: "New unrecognised unflaggable features detected from polyfill.io",
-                body: `Found new unrecognised unflaggable features detected from polyfill.io, please check it manually: ${workflowRun.data.html_url}`,
-            });
+        if (process.env.GITHUB_REF === "refs/heads/master") {
+            if (newUnflaggableFeatures.length > 0) {
+                consoleWithTime.info("New unflaggable features found:", newUnflaggableFeatures);
+                await octokit.rest.issues.create({
+                    title: "New unflaggable features detected from polyfill.io",
+                    body: `These new unflaggable features detected from polyfill.io:\n\`\`\` json\n${JSON.stringify(newUnflaggableFeatures, null, 4)}\n\`\`\``,
+                });
+            }
+            if (isUnrecognised) {
+                const codePath = path.join(process.env.RUNNER_TEMP, crypto.randomUUID());
+                await fs.promises.mkdir(codePath, {
+                    recursive: true,
+                });
+                const codeFilePath = path.join(codePath, "polyfillGeneratedCode.js");
+                await fs.promises.writeFile(codeFilePath, data, {
+                    encoding: "utf-8",
+                });
+                const artifactClient = require("@actions/artifact").create();
+                await artifactClient.uploadArtifact("polyfillGeneratedCode.js", [codeFilePath], codePath);
+                const workflowRun = await octokit.rest.actions.getWorkflowRun({
+                    run_id: process.env.GITHUB_RUN_ID,
+                });
+                await octokit.rest.issues.create({
+                    title: "New unrecognised unflaggable features detected from polyfill.io",
+                    body: `Found new unrecognised unflaggable features detected from polyfill.io, please check it manually: ${workflowRun.data.html_url}`,
+                });
+            }
         }
         const flaggableFeatures = features.filter((feature) => !newUnflaggableFeatures.includes(feature));
         const code = [
