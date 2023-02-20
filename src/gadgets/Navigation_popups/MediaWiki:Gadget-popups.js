@@ -1,12 +1,12 @@
 /**
- * @source https://en.wikipedia.org/wiki/_?oldid=1086319046
+ * @source https://en.wikipedia.org/wiki/_?oldid=1138216587
  * 更新后请同步更新上面链接到最新版本
  */
 /* global wikEdUseWikEd, WikEdUpdateFrame */
 /* eslint-disable no-use-before-define */
 /*
  * 全部内容引自 https://en.wikipedia.org/wiki/MediaWiki:Gadget-popups.js
- * 当前版本修改自 https://en.wikipedia.org/w/index.php?title=MediaWiki:Gadget-popups.js&oldid=1086319046
+ * 当前版本修改自 https://en.wikipedia.org/w/index.php?title=MediaWiki:Gadget-popups.js&oldid=1138216587
  * 当前版本相较于引述版本有大量优化，请不要直接复制粘贴新版本代码
  */
 // <pre>
@@ -343,7 +343,7 @@ $(() => {
     }
     function defaultPopupsContainer() {
         if (getValueOf("popupOnlyArticleLinks")) {
-            return document.getElementById("mw_content") || document.getElementById("content") || document.getElementById("article") ||
+            return document.querySelector(".skin-vector-2022 .vector-body") || document.getElementById("mw_content") || document.getElementById("content") || document.getElementById("article") ||
                 document.getElementsByTagName("article")?.[0] // moeskin
                 || document;
         }
