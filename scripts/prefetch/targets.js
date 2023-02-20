@@ -10,7 +10,7 @@ module.exports = [
     },
     {
         name: "luxon",
-        url: "https://cdn.jsdelivr.net/npm/luxon@3/build/global/luxon.js",
+        url: "https://cdn.jsdelivr.net/npm/luxon@3/build/global/luxon.min.js",
         file: "src/gadgets/luxon/MediaWiki:Gadget-luxon.js",
         appendCode: "window.luxon = luxon;",
     },
