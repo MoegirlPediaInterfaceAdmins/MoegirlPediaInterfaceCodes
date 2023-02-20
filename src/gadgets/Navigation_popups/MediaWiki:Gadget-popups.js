@@ -4,7 +4,6 @@
  */
 /*
  * 全部内容引自 https://en.wikipedia.org/wiki/MediaWiki:Gadget-popups.js
- * 当前版本修改自 https://en.wikipedia.org/wiki/_?oldid=1138216587
  * 当前版本相较于引述版本有大量优化，请不要直接复制粘贴新版本代码
  */
 // <pre>
@@ -2087,15 +2086,20 @@ $(() => {
             return mw.config.get("wgFormattedNamespaces")[this.namespaceId()];
         }
         namespaceId() {
-            const n = this.value.indexOf(":");
-            if (n < 0) {
+            try {
+                const n = this.value.indexOf(":");
+                if (n < 0) {
+                    return 0;
+                }
+                const namespaceId = mw.config.get("wgNamespaceIds")[this.value.substring(0, n).split(" ").join("_").toLowerCase()];
+                if (typeof namespaceId === "undefined") {
+                    return 0;
+                }
+                return namespaceId;
+            } catch (e) {
+                console.error(e, this);
                 return 0;
             }
-            const namespaceId = mw.config.get("wgNamespaceIds")[this.value.substring(0, n).split(" ").join("_").toLowerCase()];
-            if (typeof namespaceId === "undefined") {
-                return 0;
-            }
-            return namespaceId;
         }
         talkPage() {
             const t = new Title(this.value);
