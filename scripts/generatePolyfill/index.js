@@ -3,7 +3,7 @@ const consoleWithTime = require("../modules/console.js");
 consoleWithTime.info("Start initialization...");
 const exec = require("../modules/exec.js");
 const fetch = require("../modules/fetch.js");
-const crypto = require("crypto");
+const mkdtmp = require("../modules/mkdtmp.js");
 const fs = require("fs");
 const path = require("path");
 const unrecognizableFeatures = require("./unrecognizableFeatures.json");
@@ -31,12 +31,8 @@ const findPolyfillFiles = async () => (await fs.promises.readdir("src/gadgets/li
         consoleWithTime.log("process.env.GITHUB_REF:", process.env.GITHUB_REF);
         consoleWithTime.log("process.env.GITHUB_RUN_ID:", process.env.GITHUB_RUN_ID);
         consoleWithTime.log("octokitBaseOptions:", octokitBaseOptions);
-        const tempPath = path.join(process.env.RUNNER_TEMP, crypto.randomUUID());
-        consoleWithTime.log("tempPath:", tempPath);
-        await fs.promises.mkdir(tempPath, {
-            recursive: true,
-        });
         consoleWithTime.info("Start to delete old polyfill files:");
+        const tempPath = await mkdtmp();
         for (const file of await findPolyfillFiles()) {
             consoleWithTime.info("\tDeleteting", file);
             await fs.promises.rm(path.join("src/gadgets/libPolyfill/", file), {
@@ -51,7 +47,7 @@ const findPolyfillFiles = async () => (await fs.promises.readdir("src/gadgets/li
         await exec(`npx tsc --project tsconfig.json --outFile ${bundlePath}`);
         consoleWithTime.info("\tDone.");
         consoleWithTime.info("Start to analyse the temporary bundle file...");
-        const analysisReport = [...new Set(JSON.parse(await exec(`npx @financial-times/js-features-analyser analyse --file ${path.relative(".", bundlePath)}`)))];
+        const analysisReport = [...new Set(JSON.parse(await exec(`npx @financial-times/js-features-analyser analyse --file ${path.relative(".", bundlePath)}`)))].sort();
         const features = analysisReport.filter((feature) => !unrecognizableFeatures.includes(feature));
         consoleWithTime.info("\tDone.");
         consoleWithTime.info("\tfeatures", JSON.stringify(features, null, 4));

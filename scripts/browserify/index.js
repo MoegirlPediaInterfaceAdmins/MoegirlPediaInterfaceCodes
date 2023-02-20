@@ -1,19 +1,17 @@
 "use strict";
 const console = require("../modules/console.js");
 console.info("Start initialization...");
+const mkdtmp = require("../modules/mkdtmp.js");
 const browserify = require("browserify");
 const minifyStream = require("minify-stream");
 const browserifyTargets = require("./targets.js");
 const fs = require("fs");
 const path = require("path");
 
-const inputPath = "tmp/input.js";
-
 (async () => {
     console.info("browserifyTargets:", browserifyTargets);
-    await fs.promises.mkdir("tmp", {
-        recursive: true,
-    });
+    const tempPath = await mkdtmp();
+    const inputPath = path.join(tempPath, "input.js");
     for (const browserifyTarget of browserifyTargets) {
         console.info("target:", browserifyTarget);
         const { module, entry, file, exports, removePlugins, prependCode } = browserifyTarget;
