@@ -292,7 +292,7 @@ $(() => {
         autoedit_version: "np20140416",
         PrefixIndexHint: wgULS("显示用户%s的子页面", "顯示使用者%s的子頁面", null, null, "顯示用戶%s的子頁面"),
         nullEditSummary: wgULS("进行一次零编辑", "進行一次零編輯"),
-        // 用户组名称从系统消息获取
+        // 用户组名称从系统消息获取（“非自动确认用户”并不是用户组，所以在这里写死）
         "group-no-autoconfirmed": wgULS("非自动确认用户", "非自動確認使用者", null, null, "非自動確認用戶"),
         separator: "、",
         comma: "，",
