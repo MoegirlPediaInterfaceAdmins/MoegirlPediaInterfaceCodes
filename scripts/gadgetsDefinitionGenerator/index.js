@@ -20,12 +20,15 @@ const gadgetBaseRoot = "src/gadgets";
         console.info("gadget:", gadget);
         try {
             /**
-             * @type { { _section: string } }
+             * @type { { _section: string; _files: string[] } }
              */
             const gadgetDefinition = JSON.parse(await fs.promises.readFile(path.join(gadgetBaseRoot, gadget, "definition.json"), "utf-8"));
             const { _section } = gadgetDefinition;
-            gadgetDefinition._files = (await fs.promises.readdir(path.join(gadgetBaseRoot, gadget))).filter((file) => [".js", ".css"].includes(path.extname(path.join(gadgetBaseRoot, gadget, file))));
-            await fs.promises.writeFile(path.join(gadgetBaseRoot, gadget, "definition.json"), JSON.stringify(gadgetDefinition, null, 4));
+            const _files = (await fs.promises.readdir(path.join(gadgetBaseRoot, gadget))).filter((file) => [".js", ".css"].includes(path.extname(path.join(gadgetBaseRoot, gadget, file))));
+            if (gadgetDefinition._files.filter((file) => !_files.includes(file)).length + _files.filter((file) => !gadgetDefinition._files.includes(file)).length > 0) {
+                gadgetDefinition._files = [...gadgetDefinition._files.filter((file) => _files.includes(file)), ..._files.filter((file) => !gadgetDefinition._files.includes(file))];
+                await fs.promises.writeFile(path.join(gadgetBaseRoot, gadget, "definition.json"), JSON.stringify(gadgetDefinition, null, 4));
+            }
             console.info(`[${gadget}]`, "_section:", _section);
             let sectionExist = false;
             for (const { name, gadgets } of gadgetsDefinitionList) {
