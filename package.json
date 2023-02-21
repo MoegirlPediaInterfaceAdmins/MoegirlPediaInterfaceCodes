@@ -40,7 +40,6 @@
         "postcss": "^8.4.19",
         "postcss-cli": "^10.0.0",
         "postcss-discard-comments": "^5.1.2",
-        "postcss-font-normalize": "^0.0.0",
         "postcss-font-variant": "^5.0.0",
         "postcss-selector-matches": "^4.0.0",
         "postcss-selector-not": "^7.0.1",
@@ -48,6 +47,7 @@
         "stylelint": "^15.2.0",
         "stylelint-config-standard": "^30.0.1",
         "typescript": "^4.9.3",
+        "uglify-js": "^3.17.4",
         "unassertify": "^3.0.1"
     }
 }

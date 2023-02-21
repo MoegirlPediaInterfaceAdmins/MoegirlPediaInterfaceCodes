@@ -4,6 +4,7 @@ console.info("Start initialization...");
 const mkdtmp = require("../modules/mkdtmp.js");
 const browserify = require("browserify");
 const minifyStream = require("minify-stream");
+const uglify = require("uglify-js");
 const browserifyTargets = require("./targets.js");
 const fs = require("fs");
 const path = require("path");
@@ -41,18 +42,19 @@ const path = require("path");
                     plugins.delete(removePlugin);
                 }
             }
-            let codeObject = browserify(inputPath, {
-                paths: [tempPath],
-            }).transform("unassertify", { global: true }).transform("envify", { global: true });
+            let codeObject = browserify(inputPath).transform("unassertify", { global: true }).transform("envify", { global: true });
             for (const plugin of plugins) {
                 codeObject = codeObject.plugin(plugin);
             }
-            let codeStream = codeObject.bundle();
-            if (hasExports) {
-                codeStream = codeStream.pipe(minifyStream({
-                    sourceMap: false,
-                }));
-            }
+            const codeStream = codeObject.bundle().pipe(minifyStream({
+                sourceMap: false,
+                uglify,
+                mangle: false,
+                output: {
+                    beautify: true,
+                    width: 1024 * 10,
+                },
+            }));
             const chunks = [];
             codeStream.on("data", (chunk) => chunks.push(Buffer.from(chunk)));
             codeStream.on("error", (err) => rej(err));
