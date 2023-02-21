@@ -101,9 +101,9 @@
         "name": "interface",
         "gadgets": [
             "allmessageFilter",
+            "abusefilterResize",
             "abusefilterEdit",
-            "interfaceVariantConverter",
-            "abusefilterResize"
+            "interfaceVariantConverter"
         ]
     },
     {
