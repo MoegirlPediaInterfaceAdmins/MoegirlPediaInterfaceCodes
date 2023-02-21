@@ -21,6 +21,7 @@
     "conventionalCommits.scopes": [
         "Gadget-abusefilter33test",
         "Gadget-abusefilterEdit",
+        "Gadget-abusefilterResize",
         "Gadget-allmessageFilter",
         "Gadget-autocollapse",
         "Gadget-autoconfirmedUserPing",
