@@ -19,6 +19,7 @@ module.exports = async (needNodeModules = false) => {
             force: true,
             recursive: true,
             preserveTimestamps: true,
+            dereference: true,
         })));
     }
     return tempPath;
