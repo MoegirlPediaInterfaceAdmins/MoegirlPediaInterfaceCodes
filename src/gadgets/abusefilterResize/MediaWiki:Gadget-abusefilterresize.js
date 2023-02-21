@@ -6,8 +6,8 @@ $(() => {
             return;
         }
         */
-        const $filterBox = $("#wpAceFilterEditor");
-        const filterEditor = ace.edit("wpAceFilterEditor");
+        const $filterBox = $("#wpAceFilterEditor"),
+            filterEditor = ace.edit("wpAceFilterEditor");
         if (typeof ResizeObserver !== "undefined") {
             $filterBox.css("resize", "both");
             new ResizeObserver(() => {
