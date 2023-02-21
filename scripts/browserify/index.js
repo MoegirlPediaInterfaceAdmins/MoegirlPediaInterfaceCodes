@@ -23,10 +23,10 @@ const path = require("path");
         const hasExports = Array.isArray(exports) && exports.length > 0;
         if (!hasExports) {
             inputs.push(`import m from "${module}";`);
-            inputs.push(`global["${entry}"] = m`);
+            inputs.push(`global["${entry}"] = m;`);
         } else {
             inputs.push(`import {${exports.join(",")}} from "${module}";`);
-            inputs.push(`global["${entry}"] = {${exports.join(",")}}`);
+            inputs.push(`global["${entry}"] = {${exports.join(",")}};`);
         }
         await fs.promises.writeFile(inputPath, inputs.join("\n"));
         const codes = await new Promise((res, rej) => {
@@ -41,7 +41,9 @@ const path = require("path");
                     plugins.delete(removePlugin);
                 }
             }
-            let codeObject = browserify(inputPath).transform("unassertify", { global: true }).transform("envify", { global: true });
+            let codeObject = browserify(inputPath, {
+                paths: [tempPath],
+            }).transform("unassertify", { global: true }).transform("envify", { global: true });
             for (const plugin of plugins) {
                 codeObject = codeObject.plugin(plugin);
             }
