@@ -9,7 +9,8 @@
     "type": "general",
     "package": false,
     "rights": [
-        "patrol"
+        "edit",
+        "patrolleredit"
     ],
     "peers": [],
     "dependencies": [

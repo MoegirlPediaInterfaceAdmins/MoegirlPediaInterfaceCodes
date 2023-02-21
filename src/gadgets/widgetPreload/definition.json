@@ -9,6 +9,7 @@
     "type": "general",
     "package": false,
     "rights": [
+        "edit",
         "editwidgets"
     ],
     "peers": [],
