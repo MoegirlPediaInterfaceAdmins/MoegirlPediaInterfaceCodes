@@ -10,7 +10,7 @@ const path = require("path");
 
 (async () => {
     console.info("browserifyTargets:", browserifyTargets);
-    const tempPath = await mkdtmp();
+    const tempPath = await mkdtmp(true);
     const inputPath = path.join(tempPath, "input.js");
     for (const browserifyTarget of browserifyTargets) {
         console.info("target:", browserifyTarget);
