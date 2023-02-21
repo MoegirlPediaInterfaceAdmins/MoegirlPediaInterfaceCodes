@@ -9,7 +9,8 @@
     "type": "general",
     "package": false,
     "rights": [
-        "block"
+        "block",
+        "noratelimit"
     ],
     "peers": [],
     "dependencies": [
