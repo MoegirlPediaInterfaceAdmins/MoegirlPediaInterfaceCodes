@@ -202,7 +202,6 @@
 }
 
 .Tabs.AutoWidth {
-    width: max-content;
     display: table-cell;
 }
 
@@ -232,8 +231,8 @@
     padding: 3px;
 }
 
-.infotemplatebox>table td>.Tabs .TabLabel,
-.infotemplatebox>table td>.Tabs .TabContent {
+.infotemplatebox > table td > .Tabs .TabLabel,
+.infotemplatebox > table td > .Tabs .TabContent {
     margin: 0 -1px;
 }
 
@@ -457,11 +456,11 @@ body .mw-mmv-wrapper {
 }
 
 /* Edittool */
-.noconvins>.mw-charinsert-item::before {
+.noconvins > .mw-charinsert-item::before {
     content: "-{";
 }
 
-.noconvins>.mw-charinsert-item::after {
+.noconvins > .mw-charinsert-item::after {
     content: "}-";
 }
 
@@ -732,7 +731,7 @@ div#simpleSearch button#searchButton {
     display: none;
 }
 
-#siteNotice .scrollDiv>* {
+#siteNotice .scrollDiv > * {
     list-style: none;
     padding-left: 0;
     position: absolute;
@@ -740,12 +739,12 @@ div#simpleSearch button#searchButton {
     top: 1.28rem;
 }
 
-#siteNotice .scrollDiv>*:first-child {
+#siteNotice .scrollDiv > *:first-child {
     top: 0;
 }
 
 #siteNotice .scrollDiv.scrolling.animation,
-#siteNotice .scrollDiv.scrolling.animation>* {
+#siteNotice .scrollDiv.scrolling.animation > * {
     transition: all 0.37s ease-in-out;
 }
 
@@ -774,12 +773,12 @@ body.mediawiki.mw-mmv-lightbox-open :is(#mw-page-base, #mw-head-base, #mw-naviga
     display: inherit;
 }
 
-body.mediawiki.mw-mmv-lightbox-open>* {
+body.mediawiki.mw-mmv-lightbox-open > * {
     display: inherit;
 }
 
-body.mediawiki.mw-mmv-lightbox-open>script,
-body.mediawiki.mw-mmv-lightbox-open>style {
+body.mediawiki.mw-mmv-lightbox-open > script,
+body.mediawiki.mw-mmv-lightbox-open > style {
     display: none;
 }
 
@@ -916,7 +915,7 @@ table.navbox {
     width: 100%;
 }
 
-table.navbox+table.navbox {
+table.navbox + table.navbox {
     margin-top: -1px;
 }
 
@@ -1020,8 +1019,8 @@ body.ns-2 div#catlinks {
 }
 
 /* 注释里的列表 */
-.reference-text>ul.listInRef,
-.reference-text>ol.listInRef {
+.reference-text > ul.listInRef,
+.reference-text > ol.listInRef {
     margin: -1.5em 0 0 2em;
 }
 
@@ -1343,56 +1342,56 @@ body:not(.ns--1):not(.ns--2) .navbox .mw-collapsible:not(.mw-collapsed) > tbody 
 }
 
 /* 关闭默认编辑器上传图片入口 */
-#wikieditor-toolbar-file-dialog+.ui-dialog-buttonpane>.ui-dialog-buttonset>.ui-button:last-child {
+#wikieditor-toolbar-file-dialog + .ui-dialog-buttonpane > .ui-dialog-buttonset > .ui-button:last-child {
     display: none;
 }
 
 /* 编辑冲突界面排版 */
-.mw-explainconflict~#editform {
+.mw-explainconflict ~ #editform {
     display: flex;
     flex-direction: column;
 }
 
-.mw-explainconflict~#editform>* {
+.mw-explainconflict ~ #editform > * {
     order: 2;
 }
 
-.mw-explainconflict~#editform>h2,
-.mw-explainconflict~#editform>h2~* {
+.mw-explainconflict ~ #editform > h2,
+.mw-explainconflict ~ #editform > h2 ~ * {
     order: 1;
 }
 
-.mw-explainconflict~#editform>h2>.mw-headline::after {
+.mw-explainconflict ~ #editform > h2 > .mw-headline::after {
     content: "（请滚动查看，可拖动右下角斜线符号调整高度）";
 }
 
-.mw-explainconflict~#editform>.diff+h2>.mw-headline::after,
-.mw-explainconflict~#editform>.diff-container+h2>.mw-headline::after {
+.mw-explainconflict ~ #editform > .diff + h2 > .mw-headline::after,
+.mw-explainconflict ~ #editform > .diff-container + h2 > .mw-headline::after {
     content: "（由于技术限制，此处为全文版本，请使用 Ctrl+F | ⌘+F 搜索相关差异，可拖动右下角斜线符号调整高度）";
 }
 
-:is(html[lang="zh-hant" i], html[lang="zh-hk" i], html[lang="zh-tw" i]) .mw-explainconflict~#editform>h2>.mw-headline::after {
+:is(html[lang="zh-hant" i], html[lang="zh-hk" i], html[lang="zh-tw" i]) .mw-explainconflict ~ #editform > h2 > .mw-headline::after {
     content: "（請滾動查看，可拖動右下角斜線符號調整高度）";
 }
 
-:is(html[lang="zh-hant" i], html[lang="zh-hk" i], html[lang="zh-tw" i]) .mw-explainconflict~#editform>:is(.diff, .diff-container)+h2>.mw-headline::after {
+:is(html[lang="zh-hant" i], html[lang="zh-hk" i], html[lang="zh-tw" i]) .mw-explainconflict ~ #editform > :is(.diff, .diff-container) + h2 > .mw-headline::after {
     content: "（由於技術限制，此處為全文版本，請使用 Ctrl+F | ⌘+F 搜索相關差異，可拖動右下角斜線符號調整高度）";
 }
 
-.mw-explainconflict~#editform>textarea[readonly] {
+.mw-explainconflict ~ #editform > textarea[readonly] {
     height: 20vh;
     width: 100% !important;
     resize: vertical;
 }
 
-.mw-explainconflict~#editform>.diff-container {
+.mw-explainconflict ~ #editform > .diff-container {
     height: 20vh;
     overflow-y: auto;
     border: 1px solid gray;
     resize: vertical;
 }
 
-.mw-explainconflict~#editform>.wikiEditor-ui::before {
+.mw-explainconflict ~ #editform > .wikiEditor-ui::before {
     content: "编辑框（最新版本）";
     font-size: 1.5em;
     margin: 1em 0 0.25em;
@@ -1407,7 +1406,7 @@ body:not(.ns--1):not(.ns--2) .navbox .mw-collapsible:not(.mw-collapsed) > tbody 
     display: block;
 }
 
-:is(html[lang="zh-hant" i], html[lang="zh-hk" i], html[lang="zh-tw" i]) .mw-explainconflict~#editform>.wikiEditor-ui::before {
+:is(html[lang="zh-hant" i], html[lang="zh-hk" i], html[lang="zh-tw" i]) .mw-explainconflict ~ #editform > .wikiEditor-ui::before {
     content: "編輯框（最新修訂）";
 }
 
