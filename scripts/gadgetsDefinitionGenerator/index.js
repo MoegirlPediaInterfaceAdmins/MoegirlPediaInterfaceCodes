@@ -10,7 +10,7 @@ const gadgetBaseRoot = "src/gadgets";
     /**
      * @type { { name: string, gadgets: string[] }[] }
      */
-    const gadgetsDefinitionList = JSON.parse(await fs.promises.readFile(path.join(gadgetBaseRoot, "Gadgets-definition-list.json"), "utf-8"));
+    const gadgetsDefinitionList = require(`../../${path.join(gadgetBaseRoot, "Gadgets-definition-list.json")}`);
     console.info("gadgetsDefinitionList:", gadgetsDefinitionList);
     for (const gadgetDirent of await fs.promises.readdir(gadgetBaseRoot, { withFileTypes: true })) {
         if (!gadgetDirent.isDirectory()) {
@@ -22,7 +22,7 @@ const gadgetBaseRoot = "src/gadgets";
             /**
              * @type { { _section: string; _files: string[] } }
              */
-            const gadgetDefinition = JSON.parse(await fs.promises.readFile(path.join(gadgetBaseRoot, gadget, "definition.json"), "utf-8"));
+            const gadgetDefinition = require(`../../${path.join(gadgetBaseRoot, gadget, "definition.json")}`);
             const { _section } = gadgetDefinition;
             const _files = (await fs.promises.readdir(path.join(gadgetBaseRoot, gadget))).filter((file) => [".js", ".css"].includes(path.extname(path.join(gadgetBaseRoot, gadget, file))));
             if (gadgetDefinition._files.filter((file) => !_files.includes(file)).length + _files.filter((file) => !gadgetDefinition._files.includes(file)).length > 0) {
