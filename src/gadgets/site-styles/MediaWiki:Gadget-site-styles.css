@@ -203,7 +203,7 @@
 
 .Tabs.AutoWidth {
     width: max-content;
-    display: flow-root;
+    display: table-cell;
 }
 
 .Tabs.FloatLeft {
