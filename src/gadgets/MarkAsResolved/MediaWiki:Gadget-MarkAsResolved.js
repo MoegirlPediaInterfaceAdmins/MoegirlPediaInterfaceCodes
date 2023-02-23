@@ -186,6 +186,10 @@ $(() => {
                 throw d.error.code;
             }
         }
+        setSectionTitle(sectionTitle) {
+            this.sectionTitleWidget.setData(sectionTitle);
+            this.sectionTitleWidget.$element.text(sectionTitle);
+        }
     }
 
     const windowManager = new OO.ui.WindowManager();
@@ -197,7 +201,7 @@ $(() => {
     for (const ele of $("#mw-content-text > .mw-parser-output > h2, #mw-content-text > .mw-parser-output > .discussionContainer > h2")) {
         const self = $(ele);
         const content = self.nextUntil("h2").not("h2");
-        if (content.hasClass("saveNotice") || content.hasClass("MarkAsResolved")) { return; }
+        if (content.hasClass("saveNotice") || content.hasClass("MarkAsResolved")) { break; }
         const sectionTitle = self.find(".mw-headline").attr("id");
         const a = $("<a>");
         a.attr("href", "javascript:void(0);").prop("draggable", false).addClass("AnnTools_MarkAsResolved").text("标记状态");
@@ -206,8 +210,7 @@ $(() => {
             .after(a);
         a.on("click", () => {
             if (!marDialog.isVisible()) {
-                marDialog.sectionTitleWidget.setData(sectionTitle);
-                marDialog.sectionTitleWidget.$element.text(sectionTitle);
+                marDialog.setSectionTitle(sectionTitle);
                 windowManager.openWindow(marDialog);
             }
             return false;
