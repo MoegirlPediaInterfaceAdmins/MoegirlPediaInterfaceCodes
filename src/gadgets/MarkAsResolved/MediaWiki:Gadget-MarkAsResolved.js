@@ -88,7 +88,7 @@ $(() => {
             value: 3,
         });
         get archiveOffset() {
-            return Math.max(1, Math.min(30, Math.round(this.archiveOffsetNumberInput.getValue())));
+            return Math.max(1, Math.min(30, Math.round(+this.archiveOffsetNumberInput.getValue())));
         }
 
         precommentTextInput = new OO.ui.TextInputWidget({
