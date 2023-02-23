@@ -2,10 +2,8 @@
 "use strict";
 $(() => {
     const wgUserGroups = mw.config.get("wgUserGroups");
-    if (!/^萌娘百科_talk:讨论版\/[^/]+$/.test(mw.config.get("wgPageName"))) { return; }
+    if (!/^萌娘百科_talk:讨论版\/[^存]+$/.test(mw.config.get("wgPageName"))) { return; }
     if (!wgUserGroups.includes("sysop") && !wgUserGroups.includes("patroller")) { return; }
-    // mw.loader.load(`${mw.config.get("wgServer")}${mw.config.get("wgScriptPath")}/User:AnnAngela/js/quick-save.js/style.css?action=raw&ctype=text/css`, "text/css");
-    // await mw.loader.using(["mediawiki.api", "mediawiki.Uri"]);
     const $body = $("body");
     $("#mw-notification-area").appendTo($body);
     const api = new mw.Api();
@@ -91,7 +89,7 @@ $(() => {
         get comment() {
             return this.commentTextInput.getValue();
         }
-        constructor(config) {
+        constructor (config) {
             super(config);
         }
         initialize() {
