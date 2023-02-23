@@ -6,78 +6,10 @@ body.skin-moeskin #moe-global-background {
     --background-url: url("https://app.moegirl.org.cn/background/2023NewYear/moeskin.jpg");
 }
 
-/* 全局页脚导航 */
-body.skin-moeskin #footer-info-copyright {
-    padding: 15px 0 30px;
-    min-height: 165px;
-}
-
-body.skin-moeskin #footer-moegirl {
-    color: #2F2F2F;
-    flex-wrap: wrap;
-    display: flex;
-    gap: 1rem;
-    overflow: hidden;
-}
-
-body.skin-moeskin #footer-moegirl h4 {
-    color: #243C4A;
-    font-size: 1.25rem;
-    margin-bottom: 8px;
-    font-weight: 600;
-}
-
-body.skin-moeskin #footer-moegirl ul {
-    line-height: 1.7;
-    min-width: 120px;
-    font-size: 12pt;
-    flex: 1;
-}
-
-body.skin-moeskin #footer-moegirl li {
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-body.skin-moeskin #footer-moegirl ul a {
-    color: #2F2F2F;
-}
-
-body.skin-moeskin #footer-moegirl #footer-qrcode-area {
-    display: flex;
-}
-
-body.skin-moeskin #footer-moegirl #footer-qrcode-area>div {
-    text-align: center;
-    flex: 1;
-}
-
-body.skin-moeskin #footer-moegirl #footer-qrcode-area>div:not(:last-of-type) {
-    margin-right: 1rem;
-}
-
-body.skin-moeskin #footer-moegirl #footer-qrcode-area>div span {
-    display: block;
-    font-size: 0.875rem;
-    margin-top: 4px;
-    text-align: center;
-}
-
-body.skin-moeskin #footer-moegirl #footer-qrcode-area img {
-    margin: 0 auto;
-    display: block;
-    border-radius: 0.5rem;
-    padding: 0.1rem;
-    background-color: #FFF;
-    border: 1px solid #DDD;
-    max-width: 80px;
-    width: 100%;
-}
-
 /* 在常规屏幕设备上使文章区域略微透明，以便展示背景图片 */
 @media (min-width: 768px) {
     body.skin-moeskin #moe-main-container {
-        --theme-card-background-color: rgb(255 255 255 / 90%);
+        --theme-card-background-color: rgb(255 255 255 / 94%);
     }
 }
 
@@ -130,21 +62,6 @@ aside#moe-global-siderail #moe-custom-sidenav-block h2 {
 .skin-moeskin #moe-article .local-danmaku-container {
     width: calc(100% + 4rem) !important;
     left: -2rem !important;
-}
-
-/* @fix Monospaced elements */
-body pre,
-body code,
-body tt,
-body kbd,
-body samp,
-.mw-code {
-    font-family: "Courier New", Courier, monospace;
-}
-
-/* @fix 灯箱 */
-body.skin-moeskin .mw-mmv-wrapper {
-    box-sizing: content-box;
 }
 
 /* 修正侧边栏公告二级标题 */
@@ -230,21 +147,6 @@ body.skin-moeskin .mw-mmv-wrapper {
     }
 }
 
-/* @fix fieldset */
-.skin-moeskin fieldset:not(.prefsection) {
-    display: block;
-    padding: 1em;
-    border: 1px solid rgb(0 0 0 / 10%);
-    border-radius: 0.5rem;
-}
-
-.skin-moeskin legend {
-    font-size: 1.2rem;
-    padding: 0 0.5em;
-    margin: 0 -0.5em;
-    font-weight: 700;
-}
-
 /* @fix 临时修复 img 元素的宽高 */
 img {
     height: auto;
@@ -311,19 +213,4 @@ a>img {
         content: " (" attr(title) ")";
         display: inline;
     }
-}
-
-/* @fix 临时修复 更改日志表格文字对齐 */
-#mw-content-text .mw-changeslist-line td {
-    vertical-align: baseline;
-}
-
-/*
- * @author 萌娘百科·娜娜奇 2023年1月16日
- * @FIXME  临时修复 in-content 广告在宽屏中无法回避浮动元素
- *         由于工期原因，暂时无法研究最佳解决方案
- *         勿动，之后修
- */
-.mw-parser-output [data-v-app] {
-    clear: both;
 }
