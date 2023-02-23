@@ -15,8 +15,9 @@
     "peers": [],
     "dependencies": [
         "mediawiki.api",
-        "mediawiki.Uri",
-        "ext.gadget.libPolyfill"
+        "ext.gadget.libPolyfill",
+        "ext.gadget.libOOUIDialog",
+        "ext.gadget.site-lib"
     ],
     "_section": "maintenance",
     "_files": [
