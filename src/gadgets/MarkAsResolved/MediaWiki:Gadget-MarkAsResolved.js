@@ -96,34 +96,16 @@ $(() => {
         }
         initialize() {
             super.initialize();
-            const sectionTitleField = new OO.ui.FieldLayout(this.sectionTitleWidget, {
-                label: MARWindow.bolbLabel(wgULS("段落标题：")), // @TODO
+            this.panelLayout.$element.append(...[
+                [this.sectionTitleWidget, MARWindow.bolbLabel(wgULS("段落标题："))], // @TODO
+                [this.statusRadioSelect, MARWindow.bolbLabel(wgULS("标记状态："))], // @TODO
+                [this.archiveOffsetNumberInput, MARWindow.bolbLabel(wgULS("存档用时："))], // @TODO
+                [this.precommentTextInput, MARWindow.bolbLabel(wgULS("前置留言："))], // @TODO
+                [this.commentTextInput, MARWindow.bolbLabel(wgULS("内置留言："))], // @TODO
+            ].map(([fieldWidget, config]) => new OO.ui.FieldLayout(fieldWidget, {
+                ...config,
                 align: "top",
-            });
-            const statusRadioSelectField = new OO.ui.FieldLayout(this.statusRadioSelect, {
-                label: MARWindow.bolbLabel(wgULS("标记状态：")), // @TODO
-                align: "top",
-            });
-            const archiveOffsetNumberInputField = new OO.ui.FieldLayout(this.archiveOffsetNumberInput, {
-                label: MARWindow.bolbLabel(wgULS("存档用时：")), // @TODO
-                align: "top",
-            });
-            const precommentTextInputField = new OO.ui.FieldLayout(this.precommentTextInput, {
-                label: MARWindow.bolbLabel(wgULS("前置留言：")), // @TODO
-                align: "top",
-            });
-            const commentTextInputField = new OO.ui.FieldLayout(this.commentTextInput, {
-                label: MARWindow.bolbLabel(wgULS("内置留言：")), // @TODO
-                align: "top",
-            });
-
-            this.panelLayout.$element.append(
-                sectionTitleField.$element,
-                statusRadioSelectField.$element,
-                archiveOffsetNumberInputField.$element,
-                precommentTextInputField.$element,
-                commentTextInputField.$element,
-            );
+            })));
 
             this.statusRadioSelect.connect(this, { choose: "setDefaultArchiveOffset" });
             this.$body.append(this.panelLayout.$element);
