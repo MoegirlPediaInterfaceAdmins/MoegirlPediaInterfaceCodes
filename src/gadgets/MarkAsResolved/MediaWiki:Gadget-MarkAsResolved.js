@@ -27,19 +27,30 @@ $(() => {
                 },
             ],
         };
-        static statusList = [
-            ["r", "问题已解决"],
-            ["p", "问题已答复"],
-            ["a", "请求已接受"],
-            ["s", "请求被暂缓"],
-            ["w", "请求被撤回"],
-            ["d", "请求被拒绝"],
-            ["n", "无人回复（点名批评）"],
-        ];
+
+
+        static statusList = mw.config.get("wgPageName") === "萌娘百科_talk:讨论版/操作申请/注销账号申请" ?
+            [
+                ["c", "注销进行中"],
+                ["a", "请求已接受"],
+                ["s", "请求被暂缓"],
+                ["w", "请求被撤回"],
+                ["d", "请求被拒绝"],
+            ] : [
+                ["r", "问题已解决"],
+                ["p", "问题已答复"],
+                ["a", "请求已接受"],
+                ["s", "请求被暂缓"],
+                ["w", "请求被撤回"],
+                ["d", "请求被拒绝"],
+                ["n", "无人回复"],
+            ];
+
         static archiveOffsetsFromStatus = {
             ...Object.fromEntries(MARWindow.statusList.map(([status]) => [status, 3])),
             n: 10,
             s: 10,
+            c: 10,
         };
         static bolbLabel(text) {
             return $("<span>").addClass("AnnTools_bolb").text(text);
