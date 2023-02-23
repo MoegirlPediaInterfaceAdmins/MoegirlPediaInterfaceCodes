@@ -135,7 +135,8 @@ $(() => {
                 return new OO.ui.Process(() => {
                     this.close({ action });
                 }, this);
-            } else if (action === "submit") {
+            }
+            if (action === "submit") {
                 return new OO.ui.Process($.when((async () => {
                     if (!this.status) {
                         throw new OO.ui.Error(wgULS("请选择一个状态"), {
@@ -198,9 +199,8 @@ $(() => {
         const content = self.nextUntil("h2").not("h2");
         if (content.hasClass("saveNotice") || content.hasClass("MarkAsResolved")) { return; }
         const sectionTitle = self.find(".mw-headline").attr("id");
-        const href = self.find('.mw-editsection a[href*="action=edit"]').attr("href");
         const a = $("<a>");
-        a.attr({ href }).prop("draggable", false).addClass("AnnTools_MarkAsResolved").text("标记状态");
+        a.attr("href", "javascript:void(0);").prop("draggable", false).addClass("AnnTools_MarkAsResolved").text("标记状态");
         self.find(".mw-editsection-bracket").first()
             .after('<span class="mw-editsection-divider"> | </span>')
             .after(a);
