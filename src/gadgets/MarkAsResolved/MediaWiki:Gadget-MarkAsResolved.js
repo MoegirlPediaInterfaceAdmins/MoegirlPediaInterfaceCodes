@@ -28,7 +28,6 @@ $(() => {
             ],
         };
 
-
         static statusList = mw.config.get("wgPageName") === "萌娘百科_talk:讨论版/操作申请/注销账号申请" ?
             [
                 ["c", "注销进行中"],
@@ -45,13 +44,13 @@ $(() => {
                 ["d", "请求被拒绝"],
                 ["n", "无人回复"],
             ];
-
         static archiveOffsetsFromStatus = {
             ...Object.fromEntries(MARWindow.statusList.map(([status]) => [status, 3])),
             n: 10,
             s: 10,
             c: 10,
         };
+
         static bolbLabel(text) {
             return $("<span>").addClass("AnnTools_bolb").text(text);
         }
@@ -60,12 +59,14 @@ $(() => {
             expanded: false,
             padded: true,
         });
+
         sectionTitleWidget = new OO.ui.Widget({
             classes: ["AnnTools_paragraphs"],
         });
         get sectionTitle() {
             return this.sectionTitleWidget.getData();
         }
+
         statusRadioSelect = new OO.ui.RadioSelectWidget({
             items: MARWindow.statusList.map(([data, label]) => new OO.ui.RadioOptionWidget({
                 data,
@@ -79,6 +80,7 @@ $(() => {
         get statusLabel() {
             return this.statusRadioSelect.findSelectedItem()?.getLabel?.();
         }
+
         archiveOffsetNumberInput = new OO.ui.NumberInputWidget({
             min: 1,
             max: 30,
@@ -88,42 +90,42 @@ $(() => {
         get archiveOffset() {
             return Math.max(1, Math.min(30, Math.round(this.archiveOffsetNumberInput.getValue())));
         }
+
         precommentTextInput = new OO.ui.TextInputWidget({
-            placeholder: "（但是如果不写就啥也没有）",
+            placeholder: wgULS("（但是如果不写就啥也没有）"), // @TODO
         });
         get precomment() {
             return this.precommentTextInput.getValue();
         }
+
         commentTextInput = new OO.ui.TextInputWidget({
-            placeholder: "（但是如果不写就啥也没有）",
+            placeholder: wgULS("（但是如果不写就啥也没有）"), // @TODO
         });
         get comment() {
             return this.commentTextInput.getValue();
         }
-        constructor (config) {
+
+        constructor(config) {
             super(config);
         }
         initialize() {
             super.initialize();
             this.panelLayout.$element.append(...[
-                [this.sectionTitleWidget, MARWindow.bolbLabel(wgULS("段落标题："))], // @TODO
-                [this.statusRadioSelect, MARWindow.bolbLabel(wgULS("标记状态："))], // @TODO
-                [this.archiveOffsetNumberInput, MARWindow.bolbLabel(wgULS("存档用时："))], // @TODO
-                [this.precommentTextInput, MARWindow.bolbLabel(wgULS("前置留言："))], // @TODO
-                [this.commentTextInput, MARWindow.bolbLabel(wgULS("内置留言："))], // @TODO
-            ].map(([fieldWidget, config]) => new OO.ui.FieldLayout(fieldWidget, {
-                ...config,
+                [this.sectionTitleWidget, wgULS("段落标题：")], // @TODO
+                [this.statusRadioSelect, wgULS("标记状态：")], // @TODO
+                [this.archiveOffsetNumberInput, wgULS("存档用时：")], // @TODO
+                [this.precommentTextInput, wgULS("前置留言：")], // @TODO
+                [this.commentTextInput, wgULS("内置留言：")], // @TODO
+            ].map(([fieldWidget, labelText]) => new OO.ui.FieldLayout(fieldWidget, {
+                label: MARWindow.bolbLabel(labelText),
                 align: "top",
             })));
 
-            this.statusRadioSelect.connect(this, { choose: "setDefaultArchiveOffset" });
+            this.statusRadioSelect.on("choose", (item) => {
+                this.archiveOffsetNumberInput.setValue(MARWindow.archiveOffsetsFromStatus[item.getData()] || 3);
+            });
+
             this.$body.append(this.panelLayout.$element);
-        }
-        /**
-         * @type {(this: this, item: OO.ui.OptionWidget, selected: boolean) => void}
-         */
-        setDefaultArchiveOffset(item) {
-            this.archiveOffsetNumberInput.setValue(MARWindow.archiveOffsetsFromStatus[item.getData()] || 3);
         }
         getBodyHeight() {
             return this.panelLayout.$element.outerHeight(true);
@@ -136,7 +138,7 @@ $(() => {
             } else if (action === "submit") {
                 return new OO.ui.Process($.when((async () => {
                     if (!this.status) {
-                        throw new OO.ui.Error("请选择一个状态", {
+                        throw new OO.ui.Error(wgULS("请选择一个状态"), {
                             recoverable: false,
                         });
                     }
@@ -147,7 +149,7 @@ $(() => {
                         prop: "sections",
                     })).parse.sections.map(({ anchor, index }) => [anchor, index]));
                     if (!Reflect.has(toclist, this.sectionTitle)) {
-                        throw new OO.ui.Error("请移除该标题内的模板后再行操作……", {
+                        throw new OO.ui.Error(wgULS("小工具无法根据段落标题找到该段落，请移除该段落标题内的模板后再行操作……"), { // @TODOs
                             recoverable: false,
                         });
                     }
