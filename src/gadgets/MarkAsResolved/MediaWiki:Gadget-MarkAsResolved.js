@@ -105,7 +105,7 @@ $(() => {
             return this.commentTextInput.getValue();
         }
 
-        constructor(config) {
+        constructor (config) {
             super(config);
         }
         initialize() {
@@ -195,7 +195,7 @@ $(() => {
     const windowManager = new OO.ui.WindowManager();
     $body.append(windowManager.$element);
     const marDialog = new MARWindow({
-        size: "medium",
+        size: "large",
     });
     windowManager.addWindows([marDialog]);
     for (const ele of $("#mw-content-text > .mw-parser-output > h2, #mw-content-text > .mw-parser-output > .discussionContainer > h2")) {
