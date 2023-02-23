@@ -119,7 +119,7 @@ $(() => {
             ].map(([fieldWidget, labelText]) => new OO.ui.FieldLayout(fieldWidget, {
                 label: MARWindow.bolbLabel(labelText),
                 align: "top",
-            })));
+            }).$element));
 
             this.statusRadioSelect.on("choose", (item) => {
                 this.archiveOffsetNumberInput.setValue(MARWindow.archiveOffsetsFromStatus[item.getData()] || 3);
