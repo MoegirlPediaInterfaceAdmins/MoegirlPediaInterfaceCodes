@@ -15,5 +15,7 @@
 }
 
 .AnnTools_RadioSelectWidget_column_2.oo-ui-radioSelectWidget > .oo-ui-radioOptionWidget {
-    width: 50%;
+    min-width: 50%;
+    width: max-content;
+    max-width: 100%;
 }
