@@ -16,5 +16,8 @@
         "mediawiki.legacy.wikibits",
         "mediawiki.util"
     ],
-    "_section": "system"
+    "_section": "system",
+    "_files": [
+        "MediaWiki:Gadget-site-lib.js"
+    ]
 }

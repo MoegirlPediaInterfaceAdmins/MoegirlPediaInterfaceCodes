@@ -22,7 +22,7 @@
 	}
 	mw.libs.wphl = mw.libs.wphl || {}; // 开始加载
 
-	const version = '2.48.7',
+	const version = '2.49.7',
 		newAddon = 0;
 
 	/** @type {typeof mw.storage} */
@@ -107,7 +107,7 @@
 	const CDN = '//fastly.jsdelivr.net',
 		CM_CDN = 'npm/codemirror@5.65.3',
 		MW_CDN = 'gh/bhsd-harry/codemirror-mediawiki@1.1.6',
-		PARSER_CDN = 'gh/bhsd-harry/wikiparser-node@0.7.4-b',
+		PARSER_CDN = 'gh/bhsd-harry/wikiparser-node@0.8.8-b',
 		REPO_CDN = `npm/wikiplus-highlight@${majorVersion}`;
 
 	const {config: {values: {
@@ -210,7 +210,10 @@
 	const entity = {'"': 'quot', "'": 'apos', '<': 'lt', '>': 'gt', '&': 'amp', ' ': 'nbsp'},
 		/** @type {(func: (str: string) => string) => (doc: CodeMirror.Editor) => void} */
 		convert = func => doc => {
-			doc.replaceSelection(doc.getSelection().split('\n').map(func).join('\n'), 'around');
+			doc.replaceSelections(
+				doc.getSelections().map(selection => selection.split('\n').map(func).join('\n')),
+				'around',
+			);
 		},
 		escapeHTML = convert(str => [...str].map(c => {
 			if (c in entity) {

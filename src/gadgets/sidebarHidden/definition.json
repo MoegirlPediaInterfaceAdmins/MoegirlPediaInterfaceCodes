@@ -15,5 +15,9 @@
     "dependencies": [
         "ext.gadget.LocalObjectStorage"
     ],
-    "_section": "skin"
+    "_section": "skin",
+    "_files": [
+        "MediaWiki:Gadget-sidebarHidden.css",
+        "MediaWiki:Gadget-sidebarHidden.js"
+    ]
 }

@@ -17,7 +17,7 @@ div.vectorMenu li.patroller-show {
     margin: 7px;
 }
 
-.vectorMenu .patroller-show~.patroller-show::before {
+.vectorMenu .patroller-show ~ .patroller-show::before {
     display: none;
 }
 
@@ -25,7 +25,7 @@ div.vectorMenu li.patroller-show {
     cursor: default;
 }
 
-.vectorMenu .patroller-show~.patroller-show,
+.vectorMenu .patroller-show ~ .patroller-show,
 .vectorMenu .patroller-show a {
     cursor: pointer;
 }
@@ -41,9 +41,4 @@ body[class*="page-萌娘百科_talk_讨论版_"] .userlink .userlink-menu {
 .ajaxpoll .ajaxpoll-info .ajaxpoll-id-info {
     color: inherit;
     float: none;
-}
-
-/* AD */
-.ezoicAds {
-    display: none !important;
 }

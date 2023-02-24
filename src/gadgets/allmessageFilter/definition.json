@@ -15,5 +15,8 @@
     "dependencies": [
         "ext.gadget.libOOUIDialog"
     ],
-    "_section": "interface"
+    "_section": "interface",
+    "_files": [
+        "MediaWiki:Gadget-allmessageFilter.js"
+    ]
 }

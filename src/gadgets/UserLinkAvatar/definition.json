@@ -14,5 +14,9 @@
         "user.options",
         "ext.gadget.jQueryLazyload"
     ],
-    "_section": "user"
+    "_section": "user",
+    "_files": [
+        "MediaWiki:Gadget-UserLinkAvatar.css",
+        "MediaWiki:Gadget-UserLinkAvatar.js"
+    ]
 }

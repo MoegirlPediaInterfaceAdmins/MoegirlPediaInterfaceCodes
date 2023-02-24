@@ -1,15 +1,14 @@
 /**
- * @source https://en.wikipedia.org/wiki/_?oldid=1086319046
+ * @source https://en.wikipedia.org/wiki/_?oldid=1138216587
  * 更新后请同步更新上面链接到最新版本
  */
-/* global wikEdUseWikEd, WikEdUpdateFrame */
-/* eslint-disable no-use-before-define */
 /*
  * 全部内容引自 https://en.wikipedia.org/wiki/MediaWiki:Gadget-popups.js
- * 当前版本修改自 https://en.wikipedia.org/w/index.php?title=MediaWiki:Gadget-popups.js&oldid=1086319046
  * 当前版本相较于引述版本有大量优化，请不要直接复制粘贴新版本代码
  */
 // <pre>
+/* global wikEdUseWikEd, WikEdUpdateFrame */
+/* eslint-disable no-use-before-define */
 "use strict";
 $(() => {
     const popupStrings = {
@@ -292,7 +291,7 @@ $(() => {
         autoedit_version: "np20140416",
         PrefixIndexHint: wgULS("显示用户%s的子页面", "顯示使用者%s的子頁面", null, null, "顯示用戶%s的子頁面"),
         nullEditSummary: wgULS("进行一次零编辑", "進行一次零編輯"),
-        // 用户组名称从系统消息获取
+        // 用户组名称从系统消息获取（“非自动确认用户”并不是用户组，所以在这里写死）
         "group-no-autoconfirmed": wgULS("非自动确认用户", "非自動確認使用者", null, null, "非自動確認用戶"),
         separator: "、",
         comma: "，",
@@ -343,7 +342,7 @@ $(() => {
     }
     function defaultPopupsContainer() {
         if (getValueOf("popupOnlyArticleLinks")) {
-            return document.getElementById("mw_content") || document.getElementById("content") || document.getElementById("article") ||
+            return document.querySelector(".skin-vector-2022 .vector-body") || document.getElementById("mw_content") || document.getElementById("content") || document.getElementById("article") ||
                 document.getElementsByTagName("article")?.[0] // moeskin
                 || document;
         }
@@ -2087,15 +2086,20 @@ $(() => {
             return mw.config.get("wgFormattedNamespaces")[this.namespaceId()];
         }
         namespaceId() {
-            const n = this.value.indexOf(":");
-            if (n < 0) {
+            try {
+                const n = this.value.indexOf(":");
+                if (n < 0) {
+                    return 0;
+                }
+                const namespaceId = mw.config.get("wgNamespaceIds")[this.value.substring(0, n).split(" ").join("_").toLowerCase()];
+                if (typeof namespaceId === "undefined") {
+                    return 0;
+                }
+                return namespaceId;
+            } catch (e) {
+                console.error(e, this);
                 return 0;
             }
-            const namespaceId = mw.config.get("wgNamespaceIds")[this.value.substring(0, n).split(" ").join("_").toLowerCase()];
-            if (typeof namespaceId === "undefined") {
-                return 0;
-            }
-            return namespaceId;
         }
         talkPage() {
             const t = new Title(this.value);

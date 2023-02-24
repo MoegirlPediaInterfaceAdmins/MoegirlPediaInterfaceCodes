@@ -14,5 +14,9 @@
     ],
     "peers": [],
     "dependencies": [],
-    "_section": "interface"
+    "_section": "interface",
+    "_files": [
+        "MediaWiki:Gadget-abusefilteredit.css",
+        "MediaWiki:Gadget-abusefilteredit.js"
+    ]
 }

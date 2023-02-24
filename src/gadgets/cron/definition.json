@@ -15,5 +15,8 @@
     "dependencies": [
         "ext.gadget.luxon"
     ],
-    "_section": "system"
+    "_section": "system",
+    "_files": [
+        "MediaWiki:Gadget-cron.js"
+    ]
 }

@@ -9,7 +9,8 @@
     "type": "general",
     "package": false,
     "rights": [
-        "patrol"
+        "noratelimit",
+        "patrolleredit"
     ],
     "peers": [],
     "dependencies": [
@@ -17,5 +18,8 @@
         "oojs-ui-core",
         "moment"
     ],
-    "_section": "maintenance"
+    "_section": "maintenance",
+    "_files": [
+        "MediaWiki:Gadget-autoconfirmedUserPing.js"
+    ]
 }

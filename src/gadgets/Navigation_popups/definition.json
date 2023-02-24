@@ -20,5 +20,9 @@
         "mediawiki.api.messages",
         "ext.gadget.libPolyfill"
     ],
-    "_section": "browsing"
+    "_section": "browsing",
+    "_files": [
+        "MediaWiki:Gadget-popups.css",
+        "MediaWiki:Gadget-popups.js"
+    ]
 }

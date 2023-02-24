@@ -4,7 +4,8 @@
         "jquery": true,
         "es6": true,
         "es2020": true,
-        "es2021": true
+        "es2021": true,
+        "es2022": true
     },
     "parserOptions": {
         "ecmaVersion": "latest"
@@ -28,7 +29,8 @@
         "echarts": "readonly",
         "AsyncLock": "readonly",
         "MOE_SKIN_GLOBAL_DATA_REF": "readonly",
-        "Cron": "readonly"
+        "Cron": "readonly",
+        "ace": "readonly"
     },
     "rules": {
         "logical-assignment-operators": "error",

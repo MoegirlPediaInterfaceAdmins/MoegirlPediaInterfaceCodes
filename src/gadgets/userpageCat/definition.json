@@ -13,5 +13,8 @@
     ],
     "peers": [],
     "dependencies": [],
-    "_section": "maintenance"
+    "_section": "maintenance",
+    "_files": [
+        "MediaWiki:Gadget-userpagecat.css"
+    ]
 }

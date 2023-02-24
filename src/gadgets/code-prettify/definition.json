@@ -13,5 +13,9 @@
     "dependencies": [
         "mediawiki.Uri"
     ],
-    "_section": "browsing"
+    "_section": "browsing",
+    "_files": [
+        "MediaWiki:Gadget-code-prettify.css",
+        "MediaWiki:Gadget-code-prettify.js"
+    ]
 }

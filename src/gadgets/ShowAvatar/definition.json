@@ -13,5 +13,9 @@
     "dependencies": [
         "mediawiki.Uri"
     ],
-    "_section": "user"
+    "_section": "user",
+    "_files": [
+        "MediaWiki:Gadget-ShowAvatar.css",
+        "MediaWiki:Gadget-ShowAvatar.js"
+    ]
 }

@@ -11,7 +11,11 @@
     "rights": [],
     "peers": [],
     "dependencies": [
-        "mediawiki.Uri"
+        "mediawiki.Uri",
+        "ext.gadget.site-lib"
     ],
-    "_section": "user"
+    "_section": "user",
+    "_files": [
+        "MediaWiki:Gadget-Logout-confirm.js"
+    ]
 }

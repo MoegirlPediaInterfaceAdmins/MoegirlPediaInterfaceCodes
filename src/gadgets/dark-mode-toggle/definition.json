@@ -25,5 +25,8 @@
         "mediawiki.storage",
         "ext.gadget.site-lib"
     ],
-    "_section": "skin"
+    "_section": "skin",
+    "_files": [
+        "MediaWiki:Gadget-dark-mode-toggle.js"
+    ]
 }

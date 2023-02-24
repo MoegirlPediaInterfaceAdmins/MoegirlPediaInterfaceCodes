@@ -17,5 +17,9 @@
         "oojs",
         "oojs-ui"
     ],
-    "_section": "browsing"
+    "_section": "browsing",
+    "_files": [
+        "MediaWiki:Gadget-ReferenceTooltips.css",
+        "MediaWiki:Gadget-ReferenceTooltips.js"
+    ]
 }

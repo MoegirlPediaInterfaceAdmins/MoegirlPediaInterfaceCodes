@@ -15,5 +15,8 @@
     "dependencies": [
         "jquery.client"
     ],
-    "_section": "editing"
+    "_section": "editing",
+    "_files": [
+        "MediaWiki:Gadget-DotsSyntaxHighlighter.js"
+    ]
 }

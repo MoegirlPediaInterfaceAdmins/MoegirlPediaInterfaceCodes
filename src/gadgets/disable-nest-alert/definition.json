@@ -13,5 +13,8 @@
     ],
     "peers": [],
     "dependencies": [],
-    "_section": "editing"
+    "_section": "editing",
+    "_files": [
+        "MediaWiki:Gadget-disable-nest-alert.js"
+    ]
 }

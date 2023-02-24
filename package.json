@@ -7,18 +7,23 @@
     "license": "",
     "private": true,
     "engines": {
-        "node": "16.* || >=18.*"
+        "node": "16.* || 18.*"
     },
     "scripts": {
         "test": "eslint src && stylelint src/**/*.css",
         "format": "eslint src --fix && stylelint src/**/*.css --fix"
     },
     "dependencies": {
+        "@actions/artifact": "^1.1.1",
         "@csstools/postcss-is-pseudo-class": "^3.1.0",
         "@financial-times/js-features-analyser": "^0.4.3",
+        "@octokit/auth-action": "^2.0.3",
+        "@octokit/plugin-retry": "^4.1.2",
+        "@octokit/rest": "^19.0.7",
         "@types/cron": "^2.0.0",
         "@types/jquery": "^3.5.14",
         "@types/moment": "^2.13.0",
+        "@types/oojs-ui": "^0.46.1",
         "@wikimedia/types-wikimedia": "^0.3.4",
         "async-lock": "^1.4.0",
         "autoprefixer": "^10.4.13",
@@ -36,14 +41,14 @@
         "postcss": "^8.4.19",
         "postcss-cli": "^10.0.0",
         "postcss-discard-comments": "^5.1.2",
-        "postcss-font-normalize": "^0.0.0",
         "postcss-font-variant": "^5.0.0",
         "postcss-selector-matches": "^4.0.0",
         "postcss-selector-not": "^7.0.1",
         "strip-json-comments": "^5.0.0",
-        "stylelint": "^15.1.0",
+        "stylelint": "^15.2.0",
         "stylelint-config-standard": "^30.0.1",
         "typescript": "^4.9.3",
+        "uglify-js": "^3.17.4",
         "unassertify": "^3.0.1"
     }
 }

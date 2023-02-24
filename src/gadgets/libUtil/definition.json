@@ -13,5 +13,8 @@
     ],
     "peers": [],
     "dependencies": [],
-    "_section": "system"
+    "_section": "system",
+    "_files": [
+        "MediaWiki:Gadget-libUtil.js"
+    ]
 }

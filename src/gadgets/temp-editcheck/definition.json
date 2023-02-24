@@ -18,5 +18,8 @@
         "mediawiki.notification",
         "mediawiki.notify"
     ],
-    "_section": "editing"
+    "_section": "editing",
+    "_files": [
+        "MediaWiki:Gadget-temp-editcheck.js"
+    ]
 }

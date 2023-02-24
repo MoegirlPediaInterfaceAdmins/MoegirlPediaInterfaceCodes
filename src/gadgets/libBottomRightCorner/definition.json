@@ -13,5 +13,9 @@
     ],
     "peers": [],
     "dependencies": [],
-    "_section": "system"
+    "_section": "system",
+    "_files": [
+        "MediaWiki:Gadget-libBottomRightCorner.css",
+        "MediaWiki:Gadget-libBottomRightCorner.js"
+    ]
 }

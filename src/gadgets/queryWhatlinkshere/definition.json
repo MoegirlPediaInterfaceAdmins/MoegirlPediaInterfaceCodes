@@ -13,5 +13,8 @@
     "dependencies": [
         "mediawiki.api"
     ],
-    "_section": "browsing"
+    "_section": "browsing",
+    "_files": [
+        "MediaWiki:Gadget-queryWhatlinkshere.js"
+    ]
 }

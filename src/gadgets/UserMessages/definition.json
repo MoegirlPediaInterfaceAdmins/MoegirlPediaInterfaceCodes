@@ -9,16 +9,20 @@
     "type": "general",
     "package": false,
     "rights": [
-        "patrol"
+        "edit",
+        "patrolleredit"
     ],
     "peers": [],
     "dependencies": [
         "ext.gadget.site-lib",
         "ext.gadget.libUtil",
-        "jquery.ui.dialog", 
-        "jquery.ui.autocomplete", 
+        "jquery.ui.dialog",
+        "jquery.ui.autocomplete",
         "jquery.ui.resizable",
         "mediawiki.util"
     ],
-    "_section": "maintenance"
+    "_section": "maintenance",
+    "_files": [
+        "MediaWiki:Gadget-UserMessages.js"
+    ]
 }

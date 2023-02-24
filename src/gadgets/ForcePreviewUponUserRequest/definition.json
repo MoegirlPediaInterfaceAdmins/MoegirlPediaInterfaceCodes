@@ -16,5 +16,8 @@
     "dependencies": [
         "ext.gadget.Force_preview"
     ],
-    "_section": "editing"
+    "_section": "editing",
+    "_files": [
+        "MediaWiki:Gadget-Force_preview_upon_user_request.js"
+    ]
 }

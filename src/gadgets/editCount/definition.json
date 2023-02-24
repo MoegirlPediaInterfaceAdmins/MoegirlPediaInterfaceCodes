@@ -15,5 +15,8 @@
     ],
     "peers": [],
     "dependencies": [],
-    "_section": "user"
+    "_section": "user",
+    "_files": [
+        "MediaWiki:Gadget-editCount.js"
+    ]
 }

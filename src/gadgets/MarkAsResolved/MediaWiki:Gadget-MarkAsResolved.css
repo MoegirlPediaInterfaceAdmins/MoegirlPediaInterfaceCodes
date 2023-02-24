@@ -1,139 +1,19 @@
-.AnnTools_Frame {
-    position: fixed;
-    z-index: 999;
-    top: 13vh;
-    left: 17vw;
-    height: 74vh;
-    width: 66vw;
-    background: white;
-    border: 1px solid #A7D7F9;
-    display: none;
-    line-height: normal;
-    overflow: auto;
+.AnnTools_bolb {
+    font-weight: bold;
 }
 
-.AnnTools_Frame_Head {
-    position: sticky;
-    top: 0;
-    z-index: 2;
-    background-color: white;
+.AnnTools_paragraphs {
+    text-indent: 2em;
 }
 
-.AnnTools_Frame_Title {
-    border-bottom: 1px solid gray;
-    padding: 13px;
+.AnnTools_RadioSelectWidget_column_2.oo-ui-radioSelectWidget {
+    display: flex;
+    flex-wrap: wrap;
+    align-content: flex-start;
+    justify-content: flex-start;
+    align-items: flex-start;
 }
 
-.AnnTools_Frame_Close {
-    padding: 7px;
-    cursor: pointer;
-    font-size: 37px;
-    position: absolute;
-    top: -10%;
-    right: 0;
-}
-
-.AnnTools_Frame_Close.disable {
-    cursor: not-allowed;
-    opacity: 0.3;
-}
-
-.AnnTools_Frame.Content {
-    clear: both;
-}
-
-.AnnTools_Confirm {
-    border: 1px solid #A7D7F9;
-    padding: 0 3rem;
-}
-
-.AnnTools_Confirm.AnnTools_Confirm_expand {
-    display: none;
-}
-
-.AnnTools_Confirm_Content,
-.AnnTools_Frame_Content,
-.AnnTools_status:not(:empty) {
-    padding: 1em;
-}
-
-.AnnTools_Frame_Content {
-    /* overflow: auto; */
-}
-
-.AnnTools_Confirm_Yes,
-.AnnTools_Confirm_No {
-    cursor: pointer;
-    box-sizing: border-box;
-    width: 36%;
-    margin: 0 7% 1em;
-    border: 1px solid #A7D7F9;
-    padding: 1em 0;
-    text-align: center;
-    display: inline-block;
-}
-
-.AnnTools_floatAlert {
-    display: none;
-    background: white;
-    border: 1px solid #A7D7F9;
-    padding: 1em;
-    width: 17em;
-}
-
-.AnnTools_Info {
-    display: none;
-}
-
-.AnnTools_ProgressBar {
-    margin: 13px auto;
-    padding: 3px;
-    height: 1em;
-    width: 73%;
-    border: 1px solid #A7D7F9;
-}
-
-.AnnTools_ProgressBar_Finished {
-    background: green;
-    height: 100%;
-    transition: 0.73s all ease;
-    width: 0;
-}
-
-.AnnTools_Notice {
-    font-size: 17px;
-    text-align: center;
-}
-
-.AnnTools_ProgressBar.error .AnnTools_ProgressBar_Finished {
-    background: red;
-}
-
-.AnnTools_WorkDetail {
-    list-style-type: decimal;
-}
-
-.AnnTools_WorkDetail_Ongoing {
-    color: orange;
-}
-
-.AnnTools_WorkDetail_Succeed {
-    color: green;
-}
-
-.AnnTools_WorkDetail_Failed {
-    color: red;
-}
-
-#AnnTools_comment,
-#AnnTools_precomment {
-    max-width: 100%;
-}
-
-.AnnTools_status {
-    text-align: center;
-}
-
-#AnnTools_archive_offset {
-    width: 100%;
+.AnnTools_RadioSelectWidget_column_2.oo-ui-radioSelectWidget > .oo-ui-radioOptionWidget {
+    width: 50%;
 }

@@ -15,5 +15,8 @@
     ],
     "peers": [],
     "dependencies": [],
-    "_section": "skin"
+    "_section": "skin",
+    "_files": [
+        "MediaWiki:Gadget-moeskin-classic.css"
+    ]
 }

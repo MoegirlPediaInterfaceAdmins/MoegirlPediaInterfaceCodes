@@ -15,5 +15,8 @@
     "dependencies": [
         "ext.gadget.libPolyfill"
     ],
-    "_section": "system"
+    "_section": "system",
+    "_files": [
+        "MediaWiki:Gadget-luxon.js"
+    ]
 }

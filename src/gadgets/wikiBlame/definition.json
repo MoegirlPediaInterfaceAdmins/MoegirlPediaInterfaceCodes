@@ -9,6 +9,7 @@
     "type": "general",
     "package": false,
     "rights": [
+        "edit",
         "patrol"
     ],
     "peers": [],
@@ -18,5 +19,8 @@
         "oojs-ui-core",
         "mediawiki.diff.styles"
     ],
-    "_section": "maintenance"
+    "_section": "maintenance",
+    "_files": [
+        "MediaWiki:Gadget-wikiBlame.js"
+    ]
 }

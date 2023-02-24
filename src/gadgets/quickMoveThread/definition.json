@@ -9,6 +9,7 @@
     "type": "general",
     "package": false,
     "rights": [
+        "edit",
         "patrolleredit"
     ],
     "peers": [],
@@ -20,5 +21,8 @@
         "ext.gadget.LocalObjectStorage",
         "ext.gadget.libPolyfill"
     ],
-    "_section": "maintenance"
+    "_section": "maintenance",
+    "_files": [
+        "MediaWiki:Gadget-quickMoveThread.js"
+    ]
 }
