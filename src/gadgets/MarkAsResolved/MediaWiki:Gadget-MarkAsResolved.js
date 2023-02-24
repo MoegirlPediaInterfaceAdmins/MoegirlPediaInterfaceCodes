@@ -125,6 +125,9 @@ $(() => {
             this.statusRadioSelect.on("choose", (item) => {
                 this.archiveOffsetNumberInput.setValue(MARWindow.archiveOffsetsFromStatus[item.getData()] || 3);
             });
+            this.precommentMultilineTextInput.on("resize", () => {
+                this.updateSize();
+            });
 
             this.$body.append(this.panelLayout.$element);
         }
@@ -205,7 +208,7 @@ $(() => {
         if (content.hasClass("saveNotice") || content.hasClass("MarkAsResolved")) { continue; }
         const sectionTitle = self.find(".mw-headline").attr("id");
         const button = $("<a>");
-        button.attr("href", "javascript:void(0);").prop("draggable", false).addClass("AnnTools_MarkAsResolved").text("标记状态");
+        button.attr("href", "javascript:void(0);").prop("draggable", false).addClass("AnnTools_MarkAsResolved").text(wgULS("标记状态1")); // @TODO
         self.find(".mw-editsection-bracket").first()
             .after('<span class="mw-editsection-divider"> | </span>')
             .after(button);
