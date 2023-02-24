@@ -91,11 +91,12 @@ $(() => {
             return Math.max(1, Math.min(30, Math.round(+this.archiveOffsetNumberInput.getValue())));
         }
 
-        precommentTextInput = new OO.ui.TextInputWidget({
+        precommentMultilineTextInput = new OO.ui.MultilineTextInputWidget({
             placeholder: wgULS("（但是如果不写就啥也没有）"), // @TODO
+            autosize: true,
         });
         get precomment() {
-            return this.precommentTextInput.getValue();
+            return this.precommentMultilineTextInput.getValue();
         }
 
         commentTextInput = new OO.ui.TextInputWidget({
@@ -105,7 +106,7 @@ $(() => {
             return this.commentTextInput.getValue();
         }
 
-        constructor (config) {
+        constructor(config) {
             super(config);
         }
         initialize() {
@@ -114,7 +115,7 @@ $(() => {
                 [this.sectionTitleWidget, wgULS("段落标题：")], // @TODO
                 [this.statusRadioSelect, wgULS("标记状态：")], // @TODO
                 [this.archiveOffsetNumberInput, wgULS("存档用时：")], // @TODO
-                [this.precommentTextInput, wgULS("前置留言：")], // @TODO
+                [this.precommentMultilineTextInput, wgULS("前置留言：")], // @TODO
                 [this.commentTextInput, wgULS("内置留言：")], // @TODO
             ].map(([fieldWidget, labelText]) => new OO.ui.FieldLayout(fieldWidget, {
                 label: MARWindow.bolbLabel(labelText),
@@ -203,12 +204,12 @@ $(() => {
         const content = self.nextUntil("h2").not("h2");
         if (content.hasClass("saveNotice") || content.hasClass("MarkAsResolved")) { continue; }
         const sectionTitle = self.find(".mw-headline").attr("id");
-        const a = $("<a>");
-        a.attr("href", "javascript:void(0);").prop("draggable", false).addClass("AnnTools_MarkAsResolved").text("标记状态");
+        const button = $("<a>");
+        button.attr("href", "javascript:void(0);").prop("draggable", false).addClass("AnnTools_MarkAsResolved").text("标记状态");
         self.find(".mw-editsection-bracket").first()
             .after('<span class="mw-editsection-divider"> | </span>')
-            .after(a);
-        a.on("click", () => {
+            .after(button);
+        button.on("click", () => {
             if (!marDialog.isVisible()) {
                 marDialog.setSectionTitle(sectionTitle);
                 windowManager.openWindow(marDialog);
