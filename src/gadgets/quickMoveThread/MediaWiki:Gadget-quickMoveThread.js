@@ -160,6 +160,9 @@ $(() => {
                         if (this.target === PAGENAME) {
                             throw new OO.ui.Error(wgULS("目标页面不得与当前页面相同", "目標頁面不得與當前頁面相同"));
                         }
+                        if (/talk|[讨討][论論]|[对對][话話]/i.test(this.target)) {
+                            throw new OO.ui.Error(wgULS("目标页面必须为讨论页面", "目標頁面必須為討論頁面"));
+                        }
                         try {
                             await this.doMove();
                             this.close({ action });
