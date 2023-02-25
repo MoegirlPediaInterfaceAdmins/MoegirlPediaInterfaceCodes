@@ -40,6 +40,8 @@ jobs:
         run: node scripts/gadgetsDefinitionGenerator/index.js
       - name: Conventional Commits scopes generator
         run: node scripts/conventionalCommitsScopesGenerator/index.js
+      - name: linguist-generated to .gitattributes
+        run: node scripts/postCommit/linguist-generated.js
       - uses: EndBug/add-and-commit@v9
         with:
           committer_name: GitHub Actions

@@ -7,6 +7,7 @@ const mkdtmp = require("../modules/mkdtmp.js");
 const fs = require("fs");
 const path = require("path");
 const unrecognizableFeatures = require("./unrecognizableFeatures.json");
+const core = require("@actions/core");
 const { Octokit } = require("@octokit/rest");
 const { retry } = require("@octokit/plugin-retry");
 const octokit = new (Octokit.plugin(retry))({
@@ -63,6 +64,7 @@ const findPolyfillFiles = async () => (await fs.promises.readdir("src/gadgets/li
             },
         });
         const codeFilePath = path.join(tempPath, "polyfillGeneratedCode.js");
+        core.exportVariable("linguist-generated-generatePolyfill", JSON.stringify([codeFilePath]));
         await fs.promises.writeFile(codeFilePath, data, {
             encoding: "utf-8",
         });

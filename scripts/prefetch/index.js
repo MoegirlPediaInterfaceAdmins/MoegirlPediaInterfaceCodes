@@ -5,9 +5,11 @@ const fetch = require("../modules/fetch.js");
 const prefetchTargets = require("./targets.js");
 const fs = require("fs");
 const path = require("path");
+const core = require("@actions/core");
 
 (async () => {
     console.info("prefetchTargets:", prefetchTargets);
+    core.exportVariable("linguist-generated-prefetch", JSON.stringify(prefetchTargets.map(({ file }) => file)));
     for (const prefetchTarget of prefetchTargets) {
         console.info("target:", prefetchTarget);
         const { name, url, file, appendCode } = prefetchTarget;

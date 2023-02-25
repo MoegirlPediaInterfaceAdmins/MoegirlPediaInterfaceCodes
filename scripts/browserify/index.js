@@ -8,11 +8,13 @@ const uglify = require("uglify-js");
 const browserifyTargets = require("./targets.js");
 const fs = require("fs");
 const path = require("path");
+const core = require("@actions/core");
 
 (async () => {
     console.info("browserifyTargets:", browserifyTargets);
     const tempPath = await mkdtmp(true);
     const inputPath = path.join(tempPath, "input.js");
+    core.exportVariable("linguist-generated-browserify", JSON.stringify(browserifyTargets.map(({ file }) => file)));
     for (const browserifyTarget of browserifyTargets) {
         console.info("target:", browserifyTarget);
         const { module, entry, file, exports, removePlugins, prependCode } = browserifyTarget;
