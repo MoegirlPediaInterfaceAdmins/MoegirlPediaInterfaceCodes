@@ -25,10 +25,10 @@ jobs:
           node-version: lts/*
           check-latest: true
           cache: npm
-      - name: Prepare git
-        run: node scripts/postCommit/prepareGit.js
       - name: Install dependencies
         run: npm ci
+      - name: Prepare git
+        run: node scripts/postCommit/prepareGit.js
       - name: Auto browserify generator
         run: node scripts/browserify/index.js
       - name: Auto prefetch
