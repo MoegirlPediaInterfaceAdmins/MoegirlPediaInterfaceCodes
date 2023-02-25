@@ -9,7 +9,7 @@ const core = require("@actions/core");
         encoding: "utf-8",
     });
     console.info("old .gitattributes", oldGitattributes);
-    const originalGitattributes = oldGitattributes.split("\n").filter((line) => !line.includes(" # From ")).join("\n").replace(/(?<=\n)\n+/g, "");
+    const originalGitattributes = oldGitattributes.split("\n").filter((line) => line.length > 0 && !line.includes(" # From ")).join("\n");
     console.info("original .gitattributes", originalGitattributes);
     const newGitattributes = [""];
     for (const [index, stringValue] of Object.entries(process.env)) {
