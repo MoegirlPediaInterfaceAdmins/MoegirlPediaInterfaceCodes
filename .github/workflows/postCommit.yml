@@ -25,16 +25,16 @@ jobs:
           node-version: lts/*
           check-latest: true
           cache: npm
-      - name: Install dependencies
+      - name: "Prepare: Install dependencies"
         run: npm ci
-      - name: Prepare git
+      - name: "Prepare: Prepare git"
         run: node scripts/postCommit/prepareGit.js
+      - name: "Prepare: Expose GitHub Runtime"
+        uses: crazy-max/ghaction-github-runtime@v2
       - name: Auto browserify generator
         run: node scripts/browserify/index.js
       - name: Auto prefetch
         run: node scripts/prefetch/index.js
-      - name: Expose GitHub Runtime
-        uses: crazy-max/ghaction-github-runtime@v2
       - name: Gadget-polyfill generator
         run: node scripts/generatePolyfill/index.js
       - name: Gadgets-definition Generator
