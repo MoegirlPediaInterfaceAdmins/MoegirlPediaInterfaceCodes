@@ -56,7 +56,7 @@ body.skin-moeskin #moe-page-tools #Wikiplus-Edit-TopBtn a {
 }
 
 .mobile-edit-button #Wikiplus-Edit-TopBtn a:hover {
-    background: rgb(24, 160, 88, 0.22);
+    background: rgb(24  160  88 / 22%);
 }
 
 .mobile-edit-button #Wikiplus-Edit-TopBtn a:focus {
