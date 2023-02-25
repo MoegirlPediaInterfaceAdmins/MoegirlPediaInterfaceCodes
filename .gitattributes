@@ -1,4 +1,7 @@
-src/**/*.js linguist-generated=falsesrc/**/*.css linguist-generated=false
+src/**/*.js linguist-generated=false
+src/**/*.css linguist-generated=false
+src/**/*.json linguist-generated=false
+src/*.json linguist-generated=false
 
 src/gadgets/libPolyfill/MediaWiki:Gadget-libPolyfill.js  linguist-generated=true # From generatePolyfill
 

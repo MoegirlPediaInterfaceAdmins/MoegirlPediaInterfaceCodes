@@ -9,12 +9,14 @@ const browserifyTargets = require("./targets.js");
 const fs = require("fs");
 const path = require("path");
 const core = require("@actions/core");
+const createCommit = require("../modules/createCommit.js");
 
 (async () => {
     console.info("browserifyTargets:", browserifyTargets);
     const tempPath = await mkdtmp(true);
     const inputPath = path.join(tempPath, "input.js");
     core.exportVariable("linguist-generated-browserify", JSON.stringify(browserifyTargets.map(({ file }) => file)));
+    const diff = [];
     for (const browserifyTarget of browserifyTargets) {
         console.info("target:", browserifyTarget);
         const { module, entry, file, exports, removePlugins, prependCode } = browserifyTarget;
@@ -71,11 +73,16 @@ const core = require("@actions/core");
             output.push(prependCode);
         }
         output.push(codes.trim(), "");
-        await fs.promises.rm(file, {
-            recursive: true,
-            force: true,
-        });
-        await fs.promises.writeFile(file, output.join("\n"));
+        const code = output.join("\n");
+        const oldCode = await fs.promises.readFile(file, {
+            encoding: "utf-8",
+        }).catch(() => undefined);
+        if (code === oldCode) {
+            console.info(`[${module}]`, "No change, continue to next one.");
+            continue;
+        }
+        diff.push(module);
+        await fs.promises.writeFile(file, code);
         if (path.extname(file) === ".js") {
             const filename = path.basename(file);
             const eslintrcName = path.join(path.dirname(file), ".eslintrc");
@@ -89,6 +96,10 @@ const core = require("@actions/core");
             }
         }
         console.info(`[${module}]`, "generated successfully.");
+    }
+    if (diff.length > 0) {
+        const message = `auto: browserify generated new code - ${diff.join(", ")}`;
+        await createCommit(message);
     }
     console.info("Done.");
     process.exit(0);
