@@ -1,2 +1,89 @@
-src/**/*.js linguist-generated=false
-src/**/*.css linguist-generated=false
+s
+r
+c
+/
+*
+*
+/
+*
+.
+j
+s
+ 
+l
+i
+n
+g
+u
+i
+s
+t
+-
+g
+e
+n
+e
+r
+a
+t
+e
+d
+=
+f
+a
+l
+s
+e
+
+
+s
+r
+c
+/
+*
+*
+/
+*
+.
+c
+s
+s
+ 
+l
+i
+n
+g
+u
+i
+s
+t
+-
+g
+e
+n
+e
+r
+a
+t
+e
+d
+=
+f
+a
+l
+s
+e
+
+
+
+/home/runner/work/_temp/382bd5a0-4a38-4bff-9f34-94ce8ce20c1a/polyfillGeneratedCode.js  linguist-generated=true # From generatePolyfill
+
+src/gadgets/cron/MediaWiki:Gadget-cron.js  linguist-generated=true # From browserify
+src/gadgets/libAsyncLock/MediaWiki:Gadget-libAsyncLock.js  linguist-generated=true # From browserify
+src/gadgets/libHashwasm/MediaWiki:Gadget-libHashwasm.js  linguist-generated=true # From browserify
+src/gadgets/libip/MediaWiki:Gadget-libip.js  linguist-generated=true # From browserify
+src/gadgets/localforage/MediaWiki:Gadget-localforage.js  linguist-generated=true # From browserify
+
+src/gadgets/wikiplus-highlight/MediaWiki:Gadget-wikiplus-highlight.js  linguist-generated=true # From prefetch
+src/gadgets/luxon/MediaWiki:Gadget-luxon.js  linguist-generated=true # From prefetch
+src/gadgets/libJSON5/MediaWiki:Gadget-libJSON5.js  linguist-generated=true # From prefetch
