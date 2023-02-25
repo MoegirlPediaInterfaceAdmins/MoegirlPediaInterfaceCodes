@@ -2,6 +2,8 @@
 const consoleWithTime = require("../modules/console.js");
 consoleWithTime.info("Start initialization...");
 const exec = require("../modules/exec.js");
+const { git } = require("../modules/git.js");
+const octokit = require("../modules/octokit.js");
 (async () => {
     try {
         consoleWithTime.info("Start checking unpushed commits...");
@@ -12,11 +14,28 @@ const exec = require("../modules/exec.js");
         }
         consoleWithTime.info("Found unpushed commits:", unpushedCommits.split("\n"));
         consoleWithTime.info("Pulling new commits...");
-        consoleWithTime.info("Successfully pulled the commits:", await exec("git pull"));
+        consoleWithTime.info("Successfully pulled the commits:", await git.pull());
         consoleWithTime.info("Pushing these commits...");
-        consoleWithTime.info("Successfully pushed the commits:", await exec("git push"));
+        consoleWithTime.info("Successfully pushed the commits:", await git.push());
+        console.info("process.env.changedFiles:", process.env.changedFiles);
+        /**
+         * @type {string[] | undefined}
+         */
+        const changedFilesFromEnv = JSON.parse(process.env.changedFiles || "[]");
+        console.info("changedFilesFromEnv:", changedFilesFromEnv);
+        if (!Array.isArray(changedFilesFromEnv) || changedFilesFromEnv.length === 0) {
+            consoleWithTime.info("Unable to get changed files, exit!");
+            process.exit(0);
+        }
+        if (changedFilesFromEnv.filter((file) => file.startsWith("src/")).length === 0) {
+            consoleWithTime.info("No src file changed, exit!");
+            process.exit(0);
+        }
         consoleWithTime.info("Start triggering linter test...");
-        consoleWithTime.info("Successfully triggered the linter test:", await exec("gh workflow run \"Linter test\""));
+        consoleWithTime.info("Successfully triggered the linter test:", await octokit.rest.actions.createWorkflowDispatch({
+            workflow_id: "Linter test",
+            ref: process.env.GITHUB_REF,
+        }));
         process.exit(0);
     } catch (e) {
         consoleWithTime.error(e);

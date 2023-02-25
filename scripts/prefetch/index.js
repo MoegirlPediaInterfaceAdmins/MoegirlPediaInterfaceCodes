@@ -2,12 +2,16 @@
 const console = require("../modules/console.js");
 console.info("Start initialization...");
 const fetch = require("../modules/fetch.js");
+const createCommit = require("../modules/createCommit.js");
 const prefetchTargets = require("./targets.js");
 const fs = require("fs");
 const path = require("path");
+const core = require("@actions/core");
 
 (async () => {
     console.info("prefetchTargets:", prefetchTargets);
+    const diff = [];
+    core.exportVariable("linguist-generated-prefetch", JSON.stringify(prefetchTargets.map(({ file }) => file)));
     for (const prefetchTarget of prefetchTargets) {
         console.info("target:", prefetchTarget);
         const { name, url, file, appendCode } = prefetchTarget;
@@ -29,6 +33,11 @@ const path = require("path");
             code.push(appendCode);
         }
         code.push("");
+        if (await fs.promises.readFile(file, { encoding: "utf-8" }) === code.join("\n")) {
+            console.info(`[${name}]`, "Nothing changed, continue.");
+            continue;
+        }
+        diff.push(name);
         const folder = path.dirname(file);
         const filename = path.basename(file);
         const eslintrcName = path.join(folder, ".eslintrc");
@@ -47,6 +56,11 @@ const path = require("path");
             }
         }
     }
+    if (diff.length > 0) {
+        const message = `auto: prefetch generated new code - ${diff.join(", ")}`;
+        await createCommit(message);
+    }
+    console.info("Done.");
     console.info("Done.");
     process.exit(0);
 })();

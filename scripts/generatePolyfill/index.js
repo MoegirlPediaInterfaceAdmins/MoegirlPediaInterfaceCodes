@@ -4,22 +4,12 @@ consoleWithTime.info("Start initialization...");
 const exec = require("../modules/exec.js");
 const fetch = require("../modules/fetch.js");
 const mkdtmp = require("../modules/mkdtmp.js");
+const createCommit = require("../modules/createCommit.js");
 const fs = require("fs");
 const path = require("path");
 const unrecognizableFeatures = require("./unrecognizableFeatures.json");
-const { Octokit } = require("@octokit/rest");
-const { retry } = require("@octokit/plugin-retry");
-const octokit = new (Octokit.plugin(retry))({
-    authStrategy: require("@octokit/auth-action").createActionAuth(),
-});
-const octokitBaseOptions = {
-    owner: process.env.GITHUB_REPOSITORY_OWNER,
-    repo: process.env.GITHUB_REPOSITORY.split("/")[1],
-};
-octokit.hook.wrap("request", (request, options) => request({
-    ...octokitBaseOptions,
-    ...options,
-}));
+const core = require("@actions/core");
+const octokit = require("../modules/octokit.js");
 
 const TARGET_CHROMIUM_VERSION = "70.0.3538.0";
 const TARGET_UA = `Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/${TARGET_CHROMIUM_VERSION} Safari/537.36`;
@@ -30,7 +20,6 @@ const findPolyfillFiles = async () => (await fs.promises.readdir("src/gadgets/li
     try {
         consoleWithTime.log("process.env.GITHUB_REF:", process.env.GITHUB_REF);
         consoleWithTime.log("process.env.GITHUB_RUN_ID:", process.env.GITHUB_RUN_ID);
-        consoleWithTime.log("octokitBaseOptions:", octokitBaseOptions);
         consoleWithTime.info("Start to delete old polyfill files:");
         const tempPath = await mkdtmp();
         for (const file of await findPolyfillFiles()) {
@@ -118,6 +107,10 @@ const findPolyfillFiles = async () => (await fs.promises.readdir("src/gadgets/li
         await fs.promises.writeFile("src/gadgets/libPolyfill/.eslintrc", JSON.stringify(eslintrc, null, 4), {
             encoding: "utf-8",
         });
+        core.exportVariable("linguist-generated-generatePolyfill", JSON.stringify(["src/gadgets/libPolyfill/MediaWiki:Gadget-libPolyfill.js"]));
+        const message = "auto: new Gadget-libPolyfill generated";
+        await createCommit(message);
+        console.info("Done.");
         process.exit(0);
     } catch (e) {
         consoleWithTime.error(e);

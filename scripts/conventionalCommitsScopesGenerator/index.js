@@ -3,17 +3,14 @@ const console = require("../modules/console.js");
 console.info("Start initialization...");
 const fs = require("fs");
 const path = require("path");
+const createCommit = require("../modules/createCommit.js");
 /**
  * @param {string} str 
  * @returns {string}
  */
 const toLowerFirstCharacter = (str) => str[0].toLowerCase() + str.slice(1);
-import("strip-json-comments").then(async ({
-    "default": stripJsonComments,
-}) => {
-    const settings = JSON.parse(stripJsonComments(await fs.promises.readFile(".vscode/settings.json", "utf-8"), {
-        trailingCommas: true,
-    }));
+(async () => {
+    const settings = require("../../.vscode/settings.json");
     const totalScopes = [];
     const dirents = await fs.promises.readdir("src", {
         withFileTypes: true,
@@ -52,6 +49,8 @@ import("strip-json-comments").then(async ({
     console.info("totalScopes:", totalScopes);
     settings["conventionalCommits.scopes"] = totalScopes;
     await fs.promises.writeFile(".vscode/settings.json", `${JSON.stringify(settings, null, 4)}\n`);
+    const message = "auto: new conventionalCommits.scopes generated";
+    await createCommit(message);
     console.info("Done.");
     process.exit(0);
-});
+})();
