@@ -1,6 +1,6 @@
 src/**/*.js linguist-generated=falsesrc/**/*.css linguist-generated=false
 
-/home/runner/work/_temp/348da731-a764-4765-a89d-5e9677aa3737/polyfillGeneratedCode.js  linguist-generated=true # From generatePolyfill
+src/gadgets/libPolyfill/MediaWiki:Gadget-libPolyfill.js  linguist-generated=true # From generatePolyfill
 
 src/gadgets/cron/MediaWiki:Gadget-cron.js  linguist-generated=true # From browserify
 src/gadgets/libAsyncLock/MediaWiki:Gadget-libAsyncLock.js  linguist-generated=true # From browserify
