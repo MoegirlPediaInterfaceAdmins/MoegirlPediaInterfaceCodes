@@ -29,7 +29,7 @@ const core = require("@actions/core");
         newGitattributes.push("");
     }
     console.info("new .gitattributes", newGitattributes);
-    const finalGitattributes = [...originalGitattributes, ...newGitattributes];
+    const finalGitattributes = [originalGitattributes, ...newGitattributes];
     console.info("final .gitattributes", finalGitattributes);
     await fs.promises.writeFile(".gitattributes", finalGitattributes.join("\n"), {
         encoding: "utf-8",

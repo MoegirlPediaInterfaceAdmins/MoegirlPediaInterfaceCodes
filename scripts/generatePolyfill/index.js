@@ -64,7 +64,6 @@ const findPolyfillFiles = async () => (await fs.promises.readdir("src/gadgets/li
             },
         });
         const codeFilePath = path.join(tempPath, "polyfillGeneratedCode.js");
-        core.exportVariable("linguist-generated-generatePolyfill", JSON.stringify([codeFilePath]));
         await fs.promises.writeFile(codeFilePath, data, {
             encoding: "utf-8",
         });
@@ -120,6 +119,7 @@ const findPolyfillFiles = async () => (await fs.promises.readdir("src/gadgets/li
         await fs.promises.writeFile("src/gadgets/libPolyfill/.eslintrc", JSON.stringify(eslintrc, null, 4), {
             encoding: "utf-8",
         });
+        core.exportVariable("linguist-generated-generatePolyfill", JSON.stringify(["src/gadgets/libPolyfill/MediaWiki:Gadget-libPolyfill.js"]));
         process.exit(0);
     } catch (e) {
         consoleWithTime.error(e);
