@@ -6,7 +6,7 @@ const core = require("@actions/core");
         ...octokitBaseOptions,
         title: "test",
         body: "test",
-        labels: "ci:generatePolyfill",
+        labels: ["ci:test"],
     }));
     core.startGroup("process.env");
     core.info(JSON.stringify(process.env, null, 4));
