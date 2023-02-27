@@ -8,6 +8,6 @@ const core = require("@actions/core");
         labels: "ci:generatePolyfill",
     }));
     core.startGroup("process.env");
-    core.info(JSON.stringify(process.env));
+    core.info(JSON.stringify(process.env, null, 4));
     core.endGroup();
 })();
