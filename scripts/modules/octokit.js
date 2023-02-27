@@ -3,13 +3,14 @@ const consoleWithTime = require("../modules/console.js");
 const core = require("@actions/core");
 const { Octokit } = require("@octokit/rest");
 const { retry } = require("@octokit/plugin-retry");
+const isInGithubActions = process.env.GITHUB_ACTIONS === "true";
 const octokitBaseOptions = {
-    owner: process.env.GITHUB_REPOSITORY_OWNER,
-    repo: process.env.GITHUB_REPOSITORY.split("/")[1],
+    owner: isInGithubActions ? process.env.GITHUB_REPOSITORY_OWNER : undefined,
+    repo: isInGithubActions ? process.env.GITHUB_REPOSITORY.split("/")[1] : undefined,
 };
 const octokit = new (Octokit.plugin(retry))({
-    authStrategy: require("@octokit/auth-action").createActionAuth,
-    auth: {},
+    authStrategy: isInGithubActions ? require("@octokit/auth-action").createActionAuth : require("@octokit/auth-unauthenticated").createUnauthenticatedAuth,
+    auth: isInGithubActions ? {} : { reason: "Not running in github actions, unable to get any auth." },
 });
 // 非常神必，直接给 request 传入 { ...octokitBaseOptions, ...options } 没有任何作用，只能修改地址了
 octokit.hook.wrap("request", (request, options) => {
@@ -63,4 +64,4 @@ const createIssue = async (issueTitle, issueBody, labels) => {
     }
     console.info("Not running in the master branch, exit.");
 };
-module.exports = { octokit, isInMasterBranch, octokitBaseOptions, createIssue };
+module.exports = { octokit, isInMasterBranch, octokitBaseOptions, createIssue, isInGithubActions };

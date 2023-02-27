@@ -2,9 +2,10 @@
 const console = require("../modules/console.js");
 console.info("Start initialization...");
 const { git } = require("../modules/git.js");
+const { isInGithubActions } = require("../modules/octokit.js");
 
 (async () => {
-    if (process.env.GITHUB_ACTIONS === "true") {
+    if (isInGithubActions) {
         console.info("Running in github actions, preparing git...");
         const name = process.env.GITHUB_ACTOR;
         const email = `${process.env.GITHUB_ACTOR}@users.noreply.github.com`;

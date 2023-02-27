@@ -1,10 +1,11 @@
 "use strict";
 /**
- * @type {{ type: "npm", gadget: { name: string, fileName: string }, distFilePath: string, version?: string, appendCode?: string, }[]}
+ * @type {{ type: "npm", moduleName: string, gadget: { name: string, fileName: string }, distFilePath: string, version?: string, appendCode?: string, }[]}
  */
 module.exports = [
     {
         type: "npm",
+        moduleName: "wikiplus-highlight",
         gadget: {
             name: "wikiplus-highlight",
             fileName: "MediaWiki:Gadget-wikiplus-highlight.js",
@@ -13,6 +14,7 @@ module.exports = [
     },
     {
         type: "npm",
+        moduleName: "luxon",
         gadget: {
             name: "luxon",
             fileName: "MediaWiki:Gadget-luxon.js",
@@ -23,6 +25,7 @@ module.exports = [
     },
     /* {
         type: "npm",
+        moduleName: "InPageEdit-v2",
         gadget: {
             name: "InPageEdit-v2",
             fileName: "MediaWiki:Gadget-InPageEdit-v2.js",
@@ -31,6 +34,7 @@ module.exports = [
     }, */
     {
         type: "npm",
+        moduleName: "json5",
         gadget: {
             name: "libJSON5",
             fileName: "MediaWiki:Gadget-libJSON5.js",
@@ -40,6 +44,7 @@ module.exports = [
     },
     {
         type: "npm",
+        moduleName: "localforage",
         gadget: {
             name: "localforage",
             fileName: "MediaWiki:Gadget-localforage.js",

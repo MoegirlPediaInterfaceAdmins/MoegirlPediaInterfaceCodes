@@ -2,6 +2,7 @@
 const console = require("../modules/console.js");
 const { git } = require("../modules/git.js");
 const core = require("@actions/core");
+const { isInGithubActions } = require("../modules/octokit.js");
 
 /**
  * 
@@ -9,7 +10,7 @@ const core = require("@actions/core");
  * @returns {CommitResult & { commit_long: string }}
  */
 module.exports = async (message) => {
-    if (process.env.GITHUB_ACTIONS === "true") {
+    if (isInGithubActions) {
         console.info("[createCommit] Running in github actions, try to create commit.");
         console.info("[createCommit] message:", message);
         const changedFiles = (await git.diffSummary(["--cached"])).files.map(({ file }) => file);

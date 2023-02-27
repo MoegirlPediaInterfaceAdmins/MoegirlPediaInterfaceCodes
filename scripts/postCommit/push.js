@@ -3,10 +3,10 @@ const consoleWithTime = require("../modules/console.js");
 consoleWithTime.info("Start initialization...");
 const exec = require("../modules/exec.js");
 const { git } = require("../modules/git.js");
-const { octokit } = require("../modules/octokit.js");
+const { octokit, isInGithubActions } = require("../modules/octokit.js");
 const core = require("@actions/core");
 (async () => {
-    if (process.env.GITHUB_ACTIONS === "true") {
+    if (isInGithubActions) {
         try {
             consoleWithTime.info("Running in github actions, start to check unpushed commits...");
             const unpushedCommits = await exec("git cherry -v");
