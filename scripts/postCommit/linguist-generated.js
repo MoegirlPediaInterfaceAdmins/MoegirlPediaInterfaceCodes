@@ -10,7 +10,7 @@ const createCommit = require("../modules/createCommit.js");
         encoding: "utf-8",
     });
     console.info("old .gitattributes:", oldGitattributes);
-    const originalGitattributes = oldGitattributes.split("\n").filter((line) => line.length > 0 && !line.includes(" # From ")).join("\n");
+    const originalGitattributes = oldGitattributes.replace(/\n# From [^\n]+\n(?:[^\n]+\n)+(?=\n)/g, "").trim();
     console.info("original .gitattributes:", originalGitattributes);
     const newGitattributes = [""];
     for (const [index, stringValue] of Object.entries(process.env)) {
@@ -24,8 +24,9 @@ const createCommit = require("../modules/createCommit.js");
             continue;
         }
         console.info(`${key}:`, value);
+        newGitattributes.push(`# From ${key}`);
         for (const srcPath of value) {
-            newGitattributes.push(`${srcPath}  linguist-generated=true # From ${key}`);
+            newGitattributes.push(`${srcPath}  linguist-generated=true`);
         }
         newGitattributes.push("");
     }
@@ -35,8 +36,7 @@ const createCommit = require("../modules/createCommit.js");
     await fs.promises.writeFile(".gitattributes", finalGitattributes.join("\n"), {
         encoding: "utf-8",
     });
-    const message = "auto: new .gitattributes generated";
-    await createCommit(message);
+    await createCommit("auto: new .gitattributes generated");
     console.info("Done.");
     process.exit(0);
 })();

@@ -13,7 +13,6 @@ const gadgetBaseRoot = "src/gadgets";
      */
     const gadgetsDefinitionList = require(`../../${path.join(gadgetBaseRoot, "Gadgets-definition-list.json")}`);
     console.info("gadgetsDefinitionList:", gadgetsDefinitionList);
-    const diff = [];
     for (const gadgetDirent of await fs.promises.readdir(gadgetBaseRoot, { withFileTypes: true })) {
         if (!gadgetDirent.isDirectory()) {
             continue;
@@ -29,8 +28,8 @@ const gadgetBaseRoot = "src/gadgets";
             const _files = (await fs.promises.readdir(path.join(gadgetBaseRoot, gadget))).filter((file) => [".js", ".css"].includes(path.extname(path.join(gadgetBaseRoot, gadget, file))));
             if (gadgetDefinition._files.filter((file) => !_files.includes(file)).length + _files.filter((file) => !gadgetDefinition._files.includes(file)).length > 0) {
                 gadgetDefinition._files = [...gadgetDefinition._files.filter((file) => _files.includes(file)), ..._files.filter((file) => !gadgetDefinition._files.includes(file))];
-                diff.push(gadget);
                 await fs.promises.writeFile(path.join(gadgetBaseRoot, gadget, "definition.json"), JSON.stringify(gadgetDefinition, null, 4));
+                await createCommit(`auto(Gadget-${gadget}): gadget definition updated by gadgetsDefinitionGenerator`);
             }
             console.info(`[${gadget}]`, "_section:", _section);
             let sectionExist = false;
@@ -59,16 +58,9 @@ const gadgetBaseRoot = "src/gadgets";
             process.exit(1);
         }
     }
-    if (diff.length > 0) {
-        console.info("Try to create commit for gadget definition update.");
-        const message = `auto: gadget definition updated - ${diff.join(", ")}`;
-        await createCommit(message);
-        console.info("Done.");
-    }
     console.info("gadgetsDefinitionList final:", gadgetsDefinitionList);
     await fs.promises.writeFile(path.join(gadgetBaseRoot, "Gadgets-definition-list.json"), `${JSON.stringify(gadgetsDefinitionList, null, 4)}\n`);
-    const message = "auto: new Gadgets-definition-list.json generated";
-    await createCommit(message);
+    await createCommit("auto: new Gadgets-definition-list.json generated");
     console.info("Done.");
     process.exit(0);
 })();

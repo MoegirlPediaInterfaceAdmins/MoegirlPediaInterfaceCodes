@@ -10,16 +10,19 @@ const fs = require("fs");
 const path = require("path");
 const core = require("@actions/core");
 const createCommit = require("../modules/createCommit.js");
+const exec = require("../modules/exec.js");
 
 (async () => {
     console.info("browserifyTargets:", browserifyTargets);
     const tempPath = await mkdtmp(true);
     const inputPath = path.join(tempPath, "input.js");
     core.exportVariable("linguist-generated-browserify", JSON.stringify(browserifyTargets.map(({ file }) => file)));
-    const diff = [];
+    exec("npm ls").then((output) => console.info("npm ls:", output));
+    const localPackageVersions = JSON.parse(await exec("npm ls --json")).dependencies;
     for (const browserifyTarget of browserifyTargets) {
         console.info("target:", browserifyTarget);
-        const { module, entry, file, exports, removePlugins, prependCode } = browserifyTarget;
+        const { module, entry, gadget: { name, fileName }, exports, removePlugins, prependCode } = browserifyTarget;
+        const file = path.join("src/gadgets", name, fileName);
         await fs.promises.rm(inputPath, {
             recursive: true,
             force: true,
@@ -81,7 +84,6 @@ const createCommit = require("../modules/createCommit.js");
             console.info(`[${module}]`, "No change, continue to next one.");
             continue;
         }
-        diff.push(module);
         await fs.promises.writeFile(file, code);
         if (path.extname(file) === ".js") {
             const filename = path.basename(file);
@@ -96,10 +98,7 @@ const createCommit = require("../modules/createCommit.js");
             }
         }
         console.info(`[${module}]`, "generated successfully.");
-    }
-    if (diff.length > 0) {
-        const message = `auto: browserify generated new code - ${diff.join(", ")}`;
-        await createCommit(message);
+        await createCommit(`auto(Gadget-${name}): bump ${module} to ${localPackageVersions[module].version} by browserify`);
     }
     console.info("Done.");
     process.exit(0);

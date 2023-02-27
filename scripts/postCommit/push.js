@@ -3,10 +3,11 @@ const consoleWithTime = require("../modules/console.js");
 consoleWithTime.info("Start initialization...");
 const exec = require("../modules/exec.js");
 const { git } = require("../modules/git.js");
-const octokit = require("../modules/octokit.js");
+const { octokit } = require("../modules/octokit.js");
+const core = require("@actions/core");
 (async () => {
     try {
-        consoleWithTime.info("Start checking unpushed commits...");
+        consoleWithTime.info("Start to check unpushed commits...");
         const unpushedCommits = await exec("git cherry -v");
         if (unpushedCommits.length === 0) {
             consoleWithTime.info("No unpushed commit, exit!");
@@ -31,11 +32,14 @@ const octokit = require("../modules/octokit.js");
             consoleWithTime.info("No src file changed, exit!");
             process.exit(0);
         }
-        consoleWithTime.info("Start triggering linter test...");
-        consoleWithTime.info("Successfully triggered the linter test:", await octokit.rest.actions.createWorkflowDispatch({
+        consoleWithTime.info("Start to trigger linter test...");
+        const result = await octokit.rest.actions.createWorkflowDispatch({
             workflow_id: "Linter test",
             ref: process.env.GITHUB_REF,
-        }));
+        });
+        core.startGroup("Successfully triggered the linter test:");
+        consoleWithTime.info(result);
+        core.endGroup();
         process.exit(0);
     } catch (e) {
         consoleWithTime.error(e);

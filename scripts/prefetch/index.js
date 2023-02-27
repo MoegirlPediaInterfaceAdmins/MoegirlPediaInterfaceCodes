@@ -7,18 +7,32 @@ const prefetchTargets = require("./targets.js");
 const fs = require("fs");
 const path = require("path");
 const core = require("@actions/core");
+const semver = require("semver");
+const { createIssue } = require("../modules/octokit.js");
+const exec = require("../modules/exec.js");
+
+const labels = ["ci:prefetch"];
 
 (async () => {
     console.info("prefetchTargets:", prefetchTargets);
-    const diff = [];
     core.exportVariable("linguist-generated-prefetch", JSON.stringify(prefetchTargets.map(({ file }) => file)));
+    exec("npm config get registry --global").then((output) => console.info("npm config get registry --global:", output));
+    const registryBaseUrl = (await exec("npm config get registry --global")).trim();
     for (const prefetchTarget of prefetchTargets) {
         console.info("target:", prefetchTarget);
-        const { name, url, file, appendCode } = prefetchTarget;
-        console.info(`[${name}]`, "Start fetching...");
-        const data = await fetch.text(url, {
-            method: "GET",
-        });
+        const { type, gadget: { name, fileName }, distFilePath, version, appendCode } = prefetchTarget;
+        const file = path.join("src/gadgets", name, fileName);
+        console.info(`[${name}]`, "Start to fetch...");
+        const data = await (async () => {
+            if (type === "npm") {
+                const packageName = `${name}${typeof version === "string" ? `@${version}` : ""}`;
+                const filePath = path.posix.join("npm", packageName, distFilePath);
+                const url = new URL(filePath, "https://cdn.jsdelivr.net/");
+                return await fetch.text(url, {
+                    method: "GET",
+                });
+            }
+        })();
         console.info(`[${name}]`, "Successfully fetched.");
         const code = [
             "/**",
@@ -37,7 +51,6 @@ const core = require("@actions/core");
             console.info(`[${name}]`, "Nothing changed, continue.");
             continue;
         }
-        diff.push(name);
         const folder = path.dirname(file);
         const filename = path.basename(file);
         const eslintrcName = path.join(folder, ".eslintrc");
@@ -55,10 +68,22 @@ const core = require("@actions/core");
                 await fs.promises.writeFile(eslintrcName, JSON.stringify(eslintrc, null, 4));
             }
         }
-    }
-    if (diff.length > 0) {
-        const message = `auto: prefetch generated new code - ${diff.join(", ")}`;
-        await createCommit(message);
+        console.info(`[${name}]`, "fetched successfully.");
+        const packageInfo = await fetch.json(new URL(name, registryBaseUrl), {
+            method: "GET",
+        });
+        const distVersions = Object.keys(packageInfo.versions);
+        console.info(`[${name}]`, "distVersions:", distVersions);
+        const targetVersion = semver.maxSatisfying(distVersions, version);
+        console.info(`[${name}]`, "targetVersion:", targetVersion);
+        await createCommit(`auto(Gadget-${name}): bump ${module} to ${targetVersion} by prefetch`);
+        if (packageInfo["dist-tags"].latest !== targetVersion) {
+            await createIssue(
+                `[prefetch] Found new verion ${name}@${packageInfo["dist-tags"].latest} higher than ${targetVersion}`,
+                `Found new verion \`${name}@${packageInfo["dist-tags"].latest}\` higher than \`${targetVersion}\`, while [\`scripts/prefetch/targets.js\`](scripts/prefetch/targets.js) configured as ${name}@${version}, please consider to upgrade it: ${new URL(path.posix.join("package", name), "https://www.npmjs.com/")}`,
+                labels,
+            );
+        }
     }
     console.info("Done.");
     console.info("Done.");
