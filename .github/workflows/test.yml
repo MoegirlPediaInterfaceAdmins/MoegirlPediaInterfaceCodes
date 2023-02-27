@@ -3,6 +3,9 @@ name: test
 on:
   workflow_dispatch:
 
+permissions:
+  issues: write
+
 env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 

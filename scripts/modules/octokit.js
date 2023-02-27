@@ -7,7 +7,7 @@ const octokitBaseOptions = {
     repo: process.env.GITHUB_REPOSITORY.split("/")[1],
 };
 const octokit = new (Octokit.plugin(retry))({
-    authStrategy: require("@octokit/auth-action").createActionAuth(),
+    authStrategy: require("@octokit/auth-action").createActionAuth,
     auth: {},
 });
 consoleWithTime.log("octokitBaseOptions:", octokitBaseOptions);
