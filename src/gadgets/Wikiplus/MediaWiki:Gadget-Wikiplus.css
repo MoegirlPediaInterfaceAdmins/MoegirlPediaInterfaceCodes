@@ -21,7 +21,7 @@ body.skin-moeskin #moe-page-tools #Wikiplus-Edit-TopBtn a {
     color: var(--theme-button-color);
 }
 
-@media (max-width: 576px) {
+@media (max-width: 768px) {
 
     /* 调整窄屏的快速编辑按钮 */
     .skin-moeskin .mobile-edit-button {
