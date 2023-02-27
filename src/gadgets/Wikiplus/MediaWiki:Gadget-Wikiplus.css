@@ -52,8 +52,6 @@ body.skin-moeskin #moe-page-tools #Wikiplus-Edit-TopBtn a {
         color: #18a058;
         line-height: 1;
         -webkit-user-select: none;
-        -moz-user-select: none;
-        -ms-user-select: none;
         user-select: none;
     }
 
