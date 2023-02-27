@@ -15,7 +15,7 @@ env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 jobs:
-  postCommit:
+  generateUnrecognizableFeatures:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
