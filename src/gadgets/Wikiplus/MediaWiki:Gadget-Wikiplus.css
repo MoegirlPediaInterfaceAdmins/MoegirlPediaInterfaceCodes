@@ -20,3 +20,46 @@ body.skin-moeskin #moe-page-tools #Wikiplus-Edit-TopBtn {
 body.skin-moeskin #moe-page-tools #Wikiplus-Edit-TopBtn a {
     color: var(--theme-button-color);
 }
+
+@media (max-width: 576px) {
+
+    /* 调整窄屏的快速编辑按钮 */
+    .skin-moeskin .mobile-edit-button {
+        display: flex;
+        gap: .5em;
+    }
+
+    .skin-moeskin .mobile-edit-button #Wikiplus-Edit-TopBtn {
+        list-style: none;
+        height: 28px;
+    }
+
+    .skin-moeskin .mobile-edit-button #Wikiplus-Edit-TopBtn > span {
+        display: block;
+        height: 100%;
+    }
+
+    .skin-moeskin .mobile-edit-button #Wikiplus-Edit-TopBtn a {
+        height: 100%;
+        display: flex;
+        align-items: center;
+        background-color: rgb(24 160 88 / 16%);
+        border-radius: 3px;
+        padding: 0 10px;
+        white-space: nowrap;
+        font-size: 14px;
+        transition: color .3s cubic-bezier(0.4, 0, 0.2, 1), background-color .3s cubic-bezier(0.4, 0, 0.2, 1), opacity .3s cubic-bezier(0.4, 0, 0.2, 1), border-color .3s cubic-bezier(0.4, 0, 0.2, 1);
+        color: #18a058;
+        line-height: 1;
+        -webkit-user-select: none;
+        user-select: none;
+    }
+
+    .skin-moeskin .mobile-edit-button #Wikiplus-Edit-TopBtn a:hover {
+        background: rgb(24 160 88 / 22%);
+    }
+
+    .skin-moeskin .mobile-edit-button #Wikiplus-Edit-TopBtn a:focus {
+        text-decoration: none;
+    }
+}
