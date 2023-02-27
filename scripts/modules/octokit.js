@@ -18,44 +18,49 @@ octokit.hook.wrap("request", (request, options) => {
     return request(options);
 });
 consoleWithTime.log("octokitBaseOptions:", octokitBaseOptions);
+const isInMasterBranch = process.env.GITHUB_REF === "refs/heads/master";
+consoleWithTime.log("isInMasterBranch:", octokitBaseOptions);
 const createIssue = async (issueTitle, issueBody, labels) => {
-    consoleWithTime.info("[createIssue] Searching current opened issue with labels:", labels);
-    const issues = (await octokit.rest.issues.listForRepo({
-        labels: labels.join(","),
-    })).data;
-    core.startGroup("[createIssue] Current opened issue:");
-    consoleWithTime.info(issues);
-    core.endGroup();
-    for (const { number, title, body } of issues) {
-        console.info("[createIssue] Checking issue:", { number, title, body });
-        if (title !== issueTitle || body !== issueBody) {
-            consoleWithTime.info("[createIssue] Issue is not relative, ignore.");
-            continue;
+    if (isInMasterBranch) {
+        consoleWithTime.info("[createIssue] Running in the master branch, searching current opened issue with labels:", labels);
+        const issues = (await octokit.rest.issues.listForRepo({
+            labels: labels.join(","),
+        })).data;
+        core.startGroup("[createIssue] Current opened issue:");
+        consoleWithTime.info(issues);
+        core.endGroup();
+        for (const { number, title, body } of issues) {
+            console.info("[createIssue] Checking issue:", { number, title, body });
+            if (title !== issueTitle || body !== issueBody) {
+                consoleWithTime.info("[createIssue] Issue is not relative, ignore.");
+                continue;
+            }
+            consoleWithTime.info("[createIssue] Issue is relative, start to close issue...");
+            const result = await octokit.rest.issues.update({
+                issue_number: number,
+                state: "closed",
+                state_reason: "Duplicated",
+            });
+            core.startGroup("[createIssue] Successfully closed the issue:");
+            consoleWithTime.info(result);
+            core.endGroup();
         }
-        consoleWithTime.info("[createIssue] Issue is relative, start to close issue...");
-        const result = await octokit.rest.issues.update({
-            issue_number: number,
-            state: "closed",
-            state_reason: "Duplicated",
+        const options = {
+            title: issueTitle,
+            body: issueBody,
+            labels,
+        };
+        consoleWithTime.info("[createIssue] Start to create issue:", options);
+        const result = await octokit.rest.issues.create({
+            title: issueTitle,
+            body: issueBody,
+            labels,
         });
-        core.startGroup("[createIssue] Successfully closed the issue:");
+        core.startGroup("[createIssue] Successfully created the issue:");
         consoleWithTime.info(result);
         core.endGroup();
+        return result;
     }
-    const options = {
-        title: issueTitle,
-        body: issueBody,
-        labels,
-    };
-    consoleWithTime.info("[createIssue] Start to create issue:", options);
-    const result = await octokit.rest.issues.create({
-        title: issueTitle,
-        body: issueBody,
-        labels,
-    });
-    core.startGroup("[createIssue] Successfully created the issue:");
-    consoleWithTime.info(result);
-    core.endGroup();
-    return result;
+    console.info("Not running in the master branch, exit.");
 };
-module.exports = { octokit, octokitBaseOptions, createIssue };
+module.exports = { octokit, isInMasterBranch, octokitBaseOptions, createIssue };

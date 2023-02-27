@@ -9,7 +9,7 @@ const fs = require("fs");
 const path = require("path");
 const unrecognizableFeatures = require("./unrecognizableFeatures.json");
 const core = require("@actions/core");
-const { octokit, createIssue } = require("../modules/octokit.js");
+const { octokit, createIssue, isInMasterBranch } = require("../modules/octokit.js");
 
 const TARGET_CHROMIUM_VERSION = "70.0.3538.0";
 const TARGET_UA = `Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/${TARGET_CHROMIUM_VERSION} Safari/537.36`;
@@ -75,17 +75,15 @@ const findPolyfillFiles = async () => (await fs.promises.readdir("src/gadgets/li
         } else {
             if (newUnrecognizableFeatures.length > 0) {
                 consoleWithTime.info("New unrecognizable features found:", newUnrecognizableFeatures);
-                if (process.env.GITHUB_REF === "refs/heads/master") {
-                    await createIssue(
-                        "[generatePolyfill] New unrecognizable features detected from polyfill.io",
-                        `These new unrecognizable features detected from polyfill.io:\n\`\`\` json\n${JSON.stringify(newUnrecognizableFeatures, null, 4)}\n\`\`\``,
-                        labels,
-                    );
-                }
+                await createIssue(
+                    "[generatePolyfill] New unrecognizable features detected from polyfill.io",
+                    `These new unrecognizable features detected from polyfill.io:\n\`\`\` json\n${JSON.stringify(newUnrecognizableFeatures, null, 4)}\n\`\`\``,
+                    labels,
+                );
             }
             if (hasUnparsableUnrecognizableFeatures) {
                 consoleWithTime.info("New unparsable unrecognizable features found.");
-                if (process.env.GITHUB_REF === "refs/heads/master") {
+                if (isInMasterBranch) {
                     const workflowRun = await octokit.rest.actions.getWorkflowRun({
                         run_id: process.env.GITHUB_RUN_ID,
                     });
