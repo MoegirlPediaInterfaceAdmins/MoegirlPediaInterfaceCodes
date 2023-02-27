@@ -1,13 +1,13 @@
-name: post commit CI
+name: Generate unrecognizable features
 
 on:
   push:
     paths:
-      - "scripts/**/*.js"
-      - ".github/workflows/postCommit.yml"
+      - "scripts/generateUnrecognizableFeatures/*.js"
+      - ".github/workflows/generateUnrecognizableFeatures.yml"
   workflow_dispatch:
   schedule:
-    - cron: 15 0 * * *
+    - cron: 0 0 * * 1 # Every Monday
 
 concurrency: postCommit
 
@@ -31,17 +31,7 @@ jobs:
         run: node scripts/postCommit/prepareGit.js
       - name: "Prepare: Expose GitHub Runtime"
         uses: crazy-max/ghaction-github-runtime@v2
-      - name: Auto browserify generator
-        run: node scripts/browserify/index.js
-      - name: Auto prefetch
-        run: node scripts/prefetch/index.js
-      - name: Gadget-polyfill generator
-        run: node scripts/generatePolyfill/index.js
-      - name: Gadgets-definition Generator
-        run: node scripts/gadgetsDefinitionGenerator/index.js
-      - name: Conventional Commits scopes generator
-        run: node scripts/conventionalCommitsScopesGenerator/index.js
-      - name: linguist-generated to .gitattributes
-        run: node scripts/postCommit/linguist-generated.js
+      - name: Generate unrecognizable features
+        run: node scripts/generateUnrecognizableFeatures/index.js
       - name: Show git status & push
         run: node scripts/postCommit/push.js
