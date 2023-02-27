@@ -8,6 +8,28 @@ const octokitBaseOptions = {
 };
 const octokit = new (Octokit.plugin(retry))({
     authStrategy: require("@octokit/auth-action").createActionAuth(),
+    auth: {},
 });
 consoleWithTime.log("octokitBaseOptions:", octokitBaseOptions);
-module.exports = { octokit, octokitBaseOptions };
+const closeRelativeIssue = async (issueTitle, labels) => {
+    consoleWithTime.info("Searching current opened issue with labels:", labels);
+    const issues = (await octokit.rest.issues.listForRepo({
+        ...octokitBaseOptions,
+        creator: process.env.GITHUB_ACTOR,
+        labels,
+    })).data.map(({ number, title }) => ({ number, title }));
+    consoleWithTime.info("Current opened issue:", issues);
+    for (const { number, title } of issues) {
+        if (title !== issueTitle) {
+            consoleWithTime.info("issue is not relative, ignore:", { number, title });
+            continue;
+        }
+        consoleWithTime.info("issue is relative, close:", { number, title }, await octokit.rest.issues.update({
+            ...octokitBaseOptions,
+            issue_number: number,
+            state: "closed",
+            state_reason: "Duplicated",
+        }));
+    }
+};
+module.exports = { octokit, octokitBaseOptions, closeRelativeIssue };
