@@ -81,13 +81,13 @@ const labels = ["ci:prefetch"];
         core.endGroup();
         const distVersions = Object.keys(packageInfo.versions);
         console.info(`[${name}]`, "distVersions:", distVersions);
-        const targetVersion = semver.maxSatisfying(distVersions, version);
-        console.info(`[${name}]`, "targetVersion:", targetVersion || "*");
+        const targetVersion = semver.maxSatisfying(distVersions, version || "*");
+        console.info(`[${name}]`, "targetVersion:", targetVersion);
         await createCommit(`auto(Gadget-${name}): bump ${moduleName} to ${targetVersion} by prefetch`);
         if (packageInfo["dist-tags"].latest !== targetVersion) {
             await createIssue(
                 `[prefetch] Found new verion ${moduleName}@${packageInfo["dist-tags"].latest} higher than ${targetVersion}`,
-                `Found new verion \`${moduleName}@${packageInfo["dist-tags"].latest}\` higher than \`${targetVersion}\`, while [\`scripts/prefetch/targets.js\`](scripts/prefetch/targets.js) configured as \`${moduleName}@${version}\`, please consider to upgrade it: ${new URL(path.posix.join("package", name), "https://www.npmjs.com/")}`,
+                `Found new verion \`${moduleName}@${packageInfo["dist-tags"].latest}\` higher than \`${targetVersion}\`, while [\`scripts/prefetch/targets.js\`](scripts/prefetch/targets.js) configured as \`${moduleName}@${version || "*"}\`, please consider to upgrade it: ${new URL(path.posix.join("package", name), "https://www.npmjs.com/")}`,
                 labels,
             );
         }
