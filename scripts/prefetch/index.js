@@ -15,19 +15,21 @@ const labels = ["ci:prefetch"];
 
 (async () => {
     console.info("prefetchTargets:", prefetchTargets);
-    core.exportVariable("linguist-generated-prefetch", JSON.stringify(prefetchTargets.map(({ file }) => file)));
     exec("npm config get registry --global").then((output) => console.info("npm config get registry --global:", output));
     const registryBaseUrl = (await exec("npm config get registry --global")).trim();
+    const fileList = [];
     for (const prefetchTarget of prefetchTargets) {
         console.info("target:", prefetchTarget);
         const { type, moduleName, gadget: { name, fileName }, distFilePath, version, appendCode } = prefetchTarget;
         const file = path.join("src/gadgets", name, fileName);
+        fileList.push(file);
         console.info(`[${name}]`, "Start to fetch...");
         const data = await (async () => {
             if (type === "npm") {
                 const packageName = `${moduleName}${typeof version === "string" ? `@${version}` : ""}`;
                 const filePath = path.posix.join("npm", packageName, distFilePath);
                 const url = new URL(filePath, "https://cdn.jsdelivr.net/");
+                console.info(`[${name}]`, `url: ${url}`);
                 return await fetch.text(url, {
                     method: "GET",
                 });
@@ -90,7 +92,7 @@ const labels = ["ci:prefetch"];
             );
         }
     }
-    console.info("Done.");
+    core.exportVariable("linguist-generated-prefetch", JSON.stringify(fileList));
     console.info("Done.");
     process.exit(0);
 })();

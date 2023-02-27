@@ -16,13 +16,14 @@ const exec = require("../modules/exec.js");
     console.info("browserifyTargets:", browserifyTargets);
     const tempPath = await mkdtmp(true);
     const inputPath = path.join(tempPath, "input.js");
-    core.exportVariable("linguist-generated-browserify", JSON.stringify(browserifyTargets.map(({ file }) => file)));
     exec("npm ls").then((output) => console.info("npm ls:", output));
     const localPackageVersions = JSON.parse(await exec("npm ls --json")).dependencies;
+    const fileList = [];
     for (const browserifyTarget of browserifyTargets) {
         console.info("target:", browserifyTarget);
         const { module, entry, gadget: { name, fileName }, exports, removePlugins, prependCode } = browserifyTarget;
         const file = path.join("src/gadgets", name, fileName);
+        fileList.push(file);
         await fs.promises.rm(inputPath, {
             recursive: true,
             force: true,
@@ -100,6 +101,7 @@ const exec = require("../modules/exec.js");
         console.info(`[${module}]`, "generated successfully.");
         await createCommit(`auto(Gadget-${name}): bump ${module} to ${localPackageVersions[module].version} by browserify`);
     }
+    core.exportVariable("linguist-generated-browserify", JSON.stringify(fileList));
     console.info("Done.");
     process.exit(0);
 })();

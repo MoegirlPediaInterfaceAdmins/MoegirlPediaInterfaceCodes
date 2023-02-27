@@ -19,7 +19,7 @@ module.exports = [
             name: "luxon",
             fileName: "MediaWiki:Gadget-luxon.js",
         },
-        distFilePath: "global/luxon.min.js",
+        distFilePath: "build/global/luxon.min.js",
         version: "3",
         appendCode: "window.luxon = luxon;",
     },
@@ -49,7 +49,7 @@ module.exports = [
             name: "localforage",
             fileName: "MediaWiki:Gadget-localforage.js",
         },
-        distFilePath: "dist/index.js",
+        distFilePath: "dist/localforage.js",
         version: "1",
     },
 ];
