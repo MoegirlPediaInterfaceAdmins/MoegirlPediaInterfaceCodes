@@ -2,16 +2,16 @@
 const { octokit } = require("../modules/octokit.js");
 const core = require("@actions/core");
 (async () => {
-    const lists = await octokit.rest.actions.listWorkflowRuns({
+    const workflow_runs = (await octokit.rest.actions.listWorkflowRuns({
         workflow_id: "test.yml",
         per_page: 100,
         created: "<2023-01-01",
-    });
-    core.startGroup("listWorkflowRuns");
-    console.info(lists);
+    })).data.workflow_runs;
+    core.startGroup("workflow_runs");
+    console.info(workflow_runs);
     core.endGroup();
     const failed = [];
-    for (const { id } of lists) {
+    for (const { id } of workflow_runs) {
         try {
             const result = await octokit.rest.actions.deleteWorkflowRun({
                 run_id: id,
