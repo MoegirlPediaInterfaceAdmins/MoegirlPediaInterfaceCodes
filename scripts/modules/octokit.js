@@ -1,5 +1,8 @@
 "use strict";
 const consoleWithTime = require("../modules/console.js");
+const fs = require("fs");
+const YAML = require("yaml");
+const { assignees } = YAML.parse(fs.readFileSync(".github/auto_assign.yml", { encoding: "utf-8" }));
 const core = require("@actions/core");
 const { Octokit } = require("@octokit/rest");
 const { retry } = require("@octokit/plugin-retry");
@@ -51,13 +54,10 @@ const createIssue = async (issueTitle, issueBody, labels) => {
             title: issueTitle,
             body: issueBody,
             labels,
+            assignees,
         };
         consoleWithTime.info("[createIssue] Start to create issue:", options);
-        const result = await octokit.rest.issues.create({
-            title: issueTitle,
-            body: issueBody,
-            labels,
-        });
+        const result = await octokit.rest.issues.create(options);
         core.startGroup("[createIssue] Successfully created the issue:");
         consoleWithTime.info(result);
         core.endGroup();
