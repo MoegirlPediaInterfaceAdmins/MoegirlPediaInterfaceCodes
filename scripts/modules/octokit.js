@@ -4,6 +4,7 @@ const core = require("@actions/core");
 const { Octokit } = require("@octokit/rest");
 const { retry } = require("@octokit/plugin-retry");
 const isInGithubActions = process.env.GITHUB_ACTIONS === "true";
+consoleWithTime.log("isInGithubActions:", isInGithubActions);
 const octokitBaseOptions = {
     owner: isInGithubActions ? process.env.GITHUB_REPOSITORY_OWNER : undefined,
     repo: isInGithubActions ? process.env.GITHUB_REPOSITORY.split("/")[1] : undefined,
@@ -20,7 +21,7 @@ octokit.hook.wrap("request", (request, options) => {
 });
 consoleWithTime.log("octokitBaseOptions:", octokitBaseOptions);
 const isInMasterBranch = process.env.GITHUB_REF === "refs/heads/master";
-consoleWithTime.log("isInMasterBranch:", octokitBaseOptions);
+consoleWithTime.log("isInMasterBranch:", isInMasterBranch);
 const createIssue = async (issueTitle, issueBody, labels) => {
     if (isInMasterBranch) {
         consoleWithTime.info("[createIssue] Running in the master branch, searching current opened issue with labels:", labels);

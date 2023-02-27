@@ -82,7 +82,7 @@ const labels = ["ci:prefetch"];
         const distVersions = Object.keys(packageInfo.versions);
         console.info(`[${name}]`, "distVersions:", distVersions);
         const targetVersion = semver.maxSatisfying(distVersions, version);
-        console.info(`[${name}]`, "targetVersion:", targetVersion);
+        console.info(`[${name}]`, "targetVersion:", targetVersion || "*");
         await createCommit(`auto(Gadget-${name}): bump ${moduleName} to ${targetVersion} by prefetch`);
         if (packageInfo["dist-tags"].latest !== targetVersion) {
             await createIssue(
