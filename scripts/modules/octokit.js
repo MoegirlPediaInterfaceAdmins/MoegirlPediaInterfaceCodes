@@ -40,7 +40,7 @@ const createIssue = async (issueTitle, issueBody, labels) => {
             const result = await octokit.rest.issues.update({
                 issue_number: number,
                 state: "closed",
-                state_reason: "Duplicated",
+                state_reason: "completed",
             });
             core.startGroup("[createIssue] Successfully closed the issue:");
             consoleWithTime.info(result);
