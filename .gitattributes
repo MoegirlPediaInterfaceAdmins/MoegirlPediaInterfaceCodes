@@ -3,12 +3,6 @@ src/**/*.css linguist-generated=false
 src/**/*.json linguist-generated=false
 src/*.json linguist-generated=false
 
-# From prefetch
-src/gadgets/wikiplus-highlight/MediaWiki:Gadget-wikiplus-highlight.js  linguist-generated=true
-src/gadgets/luxon/MediaWiki:Gadget-luxon.js  linguist-generated=true
-src/gadgets/libJSON5/MediaWiki:Gadget-libJSON5.js  linguist-generated=true
-src/gadgets/localforage/MediaWiki:Gadget-localforage.js  linguist-generated=true
-
 # From generatePolyfill
 src/gadgets/libPolyfill/MediaWiki:Gadget-libPolyfill.js  linguist-generated=true
 
@@ -23,3 +17,4 @@ src/gadgets/wikiplus-highlight/MediaWiki:Gadget-wikiplus-highlight.js  linguist-
 src/gadgets/luxon/MediaWiki:Gadget-luxon.js  linguist-generated=true
 src/gadgets/libJSON5/MediaWiki:Gadget-libJSON5.js  linguist-generated=true
 src/gadgets/localforage/MediaWiki:Gadget-localforage.js  linguist-generated=true
+
