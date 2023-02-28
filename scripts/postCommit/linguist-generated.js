@@ -10,7 +10,7 @@ const createCommit = require("../modules/createCommit.js");
         encoding: "utf-8",
     });
     console.info("old .gitattributes:", oldGitattributes);
-    const originalGitattributes = oldGitattributes.replace(/\n# From [^\n]+\n(?:[^\n]+\n)+(?=\n)/g, "").trim();
+    const originalGitattributes = oldGitattributes.replace(/\n# From [^\n]+\n(?:[^\n]+\n)+(?=\n|$)/g, "").trim();
     console.info("original .gitattributes:", originalGitattributes);
     const newGitattributes = [""];
     for (const [index, stringValue] of Object.entries(process.env)) {
@@ -31,7 +31,7 @@ const createCommit = require("../modules/createCommit.js");
         newGitattributes.push("");
     }
     console.info("new .gitattributes:", newGitattributes);
-    const finalGitattributes = [originalGitattributes, ...newGitattributes];
+    const finalGitattributes = [originalGitattributes, ...newGitattributes, ""];
     console.info("final .gitattributes:", finalGitattributes);
     await fs.promises.writeFile(".gitattributes", finalGitattributes.join("\n"), {
         encoding: "utf-8",

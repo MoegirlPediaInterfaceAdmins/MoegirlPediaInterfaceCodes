@@ -35,7 +35,7 @@ const core = require("@actions/core");
             }
             console.info("Start to trigger linter test...");
             const result = await octokit.rest.actions.createWorkflowDispatch({
-                workflow_id: "Linter test",
+                workflow_id: "Linter test.yml",
                 ref: process.env.GITHUB_REF,
             });
             core.startGroup("Successfully triggered the linter test:");
