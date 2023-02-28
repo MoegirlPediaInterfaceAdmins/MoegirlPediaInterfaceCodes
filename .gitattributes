@@ -2,3 +2,18 @@ src/**/*.js linguist-generated=false
 src/**/*.css linguist-generated=false
 src/**/*.json linguist-generated=false
 src/*.json linguist-generated=false
+
+# From generatePolyfill
+src/gadgets/libPolyfill/MediaWiki:Gadget-libPolyfill.js  linguist-generated=true
+
+# From browserify
+src/gadgets/cron/MediaWiki:Gadget-cron.js  linguist-generated=true
+src/gadgets/libAsyncLock/MediaWiki:Gadget-libAsyncLock.js  linguist-generated=true
+src/gadgets/libHashwasm/MediaWiki:Gadget-libHashwasm.js  linguist-generated=true
+src/gadgets/libip/MediaWiki:Gadget-libip.js  linguist-generated=true
+
+# From prefetch
+src/gadgets/wikiplus-highlight/MediaWiki:Gadget-wikiplus-highlight.js  linguist-generated=true
+src/gadgets/luxon/MediaWiki:Gadget-luxon.js  linguist-generated=true
+src/gadgets/libJSON5/MediaWiki:Gadget-libJSON5.js  linguist-generated=true
+src/gadgets/localforage/MediaWiki:Gadget-localforage.js  linguist-generated=true
