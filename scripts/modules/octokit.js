@@ -13,13 +13,13 @@ const octokitBaseOptions = {
     repo: isInGithubActions ? process.env.GITHUB_REPOSITORY.split("/")[1] : undefined,
 };
 const octokit = new (Octokit.plugin(retry))({
-    authStrategy: isInGithubActions ? require("@octokit/auth-action").createActionAuth : require("@octokit/auth-unauthenticated").createUnauthenticatedAuth,
-    auth: isInGithubActions ? {} : { reason: "Not running in github actions, unable to get any auth." },
+    authStrategy: isInGithubActions && process.env.GITHUB_TOKEN ? require("@octokit/auth-action").createActionAuth : require("@octokit/auth-unauthenticated").createUnauthenticatedAuth,
+    auth: isInGithubActions ? process.env.GITHUB_TOKEN ? {} : { reason: "Running in github actions, but the `GITHUB_TOKEN` env variable is unset, unable to get any auth." } : { reason: "Not running in github actions, unable to get any auth." },
 });
 // 非常神必，直接给 request 传入 { ...octokitBaseOptions, ...options } 没有任何作用，只能修改地址了
 octokit.hook.wrap("request", (request, options) => {
     const url = options.url.split("/");
-    options.url = url.map((part) => part === "{owner}" ? octokitBaseOptions.owner : part === "{repo}" ? octokitBaseOptions.repo : part).join("/");
+    options.url = url.map((part) => part === "{owner}" ? octokitBaseOptions.owner || part : part === "{repo}" ? octokitBaseOptions.repo || part : part).join("/");
     return request(options);
 });
 console.log("octokitBaseOptions:", octokitBaseOptions);

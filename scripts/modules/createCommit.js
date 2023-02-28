@@ -28,10 +28,10 @@ module.exports = async (message) => {
             console.info("[createCommit] changedFilesFromEnv:", changedFilesFromEnv);
             const conbineChangedFiles = [...new Set([...Array.isArray(changedFilesFromEnv) ? changedFilesFromEnv : [], ...changedFiles])];
             console.info("[createCommit] conbineChangedFiles:", conbineChangedFiles);
-            core.exportVariable(changedFiles, JSON.stringify(conbineChangedFiles));
+            core.exportVariable("changedFiles", JSON.stringify(conbineChangedFiles));
         } catch (e) {
             console.error("[createCommit] processing env error, discarded", e);
-            core.exportVariable(changedFiles, JSON.stringify(changedFiles));
+            core.exportVariable("changedFiles", JSON.stringify(changedFiles));
         }
         const data = await git.commit(message);
         console.info("[createCommit] commit_sha:", data.commit);
