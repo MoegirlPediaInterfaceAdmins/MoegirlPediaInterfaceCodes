@@ -16,7 +16,7 @@ const core = require("@actions/core");
             }
             console.info("Found unpushed commits:", unpushedCommits.split("\n"));
             console.info("Pulling new commits...");
-            console.info("Successfully pulled the commits:", await git.pull());
+            console.info("Successfully pulled the commits:", await git.pull(undefined, undefined, ["--rebase"]));
             console.info("Pushing these commits...");
             console.info("Successfully pushed the commits:", await git.push());
             console.info("process.env.changedFiles:", process.env.changedFiles);

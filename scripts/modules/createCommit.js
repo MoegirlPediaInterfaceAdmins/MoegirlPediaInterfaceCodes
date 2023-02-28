@@ -20,7 +20,7 @@ module.exports = async (message) => {
             return false;
         }
         try {
-            console.info("[createCommit] process.env.changedFiles:", process.env.changedFiles);
+            console.info("[createCommit] process.env.changedFiles:", process.env.changedFiles || "[]");
             /**
              * @type {string[] | undefined}
              */

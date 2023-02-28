@@ -1,10 +1,6 @@
 name: Generate unrecognizable features
 
 on:
-  push:
-    paths:
-      - "scripts/generateUnrecognizableFeatures/*.js"
-      - ".github/workflows/generateUnrecognizableFeatures.yml"
   workflow_dispatch:
   schedule:
     - cron: 0 0 * * 1 # Every Monday
