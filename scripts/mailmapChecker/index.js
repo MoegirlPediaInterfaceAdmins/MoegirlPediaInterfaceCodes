@@ -6,11 +6,9 @@ const { git } = require("../modules/git.js");
 const core = require("@actions/core");
 const { isInGithubActions } = require("../modules/octokit.js");
 
+const detectIfBot = (name, email) => name.endsWith("[bot]") || email.split("@")[1] === "github.com";
+
 (async () => {
-    if (process.env.GITHUB_ACTOR?.endsWith?.("[bot]")) {
-        console.info("No check for bot, exit.");
-        process.exit(0);
-    }
     /**
      * 
      * @param {string[]} types 
@@ -42,11 +40,11 @@ const { isInGithubActions } = require("../modules/octokit.js");
         core.endGroup();
         for (const { author: { email: authorEmail, name: authorName }, committer: { email: committerEmail, name: committerName }, id, message, url } of commits) {
             const failure = [];
-            if (!mailSet.includes(authorEmail)) {
-                failure.push(`${authorName} <${authorEmail}>`);
+            if (!detectIfBot(authorName, authorEmail) && !mailSet.includes(authorEmail)) {
+                failure.push(`author: ${authorName} <${authorEmail}>`);
             }
-            if (!mailSet.includes(committerEmail)) {
-                failure.push(`${committerName} <${committerEmail}>`);
+            if (!detectIfBot(committerName, committerEmail) && !mailSet.includes(committerEmail)) {
+                failure.push(`committer: ${committerName} <${committerEmail}>`);
             }
             if (failure.length > 0) {
                 failures.push({ id, message, url, failure });
