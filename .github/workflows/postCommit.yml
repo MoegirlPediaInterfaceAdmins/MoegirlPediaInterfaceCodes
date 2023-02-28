@@ -12,7 +12,7 @@ on:
     - cron: 15 0 * * *
 
 concurrency:
-  group: ${{ github.workflow }}-${{ env.GITHUB_WORKFLOW_REF }}
+  group: ${{ github.workflow_ref }}
   cancel-in-progress: true
 
 env:
