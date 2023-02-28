@@ -17,8 +17,8 @@ const { isInGithubActions } = require("../modules/octokit.js");
             .addConfig("user.name", name)
             .addConfig("author.email", email)
             .addConfig("author.name", name)
-            .addConfig("committer.email", "GitHub Actions")
-            .addConfig("committer.name", "actions@github.com")
+            .addConfig("committer.email", "actions@github.com")
+            .addConfig("committer.name", "GitHub Actions")
             .fetch(["--tags", "--force"]);
     } else {
         console.info("Not running in github actions, exit.");
