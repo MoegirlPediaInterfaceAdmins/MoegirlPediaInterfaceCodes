@@ -13,11 +13,14 @@ const createCommit = require("../modules/createCommit.js");
 const exec = require("../modules/exec.js");
 
 (async () => {
-    console.info("browserifyTargets:", browserifyTargets);
+    core.startGroup("browserifyTargets:");
+    console.info(browserifyTargets);
+    core.endGroup();
     const tempPath = await mkdtmp(true);
     const inputPath = path.join(tempPath, "input.js");
-    exec("npm ls").then((output) => console.info("npm ls:", output));
-    const localPackageVersions = JSON.parse(await exec("npm ls --json")).dependencies;
+    const [nomalOutput, jsonOutput] = await Promise.all([exec("npm ls"), exec("npm ls --json")]);
+    console.info("npm ls:", nomalOutput);
+    const localPackageVersions = JSON.parse(jsonOutput).dependencies;
     const fileList = [];
     for (const browserifyTarget of browserifyTargets) {
         console.info("target:", browserifyTarget);

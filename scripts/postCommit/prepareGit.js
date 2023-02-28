@@ -7,8 +7,14 @@ const { isInGithubActions } = require("../modules/octokit.js");
 (async () => {
     if (isInGithubActions) {
         console.info("Running in github actions, preparing git...");
-        const name = process.env.GITHUB_ACTOR;
-        const email = `${process.env.GITHUB_ACTOR}@users.noreply.github.com`;
+        const { commit, head_commit, pusher, sender } = require(process.env.GITHUB_EVENT_PATH);
+        const tmpMap = {};
+        for (const { author: { email: authorEmail, name: authorName, username: authorUsername }, committer: { email: committerEmail, name: committerName, username: committerUsername } } of [...Array.isArray(commit) ? commit : [], ...head_commit ? [head_commit] : []]) {
+            tmpMap[authorName] = tmpMap[authorUsername] = authorEmail;
+            tmpMap[committerName] = tmpMap[committerUsername] = committerEmail;
+        }
+        const name = pusher ? pusher.name : sender ? sender.login : process.env.GITHUB_ACTOR;
+        const email = pusher ? pusher.email : sender ? tmpMap[sender.login] || `${sender.login}@users.noreply.github.com` : `${process.env.GITHUB_ACTOR}@users.noreply.github.com`;
         console.info("name:", name);
         console.info("email:", email);
         await git

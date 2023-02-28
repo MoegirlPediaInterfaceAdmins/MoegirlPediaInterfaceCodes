@@ -14,7 +14,9 @@ const exec = require("../modules/exec.js");
 const labels = ["ci:prefetch"];
 
 (async () => {
-    console.info("prefetchTargets:", prefetchTargets);
+    core.startGroup("prefetchTargets:");
+    console.info(prefetchTargets);
+    core.endGroup();
     exec("npm config get registry --global").then((output) => console.info("npm config get registry --global:", output));
     const registryBaseUrl = (await exec("npm config get registry --global")).trim();
     const fileList = [];
@@ -70,7 +72,7 @@ const labels = ["ci:prefetch"];
                 await fs.promises.writeFile(eslintrcName, JSON.stringify(eslintrc, null, 4));
             }
         }
-        console.info(`[${name}]`, "fetched successfully.");
+        console.info(`[${name}]`, "wrote the code file and eslintrc successfully.");
         const registryUrl = `${new URL(moduleName, registryBaseUrl)}`;
         console.info(`[${name}]`, "Start to fetch the package info:", registryUrl);
         const packageInfo = await fetch.json(registryUrl, {

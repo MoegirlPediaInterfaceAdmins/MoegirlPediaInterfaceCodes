@@ -3,6 +3,7 @@ const console = require("../modules/console.js");
 console.info("Start initialization...");
 const fs = require("fs");
 const path = require("path");
+const core = require("@actions/core");
 const createCommit = require("../modules/createCommit.js");
 
 const gadgetBaseRoot = "src/gadgets";
@@ -12,7 +13,9 @@ const gadgetBaseRoot = "src/gadgets";
      * @type { { name: string, gadgets: string[] }[] }
      */
     const gadgetsDefinitionList = require(`../../${path.join(gadgetBaseRoot, "Gadgets-definition-list.json")}`);
-    console.info("gadgetsDefinitionList:", gadgetsDefinitionList);
+    core.startGroup("gadgetsDefinitionList:");
+    console.info(gadgetsDefinitionList);
+    core.endGroup();
     for (const gadgetDirent of await fs.promises.readdir(gadgetBaseRoot, { withFileTypes: true })) {
         if (!gadgetDirent.isDirectory()) {
             continue;
@@ -58,7 +61,9 @@ const gadgetBaseRoot = "src/gadgets";
             process.exit(1);
         }
     }
-    console.info("gadgetsDefinitionList final:", gadgetsDefinitionList);
+    core.startGroup("gadgetsDefinitionList final:");
+    console.info(gadgetsDefinitionList);
+    core.endGroup();
     await fs.promises.writeFile(path.join(gadgetBaseRoot, "Gadgets-definition-list.json"), `${JSON.stringify(gadgetsDefinitionList, null, 4)}\n`);
     await createCommit("auto: new Gadgets-definition-list.json generated");
     console.info("Done.");

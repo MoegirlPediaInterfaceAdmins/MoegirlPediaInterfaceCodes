@@ -13,6 +13,7 @@ module.exports = async (message) => {
     if (isInGithubActions) {
         console.info("[createCommit] Running in github actions, try to create commit.");
         console.info("[createCommit] message:", message);
+        await git.add(".");
         const changedFiles = (await git.diffSummary(["--cached"])).files.map(({ file }) => file);
         if (changedFiles.length === 0) {
             console.info("[createCommit] Working tree clean. Nothing to commit.");

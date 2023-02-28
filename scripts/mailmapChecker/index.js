@@ -1,10 +1,10 @@
 "use strict";
 const console = require("../modules/console.js");
+console.info("Start initialization...");
 const fs = require("fs");
 const { git } = require("../modules/git.js");
 const core = require("@actions/core");
 const { isInGithubActions } = require("../modules/octokit.js");
-
 
 (async () => {
     if (process.env.GITHUB_ACTOR?.endsWith?.("[bot]")) {
@@ -32,6 +32,10 @@ const { isInGithubActions } = require("../modules/octokit.js");
     core.endGroup();
     if (isInGithubActions) {
         const { commits } = require(process.env.GITHUB_EVENT_PATH);
+        if (!Array.isArray(commits) || commits.length === 0) {
+            console.info("Running in github actions, but no commit found, exit.");
+            process.exit(0);
+        }
         const failures = [];
         core.startGroup("Running in github actions, commits:");
         console.info(commits);

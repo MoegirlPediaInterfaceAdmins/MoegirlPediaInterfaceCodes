@@ -3,8 +3,10 @@ name: post commit CI
 on:
   push:
     paths:
-      - "scripts/**/*.js"
-      - ".github/workflows/postCommit.yml"
+      - scripts/**/*.js
+      - "!scripts/test/*.js"
+      - "!scripts/mailmapChecker/*.js"
+      - .github/workflows/postCommit.yml
   workflow_dispatch:
   schedule:
     - cron: 15 0 * * *
