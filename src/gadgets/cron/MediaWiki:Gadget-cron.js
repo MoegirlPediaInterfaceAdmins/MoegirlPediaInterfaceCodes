@@ -3,7 +3,7 @@
  * Options:
  *     module: "cron"
  *     entry: "Cron"
- *     file: "src/gadgets/cron/MediaWiki:Gadget-cron.js"
+ *     gadget: { "name": "cron", "fileName": "MediaWiki:Gadget-cron.js" }
  *     prependCode: "const require = () => window.luxon;"
  */
 const require = () => window.luxon;
