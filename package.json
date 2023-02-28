@@ -10,7 +10,7 @@
         "node": "16.* || 18.*"
     },
     "scripts": {
-        "test": "eslint src && stylelint src/**/*.css",
+        "test": "eslint src && stylelint src/**/*.css && v8r@latest src/**/definition.json --schema .vscode/json-schemas/gadget-definition.json && node scripts/mailmapChecker/index.js",
         "format": "eslint src --fix && stylelint src/**/*.css --fix"
     },
     "dependencies": {
@@ -53,6 +53,7 @@
         "typescript": "^4.9.3",
         "uglify-js": "^3.17.4",
         "unassertify": "^3.0.1",
+        "v8r": "^0.14.0",
         "yaml": "^2.2.1"
     }
 }

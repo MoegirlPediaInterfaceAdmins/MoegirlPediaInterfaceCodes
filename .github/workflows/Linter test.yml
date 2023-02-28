@@ -45,7 +45,7 @@ jobs:
       - name: Run stylelint
         run: npx stylelint --max-warnings 0 --cache --cache-strategy content --cache-location ".cache/" "src/**/*.css"
       - name: Run v8r
-        run: npx -y v8r@latest src/**/definition.json --schema .vscode/json-schemas/gadget-definition.json
+        run: npx v8r@latest src/**/definition.json --schema .vscode/json-schemas/gadget-definition.json
       - name: Check .mailmap
         run: node scripts/mailmapChecker/index.js
       - name: Trigger post commit CI
