@@ -7,6 +7,7 @@ on:
       - src/**/*.css
       - src/**/definition.json
       - src/gadgets/Gadgets-definition-list.json
+      - scripts/mailmapChecker/*.js
       - .github/workflows/Linter test.yml
       - package-lock.json
   pull_request:
@@ -36,6 +37,8 @@ jobs:
           key: cache
       - uses: technote-space/get-diff-action@v6
         name: List diff
+      - name: Print env
+        run: node scripts/test/test.js
       - name: Check eslint environment
         run: npx eslint --env-info && echo ---- && mkdir -p .cache && echo ---- && ls -lhA .cache && echo ---- && ls -lhA $RUNNER_TEMP
       - name: Run eslint
