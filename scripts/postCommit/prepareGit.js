@@ -3,8 +3,14 @@ const console = require("../modules/console.js");
 console.info("Start initialization...");
 const { isInGithubActions } = require("../modules/octokit.js");
 const core = require("@actions/core");
+const { git } = require("../modules/git.js");
 
-if (isInGithubActions) {
+(async () => {
+    if (!isInGithubActions) {
+        console.info("Not running in github actions, exit.");
+        process.exit(0);
+        return;
+    }
     console.info("Running in github actions, preparing git...");
     const { commit, head_commit, pusher, sender } = require(process.env.GITHUB_EVENT_PATH);
     const tmpMap = {};
@@ -20,7 +26,14 @@ if (isInGithubActions) {
     core.exportVariable("AUTHOR_EMAIL", email);
     core.exportVariable("COMMITTER_NAME", "GitHub Actions");
     core.exportVariable("COMMITTER_EMAIL", "actions@github.com");
-} else {
-    console.info("Not running in github actions, exit.");
-}
-process.exit(0);
+    await git
+        .add(".")
+        .addConfig("user.name", name)
+        .addConfig("user.email", email)
+        .addConfig("author.name", name)
+        .addConfig("author.email", email)
+        .addConfig("committer.name", "GitHub Actions")
+        .addConfig("committer.email", "actions@github.com")
+        .fetch(["--tags", "--force"]);
+    process.exit(0);
+})();

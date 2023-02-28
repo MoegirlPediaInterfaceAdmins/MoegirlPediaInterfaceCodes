@@ -1,13 +1,13 @@
 "use strict";
-const fs = require("fs");
 const console = require("../modules/console.js");
 const { git } = require("../modules/git.js");
 const core = require("@actions/core");
-const { isInGithubActions, octokit } = require("../modules/octokit.js");
+const { isInGithubActions } = require("../modules/octokit.js");
 
 /**
  * 
  * @param {string} message 
+ * @returns {Promise<CommitResult & { commit_long: string } | false>}
  */
 module.exports = async (message) => {
     if (!isInGithubActions) {
@@ -36,30 +36,10 @@ module.exports = async (message) => {
         console.error("[createCommit] processing env error, discarded", e);
         core.exportVariable("changedFiles", JSON.stringify(changedFiles));
     }
-    let i = 1;
-    for (const file of changedFiles) {
-        console.info("Start to upload", file);
-        const result = await octokit.rest.repos.createOrUpdateFileContents({
-            path: file,
-            message: `${changedFiles.length > 1 ? `[${i++}/${changedFiles.length}] ` : ""}${message}`,
-            content: await fs.promises.readFile(file, { encoding: "base64" }),
-            sha: await git.revparse([`${process.env.GITHUB_REF}:${file}`]),
-            branch: process.env.GITHUB_REF,
-            committer: {
-                name: process.env.COMMITTER_NAME,
-                email: process.env.COMMITTER_EMAIL,
-            },
-            author: {
-                name: process.env.AUTHOR_NAME,
-                email: process.env.AUTHOR_EMAIL,
-            },
-        });
-        core.startGroup("[createCommit] Upload result:");
-        console.info(result);
-        core.endGroup();
-    }
-    console.info("[createCommit] Start to pull back the repo.");
-    await git.pull(undefined, undefined, ["--rebase"]);
+    const data = await git.commit(message);
+    console.info("[createCommit] commit_sha:", data.commit);
+    data.commit_long = await git.revparse(data.commit);
+    console.info("[createCommit] commit_long_sha:", data.commit_long);
     console.info("[createCommit] Done.");
-    return true;
+    return data;
 };
