@@ -58,6 +58,7 @@ module.exports = async (message) => {
         console.info(result);
         core.endGroup();
     }
+    console.info("[createCommit] Start to pull back the repo.");
     await git.pull(undefined, undefined, ["--rebase"]);
     console.info("[createCommit] Done.");
     return true;

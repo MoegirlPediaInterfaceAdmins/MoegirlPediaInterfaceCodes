@@ -31,9 +31,9 @@ const createCommit = require("../modules/createCommit.js");
         newGitattributes.push("");
     }
     console.info("new .gitattributes:", newGitattributes);
-    const finalGitattributes = [originalGitattributes, ...newGitattributes, ""];
+    const finalGitattributes = [originalGitattributes, ...newGitattributes];
     console.info("final .gitattributes:", finalGitattributes);
-    await fs.promises.writeFile(".gitattributes", finalGitattributes.join("\n"), {
+    await fs.promises.writeFile(".gitattributes", `${finalGitattributes.join("\n").trim()}\n`, {
         encoding: "utf-8",
     });
     await createCommit("auto: new .gitattributes generated");
