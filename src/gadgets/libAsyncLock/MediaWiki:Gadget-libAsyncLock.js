@@ -3,7 +3,7 @@
  * Options:
  *     module: "async-lock"
  *     entry: "AsyncLock"
- *     file: "src/gadgets/libAsyncLock/MediaWiki:Gadget-libAsyncLock.js"
+ *     gadget: { "name": "libAsyncLock", "fileName": "MediaWiki:Gadget-libAsyncLock.js" }
  */
 !function() {
     var _$browser_4, cachedSetTimeout, cachedClearTimeout, process = _$browser_4 = {};
