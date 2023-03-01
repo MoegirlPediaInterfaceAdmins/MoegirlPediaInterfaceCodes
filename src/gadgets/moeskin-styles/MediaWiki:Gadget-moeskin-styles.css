@@ -82,9 +82,10 @@ aside#moe-global-siderail #moe-custom-sidenav-block h2 {
         float: unset !important;
     }
 
-    /* [[T:Infobox]] */
+    /* [[T:Infobox]] and [[T:信息栏2.0]] */
     body.skin-moeskin .infotemplatebox,
     body.skin-moeskin table.infobox,
+    body.skin-moeskin table.infobox2,
     body.skin-moeskin table.infoboxSpecial {
         width: 100% !important;
         float: unset !important;
