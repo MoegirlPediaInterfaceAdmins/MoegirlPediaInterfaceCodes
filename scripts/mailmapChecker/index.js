@@ -35,7 +35,7 @@ const detectIfBot = (name, email) => name.endsWith("[bot]") || email.split("@")[
             process.exit(0);
         }
         const failures = [];
-        const allCommits = [...Array.isArray(commits) ? commits : [], ...commits(head_commit ? [head_commit] : [])];
+        const allCommits = [...Array.isArray(commits) ? commits : [], ...head_commit ? [head_commit] : []];
         core.startGroup("Running in github actions, commits:");
         console.info(allCommits);
         core.endGroup();
