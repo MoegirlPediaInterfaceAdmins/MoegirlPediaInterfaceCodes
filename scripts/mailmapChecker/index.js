@@ -29,16 +29,17 @@ const detectIfBot = (name, email) => name.endsWith("[bot]") || email.split("@")[
     console.info(mailSet);
     core.endGroup();
     if (isInGithubActions) {
-        const { commits } = require(process.env.GITHUB_EVENT_PATH);
-        if (!Array.isArray(commits) || commits.length === 0) {
+        const { commits, head_commit } = require(process.env.GITHUB_EVENT_PATH);
+        if ((!Array.isArray(commits) || commits.length === 0) && !head_commit) {
             console.info("Running in github actions, but no commit found, exit.");
             process.exit(0);
         }
         const failures = [];
+        const allCommits = [...Array.isArray(commits) ? commits : [], ...commits(head_commit ? [head_commit] : [])];
         core.startGroup("Running in github actions, commits:");
-        console.info(commits);
+        console.info(allCommits);
         core.endGroup();
-        for (const { author: { email: authorEmail, name: authorName }, committer: { email: committerEmail, name: committerName }, id, message, url } of commits) {
+        for (const { author: { email: authorEmail, name: authorName }, committer: { email: committerEmail, name: committerName }, id, message, url } of allCommits) {
             const failure = [];
             if (!detectIfBot(authorName, authorEmail) && !mailSet.includes(authorEmail)) {
                 failure.push(`author: ${authorName} <${authorEmail}>`);
