@@ -29,7 +29,7 @@ $(() => {
                     },
                 ],
             };
-            constructor(config) {
+            constructor (config) {
                 // Parent constructor
                 super(config);
 
@@ -178,6 +178,7 @@ $(() => {
                     nocreate: true,
                     watchlist: "nochange",
                     tags: "Automation tool",
+                    contentmodel: "wikitext",
                 });
                 if (d.error) {
                     throw d.error.code;

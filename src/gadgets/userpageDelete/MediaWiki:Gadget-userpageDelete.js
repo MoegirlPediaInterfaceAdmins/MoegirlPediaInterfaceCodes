@@ -79,6 +79,7 @@ $(() => {
                     nocreate: true,
                     watchlist: "nochange",
                     tags: "Automation tool",
+                    contentmodel: "wikitext",
                 });
                 if (d.error) {
                     throw d.error.code;
