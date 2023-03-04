@@ -4,9 +4,7 @@
     "default": false,
     "supportsUrlLoad": false,
     "targets": [],
-    "skins": [
-        "vector"
-    ],
+    "skins": [],
     "actions": [],
     "type": "general",
     "package": false,
