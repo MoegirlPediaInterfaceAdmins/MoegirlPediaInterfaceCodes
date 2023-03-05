@@ -23,7 +23,7 @@
 	}
 	mw.libs.wphl = mw.libs.wphl || {}; // 开始加载
 
-	const version = '2.49.7',
+	const version = '2.53.1',
 		newAddon = 0;
 
 	/** @type {typeof mw.storage} */
@@ -108,7 +108,7 @@
 	const CDN = '//fastly.jsdelivr.net',
 		CM_CDN = 'npm/codemirror@5.65.3',
 		MW_CDN = 'gh/bhsd-harry/codemirror-mediawiki@1.1.6',
-		PARSER_CDN = 'gh/bhsd-harry/wikiparser-node@0.8.8-b',
+		PARSER_CDN = 'npm/wikiparser-node@0.9.1-b',
 		REPO_CDN = `npm/wikiplus-highlight@${majorVersion}`;
 
 	const {config: {values: {
@@ -817,25 +817,6 @@
 		},
 	);
 
-	// 添加样式
-	const wphlStyle = document.querySelector('#wphl-style') || mw.loader.addStyleTag(
-		'#Wikiplus-CodeMirror{border:1px solid #c8ccd1;line-height:1.3;clear:both;'
-		+ '-moz-user-select:auto;-webkit-user-select:auto;user-select:auto}' // fix mobile select
-		+ '#Wikiplus-CodeMirror .CodeMirror-gutter-wrapper{'
-		+ '-moz-user-select:none;-webkit-user-select:none;user-select:none}' // fix iOS select-all
-		+ 'div.Wikiplus-InterBox{font-size:14px;z-index:100}'
-		+ '.skin-minerva .Wikiplus-InterBox{font-size:16px}'
-		+ '.cm-trailingspace{text-decoration:underline wavy red}'
-		+ 'div.CodeMirror span.CodeMirror-matchingbracket{box-shadow:0 0 0 2px #9aef98}'
-		+ 'div.CodeMirror span.CodeMirror-nonmatchingbracket{box-shadow:0 0 0 2px #eace64}'
-		+ '#Wikiplus-highlight-dialog .oo-ui-messageDialog-title{margin-bottom:0.28571429em}'
-		+ '#Wikiplus-highlight-dialog .oo-ui-flaggedElement-notice{font-weight:normal;margin:0}'
-		+ '.CodeMirror-contextmenu .cm-mw-template-name{cursor:pointer}'
-		+ '.skin-moeskin #ca-more-actions li>a{display:inline-block;padding:0.4rem 0.8rem;line-height:1.5}'
-		+ '.skin-moeskin .oo-ui-windowManager-modal>.oo-ui-dialog{z-index:101}',
-	);
-	wphlStyle.id = 'wphl-style';
-
 	/**
 	 * 对编辑框调用jQuery.val方法时从CodeMirror获取文本
 	 * @type {{get: (elem: HTMLTextAreaElement) => string, set: (elem: HTMLTextAreaElement, value: string) => void}}
@@ -872,7 +853,6 @@
 		/** @type {OOUI.CheckboxMultiselectInputWidget} */ widget,
 		/** @type {OOUI.CheckboxMultioptionWidget} */ searchWidget,
 		/** @type {OOUI.CheckboxMultioptionWidget} */ wikiEditorWidget,
-		/** @type {OOUI.CheckboxMultioptionWidget} */ lintWidget,
 		/** @type {OOUI.NumberInputWidget} */ indentWidget,
 		/** @type {OOUI.FieldLayout} */ field,
 		/** @type {OOUI.FieldLayout} */ indentField;
@@ -916,7 +896,6 @@
 			const {checkboxMultiselectWidget} = widget;
 			searchWidget = checkboxMultiselectWidget.findItemFromData('search');
 			wikiEditorWidget = checkboxMultiselectWidget.findItemFromData('wikiEditor');
-			lintWidget = checkboxMultiselectWidget.findItemFromData('lint');
 			indentWidget = new OO.ui.NumberInputWidget({min: 0, value: indent});
 			field = new OO.ui.FieldLayout(widget, {
 				label: msg('addon-label'),
@@ -930,7 +909,6 @@
 		const wikiplusLoaded = typeof window.Wikiplus === 'object' || typeof window.Pages === 'object';
 		searchWidget.setDisabled(!wikiplusLoaded);
 		wikiEditorWidget.setDisabled(!wikiplusLoaded || !mw.loader.getState('ext.wikiEditor'));
-		lintWidget.setDisabled(!wikiplusLoaded);
 		const data = await dialog.open({
 			title: msg('addon-title'),
 			message: field.$element.add(indentField.$element).add(
@@ -980,7 +958,21 @@
 		let mode = doc.getOption('mode');
 		mode = mode === 'text/mediawiki' ? 'mediawiki' : mode;
 		const addonScript = getAddonScript(CodeMirror, true),
-			json = doc.getOption('json');
+			json = doc.getOption('json'),
+			{prototype, optionHandlers, helpers: {lint}} = CodeMirror;
+		if (!prototype.annotateScrollbar && mode === 'mediawiki' && addons.has('lint')) {
+			addonScript.push(ADDON_LIST.annotateScrollbar);
+		}
+		if (!window.wikiparse && mode === 'mediawiki' && addons.has('lint')) {
+			addonScript.push(ADDON_LIST.parser);
+		}
+		if (!optionHandlers.lint && mode === 'mediawiki' && addons.has('lint')) {
+			mw.loader.load(`${CDN}/${CM_CDN}/addon/lint/lint.min.css`, 'text/css');
+			addonScript.push(ADDON_LIST.lint);
+		}
+		if (!(lint && lint.mediawiki) && mode === 'mediawiki' && addons.has('lint')) {
+			addonScript.push(ADDON_LIST.lintWikitext);
+		}
 		await getScript(addonScript);
 		for (const {
 			option, addon = option, modes, complex = (/** @type {string} */ mod) => !modes || modes.has(mod),
@@ -1009,14 +1001,18 @@
 		}
 	});
 
+	mw.loader.load(`${CDN}/${REPO_CDN}/styles.min.css`, 'text/css');
+
 	Object.assign(mw.libs.wphl, {
 		version,
 		options,
 		addons,
 		i18n,
 		i18nLang,
-		wphlStyle,
+		storage,
 		$portlet,
+		CDN,
+		PARSER_CDN,
 		USING_LOCAL,
 		MODE_LIST,
 		ADDON_LIST,
