@@ -35,7 +35,7 @@ export default async (message) => {
         console.error("[createCommit] processing env error, discarded", e);
         exportVariable("changedFiles", JSON.stringify(changedFiles));
     }
-    const data = await git.commit(message, undefined, { "-m": true });
+    const data = await git.commit(message);
     console.info("[createCommit] commit_sha:", data.commit);
     data.commit_long = await git.revparse(data.commit);
     console.info("[createCommit] commit_long_sha:", data.commit_long);

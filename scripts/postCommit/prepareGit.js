@@ -9,15 +9,15 @@ if (!isInGithubActions) {
     exit(0);
 }
 console.info("Running in github actions, preparing git...");
-const name = "github-actions";
-const email = "actions@github.com";
+const name = "github-actions[bot]";
+const email = "41898282+github-actions[bot]@users.noreply.github.com";
 console.info("name:", name);
 console.info("email:", email);
 await git
     .add(".")
-    .addConfig("user.name", "github-actions")
+    .addConfig("user.name", name)
     .addConfig("user.email", email)
-    .addConfig("author.name", "github-actions")
+    .addConfig("author.name", name)
     .addConfig("author.email", email)
-    .addConfig("committer.name", "github-actions")
+    .addConfig("committer.name", name)
     .addConfig("committer.email", email);
