@@ -26,7 +26,7 @@ export default async (message) => {
         /**
          * @type {string[] | undefined}
          */
-        const changedFilesFromEnv = JSON.parse(process.env.changedFiles);
+        const changedFilesFromEnv = JSON.parse(process.env.changedFiles || "[]");
         console.info("[createCommit] changedFilesFromEnv:", changedFilesFromEnv);
         const conbineChangedFiles = [...new Set([...Array.isArray(changedFilesFromEnv) ? changedFilesFromEnv : [], ...changedFiles])];
         console.info("[createCommit] conbinedChangedFiles:", conbineChangedFiles);
