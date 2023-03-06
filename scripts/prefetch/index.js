@@ -63,7 +63,7 @@ for (const prefetchTarget of prefetchTargets) {
     });
     await fs.promises.writeFile(file, code.join("\n"));
     if (path.extname(file) === ".js") {
-        const eslintrc = await jsonModule(eslintrcName).catch(() => ({}));
+        const eslintrc = await jsonModule.readFile(eslintrcName).catch(() => ({}));
         if (!Array.isArray(eslintrc.ignorePatterns)) {
             eslintrc.ignorePatterns = [];
         }

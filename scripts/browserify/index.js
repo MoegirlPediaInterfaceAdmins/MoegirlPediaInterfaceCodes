@@ -92,7 +92,7 @@ for (const browserifyTarget of browserifyTargets) {
     if (path.extname(file) === ".js") {
         const filename = path.basename(file);
         const eslintrcName = path.join(path.dirname(file), ".eslintrc");
-        const eslintrc = await jsonModule(eslintrcName).catch(() => ({}));
+        const eslintrc = await jsonModule.readFile(eslintrcName).catch(() => ({}));
         if (!Array.isArray(eslintrc.ignorePatterns)) {
             eslintrc.ignorePatterns = [];
         }
