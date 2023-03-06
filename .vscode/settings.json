@@ -19,7 +19,6 @@
     ],
     "files.insertFinalNewline": true,
     "conventionalCommits.scopes": [
-        "Gadget-abusefilter33test",
         "Gadget-abusefilterEdit",
         "Gadget-abusefilterResize",
         "Gadget-allmessageFilter",

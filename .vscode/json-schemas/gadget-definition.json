@@ -16,7 +16,8 @@
         "rights",
         "peers",
         "dependencies",
-        "_section"
+        "_section",
+        "_files"
     ],
     "properties": {
         "ResourceLoader": {
@@ -211,26 +212,53 @@
                 "administration",
                 "system"
             ]
+        },
+        "_files": {
+            "type": "array",
+            "default": [],
+            "title": "_files 规定了小工具所需要引入的文件名",
+            "items": {
+                "type": "string",
+                "default": "文件名",
+                "title": "File name",
+                "examples": [
+                    "MediaWiki:Gadget-abusefilter33test.js"
+                ]
+            },
+            "examples": [
+                [
+                    "MediaWiki:Gadget-abusefilter33test.js"
+                ]
+            ]
         }
     },
     "examples": [
         {
             "ResourceLoader": true,
             "hidden": false,
-            "default": false,
-            "targets": [
-                "desktop"
-            ],
-            "skins": [
-                "vector"
-            ],
+            "default": true,
+            "supportsUrlLoad": false,
+            "targets": [],
+            "skins": [],
+            "actions": [],
             "type": "general",
-            "rights": [],
+            "package": false,
+            "rights": [
+                "block",
+                "noratelimit"
+            ],
             "peers": [],
             "dependencies": [
-                "mediawiki.api"
+                "mediawiki.api",
+                "mediawiki.ForeignApi",
+                "moment",
+                "mediawiki.user"
             ],
-            "_section": "administration"
+            "_section": "administration",
+            "_files": [
+                "MediaWiki:Gadget-backlog.css",
+                "MediaWiki:Gadget-backlog.js"
+            ]
         }
     ]
 }
