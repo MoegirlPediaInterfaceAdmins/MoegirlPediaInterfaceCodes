@@ -1,12 +1,11 @@
-"use strict";
-const console = require("../modules/console.js");
-const crypto = require("crypto");
-const fs = require("fs");
-const os = require("os");
-const path = require("path");
+import console from "../modules/console.js";
+import { randomUUID } from "crypto";
+import fs from "fs";
+import { tmpdir } from "os";
+import { join } from "path";
 
-module.exports = async (local = false) => {
-    const tempPath = path.join(local ? ".tmp" : process.env.RUNNER_TEMP || os.tmpdir(), crypto.randomUUID());
+export default async (local = false) => {
+    const tempPath = join(local ? ".tmp" : process.env.RUNNER_TEMP || tmpdir(), randomUUID());
     console.log("tempPath:", tempPath);
     await fs.promises.mkdir(tempPath, {
         recursive: true,

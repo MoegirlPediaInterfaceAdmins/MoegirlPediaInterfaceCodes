@@ -1,10 +1,7 @@
-"use strict";
 const globalConsole = global.console;
 const prefixable = ["log", "warn", "debug", "info", "error"];
-const toLocalTimeZoneStrings = require("./toLocalTimeZoneStrings.js");
-/**
- * @type {console}
- */
-module.exports = new Proxy(globalConsole, {
-    get: (t, p) => prefixable.includes(p) ? (...args) => t[p].bind(t)(`[${toLocalTimeZoneStrings.ISO()}]`, ...args) : t[p].bind(t),
+import { ISO } from "./toLocalTimeZoneStrings.js";
+
+export default new Proxy(globalConsole, {
+    get: (t, p) => typeof t[p] === "function" ? t[p].bind(t, ...prefixable.includes(p) ? [`[${ISO()}]`] : []) : t[p],
 });

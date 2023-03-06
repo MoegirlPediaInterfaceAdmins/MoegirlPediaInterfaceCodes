@@ -1,15 +1,14 @@
-"use strict";
-const console = require("../modules/console.js");
-const { git } = require("../modules/git.js");
-const core = require("@actions/core");
-const { isInGithubActions } = require("../modules/octokit.js");
+import console from "../modules/console.js";
+import { git } from "../modules/git.js";
+import { exportVariable } from "@actions/core";
+import { isInGithubActions } from "../modules/octokit.js";
 
 /**
  * 
  * @param {string} message 
  * @returns {Promise<CommitResult & { commit_long: string } | false>}
  */
-module.exports = async (message) => {
+export default async (message) => {
     if (!isInGithubActions) {
         console.info("Not running in github actions, exit.");
         return false;
@@ -25,16 +24,16 @@ module.exports = async (message) => {
     try {
         console.info("[createCommit] process.env.changedFiles:", process.env.changedFiles || "[]");
         /**
-             * @type {string[] | undefined}
-             */
+         * @type {string[] | undefined}
+         */
         const changedFilesFromEnv = JSON.parse(process.env.changedFiles);
         console.info("[createCommit] changedFilesFromEnv:", changedFilesFromEnv);
         const conbineChangedFiles = [...new Set([...Array.isArray(changedFilesFromEnv) ? changedFilesFromEnv : [], ...changedFiles])];
-        console.info("[createCommit] conbineChangedFiles:", conbineChangedFiles);
-        core.exportVariable("changedFiles", JSON.stringify(conbineChangedFiles));
+        console.info("[createCommit] conbinedChangedFiles:", conbineChangedFiles);
+        exportVariable("changedFiles", JSON.stringify(conbineChangedFiles));
     } catch (e) {
         console.error("[createCommit] processing env error, discarded", e);
-        core.exportVariable("changedFiles", JSON.stringify(changedFiles));
+        exportVariable("changedFiles", JSON.stringify(changedFiles));
     }
     const data = await git.commit(message);
     console.info("[createCommit] commit_sha:", data.commit);

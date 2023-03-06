@@ -1,8 +1,8 @@
-"use strict";
+
 /**
  * @type {{ type: "npm", moduleName: string, gadget: { name: string, fileName: string }, distFilePath: string, version?: string, appendCode?: string, }[]}
  */
-module.exports = [
+export default [
     {
         type: "npm",
         moduleName: "wikiplus-highlight",

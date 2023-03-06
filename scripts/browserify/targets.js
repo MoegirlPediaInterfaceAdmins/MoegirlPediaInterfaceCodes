@@ -1,11 +1,11 @@
-"use strict";
+
 /**
  * @file 在这里添加lib之前记得先`npm i`安装一下，否则会报错“找不到库”
  */
 /**
- * @type {{ module: string; entry: string; gadget: { name: string, fileName: string }; exports?: string[], removePlugins?: string[], prependCode?: string }[]}
+ * @type {{ module: string; entry: string; gadget: { name: string, fileName: string }; exportValues?: string[], removePlugins?: string[], prependCode?: string }[]}
  */
-module.exports = [
+export default [
     {
         module: "cron",
         entry: "Cron",
@@ -30,7 +30,7 @@ module.exports = [
             name: "libHashwasm",
             fileName: "MediaWiki:Gadget-libHashwasm.js",
         },
-        exports: [
+        exportValues: [
             "createMD5",
             "createSHA1",
             "createSHA224",

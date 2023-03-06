@@ -1,55 +1,53 @@
-"use strict";
-const console = require("../modules/console.js");
+import console from "../modules/console.js";
 console.info("Start initialization...");
-const fs = require("fs");
-const path = require("path");
-const createCommit = require("../modules/createCommit.js");
+import fs from "fs";
+import path from "path";
+import createCommit from "../modules/createCommit.js";
+import jsonModule from "../modules/jsonModule.js";
+
 /**
  * @param {string} str 
  * @returns {string}
  */
 const toLowerFirstCharacter = (str) => str[0].toLowerCase() + str.slice(1);
-(async () => {
-    const settings = require("../../.vscode/settings.json");
-    const totalScopes = [];
-    const dirents = await fs.promises.readdir("src", {
-        withFileTypes: true,
-    });
-    console.info("dirents:", dirents);
-    for (const dirent of dirents) {
-        if (!dirent.isDirectory()) {
-            continue;
-        }
-        const type = dirent.name;
-        const prefix = type[0].toUpperCase() + type.slice(1).replace(/s$/, "");
-        console.info(`[${type}]`, "prefix:", prefix);
-        const list = await fs.promises.readdir(path.join("src", type));
-        const lowerCaseList = list.map((item) => toLowerFirstCharacter(item));
-        lowerCaseList.sort();
-        list.sort((a, b) => lowerCaseList.indexOf(toLowerFirstCharacter(a)) - lowerCaseList.indexOf(toLowerFirstCharacter(b)));
-        console.info(`[${type}]`, "list after sorting:", list);
-        const scopes = list.map((_name) => {
-            let name;
-            switch (prefix) {
-                case "Gadget":
-                case "Group": {
-                    name = _name;
-                    break;
-                }
-                default: {
-                    name = _name.replace(/^MediaWiki:|\.js(?=#|$)/g, "");
-                    break;
-                }
-            }
-            return `${prefix}-${name}`;
-        });
-        console.info(`[${type}]`, "scopes:", scopes);
-        totalScopes.push(...scopes);
+const settings = await jsonModule.readFile(".vscode/settings.json");
+const totalScopes = [];
+const dirents = await fs.promises.readdir("src", {
+    withFileTypes: true,
+});
+console.info("dirents:", dirents);
+for (const dirent of dirents) {
+    if (!dirent.isDirectory()) {
+        continue;
     }
-    console.info("totalScopes:", totalScopes);
-    settings["conventionalCommits.scopes"] = totalScopes;
-    await fs.promises.writeFile(".vscode/settings.json", `${JSON.stringify(settings, null, 4)}\n`);
-    await createCommit("auto: new conventionalCommits.scopes generated");
-    console.info("Done.");
-    process.exit(0);
-})();
+    const type = dirent.name;
+    const prefix = type[0].toUpperCase() + type.slice(1).replace(/s$/, "");
+    console.info(`[${type}]`, "prefix:", prefix);
+    const list = await fs.promises.readdir(path.join("src", type));
+    const lowerCaseList = list.map((item) => toLowerFirstCharacter(item));
+    lowerCaseList.sort();
+    list.sort((a, b) => lowerCaseList.indexOf(toLowerFirstCharacter(a)) - lowerCaseList.indexOf(toLowerFirstCharacter(b)));
+    console.info(`[${type}]`, "list after sorting:", list);
+    const scopes = list.map((_name) => {
+        let name;
+        switch (prefix) {
+            case "Gadget":
+            case "Group": {
+                name = _name;
+                break;
+            }
+            default: {
+                name = _name.replace(/^MediaWiki:|\.js(?=#|$)/g, "");
+                break;
+            }
+        }
+        return `${prefix}-${name}`;
+    });
+    console.info(`[${type}]`, "scopes:", scopes);
+    totalScopes.push(...scopes);
+}
+console.info("totalScopes:", totalScopes);
+settings["conventionalCommits.scopes"] = totalScopes;
+await jsonModule.writeFile(".vscode/settings.json", settings);
+await createCommit("auto: new conventionalCommits.scopes generated");
+console.info("Done.");
