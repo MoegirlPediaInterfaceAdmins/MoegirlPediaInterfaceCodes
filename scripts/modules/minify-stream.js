@@ -1,6 +1,6 @@
 import duplexify from "duplexify";
 import concatStream from "concat-stream";
-import { Readable } from "readable-stream";
+import { Readable } from "stream";
 import uglify from "uglify-js";
 
 class ReadableFromString extends Readable {
@@ -23,7 +23,7 @@ class ReadableFromString extends Readable {
         if (piece.length === 0) {
             this.push(null);
         } else {
-            this.push(piece);
+            this.push(piece, "utf-8");
         }
     }
 }
