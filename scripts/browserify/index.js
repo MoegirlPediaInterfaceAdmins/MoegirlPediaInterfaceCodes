@@ -2,8 +2,7 @@ import console from "../modules/console.js";
 console.info("Start initialization...");
 import mkdtmp from "../modules/mkdtmp.js";
 import browserify from "browserify";
-import minifyStream from "minify-stream";
-import uglify from "uglify-js";
+import minifyStream from "../modules/minify-stream.js";
 import browserifyTargets from "./targets.js";
 import fs from "fs";
 import path from "path";
@@ -54,8 +53,6 @@ for (const browserifyTarget of browserifyTargets) {
             codeObject = codeObject.plugin(plugin);
         }
         const codeStream = codeObject.bundle().pipe(minifyStream({
-            sourceMap: false,
-            uglify,
             mangle: false,
             output: {
                 beautify: true,
