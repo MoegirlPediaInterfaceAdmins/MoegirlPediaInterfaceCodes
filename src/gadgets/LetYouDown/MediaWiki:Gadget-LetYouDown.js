@@ -3,8 +3,8 @@
 $(() => {
     const container = $("#mw-content-text");
     const getScrollTop = function () {
-        const lastH2 = $("#mw-content-text .mw-parser-output h2").last();
-        return (lastH2.length > 0 ? lastH2.offset().top : container.offset().top + container.outerHeight()) - 20;
+        const headings = $("#mw-content-text .mw-parser-output > :is(h1, h2)");
+        return (headings.length >= 3 ? headings.last().offset().top : container.offset().top + container.outerHeight()) - 20;
     };
     let scrollTop = getScrollTop();
     setInterval(() => {
