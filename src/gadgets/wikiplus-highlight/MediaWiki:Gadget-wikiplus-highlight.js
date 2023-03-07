@@ -23,7 +23,7 @@
 	}
 	mw.libs.wphl = mw.libs.wphl || {}; // 开始加载
 
-	const version = '2.53.1',
+	const version = '2.57',
 		newAddon = 0;
 
 	/** @type {typeof mw.storage} */
@@ -108,7 +108,7 @@
 	const CDN = '//fastly.jsdelivr.net',
 		CM_CDN = 'npm/codemirror@5.65.3',
 		MW_CDN = 'gh/bhsd-harry/codemirror-mediawiki@1.1.6',
-		PARSER_CDN = 'npm/wikiparser-node@0.9.1-b',
+		PARSER_CDN = 'npm/wikiparser-node@0.9.2-b',
 		REPO_CDN = `npm/wikiplus-highlight@${majorVersion}`;
 
 	const {config: {values: {
@@ -182,6 +182,11 @@
 			download: 'markSelection',
 			only: true,
 			/** @implements */ complex: () => !addons.has('wikiEditor'),
+		},
+		{
+			option: 'styleSelectedText',
+			addon: 'lint',
+			download: 'markSelection',
 		},
 		{option: 'styleActiveLine', addon: 'activeLine'},
 		{option: 'showTrailingSpace', addon: 'trailingspace'},
@@ -371,6 +376,7 @@
 	 * @param {boolean|undefined} local 是否先从本地下载
 	 */
 	const getScript = async (urls, local) => {
+		urls = [...new Set(urls)]; // eslint-disable-line no-param-reassign
 		const internal = urls.filter(url => !url.includes('/')),
 			external = urls.filter(url => url.includes('/'));
 		if (local === true) {
@@ -548,7 +554,9 @@
 			setPlainMode(config);
 			mw.config.set('extCodeMirrorConfig', config);
 		}
-		if (config && config.redirect && config.img) { // 情形1：config已更新，可能来自localStorage
+		const isIPE = config && Object.values(config.functionSynonyms[0]).includes(true);
+		// 情形1：config已更新，可能来自localStorage
+		if (config && config.redirect && config.img && !isIPE) {
 			return config;
 		}
 
@@ -560,12 +568,12 @@
 		 */
 		const {query: {magicwords, extensiontags, functionhooks, variables}} = await new mw.Api().get({
 			meta: 'siteinfo',
-			siprop: config ? 'magicwords' : 'magicwords|extensiontags|functionhooks|variables',
+			siprop: config && !isIPE ? 'magicwords' : 'magicwords|extensiontags|functionhooks|variables',
 			formatversion: 2,
 		});
 		const otherMagicwords = new Set(['msg', 'raw', 'msgnw', 'subst', 'safesubst']);
 
-		if (config) { // 情形2或3
+		if (config && !isIPE) { // 情形2或3
 			const {functionSynonyms: [insensitive]} = config;
 			if (!insensitive.subst) {
 				const aliases = getAliases(magicwords.filter(({name}) => otherMagicwords.has(name)));
