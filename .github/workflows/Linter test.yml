@@ -35,7 +35,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path: .cache
-          key: cache-${{ github.ref }}
+          key: cache@${{ github.ref }}
       - uses: technote-space/get-diff-action@v6
         name: List diff
       - name: Check eslint environment
