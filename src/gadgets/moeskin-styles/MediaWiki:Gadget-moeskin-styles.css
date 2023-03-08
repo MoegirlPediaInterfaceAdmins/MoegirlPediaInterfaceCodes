@@ -149,7 +149,7 @@ aside#moe-global-siderail #moe-custom-sidenav-block h2 {
 }
 
 /* @fix 临时修复 img 元素的宽高 */
-img {
+img:not([height]) {
     height: auto;
 }
 
