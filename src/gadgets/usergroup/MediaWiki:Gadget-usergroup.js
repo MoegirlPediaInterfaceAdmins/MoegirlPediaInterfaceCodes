@@ -21,6 +21,7 @@ $(() => (async () => {
         ["bot", "#00acc1"],
         ["flood", "#00acc1"],
         ["ipblock-exempt", "#009688"],
+        ["extendedconfirmed", "#2cd5c4"],
         ["manually-confirmed", "#009688"],
         ["goodeditor", "#1aa179"],
     ].reverse();
@@ -95,6 +96,9 @@ $(() => (async () => {
         },
         "manually-confirmed": {
             zh: "手",
+        },
+        extendedconfirmed: {
+            zh: "延",
         },
         staff: {
             zh: "职",
