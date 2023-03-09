@@ -245,52 +245,85 @@ $(() => {
         const api = new mw.Api();
         const pagename = mw.config.get("wgPageName");
         try {
-            const data = await api.get({
-                action: "query",
-                prop: "revisions",
-                rvprop: "ids|flags|timestamp|user|parsedcomment|tags",
-                titles: pagename,
-                rvlimit: limit,
-                rvstart: start_date,
-                rvend: end_date,
-                rvdir: "newer",
-            });
-            const page_id = Object.keys(data.query.pages)[0];
-            if (page_id) {
-                const revisions = data.query.pages[page_id].revisions;
-                if (revisions === undefined) {
+            let remaining = limit;
+            let cont = undefined;
+            const BATCH_SIZE = 50;
+            let revisions = [];
+            const progress = document.createElement("span");
+            progress.innerText = "0";
+            $("#wiki-blame-progress").html(`<p>/${limit}</p>`).find("p").prepend(progress);
+            // 使用循环持续获取版本，直到没有新版本或者达到用户指定的上限
+            while (remaining > 0) {
+                const params = {
+                    action: "query",
+                    prop: "revisions",
+                    rvprop: "ids|flags|timestamp|user|parsedcomment|tags|content",
+                    titles: pagename,
+                    rvlimit: BATCH_SIZE,
+                    rvstart: start_date,
+                    rvend: end_date,
+                    rvdir: "newer",
+                };
+                // 如需要rvcontinue参数，则添加。该参数不能为空，否则会报错
+                if (cont !== undefined) {
+                    params.rvcontinue = cont;
+                }
+                const data = await api.get(params);
+                const page_id = Object.keys(data.query.pages)[0];
+                const revisions_result = data.query.pages[page_id].revisions;
+                if (revisions_result === undefined) {
                     $("#wiki-blame-progress").html("<p style=\"color: red\">指定区间内无编辑或API错误</p>");
                     return;
                 }
-                const revisions_list = [];
-                const parser = new DOMParser();
-                const progress = document.createElement("span");
-                progress.innerText = "0";
-                $("#wiki-blame-progress").html(`<p>/${revisions.length}</p>`).find("p").prepend(progress);
-                await Promise.allSettled(revisions.map(async (r) => {
-                    try {
-                        const rdata = await api.post({
-                            action: "compare",
-                            fromrev: r.revid,
-                            torelative: "prev",
-                        });
-                        rdata.compare.user = r.user;
-                        rdata.compare.revid = rdata.torevid;
-                        const edit_date = new Date(r.timestamp);
-                        rdata.compare.timestamp = edit_date.toLocaleDateString();
-                        const dom = parser.parseFromString(rdata.compare["*"], "text/html");
-                        const diffs = dom.getElementsByClassName("diffchange");
-                        for (const d of diffs) {
-                            if (d.textContent.includes(selection)) {
-                                revisions_list.push(rdata.compare);
-                                break;
-                            }
-                        }
-                    } catch { }
-                    progress.innerText = `${+progress.innerText + 1}`;
-                }));
-                createDiffDialog(revisions_list);
+                revisions.push(...revisions_result);
+                remaining -= BATCH_SIZE;
+                progress.innerText = `${Math.min(+progress.innerText + BATCH_SIZE, limit)}`;
+                // 如果还有更多版本，修改rvcontinue参数，否则退出循环
+                if ("continue" in data) {
+                    cont = data.continue.rvcontinue;
+                } else {
+                    break;
+                }
             }
+            // 去除被版本删除的版本
+            revisions = revisions.filter((r) => "*" in r);
+            const revisions_list = [];
+            const target_revisions = [];
+            for (let i = 0; i < revisions.length; i++) {
+                const current = revisions[i];
+                // 特殊处理第一个版本
+                if (i === 0) {
+                    if (current["*"].includes(selection)) {
+                        target_revisions.push(current);
+                    }
+                    continue;
+                }
+                // 和前一个版本对比，如果多出了选择的文本，则加入列表
+                const previous = revisions[i - 1];
+                if (current["*"].includes(selection) && !previous["*"].includes(selection)) {
+                    target_revisions.push(current);
+                }
+            }
+            // 重置进度
+            progress.innerText = "0";
+            $("#wiki-blame-progress").html(`<p>/${target_revisions.length}</p>`).find("p").prepend(progress);
+
+            await Promise.allSettled(target_revisions.map(async (r) => {
+                try {
+                    const rdata = await api.post({
+                        action: "compare",
+                        fromrev: r.revid,
+                        torelative: "prev",
+                    });
+                    rdata.compare.user = r.user;
+                    rdata.compare.revid = rdata.torevid;
+                    const edit_date = new Date(r.timestamp);
+                    rdata.compare.timestamp = edit_date.toLocaleDateString();
+                    revisions_list.push(rdata.compare);
+                } catch { }
+                progress.innerText = `${+progress.innerText + 1}`;
+            }));
+            createDiffDialog(revisions_list);
         } catch (err) {
             console.log(err);
         }
