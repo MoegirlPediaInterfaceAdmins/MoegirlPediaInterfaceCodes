@@ -1267,7 +1267,7 @@ $(() => {
         aborted = false;
         method = "GET";
         async = true;
-        constructor(url) {
+        constructor (url) {
             if (typeof XMLHttpRequest !== "undefined") {
                 this.http = new XMLHttpRequest();
             }
@@ -1980,7 +1980,7 @@ $(() => {
     class Title extends Stringwrapper {
         value = null;
         anchor = "";
-        constructor(val) {
+        constructor (val) {
             super();
             this.setUtf(val);
         }
@@ -2945,7 +2945,7 @@ $(() => {
     class Previewmaker {
         maxCharacters = getValueOf("popupMaxPreviewCharacters");
         maxSentences = getValueOf("popupMaxPreviewSentences");
-        constructor(wikiText, baseUrl, owner) {
+        constructor (wikiText, baseUrl, owner) {
             this.originalData = wikiText;
             this.baseUrl = baseUrl;
             this.owner = owner;
@@ -3728,7 +3728,7 @@ $(() => {
                 // 自定义
                 const ug = [];
                 user.groups.forEach((groupName) => {
-                    if (["*", "user", "autoconfirmed", "extendedconfirmed"].indexOf(groupName) === -1) {
+                    if (["*", "user", "autoconfirmed"].indexOf(groupName) === -1) {
                         ug.push(pg.escapeQuotesHTML(mw.message(`group-${groupName}-member`, user.gender).text()));
                     }
                 });
@@ -4182,7 +4182,7 @@ $(() => {
         width = 0;
         height = 0;
         mainDiv = null;
-        constructor() {
+        constructor () {
             this.createMainDiv();
         }
         isVisible() {
