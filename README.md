@@ -10,6 +10,9 @@
 
 ## 仓库架构
 
+本仓库包含多组文件用以实现不同用途，详情见下。
+
+<details><summary>仓库架构详情</summary>
 - [`.github`](.github) 文件夹用以保存 GitHub Dependabot 和 GitHub Actions 所需配置文件，其中：
     - [`.github/workflows/Linter test.yml`](.github/workflows/Linter_test.yml) 用以保存使用 [eslint](https://eslint.org/)、[stylelint](https://stylelint.io/) 和 [v8r](https://github.com/chris48s/v8r) 进行代码测试流程，该流程成功完成时会触发[机器人](https://zh.moegirl.org.cn/User:AnnAngela-dbot)的[编译流程](#编译流程)；
     - [`.github/workflows/postCommit.yml`](.github/workflows/postCommit.yml) 用以保存自动化流程，包含自动配置 Conventional Commits（约定式提交）所需 scope（作用域）信息、自动导入来自 npm 和指定页面的代码、自动补全小工具列表和自动生成 polyfill 文件；
@@ -40,6 +43,7 @@
         - `*.js` 和 `*.css` 为小工具代码，文件名为萌娘百科上对应页面的页面名；
     - [`src/groups`](src/groups) 以文件夹形式保存用户组级别代码，每一个文件夹都对应一个用户组，里面包含 `*.js` 和 `*.css` 等代码，文件名为萌娘百科上对应页面的页面名；
     - [`src/global`](src/global) 保存全站代码，里面包含 `*.js` 和 `*.css` 等代码，文件名为萌娘百科上对应页面的页面名。
+</details>
 
 ## 自动化流程
 
@@ -59,6 +63,7 @@
 ## 参与维护
 
 众人拾柴火焰高，我们欢迎你参与到界面管理工作中来。
+
 ### 提出建议、意见
 
 我们欢迎你在[萌娘百科技术实现讨论版](https://zh.moegirl.org.cn/%E8%90%8C%E5%A8%98%E7%99%BE%E7%A7%91_talk:%E8%AE%A8%E8%AE%BA%E7%89%88/%E6%8A%80%E6%9C%AF%E5%AE%9E%E7%8E%B0)提出建议、意见，我们会审慎考虑可行性和成本等因素后作出决定。
@@ -78,6 +83,7 @@
 - 使用 [GitHub Codespaces](https://github.com/features/codespaces)（对个人用户有免费额度）。
 
 然后，我们建议你使用 [Visual Studio Code](https://code.visualstudio.com/)，本仓库专为 VSCode 配置。我们也建议你搭配以下 VSCode 扩展结合本仓库提供的配置以优化体验：
+
 - [Conventional Commits（约定式提交）](https://www.conventionalcommits.org/)：[Conventional Commits](https://marketplace.visualstudio.com/items?itemName=vivaxy.vscode-conventional-commits)  扩展；
 - [eslint](https://eslint.org/)：[ESLint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint) 扩展；
 - [stylelint](https://stylelint.io/)：[Stylelint](https://marketplace.visualstudio.com/items?itemName=stylelint.vscode-stylelint) 扩展；
