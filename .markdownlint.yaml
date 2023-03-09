@@ -1,0 +1,13 @@
+default: true
+
+MD007:
+  # Spaces for indent
+  indent: 4
+
+MD013: false
+
+MD033:
+  # Allowed elements
+  allowed_elements:
+    - details
+    - summary
