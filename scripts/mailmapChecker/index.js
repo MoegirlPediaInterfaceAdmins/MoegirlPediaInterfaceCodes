@@ -55,7 +55,7 @@ if (isInGithubActions) {
         console.info("All the emails are in .mailmap, exit.");
         exit(0);
     }
-    console("Found emails not in .mailmap, please add it:", failures);
+    console.error("Found emails not in .mailmap, please add it:", failures);
     exit(1);
 } else {
     const failures = [];
