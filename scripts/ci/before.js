@@ -1,10 +1,6 @@
 import console from "../modules/console.js";
 console.info("Start initialization...");
-import fs from "fs";
-import path from "path";
-import exec from "../modules/exec.js";
 import jsonModule from "../modules/jsonModule.js";
-import mkdtmp from "../modules/mkdtmp.js";
 const isInGithubActions = process.env.GITHUB_ACTIONS === "true";
 
 if (!isInGithubActions) {
@@ -12,14 +8,8 @@ if (!isInGithubActions) {
     process.exit(0);
 }
 const packageLockFile = "package-lock.json";
-const tmpdir = await mkdtmp();
-const tempPackageLockFile = path.join(tmpdir, packageLockFile);
-console.info("tempPackageLockFile", tempPackageLockFile);
-await exec(`export tempPackageLockFile=${tempPackageLockFile}`);
-console.info("Start to rename", packageLockFile);
-await fs.promises.rename(packageLockFile, tempPackageLockFile);
 console.info("Start to read", packageLockFile);
-const packageLockFileContent = await jsonModule.readFile(tempPackageLockFile);
+const packageLockFileContent = await jsonModule.readFile(packageLockFile);
 console.info("Start to modified resolved path for packages");
 for (const key of Object.keys(packageLockFileContent.packages)) {
     if (typeof packageLockFileContent.packages[key].resolved === "string") {
