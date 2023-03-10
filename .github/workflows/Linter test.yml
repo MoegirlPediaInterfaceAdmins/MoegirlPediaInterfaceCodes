@@ -30,7 +30,7 @@ jobs:
           check-latest: true
           cache: npm
       - name: Install dependencies
-        run: npm ci
+        run: npm run ci
       - name: Reload the cache
         uses: actions/cache@v3
         with:
