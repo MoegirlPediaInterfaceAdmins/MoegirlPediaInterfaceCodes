@@ -26,7 +26,7 @@
         pendingSetTimeouts = 0;
         oldValue = "";
         userNameExists = 2;
-        constructor($userInputField, $outputField, stCallBack, callingObject, CBValidChange) {
+        constructor ($userInputField, $outputField, stCallBack, callingObject, CBValidChange) {
             this.$userInputField = $userInputField;
             this.$outputField = $outputField;
             this.callingObject = callingObject;
@@ -827,6 +827,7 @@
          !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!*/
         //  ['Template name',             "Name in Sidebar", "Detailed text",                                                                          Type/Prompt statement,           'Talk summary'];
         ["UserMessages/Welcome", "Welcome", "欢迎新用户～", umsg.umFlagUM, "Welcome to Moegirlpedia~"],
+        ["UserMessages/GoodEditor", "GoodEditor", "优质编辑者（1=选填原因）", umsg.umFlagP2, "恭喜您成为萌娘百科优质编辑者！"],
         ["UserMessages/MovedToUserSubpage", "MovedToUserSubpage", "可收录的页面打回至用户子页面（1=页面名，2=原因）", umsg.umFlagP2 + umsg.umFlagP3, "页面打回通知"],
         ["UserMessages/MovedToUserSubpage2", "MovedToUserSubpage", "不在收录范围内的页面打回至用户子页面（1=页面名，2=原因）", umsg.umFlagP2 + umsg.umFlagP3, "页面打回通知"],
         ["UserMessages/ArticleCopyright", "ArticleCopyrightInfringement", "著作权侵犯（1=页面名，2=选填站点）", umsg.umFlagP2 + umsg.umFlagP3, "请勿侵犯著作权"],
