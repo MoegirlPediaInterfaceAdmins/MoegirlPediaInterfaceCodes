@@ -14,7 +14,7 @@ const packageLockFile = "package-lock.json";
 const tmpdir = await mkdtmp();
 const tempPackageLockFile = path.join(tmpdir, packageLockFile);
 console.info("tempPackageLockFile", tempPackageLockFile);
-await fs.promises.appendFile(process.env.GITHUB_ENV, `tempPackageLockFile=${tempPackageLockFile}`, {
+await fs.promises.appendFile(process.env.GITHUB_ENV, `tempPackageLockFile=${tempPackageLockFile}\n`, {
     encoding: "utf-8",
 });
 console.info("Start to rename", packageLockFile);
