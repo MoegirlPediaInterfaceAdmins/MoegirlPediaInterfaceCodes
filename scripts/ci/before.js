@@ -22,4 +22,4 @@ for (const key of Object.keys(packageLockFileContent.packages)) {
 console.info("Start to write back", packageLockFile);
 await jsonModule.writeFile(packageLockFile, packageLockFileContent);
 console.info("Done.");
-process.stdout.write("=".repeat(120));
+console.Console.prototype.info.bind(console)("=".repeat(120));

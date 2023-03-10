@@ -191,7 +191,35 @@
     }
     // 页顶活动通知
     async function noticeActivityClose() {
-        const noticeActivity = $("body > #content #notice-activity");
+        const noticeActivity = $("body").children("#content, #app").find("#notice-activity");
+        const isMoeskin = mw.config.get("skin") === "moeskin";
+        const styles = mw.config.get("skin") === "moeskin" ? {
+            userSelect: "none",
+            "text-align": "center",
+            "box-sizing": "inherit",
+            background: "none",
+            margin: "0",
+            border: "0",
+            font: "inherit",
+            "vertical-align": "baseline",
+            "text-decoration": "none",
+            position: "absolute",
+            top: ".2rem",
+            color: "#fff",
+            "background-color": "#00000080",
+            "border-radius": "99em",
+            padding: ".1rem .5rem",
+            "line-height": "1.5",
+            right: ".2rem",
+            "z-index": "999999",
+            cursor: "pointer",
+        } : {
+            position: "absolute",
+            right: "1rem",
+            top: "50%",
+            transform: "translate(0,-50%)",
+            fontSize: "1rem",
+        };
         if (noticeActivity.length > 0) {
             await mw.loader.using(["user.options"]);
             if (+mw.user.options.get("gadget-noticeActivity") === 1) {
@@ -202,18 +230,19 @@
             noticeActivity.css("position", "relative");
             const children = noticeActivity.children();
             const button = $("<span>");
-            button.css({
-                position: "absolute",
-                right: "1rem",
-                top: "50%",
-                transform: "translate(0,-50%)",
-                fontSize: "1rem",
-            });
+            button.css(styles);
             const link = $("<a>");
             link.attr({
                 href: "javascript:void(0);",
             }).text("隐藏活动通知");
-            button.append("[").append(link).append("]");
+            button.append(link);
+            if (!isMoeskin) {
+                button.prepend("[").append("]");
+            } else {
+                link.css({
+                    color: "white",
+                });
+            }
             noticeActivity.append(button);
             let status = true;
             link.on("click", () => {
