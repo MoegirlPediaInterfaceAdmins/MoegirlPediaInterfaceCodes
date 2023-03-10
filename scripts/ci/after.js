@@ -8,6 +8,7 @@ if (!isInGithubActions) {
     process.exit(0);
 }
 
+process.stdout.write("=".repeat(120));
 const packageLockFile = "package-lock.json";
 console.info("Start to recover", packageLockFile);
 await exec(`git checkout ${packageLockFile}`);
