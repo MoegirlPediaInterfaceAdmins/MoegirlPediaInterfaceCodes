@@ -15,6 +15,7 @@ for (const key of Object.keys(packageLockFileContent.packages)) {
     if (typeof packageLockFileContent.packages[key].resolved === "string") {
         const url = new URL(packageLockFileContent.packages[key].resolved);
         url.hostname = "registry.npmjs.org";
+        url.pathname = url.pathname.replace(/^\/npm/, "");
         packageLockFileContent.packages[key].resolved = `${url}`;
     }
 }
