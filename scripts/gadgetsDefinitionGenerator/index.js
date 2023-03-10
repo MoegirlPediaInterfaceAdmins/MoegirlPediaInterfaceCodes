@@ -36,19 +36,19 @@ for (const gadgetDirent of await fs.promises.readdir(gadgetBaseRoot, { withFileT
         }
         console.info(`[${gadget}]`, "_section:", _section);
         let sectionExist = false;
-        for (const { name, gadgets } of gadgetsDefinitionList) {
-            if (_section === name) {
+        for (let i = 0; i < gadgetsDefinitionList.length; i++) {
+            if (_section === gadgetsDefinitionList[i].name) {
                 sectionExist = true;
-                if (!gadgets.includes(gadget)) {
+                if (!gadgetsDefinitionList[i].gadgets.includes(gadget)) {
                     console.info(`[${gadget}]`, `_section "${_section}" match, gadgets not includes, push`);
-                    gadgets.push(gadget);
+                    gadgetsDefinitionList[i].gadgets.push(gadget);
                 } else {
                     console.info(`[${gadget}]`, `_section "${_section}" match, gadgets includes`);
                 }
             } else {
-                if (gadgets.includes(gadget)) {
+                if (gadgetsDefinitionList[i].gadgets.includes(gadget)) {
                     console.info(`[${gadget}]`, `_section "${_section}" not match, gadgets includes, remove`);
-                    gadgets.splice(gadgets.indexOf(gadget), 1);
+                    gadgetsDefinitionList[i].gadgets.splice(gadgetsDefinitionList[i].gadgets.indexOf(gadget), 1);
                 }
             }
         }
