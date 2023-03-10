@@ -1,0 +1,29 @@
+ResourceLoader: true
+
+hidden: false
+
+default: false
+
+supportsUrlLoad: false
+
+targets: []
+
+skins: []
+
+actions: []
+
+type: general
+
+package: false
+
+rights:
+  - edit
+
+peers: []
+
+dependencies: []
+
+_section: editing
+
+_files:
+  - MediaWiki:Gadget-enable-nest-highlight.js

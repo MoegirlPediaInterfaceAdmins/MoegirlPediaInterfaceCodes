@@ -1,0 +1,32 @@
+ResourceLoader: true
+
+hidden: false
+
+default: false
+
+supportsUrlLoad: false
+
+targets: []
+
+skins: []
+
+actions: []
+
+type: general
+
+package: false
+
+rights:
+  - skipcaptcha
+
+peers: []
+
+dependencies:
+  - mediawiki.api
+  - ext.gadget.site-lib
+  - ext.gadget.libPolyfill
+
+_section: browsing
+
+_files:
+  - MediaWiki:Gadget-Navbox-link.js

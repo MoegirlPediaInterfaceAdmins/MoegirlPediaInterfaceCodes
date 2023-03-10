@@ -1,0 +1,32 @@
+ResourceLoader: true
+
+hidden: true
+
+default: false
+
+supportsUrlLoad: false
+
+targets: []
+
+skins: []
+
+actions: []
+
+type: general
+
+package: false
+
+rights:
+  - comment
+  - disabled
+
+peers: []
+
+dependencies:
+  - ext.gadget.libOOUIDialog
+
+_section: browsing
+
+_files:
+  - MediaWiki:Gadget-FlowThreadCheck.css
+  - MediaWiki:Gadget-FlowThreadCheck.js

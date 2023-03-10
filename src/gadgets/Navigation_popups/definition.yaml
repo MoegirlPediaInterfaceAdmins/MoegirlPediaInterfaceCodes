@@ -1,0 +1,37 @@
+ResourceLoader: true
+
+hidden: false
+
+default: false
+
+supportsUrlLoad: false
+
+targets: []
+
+skins: []
+
+actions: []
+
+type: general
+
+package: false
+
+rights: []
+
+peers: []
+
+dependencies:
+  - ext.gadget.site-lib
+  - mediawiki.util
+  - mediawiki.api
+  - mediawiki.user
+  - user.options
+  - mediawiki.jqueryMsg
+  - mediawiki.api.messages
+  - ext.gadget.libPolyfill
+
+_section: browsing
+
+_files:
+  - MediaWiki:Gadget-popups.css
+  - MediaWiki:Gadget-popups.js

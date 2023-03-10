@@ -1,0 +1,29 @@
+ResourceLoader: true
+
+hidden: false
+
+default: false
+
+supportsUrlLoad: false
+
+targets: []
+
+skins: []
+
+actions: []
+
+type: general
+
+package: false
+
+rights: []
+
+peers: []
+
+dependencies:
+  - ext.gadget.HeimuToggle
+
+_section: browsing
+
+_files:
+  - MediaWiki:Gadget-heimu-toggle-defaultOn.js

@@ -1,0 +1,35 @@
+ResourceLoader: true
+
+hidden: false
+
+default: false
+
+supportsUrlLoad: false
+
+targets: []
+
+skins: []
+
+actions: []
+
+type: general
+
+package: false
+
+rights:
+  - edit
+  - block
+
+peers: []
+
+dependencies:
+  - ext.gadget.libOOUIDialog
+  - mediawiki.api
+  - mediawiki.notification
+  - mediawiki.notify
+  - moment
+
+_section: administration
+
+_files:
+  - MediaWiki:Gadget-flagBlocked.js

@@ -1,0 +1,32 @@
+ResourceLoader: true
+
+hidden: false
+
+default: false
+
+supportsUrlLoad: false
+
+targets: []
+
+skins: []
+
+actions: []
+
+type: general
+
+package: false
+
+rights:
+  - edit
+  - skipcaptcha
+
+peers: []
+
+dependencies:
+  - ext.gadget.libOOUIDialog
+  - user
+
+_section: editing
+
+_files:
+  - MediaWiki:Gadget-HotCat.js

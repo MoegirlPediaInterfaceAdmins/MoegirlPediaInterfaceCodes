@@ -1,0 +1,131 @@
+- name: browsing
+  gadgets:
+    - Navigation_popups
+    - Purgecache
+    - code-prettify
+    - HeimuToggle
+    - HeimuToggleDefaultOn
+    - FlowthreadTOC
+    - hideFlowthreadDefaultly
+    - FlowThreadCheck
+    - float-toc
+    - GiveYouUp
+    - LetYouDown
+    - GothicMoe
+    - noteTA
+    - shortlink
+    - RecentchangesTagFilter
+    - hideUnpatrolledFlag
+    - extiw
+    - disambigLink
+    - Navbox-link
+    - ReferenceTooltips
+    - queryWhatlinkshere
+    - noticeActivity
+    - report
+    - autocollapse
+    - SideBarPic
+    - SpecialWikitext
+
+- name: skin
+  gadgets:
+    - moeskin-classic
+    - Searchbox-popout
+    - Searchbox-integration
+    - mwPanel
+    - moeskin-topbar
+    - moeskin-topbar-patrolplus
+    - sidebarHidden
+    - dark-mode-toggle
+    - dark-mode-toggle-pagestyles
+    - dark-mode
+
+- name: user
+  gadgets:
+    - CommentsinLocalTime
+    - editCount
+    - Logout-confirm
+    - ShowAvatar
+    - UserLinkAvatar
+    - userLinkAvatarMagnifier
+    - usergroup
+    - queryContributions
+    - userpageDelete
+
+- name: editing
+  gadgets:
+    - Force_preview
+    - ForcePreviewUponUserRequest
+    - editTopSection
+    - DotsSyntaxHighlighter
+    - wikieditor-highlight
+    - HotCat
+    - Wikiplus
+    - wikiplus-highlight
+    - InPageEdit-v2
+    - EditDraft
+    - enable-nest-highlight
+    - disable-nest-alert
+    - uploader
+    - temp-editcheck
+
+- name: maintenance
+  gadgets:
+    - rollback-summary
+    - RollbackEverything
+    - registerToDelete
+    - moveToUserSubpage
+    - userpageCat
+    - MarkAsResolved
+    - quickMoveThread
+    - patrolPlus
+    - patrolCount
+    - UserMessages
+    - AxUserMsg
+    - autoconfirmedUserPing
+    - widgetPreload
+    - wikiBlame
+
+- name: interface
+  gadgets:
+    - allmessageFilter
+    - abusefilterResize
+    - abusefilterEdit
+    - interfaceVariantConverter
+
+- name: administration
+  gadgets:
+    - CleanDeleteReasons
+    - deletion
+    - blockEnhance
+    - backlog
+    - abusefilter33test
+    - flagEditWar
+    - flagBlocked
+
+- name: system
+  gadgets:
+    - site-js
+    - site-styles
+    - desktop-styles
+    - vector-styles
+    - moeskin-styles
+    - mobile-styles
+    - edit
+    - site-lib
+    - libBottomRightCorner
+    - libOOUIDialog
+    - LocalObjectStorage
+    - localforage
+    - moment-timezone
+    - cron
+    - jQueryLazyload
+    - libHashwasm
+    - libJQuery
+    - libUtil
+    - libPolyfill
+    - sidebaricons
+    - libip
+    - libAsyncLock
+    - luxon
+    - libJSON5

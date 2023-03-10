@@ -1,0 +1,32 @@
+ResourceLoader: true
+
+hidden: false
+
+default: true
+
+supportsUrlLoad: false
+
+targets: []
+
+skins:
+  - vector
+
+actions: []
+
+type: general
+
+package: false
+
+rights: []
+
+peers: []
+
+dependencies:
+  - ext.gadget.LocalObjectStorage
+  - mediawiki.toc
+
+_section: browsing
+
+_files:
+  - MediaWiki:Gadget-float-toc.css
+  - MediaWiki:Gadget-float-toc.js

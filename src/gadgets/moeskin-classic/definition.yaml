@@ -1,0 +1,30 @@
+ResourceLoader: true
+
+hidden: false
+
+default: false
+
+supportsUrlLoad: false
+
+targets: []
+
+skins:
+  - moeskin
+
+actions: []
+
+type: styles
+
+package: false
+
+rights:
+  - disabled
+
+peers: []
+
+dependencies: []
+
+_section: skin
+
+_files:
+  - MediaWiki:Gadget-moeskin-classic.css

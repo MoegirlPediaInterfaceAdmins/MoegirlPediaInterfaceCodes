@@ -1,0 +1,30 @@
+ResourceLoader: true
+
+hidden: true
+
+default: false
+
+supportsUrlLoad: false
+
+targets: []
+
+skins: []
+
+actions: []
+
+type: general
+
+package: false
+
+rights:
+  - hidden
+
+peers: []
+
+dependencies:
+  - ext.gadget.libPolyfill
+
+_section: system
+
+_files:
+  - MediaWiki:Gadget-luxon.js

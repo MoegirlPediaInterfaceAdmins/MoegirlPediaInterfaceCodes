@@ -3,15 +3,18 @@ console.info("Start initialization...");
 import mkdtmp from "../modules/mkdtmp.js";
 import browserify from "browserify";
 import minifyStream from "../modules/minify-stream.js";
-import browserifyTargets from "./targets.js";
+import yamlModule from "../modules/yamlModule.js";
 import fs from "fs";
 import path from "path";
 import { startGroup, endGroup, exportVariable } from "@actions/core";
 import createCommit from "../modules/createCommit.js";
 import exec from "../modules/exec.js";
 import modulePath from "../modules/modulePath.js";
-import jsonModule from "../modules/jsonModule.js";
 
+/**
+ * @type {{ module: string; entry: string; gadget: { name: string, fileName: string }; exportValues?: string[], removePlugins?: string[], prependCode?: string }[]}
+ */
+const browserifyTargets = await yamlModule.readFile("scripts/browserify/targets.yaml");
 startGroup("browserifyTargets:");
 console.info(browserifyTargets);
 endGroup();
@@ -88,14 +91,14 @@ for (const browserifyTarget of browserifyTargets) {
     await fs.promises.writeFile(file, code);
     if (path.extname(file) === ".js") {
         const filename = path.basename(file);
-        const eslintrcName = path.join(path.dirname(file), ".eslintrc");
-        const eslintrc = await jsonModule.readFile(eslintrcName).catch(() => ({}));
+        const eslintrcName = path.join(path.dirname(file), ".eslintrc.yaml");
+        const eslintrc = await yamlModule.readFile(eslintrcName).catch(() => ({}));
         if (!Array.isArray(eslintrc.ignorePatterns)) {
             eslintrc.ignorePatterns = [];
         }
         if (!eslintrc.ignorePatterns.includes(filename)) {
             eslintrc.ignorePatterns.push(filename);
-            await jsonModule.writeFile(eslintrcName, eslintrc);
+            await yamlModule.writeFile(eslintrcName, eslintrc);
         }
     }
     console.info(`[${module}]`, "generated successfully.");
