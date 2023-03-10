@@ -8,7 +8,7 @@ on:
       - src/**/definition.yaml
       - src/gadgets/Gadgets-definition-list.yaml
       - scripts/mailmapChecker/*.js
-      - scripts/test/*.js
+      - scripts/ci/*.js
       - .github/workflows/Linter test.yml
       - package-lock.json
   pull_request:

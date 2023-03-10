@@ -4,18 +4,17 @@ console.info("Start initialization...");
 import path from "path";
 import jsonModule from "../modules/jsonModule.js";
 import mkdtmp from "../modules/mkdtmp.js";
-import { exportVariable } from "@actions/core";
-import { isInGithubActions } from "../modules/octokit.js";
+const isInGithubActions = process.env.GITHUB_ACTIONS === "true";
 
 if (!isInGithubActions) {
     console.info("Not running in github actions, exit.");
-    process.exit(0);
+    // process.exit(0);
 }
 const packageLockFile = "package-lock.json";
 const tmpdir = await mkdtmp();
 const tempPackageLockFile = path.join(tmpdir, packageLockFile);
 console.info("tempPackageLockFile", tempPackageLockFile);
-exportVariable("tempPackageLockFile", tempPackageLockFile);
+console.info(`::set-env name=tempPackageLockFile::${tempPackageLockFile}`);
 console.info("Start to rename", packageLockFile);
 await fs.promises.rename(packageLockFile, tempPackageLockFile);
 console.info("Start to read", packageLockFile);

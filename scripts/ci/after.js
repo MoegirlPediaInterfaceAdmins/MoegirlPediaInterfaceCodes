@@ -1,11 +1,11 @@
 import console from "../modules/console.js";
 console.info("Start initialization...");
 import fs from "fs";
-import { isInGithubActions } from "../modules/octokit.js";
+const isInGithubActions = process.env.GITHUB_ACTIONS === "true";
 
 if (!isInGithubActions) {
     console.info("Not running in github actions, exit.");
-    process.exit(0);
+    // process.exit(0);
 }
 
 const packageLockFile = "package-lock.json";
