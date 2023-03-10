@@ -1,21 +1,6 @@
 name: Linter test
 
 on:
-  push:
-    paths:
-      - src/**/*.js
-      - src/**/*.css
-      - src/**/definition.yaml
-      - src/gadgets/Gadgets-definition-list.yaml
-      - scripts/mailmapChecker/*.js
-      - scripts/ci/*.js
-      - .github/workflows/Linter test.yml
-      - package-lock.json
-  pull_request:
-    paths:
-      - src/**/*.js
-      - src/**/*.css
-      - src/**/definition.yaml
   workflow_dispatch:
 
 jobs:
