@@ -13,10 +13,12 @@ if (!isInGithubActions) {
 console.info("process.env.GITHUB_EVENT_NAME:", process.env.GITHUB_EVENT_NAME);
 const isPushOrPullRequest = ["push", "pull_request"].includes(process.env.GITHUB_EVENT_NAME);
 console.info("isPushOrPullRequest:", isPushOrPullRequest);
+console.info("process.env.GITHUB_SHA:", process.env.GITHUB_SHA);
 const changedFilesInLastCommit = await git.raw(["diff-tree", "--no-commit-id", "--name-only", process.env.GITHUB_SHA, "-r"]);
 //if (changedFilesInLastCommit) {
 startGroup("changedFilesInLastCommit:");
 console.info(changedFilesInLastCommit);
+console.info(await exec(`git diff-tree --no-commit-id --name-only ${process.env.GITHUB_SHA} -r`));
 endGroup();
 //}
 const triggerLinterTest = async (force = false) => {
