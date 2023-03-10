@@ -1,7 +1,8 @@
-import fs from "fs";
 import console from "../modules/console.js";
 console.info("Start initialization...");
+import fs from "fs";
 import path from "path";
+import exec from "../modules/exec.js";
 import jsonModule from "../modules/jsonModule.js";
 import mkdtmp from "../modules/mkdtmp.js";
 const isInGithubActions = process.env.GITHUB_ACTIONS === "true";
@@ -14,9 +15,7 @@ const packageLockFile = "package-lock.json";
 const tmpdir = await mkdtmp();
 const tempPackageLockFile = path.join(tmpdir, packageLockFile);
 console.info("tempPackageLockFile", tempPackageLockFile);
-await fs.promises.appendFile(process.env.GITHUB_ENV, `tempPackageLockFile=${tempPackageLockFile}\n`, {
-    encoding: "utf-8",
-});
+await exec(`export tempPackageLockFile=${tempPackageLockFile}`);
 console.info("Start to rename", packageLockFile);
 await fs.promises.rename(packageLockFile, tempPackageLockFile);
 console.info("Start to read", packageLockFile);
