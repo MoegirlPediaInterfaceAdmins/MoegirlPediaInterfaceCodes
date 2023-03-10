@@ -10,6 +10,7 @@ if (!isInGithubActions) {
     console.info("Not running in github actions, exit.");
     exit(0);
 }
+await git.fetch();
 console.info("process.env.GITHUB_EVENT_NAME:", process.env.GITHUB_EVENT_NAME);
 const isPushOrPullRequest = ["push", "pull_request"].includes(process.env.GITHUB_EVENT_NAME);
 console.info("isPushOrPullRequest:", isPushOrPullRequest);
