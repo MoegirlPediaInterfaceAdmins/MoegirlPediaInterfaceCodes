@@ -10,7 +10,7 @@
         "node": "16.* || 18.*"
     },
     "scripts": {
-        "test": "eslint src && stylelint src/**/*.css && pajv -d src/**/definition.yaml -s .vscode/json-schemas/gadget-definition.json --errors=text --all-errors --verbose && node scripts/mailmapChecker/index.js",
+        "test": "eslint src && stylelint src/**/*.css && v8r && node scripts/mailmapChecker/index.js",
         "format": "eslint src --fix && stylelint src/**/*.css --fix"
     },
     "dependencies": {
@@ -41,7 +41,6 @@
         "hash-wasm": "^4.9.0",
         "ip": "^2.0.0",
         "localforage": "^1.10.0",
-        "pajv": "^1.2.0",
         "postcss": "^8.4.19",
         "postcss-cli": "^10.0.0",
         "postcss-discard-comments": "^5.1.2",
@@ -55,6 +54,7 @@
         "typescript": "^4.9.3",
         "uglify-js": "^3.17.4",
         "unassertify": "^3.0.1",
+        "v8r": "^0.14.0",
         "yaml": "^2.2.1"
     }
 }
