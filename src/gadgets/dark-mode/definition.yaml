@@ -1,0 +1,30 @@
+ResourceLoader: true
+
+hidden: false
+
+default: false
+
+supportsUrlLoad: false
+
+targets: []
+
+skins:
+  - vector
+
+actions: []
+
+type: styles
+
+package: false
+
+rights:
+  - techedit
+
+peers: []
+
+dependencies: []
+
+_section: skin
+
+_files:
+  - MediaWiki:Gadget-dark-mode.css

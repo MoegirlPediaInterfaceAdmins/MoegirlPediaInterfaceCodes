@@ -16,9 +16,9 @@
 
 ## 新建小工具后检查配置
 
-请在新建小工具后，在小工具文件夹下创建一个 `definition.json`，并遵照 VSCode 编辑器指示（如果使用的不是 VSCode，那么请参照[对应的 json schemas](.vscode/json-schemas/gadget-definition.json)）。
+请在新建小工具后，在小工具文件夹下创建一个 `definition.yaml`，并遵照 VSCode 编辑器指示（如果使用的不是 VSCode，那么请参照[对应的 json schemas](.vscode/json-schemas/gadget-definition.yaml)）。
 
-也不要忘记在 [`src/gadgets/Gadgets-definition-list.json`](src/gadgets/Gadgets-definition-list.json) 里指定其位置。
+也不要忘记在 [`src/gadgets/Gadgets-definition-list.yaml`](src/gadgets/Gadgets-definition-list.yaml) 里指定其位置。
 
 ## 提交问题
 
@@ -34,4 +34,4 @@
 
 ## 自动化 css 代码
 
-1. 记得将对应文件路径添加到 [`.stylelintrc.json`](.stylelintrc.json) 的 `"ignoreFiles"` 配置项中。
+1. 记得将对应文件路径添加到 [`.stylelintrc.yaml`](.stylelintrc.yaml) 的 `"ignoreFiles"` 配置项中。

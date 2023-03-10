@@ -1,0 +1,30 @@
+ResourceLoader: true
+
+hidden: false
+
+default: false
+
+supportsUrlLoad: false
+
+targets: []
+
+skins: []
+
+actions: []
+
+type: general
+
+package: false
+
+rights: []
+
+peers: []
+
+dependencies:
+  - ext.gadget.UserLinkAvatar
+  - ext.gadget.jQueryLazyload
+
+_section: user
+
+_files:
+  - MediaWiki:Gadget-UserLinkAvatarMagnifier.css

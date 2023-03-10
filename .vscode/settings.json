@@ -17,6 +17,9 @@
             "url": "https://docs.renovatebot.com/renovate-schema.json"
         }
     ],
+    "yaml.schemas": {
+        "./.vscode/json-schemas/gadget-definition.json": "src/gadgets/*/definition.yaml"
+    },
     "files.insertFinalNewline": true,
     "conventionalCommits.scopes": [
         "Gadget-abusefilter33test",
@@ -50,7 +53,7 @@
         "Gadget-FlowthreadTOC",
         "Gadget-ForcePreviewUponUserRequest",
         "Gadget-Force_preview",
-        "Gadget-Gadgets-definition-list.json",
+        "Gadget-Gadgets-definition-list.yaml",
         "Gadget-GiveYouUp",
         "Gadget-GothicMoe",
         "Gadget-HeimuToggle",

@@ -1,0 +1,29 @@
+ResourceLoader: true
+
+hidden: true
+
+default: true
+
+supportsUrlLoad: false
+
+targets: []
+
+skins: []
+
+actions: []
+
+type: general
+
+package: false
+
+rights:
+  - edit
+
+peers: []
+
+dependencies: []
+
+_section: system
+
+_files:
+  - MediaWiki:Gadget-edit.js

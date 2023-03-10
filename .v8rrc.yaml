@@ -1,0 +1,12 @@
+patterns:
+  - src/**/definition.yaml
+
+verbose: 2
+
+customCatalog:
+  schemas:
+    - name: gadget-definition
+      description: 小工具定义
+      fileMatch:
+        - src/**/definition.yaml
+      location: .vscode/json-schemas/gadget-definition.json

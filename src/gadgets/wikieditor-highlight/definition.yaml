@@ -1,0 +1,31 @@
+ResourceLoader: true
+
+hidden: false
+
+default: false
+
+supportsUrlLoad: false
+
+targets: []
+
+skins: []
+
+actions: []
+
+type: general
+
+package: false
+
+rights:
+  - edit
+
+peers: []
+
+dependencies:
+  - oojs-ui-core
+  - ext.gadget.libPolyfill
+
+_section: editing
+
+_files:
+  - MediaWiki:Gadget-wikieditor-highlight.js

@@ -1,0 +1,43 @@
+# @file 在这里添加lib之前记得先`npm i`安装一下，否则会报错“找不到库”
+
+- module: cron
+  entry: Cron
+  gadget:
+    name: cron
+    fileName: MediaWiki:Gadget-cron.js
+  prependCode: const require = () => window.luxon;
+
+- module: async-lock
+  entry: AsyncLock
+  gadget:
+    name: libAsyncLock
+    fileName: MediaWiki:Gadget-libAsyncLock.js
+
+- module: hash-wasm
+  entry: hashwasm
+  gadget:
+    name: libHashwasm
+    fileName: MediaWiki:Gadget-libHashwasm.js
+  exportValues:
+    - createMD5
+    - createSHA1
+    - createSHA224
+    - createSHA256
+    - createSHA3
+    - createSHA384
+    - createSHA512
+    - createSM3
+    - md5
+    - sha1
+    - sha224
+    - sha256
+    - sha3
+    - sha384
+    - sha512
+    - sm3
+
+- module: ip
+  entry: libip
+  gadget:
+    name: libip
+    fileName: MediaWiki:Gadget-libip.js

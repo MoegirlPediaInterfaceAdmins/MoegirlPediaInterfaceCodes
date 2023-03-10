@@ -1,0 +1,32 @@
+ResourceLoader: true
+
+hidden: true
+
+default: true
+
+supportsUrlLoad: false
+
+targets: []
+
+skins: []
+
+actions: []
+
+type: general
+
+package: false
+
+rights:
+  - upload
+  - skipcaptcha
+
+peers: []
+
+dependencies:
+  - mediawiki.util
+  - ext.gadget.site-lib
+
+_section: editing
+
+_files:
+  - MediaWiki:Gadget-uploader.js

@@ -1,0 +1,30 @@
+ResourceLoader: true
+
+hidden: false
+
+default: false
+
+supportsUrlLoad: false
+
+targets: []
+
+skins: []
+
+actions: []
+
+type: general
+
+package: false
+
+rights:
+  - disabled
+
+peers: []
+
+dependencies:
+  - jquery.client
+
+_section: editing
+
+_files:
+  - MediaWiki:Gadget-DotsSyntaxHighlighter.js

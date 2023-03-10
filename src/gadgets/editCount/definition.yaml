@@ -1,0 +1,30 @@
+ResourceLoader: true
+
+hidden: false
+
+default: false
+
+supportsUrlLoad: false
+
+targets: []
+
+skins:
+  - vector
+
+actions: []
+
+type: general
+
+package: false
+
+rights:
+  - edit
+
+peers: []
+
+dependencies: []
+
+_section: user
+
+_files:
+  - MediaWiki:Gadget-editCount.js

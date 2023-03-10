@@ -1,0 +1,29 @@
+ResourceLoader: true
+
+hidden: false
+
+default: false
+
+supportsUrlLoad: false
+
+targets: []
+
+skins:
+  - vector
+
+actions: []
+
+type: general
+
+package: false
+
+rights: []
+
+peers: []
+
+dependencies: []
+
+_section: skin
+
+_files:
+  - MediaWiki:Gadget-Searchbox-popout.js

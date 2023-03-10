@@ -1,0 +1,31 @@
+ResourceLoader: true
+
+hidden: true
+
+default: false
+
+supportsUrlLoad: false
+
+targets: []
+
+skins: []
+
+actions: []
+
+type: general
+
+package: false
+
+rights:
+  - hidden
+
+peers: []
+
+dependencies:
+  - mediawiki.legacy.wikibits
+  - mediawiki.util
+
+_section: system
+
+_files:
+  - MediaWiki:Gadget-site-lib.js

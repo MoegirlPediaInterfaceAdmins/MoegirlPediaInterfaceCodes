@@ -1,0 +1,29 @@
+ResourceLoader: true
+
+hidden: true
+
+default: true
+
+supportsUrlLoad: false
+
+targets: []
+
+skins:
+  - vector
+
+actions: []
+
+type: styles
+
+package: false
+
+rights: []
+
+peers: []
+
+dependencies: []
+
+_section: system
+
+_files:
+  - MediaWiki:Gadget-vector-styles.css

@@ -1,0 +1,33 @@
+ResourceLoader: true
+
+hidden: false
+
+default: true
+
+supportsUrlLoad: false
+
+targets: []
+
+skins: []
+
+actions: []
+
+type: general
+
+package: false
+
+rights:
+  - rollback
+
+peers: []
+
+dependencies:
+  - ext.gadget.libOOUIDialog
+  - mediawiki.api
+  - mediawiki.Uri
+  - ext.gadget.site-lib
+
+_section: maintenance
+
+_files:
+  - MediaWiki:Gadget-rollback-summary.js

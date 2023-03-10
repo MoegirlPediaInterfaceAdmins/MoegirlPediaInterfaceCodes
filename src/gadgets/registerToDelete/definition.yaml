@@ -1,0 +1,34 @@
+ResourceLoader: true
+
+hidden: false
+
+default: true
+
+supportsUrlLoad: false
+
+targets: []
+
+skins: []
+
+actions: []
+
+type: general
+
+package: false
+
+rights:
+  - edit
+  - patrolleredit
+
+peers: []
+
+dependencies:
+  - ext.gadget.libOOUIDialog
+  - ext.gadget.site-lib
+  - ext.gadget.LocalObjectStorage
+  - ext.gadget.libPolyfill
+
+_section: maintenance
+
+_files:
+  - MediaWiki:Gadget-registerToDelete.js

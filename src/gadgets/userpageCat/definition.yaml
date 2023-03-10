@@ -1,0 +1,29 @@
+ResourceLoader: true
+
+hidden: false
+
+default: false
+
+supportsUrlLoad: false
+
+targets: []
+
+skins: []
+
+actions: []
+
+type: styles
+
+package: false
+
+rights:
+  - patrol
+
+peers: []
+
+dependencies: []
+
+_section: maintenance
+
+_files:
+  - MediaWiki:Gadget-userpagecat.css

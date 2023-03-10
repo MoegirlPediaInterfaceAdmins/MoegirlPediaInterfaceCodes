@@ -1,0 +1,31 @@
+ResourceLoader: true
+
+hidden: false
+
+default: true
+
+supportsUrlLoad: false
+
+targets: []
+
+skins: []
+
+actions: []
+
+type: general
+
+package: false
+
+rights: []
+
+peers: []
+
+dependencies:
+  - user.options
+  - ext.gadget.jQueryLazyload
+
+_section: user
+
+_files:
+  - MediaWiki:Gadget-UserLinkAvatar.css
+  - MediaWiki:Gadget-UserLinkAvatar.js

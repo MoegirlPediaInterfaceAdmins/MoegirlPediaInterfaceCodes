@@ -1,0 +1,32 @@
+ResourceLoader: true
+
+hidden: false
+
+default: false
+
+supportsUrlLoad: false
+
+targets: []
+
+skins: []
+
+actions: []
+
+type: general
+
+package: false
+
+rights: []
+
+peers: []
+
+dependencies:
+  - user.options
+  - ext.gadget.libBottomRightCorner
+  - ext.gadget.site-lib
+
+_section: browsing
+
+_files:
+  - MediaWiki:Gadget-heimu-toggle.css
+  - MediaWiki:Gadget-heimu-toggle.js

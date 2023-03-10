@@ -5,14 +5,14 @@ import path from "path";
 import { startGroup, endGroup } from "@actions/core";
 import createCommit from "../modules/createCommit.js";
 import { exit } from "process";
-import jsonModule from "../modules/jsonModule.js";
+import yamlModule from "../modules/yamlModule.js";
 
 const gadgetBaseRoot = "src/gadgets";
 
 /**
  * @type { { name: string, gadgets: string[] }[] }
  */
-const gadgetsDefinitionList = await jsonModule.readFile(path.join(gadgetBaseRoot, "Gadgets-definition-list.json"));
+const gadgetsDefinitionList = await yamlModule.readFile(path.join(gadgetBaseRoot, "Gadgets-definition-list.yaml"));
 startGroup("gadgetsDefinitionList:");
 console.info(gadgetsDefinitionList);
 endGroup();
@@ -26,12 +26,12 @@ for (const gadgetDirent of await fs.promises.readdir(gadgetBaseRoot, { withFileT
         /**
          * @type { { _section: string; _files: string[] } }
          */
-        const gadgetDefinition = await jsonModule.readFile(path.join(gadgetBaseRoot, gadget, "definition.json"));
+        const gadgetDefinition = await yamlModule.readFile(path.join(gadgetBaseRoot, gadget, "definition.yaml"));
         const { _section } = gadgetDefinition;
         const _files = (await fs.promises.readdir(path.join(gadgetBaseRoot, gadget))).filter((file) => [".js", ".css"].includes(path.extname(path.join(gadgetBaseRoot, gadget, file))));
         if (gadgetDefinition._files.filter((file) => !_files.includes(file)).length + _files.filter((file) => !gadgetDefinition._files.includes(file)).length > 0) {
             gadgetDefinition._files = [...gadgetDefinition._files.filter((file) => _files.includes(file)), ..._files.filter((file) => !gadgetDefinition._files.includes(file))];
-            await jsonModule.writeFile(path.join(gadgetBaseRoot, gadget, "definition.json"), gadgetDefinition);
+            await yamlModule.writeFile(path.join(gadgetBaseRoot, gadget, "definition.yaml"), gadgetDefinition);
             await createCommit(`auto(Gadget-${gadget}): gadget definition updated by gadgetsDefinitionGenerator`);
         }
         console.info(`[${gadget}]`, "_section:", _section);
@@ -64,6 +64,6 @@ for (const gadgetDirent of await fs.promises.readdir(gadgetBaseRoot, { withFileT
 startGroup("gadgetsDefinitionList final:");
 console.info(gadgetsDefinitionList);
 endGroup();
-await jsonModule.writeFile(path.join(gadgetBaseRoot, "Gadgets-definition-list.json"), gadgetsDefinitionList);
-await createCommit("auto: new Gadgets-definition-list.json generated");
+await yamlModule.writeFile(path.join(gadgetBaseRoot, "Gadgets-definition-list.yaml"), gadgetsDefinitionList);
+await createCommit("auto: new Gadgets-definition-list.yaml generated");
 console.info("Done.");

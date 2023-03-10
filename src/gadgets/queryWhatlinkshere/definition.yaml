@@ -1,0 +1,29 @@
+ResourceLoader: true
+
+hidden: false
+
+default: false
+
+supportsUrlLoad: false
+
+targets: []
+
+skins: []
+
+actions: []
+
+type: general
+
+package: false
+
+rights: []
+
+peers: []
+
+dependencies:
+  - mediawiki.api
+
+_section: browsing
+
+_files:
+  - MediaWiki:Gadget-queryWhatlinkshere.js

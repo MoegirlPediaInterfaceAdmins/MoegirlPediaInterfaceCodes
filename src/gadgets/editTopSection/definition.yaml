@@ -1,0 +1,32 @@
+ResourceLoader: true
+
+hidden: false
+
+default: true
+
+supportsUrlLoad: false
+
+targets: []
+
+skins:
+  - vector
+
+actions: []
+
+type: general
+
+package: false
+
+rights:
+  - edit
+
+peers: []
+
+dependencies:
+  - ext.gadget.site-lib
+
+_section: editing
+
+_files:
+  - MediaWiki:Gadget-editTopSection.css
+  - MediaWiki:Gadget-editTopSection.js

@@ -5,17 +5,17 @@ on:
     paths:
       - src/**/*.js
       - src/**/*.css
-      - src/**/definition.json
-      - src/gadgets/Gadgets-definition-list.json
+      - src/**/definition.yaml
+      - src/gadgets/Gadgets-definition-list.yaml
       - scripts/mailmapChecker/*.js
-      - scripts/test/*.js
+      - scripts/ci/*.js
       - .github/workflows/Linter test.yml
       - package-lock.json
   pull_request:
     paths:
       - src/**/*.js
       - src/**/*.css
-      - src/**/definition.json
+      - src/**/definition.yaml
   workflow_dispatch:
 
 jobs:
@@ -30,7 +30,7 @@ jobs:
           check-latest: true
           cache: npm
       - name: Install dependencies
-        run: npm ci
+        run: npm run ci
       - name: Reload the cache
         uses: actions/cache@v3
         with:
@@ -45,7 +45,7 @@ jobs:
       - name: Run stylelint
         run: npx stylelint --max-warnings 0 --cache --cache-strategy content --cache-location ".cache/" "src/**/*.css"
       - name: Run v8r
-        run: npx v8r@latest src/**/definition.json --schema .vscode/json-schemas/gadget-definition.json
+        run: npx v8r
       - name: Check .mailmap
         run: node scripts/mailmapChecker/index.js
       - name: Trigger post commit CI

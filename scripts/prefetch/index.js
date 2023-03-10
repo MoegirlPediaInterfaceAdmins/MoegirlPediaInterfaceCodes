@@ -1,7 +1,7 @@
 import console from "../modules/console.js";
 console.info("Start initialization...");
 import createCommit from "../modules/createCommit.js";
-import prefetchTargets from "./targets.js";
+import yamlModule from "../modules/yamlModule.js";
 import fs from "fs";
 import path from "path";
 import { startGroup, endGroup, exportVariable } from "@actions/core";
@@ -13,6 +13,11 @@ import jsonModule from "../modules/jsonModule.js";
 
 const labels = ["ci:prefetch"];
 
+const prefetchTargetsPath = "scripts/prefetch/targets.yaml";
+/**
+ * @type {{ type: "npm", moduleName: string, gadget: { name: string, fileName: string }, distFilePath: string, version?: string, appendCode?: string, }[]}
+ */
+const prefetchTargets = await yamlModule.readFile(prefetchTargetsPath);
 startGroup("prefetchTargets:");
 console.info(prefetchTargets);
 endGroup();
@@ -57,7 +62,7 @@ for (const prefetchTarget of prefetchTargets) {
     }
     const folder = path.dirname(file);
     const filename = path.basename(file);
-    const eslintrcName = path.join(folder, ".eslintrc");
+    const eslintrcName = path.join(folder, ".eslintrc.yaml");
     await fs.promises.mkdir(folder, {
         recursive: true,
     });
@@ -90,7 +95,7 @@ for (const prefetchTarget of prefetchTargets) {
     if (packageInfo["dist-tags"].latest !== targetVersion) {
         await createIssue(
             `[prefetch] Found new verion ${moduleName}@${packageInfo["dist-tags"].latest} higher than ${targetVersion}`,
-            `Found new verion \`${moduleName}@${packageInfo["dist-tags"].latest}\` higher than \`${targetVersion}\`, while [\`scripts/prefetch/targets.js\`](scripts/prefetch/targets.js) configured as \`${moduleName}@${version || "*"}\`, please consider to upgrade it: ${new URL(path.posix.join("package", name), "https://www.npmjs.com/")}`,
+            `Found new verion \`${moduleName}@${packageInfo["dist-tags"].latest}\` higher than \`${targetVersion}\`, while [\`${prefetchTargetsPath}\`](${prefetchTargetsPath}) configured as \`${moduleName}@${version || "*"}\`, please consider to upgrade it: ${new URL(path.posix.join("package", name), "https://www.npmjs.com/")}`,
             labels,
         );
     }

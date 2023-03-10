@@ -1,0 +1,29 @@
+ResourceLoader: true
+
+hidden: false
+
+default: true
+
+supportsUrlLoad: false
+
+targets: []
+
+skins: []
+
+actions: []
+
+type: general
+
+package: false
+
+rights:
+  - delete
+
+peers: []
+
+dependencies: []
+
+_section: administration
+
+_files:
+  - MediaWiki:Gadget-CleanDeleteReasons.js
