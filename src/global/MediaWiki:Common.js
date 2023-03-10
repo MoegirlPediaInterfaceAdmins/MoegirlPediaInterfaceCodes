@@ -194,7 +194,7 @@
         const noticeActivity = $("body").children("#content, #app").find("#notice-activity");
         const isMoeskin = mw.config.get("skin") === "moeskin";
         const styles = mw.config.get("skin") === "moeskin" ? {
-            userSelect: "none",
+            "user-select": "none",
             "text-align": "center",
             "box-sizing": "inherit",
             background: "none",

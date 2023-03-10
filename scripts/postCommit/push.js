@@ -10,11 +10,33 @@ if (!isInGithubActions) {
     console.info("Not running in github actions, exit.");
     exit(0);
 }
+const changedFilesInLastCommit = ["push", "pull_request"].includes(process.env.GITHUB_EVENT_NAME) && await git.raw(["diff-tree", "--no-commit-id", "--name-only", process.env.GITHUB_SHA, "-r"]);
+if (changedFilesInLastCommit) {
+    startGroup("changedFilesInLastCommit:");
+    console.info(changedFilesInLastCommit);
+    endGroup();
+}
+const triggerLinterTest = async (force = false) => {
+    if (!changedFilesInLastCommit && !force) {
+        console.info("This workflow is not triggered by `push` or `pull_request`, exit.");
+        exit(0);
+    }
+    console.info("Start to trigger linter test...");
+    const result = await octokit.rest.actions.createWorkflowDispatch({
+        workflow_id: "Linter test.yml",
+        ref: process.env.GITHUB_REF,
+    });
+    startGroup("Successfully triggered the linter test:");
+    console.info(result);
+    endGroup();
+    console.info("Done.");
+    exit(0);
+};
 console.info("Running in github actions, start to check unpushed commits...");
 const unpushedCommits = await exec("git cherry -v");
 if (unpushedCommits.length === 0) {
-    console.info("No unpushed commit, exit!");
-    exit(0);
+    console.info("No unpushed commit.");
+    await triggerLinterTest();
 }
 console.info("Found unpushed commits:", unpushedCommits.split("\n"));
 console.info("Pulling new commits...");
@@ -28,18 +50,7 @@ console.info("process.env.changedFiles:", process.env.changedFiles);
 const changedFilesFromEnv = JSON.parse(process.env.changedFiles || "[]");
 console.info("changedFilesFromEnv:", changedFilesFromEnv);
 if (!Array.isArray(changedFilesFromEnv) || changedFilesFromEnv.length === 0) {
-    console.info("Unable to get changed files, exit!");
-    exit(0);
+    console.info("Unable to get changed files.");
+    await triggerLinterTest();
 }
-if (changedFilesFromEnv.filter((file) => file.startsWith("src/")).length === 0) {
-    console.info("No src file changed, exit!");
-    exit(0);
-}
-console.info("Start to trigger linter test...");
-const result = await octokit.rest.actions.createWorkflowDispatch({
-    workflow_id: "Linter test.yml",
-    ref: process.env.GITHUB_REF,
-});
-startGroup("Successfully triggered the linter test:");
-console.info(result);
-endGroup();
+await triggerLinterTest(changedFilesFromEnv.filter((file) => file.startsWith("src/")).length > 0);
