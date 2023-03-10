@@ -12,12 +12,10 @@ if (!isInGithubActions) {
 }
 const isPushOrPullRequest = ["push", "pull_request"].includes(process.env.GITHUB_EVENT_NAME);
 console.info("isPushOrPullRequest:", isPushOrPullRequest);
-const changedFilesInLastCommit = await git.raw(["diff-tree", "-r", "--no-commit-id", "--name-only", process.env.GITHUB_SHA]);
-//if (changedFilesInLastCommit) {
+const changedFilesInLastCommit = (await git.raw(["diff-tree", "-r", "--no-commit-id", "--name-only", process.env.GITHUB_SHA])).trim();
 startGroup("changedFilesInLastCommit:");
 console.info(changedFilesInLastCommit);
 endGroup();
-//}
 const triggerLinterTest = async (force = false) => {
     if (!isPushOrPullRequest && !force) {
         console.info("This workflow is not triggered by `push` or `pull_request`, exit.");

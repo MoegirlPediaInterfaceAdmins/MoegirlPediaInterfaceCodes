@@ -194,56 +194,67 @@
         const noticeActivity = $("body").children("#content, #app").find("#notice-activity");
         const isMoeskin = mw.config.get("skin") === "moeskin";
         const styles = mw.config.get("skin") === "moeskin" ? {
-            "user-select": "none",
-            "text-align": "center",
-            "box-sizing": "inherit",
-            background: "none",
-            margin: "0",
-            border: "0",
-            font: "inherit",
-            "vertical-align": "baseline",
-            "text-decoration": "none",
-            position: "absolute",
-            top: ".2rem",
-            color: "#fff",
-            "background-color": "#00000080",
-            "border-radius": "99em",
-            padding: ".1rem .5rem",
-            "line-height": "1.5",
-            right: ".2rem",
-            "z-index": "999999",
-            cursor: "pointer",
+            visible: {
+                "user-select": "none",
+                "text-align": "center",
+                "box-sizing": "inherit",
+                background: "none",
+                margin: "0",
+                border: "0",
+                font: "inherit",
+                "vertical-align": "baseline",
+                "text-decoration": "none",
+                position: "absolute",
+                top: ".2rem",
+                color: "#fff",
+                "background-color": "#00000080",
+                "border-radius": "99em",
+                padding: ".1rem .5rem",
+                "line-height": "1.5",
+                right: ".2rem",
+                "z-index": "999999",
+                cursor: "pointer",
+            },
+            hidden: {
+                top: "-0.8rem",
+            },
         } : {
-            position: "absolute",
-            right: "1rem",
-            top: "50%",
-            transform: "translate(0,-50%)",
-            fontSize: "1rem",
+            visible: {
+                position: "absolute",
+                right: "1rem",
+                top: "50%",
+                transform: "translate(0,-50%)",
+                fontSize: "1rem",
+            },
+            hidden: {
+                transform: "translate(0,0)",
+            },
         };
         if (noticeActivity.length > 0) {
             await mw.loader.using(["user.options"]);
             if (+mw.user.options.get("gadget-noticeActivity") === 1) {
-                noticeActivity.hide();
-                return;
+                // noticeActivity.hide();
+                // return;
             }
             const topNoticeId = noticeActivity.data("topNoticeId");
-            noticeActivity.css("position", "relative");
-            const children = noticeActivity.children();
+            const container = isMoeskin ? noticeActivity.parent() : noticeActivity;
+            container.css("position", "relative");
+            const children = container.children();
             const button = $("<span>");
-            button.css(styles);
+            button.css(styles.visible);
             const link = $("<a>");
             link.attr({
                 href: "javascript:void(0);",
             }).text("隐藏活动通知");
             button.append(link);
             if (!isMoeskin) {
-                button.prepend("[").append("]");
+                button.prepend("[").append(link).append("]");
             } else {
                 link.css({
                     color: "white",
                 });
             }
-            noticeActivity.append(button);
+            container.append(button);
             let status = true;
             link.on("click", () => {
                 if (status) {
@@ -251,9 +262,12 @@
                     children.hide();
                     noticeActivity.css({
                         height: "0px",
-                        overflow: "visible",
                     });
-                    button.css("transform", "translate(0,0)");
+                    container.css({
+                        overflow: "visible",
+                        "background-color": "transparent",
+                    });
+                    button.css(styles.hidden);
                     localStorage.setItem("AnnTools-notice-activity", topNoticeId);
                     link.text("显示活动通知");
                 } else {
@@ -261,9 +275,12 @@
                     children.show();
                     noticeActivity.css({
                         height: "auto",
-                        overflow: "visible",
                     });
-                    button.css("transform", "translate(0,-50%)");
+                    container.css({
+                        overflow: "visible",
+                        "background-color": isMoeskin ? "var(--theme-card-background-color)" : "transparent",
+                    });
+                    button.css(styles.visible);
                     localStorage.removeItem("AnnTools-notice-activity");
                     link.text("隐藏活动通知");
                 }
