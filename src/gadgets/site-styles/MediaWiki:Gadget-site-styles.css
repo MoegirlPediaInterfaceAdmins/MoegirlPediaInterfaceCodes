@@ -509,6 +509,13 @@ div#simpleSearch button#searchButton {
     padding-right: 0.1em;
 }
 
+/* 首页部分元素隐藏 */
+body.page-Mainpage.rootpage-Mainpage #firstHeading,
+body.page-Mainpage.rootpage-Mainpage #siteSub,
+body.page-Mainpage.rootpage-Mainpage #contentSub {
+    display: none;
+}
+
 /* 2012年12月24日空想之梦做出的首页样式 */
 #mainpage {
     display: block;
