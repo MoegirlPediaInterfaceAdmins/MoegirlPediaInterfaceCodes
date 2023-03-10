@@ -26,6 +26,7 @@
     - autocollapse
     - SideBarPic
     - SpecialWikitext
+    - hideAutopromoteLog
 
 - name: skin
   gadgets:
