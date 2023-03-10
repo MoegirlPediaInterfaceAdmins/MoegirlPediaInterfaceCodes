@@ -24,4 +24,5 @@ dependencies: []
 
 _section: browsing
 
-_files: [MediaWiki:hideAutoPromoteLog.css]
+_files:
+  - MediaWiki:Gadget-hideAutoPromoteLog.css
