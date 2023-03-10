@@ -1,0 +1,18 @@
+{
+    "ResourceLoader": true,
+    "hidden": false,
+    "default": false,
+    "supportsUrlLoad": false,
+    "targets": [],
+    "skins": [],
+    "actions": [],
+    "type": "styles",
+    "package": false,
+    "rights": [],
+    "peers": [],
+    "dependencies": [],
+    "_section": "browsing",
+    "_files": [
+        "MediaWiki:hideAutoPromoteLog.css"
+    ]
+}
