@@ -27,7 +27,8 @@
             "report",
             "autocollapse",
             "SideBarPic",
-            "SpecialWikitext"
+            "SpecialWikitext",
+            "hideAutopromoteLog"
         ]
     },
     {
