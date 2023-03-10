@@ -23,7 +23,7 @@
 	}
 	mw.libs.wphl = mw.libs.wphl || {}; // 开始加载
 
-	const version = '2.57.1',
+	const version = '2.57.3',
 		newAddon = 0;
 
 	/** @type {typeof mw.storage} */
@@ -108,7 +108,7 @@
 	const CDN = '//fastly.jsdelivr.net',
 		CM_CDN = 'npm/codemirror@5.65.3',
 		MW_CDN = 'gh/bhsd-harry/codemirror-mediawiki@1.1.6',
-		PARSER_CDN = 'npm/wikiparser-node@0.9.2-b',
+		PARSER_CDN = 'gh/bhsd-harry/wikiparser-node@0.9.4-b',
 		REPO_CDN = `npm/wikiplus-highlight@${majorVersion}`;
 
 	const {config: {values: {
@@ -872,8 +872,7 @@
 	};
 	const $portlet = $(mw.util.addPortletLink(
 		portletContainer[skin] || 'p-cactions', '#', msg('portlet'), 'wphl-settings',
-	)).click(async e => {
-		e.preventDefault();
+	)).click(async () => {
 		if (dialog) {
 			widget.setValue([...addons]);
 			indentWidget.setValue(indent);
