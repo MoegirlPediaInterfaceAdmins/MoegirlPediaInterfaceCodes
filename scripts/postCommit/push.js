@@ -10,6 +10,7 @@ if (!isInGithubActions) {
     console.info("Not running in github actions, exit.");
     exit(0);
 }
+console.info(process.env.GITHUB_EVENT_NAME);
 const changedFilesInLastCommit = ["push", "pull_request"].includes(process.env.GITHUB_EVENT_NAME) && await git.raw(["diff-tree", "--no-commit-id", "--name-only", process.env.GITHUB_SHA, "-r"]);
 if (changedFilesInLastCommit) {
     startGroup("changedFilesInLastCommit:");
