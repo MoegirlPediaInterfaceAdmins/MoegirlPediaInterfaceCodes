@@ -5,7 +5,7 @@ const isInGithubActions = process.env.GITHUB_ACTIONS === "true";
 
 if (!isInGithubActions) {
     console.info("Not running in github actions, exit.");
-    // process.exit(0);
+    process.exit(0);
 }
 
 const packageLockFile = "package-lock.json";
