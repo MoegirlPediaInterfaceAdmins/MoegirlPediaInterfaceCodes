@@ -10,7 +10,7 @@ if (!isInGithubActions) {
     console.info("Not running in github actions, exit.");
     exit(0);
 }
-console.info(process.env.GITHUB_EVENT_NAME);
+console.info(process.env.GITHUB_SHA);
 const changedFilesInLastCommit = ["push", "pull_request"].includes(process.env.GITHUB_EVENT_NAME) && await git.raw(["diff-tree", "--no-commit-id", "--name-only", process.env.GITHUB_SHA, "-r"]);
 if (changedFilesInLastCommit) {
     startGroup("changedFilesInLastCommit:");
@@ -20,6 +20,10 @@ if (changedFilesInLastCommit) {
 const triggerLinterTest = async (force = false) => {
     if (!changedFilesInLastCommit && !force) {
         console.info("This workflow is not triggered by `push` or `pull_request`, exit.");
+        exit(0);
+    }
+    if (changedFilesInLastCommit.split("\n").filter((file) => file.startsWith("src/")).length === 0 && !force) {
+        console.info("Nothing need to lint, exit.");
         exit(0);
     }
     console.info("Start to trigger linter test...");
