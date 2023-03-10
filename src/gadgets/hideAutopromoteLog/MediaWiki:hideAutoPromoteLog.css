@@ -1,3 +1,7 @@
 body.mw-special-Log li.mw-logline-rights[data-mw-logaction="rights/autopromote"] {
     display: none;
 }
+
+body.mw-special-Log #mw-content-text > a[href*="type=rights"]:is(.mw-lastlink, .mw-nextlink, .mw-numlink) + form li.mw-logline-rights[data-mw-logaction="rights/autopromote"] {
+    display: revert;
+}
