@@ -1,4 +1,4 @@
-process.stdout.write("=".repeat(120));
+process.stdout.write(`${"=".repeat(120)}\n`);
 import console from "../modules/console.js";
 console.info("Start initialization...");
 import exec from "../modules/exec.js";
@@ -11,5 +11,5 @@ if (!isInGithubActions) {
 
 const packageLockFile = "package-lock.json";
 console.info("Start to recover", packageLockFile);
-await exec(`git checkout ${packageLockFile}`);
+await exec(`git checkout -- ${packageLockFile}`);
 console.info("Done.");
