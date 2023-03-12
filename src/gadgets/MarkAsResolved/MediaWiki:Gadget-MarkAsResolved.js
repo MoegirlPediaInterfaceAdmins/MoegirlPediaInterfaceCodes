@@ -136,13 +136,12 @@ $(() => {
         }
         getActionProcess(action) {
             if (action === "cancel") {
-                this.statusRadioSelect.selectItem();
-                this.archiveOffsetNumberInput.setValue(3);
-                this.precommentMultilineTextInput.setValue("");
-                this.commentTextInput.setValue("");
-                return new OO.ui.Process(() => {
-                    this.close({ action });
-                }, this);
+                return new OO.ui.Process(() => this.close({ action }).closed.promise()).next(() => {
+                    this.statusRadioSelect.selectItem();
+                    this.archiveOffsetNumberInput.setValue(3);
+                    this.precommentMultilineTextInput.setValue("");
+                    this.commentTextInput.setValue("");
+                });
             }
             if (action === "submit") {
                 return new OO.ui.Process($.when((async () => {
