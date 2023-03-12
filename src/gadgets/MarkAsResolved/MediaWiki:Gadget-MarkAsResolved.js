@@ -136,6 +136,10 @@ $(() => {
         }
         getActionProcess(action) {
             if (action === "cancel") {
+                this.statusRadioSelect.selectItem();
+                this.archiveOffsetNumberInput.setValue(3);
+                this.precommentMultilineTextInput.setValue("");
+                this.commentTextInput.setValue("");
                 return new OO.ui.Process(() => {
                     this.close({ action });
                 }, this);
