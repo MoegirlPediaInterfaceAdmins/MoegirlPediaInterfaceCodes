@@ -1,7 +1,6 @@
 extends: stylelint-config-standard
 
 ignoreFiles:
-  - src/gadgets/jquery.ui/MediaWiki:Gadget-jquery.ui.css
   - dist/**/*.css
 
 rules:
