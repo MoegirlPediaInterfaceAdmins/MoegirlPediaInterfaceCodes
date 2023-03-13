@@ -1,9 +1,9 @@
 {
     "$id": "https://github.com/MoegirlPediaInterfaceAdmins/MoegirlPediaInterfaceCodes/blob/master/.vscode/json-schemas/gadget-definition.json",
-    "$schema": "https://json-schema.org/draft-07/schema#",
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
     "type": "object",
-    "default": {},
     "title": "小工具定义",
+    "additionalProperties": false,
     "required": [
         "ResourceLoader",
         "hidden",
@@ -17,13 +17,14 @@
         "rights",
         "peers",
         "dependencies",
+        "_sites",
         "_section",
         "_files"
     ],
     "properties": {
         "ResourceLoader": {
             "type": "boolean",
-            "default": false,
+            "default": true,
             "title": "ResourceLoader 在绝大多数情况下应该为 true",
             "examples": [
                 true,
@@ -51,7 +52,10 @@
         "supportsUrlLoad": {
             "type": "boolean",
             "default": false,
-            "title": "【尚未实装】supportsUrlLoad 为 true 时用户可通过在页面地址中加入 \"withgadget\" 参数并指定该小工具 ID 的方式临时加载该小工具",
+            "title": "【暂未实装】supportsUrlLoad 为 true 时用户可通过在页面地址中加入 \"withgadget\" 参数并指定该小工具 ID 的方式临时加载该小工具",
+            "enum": [
+                false
+            ],
             "examples": [
                 false,
                 true
@@ -61,9 +65,16 @@
             "type": "array",
             "default": [],
             "title": "targets 指定小工具运行的平台，\"desktop\" 指定桌面端，\"mobile\" 指定移动端，当前无需指定",
+            "uniqueItems": true,
+            "minItems": 0,
+            "maxItems": 2,
             "items": {
                 "type": "string",
                 "title": "平台名称，\"desktop\" 指定桌面端，\"mobile\" 指定移动端",
+                "enum": [
+                    "desktop",
+                    "mobile"
+                ],
                 "examples": [
                     "desktop",
                     "mobile"
@@ -87,9 +98,16 @@
             "type": "array",
             "default": [],
             "title": "skins 指定小工具运行的皮肤，包括 \"vector\"、\"moeskin\"，不指定则默认所有",
+            "uniqueItems": true,
+            "minItems": 0,
+            "maxItems": 2,
             "items": {
                 "type": "string",
                 "title": "皮肤名称，包括 \"vector\"、\"moeskin\"",
+                "enum": [
+                    "vector",
+                    "moeskin"
+                ],
                 "examples": [
                     "vector",
                     "moeskin"
@@ -113,6 +131,9 @@
             "type": "array",
             "default": [],
             "title": "【暂未实装】actions 指定小工具在显示特定操作页面时加载，例如\"edit\" 指定在编辑、预览、查看编辑差异时加载",
+            "uniqueItems": true,
+            "minItems": 0,
+            "maxItems": 0,
             "items": {
                 "type": "string",
                 "title": "【暂未实装】操作名称",
@@ -124,6 +145,10 @@
             "type": "string",
             "default": "general",
             "title": "type 指定小工具类型，\"general\" 是普通型（JS 和 CSS 会通过 JS 加载），\"styles\" 是纯 CSS 型（JS 不会被加载，CSS 文件的链接会直接嵌入页面）",
+            "enum": [
+                "general",
+                "styles"
+            ],
             "examples": [
                 "general",
                 "styles"
@@ -133,12 +158,17 @@
             "type": "boolean",
             "default": false,
             "title": "【暂未实装】package 指定小工具作为可被其他代码直接加载的包，此时仅能在小工具文件夹下保留一个 js 或 json 文件，其他代码可通过 \"require\" 函数加载该小工具，该小工具在该状态下被允许使用 json 文件",
+            "enum": [
+                false
+            ],
             "examples": []
         },
         "rights": {
             "type": "array",
             "default": [],
             "title": "rights 指定用户所需要的权限，如无需权限可保留空数组，但不能删去",
+            "uniqueItems": true,
+            "minItems": 0,
             "items": {
                 "type": "string",
                 "title": "每个权限一个元素",
@@ -152,9 +182,11 @@
             "type": "array",
             "default": [],
             "title": "peers 指定小工具所依赖的小工具，该小工具将只加载其 CSS 部分，如无需可保留空数组，但不能删去",
+            "uniqueItems": true,
+            "minItems": 0,
             "items": {
                 "type": "string",
-                "title": "A Schema",
+                "title": "A gadget",
                 "examples": [
                     "dark-mode-toggle-pagestyles"
                 ]
@@ -169,16 +201,20 @@
             "type": "array",
             "default": [],
             "title": "dependencies 指定小工具的依赖项，如无需依赖项可保留空数组，但不能删去，其中引用api时用 \"mediawiki.api\"，引用uri时用 \"mediawiki.Uri\"",
+            "uniqueItems": true,
+            "minItems": 0,
             "items": {
                 "type": "string",
-                "title": "A Schema",
+                "title": "A dependency",
                 "examples": [
-                    "mediawiki.api"
+                    "mediawiki.api",
+                    "mediawiki.Uri"
                 ]
             },
             "examples": [
                 [
-                    "mediawiki.api"
+                    "mediawiki.api",
+                    "mediawiki.Uri"
                 ]
             ]
         },
@@ -188,9 +224,16 @@
                 "zh"
             ],
             "title": "_sites 规定了小工具所对应的站点名，`zh` 为主站，`commons` 为共享站，可多选，若为空则小工具会被跳过",
+            "uniqueItems": true,
+            "minItems": 0,
+            "maxItems": 2,
             "items": {
                 "type": "string",
                 "title": "Site name",
+                "enum": [
+                    "zh",
+                    "commons"
+                ],
                 "examples": [
                     "zh",
                     "commons"
@@ -213,6 +256,7 @@
         "_section": {
             "type": "string",
             "title": "_section 规定了小工具在 MediaWiki:Gadgets-definition 里所处的章节名",
+            "minLength": 1,
             "examples": [
                 "browsing",
                 "skin",
@@ -228,6 +272,8 @@
             "type": "array",
             "default": [],
             "title": "_files 规定了小工具所需要引入的文件名",
+            "uniqueItems": true,
+            "minItems": 1,
             "items": {
                 "type": "string",
                 "title": "File name",
@@ -241,6 +287,36 @@
                 ]
             ]
         }
+    },
+    "default": {
+        "ResourceLoader": true,
+        "hidden": false,
+        "default": true,
+        "supportsUrlLoad": false,
+        "targets": [],
+        "skins": [],
+        "actions": [],
+        "type": "general",
+        "package": false,
+        "rights": [
+            "block",
+            "noratelimit"
+        ],
+        "peers": [],
+        "dependencies": [
+            "mediawiki.api",
+            "mediawiki.ForeignApi",
+            "moment",
+            "mediawiki.user"
+        ],
+        "_sites": [
+            "zh"
+        ],
+        "_section": "administration",
+        "_files": [
+            "MediaWiki:Gadget-backlog.css",
+            "MediaWiki:Gadget-backlog.js"
+        ]
     },
     "examples": [
         {

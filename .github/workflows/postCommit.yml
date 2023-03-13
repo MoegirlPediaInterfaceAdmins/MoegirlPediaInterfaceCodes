@@ -11,6 +11,7 @@ on:
       - src/gadgets/Gadgets-definition-list.yaml
       - .github/workflows/postCommit.yml
       - .github/workflows/Linter test.yml
+      - .vscode/json-schemas/gadget-definition.json
       - package-lock.json
   workflow_dispatch:
   schedule:
