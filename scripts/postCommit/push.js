@@ -13,7 +13,7 @@ if (!isInGithubActions) {
 const isPushRequest = ["push"].includes(process.env.GITHUB_EVENT_NAME);
 console.info("isPushRequest:", isPushRequest);
 console.info("process.env.GITHUB_SHA:", process.env.GITHUB_SHA);
-const changedFilesInLastCommit = (await git.raw(["diff-tree", "-r", "--no-commit-id", "--name-only", process.env.GITHUB_SHA, `${process.env.GITHUB_SHA}^`])).trim();
+const changedFilesInLastCommit = (await git.raw(["diff-tree", "-c", "-r", "--no-commit-id", "--name-only", process.env.GITHUB_SHA])).trim();
 startGroup("changedFilesInLastCommit:");
 console.info(changedFilesInLastCommit);
 endGroup();
