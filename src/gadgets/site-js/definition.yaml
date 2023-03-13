@@ -26,6 +26,9 @@ dependencies:
   - mediawiki.api
   - mediawiki.Uri
 
+_sites:
+  - zh
+
 _section: system
 
 _files:

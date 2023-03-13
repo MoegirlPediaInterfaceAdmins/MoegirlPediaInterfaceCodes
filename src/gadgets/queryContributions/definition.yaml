@@ -28,6 +28,9 @@ dependencies:
   - jquery.tablesorter
   - ext.gadget.libPolyfill
 
+_sites:
+  - zh
+
 _section: user
 
 _files:

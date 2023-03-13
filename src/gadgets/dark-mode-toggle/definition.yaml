@@ -32,6 +32,9 @@ dependencies:
   - mediawiki.storage
   - ext.gadget.site-lib
 
+_sites:
+  - zh
+
 _section: skin
 
 _files:

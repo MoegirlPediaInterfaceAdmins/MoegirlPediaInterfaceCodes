@@ -24,6 +24,9 @@ dependencies:
   - user.options
   - ext.gadget.jQueryLazyload
 
+_sites:
+  - zh
+
 _section: user
 
 _files:

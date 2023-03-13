@@ -25,6 +25,9 @@ dependencies:
   - mediawiki.legacy.wikibits
   - mediawiki.util
 
+_sites:
+  - zh
+
 _section: system
 
 _files:

@@ -24,6 +24,9 @@ peers: []
 dependencies:
   - ext.gadget.luxon
 
+_sites:
+  - zh
+
 _section: system
 
 _files:

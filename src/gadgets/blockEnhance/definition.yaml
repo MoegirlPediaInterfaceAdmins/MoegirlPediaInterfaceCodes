@@ -26,6 +26,9 @@ dependencies:
   - mediawiki.api
   - ext.gadget.site-lib
 
+_sites:
+  - zh
+
 _section: administration
 
 _files:

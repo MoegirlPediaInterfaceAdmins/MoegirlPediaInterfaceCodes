@@ -25,6 +25,9 @@ dependencies:
   - moment
   - ext.gadget.cron
 
+_sites:
+  - zh
+
 _section: user
 
 _files:

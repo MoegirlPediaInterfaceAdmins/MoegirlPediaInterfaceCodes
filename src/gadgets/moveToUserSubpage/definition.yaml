@@ -29,6 +29,9 @@ dependencies:
   - mediawiki.notify
   - ext.gadget.libPolyfill
 
+_sites:
+  - zh
+
 _section: maintenance
 
 _files:

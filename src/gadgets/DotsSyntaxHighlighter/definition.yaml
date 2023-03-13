@@ -24,6 +24,9 @@ peers: []
 dependencies:
   - jquery.client
 
+_sites:
+  - zh
+
 _section: editing
 
 _files:

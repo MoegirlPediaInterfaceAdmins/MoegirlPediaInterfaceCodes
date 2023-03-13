@@ -25,6 +25,9 @@ peers: []
 dependencies:
   - ext.gadget.libOOUIDialog
 
+_sites:
+  - zh
+
 _section: browsing
 
 _files:

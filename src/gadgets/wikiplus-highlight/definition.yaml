@@ -27,6 +27,9 @@ dependencies:
   - ext.gadget.libPolyfill
   - mediawiki.util
 
+_sites:
+  - zh
+
 _section: editing
 
 _files:

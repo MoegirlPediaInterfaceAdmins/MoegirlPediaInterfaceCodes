@@ -29,6 +29,9 @@ dependencies:
   - mediawiki.notify
   - moment
 
+_sites:
+  - zh
+
 _section: administration
 
 _files:

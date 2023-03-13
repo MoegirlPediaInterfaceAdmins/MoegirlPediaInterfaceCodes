@@ -24,6 +24,9 @@ peers: []
 dependencies:
   - user.options
 
+_sites:
+  - zh
+
 _section: editing
 
 _files:

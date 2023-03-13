@@ -24,6 +24,9 @@ peers: []
 dependencies:
   - ext.abuseFilter.ace
 
+_sites:
+  - zh
+
 _section: interface
 
 _files:

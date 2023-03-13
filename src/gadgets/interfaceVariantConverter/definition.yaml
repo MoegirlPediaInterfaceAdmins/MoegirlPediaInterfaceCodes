@@ -28,6 +28,9 @@ dependencies:
   - oojs-ui
   - ext.gadget.libPolyfill
 
+_sites:
+  - zh
+
 _section: interface
 
 _files:
