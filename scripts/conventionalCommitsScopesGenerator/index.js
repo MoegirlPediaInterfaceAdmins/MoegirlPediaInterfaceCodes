@@ -23,19 +23,20 @@ for (const dirent of dirents) {
     const type = dirent.name;
     const prefix = type[0].toUpperCase() + type.slice(1).replace(/s$/, "");
     console.info(`[${type}]`, "prefix:", prefix);
-    const list = new Set();
+    const listSet = new Set();
     if (type === "gadgets") {
         for (const item of await fs.promises.readdir(path.join("src", type))) {
-            list.add(item);
+            listSet.add(item);
         }
     } else {
         const sites = await fs.promises.readdir(path.join("src", type));
         for (const site of sites) {
             for (const item of await fs.promises.readdir(path.join("src", type, site))) {
-                list.add(item);
+                listSet.add(item);
             }
         }
     }
+    const list = [...listSet];
     const lowerCaseList = list.map((item) => toLowerFirstCharacter(item));
     lowerCaseList.sort();
     list.sort((a, b) => lowerCaseList.indexOf(toLowerFirstCharacter(a)) - lowerCaseList.indexOf(toLowerFirstCharacter(b)));
