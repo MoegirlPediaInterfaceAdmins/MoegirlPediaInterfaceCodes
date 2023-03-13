@@ -57,8 +57,7 @@
                 false
             ],
             "examples": [
-                false,
-                true
+                false
             ]
         },
         "targets": {
@@ -161,7 +160,9 @@
             "enum": [
                 false
             ],
-            "examples": []
+            "examples": [
+                false
+            ]
         },
         "rights": {
             "type": "array",
