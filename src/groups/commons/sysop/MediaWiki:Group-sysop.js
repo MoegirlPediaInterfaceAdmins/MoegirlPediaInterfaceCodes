@@ -1,21 +1,11 @@
 "use strict";
 (async () => {
-    const sleep = (ms) => new Promise((res) => setTimeout(res, ms));
     /* 函数定义块 */
     //添加删除原因链接
     function addLink($obj, act) {
         const href = $obj.css("margin-left", "1em")[0].href,
             reasonPageName = href.slice(href.indexOf("title=") + 6, href.indexOf("&action"));
         $obj.before(`<a target="_blank" href="/${reasonPageName}">浏览${act}原因</a>`);
-    }
-    //i18n语言链接
-    function i18nLink() {
-        $('#mw-content-text a.new[href$="/zh-cn"], #mw-content-text a.new[href$="/zh-tw"], #mw-content-text a.new[href$="/zh-hk"]').each((_, ele) => {
-            $(ele).removeClass("new").attr({
-                title: ele.title.replace(/\/zh-[a-z]+|（页面不存在）/g, ""),
-                href: ele.href.replace(/\/zh-[a-z]+/g, ""),
-            });
-        });
     }
     /* 函数执行块 */
     await $.ready;
@@ -34,8 +24,6 @@
     if (mw.config.get("wgCanonicalSpecialPageName") === "Revisiondelete" && $(".mw-revdel-editreasons")[0]) {
         addLink($(".mw-revdel-editreasons > a"), "删除");
     }
-    //i18n语言链接
-    i18nLink();
     //替换文本默认不勾选「通过Special:最近更改和监视列表通知这些编辑」
     if (mw.config.get("wgCanonicalSpecialPageName") === "ReplaceText" && $("#doAnnounce")[0]) {
         $("#doAnnounce, #mw-search-ns0").prop("checked", false);
