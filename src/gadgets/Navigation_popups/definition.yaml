@@ -32,6 +32,7 @@ dependencies:
 
 _sites:
   - zh
+  - commons
 
 _section: browsing
 

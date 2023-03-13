@@ -25,6 +25,7 @@ dependencies:
 
 _sites:
   - zh
+  - commons
 
 _section: user
 

@@ -28,6 +28,7 @@ dependencies:
 
 _sites:
   - zh
+  - commons
 
 _section: administration
 
