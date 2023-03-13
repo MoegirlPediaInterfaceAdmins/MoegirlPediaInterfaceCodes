@@ -1,0 +1,76 @@
+.patroller-show,
+.sysop-show {
+    display: revert !important;
+}
+
+div.vectorMenu li.patroller-show {
+    order: 998;
+}
+
+div.vectorMenu li.sysop-show {
+    order: 999;
+}
+
+.vectorMenu .patroller-show::before,
+.vectorMenu .sysop-show::before {
+    content: " ";
+    display: block;
+    height: 1px;
+    color: #A2A9B1;
+    background-color: #A2A9B1;
+    border: 0;
+    margin: 7px;
+}
+
+.vectorMenu .patroller-show ~ .patroller-show::before,
+.vectorMenu .sysop-show ~ .sysop-show::before {
+    display: none;
+}
+
+.vectorMenu .patroller-show,
+.vectorMenu .sysop-show {
+    cursor: default;
+}
+
+.vectorMenu .patroller-show ~ .patroller-show,
+.vectorMenu .patroller-show a,
+.vectorMenu .sysop-show ~ .sysop-show,
+.vectorMenu .sysop-show a {
+    cursor: pointer;
+}
+
+/* poll-id显示 */
+.ajaxpoll .ajaxpoll-info .ajaxpoll-id-info {
+    color: inherit;
+    float: none;
+}
+
+/* 滥用过滤器表格 */
+.mw-special-AbuseFilter .mw-datatable.TablePager {
+    table-layout: auto;
+}
+
+.mw-special-AbuseFilter .mw-datatable.TablePager .TablePager_col_af_id {
+    width: 6em;
+}
+
+.mw-special-AbuseFilter .mw-datatable.TablePager tbody .TablePager_col_af_id,
+.mw-special-AbuseFilter .mw-datatable.TablePager tbody .TablePager_col_af_enabled,
+.mw-special-AbuseFilter .mw-datatable.TablePager tbody .TablePager_col_af_hidden {
+    padding-left: 0.5em !important;
+}
+
+.mw-special-AbuseFilter .mw-datatable.TablePager .TablePager_col_af_enabled,
+.mw-special-AbuseFilter .mw-datatable.TablePager .TablePager_col_af_hidden {
+    width: 4em;
+}
+
+/* 过滤器历史优化（只是强迫症） */
+.TablePager_col_afh_id {
+    text-align: center;
+}
+
+/* 防止误删 */
+.page-Category_即将删除的页面 #ca-delete {
+    display: none;
+}

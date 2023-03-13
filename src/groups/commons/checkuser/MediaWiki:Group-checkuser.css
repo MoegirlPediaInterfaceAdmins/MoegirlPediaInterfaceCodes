@@ -1,0 +1,30 @@
+.checkuser-show {
+    display: revert !important;
+}
+
+div.vectorMenu li.checkuser-show {
+    order: 1000;
+}
+
+.vectorMenu .checkuser-show::before {
+    content: " ";
+    display: block;
+    height: 1px;
+    color: #A2A9B1;
+    background-color: #A2A9B1;
+    border: 0;
+    margin: 7px;
+}
+
+.vectorMenu .checkuser-show ~ .checkuser-show::before {
+    display: none;
+}
+
+.vectorMenu .checkuser-show {
+    cursor: default;
+}
+
+.vectorMenu .checkuser-show ~ .checkuser-show,
+.vectorMenu .checkuser-show a {
+    cursor: pointer;
+}
