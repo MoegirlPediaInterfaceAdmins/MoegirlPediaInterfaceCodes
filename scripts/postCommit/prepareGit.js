@@ -20,4 +20,5 @@ await git
     .addConfig("author.name", name)
     .addConfig("author.email", email)
     .addConfig("committer.name", name)
-    .addConfig("committer.email", email);
+    .addConfig("committer.email", email)
+    .addConfig("push.autoSetupRemote", "true");
