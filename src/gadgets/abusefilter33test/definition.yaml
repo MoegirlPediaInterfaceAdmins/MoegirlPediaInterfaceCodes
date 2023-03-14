@@ -24,6 +24,10 @@ peers: []
 dependencies:
   - mediawiki.api
 
+_sites:
+  - zh
+  - commons
+
 _section: administration
 
 _files:

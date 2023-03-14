@@ -29,6 +29,10 @@ dependencies:
   - ext.gadget.site-lib
   - ext.gadget.libPolyfill
 
+_sites:
+  - zh
+  - commons
+
 _section: user
 
 _files:

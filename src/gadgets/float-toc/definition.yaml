@@ -25,6 +25,9 @@ dependencies:
   - ext.gadget.LocalObjectStorage
   - mediawiki.toc
 
+_sites:
+  - zh
+
 _section: browsing
 
 _files:

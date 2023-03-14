@@ -22,6 +22,10 @@ peers: []
 
 dependencies: []
 
+_sites:
+  - zh
+  - commons
+
 _section: system
 
 _files:

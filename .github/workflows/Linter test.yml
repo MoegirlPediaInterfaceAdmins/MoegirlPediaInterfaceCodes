@@ -2,6 +2,10 @@ name: Linter test
 
 on:
   workflow_dispatch:
+    commits:
+      description: "commits json, only for postCommit"
+      required: false
+      type: string
 
 jobs:
   test:

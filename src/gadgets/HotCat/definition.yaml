@@ -26,6 +26,10 @@ dependencies:
   - ext.gadget.libOOUIDialog
   - user
 
+_sites:
+  - zh
+  - commons
+
 _section: editing
 
 _files:

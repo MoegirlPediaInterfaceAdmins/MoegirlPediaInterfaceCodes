@@ -24,6 +24,9 @@ peers: []
 
 dependencies: []
 
+_sites:
+  - zh
+
 _section: interface
 
 _files:

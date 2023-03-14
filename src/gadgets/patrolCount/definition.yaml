@@ -25,6 +25,9 @@ peers: []
 dependencies:
   - ext.gadget.site-lib
 
+_sites:
+  - zh
+
 _section: maintenance
 
 _files:

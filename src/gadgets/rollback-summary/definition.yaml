@@ -27,6 +27,10 @@ dependencies:
   - mediawiki.Uri
   - ext.gadget.site-lib
 
+_sites:
+  - zh
+  - commons
+
 _section: maintenance
 
 _files:

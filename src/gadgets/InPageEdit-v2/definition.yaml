@@ -25,6 +25,9 @@ peers: []
 dependencies:
   - mediawiki.api
 
+_sites:
+  - zh
+
 _section: editing
 
 _files:

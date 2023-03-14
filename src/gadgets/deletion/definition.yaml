@@ -28,6 +28,10 @@ dependencies:
   - mediawiki.api
   - mediawiki.Uri
 
+_sites:
+  - zh
+  - commons
+
 _section: administration
 
 _files:

@@ -24,6 +24,10 @@ peers: []
 dependencies:
   - ext.gadget.libBottomRightCorner
 
+_sites:
+  - zh
+  - commons
+
 _section: browsing
 
 _files:

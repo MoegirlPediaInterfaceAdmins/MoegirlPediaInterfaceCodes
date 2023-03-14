@@ -28,6 +28,10 @@ dependencies:
   - ext.gadget.LocalObjectStorage
   - ext.gadget.libPolyfill
 
+_sites:
+  - zh
+  - commons
+
 _section: maintenance
 
 _files:

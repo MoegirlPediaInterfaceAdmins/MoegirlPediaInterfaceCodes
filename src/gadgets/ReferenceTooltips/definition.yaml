@@ -27,6 +27,9 @@ dependencies:
   - oojs
   - oojs-ui
 
+_sites:
+  - zh
+
 _section: browsing
 
 _files:

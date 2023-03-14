@@ -1,0 +1,30 @@
+.patroller-show {
+    display: revert !important;
+}
+
+div.vectorMenu li.patroller-show {
+    order: 998;
+}
+
+.vectorMenu .patroller-show::before {
+    content: " ";
+    display: block;
+    height: 1px;
+    color: #A2A9B1;
+    background-color: #A2A9B1;
+    border: 0;
+    margin: 7px;
+}
+
+.vectorMenu .patroller-show ~ .patroller-show::before {
+    display: none;
+}
+
+.vectorMenu .patroller-show {
+    cursor: default;
+}
+
+.vectorMenu .patroller-show ~ .patroller-show,
+.vectorMenu .patroller-show a {
+    cursor: pointer;
+}

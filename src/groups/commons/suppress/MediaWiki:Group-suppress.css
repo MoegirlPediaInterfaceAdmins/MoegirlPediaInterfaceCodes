@@ -1,0 +1,30 @@
+.suppress-show {
+    display: revert !important;
+}
+
+div.vectorMenu li.suppress-show {
+    order: 1001;
+}
+
+.vectorMenu .suppress-show::before {
+    content: " ";
+    display: block;
+    height: 1px;
+    color: #A2A9B1;
+    background-color: #A2A9B1;
+    border: 0;
+    margin: 7px;
+}
+
+.vectorMenu .suppress-show ~ .suppress-show::before {
+    display: none;
+}
+
+.vectorMenu .suppress-show {
+    cursor: default;
+}
+
+.vectorMenu .suppress-show ~ .suppress-show,
+.vectorMenu .suppress-show a {
+    cursor: pointer;
+}

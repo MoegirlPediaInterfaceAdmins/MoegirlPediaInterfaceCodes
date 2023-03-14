@@ -24,6 +24,10 @@ dependencies:
   - ext.gadget.UserLinkAvatar
   - ext.gadget.jQueryLazyload
 
+_sites:
+  - zh
+  - commons
+
 _section: user
 
 _files:

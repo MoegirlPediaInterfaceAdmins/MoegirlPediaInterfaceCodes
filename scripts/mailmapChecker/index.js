@@ -2,9 +2,8 @@ import console from "../modules/console.js";
 console.info("Start initialization...");
 import fs from "fs";
 import { git } from "../modules/git.js";
-import { startGroup, endGroup } from "@actions/core";
+import { startGroup, endGroup, getInput } from "@actions/core";
 import { isInGithubActions } from "../modules/octokit.js";
-import jsonModule from "../modules/jsonModule.js";
 import { exit } from "process";
 
 const detectIfBot = (name, email) => name.endsWith("[bot]") || email.split("@")[1] === "github.com";
@@ -29,14 +28,14 @@ startGroup("mailSet:");
 console.info(mailSet);
 endGroup();
 if (isInGithubActions) {
-    const { commits, head_commit } = await jsonModule.readFile(process.env.GITHUB_EVENT_PATH);
-    if ((!Array.isArray(commits) || commits.length === 0) && !head_commit) {
-        console.info("Running in github actions, but no commit found, exit.");
+    const commits = getInput("commits");
+    if (commits.length === 0) {
+        console.info("Running in github actions, but no commit input, exit.");
         exit(0);
     }
     const failures = [];
-    const allCommits = [...Array.isArray(commits) ? commits : [], ...head_commit ? [head_commit] : []];
-    startGroup("Running in github actions, commits:");
+    const allCommits = JSON.parse(commits);
+    startGroup("Running in github actions, commits input:");
     console.info(allCommits);
     endGroup();
     for (const { author: { email: authorEmail, name: authorName }, committer: { email: committerEmail, name: committerName }, id, message, url } of allCommits) {

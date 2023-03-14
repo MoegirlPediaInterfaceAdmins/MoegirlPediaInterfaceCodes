@@ -30,6 +30,10 @@ dependencies:
   - mediawiki.api.messages
   - ext.gadget.libPolyfill
 
+_sites:
+  - zh
+  - commons
+
 _section: browsing
 
 _files:

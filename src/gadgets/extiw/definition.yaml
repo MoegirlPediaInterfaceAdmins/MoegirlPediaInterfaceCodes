@@ -22,6 +22,9 @@ peers: []
 
 dependencies: []
 
+_sites:
+  - zh
+
 _section: browsing
 
 _files:

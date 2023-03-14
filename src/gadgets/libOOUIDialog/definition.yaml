@@ -28,6 +28,10 @@ dependencies:
   - oojs-ui.styles.icons-alerts
   - ext.gadget.libPolyfill
 
+_sites:
+  - zh
+  - commons
+
 _section: system
 
 _files:

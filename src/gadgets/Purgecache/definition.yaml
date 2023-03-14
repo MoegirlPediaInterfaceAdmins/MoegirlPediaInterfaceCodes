@@ -26,6 +26,10 @@ dependencies:
   - ext.gadget.cron
   - ext.gadget.site-lib
 
+_sites:
+  - zh
+  - commons
+
 _section: browsing
 
 _files:

@@ -30,6 +30,9 @@ dependencies:
   - jquery.ui.resizable
   - mediawiki.util
 
+_sites:
+  - zh
+
 _section: maintenance
 
 _files:

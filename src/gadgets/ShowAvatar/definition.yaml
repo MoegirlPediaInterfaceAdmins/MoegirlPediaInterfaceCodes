@@ -23,6 +23,10 @@ peers: []
 dependencies:
   - mediawiki.Uri
 
+_sites:
+  - zh
+  - commons
+
 _section: user
 
 _files:
