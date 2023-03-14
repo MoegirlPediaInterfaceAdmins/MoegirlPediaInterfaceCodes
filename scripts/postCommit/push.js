@@ -16,7 +16,7 @@ const isPushRequest = ["push"].includes(process.env.GITHUB_EVENT_NAME);
 console.info("isPushRequest:", isPushRequest);
 const { before, after } = GITHUB_EVENT;
 console.info("commits:", { before, after });
-const changedFiles = (await git.raw(["diff-tree", "-c", "-r", "--no-commit-id", "--name-only", before, after])).trim();
+const changedFiles = before && after ? (await git.raw(["diff-tree", "-c", "-r", "--no-commit-id", "--name-only", before, after])).trim() : "";
 startGroup("changedFiles:");
 console.info(changedFiles);
 endGroup();

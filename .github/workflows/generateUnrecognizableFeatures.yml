@@ -22,7 +22,7 @@ jobs:
           check-latest: true
           cache: npm
       - name: "Prepare: Install dependencies"
-        run: npm ci
+        run: npm run ci
       - name: "Prepare: Prepare git"
         run: node scripts/postCommit/prepareGit.js
       - name: "Prepare: Expose GitHub Runtime"
