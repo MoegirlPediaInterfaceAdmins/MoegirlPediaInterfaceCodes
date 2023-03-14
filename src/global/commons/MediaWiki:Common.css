@@ -72,7 +72,7 @@ body:not(.ns-0) #upload-div {
 .ns-4.action-view #bodyContent::after,
 .ns-12.action-view #bodyContent::after {
     content: "因系统维护，评论区临时暂停所有功能";
-    border: 1px solid rgba(0 0 0 17%);
+    border: 1px solid rgba(0 0 0 / 17%);
     text-align: center;
     font-size: small;
     padding: 1em;
