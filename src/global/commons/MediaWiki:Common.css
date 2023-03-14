@@ -1,0 +1,97 @@
+/* 
+ * 放置于这里的CSS将应用于所有皮肤
+ * 请尊重萌娘百科版权，以下代码除非注明均是管理员手敲出来的！！！复制需要注明源自萌娘百科，并且附上URL地址http://commons.moegirl.org.cn/MediaWiki:Common.css
+ * 版权协定：知识共享 署名-非商业性使用-相同方式共享 3.0
+ * 如果复制css，复制后之后请把图片换成自己网站上的图片！！！！！！！！！！！！！
+ */
+/* 返回上一页 */
+#back {
+    cursor: pointer;
+}
+
+/* 通用圆角框 */
+.common-box {
+    padding: .2em .4em;
+    border: 1px solid #ddd;
+    -moz-border-radius: 10px;
+    -webkit-border-radius: 10px;
+    -khtml-border-radius: 10px;
+    -o-border-radius: 10px;
+    -webkit-box-shadow: #666 0 2px 3px;
+    -moz-box-shadow: #666 0 2px 3px;
+    border-radius: 10px;
+    box-shadow: #666 0 2px 3px;
+}
+
+/* 在非主名字空间里隐藏编辑上传接口 */
+body:not(.ns-0) #upload-div {
+    display: none;
+}
+
+/* 隐藏只供维护人员查看的内容 */
+.patroller-show,
+.checkuser-show,
+.suppress-show,
+.sysop-show,
+.interface-admin-show {
+    display: none !important;
+}
+
+/* 数据表格 */
+.mw-datatable.TablePager {
+    width: 100%;
+    table-layout: fixed;
+    word-wrap: break-word;
+}
+
+/* 评论区输入框工具栏 */
+.post-content .comment-text {
+    position: static;
+}
+
+.post-content .comment-toolbar {
+    position: static;
+    display: flex;
+    justify-content: flex-start;
+}
+
+.post-content .flowthread-btn {
+    position: static;
+    margin-top: 3px;
+}
+
+.post-content .comment-submit {
+    position: static;
+    margin: -1px -1px 0 auto;
+}
+
+
+/* 评论区提示 */
+.ns-0.action-view:not(.page-Mainpage) #bodyContent::after,
+.ns-2.action-view #bodyContent::after,
+.ns-4.action-view #bodyContent::after,
+.ns-12.action-view #bodyContent::after {
+    content: "因系统维护，评论区临时暂停所有功能";
+    border: 1px solid rgba(0 0 0 17%);
+    text-align: center;
+    font-size: small;
+    padding: 1em;
+    color: #777;
+    display: block !important;
+    clear: both;
+}
+
+.ns-0.action-view:not(.page-Mainpage) #bodyContent:lang(zh-hant)::after,
+.ns-0.action-view:not(.page-Mainpage) #bodyContent:lang(zh-hk)::after,
+.ns-0.action-view:not(.page-Mainpage) #bodyContent:lang(zh-tw)::after,
+.ns-2.action-view #bodyContent:lang(zh-hant)::after,
+.ns-2.action-view #bodyContent:lang(zh-hk)::after,
+.ns-2.action-view #bodyContent:lang(zh-tw)::after,
+.ns-4.action-view #bodyContent:lang(zh-hant)::after,
+.ns-4.action-view #bodyContent:lang(zh-hk)::after,
+.ns-4.action-view #bodyContent:lang(zh-tw)::after,
+.ns-12.action-view #bodyContent:lang(zh-hant)::after,
+.ns-12.action-view #bodyContent:lang(zh-hk)::after,
+.ns-12.action-view #bodyContent:lang(zh-tw)::after {
+    content: "因系統維護，評論區臨時暫停所有功能"
+}

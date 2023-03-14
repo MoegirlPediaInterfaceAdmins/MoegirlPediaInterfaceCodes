@@ -253,7 +253,7 @@
     /* 修正嵌套使用删除线、黑幕、彩色幕和胡话模板 */
     const templateTags = ["s", "del"].join(", ");
     const templateClasses = [".heimu", ".colormu", ".just-kidding-text"];
-    const templateStr = `${templateClasses.join(", ")},${templateTags}`;
+    const templateStr = [...templateTags, ...templateClasses].join(", ");
     /**
      * @param {JQuery<HTMLDivElement>} $content 
      */
@@ -326,8 +326,40 @@
         });
     }
     /* 水印 */
+    // https://github.com/zloirock/core-js/blob/v3.29.1/packages/core-js/modules/es.unescape.js
+    const hex2 = /^[\da-f]{2}$/i;
+    const hex4 = /^[\da-f]{4}$/i;
+    function unescapeString(string) {
+        const str = `${string}`;
+        let result = "";
+        const length = str.length;
+        let index = 0;
+        let chr, part;
+        while (index < length) {
+            chr = str.charAt(index++);
+            if (chr === "%") {
+                if (str.charAt(index) === "u") {
+                    part = str.slice(index + 1, index + 5);
+                    if (hex4.exec(part)) {
+                        result += String.fromCharCode(parseInt(part, 16));
+                        index += 5;
+                        continue;
+                    }
+                } else {
+                    part = str.slice(index, index + 2);
+                    if (hex2.exec(part)) {
+                        result += String.fromCharCode(parseInt(part, 16));
+                        index += 2;
+                        continue;
+                    }
+                }
+            }
+            result += chr;
+        }
+        return result;
+    }
     function watermark(txt, size) {
-        $("<div>").attr("style", `position: fixed !important; z-index: 99999 !important; inset: 0px !important; background-image: url("data:image/svg+xml;base64,${btoa(`<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}"><foreignObject width="${size}" height="${size}"><html xmlns="http://www.w3.org/1999/xhtml" style="width: ${size}px; height: ${size}px;"><head></head><body style="width: ${size}px; height: ${size}px; margin: 0px;"><div style="width: 100% !important; height: 100% !important; opacity: .17 !important; font-size: 24px !important; position: relative !important; color: black !important;"><div style="transform: rotate(-15deg) translateX(-50%) translateY(-50%) !important; word-break: break-all !important; top: 36% !important; left: 50% !important; position: absolute !important; width: 100% !important; text-align: center !important;">${unescape(encodeURIComponent(txt))}</div></div></body></html></foreignObject></svg>`)}") !important; background-repeat: repeat !important; pointer-events: none !important; display: block !important; visibility: visible !important; width: unset !important; height: unset !important; opacity: unset !important; background-color: unset !important;`).appendTo("body");
+        $("<div>").attr("style", `position: fixed !important; z-index: 99999 !important; inset: 0px !important; background-image: url("data:image/svg+xml;base64,${btoa(`<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}"><foreignObject width="${size}" height="${size}"><html xmlns="http://www.w3.org/1999/xhtml" style="width: ${size}px; height: ${size}px;"><head></head><body style="width: ${size}px; height: ${size}px; margin: 0px;"><div style="width: 100% !important; height: 100% !important; opacity: .17 !important; font-size: 24px !important; position: relative !important; color: black !important;"><div style="transform: rotate(-15deg) translateX(-50%) translateY(-50%) !important; word-break: break-all !important; top: 36% !important; left: 50% !important; position: absolute !important; width: 100% !important; text-align: center !important;">${unescapeString(encodeURIComponent(txt))}</div></div></body></html></foreignObject></svg>`)}") !important; background-repeat: repeat !important; pointer-events: none !important; display: block !important; visibility: visible !important; width: unset !important; height: unset !important; opacity: unset !important; background-color: unset !important;`).appendTo("body");
     }
     /* 获取特定名字空间前缀正则表达式 */
     function getNamespacePrefixRegex(namespaceNumber) {
