@@ -1,10 +1,11 @@
 import console from "../modules/console.js";
 console.info("Start initialization...");
+import { exit } from "process";
+import { startGroup, endGroup } from "@actions/core";
 import exec from "../modules/exec.js";
 import { git } from "../modules/git.js";
 import { octokit, isInGithubActions } from "../modules/octokit.js";
-import { startGroup, endGroup } from "@actions/core";
-import { exit } from "process";
+import jsonModule from "../modules/jsonModule.js";
 
 if (!isInGithubActions) {
     console.info("Not running in github actions, exit.");
@@ -26,10 +27,21 @@ const triggerLinterTest = async (force = false) => {
         console.info("Nothing need to lint, exit.");
         exit(0);
     }
+    const { commits, head_commit } = await jsonModule.readFile(process.env.GITHUB_EVENT_PATH);
+    const allCommits = Array.isArray(commits) ? commits : [];
+    if (head_commit && !allCommits.map(({ id }) => id).includes(head_commit.id)) {
+        allCommits.push(head_commit);
+    }
+    startGroup("Found commits:");
+    console.info(allCommits);
+    endGroup();
     console.info("Start to trigger linter test...");
     const result = await octokit.rest.actions.createWorkflowDispatch({
         workflow_id: "Linter test.yml",
         ref: process.env.GITHUB_REF,
+        inputs: {
+            commits: JSON.stringify(allCommits),
+        },
     });
     startGroup("Successfully triggered the linter test:");
     console.info(result);

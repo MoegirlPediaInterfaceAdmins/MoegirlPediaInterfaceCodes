@@ -1,6 +1,6 @@
 {
     "$id": "https://github.com/MoegirlPediaInterfaceAdmins/MoegirlPediaInterfaceCodes/blob/master/.vscode/json-schemas/gadget-definition.json",
-    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$schema": "http://json-schema.org/draft-07/schema#",
     "type": "object",
     "title": "小工具定义",
     "additionalProperties": false,
