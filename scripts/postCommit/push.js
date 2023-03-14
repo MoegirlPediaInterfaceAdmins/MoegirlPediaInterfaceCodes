@@ -11,23 +11,25 @@ if (!isInGithubActions) {
     console.info("Not running in github actions, exit.");
     exit(0);
 }
+const GITHUB_EVENT = await jsonModule.readFile(process.env.GITHUB_EVENT_PATH);
 const isPushRequest = ["push"].includes(process.env.GITHUB_EVENT_NAME);
 console.info("isPushRequest:", isPushRequest);
-console.info("process.env.GITHUB_SHA:", process.env.GITHUB_SHA);
-const changedFilesInLastCommit = (await git.raw(["diff-tree", "-c", "-r", "--no-commit-id", "--name-only", process.env.GITHUB_SHA])).trim();
-startGroup("changedFilesInLastCommit:");
-console.info(changedFilesInLastCommit);
+const { before, after } = GITHUB_EVENT;
+console.info("commits:", { before, after });
+const changedFiles = (await git.raw(["diff-tree", "-c", "-r", "--no-commit-id", "--name-only", before, after])).trim();
+startGroup("changedFiles:");
+console.info(changedFiles);
 endGroup();
 const triggerLinterTest = async (force = false) => {
     if (!isPushRequest && !force) {
         console.info("This workflow is not triggered by `push` or `pull_request`, exit.");
         exit(0);
     }
-    if (changedFilesInLastCommit.split("\n").filter((file) => file.startsWith("src/")).length === 0 && !force) {
+    if (changedFiles.split("\n").filter((file) => file.startsWith("src/")).length === 0 && !force) {
         console.info("Nothing need to lint, exit.");
         exit(0);
     }
-    const { commits, head_commit } = await jsonModule.readFile(process.env.GITHUB_EVENT_PATH);
+    const { commits, head_commit } = GITHUB_EVENT;
     const allCommits = Array.isArray(commits) ? commits : [];
     if (head_commit && !allCommits.map(({ id }) => id).includes(head_commit.id)) {
         allCommits.push(head_commit);
