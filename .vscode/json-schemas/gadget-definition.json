@@ -292,32 +292,21 @@
     "default": {
         "ResourceLoader": true,
         "hidden": false,
-        "default": true,
+        "default": false,
         "supportsUrlLoad": false,
         "targets": [],
         "skins": [],
         "actions": [],
         "type": "general",
         "package": false,
-        "rights": [
-            "block",
-            "noratelimit"
-        ],
+        "rights": [],
         "peers": [],
-        "dependencies": [
-            "mediawiki.api",
-            "mediawiki.ForeignApi",
-            "moment",
-            "mediawiki.user"
-        ],
+        "dependencies": [],
         "_sites": [
             "zh"
         ],
         "_section": "administration",
-        "_files": [
-            "MediaWiki:Gadget-backlog.css",
-            "MediaWiki:Gadget-backlog.js"
-        ]
+        "_files": []
     },
     "examples": [
         {

@@ -8,6 +8,11 @@ $(() => {
     $("#mw-notification-area").appendTo($body);
     const api = new mw.Api();
 
+    /**
+     * @type { { [key: string]: { status: string | undefined, archiveOffset: number, precomment: string, comment: string } } }
+     */
+    const caches = {};
+
     class MARWindow extends OO.ui.ProcessDialog {
         static static = {
             ...super.static,
@@ -63,6 +68,9 @@ $(() => {
         sectionTitleWidget = new OO.ui.Widget({
             classes: ["AnnTools_paragraphs"],
         });
+        /**
+         * @type { string | undefined }
+         */
         get sectionTitle() {
             return this.sectionTitleWidget.getData();
         }
@@ -74,9 +82,15 @@ $(() => {
             })),
             classes: ["AnnTools_RadioSelectWidget_column_2"],
         });
+        /**
+         * @type { string | undefined }
+         */
         get status() {
             return this.statusRadioSelect.findSelectedItem()?.getData?.();
         }
+        /**
+         * @type { string | undefined }
+         */
         get statusLabel() {
             return this.statusRadioSelect.findSelectedItem()?.getLabel?.();
         }
@@ -134,9 +148,28 @@ $(() => {
         getBodyHeight() {
             return this.panelLayout.$element.outerHeight(true);
         }
+        getSetupProcess(data) {
+            return super.getSetupProcess(data).next(() => {
+                if (this.sectionTitle && Reflect.has(caches, this.sectionTitle)) {
+                    const cache = caches[this.sectionTitle];
+                    if (cache.status) {
+                        this.statusRadioSelect.selectItemByData(cache.status);
+                    }
+                    this.archiveOffsetNumberInput.setValue(cache.archiveOffset);
+                    this.precommentMultilineTextInput.setValue(cache.precomment);
+                    this.commentTextInput.setValue(cache.comment);
+                }
+            }, this);
+        }
         getActionProcess(action) {
             if (action === "cancel") {
                 return new OO.ui.Process(() => this.close({ action }).closed.promise()).next(() => {
+                    caches[this.sectionTitle] = {
+                        status: this.status,
+                        archiveOffset: this.archiveOffset,
+                        precomment: this.precomment,
+                        comment: this.comment,
+                    };
                     this.statusRadioSelect.selectItem();
                     this.archiveOffsetNumberInput.setValue(3);
                     this.precommentMultilineTextInput.setValue("");
