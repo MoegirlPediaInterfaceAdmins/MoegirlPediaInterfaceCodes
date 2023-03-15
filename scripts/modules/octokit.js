@@ -31,44 +31,65 @@ console.log("octokitBaseOptions:", octokitBaseOptions);
 console.log("auth:", auth);
 endGroup();
 const createIssue = async (issueTitle, issueBody, labels) => {
-    if (isInMasterBranch) {
-        console.info("[createIssue] Running in the master branch, searching current opened issue with labels:", labels);
-        const issues = (await octokit.rest.issues.listForRepo({
-            labels: labels.join(","),
-        })).data;
-        startGroup("[createIssue] Current opened issue:");
-        console.info(issues);
-        endGroup();
-        for (const { number, title, body } of issues) {
-            console.info("[createIssue] Checking issue:", { number, title, body });
-            if (title !== issueTitle || body !== issueBody) {
-                console.info("[createIssue] Issue is not relative, ignore.");
-                continue;
-            }
-            console.info("[createIssue] Issue is relative, start to close issue...");
-            const result = await octokit.rest.issues.update({
-                issue_number: number,
-                state: "closed",
-                state_reason: "completed",
-            });
-            startGroup("[createIssue] Successfully closed the issue:");
-            console.info(result);
-            endGroup();
+    if (!isInMasterBranch) {
+        console.info("Not running in the master branch, exit.");
+        return;
+    }
+    console.info("[createIssue] Running in the master branch, searching current opened issue with labels:", labels);
+    const issues = (await octokit.rest.issues.listForRepo({
+        labels: labels.join(","),
+    })).data;
+    startGroup("[createIssue] Current opened issue:");
+    console.info(issues);
+    endGroup();
+    let issue_number;
+    const runUrl = `https://github.com/${octokitBaseOptions.owner}/${octokitBaseOptions.repo}/actions/runs/${process.env.GITHUB_RUN_ID}`;
+    const body = `${assignees.map((assignee) => `@${assignee}`).join(" ")} Occured at ${runUrl}`;
+    for (const { number, title, body } of issues) {
+        console.info("[createIssue] Checking issue:", { number, title, body });
+        if (title !== issueTitle || body !== issueBody) {
+            console.info("[createIssue] Issue is not relative, ignore.");
+            continue;
         }
+        if (typeof issue_number !== "number") {
+            console.info("[createIssue] Issue is relative, reuse it:", issue_number);
+            issue_number = number;
+            continue;
+        }
+        console.info("[createIssue] Issue is duplicated, start to close issue...");
+        const result = await octokit.rest.issues.update({
+            issue_number: number,
+            state: "closed",
+            state_reason: "not_planned",
+        });
+        startGroup("[createIssue] Successfully closed the issue:");
+        console.info(result);
+        endGroup();
+    }
+    if (typeof issue_number !== "number") {
         const options = {
             title: issueTitle,
             body: issueBody,
             labels,
             assignees,
         };
-        console.info("[createIssue] Start to create issue:", options);
+        console.info("[createIssue] No relative issue found, start to create issue:", options);
         const result = await octokit.rest.issues.create(options);
         startGroup("[createIssue] Successfully created the issue:");
         console.info(result);
         endGroup();
-        return result;
+        issue_number = result.data.number;
     }
-    console.info("Not running in the master branch, exit.");
+    const options = {
+        issue_number,
+        body,
+    };
+    console.info("[createIssue] Start to reply the relative issue:", options);
+    const result = await octokit.rest.issues.createComment(options);
+    startGroup("[createIssue] Successfully replied the relative the issue:");
+    console.info(result);
+    endGroup();
+    return issue_number;
 };
 export { octokit, isInMasterBranch, octokitBaseOptions, createIssue, isInGithubActions };
 export default { octokit, isInMasterBranch, octokitBaseOptions, createIssue, isInGithubActions };

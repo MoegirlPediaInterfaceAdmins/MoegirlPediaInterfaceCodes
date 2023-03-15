@@ -2,6 +2,7 @@ name: Linter test
 
 on:
   workflow_dispatch:
+  workflow_call:
     inputs:
       commits:
         description: "commits json, only for postCommit"
@@ -37,15 +38,4 @@ jobs:
       - name: Run v8r
         run: npx v8r
       - name: Check .mailmap
-        run: node scripts/mailmapChecker/index.js
-      - name: Trigger post commit CI
-        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
-        uses: actions/github-script@v6
-        with:
-          script: |
-            github.rest.actions.createWorkflowDispatch({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              workflow_id: 'postCommit.yml',
-              ref: context.ref,
-            })
+        run: node scripts/emailmapChecker/index.js

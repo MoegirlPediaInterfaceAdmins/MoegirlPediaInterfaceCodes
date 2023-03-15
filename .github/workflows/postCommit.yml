@@ -71,3 +71,8 @@ jobs:
         run: node scripts/postCommit/linguist-generated.js
       - name: Show git status & push
         run: node scripts/postCommit/push.js
+      - name: Run linter test
+        uses: .github/workflows/Linter test.yml
+        with:
+          commits: ${{ env.commits }}
+        if: ${{ env.linterTest == "true" }}
