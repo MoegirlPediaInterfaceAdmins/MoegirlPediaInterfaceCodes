@@ -1,10 +1,10 @@
 import console from "../modules/console.js";
 console.info("Start initialization...");
 import { exit } from "process";
-import { startGroup, endGroup } from "@actions/core";
+import { startGroup, endGroup, exportVariable } from "@actions/core";
 import exec from "../modules/exec.js";
 import { git } from "../modules/git.js";
-import { octokit, isInGithubActions } from "../modules/octokit.js";
+import { isInGithubActions } from "../modules/octokit.js";
 import jsonModule from "../modules/jsonModule.js";
 
 if (!isInGithubActions) {
@@ -20,7 +20,7 @@ const changedFiles = before && after ? (await git.raw(["diff-tree", "-c", "-r", 
 startGroup("changedFiles:");
 console.info(changedFiles);
 endGroup();
-const triggerLinterTest = async (force = false) => {
+const triggerLinterTest = (force = false) => {
     if (!isPushRequest && !force) {
         console.info("This workflow is not triggered by `push` or `pull_request`, exit.");
         exit(0);
@@ -37,17 +37,9 @@ const triggerLinterTest = async (force = false) => {
     startGroup("Found commits:");
     console.info(allCommits);
     endGroup();
-    console.info("Start to trigger linter test...");
-    const result = await octokit.rest.actions.createWorkflowDispatch({
-        workflow_id: "Linter test.yml",
-        ref: process.env.GITHUB_REF,
-        inputs: {
-            commits: JSON.stringify(allCommits),
-        },
-    });
-    startGroup("Successfully triggered the linter test:");
-    console.info(result);
-    endGroup();
+    exportVariable("commits", JSON.stringify(allCommits));
+    exportVariable("linterTest", "true");
+    console.info("Exposed envs, exit.");
     console.info("Done.");
     exit(0);
 };
