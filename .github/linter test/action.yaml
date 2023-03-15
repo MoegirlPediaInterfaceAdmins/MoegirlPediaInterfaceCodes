@@ -20,7 +20,7 @@ runs:
         path: .cache
         key: cache@${{ github.ref }}
     - name: Check eslint environment
-      run: npx eslint --env-info && echo ---- && mkdir -p .cache && echo ---- && ls -lhA .cache && echo ---- && ls -lhA $RUNNER_TEMP
+      run: npx eslint --env-info && mkdir -p .cache && echo ---- && ls -lhA .cache
       shell: bash
     - name: Run eslint
       run: npx eslint --exit-on-fatal-error --max-warnings 0 --cache --cache-strategy content --cache-location ".cache/" --ext js ./src
