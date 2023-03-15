@@ -4,12 +4,8 @@ import fs from "fs";
 import path from "path";
 import createCommit from "../modules/createCommit.js";
 import jsonModule from "../modules/jsonModule.js";
+import { sortWithLowerFirstCharacter } from "../modules/sortWithLowerFirstCharacter.js";
 
-/**
- * @param {string} str 
- * @returns {string}
- */
-const toLowerFirstCharacter = (str) => str[0].toLowerCase() + str.slice(1);
 const settings = await jsonModule.readFile(".vscode/settings.json");
 const totalScopes = [];
 const dirents = await fs.promises.readdir("src", {
@@ -36,10 +32,7 @@ for (const dirent of dirents) {
             }
         }
     }
-    const list = [...listSet];
-    const lowerCaseList = list.map((item) => toLowerFirstCharacter(item));
-    lowerCaseList.sort();
-    list.sort((a, b) => lowerCaseList.indexOf(toLowerFirstCharacter(a)) - lowerCaseList.indexOf(toLowerFirstCharacter(b)));
+    const list = sortWithLowerFirstCharacter([...listSet]);
     console.info(`[${type}]`, "list after sorting:", list);
     const scopes = list.map((_name) => {
         let name;

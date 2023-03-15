@@ -59,6 +59,7 @@ $(() => {
         static bolbLabel(text) {
             return $("<span>").addClass("AnnTools_bolb").text(text);
         }
+
         panelLayout = new OO.ui.PanelLayout({
             scrollable: false,
             expanded: false,
@@ -190,7 +191,7 @@ $(() => {
                         prop: "sections",
                     })).parse.sections.map(({ anchor, index }) => [anchor, index]));
                     if (!Reflect.has(toclist, this.sectionTitle)) {
-                        throw new OO.ui.Error(wgULS("小工具无法根据段落标题找到该段落，请移除该段落标题内的模板后再行操作……"), { // @TODOs
+                        throw new OO.ui.Error(wgULS("小工具无法根据段落标题找到该段落，请移除该段落标题内的模板后再行操作……"), { // @TODO
                             recoverable: false,
                         });
                     }

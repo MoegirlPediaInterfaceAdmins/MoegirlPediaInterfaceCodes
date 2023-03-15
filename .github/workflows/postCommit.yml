@@ -69,10 +69,12 @@ jobs:
         run: node scripts/conventionalCommitsScopesGenerator/index.js
       - name: linguist-generated
         run: node scripts/postCommit/linguist-generated.js
-      - name: Show git status & push
+      - name: Show git status
         run: node scripts/postCommit/push.js
-      - name: Run linter test
+      - name: Run linter test # Name MUST NOT be changed.
         uses: ./.github/linter test
         with:
           commits: ${{ env.commits }}
         if: ${{ env.linterTest == 'true' }}
+      - name: push
+        run: node scripts/postCommit/push.js

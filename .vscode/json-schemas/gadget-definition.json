@@ -165,19 +165,7 @@
             ]
         },
         "rights": {
-            "type": "array",
-            "default": [],
-            "title": "rights 指定用户所需要的权限，如无需权限可保留空数组，但不能删去",
-            "uniqueItems": true,
-            "minItems": 0,
-            "items": {
-                "type": "string",
-                "title": "每个权限一个元素",
-                "examples": []
-            },
-            "examples": [
-                []
-            ]
+            "$ref": "user-rights-definition.json#/definitions/userRights"
         },
         "peers": {
             "type": "array",
