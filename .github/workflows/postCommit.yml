@@ -70,7 +70,7 @@ jobs:
       - name: linguist-generated
         run: node scripts/postCommit/linguist-generated.js
       - name: Show git status
-        run: node scripts/postCommit/push.js
+        run: node scripts/postCommit/preparePush.js
       - name: Run linter test # Name MUST NOT be changed.
         uses: ./.github/linter test
         with:

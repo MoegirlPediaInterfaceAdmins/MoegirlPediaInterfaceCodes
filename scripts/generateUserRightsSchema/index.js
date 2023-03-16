@@ -28,7 +28,7 @@ const schema = await jsonModule.readFile(".vscode/json-schemas/user-rights-defin
 startGroup("old schema:");
 console.info(schema);
 endGroup();
-schema.definitions.userRights.items.enum = userRights;
+schema.definitions.userRights.enum = userRights;
 startGroup("new schema:");
 console.info(schema);
 endGroup();

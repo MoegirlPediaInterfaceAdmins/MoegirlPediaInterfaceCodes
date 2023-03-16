@@ -1,0 +1,30 @@
+.AnnTools_bolb {
+    font-weight: bold;
+}
+
+.AnnTools_paragraphs {
+    text-indent: 2em;
+}
+
+.AnnTools_log {
+    display: flex;
+}
+
+
+.AnnTools_log_message {
+    flex-grow: 1;
+}
+
+.AnnTools_log_status {
+    flex-shrink: 0;
+    width: 3em;
+    text-align: center;
+}
+
+.AnnTools_log-success .AnnTools_log_status {
+    color: #67CA75;
+}
+
+.AnnTools_log-failed {
+    color: #FF7272;
+}

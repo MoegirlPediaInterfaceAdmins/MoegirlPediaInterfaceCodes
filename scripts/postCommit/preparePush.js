@@ -14,8 +14,13 @@ const GITHUB_EVENT = await jsonModule.readFile(process.env.GITHUB_EVENT_PATH);
 const isPushRequest = ["push"].includes(process.env.GITHUB_EVENT_NAME);
 console.info("isPushRequest:", isPushRequest);
 const { before, after } = GITHUB_EVENT;
-console.info("commits:", { before, after });
-const changedFiles = before && after ? (await git.raw(["diff-tree", "-c", "-r", "--no-commit-id", "--name-only", before, after])).trim() : "";
+const isBeforeExists = before && after && (await git.branch(["--contains", before]).catch(() => ({ current: "" }))).current.length > 0;
+console.info("commits:", { before, after, isBeforeExists });
+const commits = [after];
+if (isBeforeExists) {
+    commits.unshift(before);
+}
+const changedFiles = before && after ? (await git.raw(["diff-tree", "-c", "-r", "--no-commit-id", "--name-only", ...commits])).trim() : "";
 startGroup("changedFiles:");
 console.info(changedFiles);
 endGroup();

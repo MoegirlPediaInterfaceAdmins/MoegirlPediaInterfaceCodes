@@ -86,6 +86,7 @@
     - autoconfirmedUserPing
     - widgetPreload
     - wikiBlame
+    - quickSave
 
 - name: interface
   gadgets:
