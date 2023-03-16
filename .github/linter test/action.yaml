@@ -29,7 +29,7 @@ runs:
       run: npx stylelint --max-warnings 0 --cache --cache-strategy content --cache-location ".cache/" "src/**/*.css"
       shell: bash
     - name: Run v8r
-      run: npx v8r
+      run: echo "::group::v8r output" && npx v8r && echo "::endgroup::"
       shell: bash
     - name: Check .mailmap
       run: node scripts/emailmapChecker/index.js
