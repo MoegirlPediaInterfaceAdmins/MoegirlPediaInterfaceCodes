@@ -3,6 +3,20 @@ name: Linter test
 on:
   workflow_dispatch:
 
+permissions:
+  actions: read
+  checks: read
+  contents: read
+  deployments: read
+  issues: read
+  discussions: read
+  packages: read
+  pages: read
+  pull-requests: read
+  repository-projects: read
+  security-events: write
+  statuses: read
+
 jobs:
   test:
     runs-on: ubuntu-latest
