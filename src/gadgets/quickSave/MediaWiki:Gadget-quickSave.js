@@ -194,7 +194,7 @@ $(() => {
                             type: "success",
                             tag: "AnnTools_QuickSave",
                         });
-                        // setTimeout(() => location.reload(), 730);
+                        setTimeout(() => location.reload(), 730);
                     } catch (e) {
                         console.error("[QuickSave] Error:", e);
                         throw new OO.ui.Error(e);
@@ -204,8 +204,9 @@ $(() => {
             return super.getActionProcess(action);
         }
         async quickSave({ section }) {
+            this.progress.log("标题存在！");
             this.progress.nextStep();
-            this.progress.log("开始获取段落内容……");
+            this.progress.log("正在获取段落内容……");
             const sectionContent = await $.ajax({
                 url: `${mw.config.get("wgServer")}${mw.config.get("wgScriptPath")}/index.php`,
                 data: {
