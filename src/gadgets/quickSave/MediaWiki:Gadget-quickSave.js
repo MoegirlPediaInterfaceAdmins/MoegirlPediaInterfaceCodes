@@ -55,7 +55,7 @@ $(() => {
          * @param {number} steps 
          * @param {QSWindow} dialog
          */
-        constructor(steps, dialog) {
+        constructor (steps, dialog) {
             this.steps = steps;
             this.dialog = dialog;
             this.progressLogWidget.$element.append(this.$progressLogList);
@@ -146,7 +146,7 @@ $(() => {
             align: "top",
         });
 
-        constructor(config) {
+        constructor (config) {
             super(config);
             this.hideProgress();
         }
@@ -268,7 +268,7 @@ $(() => {
                 action: "edit",
                 format: "json",
                 title: this.savePageTitle,
-                prependtext: `${this.template}\n`,
+                prependtext: `{{${this.template}}}\n`,
                 tags: "快速存档讨论串|Automation tool",
                 summary: "添加档案馆模板",
             });
