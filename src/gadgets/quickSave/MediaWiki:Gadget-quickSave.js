@@ -97,7 +97,7 @@ $(() => {
         static static = {
             ...super.static,
             tagName: "div",
-            name: "AnnTools_MarkAsResolved",
+            name: "AnnTools_QuickSave",
             title: wgULS("公共讨论页段落存档工具"), // @TODO
             actions: [
                 {
@@ -192,11 +192,11 @@ $(() => {
                         mw.notify(wgULS("即将刷新……", "即將刷新……"), {
                             title: wgULS("存档成功"), // @TODO
                             type: "success",
-                            tag: "AnnTools_MarkAsResolved",
+                            tag: "AnnTools_QuickSave",
                         });
                         // setTimeout(() => location.reload(), 730);
                     } catch (e) {
-                        console.error("[MarkAsResolved] Error:", e);
+                        console.error("[QuickSave] Error:", e);
                         throw new OO.ui.Error(e);
                     }
                 })()).promise(), this);
