@@ -10,8 +10,8 @@ $(() => {
 
     class Log {
         static statusTexts = {
-            SUCCESS: wgULS("成功"),
-            FAILED: wgULS("失败"),
+            SUCCESS: "成功",
+            FAILED: wgULS("失败", "失敗"),
         };
 
         $element = $("<li>");
@@ -98,7 +98,7 @@ $(() => {
             ...super.static,
             tagName: "div",
             name: "AnnTools_QuickSave",
-            title: wgULS("公共讨论页段落存档工具"), // @TODO
+            title: wgULS("公共讨论页段落存档工具", "公共討論頁段落存檔工具"),
             actions: [
                 {
                     action: "cancel",
@@ -153,7 +153,7 @@ $(() => {
         initialize() {
             super.initialize();
             this.panelLayout.$element.append(...[
-                [this.sectionTitleWidget, wgULS("段落标题：")], // @TODO
+                [this.sectionTitleWidget, wgULS("段落标题：", "段落標題：")],
             ].map(([fieldWidget, labelText]) => new OO.ui.FieldLayout(fieldWidget, {
                 label: QSWindow.bolbLabel(labelText),
                 align: "top",
@@ -182,7 +182,7 @@ $(() => {
                         prop: "sections",
                     })).parse.sections.map(({ anchor, index }) => [anchor, index]));
                     if (!Reflect.has(toclist, this.sectionTitle)) {
-                        throw new OO.ui.Error(wgULS("小工具无法根据段落标题找到该段落，请移除该段落标题内的模板后再行操作……"), { // @TODO
+                        throw new OO.ui.Error(wgULS("小工具无法根据段落标题找到该段落，请移除该段落标题内的模板后再行操作……", "小工具無法根據段落標題找到該段落，請移除該段落標題內的模板後再行操作……"), {
                             recoverable: false,
                         });
                     }
@@ -190,7 +190,7 @@ $(() => {
                     try {
                         await this.quickSave({ section });
                         mw.notify(wgULS("即将刷新……", "即將刷新……"), {
-                            title: wgULS("存档成功"), // @TODO
+                            title: wgULS("存档成功", "存檔成功"),
                             type: "success",
                             tag: "AnnTools_QuickSave",
                         });
@@ -307,7 +307,7 @@ $(() => {
         if (content.hasClass("saveNotice")) { continue; }
         const sectionTitle = self.find(".mw-headline").attr("id");
         const button = $("<a>");
-        button.attr("href", "javascript:void(0);").prop("draggable", false).addClass("AnnTools_QuickSave").text(wgULS("快速存档")); // @TODO
+        button.attr("href", "javascript:void(0);").prop("draggable", false).addClass("AnnTools_QuickSave").text(wgULS("快速存档", "快速存檔"));
         self.find(".mw-editsection-bracket").first()
             .after('<span class="mw-editsection-divider"> | </span>')
             .after(button);
