@@ -1,5 +1,5 @@
 /**
- * @source https://www.mediawiki.org/wiki/_?oldid=5135197
+ * @source https://www.mediawiki.org/wiki/_?oldid=5678566
  * 更新后请同步更新上面链接到最新版本
  */
 /* Based on https://www.mediawiki.org/wiki/User:Remember_the_dot/Syntax_highlighter.js */
@@ -312,6 +312,9 @@
     function setup() {
         wpTextbox1 = document.getElementById("wpTextbox1");
         if (!wpTextbox1) {
+            return;
+        }
+        if (document.getElementById("wpTextbox0")) {
             return;
         }
         function configureColor(parameterName, hardcodedFallback, defaultOk) {

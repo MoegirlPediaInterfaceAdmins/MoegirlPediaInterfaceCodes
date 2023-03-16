@@ -1,5 +1,5 @@
 /**
- * @source https://en.wikipedia.org/wiki/_?oldid=1138216587
+ * @source https://en.wikipedia.org/wiki/_?oldid=1141136990
  * 更新后请同步更新上面链接到最新版本
  */
 /*
@@ -1267,7 +1267,7 @@ $(() => {
         aborted = false;
         method = "GET";
         async = true;
-        constructor (url) {
+        constructor(url) {
             if (typeof XMLHttpRequest !== "undefined") {
                 this.http = new XMLHttpRequest();
             }
@@ -1980,7 +1980,7 @@ $(() => {
     class Title extends Stringwrapper {
         value = null;
         anchor = "";
-        constructor (val) {
+        constructor(val) {
             super();
             this.setUtf(val);
         }
@@ -2945,7 +2945,7 @@ $(() => {
     class Previewmaker {
         maxCharacters = getValueOf("popupMaxPreviewCharacters");
         maxSentences = getValueOf("popupMaxPreviewSentences");
-        constructor (wikiText, baseUrl, owner) {
+        constructor(wikiText, baseUrl, owner) {
             this.originalData = wikiText;
             this.baseUrl = baseUrl;
             this.owner = owner;
@@ -3958,6 +3958,7 @@ $(() => {
             tt: [R, "yünältü", "перенаправление", "перенапр"],
             uk: [R, "ПЕРЕНАПРАВЛЕННЯ", "ПЕРЕНАПР"],
             vi: [r, "đổi"],
+            yi: [R, "ווייטערפירן"],
             zh: [R, "重定向"],
         };
         const redirList = redirLists[pg.wiki.lang] || [r, R];
@@ -4182,7 +4183,7 @@ $(() => {
         width = 0;
         height = 0;
         mainDiv = null;
-        constructor () {
+        constructor() {
             this.createMainDiv();
         }
         isVisible() {

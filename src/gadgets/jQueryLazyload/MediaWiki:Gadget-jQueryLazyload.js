@@ -1,5 +1,5 @@
 /**
- * @source https://github.com/tuupola/lazyload
+ * @source https://github.com/tuupola/lazyload/compare/2.x...d3ad81c12332a0f950c6c703ff975b60350405a4
  * 更新后请同步更新上面链接到最新版本
  */
 /*!
