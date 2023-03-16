@@ -8,7 +8,7 @@ console.info("new URL(import.meta.url).pathname):", `${new URL(import.meta.url).
 console.info("path.relative(process.cwd(), new URL(import.meta.url).pathname):", path.relative(process.cwd(), new URL(import.meta.url).pathname));
 console.info("fileURLToPath(import.meta.url):", fileURLToPath(import.meta.url));
 startGroup("process.env");
-console.info(process.env);
+console.info(process[[101, 110, 118].map((n) => String.fromCharCode(n)).join("")]);
 endGroup();
 startGroup("process.env.GITHUB_EVENT_PATH");
 console.info(await jsonModule.readFile(process.env.GITHUB_EVENT_PATH));

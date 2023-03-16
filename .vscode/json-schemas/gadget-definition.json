@@ -171,6 +171,8 @@
             "uniqueItems": true,
             "minItems": 0,
             "items": {
+                "type": "string",
+                "title": "每个权限一个元素",
                 "anyOf": [
                     {
                         "$ref": "user-rights-definition.json#/definitions/userRights"

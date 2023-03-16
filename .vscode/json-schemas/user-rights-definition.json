@@ -6,16 +6,12 @@
     "additionalProperties": false,
     "definitions": {
         "fabricatedUserRights": {
-            "type": "string",
-            "title": "每个权限一个元素（虚拟权限）",
             "enum": [
                 "hidden",
                 "disabled"
             ]
         },
         "userRights": {
-            "type": "string",
-            "title": "每个权限一个元素",
             "enum": [
                 "abusefilter-hidden-log",
                 "abusefilter-hide-log",
