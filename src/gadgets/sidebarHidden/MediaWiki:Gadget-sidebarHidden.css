@@ -48,7 +48,8 @@ html.sidebarHiddenOn #sidebarHidden-arrow {
     position: fixed;
     width: 0.8em;
     height: 0.8em;
-    top: calc(2.5em + 60px + 34px); /* 34px 是 2022 春季版头适配 */
+    top: calc(2.5em + 60px + 34px);
+    /* 34px 是 2022 春季版头适配 */
     cursor: pointer;
     padding: 0.3em;
     border-radius: 50%;
@@ -62,10 +63,7 @@ html.sidebarHiddenOn #sidebarHidden-arrow {
 html.sidebarHiddenOn #sidebarHidden-arrow-left,
 html.sidebarHiddenOn #sidebarHidden-arrow-right {
     position: absolute;
-    top: 0.3em;
-    left: 0.3em;
-    right: 0.3em;
-    bottom: 0.3em;
+    inset: 0.3em;
     pointer-events: none;
     transition: 0.37s ease-in-out all;
 }

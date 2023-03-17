@@ -8,3 +8,4 @@ plugins:
     specificityMatchingName: GaiBuHuiZhenYouRenYongZheGeClassBa
   postcss-font-variant: {}
   postcss-discard-comments: {}
+  postcss-logical: {}
