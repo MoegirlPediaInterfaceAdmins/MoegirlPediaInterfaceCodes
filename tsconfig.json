@@ -9,7 +9,11 @@
         "downlevelIteration": true,
         "incremental": true,
         "tsBuildInfoFile": ".cache/.tsbuildinfo",
-        "lib": ["ESNext", "DOM"]
+        "lib": [
+            "ESNext",
+            "DOM"
+        ],
+        "ignoreDeprecations": "5.0"
     },
     "include": [
         "src",
