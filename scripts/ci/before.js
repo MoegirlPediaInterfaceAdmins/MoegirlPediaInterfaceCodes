@@ -1,4 +1,4 @@
-import console from "../modules/console.js";
+import console, { globalConsole } from "../modules/console.js";
 console.info("Start initialization...");
 import jsonModule from "../modules/jsonModule.js";
 const isInGithubActions = process.env.GITHUB_ACTIONS === "true";
@@ -22,4 +22,4 @@ for (const key of Object.keys(packageLockFileContent.packages)) {
 console.info("Start to write back", packageLockFile);
 await jsonModule.writeFile(packageLockFile, packageLockFileContent);
 console.info("Done.");
-console.Console.prototype.info.bind(console)("=".repeat(120));
+globalConsole.info("=".repeat(120));
