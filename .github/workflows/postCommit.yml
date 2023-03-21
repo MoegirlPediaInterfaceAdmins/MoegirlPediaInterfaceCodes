@@ -13,6 +13,8 @@ on:
       - .github/workflows/Linter test.yml
       - .github/linter test/action.yaml
       - .vscode/json-schemas/gadget-definition.json
+      - .browserslistrc
+      - .*.yaml
       - package-lock.json
   workflow_dispatch:
   schedule:

@@ -6,6 +6,17 @@ import { git } from "../modules/git.js";
 import { isInGithubActions } from "../modules/octokit.js";
 import jsonModule from "../modules/jsonModule.js";
 
+const contentConfigs = [
+    "src/gadgets/Gadgets-definition-list.yaml",
+    ".github/linter test/action.yaml",
+    ".vscode/json-schemas/gadget-definition.json",
+    ".browserslistrc",
+    "package-lock.json",
+];
+/**
+ * @type {(files: string[]) => boolean}
+ */
+const detectContentChanged = (files) => files.filter((file) => file.startsWith("src/") || contentConfigs.includes(file) || /^\.[^.\\]+\.yaml$/.test(file)).length > 0;
 if (!isInGithubActions) {
     console.info("Not running in github actions, exit.");
     exit(0);
@@ -29,7 +40,7 @@ const triggerLinterTest = (force = false) => {
         console.info("This workflow is not triggered by `push` or `pull_request`, exit.");
         exit(0);
     }
-    if (changedFiles.split("\n").filter((file) => file.startsWith("src/")).length === 0 && !force) {
+    if (!detectContentChanged(changedFiles.split("\n")) && !force) {
         console.info("Nothing need to lint, exit.");
         exit(0);
     }
@@ -57,4 +68,4 @@ if (!Array.isArray(changedFilesFromEnv) || changedFilesFromEnv.length === 0) {
     console.info("Unable to get changed files.");
     triggerLinterTest();
 }
-triggerLinterTest(changedFilesFromEnv.filter((file) => file.startsWith("src/")).length > 0);
+triggerLinterTest(detectContentChanged(changedFilesFromEnv));
