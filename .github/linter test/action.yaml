@@ -2,11 +2,6 @@ name: linter test
 
 description: linter test
 
-inputs:
-  commits:
-    description: "commits json, only for postCommit"
-    required: false
-
 branding:
   icon: type
   color: purple
@@ -39,8 +34,5 @@ runs:
       with:
         languages: javascript
         config-file: ./.github/codeql-config.yml
-    - name: Check ref and sha
-      run: 'echo "Github context:" && echo "    ref: ${{ github.ref }}" && echo "    sha: ${{ github.sha }}" && echo "env:" && echo "    ref: $GITHUB_REF" && echo "    sha: $GITHUB_SHA" && echo "git log -1:" && git log -1'
-      shell: bash
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v2

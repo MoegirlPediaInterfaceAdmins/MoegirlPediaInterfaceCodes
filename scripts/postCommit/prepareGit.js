@@ -1,12 +1,11 @@
 import console from "../modules/console.js";
 console.info("Start initialization...");
 import { isInGithubActions } from "../modules/octokit.js";
-import { exit } from "process";
 import { git } from "../modules/git.js";
 
 if (!isInGithubActions) {
     console.info("Not running in github actions, exit.");
-    exit(0);
+    process.exit(0);
 }
 console.info("Running in github actions, preparing git...");
 const name = "github-actions[bot]";

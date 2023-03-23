@@ -32,4 +32,4 @@ jobs:
       - name: Generate user rights schema
         run: node scripts/generateUserRightsSchema/index.js
       - name: Show git status & push
-        run: node scripts/postCommit/preparePush.js && node scripts/postCommit/push.js
+        run: node scripts/postCommit/push.js

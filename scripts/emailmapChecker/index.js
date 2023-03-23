@@ -2,9 +2,8 @@ import console from "../modules/console.js";
 console.info("Start initialization...");
 import fs from "fs";
 import { git } from "../modules/git.js";
-import { startGroup, endGroup, getInput } from "@actions/core";
+import { startGroup, endGroup } from "@actions/core";
 import { isInGithubActions } from "../modules/octokit.js";
-import { exit } from "process";
 
 const detectIfBot = (name, email) => name.endsWith("[bot]") || email.split("@")[1] === "github.com";
 
@@ -17,7 +16,7 @@ const getGitConfigs = async (types) => (await Promise.all(types.map(async (type)
 const localGitConfigs = await getGitConfigs(["user", "author", "committer"]);
 if (!isInGithubActions && localGitConfigs.length === 0) {
     console.info("No email found, exit.");
-    exit(0);
+    process.exit(0);
 }
 const mailmap = await fs.promises.readFile(".mailmap", { encoding: "utf-8" });
 startGroup(".mailmap:");
@@ -28,10 +27,10 @@ startGroup("mailSet:");
 console.info(mailSet);
 endGroup();
 if (isInGithubActions) {
-    const commits = getInput("commits");
-    if (commits.length === 0) {
+    const { commits } = process.env;
+    if (typeof commits !== "string" || commits.length === 0) {
         console.info("Running in github actions, but no commit input, exit.");
-        exit(0);
+        process.exit(0);
     }
     const failures = [];
     const allCommits = JSON.parse(commits);
@@ -52,10 +51,10 @@ if (isInGithubActions) {
     }
     if (failures.length === 0) {
         console.info("All the emails are in .mailmap, exit.");
-        exit(0);
+        process.exit(0);
     }
     console.error("Found emails not in .mailmap, please add it:", failures);
-    exit(1);
+    process.exit(1);
 } else {
     const failures = [];
     startGroup("Running in local, localGitConfigs:");
@@ -68,8 +67,8 @@ if (isInGithubActions) {
     }
     if (failures.length === 0) {
         console.info("All the emails are in .mailmap, exit.");
-        exit(0);
+        process.exit(0);
     }
     console("Found emails not in .mailmap, please add it:", failures);
-    exit(1);
+    process.exit(1);
 }

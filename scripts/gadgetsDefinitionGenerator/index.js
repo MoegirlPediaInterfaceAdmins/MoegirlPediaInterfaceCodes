@@ -4,7 +4,6 @@ import fs from "fs";
 import path from "path";
 import { startGroup, endGroup } from "@actions/core";
 import createCommit from "../modules/createCommit.js";
-import { exit } from "process";
 import yamlModule from "../modules/yamlModule.js";
 
 const gadgetBaseRoot = "src/gadgets";
@@ -58,7 +57,7 @@ for (const gadgetDirent of await fs.promises.readdir(gadgetBaseRoot, { withFileT
         }
     } catch (err) {
         console.error(`[${gadget}]`, "error:", err);
-        exit(1);
+        process.exit(1);
     }
 }
 startGroup("gadgetsDefinitionList final:");
