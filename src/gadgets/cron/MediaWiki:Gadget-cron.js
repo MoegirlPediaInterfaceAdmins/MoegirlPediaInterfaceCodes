@@ -148,6 +148,9 @@ const require = () => window.luxon;
                         return self._wcOrAll(timeName);
                     });
                 },
+                getNextDateFrom: function(start, zone) {
+                    return this._getNextDateFrom(start, zone);
+                },
                 _getNextDateFrom: function(start, zone) {
                     var date = start = start instanceof Date ? luxon.DateTime.fromJSDate(start) : start, firstDate = start.toMillis();
                     if (zone && (date = date.setZone(zone)), this.realDate || 0 < date.millisecond && (date = date.set({
@@ -158,45 +161,129 @@ const require = () => window.luxon;
                         var diff = date - start;
                         if (Date.now() > timeout) throw new Error(`Something went wrong. It took over five seconds to find the next execution time for the cron job.
 							Please refer to the canonical issue (https://github.com/kelektiv/node-cron/issues/467) and provide the following string if you would like to help debug:
-							Time Zone: ${zone || '""'} - Cron String: ${this} - UTC offset: ${date.format("Z")} - current Date: ` + luxon.DateTime.local().toString());
-                        if (date.month - 1 in this.month || 12 === Object.keys(this.month).length) if (date.day in this.dayOfMonth || 31 === Object.keys(this.dayOfMonth).length || date.getWeekDay() in this.dayOfWeek && 7 !== Object.keys(this.dayOfWeek).length) if (date.getWeekDay() in this.dayOfWeek || 7 === Object.keys(this.dayOfWeek).length || date.day in this.dayOfMonth && 31 !== Object.keys(this.dayOfMonth).length) if (date.hour in this.hour || 24 === Object.keys(this.hour).length) if (date.minute in this.minute || 60 === Object.keys(this.minute).length) if (date.second in this.second || 60 === Object.keys(this.second).length) {
-                            if (date.toMillis() !== firstDate) break;
-                            date = date.set({
-                                second: date.second + 1
-                            });
-                        } else date = date.set({
-                            second: 59 === date.second && 6e4 < diff ? 0 : date.second + 1
-                        }); else date = (date = date.set({
-                            minute: 59 === date.minute && 36e5 < diff ? 0 : date.minute + 1
-                        })).set({
-                            second: 0
-                        }); else date = (date = date.set({
-                            hour: 23 === date.hour && 864e5 < diff ? 0 : date.hour + 1
-                        })).set({
-                            minute: 0,
-                            second: 0
-                        }); else date = (date = date.plus({
-                            days: 1
-                        })).set({
-                            hour: 0,
-                            minute: 0,
-                            second: 0
-                        }); else date = (date = date.plus({
-                            days: 1
-                        })).set({
-                            hour: 0,
-                            minute: 0,
-                            second: 0
-                        }); else date = (date = date.plus({
+							Time Zone: ${zone || '""'} - Cron String: ${this} - UTC offset: ${date.offset}
+							- current Date: ` + luxon.DateTime.local().toString());
+                        if (date.month - 1 in this.month || 12 === Object.keys(this.month).length) {
+                            if (date.day in this.dayOfMonth || 31 === Object.keys(this.dayOfMonth).length || date.getWeekDay() in this.dayOfWeek && 7 !== Object.keys(this.dayOfWeek).length) {
+                                if (date.getWeekDay() in this.dayOfWeek || 7 === Object.keys(this.dayOfWeek).length || date.day in this.dayOfMonth && 31 !== Object.keys(this.dayOfMonth).length) if (date.hour in this.hour || 24 === Object.keys(this.hour).length) if (date.minute in this.minute || 60 === Object.keys(this.minute).length) if (date.second in this.second || 60 === Object.keys(this.second).length) {
+                                    if (date.toMillis() !== firstDate) break;
+                                    {
+                                        const expectedSecond = date.second + 1, expectedMinute = date.minute + (60 === expectedSecond), expectedHour = date.hour + (60 === expectedMinute ? 1 : 0);
+                                        if (date = date.set({
+                                            second: expectedSecond
+                                        }), this._forwardDSTJump(expectedHour, expectedMinute, date)) {
+                                            const [ done, newDate ] = this._findPreviousDSTJump(date);
+                                            if (date = newDate, done) break;
+                                        }
+                                    }
+                                } else {
+                                    var expectedSecond = 59 === date.second && 6e4 < diff ? 0 : date.second + 1;
+                                    const expectedMinute = date.minute + (60 === expectedSecond), expectedHour = date.hour + (60 === expectedMinute ? 1 : 0);
+                                    if (date = date.set({
+                                        second: expectedSecond
+                                    }), this._forwardDSTJump(expectedHour, expectedMinute, date)) {
+                                        const [ done, newDate ] = this._findPreviousDSTJump(date);
+                                        if (date = newDate, done) break;
+                                    }
+                                } else {
+                                    const expectedMinute = 59 === date.minute && 36e5 < diff ? 0 : date.minute + 1, expectedHour = date.hour + (60 === expectedMinute ? 1 : 0);
+                                    if (date = (date = date.set({
+                                        minute: expectedMinute
+                                    })).set({
+                                        second: 0
+                                    }), this._forwardDSTJump(expectedHour, expectedMinute, date)) {
+                                        const [ done, newDate ] = this._findPreviousDSTJump(date);
+                                        if (date = newDate, done) break;
+                                    }
+                                } else {
+                                    expectedSecond = 23 === date.hour && 864e5 < diff ? 0 : date.hour + 1, diff = date.minute;
+                                    if (date = (date = date.set({
+                                        hour: expectedSecond
+                                    })).set({
+                                        minute: 0,
+                                        second: 0
+                                    }), this._forwardDSTJump(expectedSecond, diff, date)) {
+                                        const [ done, newDate ] = this._findPreviousDSTJump(date);
+                                        if (date = newDate, done) break;
+                                    }
+                                } else if (date = (date = date.plus({
+                                    days: 1
+                                })).set({
+                                    hour: 0,
+                                    minute: 0,
+                                    second: 0
+                                }), this._forwardDSTJump(0, 0, date)) {
+                                    const [ done, newDate ] = this._findPreviousDSTJump(date);
+                                    if (date = newDate, done) break;
+                                }
+                            } else if (date = (date = date.plus({
+                                days: 1
+                            })).set({
+                                hour: 0,
+                                minute: 0,
+                                second: 0
+                            }), this._forwardDSTJump(0, 0, date)) {
+                                const [ done, newDate ] = this._findPreviousDSTJump(date);
+                                if (date = newDate, done) break;
+                            }
+                        } else if (date = (date = date.plus({
                             months: 1
                         })).set({
                             day: 1,
                             hour: 0,
                             minute: 0,
                             second: 0
-                        });
+                        }), this._forwardDSTJump(0, 0, date)) {
+                            var [ diff, newDate ] = this._findPreviousDSTJump(date), date = newDate;
+                            if (diff) break;
+                        }
                     }
                     return date;
+                },
+                _findPreviousDSTJump: function(date) {
+                    let expectedMinute, expectedHour, actualMinute, actualHour, maybeJumpingPoint = date;
+                    let iteration = 0;
+                    do {
+                        if (1440 < ++iteration) throw new Error(`ERROR: This DST checking related function assumes the input DateTime (${date.toISO()}) is within 24 hours of a DST jump.`);
+                    } while (expectedMinute = maybeJumpingPoint.minute - 1, expectedHour = maybeJumpingPoint.hour, expectedMinute < 0 && (expectedMinute += 60, expectedHour = (expectedHour + 24 - 1) % 24), actualMinute = (maybeJumpingPoint = maybeJumpingPoint.minus({
+                        minute: 1
+                    })).minute, actualHour = maybeJumpingPoint.hour, expectedMinute === actualMinute && expectedHour === actualHour);
+                    var afterJumpingPoint = maybeJumpingPoint.plus({
+                        minute: 1
+                    }).set({
+                        seconds: 0,
+                        millisecond: 0
+                    }), beforeJumpingPoint = afterJumpingPoint.minus({
+                        second: 1
+                    });
+                    return date.month in this.month && date.day in this.dayOfMonth && date.getWeekDay() in this.dayOfWeek ? [ this._checkTimeInSkippedRange(beforeJumpingPoint, afterJumpingPoint), afterJumpingPoint ] : [ !1, afterJumpingPoint ];
+                },
+                _checkTimeInSkippedRange: function(beforeJumpingPoint, afterJumpingPoint) {
+                    var startingMinute = (beforeJumpingPoint.minute + 1) % 60, beforeJumpingPoint = (beforeJumpingPoint.hour + (0 == startingMinute)) % 24, hourRangeSize = afterJumpingPoint.hour - beforeJumpingPoint + 1, isHourJump = 0 == startingMinute && 0 === afterJumpingPoint.minute;
+                    return 2 == hourRangeSize && isHourJump ? beforeJumpingPoint in this.hour : 1 == hourRangeSize ? beforeJumpingPoint in this.hour && this._checkTimeInSkippedRangeSingleHour(startingMinute, afterJumpingPoint.minute) : this._checkTimeInSkippedRangeMultiHour(beforeJumpingPoint, startingMinute, afterJumpingPoint.hour, afterJumpingPoint.minute);
+                },
+                _checkTimeInSkippedRangeSingleHour: function(startMinute, endMinute) {
+                    for (let minute = startMinute; minute < endMinute; ++minute) if (minute in this.minute) return !0;
+                    return endMinute in this.minute && 0 in this.second;
+                },
+                _checkTimeInSkippedRangeMultiHour: function(startHour, startMinute, endHour, endMinute) {
+                    if (endHour <= startHour) throw new Error(`ERROR: This DST checking related function assumes the forward jump starting hour (${startHour}) is less than the end hour (${endHour})`);
+                    const firstHourMinuteRange = Array.from({
+                        length: 60 - startMinute
+                    }, (_, k) => startMinute + k), lastHourMinuteRange = Array.from({
+                        length: endMinute
+                    }, (_, k) => k), middleHourMinuteRange = Array.from({
+                        length: 60
+                    }, (_, k) => k);
+                    for (let hour = startHour; hour <= endHour; ++hour) if (hour in this.hour) {
+                        var forHour = (forHour = hour) === startHour ? firstHourMinuteRange : forHour === endHour ? lastHourMinuteRange : middleHourMinuteRange;
+                        for (const minute of forHour) if (minute in this.minute) return !0;
+                    }
+                    return endHour in this.hour && endMinute in this.minute && 0 in this.second;
+                },
+                _forwardDSTJump: function(expectedHour, expectedMinute, actualDate) {
+                    var actualHour = actualDate.hour, actualDate = actualDate.minute;
+                    return expectedHour % 24 < actualHour || expectedMinute % 60 < actualDate;
                 },
                 _wcOrAll: function(type) {
                     if (this._hasAll(type)) return "*";
