@@ -1,2 +1,5 @@
-ignorePatterns:
-  - MediaWiki:Gadget-wikiplus-highlight.js
+{
+    "ignorePatterns": [
+        "MediaWiki:Gadget-wikiplus-highlight.js"
+    ]
+}

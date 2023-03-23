@@ -23,7 +23,7 @@
 	}
 	mw.libs.wphl = mw.libs.wphl || {}; // 开始加载
 
-	const version = '2.57.3',
+	const version = '2.59',
 		newAddon = 0;
 
 	/** @type {typeof mw.storage} */
@@ -108,7 +108,7 @@
 	const CDN = '//fastly.jsdelivr.net',
 		CM_CDN = 'npm/codemirror@5.65.3',
 		MW_CDN = 'gh/bhsd-harry/codemirror-mediawiki@1.1.6',
-		PARSER_CDN = 'gh/bhsd-harry/wikiparser-node@0.9.4-b',
+		PARSER_CDN = 'gh/bhsd-harry/wikiparser-node@0.9.7-b',
 		REPO_CDN = `npm/wikiplus-highlight@${majorVersion}`;
 
 	const {config: {values: {
@@ -550,7 +550,7 @@
 		}
 		const isIPE = config && Object.values(config.functionSynonyms[0]).includes(true);
 		// 情形1：config已更新，可能来自localStorage
-		if (config && config.redirect && config.img && !isIPE) {
+		if (config && config.redirect && config.img && config.variants && !isIPE) {
 			return config;
 		}
 
@@ -560,9 +560,11 @@
 		 * 情形3：新加载的 ext.CodeMirror.data
 		 * 情形4：`config === null`
 		 */
-		const {query: {magicwords, extensiontags, functionhooks, variables}} = await new mw.Api().get({
+		const {
+			query: {general: {variants}, magicwords, extensiontags, functionhooks, variables},
+		} = await new mw.Api().get({
 			meta: 'siteinfo',
-			siprop: config && !isIPE ? 'magicwords' : 'magicwords|extensiontags|functionhooks|variables',
+			siprop: `general|magicwords${config && !isIPE ? '' : '|extensiontags|functionhooks|variables'}`,
 			formatversion: 2,
 		});
 		const otherMagicwords = new Set(['msg', 'raw', 'msgnw', 'subst', 'safesubst']);
@@ -610,6 +612,7 @@
 		config.img = getConfig(
 			getAliases(magicwords.filter(({name}) => name.startsWith('img_'))),
 		);
+		config.variants = variants ? variants.map(({code}) => code) : [];
 		setPlainMode(config);
 		mw.config.set('extCodeMirrorConfig', config);
 		updateCachedConfig(config);
@@ -867,7 +870,6 @@
 	};
 	const portletContainer = {
 		minerva: 'page-actions-overflow',
-		citizen: 'p-actions',
 		moeskin: 'ca-more-actions',
 	};
 	const $portlet = $(mw.util.addPortletLink(
