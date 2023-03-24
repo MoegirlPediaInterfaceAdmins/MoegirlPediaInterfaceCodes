@@ -1,0 +1,4 @@
+body.patrolPlusRunning .patrolLink:not(.running) {
+    color: #aaa;
+    text-decoration: none;
+}
