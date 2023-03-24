@@ -22,7 +22,6 @@ rights:
 peers: []
 
 dependencies:
-  - ext.gadget.libOOUIDialog
   - mediawiki.api
   - mediawiki.Uri
 
