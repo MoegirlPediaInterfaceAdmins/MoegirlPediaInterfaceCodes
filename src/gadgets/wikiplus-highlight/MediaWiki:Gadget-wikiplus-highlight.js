@@ -13,9 +13,9 @@
  * @license GPL-3.0
  */
 
+/* eslint es-x/no-regexp-u-flag: 2 */
+/* eslint-disable require-unicode-regexp */
 (async () => {
-	/* eslint es-x/no-regexp-u-flag: 2 */
-	/* eslint-disable require-unicode-regexp */
 	'use strict';
 
 	if (mw.libs.wphl && mw.libs.wphl.version) {
@@ -23,7 +23,7 @@
 	}
 	mw.libs.wphl = mw.libs.wphl || {}; // 开始加载
 
-	const version = '2.59',
+	const version = '2.59.2',
 		newAddon = 0;
 
 	/** @type {typeof mw.storage} */
@@ -107,7 +107,7 @@
 	// 路径
 	const CDN = '//fastly.jsdelivr.net',
 		CM_CDN = 'npm/codemirror@5.65.3',
-		MW_CDN = 'gh/bhsd-harry/codemirror-mediawiki@1.1.6',
+		MW_CDN = 'gh/bhsd-harry/codemirror-mediawiki@1.1.10',
 		PARSER_CDN = 'gh/bhsd-harry/wikiparser-node@0.9.7-b',
 		REPO_CDN = `npm/wikiplus-highlight@${majorVersion}`;
 
@@ -554,12 +554,10 @@
 			return config;
 		}
 
-		/*
-		 * 以下情形均需要发送API请求
-		 * 情形2：localStorage未过期但不包含新设置
-		 * 情形3：新加载的 ext.CodeMirror.data
-		 * 情形4：`config === null`
-		 */
+		// 以下情形均需要发送API请求
+		// 情形2：localStorage未过期但不包含新设置
+		// 情形3：新加载的 ext.CodeMirror.data
+		// 情形4：`config === null`
 		const {
 			query: {general: {variants}, magicwords, extensiontags, functionhooks, variables},
 		} = await new mw.Api().get({
