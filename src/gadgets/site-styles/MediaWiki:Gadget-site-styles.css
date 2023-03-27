@@ -290,7 +290,7 @@ span.heimu a.extiw:visited,
 span.heimu a.mw-disambig,
 span.heimu a.mw-redirect {
     transition: color 0.13s linear;
-    color: #252525;
+    color: transparent;
     text-shadow: none;
 }
 
@@ -305,7 +305,8 @@ a:hover span.heimu {
 }
 
 span.heimu:hover a:visited,
-a:visited:hover span.heimu {
+a:visited:hover span.heimu,
+span.heimu:hover a.external {
     color: #C5CAE9;
 }
 
@@ -331,7 +332,7 @@ span.heimu img {
 
 span.heimu:hover img,
 body.heimu_toggle_on span.heimu img{
-    opacity:revert;
+    opacity: revert;
 }
 
 /* info类模板 */
