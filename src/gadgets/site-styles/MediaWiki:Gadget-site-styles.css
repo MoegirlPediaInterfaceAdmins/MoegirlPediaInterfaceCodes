@@ -290,7 +290,8 @@ span.heimu a.extiw:visited,
 span.heimu a.mw-disambig,
 span.heimu a.mw-redirect {
     transition: color 0.13s linear;
-    color: transparent;
+    color: #252525;
+    /* NO TRANSPARENT!!! */
     text-shadow: none;
 }
 
@@ -305,8 +306,7 @@ a:hover span.heimu {
 }
 
 span.heimu:hover a:visited,
-a:visited:hover span.heimu,
-span.heimu:hover a.external {
+a:visited:hover span.heimu {
     color: #C5CAE9;
 }
 
@@ -323,16 +323,6 @@ a.new:hover:visited span.heimu {
 span.heimu:hover a.extiw:visited,
 a.extiw:visited:hover span.heimu {
     color: #D1C4E9;
-}
-
-span.heimu img {
-    opacity: 0;
-    transition: opacity .13s linear;
-}
-
-span.heimu:hover img,
-body.heimu_toggle_on span.heimu img{
-    opacity: revert;
 }
 
 /* info类模板 */
