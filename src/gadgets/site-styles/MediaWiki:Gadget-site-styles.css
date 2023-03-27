@@ -324,6 +324,16 @@ a.extiw:visited:hover span.heimu {
     color: #D1C4E9;
 }
 
+span.heimu img {
+    opacity: 0;
+    transition: opacity .13s linear;
+}
+
+span.heimu:hover img,
+body.heimu_toggle_on span.heimu img{
+    opacity:revert;
+}
+
 /* info类模板 */
 .infoBox {
     margin: 0 auto;
