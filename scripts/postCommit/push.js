@@ -2,7 +2,7 @@ import console from "../modules/console.js";
 console.info("Start initialization...");
 import { startGroup, endGroup, exportVariable } from "@actions/core";
 import { git } from "../modules/git.js";
-import { isInGithubActions, isPush } from "../modules/octokit.js";
+import { isInGithubActions, isPush, isPullRequest } from "../modules/octokit.js";
 import jsonModule from "../modules/jsonModule.js";
 
 const contentConfigs = [
@@ -36,7 +36,7 @@ endGroup();
  * @return {never} 
  */
 const triggerLinterTest = (force = false) => {
-    if (!isPush && !force) {
+    if (!isPush && !isPullRequest && !force) {
         console.info("This workflow is not triggered by `push` or `pull_request`, exit.");
         process.exit(0);
     }
