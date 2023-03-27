@@ -9,6 +9,7 @@ import authAction from "@octokit/auth-action";
 import authUnauthenticated from "@octokit/auth-unauthenticated";
 const isInGithubActions = process.env.GITHUB_ACTIONS === "true";
 const isInMasterBranch = process.env.GITHUB_REF === "refs/heads/master";
+const isPush = ["push"].includes(process.env.GITHUB_EVENT_NAME);
 const octokitBaseOptions = {
     owner: isInGithubActions ? process.env.GITHUB_REPOSITORY_OWNER : undefined,
     repo: isInGithubActions ? process.env.GITHUB_REPOSITORY.split("/")[1] : undefined,
@@ -27,6 +28,7 @@ const auth = await octokit.auth();
 startGroup("octokit initialization:");
 console.log("isInGithubActions:", isInGithubActions);
 console.log("isInMasterBranch:", isInMasterBranch);
+console.log("isPush:", isPush);
 console.log("octokitBaseOptions:", octokitBaseOptions);
 console.log("auth:", auth);
 endGroup();
@@ -91,5 +93,5 @@ const createIssue = async (issueTitle, issueBody, labels) => {
     endGroup();
     return issue_number;
 };
-export { octokit, isInMasterBranch, octokitBaseOptions, createIssue, isInGithubActions };
-export default { octokit, isInMasterBranch, octokitBaseOptions, createIssue, isInGithubActions };
+export { octokit, isInMasterBranch, octokitBaseOptions, createIssue, isInGithubActions, isPush };
+export default { octokit, isInMasterBranch, octokitBaseOptions, createIssue, isInGithubActions, isPush };

@@ -2,7 +2,7 @@ import console from "../modules/console.js";
 console.info("Start initialization...");
 import { startGroup, endGroup, exportVariable } from "@actions/core";
 import { git } from "../modules/git.js";
-import { isInGithubActions } from "../modules/octokit.js";
+import { isInGithubActions, isPush } from "../modules/octokit.js";
 import jsonModule from "../modules/jsonModule.js";
 
 const contentConfigs = [
@@ -21,8 +21,6 @@ if (!isInGithubActions) {
     process.exit(0);
 }
 const GITHUB_EVENT = await jsonModule.readFile(process.env.GITHUB_EVENT_PATH);
-const isPushRequest = ["push"].includes(process.env.GITHUB_EVENT_NAME);
-console.info("isPushRequest:", isPushRequest);
 const { before, after } = GITHUB_EVENT;
 const isBeforeExists = before && after && (await git.branch(["--contains", before]).catch(() => ({ current: "" }))).current.length > 0;
 console.info("commits:", { before, after, isBeforeExists });
@@ -34,8 +32,11 @@ const changedFiles = before && after ? (await git.raw(["diff-tree", "-c", "-r", 
 startGroup("changedFiles:");
 console.info(changedFiles);
 endGroup();
+/**
+ * @return {never} 
+ */
 const triggerLinterTest = (force = false) => {
-    if (!isPushRequest && !force) {
+    if (!isPush && !force) {
         console.info("This workflow is not triggered by `push` or `pull_request`, exit.");
         process.exit(0);
     }
@@ -57,6 +58,10 @@ const triggerLinterTest = (force = false) => {
     console.info("Done.");
     process.exit(0);
 };
+if (!isPush) {
+    console.info("Running in github actions, but not in push event, skip checking unpushed commits...");
+    triggerLinterTest();
+}
 console.info("Running in github actions, start to check unpushed commits...");
 const unpushedCommits = (await git.raw(["cherry", "-v"])).trim();
 if (unpushedCommits.length === 0) {
