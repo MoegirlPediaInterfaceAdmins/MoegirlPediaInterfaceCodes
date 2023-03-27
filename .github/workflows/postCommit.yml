@@ -16,6 +16,21 @@ on:
       - .browserslistrc
       - .*.yaml
       - package-lock.json
+  pull_request:
+    paths:
+      - scripts/**/*.js
+      - "!scripts/test/*.js"
+      - src/**/*.js
+      - src/**/*.css
+      - src/**/definition.yaml
+      - src/gadgets/Gadgets-definition-list.yaml
+      - .github/workflows/postCommit.yml
+      - .github/workflows/Linter test.yml
+      - .github/linter test/action.yaml
+      - .vscode/json-schemas/gadget-definition.json
+      - .browserslistrc
+      - .*.yaml
+      - package-lock.json
   workflow_dispatch:
   schedule:
     - cron: 15 0 * * *
