@@ -329,7 +329,8 @@ span.heimu img {
     transition: opacity .13s linear;
 }
 
-span.heimu:hover img {
+span.heimu:hover img,
+body.heimu_toggle_on span.heimu img{
     opacity:revert;
 }
 
