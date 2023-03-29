@@ -1,7 +1,7 @@
 /* eslint-disable require-atomic-updates */
 "use strict";
 $(() => {
-    if (!["Recentchanges", "Watchlist"].includes(mw.config.get("wgCanonicalSpecialPageName"))) {
+    if (!["Recentchanges", "Watchlist", "Recentchangeslinked"].includes(mw.config.get("wgCanonicalSpecialPageName"))) {
         return;
     }
 
