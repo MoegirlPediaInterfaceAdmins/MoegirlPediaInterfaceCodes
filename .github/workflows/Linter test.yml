@@ -2,6 +2,8 @@ name: Linter test
 
 on:
   workflow_dispatch:
+  schedule:
+    - cron: 15 0 * * *
 
 permissions:
   actions: read
