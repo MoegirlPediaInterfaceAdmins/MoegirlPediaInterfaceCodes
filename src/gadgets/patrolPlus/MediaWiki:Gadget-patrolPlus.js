@@ -78,9 +78,9 @@ $(() => {
                 textStatus.text(`[标记失败：${error instanceof Error ? error.name : error.code}，请在3秒后重试]`);
                 console.error("[patrolPlus]", error);
                 await sleep(3000);
-                textStatus.remove();
                 container.show();
             }
+            textStatus.remove();
             document.body.classList.remove("patrolPlusRunning");
             container.removeClass("running");
             running = false;
