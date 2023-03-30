@@ -4,7 +4,7 @@
 
 [![Linter test](https://github.com/MoegirlPediaInterfaceAdmins/MoegirlPediaInterfaceCodes/actions/workflows/Linter%20test.yml/badge.svg)](https://github.com/MoegirlPediaInterfaceAdmins/MoegirlPediaInterfaceCodes/actions/workflows/Linter%20test.yml)  [![post commit CI](https://github.com/MoegirlPediaInterfaceAdmins/MoegirlPediaInterfaceCodes/actions/workflows/postCommit.yml/badge.svg)](https://github.com/MoegirlPediaInterfaceAdmins/MoegirlPediaInterfaceCodes/actions/workflows/postCommit.yml)
 
-欢迎来到萌娘百科界面代码库，本仓库由[萌娘百科界面管理员](https://zh.moegirl.org.cn/%E8%90%8C%E5%A8%98%E7%99%BE%E7%A7%91:%E7%95%8C%E9%9D%A2%E7%AE%A1%E7%90%86%E5%91%98)所组成的[团队](https://github.com/MoegirlPediaInterfaceAdmins)维护，旨在以自动化的方式减轻维护界面代码的复杂度。
+欢迎来到萌娘百科界面代码库，本仓库由[萌娘百科界面管理员](https://zh.moegirl.org.cn/_?curid=489391)所组成的[团队](https://github.com/MoegirlPediaInterfaceAdmins)维护，旨在以自动化的方式减轻维护界面代码的复杂度。
 
 目前只有[萌娘百科的界面管理员](https://zh.moegirl.org.cn/Special:Listusers/interface-admin)可以拥有本仓库的读写权限，如果你是萌娘百科的界面管理员但没有权限，你可以向 U:AnnAngela 获取本仓库的读写权限；不过如果你尚不是界面管理员，我们也欢迎你以[下列方式](#参与维护)参与到本仓库的维护工作中来。
 
@@ -82,7 +82,7 @@
 
 ### 提出建议、意见
 
-我们欢迎你在[萌娘百科技术实现讨论版](https://zh.moegirl.org.cn/%E8%90%8C%E5%A8%98%E7%99%BE%E7%A7%91_talk:%E8%AE%A8%E8%AE%BA%E7%89%88/%E6%8A%80%E6%9C%AF%E5%AE%9E%E7%8E%B0)提出建议、意见，我们会审慎考虑可行性和成本等因素后作出决定。
+我们欢迎你在[萌娘百科技术实现讨论版](https://zh.moegirl.org.cn/_?curid=543139)提出建议、意见，我们会审慎考虑可行性和成本等因素后作出决定。
 
 ### 提交贡献
 
@@ -94,8 +94,9 @@
 
 所以我们建议你通过以下方式提交贡献：
 
-- 使用 [Linux on Windows with WSL](https://docs.microsoft.com/en-us/windows/wsl/install)；
+- 使用 [Linux on Windows with WSL](https://learn.microsoft.com/zh-cn/windows/wsl/install)；
 - 使用 Linux 系统（可以是远程服务器、本地 Docker 容器等）；
+- 使用 macOS [GitHub Desktop](https://desktop.github.com/)；
 - 使用 [GitHub Codespaces](https://github.com/features/codespaces)（对个人用户有免费额度）。
 
 然后，我们建议你使用 [Visual Studio Code](https://code.visualstudio.com/)，本仓库专为 VSCode 配置。我们也建议你搭配以下 VSCode 扩展结合本仓库提供的配置以优化体验：
