@@ -74,6 +74,7 @@ $(() => {
                 }
                 textStatus.text("[标记成功]");
                 await sleep(3000);
+                textStatus.remove();
             } catch (error) {
                 textStatus.text(`[标记失败：${error instanceof Error ? error.name : error.code}，请在3秒后重试]`);
                 console.error("[patrolPlus]", error);
