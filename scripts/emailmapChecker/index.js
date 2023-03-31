@@ -1,6 +1,6 @@
 import console from "../modules/console.js";
 console.info("Initialization done.");
-import fs from "fs";
+import mailmapSet from "../modules/mailmapSet.js";
 import { git } from "../modules/git.js";
 import { startGroup, endGroup } from "@actions/core";
 import { isInGithubActions } from "../modules/octokit.js";
@@ -18,14 +18,6 @@ if (!isInGithubActions && localGitConfigs.length === 0) {
     console.info("No email found, exit.");
     process.exit(0);
 }
-const mailmap = await fs.promises.readFile(".mailmap", { encoding: "utf-8" });
-startGroup(".mailmap:");
-console.info(mailmap);
-endGroup();
-const mailSet = mailmap.replace(/#[^\n]*/g, "").match(/(?<=<)[^>\n]+/g);
-startGroup("mailSet:");
-console.info(mailSet);
-endGroup();
 if (isInGithubActions) {
     const { commits } = process.env;
     if (typeof commits !== "string" || commits.length === 0) {
@@ -39,10 +31,10 @@ if (isInGithubActions) {
     endGroup();
     for (const { author: { email: authorEmail, name: authorName }, committer: { email: committerEmail, name: committerName }, id, message, url } of allCommits) {
         const failure = [];
-        if (!detectIfBot(authorName, authorEmail) && !mailSet.includes(authorEmail)) {
+        if (!detectIfBot(authorName, authorEmail) && !mailmapSet.includes(authorEmail)) {
             failure.push(`author: ${authorName} <${authorEmail}>`);
         }
-        if (!detectIfBot(committerName, committerEmail) && !mailSet.includes(committerEmail)) {
+        if (!detectIfBot(committerName, committerEmail) && !mailmapSet.includes(committerEmail)) {
             failure.push(`committer: ${committerName} <${committerEmail}>`);
         }
         if (failure.length > 0) {
@@ -61,7 +53,7 @@ if (isInGithubActions) {
     console.info(localGitConfigs);
     endGroup();
     for (const { type, email, name } of localGitConfigs) {
-        if (!mailSet.includes(email)) {
+        if (!mailmapSet.includes(email)) {
             failures.push({ type, failure: `${name} <${email}>` });
         }
     }

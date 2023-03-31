@@ -1,0 +1,12 @@
+import console from "../modules/console.js";
+import fs from "fs";
+import { startGroup, endGroup } from "@actions/core";
+const rawMailMap = await fs.promises.readFile(".mailmap", { encoding: "utf-8" });
+startGroup("Raw .mailmap:");
+console.info(rawMailMap);
+endGroup();
+const mailmapSet = rawMailMap.replace(/#[^\n]*/g, "").match(/(?<=<)[^>\n]+/g);
+startGroup("mailmapSet:");
+console.info(mailmapSet);
+endGroup();
+export default mailmapSet;

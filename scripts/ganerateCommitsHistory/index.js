@@ -5,7 +5,7 @@ const bots = [
 ];
 
 import console from "../modules/console.js";
-import fs from "fs";
+import mailmapSet from "../modules/mailmapSet.js";
 import { startGroup, endGroup, exportVariable } from "@actions/core";
 import { isInMasterBranch } from "../modules/octokit.js";
 import { git } from "../modules/git.js";
@@ -16,33 +16,6 @@ if (!isInMasterBranch) {
     process.exit(0);
 }
 console.info("Initialization done.");
-const rawMailMap = await fs.promises.readFile(".mailmap", { encoding: "utf-8" });
-startGroup("Raw .mailmap:");
-console.info(rawMailMap);
-endGroup();
-const mailmap = {};
-startGroup(".mailmap parser:");
-for (const rawLine of rawMailMap.replace(/#[^\n]*/g, "").split("\n")) {
-    console.info("Parsing:", rawLine);
-    const line = rawLine.trim();
-    if (line.length === 0) {
-        console.info("\tEmpty line, skip.");
-        continue;
-    }
-    const match = line.match(/^(.+?) <([^>]+)/);
-    console.info("\tMatch:", match);
-    if (!Array.isArray(match) || match.length < 3) {
-        console.info("\tMatch not valid, skip.");
-        continue;
-    }
-    const [, username, email] = line.match(/^(.+?) <([^>]+)/);
-    console.info("\tusername:", username);
-    console.info("\temail:", email);
-    mailmap[email] = username;
-}
-startGroup("Parsed .mailmap:");
-console.info(mailmap);
-endGroup();
 const { all: rawHistory } = await git.log({
     format: {
         hash: "%H",
@@ -57,11 +30,11 @@ endGroup();
 const history = {};
 startGroup("Raw history parser:");
 for (const { hash, date, committer_name, committer_email } of rawHistory) {
-    console.info("Parsing:", { date, hash, committer_email, committer_name });
-    const username = Reflect.has(mailmap, committer_email) ? `U:${mailmap[committer_email]}` : `GH:${committer_name}`;
+    console.info("Parsing:", { date, hash, committer_name, committer_email });
+    const username = `${mailmapSet.includes(committer_email) ? "U:" : "GH:"}${committer_name}`;
     console.info("\tusername:", username);
     if (username.endsWith("[bot]") || bots.includes(username)) {
-        //console.info("\tThis commit came from a bot, skip.");
+        console.info("\tThis commit came from a bot, skip.");
         continue;
     }
     if (!Array.isArray(history[username])) {
