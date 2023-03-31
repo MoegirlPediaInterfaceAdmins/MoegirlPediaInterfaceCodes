@@ -87,6 +87,7 @@
     - widgetPreload
     - wikiBlame
     - quickSave
+    - ContentAboveBelowImage
 
 - name: interface
   gadgets:
