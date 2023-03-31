@@ -1,5 +1,5 @@
 import console from "../modules/console.js";
-console.info("Start initialization...");
+console.info("Initialization done.");
 import mkdtmp from "../modules/mkdtmp.js";
 import browserify from "browserify";
 import minifyStream from "../modules/minify-stream.js";

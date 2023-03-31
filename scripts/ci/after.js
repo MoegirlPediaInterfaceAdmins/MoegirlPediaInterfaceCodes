@@ -1,6 +1,6 @@
 process.stdout.write(`${"=".repeat(120)}\n`);
 import console from "../modules/console.js";
-console.info("Start initialization...");
+console.info("Initialization done.");
 import exec from "../modules/exec.js";
 const isInGithubActions = process.env.GITHUB_ACTIONS === "true";
 

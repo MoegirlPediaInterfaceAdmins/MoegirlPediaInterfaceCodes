@@ -1,5 +1,5 @@
 import console from "../modules/console.js";
-console.info("Start initialization...");
+console.info("Initialization done.");
 import createCommit from "../modules/createCommit.js";
 import jsonModule from "../modules/jsonModule.js";
 import { startGroup, endGroup } from "@actions/core";

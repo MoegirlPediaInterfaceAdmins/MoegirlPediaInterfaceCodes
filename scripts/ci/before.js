@@ -1,5 +1,5 @@
 import console, { globalConsole } from "../modules/console.js";
-console.info("Start initialization...");
+console.info("Initialization done.");
 import jsonModule from "../modules/jsonModule.js";
 const isInGithubActions = process.env.GITHUB_ACTIONS === "true";
 

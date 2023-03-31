@@ -1,5 +1,5 @@
 import console from "../modules/console.js";
-console.info("Start initialization...");
+console.info("Initialization done.");
 import { isInGithubActions } from "../modules/octokit.js";
 import { git } from "../modules/git.js";
 
