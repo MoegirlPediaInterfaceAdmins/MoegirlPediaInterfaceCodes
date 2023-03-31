@@ -1,5 +1,5 @@
 import console from "../modules/console.js";
-console.info("Start initialization...");
+console.info("Initialization done.");
 import exec from "../modules/exec.js";
 import mkdtmp from "../modules/mkdtmp.js";
 import createCommit from "../modules/createCommit.js";

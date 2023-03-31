@@ -1,5 +1,5 @@
 import console from "../modules/console.js";
-console.info("Start initialization...");
+console.info("Initialization done.");
 import fs from "fs";
 import { git } from "../modules/git.js";
 import { startGroup, endGroup } from "@actions/core";

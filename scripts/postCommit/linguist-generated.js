@@ -1,6 +1,6 @@
 
 import console from "../modules/console.js";
-console.info("Start initialization...");
+console.info("Initialization done.");
 import fs from "fs";
 import path from "path";
 import { warning, startGroup, endGroup } from "@actions/core";
