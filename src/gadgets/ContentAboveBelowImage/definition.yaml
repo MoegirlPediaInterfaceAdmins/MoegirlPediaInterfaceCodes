@@ -31,3 +31,4 @@ _section: maintenance
 
 _files:
   - MediaWiki:Gadget-ContentAboveBelowImage.js
+  - MediaWiki:Gadget-ContentAboveBelowImage.css
