@@ -1,0 +1,33 @@
+ResourceLoader: true
+
+hidden: false
+
+default: true
+
+supportsUrlLoad: false
+
+targets: []
+
+skins:
+  - vector
+
+actions: []
+
+type: general
+
+package: false
+
+rights:
+  - patrolleredit
+
+peers: []
+
+dependencies: []
+
+_sites:
+  - commons
+
+_section: maintenance
+
+_files:
+  - MediaWiki:Gadget-ContentAboveBelowImage.js
