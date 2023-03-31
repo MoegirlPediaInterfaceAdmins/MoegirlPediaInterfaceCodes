@@ -15,16 +15,25 @@ const octokitBaseOptions = {
     owner: isInGithubActions ? process.env.GITHUB_REPOSITORY_OWNER : undefined,
     repo: isInGithubActions ? process.env.GITHUB_REPOSITORY.split("/")[1] : undefined,
 };
-const octokit = new (Octokit.plugin(retry))({
-    authStrategy: isInGithubActions && process.env.GITHUB_TOKEN ? authAction.createActionAuth : authUnauthenticated.createUnauthenticatedAuth,
-    auth: isInGithubActions ? process.env.GITHUB_TOKEN ? {} : { reason: "Running in github actions, but the `GITHUB_TOKEN` env variable is unset, unable to get any auth." } : { reason: "Not running in github actions, unable to get any auth." },
-});
-// 非常神必，直接给 request 传入 { ...octokitBaseOptions, ...options } 没有任何作用，只能修改地址了
-octokit.hook.wrap("request", (request, options) => {
-    const url = options.url.split("/");
-    options.url = url.map((part) => part === "{owner}" ? octokitBaseOptions.owner || part : part === "{repo}" ? octokitBaseOptions.repo || part : part).join("/");
-    return request(options);
-});
+class OctokitWithRetry extends Octokit.plugin(retry) {
+    constructor(authStrategy, auth) {
+        if (authStrategy && auth) {
+            super({ authStrategy, auth });
+        } else {
+            super({
+                authStrategy: isInGithubActions && process.env.GITHUB_TOKEN ? authAction.createActionAuth : authUnauthenticated.createUnauthenticatedAuth,
+                auth: isInGithubActions ? process.env.GITHUB_TOKEN ? {} : { reason: "Running in github actions, but the `GITHUB_TOKEN` env variable is unset, unable to get any auth." } : { reason: "Not running in github actions, unable to get any auth." },
+            });
+        }
+        // 非常神必，直接给 request 传入 { ...octokitBaseOptions, ...options } 没有任何作用，只能修改地址了
+        this.hook.wrap("request", (request, options) => {
+            const url = options.url.split("/");
+            options.url = url.map((part) => part === "{owner}" ? options.owner || octokitBaseOptions.owner || part : part === "{repo}" ? options.repo || octokitBaseOptions.repo || part : part).join("/");
+            return request(options);
+        });
+    }
+}
+const octokit = new OctokitWithRetry();
 const auth = await octokit.auth();
 startGroup("octokit initialization:");
 console.log("isInGithubActions:", isInGithubActions);
@@ -95,5 +104,5 @@ const createIssue = async (issueTitle, issueBody, labels) => {
     endGroup();
     return issue_number;
 };
-export { octokit, isInMasterBranch, octokitBaseOptions, createIssue, isInGithubActions, isPush, isPullRequest };
-export default { octokit, isInMasterBranch, octokitBaseOptions, createIssue, isInGithubActions, isPush, isPullRequest };
+export { octokit, isInMasterBranch, octokitBaseOptions, createIssue, isInGithubActions, isPush, isPullRequest, OctokitWithRetry };
+export default { octokit, isInMasterBranch, octokitBaseOptions, createIssue, isInGithubActions, isPush, isPullRequest, OctokitWithRetry };
