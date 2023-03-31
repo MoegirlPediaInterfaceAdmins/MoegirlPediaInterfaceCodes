@@ -116,7 +116,7 @@ $(() => (async () => {
         table.closest("table").insertAfter(p).tablesorter();
         if (hasGHIAEdit) {
             const GHIAInfo = $("<p>");
-            GHIAInfo.text(`注：来自 GHIA 库的编辑共有 ${GHIAHistory[`U:${target}`].length} 笔，这些编辑君会被统计为“未被删除的编辑”，且不会被统计为“被巡查”“被手动巡查”“不同页面”和“创建页面”。`);
+            GHIAInfo.text(`注：来自 GHIA 库的编辑共有 ${GHIAHistory[`U:${target}`].length} 笔，这些编辑均会被统计为“未被删除的编辑”，且不会被统计为“被巡查”“被手动巡查”“不同页面”和“创建页面”。`);
             table.closest("table").after(GHIAInfo);
         }
 
