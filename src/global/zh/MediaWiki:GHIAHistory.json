@@ -8,10 +8,17 @@
         {
             "commit": "de3b4c6bd6714c394193a79489765502ddf21397",
             "datetime": "2023-03-09T00:28:35-05:00",
-            "changedFiles": []
+            "changedFiles": [
+                "src/gadgets/wikiBlame/MediaWiki:Gadget-wikiBlame.js"
+            ]
         }
     ],
     "U:AnnAngela": [
+        {
+            "commit": "27fbfad7af09103f55a5f6173f2fcfa78ac54bbd",
+            "datetime": "2023-04-01T19:59:24+08:00",
+            "changedFiles": []
+        },
         {
             "commit": "cd2e1298c7f2f5d71e525c40c34b353aec6285c4",
             "datetime": "2023-04-01T19:52:55+08:00",
@@ -42,13 +49,16 @@
             "changedFiles": [
                 "src/gadgets/echarts4/definition.yaml",
                 "src/gadgets/echarts5/definition.yaml",
+                "src/gadgets/queryContributions/MediaWiki:Gadget-queryContributions.js",
                 "src/gadgets/queryContributions/definition.yaml"
             ]
         },
         {
             "commit": "804e54052b28eddcdfda0d524ee3240aa6b3885a",
             "datetime": "2023-04-01T17:42:30+08:00",
-            "changedFiles": []
+            "changedFiles": [
+                "src/gadgets/queryContributions/MediaWiki:Gadget-queryContributions.js"
+            ]
         },
         {
             "commit": "d885d4ce80e0ec5ad60242396f06f47bc6da2216",
@@ -63,7 +73,9 @@
         {
             "commit": "3ba211a38efb5850d516185348a2bde3c5316754",
             "datetime": "2023-03-31T20:48:02+08:00",
-            "changedFiles": []
+            "changedFiles": [
+                "src/gadgets/queryContributions/MediaWiki:Gadget-queryContributions.js"
+            ]
         },
         {
             "commit": "98a28214ad4caeaa3d298141368d294b6541e4ea",
@@ -167,7 +179,10 @@
         {
             "commit": "b939e4924bc70d6e5f936185759640e7268d6214",
             "datetime": "2023-03-24T17:10:21+08:00",
-            "changedFiles": []
+            "changedFiles": [
+                "src/gadgets/patrolPlus/MediaWiki:Gadget-patrolPlus.css",
+                "src/gadgets/patrolPlus/MediaWiki:Gadget-patrolPlus.js"
+            ]
         },
         {
             "commit": "67172a8baa0fc66878b3327682f59e80b51a86a3",
@@ -242,7 +257,10 @@
         {
             "commit": "50e9bfaca6a9d5e5c6d972c43db87384e017672e",
             "datetime": "2023-03-17T09:41:10+08:00",
-            "changedFiles": []
+            "changedFiles": [
+                "src/gadgets/sidebarHidden/MediaWiki:Gadget-sidebarHidden.css",
+                "src/gadgets/site-styles/MediaWiki:Gadget-site-styles.css"
+            ]
         },
         {
             "commit": "1bc0180eddc18397caf60028aa35afa9210b399b",
@@ -253,6 +271,7 @@
             "commit": "242c72a376561ce85c83f4af8385dd0e65380e69",
             "datetime": "2023-03-16T16:36:06+08:00",
             "changedFiles": [
+                "src/gadgets/DotsSyntaxHighlighter/MediaWiki:Gadget-DotsSyntaxHighlighter.js",
                 "src/gadgets/Navigation_popups/MediaWiki:Gadget-popups.js",
                 "src/gadgets/jQueryLazyload/MediaWiki:Gadget-jQueryLazyload.js",
                 "src/gadgets/libJQuery/MediaWiki:Gadget-libJQuery.js"
@@ -310,6 +329,8 @@
             "datetime": "2023-03-16T10:13:31+08:00",
             "changedFiles": [
                 "src/gadgets/Gadgets-definition-list.yaml",
+                "src/gadgets/quickSave/MediaWiki:Gadget-quickSave.css",
+                "src/gadgets/quickSave/MediaWiki:Gadget-quickSave.js",
                 "src/gadgets/quickSave/definition.yaml",
                 "src/gadgets/site-lib/definition.yaml"
             ]
@@ -317,7 +338,9 @@
         {
             "commit": "cbae2b150744a2f687bfd06f7ee4ca279c7b6fc9",
             "datetime": "2023-03-15T17:26:07+08:00",
-            "changedFiles": []
+            "changedFiles": [
+                "src/gadgets/MarkAsResolved/MediaWiki:Gadget-MarkAsResolved.js"
+            ]
         },
         {
             "commit": "ddb6be845fb57d8dad9fed294687565b5b5a96ca",
@@ -385,7 +408,9 @@
         {
             "commit": "fe5b46684a74b53627cbc4a2d0a2edb11ff094f2",
             "datetime": "2023-03-14T11:56:10+08:00",
-            "changedFiles": []
+            "changedFiles": [
+                "src/gadgets/MarkAsResolved/MediaWiki:Gadget-MarkAsResolved.js"
+            ]
         },
         {
             "commit": "ac58505f36833d21f76c128d2a8e6e005152ddec",
@@ -591,7 +616,9 @@
         {
             "commit": "ce8c83bcf370fd84263a21807b5d553e52790af7",
             "datetime": "2023-03-12T17:17:50+08:00",
-            "changedFiles": []
+            "changedFiles": [
+                "src/gadgets/MarkAsResolved/MediaWiki:Gadget-MarkAsResolved.js"
+            ]
         },
         {
             "commit": "e3a1708065cbcbcb2b28da9860874429ca792827",
@@ -767,6 +794,8 @@
                 "src/gadgets/FlowThreadCheck/definition.yaml",
                 "src/gadgets/FlowthreadTOC/definition.json",
                 "src/gadgets/FlowthreadTOC/definition.yaml",
+                "src/gadgets/ForcePreviewUponUserRequest/definition.json",
+                "src/gadgets/ForcePreviewUponUserRequest/definition.yaml",
                 "src/gadgets/Force_preview/definition.json",
                 "src/gadgets/Force_preview/definition.yaml",
                 "src/gadgets/Gadgets-definition-list.json",
@@ -839,6 +868,8 @@
                 "src/gadgets/cron/.eslintrc.yaml",
                 "src/gadgets/cron/definition.json",
                 "src/gadgets/cron/definition.yaml",
+                "src/gadgets/dark-mode-toggle-pagestyles/definition.json",
+                "src/gadgets/dark-mode-toggle-pagestyles/definition.yaml",
                 "src/gadgets/dark-mode-toggle/definition.json",
                 "src/gadgets/dark-mode-toggle/definition.yaml",
                 "src/gadgets/dark-mode/definition.json",
@@ -865,8 +896,12 @@
                 "src/gadgets/flagEditWar/definition.yaml",
                 "src/gadgets/float-toc/definition.json",
                 "src/gadgets/float-toc/definition.yaml",
+                "src/gadgets/hideFlowthreadDefaultly/definition.json",
+                "src/gadgets/hideFlowthreadDefaultly/definition.yaml",
                 "src/gadgets/hideUnpatrolledFlag/definition.json",
                 "src/gadgets/hideUnpatrolledFlag/definition.yaml",
+                "src/gadgets/interfaceVariantConverter/definition.json",
+                "src/gadgets/interfaceVariantConverter/definition.yaml",
                 "src/gadgets/jQueryLazyload/definition.json",
                 "src/gadgets/jQueryLazyload/definition.yaml",
                 "src/gadgets/libAsyncLock/.eslintrc",
@@ -949,6 +984,8 @@
                 "src/gadgets/temp-editcheck/definition.yaml",
                 "src/gadgets/uploader/definition.json",
                 "src/gadgets/uploader/definition.yaml",
+                "src/gadgets/userLinkAvatarMagnifier/definition.json",
+                "src/gadgets/userLinkAvatarMagnifier/definition.yaml",
                 "src/gadgets/usergroup/definition.json",
                 "src/gadgets/usergroup/definition.yaml",
                 "src/gadgets/userpageCat/definition.json",
@@ -1338,7 +1375,9 @@
         {
             "commit": "d436f926170b13c475c4a5a8f17588a4f9217094",
             "datetime": "2023-02-24T10:43:15+08:00",
-            "changedFiles": []
+            "changedFiles": [
+                "src/gadgets/MarkAsResolved/MediaWiki:Gadget-MarkAsResolved.js"
+            ]
         },
         {
             "commit": "33bd0cf8676aaa9f122d107b3ea1d86009c271c4",
@@ -1393,17 +1432,24 @@
         {
             "commit": "8d9e53da5f4b51bca5fdf465761dd75883f0f495",
             "datetime": "2023-02-23T16:24:50+08:00",
-            "changedFiles": []
+            "changedFiles": [
+                "src/gadgets/MarkAsResolved/MediaWiki:Gadget-MarkAsResolved.js"
+            ]
         },
         {
             "commit": "615186c180d5ea6e86b3b6903a58391d2b1407e1",
             "datetime": "2023-02-23T11:58:26+08:00",
-            "changedFiles": []
+            "changedFiles": [
+                "src/gadgets/MarkAsResolved/MediaWiki:Gadget-MarkAsResolved.js"
+            ]
         },
         {
             "commit": "d4de2617b9341f07613ad5df1587757d9a6ba180",
             "datetime": "2023-02-23T11:51:38+08:00",
-            "changedFiles": []
+            "changedFiles": [
+                "src/gadgets/MarkAsResolved/MediaWiki:Gadget-MarkAsResolved.css",
+                "src/gadgets/MarkAsResolved/MediaWiki:Gadget-MarkAsResolved.js"
+            ]
         },
         {
             "commit": "deb1d099b1a30aa6131d9b09c5e83a45a1eaac82",
@@ -1448,7 +1494,9 @@
         {
             "commit": "d8c3841d85812d4c73bb3dcd717b8725809361c9",
             "datetime": "2023-02-20T15:28:46+08:00",
-            "changedFiles": []
+            "changedFiles": [
+                "src/gadgets/Navigation_popups/MediaWiki:Gadget-popups.js"
+            ]
         },
         {
             "commit": "eb3398ac067453606e7565f907c098e47970b58f",
@@ -1649,7 +1697,9 @@
         {
             "commit": "d56e849a2587d5b18356295d350d4caa0b7b9880",
             "datetime": "2023-02-11T16:40:29+08:00",
-            "changedFiles": []
+            "changedFiles": [
+                "src/gadgets/site-styles/MediaWiki:Gadget-site-styles.css"
+            ]
         },
         {
             "commit": "0ced3579f642f286bcb949944d08377ba357da2d",
@@ -1694,12 +1744,18 @@
         {
             "commit": "b81ef2638f9fbe3818c15c363786b9b92ed8ce70",
             "datetime": "2023-02-01T11:59:50+08:00",
-            "changedFiles": []
+            "changedFiles": [
+                "src/gadgets/GothicMoe/MediaWiki:Gadget-GothicMoe.css",
+                "src/gadgets/float-toc/MediaWiki:Gadget-float-toc.css",
+                "src/gadgets/site-styles/MediaWiki:Gadget-site-styles.css"
+            ]
         },
         {
             "commit": "559804b38d02bfc228cf6de1d6d5f2a1b90d00f6",
             "datetime": "2023-02-01T11:59:26+08:00",
-            "changedFiles": []
+            "changedFiles": [
+                "src/gadgets/desktop-styles/MediaWiki:Gadget-desktop-styles.css"
+            ]
         },
         {
             "commit": "5c6101f649bb56a93c103f48f8718a95553f1c0c",
@@ -1754,7 +1810,16 @@
             "commit": "e5b04c5d6b29a73bccbb7120d12d6dddf756b9a6",
             "datetime": "2022-12-19T08:06:05+00:00",
             "changedFiles": [
-                "src/gadgets/HotCat/MediaWiki:Gadget-HotCat.js"
+                "src/gadgets/DotsSyntaxHighlighter/MediaWiki:Gadget-DotsSyntaxHighlighter.js",
+                "src/gadgets/FlowThreadCheck/MediaWiki:Gadget-FlowThreadCheck.js",
+                "src/gadgets/HotCat/MediaWiki:Gadget-HotCat.js",
+                "src/gadgets/Navigation_popups/MediaWiki:Gadget-popups.js",
+                "src/gadgets/ReferenceTooltips/MediaWiki:Gadget-ReferenceTooltips.js",
+                "src/gadgets/SpecialWikitext/MediaWiki:Gadget-SpecialWikitext.js",
+                "src/gadgets/allmessageFilter/MediaWiki:Gadget-allmessageFilter.js",
+                "src/gadgets/code-prettify/MediaWiki:Gadget-code-prettify.js",
+                "src/gadgets/patrolCount/MediaWiki:Gadget-patrolCount.js",
+                "src/gadgets/wikiBlame/MediaWiki:Gadget-wikiBlame.js"
             ]
         },
         {
@@ -2046,6 +2111,7 @@
             "commit": "ab98e4e2a6b4eedf3476d9fc469265eccc0ae143",
             "datetime": "2022-09-24T08:04:30+00:00",
             "changedFiles": [
+                "src/gadgets/DotsSyntaxHighlighter/MediaWiki:Gadget-DotsSyntaxHighlighter.js",
                 "src/gadgets/HotCat/MediaWiki:Gadget-HotCat.js",
                 "src/gadgets/Navigation_popups/MediaWiki:Gadget-popups.js",
                 "src/gadgets/UserMessages/MediaWiki:Gadget-UserMessages.js",
@@ -2172,7 +2238,9 @@
         {
             "commit": "78509ac2966c078ea73d159547146d5fa6851da6",
             "datetime": "2022-09-15T01:18:47+00:00",
-            "changedFiles": []
+            "changedFiles": [
+                "src/gadgets/libPolyfill/MediaWiki:Gadget-libPolyfill.js"
+            ]
         },
         {
             "commit": "b0793ffafa5b232b92173b40ddc8097b0b8e63b1",
@@ -2239,8 +2307,18 @@
             "commit": "8907ee3a674225cf41f54259369d6ca91ed9e9fe",
             "datetime": "2022-09-14T02:30:05+00:00",
             "changedFiles": [
+                "src/gadgets/FlowThreadCheck/MediaWiki:Gadget-FlowThreadCheck.js",
+                "src/gadgets/Force_preview/MediaWiki:Gadget-Force_preview.js",
                 "src/gadgets/HotCat/MediaWiki:Gadget-HotCat.js",
+                "src/gadgets/Logout-confirm/MediaWiki:Gadget-Logout-confirm.js",
+                "src/gadgets/Navigation_popups/MediaWiki:Gadget-popups.js",
+                "src/gadgets/ReferenceTooltips/MediaWiki:Gadget-ReferenceTooltips.js",
+                "src/gadgets/SpecialWikitext/MediaWiki:Gadget-SpecialWikitext.js",
+                "src/gadgets/UserMessages/MediaWiki:Gadget-UserMessages.js",
+                "src/gadgets/float-toc/MediaWiki:Gadget-float-toc.js",
+                "src/gadgets/jQueryLazyload/MediaWiki:Gadget-jQueryLazyload.js",
                 "src/gadgets/site-js/MediaWiki:Gadget-site-js.js",
+                "src/gadgets/usergroup/MediaWiki:Gadget-usergroup.js",
                 "src/global/MediaWiki:Common.js",
                 "src/global/MediaWiki:Moeskin.js"
             ]
@@ -2254,6 +2332,7 @@
             "commit": "6f8a23f9951f134b52ac3f0427df1d3f9d4e8490",
             "datetime": "2022-09-14T01:50:12+00:00",
             "changedFiles": [
+                "src/gadgets/CommentsinLocalTime/MediaWiki:Gadget-CommentsinLocalTime.js",
                 "src/gadgets/Force_preview/MediaWiki:Gadget-Force_preview.js",
                 "src/gadgets/HotCat/MediaWiki:Gadget-HotCat.js",
                 "src/gadgets/MarkAsResolved/MediaWiki:Gadget-MarkAsResolved.js",
@@ -2265,6 +2344,8 @@
                 "src/gadgets/moveToUserSubpage/MediaWiki:Gadget-moveToUserSubpage.js",
                 "src/gadgets/noteTA/MediaWiki:Gadget-noteTA.js",
                 "src/gadgets/patrolPlus/MediaWiki:Gadget-patrolPlus.js",
+                "src/gadgets/queryContributions/MediaWiki:Gadget-queryContributions.js",
+                "src/gadgets/queryWhatlinkshere/MediaWiki:Gadget-queryWhatlinkshere.js",
                 "src/gadgets/quickMoveThread/MediaWiki:Gadget-quickMoveThread.js",
                 "src/gadgets/registerToDelete/MediaWiki:Gadget-registerToDelete.js",
                 "src/gadgets/rollback-summary/MediaWiki:Gadget-rollback-summary.js",
@@ -2331,6 +2412,11 @@
             "commit": "1339ac7072608c9feb37d8f673383c58cfc2c830",
             "datetime": "2022-09-12T01:40:40+00:00",
             "changedFiles": [
+                "src/gadgets/autoconfirmedUserPing/MediaWiki:Gadget-autoconfirmedUserPing.js",
+                "src/gadgets/interfaceVariantConverter/MediaWiki:Gadget-interfaceVariantConverter.js",
+                "src/gadgets/moveToUserSubpage/MediaWiki:Gadget-moveToUserSubpage.js",
+                "src/gadgets/quickMoveThread/MediaWiki:Gadget-quickMoveThread.js",
+                "src/gadgets/registerToDelete/MediaWiki:Gadget-registerToDelete.js",
                 "src/gadgets/report/MediaWiki:Gadget-report.js"
             ]
         },
@@ -2342,19 +2428,33 @@
         {
             "commit": "595a4084a86d150253269121187fad02e9d9a31a",
             "datetime": "2022-09-11T13:11:00+00:00",
-            "changedFiles": []
+            "changedFiles": [
+                "src/gadgets/libOOUIDialog/MediaWiki:Gadget-libOOUIDialog.js"
+            ]
         },
         {
             "commit": "d9b14dd52bef9fa1c0d9863db86931e44198567a",
             "datetime": "2022-09-11T09:56:31+00:00",
-            "changedFiles": []
+            "changedFiles": [
+                "src/gadgets/libOOUIDialog/MediaWiki:Gadget-libOOUIDialog.js"
+            ]
         },
         {
             "commit": "085c70a43ded8f3cbfb962da2befe39f5929a198",
             "datetime": "2022-09-11T03:22:47+00:00",
             "changedFiles": [
+                "src/gadgets/Purgecache/MediaWiki:Gadget-Purgecache.js",
+                "src/gadgets/allmessageFilter/MediaWiki:Gadget-allmessageFilter.js",
+                "src/gadgets/autoconfirmedUserPing/MediaWiki:Gadget-autoconfirmedUserPing.js",
+                "src/gadgets/blockEnhance/MediaWiki:Gadget-blockEnhance.js",
+                "src/gadgets/interfaceVariantConverter/MediaWiki:Gadget-interfaceVariantConverter.js",
+                "src/gadgets/moveToUserSubpage/MediaWiki:Gadget-moveToUserSubpage.js",
                 "src/gadgets/noteTA/MediaWiki:Gadget-noteTA.js",
+                "src/gadgets/patrolPlus/MediaWiki:Gadget-patrolPlus.js",
+                "src/gadgets/quickMoveThread/MediaWiki:Gadget-quickMoveThread.js",
+                "src/gadgets/registerToDelete/MediaWiki:Gadget-registerToDelete.js",
                 "src/gadgets/report/MediaWiki:Gadget-report.js",
+                "src/gadgets/rollback-summary/MediaWiki:Gadget-rollback-summary.js",
                 "src/global/MediaWiki:Mobile.js",
                 "src/global/MediaWiki:Moeskin.js"
             ]
@@ -2363,9 +2463,20 @@
             "commit": "f5b2227a801147f261acc12f7e1e187dbfd3f9ad",
             "datetime": "2022-09-11T02:53:56+00:00",
             "changedFiles": [
+                "src/gadgets/CommentsinLocalTime/MediaWiki:Gadget-CommentsinLocalTime.js",
+                "src/gadgets/FlowThreadCheck/MediaWiki:Gadget-FlowThreadCheck.js",
+                "src/gadgets/Navigation_popups/MediaWiki:Gadget-popups.js",
+                "src/gadgets/Purgecache/MediaWiki:Gadget-Purgecache.js",
+                "src/gadgets/UserMessages/MediaWiki:Gadget-UserMessages.js",
+                "src/gadgets/blockEnhance/MediaWiki:Gadget-blockEnhance.js",
+                "src/gadgets/code-prettify/MediaWiki:Gadget-code-prettify.js",
                 "src/gadgets/edit/MediaWiki:Gadget-edit.js",
+                "src/gadgets/float-toc/MediaWiki:Gadget-float-toc.js",
                 "src/gadgets/noteTA/MediaWiki:Gadget-noteTA.js",
+                "src/gadgets/patrolCount/MediaWiki:Gadget-patrolCount.js",
+                "src/gadgets/patrolPlus/MediaWiki:Gadget-patrolPlus.js",
                 "src/gadgets/site-js/MediaWiki:Gadget-site-js.js",
+                "src/gadgets/widgetPreload/MediaWiki:Gadget-widgetPreload.js",
                 "src/global/MediaWiki:Mobile.js",
                 "src/groups/staff/MediaWiki:Group-staff.js",
                 "src/groups/sysop/MediaWiki:Group-sysop.js"
@@ -2374,7 +2485,9 @@
         {
             "commit": "d237b3f95a045ba740b2af84a255012ee9a4efe9",
             "datetime": "2022-09-10T13:20:53+00:00",
-            "changedFiles": []
+            "changedFiles": [
+                "src/gadgets/libOOUIDialog/MediaWiki:Gadget-libOOUIDialog.js"
+            ]
         },
         {
             "commit": "c0e51a85eed27ef93746a2a8b1974022f3cf952b",
@@ -2467,6 +2580,15 @@
             "commit": "933a60a3ea0382fd227141260c3225a488af0ca3",
             "datetime": "2022-09-03T22:42:02+00:00",
             "changedFiles": [
+                "src/gadgets/DotsSyntaxHighlighter/MediaWiki:Gadget-DotsSyntaxHighlighter.js",
+                "src/gadgets/Navigation_popups/MediaWiki:Gadget-popups.js",
+                "src/gadgets/UserMessages/MediaWiki:Gadget-UserMessages.js",
+                "src/gadgets/code-prettify/MediaWiki:Gadget-code-prettify.css",
+                "src/gadgets/code-prettify/MediaWiki:Gadget-code-prettify.js",
+                "src/gadgets/dark-mode-toggle/MediaWiki:Gadget-dark-mode-toggle.js",
+                "src/gadgets/dark-mode/MediaWiki:Gadget-dark-mode.css",
+                "src/gadgets/jQueryLazyload/MediaWiki:Gadget-jQueryLazyload.js",
+                "src/gadgets/libJQuery/MediaWiki:Gadget-libJQuery.js",
                 "src/gadgets/libUtil/MediaWiki:Gadget-libUtil.js",
                 "src/gadgets/noteTA/MediaWiki:Gadget-noteTA.css"
             ]
@@ -2656,6 +2778,7 @@
                 "src/gadgets/DotsSyntaxHighlighter/definition.json",
                 "src/gadgets/FlowThreadCheck/definition.json",
                 "src/gadgets/FlowthreadTOC/definition.json",
+                "src/gadgets/ForcePreviewUponUserRequest/definition.json",
                 "src/gadgets/Force_preview/definition.json",
                 "src/gadgets/GiveYouUp/definition.json",
                 "src/gadgets/GothicMoe/definition.json",
@@ -2688,6 +2811,7 @@
                 "src/gadgets/blockEnhance/definition.json",
                 "src/gadgets/code-prettify/definition.json",
                 "src/gadgets/cron/definition.json",
+                "src/gadgets/dark-mode-toggle-pagestyles/definition.json",
                 "src/gadgets/dark-mode-toggle/definition.json",
                 "src/gadgets/dark-mode/definition.json",
                 "src/gadgets/deletion/definition.json",
@@ -2702,7 +2826,9 @@
                 "src/gadgets/flagBlocked/definition.json",
                 "src/gadgets/flagEditWar/definition.json",
                 "src/gadgets/float-toc/definition.json",
+                "src/gadgets/hideFlowthreadDefaultly/definition.json",
                 "src/gadgets/hideUnpatrolledFlag/definition.json",
+                "src/gadgets/interfaceVariantConverter/definition.json",
                 "src/gadgets/jQueryLazyload/definition.json",
                 "src/gadgets/jquery.ui/definition.json",
                 "src/gadgets/libAsyncLock/definition.json",
@@ -2718,6 +2844,7 @@
                 "src/gadgets/mobile-styles/definition.json",
                 "src/gadgets/moeskin-classic/definition.json",
                 "src/gadgets/moeskin-styles/definition.json",
+                "src/gadgets/moeskin-topbar-patrolplus/definition.json",
                 "src/gadgets/moeskin-topbar/definition.json",
                 "src/gadgets/moveToUserSubpage/definition.json",
                 "src/gadgets/mwPanel/definition.json",
@@ -2739,6 +2866,7 @@
                 "src/gadgets/site-styles/definition.json",
                 "src/gadgets/temp-editcheck/definition.json",
                 "src/gadgets/uploader/definition.json",
+                "src/gadgets/userLinkAvatarMagnifier/definition.json",
                 "src/gadgets/usergroup/definition.json",
                 "src/gadgets/userpageCat/definition.json",
                 "src/gadgets/vector-styles/definition.json",
@@ -2757,6 +2885,7 @@
                 "src/gadgets/DotsSyntaxHighlighter/definition.json",
                 "src/gadgets/FlowThreadCheck/definition.json",
                 "src/gadgets/FlowthreadTOC/definition.json",
+                "src/gadgets/ForcePreviewUponUserRequest/definition.json",
                 "src/gadgets/Force_preview/definition.json",
                 "src/gadgets/GiveYouUp/definition.json",
                 "src/gadgets/GothicMoe/definition.json",
@@ -2789,6 +2918,7 @@
                 "src/gadgets/blockEnhance/definition.json",
                 "src/gadgets/code-prettify/definition.json",
                 "src/gadgets/cron/definition.json",
+                "src/gadgets/dark-mode-toggle-pagestyles/definition.json",
                 "src/gadgets/dark-mode-toggle/definition.json",
                 "src/gadgets/dark-mode/definition.json",
                 "src/gadgets/deletion/definition.json",
@@ -2803,7 +2933,9 @@
                 "src/gadgets/flagBlocked/definition.json",
                 "src/gadgets/flagEditWar/definition.json",
                 "src/gadgets/float-toc/definition.json",
+                "src/gadgets/hideFlowthreadDefaultly/definition.json",
                 "src/gadgets/hideUnpatrolledFlag/definition.json",
+                "src/gadgets/interfaceVariantConverter/definition.json",
                 "src/gadgets/jQueryLazyload/definition.json",
                 "src/gadgets/jquery.ui/definition.json",
                 "src/gadgets/libAsyncLock/definition.json",
@@ -2819,6 +2951,7 @@
                 "src/gadgets/mobile-styles/definition.json",
                 "src/gadgets/moeskin-classic/definition.json",
                 "src/gadgets/moeskin-styles/definition.json",
+                "src/gadgets/moeskin-topbar-patrolplus/definition.json",
                 "src/gadgets/moeskin-topbar/definition.json",
                 "src/gadgets/moveToUserSubpage/definition.json",
                 "src/gadgets/mwPanel/definition.json",
@@ -2840,6 +2973,7 @@
                 "src/gadgets/site-styles/definition.json",
                 "src/gadgets/temp-editcheck/definition.json",
                 "src/gadgets/uploader/definition.json",
+                "src/gadgets/userLinkAvatarMagnifier/definition.json",
                 "src/gadgets/usergroup/definition.json",
                 "src/gadgets/userpageCat/definition.json",
                 "src/gadgets/vector-styles/definition.json",
@@ -2888,6 +3022,7 @@
                 "src/gadgets/DotsSyntaxHighlighter/definition.json",
                 "src/gadgets/FlowThreadCheck/definition.json",
                 "src/gadgets/FlowthreadTOC/definition.json",
+                "src/gadgets/ForcePreviewUponUserRequest/definition.json",
                 "src/gadgets/Force_preview/definition.json",
                 "src/gadgets/GiveYouUp/definition.json",
                 "src/gadgets/GothicMoe/definition.json",
@@ -2920,6 +3055,7 @@
                 "src/gadgets/blockEnhance/definition.json",
                 "src/gadgets/code-prettify/definition.json",
                 "src/gadgets/cron/definition.json",
+                "src/gadgets/dark-mode-toggle-pagestyles/definition.json",
                 "src/gadgets/dark-mode-toggle/definition.json",
                 "src/gadgets/dark-mode/definition.json",
                 "src/gadgets/desktop-styles/definition.json",
@@ -2933,7 +3069,9 @@
                 "src/gadgets/flagBlocked/definition.json",
                 "src/gadgets/flagEditWar/definition.json",
                 "src/gadgets/float-toc/definition.json",
+                "src/gadgets/hideFlowthreadDefaultly/definition.json",
                 "src/gadgets/hideUnpatrolledFlag/definition.json",
+                "src/gadgets/interfaceVariantConverter/definition.json",
                 "src/gadgets/jQueryLazyload/definition.json",
                 "src/gadgets/jquery.ui/definition.json",
                 "src/gadgets/libAsyncLock/definition.json",
@@ -2949,6 +3087,7 @@
                 "src/gadgets/mobile-styles/definition.json",
                 "src/gadgets/moeskin-classic/definition.json",
                 "src/gadgets/moeskin-styles/definition.json",
+                "src/gadgets/moeskin-topbar-patrolplus/definition.json",
                 "src/gadgets/moeskin-topbar/definition.json",
                 "src/gadgets/moveToUserSubpage/definition.json",
                 "src/gadgets/mwPanel/definition.json",
@@ -2970,6 +3109,7 @@
                 "src/gadgets/site-styles/definition.json",
                 "src/gadgets/temp-editcheck/definition.json",
                 "src/gadgets/uploader/definition.json",
+                "src/gadgets/userLinkAvatarMagnifier/definition.json",
                 "src/gadgets/usergroup/definition.json",
                 "src/gadgets/userpageCat/definition.json",
                 "src/gadgets/vector-styles/definition.json",
@@ -3061,7 +3201,9 @@
         {
             "commit": "1e0cd27ee67fe4e44c03492001fa98966f9bb9ef",
             "datetime": "2022-09-02T14:01:58+00:00",
-            "changedFiles": []
+            "changedFiles": [
+                "src/gadgets/UserMessages/MediaWiki:Gadget-UserMessages.js"
+            ]
         },
         {
             "commit": "656b9332af41fb5bdb2648ed8fb9d2fc7a4bd641",
@@ -3164,7 +3306,11 @@
             "commit": "4c19895c652c248353b0896406ec338edadd2ec3",
             "datetime": "2022-09-02T00:58:18+00:00",
             "changedFiles": [
+                "src/gadgets/ReferenceTooltips/MediaWiki:Gadget-ReferenceTooltips.js",
+                "src/gadgets/autoconfirmedUserPing/MediaWiki:Gadget-autoconfirmedUserPing.js",
                 "src/gadgets/edit/MediaWiki:Gadget-edit.js",
+                "src/gadgets/interfaceVariantConverter/MediaWiki:Gadget-interfaceVariantConverter.js",
+                "src/gadgets/moveToUserSubpage/MediaWiki:Gadget-moveToUserSubpage.js",
                 "src/gadgets/quickMoveThread/MediaWiki:Gadget-quickMoveThread.js",
                 "src/gadgets/registerToDelete/MediaWiki:Gadget-registerToDelete.js",
                 "src/gadgets/report/MediaWiki:Gadget-report.js",
@@ -3180,6 +3326,7 @@
                 "src/gadgets/DotsSyntaxHighlighter/definition.json",
                 "src/gadgets/FlowThreadCheck/definition.json",
                 "src/gadgets/FlowthreadTOC/definition.json",
+                "src/gadgets/ForcePreviewUponUserRequest/definition.json",
                 "src/gadgets/Force_preview/definition.json",
                 "src/gadgets/GiveYouUp/definition.json",
                 "src/gadgets/GothicMoe/definition.json",
@@ -3212,6 +3359,7 @@
                 "src/gadgets/blockEnhance/definition.json",
                 "src/gadgets/code-prettify/definition.json",
                 "src/gadgets/cron/definition.json",
+                "src/gadgets/dark-mode-toggle-pagestyles/definition.json",
                 "src/gadgets/dark-mode-toggle/definition.json",
                 "src/gadgets/dark-mode/definition.json",
                 "src/gadgets/deletion/definition.json",
@@ -3343,6 +3491,7 @@
                 "src/gadgets/DotsSyntaxHighlighter/definition.json",
                 "src/gadgets/FlowThreadCheck/definition.json",
                 "src/gadgets/FlowthreadTOC/definition.json",
+                "src/gadgets/ForcePreviewUponUserRequest/definition.json",
                 "src/gadgets/Force_preview/definition.json",
                 "src/gadgets/Gadgets-definition.json",
                 "src/gadgets/GiveYouUp/definition.json",
@@ -3376,6 +3525,7 @@
                 "src/gadgets/blockEnhance/definition.json",
                 "src/gadgets/code-prettify/definition.json",
                 "src/gadgets/cron/definition.json",
+                "src/gadgets/dark-mode-toggle-pagestyles/definition.json",
                 "src/gadgets/dark-mode-toggle/definition.json",
                 "src/gadgets/dark-mode/definition.json",
                 "src/gadgets/deletion/definition.json",
@@ -3390,7 +3540,9 @@
                 "src/gadgets/flagBlocked/definition.json",
                 "src/gadgets/flagEditWar/definition.json",
                 "src/gadgets/float-toc/definition.json",
+                "src/gadgets/hideFlowthreadDefaultly/definition.json",
                 "src/gadgets/hideUnpatrolledFlag/definition.json",
+                "src/gadgets/interfaceVariantConverter/definition.json",
                 "src/gadgets/jQueryLazyload/definition.json",
                 "src/gadgets/jquery.ui/definition.json",
                 "src/gadgets/libAsyncLock/definition.json",
@@ -3405,6 +3557,7 @@
                 "src/gadgets/mobile-styles/definition.json",
                 "src/gadgets/moeskin-classic/definition.json",
                 "src/gadgets/moeskin-styles/definition.json",
+                "src/gadgets/moeskin-topbar-patrolplus/definition.json",
                 "src/gadgets/moeskin-topbar/definition.json",
                 "src/gadgets/moveToUserSubpage/definition.json",
                 "src/gadgets/mwPanel/definition.json",
@@ -3426,6 +3579,7 @@
                 "src/gadgets/site-styles/definition.json",
                 "src/gadgets/temp-editcheck/definition.json",
                 "src/gadgets/uploader/definition.json",
+                "src/gadgets/userLinkAvatarMagnifier/definition.json",
                 "src/gadgets/usergroup/definition.json",
                 "src/gadgets/userpageCat/definition.json",
                 "src/gadgets/vector-styles/definition.json",
@@ -3464,6 +3618,7 @@
             "datetime": "2022-09-01T03:54:39+00:00",
             "changedFiles": [
                 "src/groups/checkuser/MediaWiki:Group-checkuser.css",
+                "src/groups/interface-admin/MediaWiki:Group-interface-admin.css",
                 "src/groups/patroller/MediaWiki:Group-patroller.css",
                 "src/groups/staff/MediaWiki:Group-staff.css",
                 "src/groups/suppress/MediaWiki:Group-suppress.css",
@@ -3480,18 +3635,49 @@
             "commit": "47c8f34b1beb8f390201e769649f6a56c542c3ed",
             "datetime": "2022-09-01T03:20:44+00:00",
             "changedFiles": [
+                "src/gadgets/FlowThreadCheck/MediaWiki:Gadget-FlowThreadCheck.css",
+                "src/gadgets/GothicMoe/MediaWiki:Gadget-GothicMoe.css",
+                "src/gadgets/HeimuToggle/MediaWiki:Gadget-heimu-toggle.css",
+                "src/gadgets/InPageEdit-v2/MediaWiki:Gadget-InPageEdit-v2.css",
+                "src/gadgets/MarkAsResolved/MediaWiki:Gadget-MarkAsResolved.css",
+                "src/gadgets/Navigation_popups/MediaWiki:Gadget-popups.css",
+                "src/gadgets/ReferenceTooltips/MediaWiki:Gadget-ReferenceTooltips.css",
+                "src/gadgets/Searchbox-integration/MediaWiki:Gadget-Searchbox-integration.css",
+                "src/gadgets/ShowAvatar/MediaWiki:Gadget-ShowAvatar.css",
+                "src/gadgets/SideBarPic/MediaWiki:Gadget-SideBarPic.css",
                 "src/gadgets/Wikiplus/MediaWiki:Gadget-Wikiplus.css",
                 "src/gadgets/backlog/MediaWiki:Gadget-backlog.css",
+                "src/gadgets/code-prettify/MediaWiki:Gadget-code-prettify.css",
+                "src/gadgets/dark-mode-toggle-pagestyles/MediaWiki:Gadget-dark-mode-toggle-pagestyles.css",
+                "src/gadgets/dark-mode/MediaWiki:Gadget-dark-mode.css",
                 "src/gadgets/deletion/MediaWiki:Gadget-deletion.css",
+                "src/gadgets/desktop-styles/MediaWiki:Gadget-desktop-styles.css",
+                "src/gadgets/disambigLink/MediaWiki:Gadget-disambigLink.css",
+                "src/gadgets/editTopSection/MediaWiki:Gadget-editTopSection.css",
                 "src/gadgets/extiw/MediaWiki:Gadget-extiw.css",
+                "src/gadgets/float-toc/MediaWiki:Gadget-float-toc.css",
+                "src/gadgets/hideUnpatrolledFlag/MediaWiki:Gadget-hideUnpatrolledFlag.css",
                 "src/gadgets/jquery.ui/.stylelintignore",
-                "src/gadgets/noteTA/MediaWiki:Gadget-noteTA.css"
+                "src/gadgets/jquery.ui/MediaWiki:Gadget-jquery.ui.css",
+                "src/gadgets/libBottomRightCorner/MediaWiki:Gadget-libBottomRightCorner.css",
+                "src/gadgets/mobile-styles/MediaWiki:Gadget-mobile-styles.css",
+                "src/gadgets/moeskin-classic/MediaWiki:Gadget-moeskin-classic.css",
+                "src/gadgets/moeskin-styles/MediaWiki:Gadget-moeskin-styles.css",
+                "src/gadgets/noteTA/MediaWiki:Gadget-noteTA.css",
+                "src/gadgets/noticeActivity/MediaWiki:Gadget-noticeActivity.css",
+                "src/gadgets/sidebarHidden/MediaWiki:Gadget-sidebarHidden.css",
+                "src/gadgets/sidebaricons/MediaWiki:Gadget-mobile-sidebaricons.css",
+                "src/gadgets/site-styles/MediaWiki:Gadget-site-styles.css",
+                "src/gadgets/userpageCat/MediaWiki:Gadget-userpagecat.css",
+                "src/gadgets/vector-styles/MediaWiki:Gadget-vector-styles.css"
             ]
         },
         {
             "commit": "d650fc9118f6ee600aa11e004c57fbd00be1e1ba",
             "datetime": "2022-09-01T02:04:08+00:00",
-            "changedFiles": []
+            "changedFiles": [
+                "src/gadgets/userLinkAvatarMagnifier/MediaWiki:Gadget-UserLinkAvatarMagnifier.css"
+            ]
         },
         {
             "commit": "64c34fe0160a3be67030f10d2828515faa81eb2d",
@@ -3538,12 +3724,17 @@
         {
             "commit": "7f90de2c9d0753014e697a57371f71e58c3dd525",
             "datetime": "2022-08-31T13:34:11+00:00",
-            "changedFiles": []
+            "changedFiles": [
+                "src/gadgets/InPageEdit-v2/MediaWiki:Gadget-InPageEdit-v2-hook.js",
+                "src/gadgets/InPageEdit-v2/MediaWiki:Gadget-InPageEdit-v2.js"
+            ]
         },
         {
             "commit": "25ea38754a192bf59fb8ce62e19802a676693f9c",
             "datetime": "2022-08-31T13:33:44+00:00",
             "changedFiles": [
+                "src/gadgets/EditDraft/MediaWiki:Gadget-EditDraft.css",
+                "src/gadgets/EditDraft/MediaWiki:Gadget-EditDraft.js",
                 "src/gadgets/EditDraft/definition.json"
             ]
         },
@@ -3583,7 +3774,8 @@
             "commit": "ea431c59a38bafdffa7d11861febe10178f3b401",
             "datetime": "2022-08-31T12:41:42+00:00",
             "changedFiles": [
-                "src/gadgets/jQueryLazyload/.eslintrc"
+                "src/gadgets/jQueryLazyload/.eslintrc",
+                "src/gadgets/jQueryLazyload/MediaWiki:Gadget-jQueryLazyload.js"
             ]
         },
         {
@@ -3591,10 +3783,13 @@
             "datetime": "2022-08-31T12:40:03+00:00",
             "changedFiles": [
                 "src/gadgets/RecentchangesTagFilter/.eslintrc",
+                "src/gadgets/RecentchangesTagFilter/MediaWiki:Gadget-RecentchangesTagFilter.js",
                 "src/gadgets/RecentchangesTagFilter/definition.json",
                 "src/gadgets/RollbackEverything/.eslintrc",
+                "src/gadgets/RollbackEverything/MediaWiki:Gadget-rollbackEverything.js",
                 "src/gadgets/RollbackEverything/definition.json",
                 "src/gadgets/moment-timezone/.eslintrc",
+                "src/gadgets/moment-timezone/MediaWiki:Gadget-moment-timezone.js",
                 "src/gadgets/moment-timezone/definition.json"
             ]
         },
@@ -3626,7 +3821,9 @@
         {
             "commit": "695af14880d13d3bddff255ba320eff801cd9e71",
             "datetime": "2022-08-31T08:32:41+00:00",
-            "changedFiles": []
+            "changedFiles": [
+                "src/gadgets/DotsSyntaxHighlighter/MediaWiki:Gadget-DotsSyntaxHighlighter.js"
+            ]
         },
         {
             "commit": "e1970132ab0cb7bb32065bb9b1807b785604f014",
@@ -3643,6 +3840,7 @@
             "datetime": "2022-08-31T07:25:49+00:00",
             "changedFiles": [
                 "src/gadgets/DotsSyntaxHighlighter/.eslintrc",
+                "src/gadgets/DotsSyntaxHighlighter/MediaWiki:Gadget-DotsSyntaxHighlighter.js",
                 "src/gadgets/DotsSyntaxHighlighter/definition.json"
             ]
         },
@@ -3689,41 +3887,92 @@
         {
             "commit": "82f914b3942d3529dd9605f5ad44b6d738c88983",
             "datetime": "2022-08-31T03:36:01+00:00",
-            "changedFiles": []
+            "changedFiles": [
+                "src/gadgets/UserMessages/MediaWiki:Gadget-UserMessages.js"
+            ]
         },
         {
             "commit": "b2304ab9ae35f0976eeae97d40094a932d638191",
             "datetime": "2022-08-31T03:35:26+00:00",
             "changedFiles": [
+                "src/gadgets/AxUserMsg/MediaWiki:Gadget-AxUserMsg.js",
                 "src/gadgets/AxUserMsg/definition.json",
-                "src/gadgets/AxUserMsg/settings.json"
+                "src/gadgets/AxUserMsg/settings.json",
+                "src/gadgets/UserMessages/MediaWiki:Gadget-AxUserMsg.js"
             ]
         },
         {
             "commit": "207bf48457c5da0079b42f6593083c93995b4b07",
             "datetime": "2022-08-31T03:24:32+00:00",
             "changedFiles": [
+                "src/gadgets/AxUserMsg/MediaWiki:Gadget-AxUserMsg.js",
                 "src/gadgets/AxUserMsg/settings.json",
+                "src/gadgets/DotsSyntaxHighlighter/MediaWiki:Gadget-DotsSyntaxHighlighter.js",
                 "src/gadgets/DotsSyntaxHighlighter/settings.json",
+                "src/gadgets/EditDraft/MediaWiki:Gadget-EditDraft.css",
+                "src/gadgets/FlowThreadCheck/MediaWiki:Gadget-FlowThreadCheck.css",
+                "src/gadgets/GothicMoe/MediaWiki:Gadget-GothicMoe.css",
+                "src/gadgets/HeimuToggle/MediaWiki:Gadget-heimu-toggle.css",
+                "src/gadgets/InPageEdit-v2/MediaWiki:Gadget-InPageEdit-v2.css",
+                "src/gadgets/MarkAsResolved/MediaWiki:Gadget-MarkAsResolved.css",
+                "src/gadgets/Navigation_popups/MediaWiki:Gadget-popups.css",
+                "src/gadgets/RecentchangesTagFilter/MediaWiki:Gadget-RecentchangesTagFilter.js",
                 "src/gadgets/RecentchangesTagFilter/settings.json",
+                "src/gadgets/ReferenceTooltips/MediaWiki:Gadget-ReferenceTooltips.css",
+                "src/gadgets/RollbackEverything/MediaWiki:Gadget-rollbackEverything.js",
                 "src/gadgets/RollbackEverything/settings.json",
+                "src/gadgets/Searchbox-integration/MediaWiki:Gadget-Searchbox-integration.css",
+                "src/gadgets/ShowAvatar/MediaWiki:Gadget-ShowAvatar.css",
+                "src/gadgets/SideBarPic/MediaWiki:Gadget-SideBarPic.css",
+                "src/gadgets/UserLinkAvatar/MediaWiki:Gadget-UserLinkAvatar.css",
                 "src/gadgets/Wikiplus/MediaWiki:Gadget-Wikiplus.css",
+                "src/gadgets/abusefilterEdit/MediaWiki:Gadget-abusefilteredit.css",
                 "src/gadgets/backlog/MediaWiki:Gadget-backlog.css",
+                "src/gadgets/code-prettify/MediaWiki:Gadget-code-prettify.css",
                 "src/gadgets/cron/MediaWiki:Gadget-cron.js",
                 "src/gadgets/cron/settings.json",
+                "src/gadgets/dark-mode-toggle-pagestyles/MediaWiki:Gadget-dark-mode-toggle-pagestyles.css",
+                "src/gadgets/dark-mode/MediaWiki:Gadget-dark-mode.css",
                 "src/gadgets/deletion/MediaWiki:Gadget-deletion.css",
+                "src/gadgets/desktop-styles/MediaWiki:Gadget-desktop-styles.css",
+                "src/gadgets/disambigLink/MediaWiki:Gadget-disambigLink.css",
+                "src/gadgets/editTopSection/MediaWiki:Gadget-editTopSection.css",
                 "src/gadgets/extiw/MediaWiki:Gadget-extiw.css",
+                "src/gadgets/float-toc/MediaWiki:Gadget-float-toc.css",
+                "src/gadgets/hideUnpatrolledFlag/MediaWiki:Gadget-hideUnpatrolledFlag.css",
+                "src/gadgets/jQueryLazyload/MediaWiki:Gadget-jQueryLazyload.js",
                 "src/gadgets/jQueryLazyload/settings.json",
+                "src/gadgets/jquery.ui/MediaWiki:Gadget-jquery.ui.css",
+                "src/gadgets/jquery.ui/MediaWiki:Gadget-jquery.ui.js",
                 "src/gadgets/jquery.ui/settings.json",
+                "src/gadgets/libAsyncLock/MediaWiki:Gadget-libAsyncLock.js",
                 "src/gadgets/libAsyncLock/settings.json",
+                "src/gadgets/libBottomRightCorner/MediaWiki:Gadget-libBottomRightCorner.css",
+                "src/gadgets/libHashwasm/MediaWiki:Gadget-libHashwasm.js",
                 "src/gadgets/libHashwasm/settings.json",
+                "src/gadgets/libPolyfill/MediaWiki:Gadget-libPolyfill.js",
                 "src/gadgets/libPolyfill/settings.json",
                 "src/gadgets/libip/MediaWiki:Gadget-libip.js",
                 "src/gadgets/libip/settings.json",
+                "src/gadgets/localforage/MediaWiki:Gadget-localforage.js",
                 "src/gadgets/localforage/settings.json",
+                "src/gadgets/mobile-styles/MediaWiki:Gadget-mobile-styles.css",
+                "src/gadgets/moeskin-classic/MediaWiki:Gadget-moeskin-classic.css",
+                "src/gadgets/moeskin-styles/MediaWiki:Gadget-moeskin-styles.css",
+                "src/gadgets/moment-timezone/MediaWiki:Gadget-moment-timezone.js",
                 "src/gadgets/moment-timezone/settings.json",
                 "src/gadgets/noteTA/MediaWiki:Gadget-noteTA.css",
+                "src/gadgets/noticeActivity/MediaWiki:Gadget-noticeActivity.css",
+                "src/gadgets/sidebarHidden/MediaWiki:Gadget-sidebarHidden.css",
+                "src/gadgets/sidebaricons/MediaWiki:Gadget-mobile-sidebaricons.css",
+                "src/gadgets/site-styles/MediaWiki:Gadget-site-styles.css",
+                "src/gadgets/userLinkAvatarMagnifier/MediaWiki:Gadget-UserLinkAvatarMagnifier.css",
+                "src/gadgets/userpageCat/MediaWiki:Gadget-userpagecat.css",
+                "src/gadgets/vector-styles/MediaWiki:Gadget-vector-styles.css",
+                "src/gadgets/widgetPreload/MediaWiki:Gadget-widgetPreload.css",
+                "src/gadgets/wikieditor-highlight/MediaWiki:Gadget-wikieditor-highlight.js",
                 "src/gadgets/wikieditor-highlight/settings.json",
+                "src/gadgets/wikiplus-highlight/MediaWiki:Gadget-wikiplus-highlight.js",
                 "src/gadgets/wikiplus-highlight/settings.json"
             ]
         },
@@ -3738,6 +3987,7 @@
                 "src/gadgets/EditDraft/definition.json",
                 "src/gadgets/FlowThreadCheck/definition.json",
                 "src/gadgets/FlowthreadTOC/definition.json",
+                "src/gadgets/ForcePreviewUponUserRequest/definition.json",
                 "src/gadgets/Force_preview/definition.json",
                 "src/gadgets/GiveYouUp/definition.json",
                 "src/gadgets/GothicMoe/definition.json",
@@ -3772,6 +4022,7 @@
                 "src/gadgets/blockEnhance/definition.json",
                 "src/gadgets/code-prettify/definition.json",
                 "src/gadgets/cron/definition.json",
+                "src/gadgets/dark-mode-toggle-pagestyles/definition.json",
                 "src/gadgets/dark-mode-toggle/definition.json",
                 "src/gadgets/dark-mode/definition.json",
                 "src/gadgets/deletion/definition.json",
@@ -3786,7 +4037,9 @@
                 "src/gadgets/flagBlocked/definition.json",
                 "src/gadgets/flagEditWar/definition.json",
                 "src/gadgets/float-toc/definition.json",
+                "src/gadgets/hideFlowthreadDefaultly/definition.json",
                 "src/gadgets/hideUnpatrolledFlag/definition.json",
+                "src/gadgets/interfaceVariantConverter/definition.json",
                 "src/gadgets/jQueryLazyload/definition.json",
                 "src/gadgets/jquery.ui/definition.json",
                 "src/gadgets/libAsyncLock/definition.json",
@@ -3801,6 +4054,7 @@
                 "src/gadgets/mobile-styles/definition.json",
                 "src/gadgets/moeskin-classic/definition.json",
                 "src/gadgets/moeskin-styles/definition.json",
+                "src/gadgets/moeskin-topbar-patrolplus/definition.json",
                 "src/gadgets/moeskin-topbar/definition.json",
                 "src/gadgets/moment-timezone/definition.json",
                 "src/gadgets/moveToUserSubpage/definition.json",
@@ -3823,6 +4077,7 @@
                 "src/gadgets/site-styles/definition.json",
                 "src/gadgets/temp-editcheck/definition.json",
                 "src/gadgets/uploader/definition.json",
+                "src/gadgets/userLinkAvatarMagnifier/definition.json",
                 "src/gadgets/usergroup/definition.json",
                 "src/gadgets/userpageCat/definition.json",
                 "src/gadgets/vector-styles/definition.json",
@@ -3884,12 +4139,16 @@
         {
             "commit": "d99b74a1df639ad69d181f20b6475b6940e91e13",
             "datetime": "2022-08-30T08:05:49+00:00",
-            "changedFiles": []
+            "changedFiles": [
+                "src/gadgets/wikiBlame/MediaWiki:Gadget-wikiBlame.js"
+            ]
         },
         {
             "commit": "988c2f8adccd9a76d898b5e5d03ac62e3a540d34",
             "datetime": "2022-08-30T07:55:18+00:00",
-            "changedFiles": []
+            "changedFiles": [
+                "src/gadgets/wikiBlame/MediaWiki:Gadget-wikiBlame.js"
+            ]
         },
         {
             "commit": "794fd08bf8b41236ba6e0ebef95dc88d38a35a39",
@@ -3990,7 +4249,9 @@
         {
             "commit": "3eb832bbee2d5e279407986536846d3034949021",
             "datetime": "2022-08-21T21:25:04+08:00",
-            "changedFiles": []
+            "changedFiles": [
+                "src/gadgets/Navigation_popups/MediaWiki:Gadget-popups.js"
+            ]
         },
         {
             "commit": "78249dd2a52f48d7c71153877c7d2bbbfeba8a2a",
@@ -4002,12 +4263,16 @@
         {
             "commit": "f1955cdb473c27b0871cbfa840109851d167b3b4",
             "datetime": "2022-08-19T10:14:09+08:00",
-            "changedFiles": []
+            "changedFiles": [
+                "src/gadgets/code-prettify/MediaWiki:Gadget-code-prettify.js"
+            ]
         },
         {
             "commit": "135010f71cb5d45c97769948913c89d3888c3245",
             "datetime": "2022-08-19T10:12:47+08:00",
-            "changedFiles": []
+            "changedFiles": [
+                "src/gadgets/CommentsinLocalTime/MediaWiki:Gadget-CommentsinLocalTime.js"
+            ]
         },
         {
             "commit": "89047237ae79df6062f5dfc4a0578f5372bba18b",
@@ -4064,12 +4329,16 @@
         {
             "commit": "5c4a237f766061bfac7c0f5ba55700fd3b5d673f",
             "datetime": "2022-08-06T10:54:43+08:00",
-            "changedFiles": []
+            "changedFiles": [
+                "src/gadgets/Navigation_popups/MediaWiki:Gadget-popups.js"
+            ]
         },
         {
             "commit": "7ff15a58afa663f8ed61e9ff798a3343a12c0343",
             "datetime": "2022-08-05T23:07:07+08:00",
-            "changedFiles": []
+            "changedFiles": [
+                "src/gadgets/libJQuery/MediaWiki:Gadget-libJQuery.js"
+            ]
         },
         {
             "commit": "2cd01f1cf1fb568cf9c490ee525940acb015fff5",
@@ -4101,8 +4370,19 @@
             "datetime": "2022-08-05T14:39:45+08:00",
             "changedFiles": [
                 "src/gadgets/HotCat/MediaWiki:Gadget-HotCat.js",
+                "src/gadgets/Navigation_popups/MediaWiki:Gadget-popups.js",
+                "src/gadgets/UserMessages/MediaWiki:Gadget-AxUserMsg.js",
+                "src/gadgets/allmessageFilter/MediaWiki:Gadget-allmessageFilter.js",
+                "src/gadgets/autoconfirmedUserPing/MediaWiki:Gadget-autoconfirmedUserPing.js",
                 "src/gadgets/backlog/MediaWiki:Gadget-backlog.js",
+                "src/gadgets/blockEnhance/MediaWiki:Gadget-blockEnhance.js",
                 "src/gadgets/deletion/MediaWiki:Gadget-deletion.js",
+                "src/gadgets/interfaceVariantConverter/MediaWiki:Gadget-interfaceVariantConverter.js",
+                "src/gadgets/libJQuery/MediaWiki:Gadget-libJQuery.js",
+                "src/gadgets/moveToUserSubpage/MediaWiki:Gadget-moveToUserSubpage.js",
+                "src/gadgets/queryContributions/MediaWiki:Gadget-queryContributions.js",
+                "src/gadgets/quickMoveThread/MediaWiki:Gadget-quickMoveThread.js",
+                "src/gadgets/registerToDelete/MediaWiki:Gadget-registerToDelete.js",
                 "src/gadgets/report/MediaWiki:Gadget-report.js",
                 "src/global/MediaWiki:Common.js",
                 "src/global/MediaWiki:Common.js#edit.js",
@@ -4173,12 +4453,16 @@
         {
             "commit": "094f42acd35cf16d1e4265a59812e2485de2d52a",
             "datetime": "2022-08-04T22:35:13+08:00",
-            "changedFiles": []
+            "changedFiles": [
+                "src/gadgets/ReferenceTooltips/MediaWiki:Gadget-ReferenceTooltips.js"
+            ]
         },
         {
             "commit": "ba5e31021361522c2b0be01c0bb7e821f68834ac",
             "datetime": "2022-08-04T21:29:26+08:00",
-            "changedFiles": []
+            "changedFiles": [
+                "src/gadgets/Navigation_popups/MediaWiki:Gadget-popups.js"
+            ]
         },
         {
             "commit": "ce13c202dcc17282c237f263ba777e2112fdbcb5",
@@ -4225,12 +4509,16 @@
         {
             "commit": "22b21625efb6266d15ddbe0c06b04296497d6e42",
             "datetime": "2022-07-24T11:02:52+08:00",
-            "changedFiles": []
+            "changedFiles": [
+                "src/gadgets/SpecialWikitext/MediaWiki:Gadget-SpecialWikitext.js"
+            ]
         },
         {
             "commit": "51dd5bbe61329b18efdb651cc3ee84c031c56d8b",
             "datetime": "2022-07-23T11:12:57+08:00",
-            "changedFiles": []
+            "changedFiles": [
+                "src/gadgets/UserMessages/MediaWiki:Gadget-UserMessages.js"
+            ]
         },
         {
             "commit": "0a87c5b2d107b91e42d32030476803b44fc3a3e2",
@@ -4252,7 +4540,9 @@
         {
             "commit": "999144fa93f933522232d35323f02366c9646ca0",
             "datetime": "2022-07-21T17:59:31+08:00",
-            "changedFiles": []
+            "changedFiles": [
+                "src/gadgets/autoconfirmedUserPing/MediaWiki:Gadget-autoconfirmedUserPing.js"
+            ]
         },
         {
             "commit": "abfa740c85cd57f45c4bc620ba938ebb5b4bb6e5",
@@ -4271,13 +4561,16 @@
         {
             "commit": "7912a381cdf9c3e9286060bff474c0cd226579f1",
             "datetime": "2022-07-21T11:16:09+08:00",
-            "changedFiles": []
+            "changedFiles": [
+                "src/gadgets/LocalObjectStorage/MediaWiki:Gadget-LocalObjectStorage.js"
+            ]
         },
         {
             "commit": "273c11ba7b1bfa900f8103b2f2f5819588dc9ccf",
             "datetime": "2022-07-21T11:04:07+08:00",
             "changedFiles": [
-                "src/gadgets/Wikiplus/MediaWiki:Gadget-Wikiplus.js"
+                "src/gadgets/Wikiplus/MediaWiki:Gadget-Wikiplus.js",
+                "src/gadgets/abusefilter33test/MediaWiki:Gadget-abusefilter33test.js"
             ]
         },
         {
@@ -4308,12 +4601,23 @@
             "commit": "2ed6c0ce53260c5c00dbbb17cf0a74b0255e597b",
             "datetime": "2022-07-20T14:46:49+08:00",
             "changedFiles": [
+                "src/gadgets/CleanDeleteReasons/MediaWiki:Gadget-CleanDeleteReasons.js",
+                "src/gadgets/EditDraft/MediaWiki:Gadget-EditDraft.js",
+                "src/gadgets/Navigation_popups/MediaWiki:Gadget-popups.js",
+                "src/gadgets/UserLinkAvatar/MediaWiki:Gadget-UserLinkAvatar.js",
                 "src/gadgets/UserMessages/MediaWiki:AxUserMsg.js",
+                "src/gadgets/UserMessages/MediaWiki:Gadget-UserMessages.js",
                 "src/gadgets/Wikiplus/MediaWiki:Gadget-Wikiplus.js",
+                "src/gadgets/blockEnhance/MediaWiki:Gadget-blockEnhance.js",
+                "src/gadgets/patrolCount/MediaWiki:Gadget-patrolCount.js",
+                "src/gadgets/queryContributions/MediaWiki:Gadget-queryContributions.js",
+                "src/gadgets/queryWhatlinkshere/MediaWiki:Gadget-queryWhatlinkshere.js",
                 "src/gadgets/site-js/MediaWiki:Gadget-site-js.js",
                 "src/gadgets/site-lib/MediaWiki:Gadget-site-lib.js",
                 "src/gadgets/uploader/MediaWiki:Gadget-uploader.js",
                 "src/gadgets/widgetPreload/widgetPreload.js",
+                "src/gadgets/wikieditor-highlight/MediaWiki:Gadget-wikieditor-highlight.js",
+                "src/gadgets/wikiplus-highlight/MediaWiki:Gadget-wikiplus-highlight.js",
                 "src/global/MediaWiki:Common.js",
                 "src/global/MediaWiki:Common.js#edit.js",
                 "src/global/MediaWiki:Mobile.js",
@@ -4332,7 +4636,8 @@
             "commit": "eac0c253b468b72ab39444d3a5749df2cdbaca60",
             "datetime": "2022-07-20T10:29:32+08:00",
             "changedFiles": [
-                "src/gadgets/deletion/MediaWiki:Gadget-deletion.js"
+                "src/gadgets/deletion/MediaWiki:Gadget-deletion.js",
+                "src/gadgets/usergroup/MediaWiki:Gadget-usergroup.js"
             ]
         },
         {
@@ -4346,6 +4651,11 @@
             "commit": "b660181c119c561ff763bc1ed249eaa2325fafeb",
             "datetime": "2022-06-28T10:41:12+08:00",
             "changedFiles": [
+                "src/gadgets/Searchbox-popout/MediaWiki:Gadget-Searchbox-popout.js",
+                "src/gadgets/ShowAvatar/MediaWiki:Gadget-ShowAvatar.js",
+                "src/gadgets/moveToUserSubpage/MediaWiki:Gadget-moveToUserSubpage.js",
+                "src/gadgets/registerToDelete/MediaWiki:Gadget-registerToDelete.js",
+                "src/gadgets/shortlink/MediaWiki:Gadget-shortlink.js",
                 "src/gadgets/site-js/MediaWiki:Gadget-site-js.js",
                 "src/gadgets/site-lib/MediaWiki:Gadget-site-lib.js",
                 "src/global/MediaWiki:Common.js"
@@ -4355,7 +4665,9 @@
             "commit": "f36bf017294cd94a568ea29632206977fbc7c361",
             "datetime": "2022-06-26T15:34:12+08:00",
             "changedFiles": [
-                "src/gadgets/HotCat/MediaWiki:Gadget-HotCat.js"
+                "src/gadgets/HotCat/MediaWiki:Gadget-HotCat.js",
+                "src/gadgets/Navigation_popups/MediaWiki:Gadget-popups.js",
+                "src/gadgets/autoconfirmedUserPing/MediaWiki:Gadget-autoconfirmedUserPing.js"
             ]
         },
         {
@@ -4363,8 +4675,19 @@
             "datetime": "2022-06-23T10:28:19+08:00",
             "changedFiles": [
                 "src/gadgets/HotCat/MediaWiki:Gadget-HotCat.js",
+                "src/gadgets/Navigation_popups/MediaWiki:Gadget-popups.js",
+                "src/gadgets/Purgecache/MediaWiki:Gadget-Purgecache.js",
+                "src/gadgets/RecentchangesTagFilter/MediaWiki:Gadget-RecentchangesTagFilter.js",
+                "src/gadgets/ReferenceTooltips/MediaWiki:Gadget-ReferenceTooltips.js",
+                "src/gadgets/RollbackEverything/MediaWiki:Gadget-rollbackEverything.js",
                 "src/gadgets/UserMessages/MediaWiki:AxUserMsg.js",
+                "src/gadgets/patrolCount/MediaWiki:Gadget-patrolCount.js",
+                "src/gadgets/patrolPlus/MediaWiki:Gadget-patrolPlus.js",
+                "src/gadgets/queryContributions/MediaWiki:Gadget-queryContributions.js",
+                "src/gadgets/queryWhatlinkshere/MediaWiki:Gadget-queryWhatlinkshere.js",
+                "src/gadgets/registerToDelete/MediaWiki:Gadget-registerToDelete.js",
                 "src/gadgets/report/MediaWiki:Gadget-report.js",
+                "src/gadgets/temp-editcheck/MediaWiki:Gadget-temp-editcheck.js",
                 "src/global/MediaWiki:Common.js"
             ]
         },
@@ -4372,10 +4695,25 @@
             "commit": "6e0add7da4f665de71da34c2e1ce55d0845fbe9e",
             "datetime": "2022-06-21T10:50:49+08:00",
             "changedFiles": [
+                "src/gadgets/FlowThreadCheck/MediaWiki:Gadget-FlowThreadCheck.js",
+                "src/gadgets/Force_preview/MediaWiki:Gadget-Force_preview.js",
                 "src/gadgets/HotCat/MediaWiki:Gadget-HotCat.js",
+                "src/gadgets/MarkAsResolved/MediaWiki:Gadget-MarkAsResolved.js",
+                "src/gadgets/Navigation_popups/MediaWiki:Gadget-popups.js",
+                "src/gadgets/SpecialWikitext/MediaWiki:Gadget-SpecialWikitext.js",
+                "src/gadgets/abusefilter33test/MediaWiki:Gadget-abusefilter33test.js",
+                "src/gadgets/abusefilterEdit/MediaWiki:Gadget-abusefilteredit.js",
+                "src/gadgets/allmessageFilter/MediaWiki:Gadget-allmessageFilter.js",
+                "src/gadgets/autoconfirmedUserPing/MediaWiki:Gadget-autoconfirmedUserPing.js",
                 "src/gadgets/backlog/MediaWiki:Gadget-backlog.js",
+                "src/gadgets/code-prettify/MediaWiki:Gadget-code-prettify.js",
                 "src/gadgets/deletion/MediaWiki:Gadget-deletion.js",
                 "src/gadgets/libUtil/MediaWiki:Gadget-libUtil.js",
+                "src/gadgets/moeskin-topbar-patrolplus/MediaWiki:Gadget-moeskin-topbar-patrolplus.js",
+                "src/gadgets/moeskin-topbar/MediaWiki:Gadget-moeskin-topbar.js",
+                "src/gadgets/moment-timezone/MediaWiki:Gadget-moment-timezone.js",
+                "src/gadgets/registerToDelete/MediaWiki:Gadget-registerToDelete.js",
+                "src/gadgets/sidebarHidden/MediaWiki:Gadget-sidebarHidden.js",
                 "src/gadgets/site-js/MediaWiki:Gadget-site-js.js",
                 "src/global/MediaWiki:Common.js",
                 "src/global/MediaWiki:Mobile.js"
@@ -4385,68 +4723,155 @@
             "commit": "9321336861de2944315f2c15b2efc1659daa28e6",
             "datetime": "2022-06-21T09:08:45+08:00",
             "changedFiles": [
+                "src/gadgets/Navigation_popups/MediaWiki:Gadget-popups.js",
+                "src/gadgets/libAsyncLock/MediaWiki:Gadget-libAsyncLock.js",
+                "src/gadgets/libHashwasm/MediaWiki:Gadget-libHashwasm.js",
+                "src/gadgets/libPolyfill/MediaWiki:Gadget-libPolyfill.js",
                 "src/gadgets/libUtil/MediaWiki:Gadget-libUtil.js",
-                "src/gadgets/libip/MediaWiki:Gadget-libip.js"
+                "src/gadgets/libip/MediaWiki:Gadget-libip.js",
+                "src/gadgets/localforage/MediaWiki:Gadget-localforage.js",
+                "src/gadgets/moment-timezone/MediaWiki:Gadget-moment-timezone.js"
             ]
         },
         {
             "commit": "2617a1e12b45a5dbb8bda2efd49fec3070b31399",
             "datetime": "2022-06-21T09:03:21+08:00",
-            "changedFiles": []
+            "changedFiles": [
+                "src/gadgets/jQueryLazyload/MediaWiki:Gadget-jQueryLazyload.js",
+                "src/gadgets/jquery.ui/MediaWiki:Gadget-jquery.ui.js"
+            ]
         },
         {
             "commit": "896272c6105c7ab5caeee78d6f1d74658c19c5ca",
             "datetime": "2022-06-21T09:00:56+08:00",
             "changedFiles": [
+                "src/gadgets/FlowThreadCheck/MediaWiki:Gadget-FlowThreadCheck.js",
+                "src/gadgets/Force_preview/MediaWiki:Gadget-Force_preview.js",
                 "src/gadgets/UserMessages/MediaWiki:AxUserMsg.js",
-                "src/gadgets/libUtil/MediaWiki:Gadget-libUtil.js"
+                "src/gadgets/allmessageFilter/MediaWiki:Gadget-allmessageFilter.js",
+                "src/gadgets/enable-nest-highlight/MediaWiki:Gadget-enable-nest-highlight.js",
+                "src/gadgets/flagBlocked/MediaWiki:Gadget-flagBlocked.js",
+                "src/gadgets/jQueryLazyload/MediaWiki:Gadget-jQueryLazyload.js",
+                "src/gadgets/jquery.ui/MediaWiki:Gadget-jquery.ui.js",
+                "src/gadgets/libAsyncLock/MediaWiki:Gadget-libAsyncLock.js",
+                "src/gadgets/libUtil/MediaWiki:Gadget-libUtil.js",
+                "src/gadgets/moment-timezone/MediaWiki:Gadget-moment-timezone.js"
             ]
         },
         {
             "commit": "9f95b8975ccc5f08a04515444427e85393614831",
             "datetime": "2022-06-20T17:45:07+08:00",
             "changedFiles": [
+                "src/gadgets/DotsSyntaxHighlighter/MediaWiki:Gadget-DotsSyntaxHighlighter.js",
+                "src/gadgets/code-prettify/MediaWiki:Gadget-code-prettify.js",
                 "src/gadgets/cron/MediaWiki:Gadget-cron.js",
-                "src/gadgets/deletion/MediaWiki:Gadget-deletion.js"
+                "src/gadgets/deletion/MediaWiki:Gadget-deletion.js",
+                "src/gadgets/disable-nest-alert/MediaWiki:Gadget-disable-nest-alert.js"
             ]
         },
         {
             "commit": "4ee5b47352efe72dd9f86d9b72d6bec27fe7a4f5",
             "datetime": "2022-06-20T17:37:04+08:00",
             "changedFiles": [
+                "src/gadgets/CleanDeleteReasons/MediaWiki:Gadget-CleanDeleteReasons.js",
+                "src/gadgets/FlowThreadCheck/MediaWiki:Gadget-FlowThreadCheck.js",
+                "src/gadgets/FlowthreadTOC/MediaWiki:Gadget-FlowthreadTOC.js",
+                "src/gadgets/GiveYouUp/MediaWiki:Gadget-GiveYouUp.js",
+                "src/gadgets/HeimuToggle/MediaWiki:Gadget-heimu-toggle.js",
+                "src/gadgets/LetYouDown/MediaWiki:Gadget-LetYouDown.js",
+                "src/gadgets/Logout-confirm/MediaWiki:Gadget-Logout-confirm.js",
+                "src/gadgets/Navigation_popups/MediaWiki:Gadget-popups.js",
+                "src/gadgets/Purgecache/MediaWiki:Gadget-Purgecache.js",
+                "src/gadgets/ReferenceTooltips/MediaWiki:Gadget-ReferenceTooltips.js",
+                "src/gadgets/Searchbox-popout/MediaWiki:Gadget-Searchbox-popout.js",
+                "src/gadgets/ShowAvatar/MediaWiki:Gadget-ShowAvatar.js",
+                "src/gadgets/UserLinkAvatar/MediaWiki:Gadget-UserLinkAvatar.js",
                 "src/gadgets/UserMessages/MediaWiki:AxUserMsg.js",
+                "src/gadgets/code-prettify/MediaWiki:Gadget-code-prettify.js",
+                "src/gadgets/dark-mode-toggle/MediaWiki:Gadget-dark-mode-toggle.js",
                 "src/gadgets/deletion/MediaWiki:Gadget-deletion.js",
-                "src/gadgets/mwPanel/MediaWiki:Gadget-mwPanel.js"
+                "src/gadgets/editTopSection/MediaWiki:Gadget-editTopSection.js",
+                "src/gadgets/libBottomRightCorner/MediaWiki:Gadget-libBottomRightCorner.js",
+                "src/gadgets/mwPanel/MediaWiki:Gadget-mwPanel.js",
+                "src/gadgets/patrolCount/MediaWiki:Gadget-patrolCount.js",
+                "src/gadgets/shortlink/MediaWiki:Gadget-shortlink.js"
             ]
         },
         {
             "commit": "f9a79c5084a962dd92a80f77445c49931cff5806",
             "datetime": "2022-06-20T17:19:22+08:00",
             "changedFiles": [
+                "src/gadgets/abusefilterEdit/MediaWiki:Gadget-abusefilteredit.js",
+                "src/gadgets/allmessageFilter/MediaWiki:Gadget-allmessageFilter.js",
+                "src/gadgets/autoconfirmedUserPing/MediaWiki:Gadget-autoconfirmedUserPing.js",
                 "src/gadgets/backlog/MediaWiki:Gadget-backlog.js"
             ]
         },
         {
             "commit": "8606a908a5ed29180f4b28ad3a1ccfc466834c64",
             "datetime": "2022-06-20T17:09:47+08:00",
-            "changedFiles": []
+            "changedFiles": [
+                "src/gadgets/DotsSyntaxHighlighter/MediaWiki:Gadget-DotsSyntaxHighlighter.js",
+                "src/gadgets/InPageEdit-v2/MediaWiki:Gadget-InPageEdit-v2.js",
+                "src/gadgets/ReferenceTooltips/MediaWiki:Gadget-ReferenceTooltips.js",
+                "src/gadgets/abusefilterEdit/MediaWiki:Gadget-abusefilteredit.js",
+                "src/gadgets/dark-mode-toggle/MediaWiki:Gadget-dark-mode-toggle.js"
+            ]
         },
         {
             "commit": "419cd5e745038a58a62252461c978d08c868eddb",
             "datetime": "2022-06-20T17:08:52+08:00",
             "changedFiles": [
+                "src/gadgets/DotsSyntaxHighlighter/MediaWiki:Gadget-DotsSyntaxHighlighter.js",
+                "src/gadgets/EditDraft/MediaWiki:Gadget-EditDraft.js",
+                "src/gadgets/ForcePreviewUponUserRequest/MediaWiki:Gadget-Force_preview_upon_user_request.js",
+                "src/gadgets/Force_preview/MediaWiki:Gadget-Force_preview.js",
+                "src/gadgets/HeimuToggleDefaultOn/MediaWiki:Gadget-heimu-toggle-defaultOn.js",
                 "src/gadgets/HotCat/MediaWiki:Gadget-HotCat.js",
+                "src/gadgets/InPageEdit-v2/MediaWiki:Gadget-InPageEdit-v2.js",
+                "src/gadgets/MarkAsResolved/MediaWiki:Gadget-MarkAsResolved.js",
+                "src/gadgets/RecentchangesTagFilter/MediaWiki:Gadget-RecentchangesTagFilter.js",
+                "src/gadgets/ReferenceTooltips/MediaWiki:Gadget-ReferenceTooltips.js",
+                "src/gadgets/RollbackEverything/MediaWiki:Gadget-rollbackEverything.js",
+                "src/gadgets/Searchbox-integration/MediaWiki:Gadget-Searchbox-integration.js",
                 "src/gadgets/UserMessages/MediaWiki:AxUserMsg.js",
+                "src/gadgets/UserMessages/MediaWiki:Gadget-UserMessages.js",
                 "src/gadgets/Wikiplus/MediaWiki:Gadget-Wikiplus.js",
+                "src/gadgets/abusefilter33test/MediaWiki:Gadget-abusefilter33test.js",
+                "src/gadgets/abusefilterEdit/MediaWiki:Gadget-abusefilteredit.js",
+                "src/gadgets/allmessageFilter/MediaWiki:Gadget-allmessageFilter.js",
+                "src/gadgets/autocollapse/MediaWiki:Gadget-autocollapse.js",
                 "src/gadgets/backlog/MediaWiki:Gadget-backlog.js",
                 "src/gadgets/cron/MediaWiki:Gadget-cron.js",
+                "src/gadgets/dark-mode-toggle/MediaWiki:Gadget-dark-mode-toggle.js",
+                "src/gadgets/disable-nest-alert/MediaWiki:Gadget-disable-nest-alert.js",
+                "src/gadgets/editCount/MediaWiki:Gadget-editCount.js",
+                "src/gadgets/enable-nest-highlight/MediaWiki:Gadget-enable-nest-highlight.js",
+                "src/gadgets/flagBlocked/MediaWiki:Gadget-flagBlocked.js",
+                "src/gadgets/flagEditWar/MediaWiki:Gadget-flagEditWar.js",
+                "src/gadgets/jQueryLazyload/MediaWiki:Gadget-jQueryLazyload.js",
+                "src/gadgets/jquery.ui/MediaWiki:Gadget-jquery.ui.js",
+                "src/gadgets/libAsyncLock/MediaWiki:Gadget-libAsyncLock.js",
+                "src/gadgets/libHashwasm/MediaWiki:Gadget-libHashwasm.js",
+                "src/gadgets/libJQuery/MediaWiki:Gadget-libJQuery.js",
+                "src/gadgets/libPolyfill/MediaWiki:Gadget-libPolyfill.js",
                 "src/gadgets/libUtil/MediaWiki:Gadget-libUtil.js",
                 "src/gadgets/libip/MediaWiki:Gadget-libip.js",
+                "src/gadgets/localforage/MediaWiki:Gadget-localforage.js",
+                "src/gadgets/moeskin-topbar-patrolplus/MediaWiki:Gadget-moeskin-topbar-patrolplus.js",
+                "src/gadgets/moeskin-topbar/MediaWiki:Gadget-moeskin-topbar.js",
+                "src/gadgets/moment-timezone/MediaWiki:Gadget-moment-timezone.js",
                 "src/gadgets/mwPanel/MediaWiki:Gadget-mwPanel.js",
+                "src/gadgets/patrolPlus/MediaWiki:Gadget-patrolPlus.js",
+                "src/gadgets/queryContributions/MediaWiki:Gadget-queryContributions.js",
+                "src/gadgets/queryWhatlinkshere/MediaWiki:Gadget-queryWhatlinkshere.js",
                 "src/gadgets/report/MediaWiki:Gadget-report.js",
+                "src/gadgets/shortlink/MediaWiki:Gadget-shortlink.js",
                 "src/gadgets/site-js/MediaWiki:Gadget-site-js.js",
                 "src/gadgets/site-lib/MediaWiki:Gadget-site-lib.js",
                 "src/gadgets/uploader/MediaWiki:Gadget-uploader.js",
+                "src/gadgets/wikieditor-highlight/MediaWiki:Gadget-wikieditor-highlight.js",
+                "src/gadgets/wikiplus-highlight/MediaWiki:Gadget-wikiplus-highlight.js",
                 "src/global/MediaWiki:Moeskin.js",
                 "src/groups/MediaWiki:Group-scripteditor.js",
                 "src/groups/MediaWiki:Group-staff.js"
@@ -4456,19 +4881,90 @@
             "commit": "919932be0afb735fe504f53f5b4df6f83d8c6bd8",
             "datetime": "2022-06-20T10:47:28+08:00",
             "changedFiles": [
+                "src/gadgets/CleanDeleteReasons/MediaWiki:Gadget-CleanDeleteReasons.js",
+                "src/gadgets/CommentsinLocalTime/MediaWiki:Gadget-CommentsinLocalTime.js",
+                "src/gadgets/DotsSyntaxHighlighter/MediaWiki:Gadget-DotsSyntaxHighlighter.js",
+                "src/gadgets/EditDraft/MediaWiki:Gadget-EditDraft.js",
+                "src/gadgets/FlowThreadCheck/MediaWiki:Gadget-FlowThreadCheck.js",
+                "src/gadgets/FlowthreadTOC/MediaWiki:Gadget-FlowthreadTOC.js",
+                "src/gadgets/ForcePreviewUponUserRequest/MediaWiki:Gadget-Force_preview_upon_user_request.js",
+                "src/gadgets/Force_preview/MediaWiki:Gadget-Force_preview.js",
+                "src/gadgets/GiveYouUp/MediaWiki:Gadget-GiveYouUp.js",
+                "src/gadgets/HeimuToggle/MediaWiki:Gadget-heimu-toggle.js",
+                "src/gadgets/HeimuToggleDefaultOn/MediaWiki:Gadget-heimu-toggle-defaultOn.js",
                 "src/gadgets/HotCat/MediaWiki:Gadget-HotCat.js",
+                "src/gadgets/InPageEdit-v2/MediaWiki:Gadget-InPageEdit-v2.js",
+                "src/gadgets/LetYouDown/MediaWiki:Gadget-LetYouDown.js",
+                "src/gadgets/LocalObjectStorage/MediaWiki:Gadget-LocalObjectStorage.js",
+                "src/gadgets/Logout-confirm/MediaWiki:Gadget-Logout-confirm.js",
+                "src/gadgets/MarkAsResolved/MediaWiki:Gadget-MarkAsResolved.js",
+                "src/gadgets/Navbox-link/MediaWiki:Gadget-Navbox-link.js",
+                "src/gadgets/Navigation_popups/MediaWiki:Gadget-popups.js",
+                "src/gadgets/Purgecache/MediaWiki:Gadget-Purgecache.js",
+                "src/gadgets/RecentchangesTagFilter/MediaWiki:Gadget-RecentchangesTagFilter.js",
+                "src/gadgets/ReferenceTooltips/MediaWiki:Gadget-ReferenceTooltips.js",
+                "src/gadgets/RollbackEverything/MediaWiki:Gadget-rollbackEverything.js",
+                "src/gadgets/Searchbox-integration/MediaWiki:Gadget-Searchbox-integration.js",
+                "src/gadgets/Searchbox-popout/MediaWiki:Gadget-Searchbox-popout.js",
+                "src/gadgets/ShowAvatar/MediaWiki:Gadget-ShowAvatar.js",
+                "src/gadgets/SideBarPic/MediaWiki:Gadget-SideBarPic.js",
+                "src/gadgets/SpecialWikitext/MediaWiki:Gadget-SpecialWikitext.js",
+                "src/gadgets/UserLinkAvatar/MediaWiki:Gadget-UserLinkAvatar.js",
+                "src/gadgets/UserMessages/MediaWiki:Gadget-UserMessages.js",
                 "src/gadgets/Wikiplus/MediaWiki:Gadget-Wikiplus.js",
+                "src/gadgets/abusefilter33test/MediaWiki:Gadget-abusefilter33test.js",
+                "src/gadgets/abusefilterEdit/MediaWiki:Gadget-abusefilteredit.js",
+                "src/gadgets/allmessageFilter/MediaWiki:Gadget-allmessageFilter.js",
+                "src/gadgets/autocollapse/MediaWiki:Gadget-autocollapse.js",
+                "src/gadgets/autoconfirmedUserPing/MediaWiki:Gadget-autoconfirmedUserPing.js",
                 "src/gadgets/backlog/MediaWiki:Gadget-backlog.js",
+                "src/gadgets/blockEnhance/MediaWiki:Gadget-blockEnhance.js",
+                "src/gadgets/code-prettify/MediaWiki:Gadget-code-prettify.js",
                 "src/gadgets/cron/MediaWiki:Gadget-cron.js",
+                "src/gadgets/dark-mode-toggle/MediaWiki:Gadget-dark-mode-toggle.js",
                 "src/gadgets/deletion/MediaWiki:Gadget-deletion.js",
+                "src/gadgets/disable-nest-alert/MediaWiki:Gadget-disable-nest-alert.js",
+                "src/gadgets/editCount/MediaWiki:Gadget-editCount.js",
+                "src/gadgets/editTopSection/MediaWiki:Gadget-editTopSection.js",
+                "src/gadgets/enable-nest-highlight/MediaWiki:Gadget-enable-nest-highlight.js",
+                "src/gadgets/flagBlocked/MediaWiki:Gadget-flagBlocked.js",
+                "src/gadgets/flagEditWar/MediaWiki:Gadget-flagEditWar.js",
+                "src/gadgets/float-toc/MediaWiki:Gadget-float-toc.js",
+                "src/gadgets/hideFlowthreadDefaultly/MediaWiki:Gadget-hideFlowthreadDefaultly.js",
+                "src/gadgets/interfaceVariantConverter/MediaWiki:Gadget-interfaceVariantConverter.js",
+                "src/gadgets/jQueryLazyload/MediaWiki:Gadget-jQueryLazyload.js",
+                "src/gadgets/jquery.ui/MediaWiki:Gadget-jquery.ui.js",
+                "src/gadgets/libAsyncLock/MediaWiki:Gadget-libAsyncLock.js",
+                "src/gadgets/libBottomRightCorner/MediaWiki:Gadget-libBottomRightCorner.js",
+                "src/gadgets/libHashwasm/MediaWiki:Gadget-libHashwasm.js",
+                "src/gadgets/libJQuery/MediaWiki:Gadget-libJQuery.js",
+                "src/gadgets/libOOUIDialog/MediaWiki:Gadget-libOOUIDialog.js",
+                "src/gadgets/libPolyfill/MediaWiki:Gadget-libPolyfill.js",
                 "src/gadgets/libUtil/MediaWiki:Gadget-libUtil.js",
                 "src/gadgets/libip/MediaWiki:Gadget-libip.js",
+                "src/gadgets/localforage/MediaWiki:Gadget-localforage.js",
+                "src/gadgets/moeskin-topbar-patrolplus/MediaWiki:Gadget-moeskin-topbar-patrolplus.js",
+                "src/gadgets/moeskin-topbar/MediaWiki:Gadget-moeskin-topbar.js",
+                "src/gadgets/moment-timezone/MediaWiki:Gadget-moment-timezone.js",
+                "src/gadgets/moveToUserSubpage/MediaWiki:Gadget-moveToUserSubpage.js",
                 "src/gadgets/mwPanel/MediaWiki:Gadget-mwPanel.js",
                 "src/gadgets/noteTA/MediaWiki:Gadget-noteTA.js",
+                "src/gadgets/patrolCount/MediaWiki:Gadget-patrolCount.js",
+                "src/gadgets/patrolPlus/MediaWiki:Gadget-patrolPlus.js",
+                "src/gadgets/queryContributions/MediaWiki:Gadget-queryContributions.js",
+                "src/gadgets/queryWhatlinkshere/MediaWiki:Gadget-queryWhatlinkshere.js",
+                "src/gadgets/registerToDelete/MediaWiki:Gadget-registerToDelete.js",
                 "src/gadgets/report/MediaWiki:Gadget-report.js",
+                "src/gadgets/rollback-summary/MediaWiki:Gadget-rollback-summary.js",
+                "src/gadgets/shortlink/MediaWiki:Gadget-shortlink.js",
+                "src/gadgets/sidebarHidden/MediaWiki:Gadget-sidebarHidden.js",
                 "src/gadgets/site-js/MediaWiki:Gadget-site-js.js",
                 "src/gadgets/site-lib/MediaWiki:Gadget-site-lib.js",
+                "src/gadgets/temp-editcheck/MediaWiki:Gadget-temp-editcheck.js",
                 "src/gadgets/uploader/MediaWiki:Gadget-uploader.js",
+                "src/gadgets/usergroup/MediaWiki:Gadget-usergroup.js",
+                "src/gadgets/wikieditor-highlight/MediaWiki:Gadget-wikieditor-highlight.js",
+                "src/gadgets/wikiplus-highlight/MediaWiki:Gadget-wikiplus-highlight.js",
                 "src/global/MediaWiki:Common.js",
                 "src/global/MediaWiki:Common.js#edit.js",
                 "src/global/MediaWiki:Mobile.js",
@@ -4518,17 +5014,23 @@
         {
             "commit": "d19568d249282de87324e12ade025ff4706c66e9",
             "datetime": "2022-08-29T21:23:18-07:00",
-            "changedFiles": []
+            "changedFiles": [
+                "src/gadgets/wikiBlame/{MediaWiki:Gadget-WikiBlame.js => MediaWiki:Gadget-wikiBlame.js}"
+            ]
         },
         {
             "commit": "9f58eef08e58dd1edca1209108b93190eaf604a9",
             "datetime": "2022-08-29T21:02:36-07:00",
-            "changedFiles": []
+            "changedFiles": [
+                "src/gadgets/wikiBlame/MediaWiki:Gadget-WikiBlame.js"
+            ]
         },
         {
             "commit": "066184d87ba878e037692f70e53fe730d7772bf8",
             "datetime": "2022-08-27T23:23:30-07:00",
-            "changedFiles": []
+            "changedFiles": [
+                "src/gadgets/wikiBlame/MediaWiki:Gadget-WikiBlame.js"
+            ]
         }
     ],
     "U:BearBin": [
@@ -4619,7 +5121,9 @@
         {
             "commit": "fcd12a6a9e6bf6c1d561fb5c5d16f4e4fff48bad",
             "datetime": "2023-01-29T05:55:36-08:00",
-            "changedFiles": []
+            "changedFiles": [
+                "src/gadgets/wikieditor-highlight/MediaWiki:Gadget-wikieditor-highlight.js"
+            ]
         },
         {
             "commit": "2553c8e0e8b3f609e60f6a448fbbe343bd295729",
@@ -4648,22 +5152,30 @@
         {
             "commit": "b813cb7fdda4f1c7a0f30f682ff5c1c30256bca1",
             "datetime": "2023-01-05T13:04:26-08:00",
-            "changedFiles": []
+            "changedFiles": [
+                "src/gadgets/wikieditor-highlight/MediaWiki:Gadget-wikieditor-highlight.js"
+            ]
         },
         {
             "commit": "f2b1419e9bfaff140cb8c5c85dc5b627385cd881",
             "datetime": "2022-12-23T08:56:16-08:00",
-            "changedFiles": []
+            "changedFiles": [
+                "src/gadgets/ReferenceTooltips/MediaWiki:Gadget-ReferenceTooltips.js"
+            ]
         },
         {
             "commit": "dc3550519ee6803d29aacfeeebf7d3181e7305da",
             "datetime": "2022-12-23T06:47:52-08:00",
-            "changedFiles": []
+            "changedFiles": [
+                "src/gadgets/ReferenceTooltips/MediaWiki:Gadget-ReferenceTooltips.js"
+            ]
         },
         {
             "commit": "de209d1b67649f906d21f6ac3753f26a55296e57",
             "datetime": "2022-12-23T06:07:26-08:00",
-            "changedFiles": []
+            "changedFiles": [
+                "src/gadgets/ReferenceTooltips/MediaWiki:Gadget-ReferenceTooltips.js"
+            ]
         },
         {
             "commit": "92a7bf24548ad99f4154e79b34f78c166491660e",
@@ -4776,6 +5288,8 @@
             "datetime": "2022-12-03T06:13:09-08:00",
             "changedFiles": [
                 "src/gadgets/ReferenceTooltips/MediaWiki:Gadget-ReferenceTooltips.js",
+                "src/gadgets/autoconfirmedUserPing/MediaWiki:Gadget-autoconfirmedUserPing.js",
+                "src/gadgets/interfaceVariantConverter/MediaWiki:Gadget-interfaceVariantConverter.js",
                 "src/gadgets/moveToUserSubpage/MediaWiki:Gadget-moveToUserSubpage.js",
                 "src/gadgets/quickMoveThread/MediaWiki:Gadget-quickMoveThread.js",
                 "src/gadgets/registerToDelete/MediaWiki:Gadget-registerToDelete.js"
@@ -4840,7 +5354,9 @@
         {
             "commit": "eafa8839cb54874e287adc89e0736af7994a7eaf",
             "datetime": "2022-11-22T01:13:09-08:00",
-            "changedFiles": []
+            "changedFiles": [
+                "src/gadgets/CommentsinLocalTime/MediaWiki:Gadget-CommentsinLocalTime.js"
+            ]
         },
         {
             "commit": "2fd0b976ca58a7650cbc559bdb9ca4c3e40b88fd",
@@ -4947,6 +5463,11 @@
             "commit": "9fd48c78e5040c269b6b48c24aa5127ae8c0cb7b",
             "datetime": "2022-09-11T15:39:17+08:00",
             "changedFiles": [
+                "src/gadgets/autoconfirmedUserPing/MediaWiki:Gadget-autoconfirmedUserPing.js",
+                "src/gadgets/interfaceVariantConverter/MediaWiki:Gadget-interfaceVariantConverter.js",
+                "src/gadgets/moveToUserSubpage/MediaWiki:Gadget-moveToUserSubpage.js",
+                "src/gadgets/quickMoveThread/MediaWiki:Gadget-quickMoveThread.js",
+                "src/gadgets/registerToDelete/MediaWiki:Gadget-registerToDelete.js",
                 "src/gadgets/report/MediaWiki:Gadget-report.js"
             ]
         },
@@ -4968,6 +5489,7 @@
             "commit": "bf0cf433d5e17247a7bb13a676340e6621824465",
             "datetime": "2022-09-03T18:03:29+08:00",
             "changedFiles": [
+                "src/gadgets/interfaceVariantConverter/MediaWiki:Gadget-interfaceVariantConverter.js",
                 "src/gadgets/interfaceVariantConverter/definition.json"
             ]
         },
@@ -4998,7 +5520,9 @@
         {
             "commit": "74fe06d65a8c2b8e1b9f9a13ccea3f4b49df802f",
             "datetime": "2022-08-30T12:39:42+08:00",
-            "changedFiles": []
+            "changedFiles": [
+                "src/gadgets/wikiBlame/MediaWiki:Gadget-wikiBlame.js"
+            ]
         },
         {
             "commit": "7eb8a858d80dbc85e940d4376b890203d7475d34",
@@ -5048,6 +5572,8 @@
             "changedFiles": [
                 "src/gadgets/HotCat/MediaWiki:Gadget-HotCat.js",
                 "src/gadgets/UserMessages/MediaWiki:Gadget-AxUserMsg.js",
+                "src/gadgets/interfaceVariantConverter/MediaWiki:Gadget-interfaceVariantConverter.js",
+                "src/gadgets/registerToDelete/MediaWiki:Gadget-registerToDelete.js",
                 "src/gadgets/report/MediaWiki:Gadget-report.js"
             ]
         },
@@ -5062,7 +5588,9 @@
         {
             "commit": "c4003fb5ec18e9970b87925686011aaafe363846",
             "datetime": "2022-08-06T10:50:09+08:00",
-            "changedFiles": []
+            "changedFiles": [
+                "src/gadgets/ReferenceTooltips/MediaWiki:Gadget-ReferenceTooltips.js"
+            ]
         },
         {
             "commit": "a9facf117115f1031e0557d72d3b2aee7fb96717",
@@ -5075,9 +5603,17 @@
             "commit": "c3d24ca815e6c6fde89219834636007cb54a5692",
             "datetime": "2022-08-06T02:23:19+08:00",
             "changedFiles": [
+                "src/gadgets/CommentsinLocalTime/MediaWiki:Gadget-CommentsinLocalTime.js",
                 "src/gadgets/HotCat/MediaWiki:Gadget-HotCat.js",
+                "src/gadgets/MarkAsResolved/MediaWiki:Gadget-MarkAsResolved.js",
+                "src/gadgets/Navigation_popups/MediaWiki:Gadget-popups.js",
+                "src/gadgets/autoconfirmedUserPing/MediaWiki:Gadget-autoconfirmedUserPing.js",
                 "src/gadgets/deletion/MediaWiki:Gadget-deletion.js",
-                "src/gadgets/site-js/MediaWiki:Gadget-site-js.js"
+                "src/gadgets/flagBlocked/MediaWiki:Gadget-flagBlocked.js",
+                "src/gadgets/interfaceVariantConverter/MediaWiki:Gadget-interfaceVariantConverter.js",
+                "src/gadgets/moveToUserSubpage/MediaWiki:Gadget-moveToUserSubpage.js",
+                "src/gadgets/site-js/MediaWiki:Gadget-site-js.js",
+                "src/gadgets/temp-editcheck/MediaWiki:Gadget-temp-editcheck.js"
             ]
         },
         {
@@ -5090,7 +5626,9 @@
         {
             "commit": "67cfaae1a21aa49e97015c39b23b03532d4397a1",
             "datetime": "2022-08-04T23:08:53+08:00",
-            "changedFiles": []
+            "changedFiles": [
+                "src/gadgets/autoconfirmedUserPing/MediaWiki:Gadget-autoconfirmedUserPing.js"
+            ]
         },
         {
             "commit": "87fd9e95d47ff020dddbba739a74daef670b04c6",
@@ -5117,7 +5655,10 @@
         {
             "commit": "32a8989aff16f4bfd6e5db9bbf741f8bbf17ac29",
             "datetime": "2022-07-30T19:24:44+08:00",
-            "changedFiles": []
+            "changedFiles": [
+                "src/gadgets/quickMoveThread/MediaWiki:Gadget-quickMoveThread.js",
+                "src/gadgets/registerToDelete/MediaWiki:Gadget-registerToDelete.js"
+            ]
         },
         {
             "commit": "97ebf2a5ce736db6f09cacdf7a25694b7ad3528e",
@@ -5136,7 +5677,9 @@
         {
             "commit": "d3e3c037decf3f36f2f7b58cb7cae4bd1e6b422c",
             "datetime": "2022-07-16T22:38:40+08:00",
-            "changedFiles": []
+            "changedFiles": [
+                "src/gadgets/blockEnhance/MediaWiki:Gadget-blockEnhance.js"
+            ]
         },
         {
             "commit": "d56be2457f1d5d3e86a76184c300b59496609c26",
@@ -5173,6 +5716,8 @@
             "datetime": "2023-02-14T14:07:45+08:00",
             "changedFiles": [
                 "src/gadgets/jquery.ui/.eslintrc",
+                "src/gadgets/jquery.ui/MediaWiki:Gadget-jquery.ui.css",
+                "src/gadgets/jquery.ui/MediaWiki:Gadget-jquery.ui.js",
                 "src/gadgets/jquery.ui/definition.json"
             ]
         },
@@ -5248,12 +5793,16 @@
         {
             "commit": "61835f4aa10bc65e51a6bb93ed77c7f5b6b86f94",
             "datetime": "2023-04-01T01:33:27+08:00",
-            "changedFiles": []
+            "changedFiles": [
+                "src/gadgets/ContentAboveBelowImage/MediaWiki:Gadget-ContentAboveBelowImage.css",
+                "src/gadgets/ContentAboveBelowImage/MediaWiki:Gadget-ContentAboveBelowImage.js"
+            ]
         },
         {
             "commit": "ffae81774e50496e989566070b575b1490b1876d",
             "datetime": "2023-04-01T01:11:44+08:00",
             "changedFiles": [
+                "src/gadgets/ContentAboveBelowImage/MediaWiki:Gadget-ContentAboveBelowImage.js",
                 "src/gadgets/ContentAboveBelowImage/definition.yaml"
             ]
         },
@@ -5330,8 +5879,13 @@
             "commit": "87f08c06c2bee65d9a2b17c94a5322233168feca",
             "datetime": "2023-03-14T04:37:39+08:00",
             "changedFiles": [
+                "src/groups/commons/checkuser/MediaWiki:Group-checkuser.css",
+                "src/groups/commons/interface-admin/MediaWiki:Group-interface-admin.css",
+                "src/groups/commons/patroller/MediaWiki:Group-patroller.css",
                 "src/groups/commons/staff/MediaWiki:Group-staff.css",
                 "src/groups/commons/staff/MediaWiki:Group-staff.js",
+                "src/groups/commons/suppress/MediaWiki:Group-suppress.css",
+                "src/groups/commons/suppress/MediaWiki:Group-suppress.js",
                 "src/groups/commons/sysop/MediaWiki:Group-sysop.css",
                 "src/groups/commons/sysop/MediaWiki:Group-sysop.js"
             ]
@@ -5409,6 +5963,7 @@
             "commit": "e2eb16256807eb1a1c8776b7124ab9cae3c1b64a",
             "datetime": "2023-03-10T12:30:23+08:00",
             "changedFiles": [
+                "src/gadgets/hideAutopromoteLog/MediaWiki:hideAutoPromoteLog.css",
                 "src/gadgets/hideAutopromoteLog/definition.json"
             ]
         },
@@ -5482,7 +6037,9 @@
         {
             "commit": "7b1cea63dfdf3e8a3164fb2249096b4b75c22080",
             "datetime": "2023-02-23T15:00:22+08:00",
-            "changedFiles": []
+            "changedFiles": [
+                "src/gadgets/MarkAsResolved/MediaWiki:Gadget-MarkAsResolved.js"
+            ]
         },
         {
             "commit": "acac4384a261d152c9b947881315796af8541bb4",
@@ -5501,7 +6058,9 @@
         {
             "commit": "2a6b65348b01d7172ee5563529bfd1d039db137c",
             "datetime": "2023-02-22T15:51:41+08:00",
-            "changedFiles": []
+            "changedFiles": [
+                "src/gadgets/site-styles/MediaWiki:Gadget-site-styles.css"
+            ]
         },
         {
             "commit": "a57a91ee1fa69d971633ab8d3065f39f44beee5c",
@@ -5528,6 +6087,7 @@
             "commit": "b1bc2c7ab9e90791e1464ce9d037ea2604647bcd",
             "datetime": "2023-02-22T01:10:31+08:00",
             "changedFiles": [
+                "src/gadgets/abusefilterResize/MediaWiki:Gadget-abusefilterresize.js",
                 "src/gadgets/abusefilterResize/definition.json"
             ]
         },
@@ -5560,7 +6120,10 @@
         {
             "commit": "594d908ba2adfeb075ff0fad4c6193829d1dd618",
             "datetime": "2023-02-20T16:32:47+08:00",
-            "changedFiles": []
+            "changedFiles": [
+                "src/gadgets/InPageEdit-v2/MediaWiki:Gadget-InPageEdit-v2-hook.js",
+                "src/gadgets/editTopSection/MediaWiki:Gadget-editTopSection.js"
+            ]
         },
         {
             "commit": "651878968d3d88c88a478093a7d67079932ece9e",
@@ -5578,6 +6141,7 @@
             "commit": "5c182d112017df827f2bfbe31d1f720cc6b7f5b2",
             "datetime": "2023-02-20T01:59:30+08:00",
             "changedFiles": [
+                "src/gadgets/Wikiplus/MediaWiki:Gadget-Wikiplus-button.js",
                 "src/gadgets/Wikiplus/definition.json"
             ]
         },
@@ -5607,6 +6171,9 @@
             "commit": "d82e7b60495cd53533562e3c3c776c616ed67a30",
             "datetime": "2023-02-14T12:19:28+08:00",
             "changedFiles": [
+                "src/gadgets/moeskin-topbar-patrolplus/MediaWiki:Gadget-moeskin-topbar-patrolplus.js",
+                "src/gadgets/moeskin-topbar-patrolplus/definition.json",
+                "src/gadgets/moeskin-topbar/MediaWiki:Gadget-moeskin-topbar.js",
                 "src/gadgets/moeskin-topbar/definition.json"
             ]
         },
@@ -5618,7 +6185,9 @@
         {
             "commit": "776326d3c538cb6ab103678ef90d35675208c703",
             "datetime": "2023-02-12T01:48:04+08:00",
-            "changedFiles": []
+            "changedFiles": [
+                "src/gadgets/userpageDelete/MediaWiki:Gadget-userpageDelete.js"
+            ]
         },
         {
             "commit": "9ec21066e1635c0dd0cb83d311245adf8b367335",
@@ -5646,6 +6215,7 @@
             "datetime": "2023-02-06T00:18:09+08:00",
             "changedFiles": [
                 "src/gadgets/Gadgets-definition-list.json",
+                "src/gadgets/userpageDelete/MediaWiki:Gadget-userpageDelete.js",
                 "src/gadgets/userpageDelete/definition.json"
             ]
         },
@@ -5667,6 +6237,7 @@
             "commit": "39ecd619f0aea266a054f3106272a328c4aa789f",
             "datetime": "2023-02-05T17:35:17+08:00",
             "changedFiles": [
+                "src/gadgets/desktop-styles/MediaWiki:Gadget-desktop-styles.css",
                 "src/gadgets/desktop-styles/definition.json"
             ]
         },
@@ -5730,7 +6301,9 @@
             "commit": "03c3b03f6430feb416820029ea3f559160bdfef3",
             "datetime": "2022-12-18T12:21:20+08:00",
             "changedFiles": [
+                "src/gadgets/mobile-styles/MediaWiki:Gadget-mobile-styles.css",
                 "src/gadgets/mobile-styles/definition.json",
+                "src/gadgets/sidebaricons/MediaWiki:Gadget-mobile-sidebaricons.css",
                 "src/gadgets/sidebaricons/definition.json",
                 "src/global/MediaWiki:Mobile.js",
                 "src/groups/patroller/MediaWiki:Group-patroller.css",
@@ -5768,7 +6341,9 @@
         {
             "commit": "784aa454a3b7c0646e09feb3ac472393af641a7d",
             "datetime": "2022-12-16T01:44:07+08:00",
-            "changedFiles": []
+            "changedFiles": [
+                "src/gadgets/site-styles/MediaWiki:Gadget-site-styles.css"
+            ]
         },
         {
             "commit": "796ffcc338553f4bc742aa44fe322faa185bbe69",
@@ -5780,7 +6355,9 @@
         {
             "commit": "91bed9370b6f24d83db20c7ac760e6ea8fe7126e",
             "datetime": "2022-12-15T20:43:43+08:00",
-            "changedFiles": []
+            "changedFiles": [
+                "src/gadgets/moeskin-styles/MediaWiki:Gadget-moeskin-styles.css"
+            ]
         },
         {
             "commit": "cb5b4ebf02a7e2ff54841f8e36a2380640ce3191",
@@ -5825,6 +6402,7 @@
                 "src/gadgets/localforage/definition.json",
                 "src/gadgets/luxon/definition.json",
                 "src/gadgets/mobile-styles/definition.json",
+                "src/gadgets/moeskin-styles/MediaWiki:Gadget-moeskin-styles.css",
                 "src/gadgets/noteTA/definition.json",
                 "src/gadgets/sidebaricons/definition.json",
                 "src/gadgets/site-js/definition.json",
@@ -5850,7 +6428,9 @@
         {
             "commit": "553fdd4d711c271ba71e92d675bf077ca272ccab",
             "datetime": "2022-12-15T18:48:34+08:00",
-            "changedFiles": []
+            "changedFiles": [
+                "src/gadgets/moeskin-styles/MediaWiki:Gadget-moeskin-styles.css"
+            ]
         },
         {
             "commit": "aea01f6199dced90d1c981012c57fd64916677d5",
@@ -5883,7 +6463,9 @@
         {
             "commit": "ca5de35261cb8ec6d5b1b09a82b661740ebc24b0",
             "datetime": "2022-12-14T01:30:57+08:00",
-            "changedFiles": []
+            "changedFiles": [
+                "src/gadgets/moeskin-styles/MediaWiki:Gadget-moeskin-styles.css"
+            ]
         },
         {
             "commit": "99b312b2d0c977d6381301ad20272e112cd37dab",
@@ -5902,7 +6484,9 @@
         {
             "commit": "98d6a0af1cdf683c4c2461a1014f4292e263f1a7",
             "datetime": "2022-12-14T00:59:13+08:00",
-            "changedFiles": []
+            "changedFiles": [
+                "src/gadgets/moeskin-styles/MediaWiki:Gadget-moeskin-styles.css"
+            ]
         },
         {
             "commit": "063eae8dd1abb52fd22b207c20bd43f314fae23b",
@@ -5928,7 +6512,9 @@
         {
             "commit": "d78e425fc05cb9744ccb9e6a9946c1cd411553c2",
             "datetime": "2022-12-11T14:19:12+08:00",
-            "changedFiles": []
+            "changedFiles": [
+                "src/gadgets/interfaceVariantConverter/MediaWiki:Gadget-interfaceVariantConverter.js"
+            ]
         },
         {
             "commit": "e33dac5d4c6d9fb0b1a780ce2bd372598b7b5e60",
@@ -5947,7 +6533,9 @@
         {
             "commit": "0d9889ff9a42f2e93dc4cd8a0aaf284aae393824",
             "datetime": "2022-12-10T16:43:54+08:00",
-            "changedFiles": []
+            "changedFiles": [
+                "src/gadgets/moeskin-styles/MediaWiki:Gadget-moeskin-styles.css"
+            ]
         },
         {
             "commit": "f50520a704db7e127d29317ff78a2e8575b1f744",
@@ -6152,7 +6740,9 @@
         {
             "commit": "b950c277a9635982533ee4ed240e5a7367edeaf6",
             "datetime": "2022-12-02T00:03:25+08:00",
-            "changedFiles": []
+            "changedFiles": [
+                "src/gadgets/moeskin-topbar/MediaWiki:Gadget-moeskin-topbar.js"
+            ]
         },
         {
             "commit": "143ce85e4445f809e063de35f004587c34803cd0",
@@ -6250,7 +6840,9 @@
         {
             "commit": "30f92285f034239f6794d917a46f521e77b4d789",
             "datetime": "2022-09-20T14:18:27+08:00",
-            "changedFiles": []
+            "changedFiles": [
+                "src/gadgets/mobile-styles/MediaWiki:Gadget-mobile-styles.css"
+            ]
         },
         {
             "commit": "1d6788e62d32ee33f1e7ebcca0c6e4303536d59a",
@@ -6543,7 +7135,9 @@
         {
             "commit": "e81bc2690fedccd4b040d327b8cb0d124e7163bc",
             "datetime": "2022-07-22T13:59:51+08:00",
-            "changedFiles": []
+            "changedFiles": [
+                "src/gadgets/queryWhatlinkshere/MediaWiki:Gadget-queryWhatlinkshere.js"
+            ]
         },
         {
             "commit": "42ea55fb2085db735655bb4aa77c7d2a1cfbafe0",
@@ -6562,12 +7156,16 @@
         {
             "commit": "57cd01fbdea00afef3ade7acafbb1666a0228691",
             "datetime": "2022-07-22T13:36:58+08:00",
-            "changedFiles": []
+            "changedFiles": [
+                "src/gadgets/queryContributions/MediaWiki:Gadget-queryContributions.js"
+            ]
         },
         {
             "commit": "34708c2adacf003a7a1b3d3c25654169ad282533",
             "datetime": "2022-07-22T13:30:28+08:00",
-            "changedFiles": []
+            "changedFiles": [
+                "src/gadgets/queryWhatlinkshere/MediaWiki:Gadget-queryWhatlinkshere.js"
+            ]
         },
         {
             "commit": "9421960b813ed6a89c0343d34c9603ba0b87ca18",
@@ -6635,7 +7233,9 @@
         {
             "commit": "ca74a00b2be824eaffe15f7459375efbe6079b5b",
             "datetime": "2023-01-09T23:40:31+08:00",
-            "changedFiles": []
+            "changedFiles": [
+                "src/gadgets/site-styles/MediaWiki:Gadget-site-styles.css"
+            ]
         },
         {
             "commit": "d324434098eba30395c73b4a0bf28f29367d996e",
@@ -6659,17 +7259,23 @@
         {
             "commit": "8c305e7bb1d8bcc0f71f0e03b0780b5b2c094d3d",
             "datetime": "2022-12-18T00:58:17+08:00",
-            "changedFiles": []
+            "changedFiles": [
+                "src/gadgets/moeskin-styles/MediaWiki:Gadget-moeskin-styles.css"
+            ]
         },
         {
             "commit": "f94271c82e75c5e640282741c48dd6ae1a97efd4",
             "datetime": "2022-12-18T00:46:35+08:00",
-            "changedFiles": []
+            "changedFiles": [
+                "src/gadgets/moeskin-styles/MediaWiki:Gadget-moeskin-styles.css"
+            ]
         },
         {
             "commit": "5987eb3d66b63f234525697099fda3fd7806fa0f",
             "datetime": "2022-12-15T23:22:03+08:00",
-            "changedFiles": []
+            "changedFiles": [
+                "src/gadgets/moeskin-styles/MediaWiki:Gadget-moeskin-styles.css"
+            ]
         },
         {
             "commit": "87593e18b4d02f44aaba2c30f37675ee5520f105",
@@ -6700,12 +7306,16 @@
         {
             "commit": "77c7a2c9698694330e0409f70a5ceae6f6d05873",
             "datetime": "2022-12-14T12:08:03+08:00",
-            "changedFiles": []
+            "changedFiles": [
+                "src/gadgets/moeskin-styles/MediaWiki:Gadget-moeskin-styles.css"
+            ]
         },
         {
             "commit": "8e2d3b44895ffb6b32523fed08c9c3dc5943ac17",
             "datetime": "2022-12-14T12:01:42+08:00",
-            "changedFiles": []
+            "changedFiles": [
+                "src/gadgets/moeskin-styles/MediaWiki:Gadget-moeskin-styles.css"
+            ]
         },
         {
             "commit": "b21c8540a51adb61972c9e3592def06a3ca3d103",
@@ -6723,6 +7333,8 @@
             "commit": "a0176329be44f6c44e4ebaf6988b9b970403b322",
             "datetime": "2022-12-10T03:37:38+08:00",
             "changedFiles": [
+                "src/gadgets/CommentsinLocalTime/MediaWiki:Gadget-CommentsinLocalTime.js",
+                "src/gadgets/autoconfirmedUserPing/MediaWiki:Gadget-autoconfirmedUserPing.js",
                 "src/gadgets/backlog/MediaWiki:Gadget-backlog.js",
                 "src/gadgets/temp-editcheck/MediaWiki:Gadget-temp-editcheck.js"
             ]
@@ -6730,7 +7342,9 @@
         {
             "commit": "d514a4566f2ef51cef28358f177d9c5dc8b5dff0",
             "datetime": "2022-12-10T03:27:41+08:00",
-            "changedFiles": []
+            "changedFiles": [
+                "src/gadgets/moeskin-styles/MediaWiki:Gadget-moeskin-styles.css"
+            ]
         },
         {
             "commit": "de90320b371cc54dfb5cef554da0ea3e3329397a",
@@ -6749,7 +7363,9 @@
         {
             "commit": "a521c34144601232319aeecf4a34efb77fd1aa23",
             "datetime": "2022-12-02T11:24:57+08:00",
-            "changedFiles": []
+            "changedFiles": [
+                "src/gadgets/moeskin-styles/MediaWiki:Gadget-moeskin-styles.css"
+            ]
         },
         {
             "commit": "e1398f98bfd22092892cfcf9660fc397162d3d06",
@@ -6775,7 +7391,9 @@
         {
             "commit": "c33303163f23b9c51e6923d7ce71e60ba7016305",
             "datetime": "2022-11-30T10:31:46+08:00",
-            "changedFiles": []
+            "changedFiles": [
+                "src/gadgets/moeskin-styles/MediaWiki:Gadget-moeskin-styles.css"
+            ]
         },
         {
             "commit": "36849b0ae500e9052d1f6e62d8b0562be957c434",
@@ -6828,7 +7446,9 @@
         {
             "commit": "8f4817e63a63f621b1604545c420ca3a33e3304a",
             "datetime": "2023-02-23T14:40:33+08:00",
-            "changedFiles": []
+            "changedFiles": [
+                "src/gadgets/moeskin-styles/MediaWiki:Gadget-moeskin-styles.css"
+            ]
         },
         {
             "commit": "a1590f66e6d3d2a5f2e651be2cfeb8775f1d02a2",
@@ -6840,7 +7460,9 @@
         {
             "commit": "664b4b4011c21342aa29251f55be06e77e9b1495",
             "datetime": "2023-02-01T10:15:56+08:00",
-            "changedFiles": []
+            "changedFiles": [
+                "src/gadgets/moeskin-styles/MediaWiki:Gadget-moeskin-styles.css"
+            ]
         },
         {
             "commit": "1ec5e95910e71647b5b9ee686210781dac3f2b7c",
@@ -6867,7 +7489,9 @@
         {
             "commit": "46949cf9ef11feae49b5abf187faf789c422d0c0",
             "datetime": "2022-12-21T17:31:37+08:00",
-            "changedFiles": []
+            "changedFiles": [
+                "src/gadgets/moeskin-styles/MediaWiki:Gadget-moeskin-styles.css"
+            ]
         },
         {
             "commit": "663c614118a927ada653034f9a1e8eb2119119c5",
@@ -6879,7 +7503,9 @@
         {
             "commit": "2082c40d1a33108f2700b9512547f39ee3a7be19",
             "datetime": "2022-12-19T14:41:39+08:00",
-            "changedFiles": []
+            "changedFiles": [
+                "src/gadgets/moeskin-styles/MediaWiki:Gadget-moeskin-styles.css"
+            ]
         },
         {
             "commit": "113d5da8d7fe328883e4b18815fa8fa66a45b053",
@@ -6896,12 +7522,16 @@
         {
             "commit": "07b7d757e04419cc680d92f6b449479bcef646c3",
             "datetime": "2022-12-17T15:29:35+08:00",
-            "changedFiles": []
+            "changedFiles": [
+                "src/gadgets/moeskin-styles/MediaWiki:Gadget-moeskin-styles.css"
+            ]
         },
         {
             "commit": "fe9b0d372183b31d479e93b98fe9acbf72ab7742",
             "datetime": "2022-12-16T12:03:09+08:00",
-            "changedFiles": []
+            "changedFiles": [
+                "src/gadgets/moeskin-styles/MediaWiki:Gadget-moeskin-styles.css"
+            ]
         },
         {
             "commit": "1e112f87e9bc67e36d71d181a8c6602df983bf7e",
@@ -6913,7 +7543,9 @@
         {
             "commit": "9b74876059a7fc40be825988219368698e45178d",
             "datetime": "2022-12-07T17:33:57+08:00",
-            "changedFiles": []
+            "changedFiles": [
+                "src/gadgets/moeskin-styles/MediaWiki:Gadget-moeskin-styles.css"
+            ]
         },
         {
             "commit": "e5f011afa228e9e3e6bab87f63c15878f264ca21",
@@ -6944,12 +7576,16 @@
         {
             "commit": "53472a81cd970766e43e871ecc1ea6ae43f7b580",
             "datetime": "2022-12-02T18:42:26+08:00",
-            "changedFiles": []
+            "changedFiles": [
+                "src/gadgets/moeskin-styles/MediaWiki:Gadget-moeskin-styles.css"
+            ]
         },
         {
             "commit": "bb6b43ffbb81c049da5f219d6efa3be43faef69d",
             "datetime": "2022-12-02T18:27:15+08:00",
-            "changedFiles": []
+            "changedFiles": [
+                "src/gadgets/moeskin-styles/MediaWiki:Gadget-moeskin-styles.css"
+            ]
         },
         {
             "commit": "c38d23c3a8d14139ae13ab9c71647ec30fa61feb",

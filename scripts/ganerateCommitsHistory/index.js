@@ -32,7 +32,7 @@ const { all: rawHistory } = await git.log({
         _committerEmail: "%cE",
         signatureKey: "%GK",
     },
-    "--stat": true,
+    "--stat": "10000",
 });
 startGroup("Raw history:");
 console.info(rawHistory);
