@@ -1,6 +1,6 @@
 ResourceLoader: true
 
-hidden: false
+hidden: true
 
 default: false
 
@@ -17,23 +17,18 @@ type: general
 package: false
 
 rights:
-  - noratelimit
-  - patrolleredit
+  - hidden
 
 peers: []
 
 dependencies:
-  - mediawiki.api
-  - mediawiki.user
-  - jquery.tablesorter
   - ext.gadget.libPolyfill
-  - ext.gadget.echarts5
 
 _sites:
   - zh
   - commons
 
-_section: user
+_section: system
 
 _files:
-  - MediaWiki:Gadget-queryContributions.js
+  - MediaWiki:Gadget-echarts5.js

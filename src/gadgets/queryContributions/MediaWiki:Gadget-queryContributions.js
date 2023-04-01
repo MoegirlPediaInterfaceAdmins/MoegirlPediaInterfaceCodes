@@ -120,15 +120,9 @@ $(() => (async () => {
 
         const fieldset = p.closest("fieldset");
         fieldset.append('<button id="toChartQueryContributions">显示饼图</button>');
-        fieldset.find("#toChartQueryContributions").on("click", async (e) => {
+        fieldset.find("#toChartQueryContributions").on("click", (e) => {
             $(e.target).remove();
             fieldset.append("<div id=\"contributionChart\" style=\"width: 100%; height: 400px;\">加载中……</div>");
-            await $.ajax({
-                url: "https://fastly.jsdelivr.net/npm/echarts@5/dist/echarts.min.js",
-                dataType: "script",
-                crossDomain: true,
-                cache: true,
-            });
             const chart = echarts.init(document.getElementById("contributionChart"));
             chart.setOption({
                 tooltip: {

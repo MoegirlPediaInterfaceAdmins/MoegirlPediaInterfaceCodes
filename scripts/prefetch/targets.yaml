@@ -29,3 +29,21 @@
     fileName: MediaWiki:Gadget-localforage.js
   distFilePath: dist/localforage.js
   version: "1"
+
+- type: npm
+  moduleName: echarts
+  gadget:
+    name: echarts4
+    fileName: MediaWiki:Gadget-echarts4.js
+  distFilePath: dist/echarts.min.js
+  version: "4"
+  ignoreSemverDiff:
+    - major
+
+- type: npm
+  moduleName: echarts
+  gadget:
+    name: echarts5
+    fileName: MediaWiki:Gadget-echarts5.js
+  distFilePath: dist/echarts.min.js
+  version: "5"

@@ -5,17 +5,17 @@ import yamlModule from "../modules/yamlModule.js";
 import fs from "fs";
 import path from "path";
 import { startGroup, endGroup, exportVariable } from "@actions/core";
-import { maxSatisfying } from "semver";
 import { createIssue } from "../modules/octokit.js";
 import exec from "../modules/exec.js";
 import modulePath from "../modules/modulePath.js";
 import jsonModule from "../modules/jsonModule.js";
+import semver from "semver";
 
 const labels = ["ci:prefetch"];
 
 const prefetchTargetsPath = "scripts/prefetch/targets.yaml";
 /**
- * @type {{ type: "npm", moduleName: string, gadget: { name: string, fileName: string }, distFilePath: string, version?: string, appendCode?: string, }[]}
+ * @type {{ type: "npm", moduleName: string, gadget: { name: string, fileName: string }, distFilePath: string, version?: string, appendCode?: string, ignoreSemverDiff?: semver.ReleaseType[] }[]}
  */
 const prefetchTargets = await yamlModule.readFile(prefetchTargetsPath);
 startGroup("prefetchTargets:");
@@ -26,7 +26,7 @@ const registryBaseUrl = (await exec("npm config get registry --global")).trim();
 const fileList = [];
 for (const prefetchTarget of prefetchTargets) {
     console.info("target:", prefetchTarget);
-    const { type, moduleName, gadget: { name, fileName }, distFilePath, version, appendCode } = prefetchTarget;
+    const { type, moduleName, gadget: { name, fileName }, distFilePath, version, appendCode, ignoreSemverDiff } = prefetchTarget;
     const file = path.join("src/gadgets", name, fileName);
     fileList.push(file);
     console.info(`[${name}]`, "Start to fetch...");
@@ -89,15 +89,18 @@ for (const prefetchTarget of prefetchTargets) {
     endGroup();
     const distVersions = Object.keys(packageInfo.versions);
     console.info(`[${name}]`, "distVersions:", distVersions);
-    const targetVersion = maxSatisfying(distVersions, version || "*");
+    const targetVersion = semver.maxSatisfying(distVersions, version || "*");
     console.info(`[${name}]`, "targetVersion:", targetVersion);
     await createCommit(`auto(Gadget-${name}): bump ${moduleName} to ${targetVersion} by prefetch`);
     if (packageInfo["dist-tags"].latest !== targetVersion) {
-        await createIssue(
-            `[prefetch] Found new verion ${moduleName}@${packageInfo["dist-tags"].latest} higher than ${targetVersion}`,
-            `Found new verion \`${moduleName}@${packageInfo["dist-tags"].latest}\` higher than \`${targetVersion}\`, while [\`${prefetchTargetsPath}\`](${prefetchTargetsPath}) configured as \`${moduleName}@${version || "*"}\`, please consider to upgrade it: ${new URL(path.posix.join("package", name), "https://www.npmjs.com/")}`,
-            labels,
-        );
+        const releaseType = semver.diff(packageInfo["dist-tags"].latest, targetVersion);
+        if (!Array.isArray(ignoreSemverDiff) || !ignoreSemverDiff.includes(releaseType)) {
+            await createIssue(
+                `[prefetch] Found new verion ${moduleName}@${packageInfo["dist-tags"].latest} higher than ${targetVersion}`,
+                `Found new verion \`${moduleName}@${packageInfo["dist-tags"].latest}\` higher than \`${targetVersion}\`, while [\`${prefetchTargetsPath}\`](${prefetchTargetsPath}) configured as \`${moduleName}@${version || "*"}\`, please consider to upgrade it: ${new URL(path.posix.join("package", name), "https://www.npmjs.com/")}`,
+                labels,
+            );
+        }
     }
 }
 exportVariable("linguist-generated-prefetch", JSON.stringify(fileList));
