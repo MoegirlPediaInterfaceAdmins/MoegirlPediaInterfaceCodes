@@ -15,6 +15,13 @@
     ],
     "U:AnnAngela": [
         {
+            "commit": "693b3bf870513d48a1c8daafe3e7e281e208825e",
+            "datetime": "2023-04-01T20:31:58+08:00",
+            "changedFiles": [
+                "src/gadgets/queryContributions/definition.yaml"
+            ]
+        },
+        {
             "commit": "75288f7b0b704b3e1e6da1954eece6a9a2318ce6",
             "datetime": "2023-04-01T20:19:55+08:00",
             "changedFiles": [
