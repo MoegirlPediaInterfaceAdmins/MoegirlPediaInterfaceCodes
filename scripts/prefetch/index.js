@@ -56,7 +56,7 @@ for (const prefetchTarget of prefetchTargets) {
         code.push(appendCode);
     }
     code.push("");
-    if (await fs.promises.readFile(file, { encoding: "utf-8" }) === code.join("\n")) {
+    if (await fs.promises.readFile(file, { encoding: "utf-8" }).catch(() => null) === code.join("\n")) {
         console.info(`[${name}]`, "Nothing changed, continue.");
         continue;
     }

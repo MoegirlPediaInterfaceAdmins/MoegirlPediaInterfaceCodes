@@ -81,10 +81,7 @@ for (const browserifyTarget of browserifyTargets) {
     }
     output.push(codes.trim(), "");
     const code = output.join("\n");
-    const oldCode = await fs.promises.readFile(file, {
-        encoding: "utf-8",
-    }).catch(() => undefined);
-    if (code === oldCode) {
+    if (code === await fs.promises.readFile(file, { encoding: "utf-8" }).catch(() => null)) {
         console.info(`[${module}]`, "No change, continue to next one.");
         continue;
     }
