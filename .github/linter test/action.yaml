@@ -36,3 +36,5 @@ runs:
         config-file: ./.github/codeql-config.yml
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v2
+      with:
+        category: linter test
