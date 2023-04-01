@@ -351,9 +351,7 @@ $(() => (async () => {
 
             if (!window.OpenCC && this.config.useOpenCC) {
                 // Load in order to prevent reference error
-                await $.cachedScript("https://testingcf.jsdelivr.net/npm/opencc-js@1.0.3/data.min.js");
-                await Promise.all([$.cachedScript("https://testingcf.jsdelivr.net/npm/opencc-js@1.0.3/data.cn2t.min.js"), $.cachedScript("https://testingcf.jsdelivr.net/npm/opencc-js@1.0.3/data.t2cn.min.js")]);
-                await $.cachedScript("https://testingcf.jsdelivr.net/npm/opencc-js@1.0.3/bundle-browser.min.js");
+                await $.cachedScript("https://npm.elemecdn.com/opencc-js@latest");
                 /* global OpenCC */
             }
 
