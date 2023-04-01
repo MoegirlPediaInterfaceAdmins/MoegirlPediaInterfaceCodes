@@ -29,11 +29,3 @@
     fileName: MediaWiki:Gadget-localforage.js
   distFilePath: dist/localforage.js
   version: "1"
-
-- type: npm
-  moduleName: echarts
-  gadget:
-    name: echarts
-    fileName: MediaWiki:Gadget-echarts.js
-  distFilePath: dist/echarts.min.js
-  version: "5"
