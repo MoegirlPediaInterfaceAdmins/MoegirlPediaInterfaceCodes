@@ -1,1 +1,1 @@
-mw.loader.load("https://fastly.jsdelivr.net/npm/mediawiki-inpageedit");
+mw.loader.load("https://testingcf.jsdelivr.net/npm/mediawiki-inpageedit");
