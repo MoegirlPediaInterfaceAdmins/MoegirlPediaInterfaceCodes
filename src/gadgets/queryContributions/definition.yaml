@@ -27,7 +27,7 @@ dependencies:
   - mediawiki.user
   - jquery.tablesorter
   - ext.gadget.libPolyfill
-  - ext.gadget.echarts5
+  - ext.gadget.echarts
 
 _sites:
   - zh

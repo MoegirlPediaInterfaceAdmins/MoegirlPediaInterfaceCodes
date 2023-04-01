@@ -31,4 +31,4 @@ _sites:
 _section: system
 
 _files:
-  - MediaWiki:Gadget-echarts4.js
+  - MediaWiki:Gadget-echarts.js

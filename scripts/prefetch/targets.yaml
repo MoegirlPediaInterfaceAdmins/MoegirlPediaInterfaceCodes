@@ -33,17 +33,7 @@
 - type: npm
   moduleName: echarts
   gadget:
-    name: echarts4
-    fileName: MediaWiki:Gadget-echarts4.js
-  distFilePath: dist/echarts.min.js
-  version: "4"
-  ignoreSemverDiff:
-    - major
-
-- type: npm
-  moduleName: echarts
-  gadget:
-    name: echarts5
-    fileName: MediaWiki:Gadget-echarts5.js
+    name: echarts
+    fileName: MediaWiki:Gadget-echarts.js
   distFilePath: dist/echarts.min.js
   version: "5"
