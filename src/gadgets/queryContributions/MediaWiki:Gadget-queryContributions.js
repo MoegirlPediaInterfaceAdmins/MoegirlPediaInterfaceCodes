@@ -101,10 +101,8 @@ $(() => (async () => {
             rvdir: "older",
         });
         const GHIAHistory = JSON.parse(Object.values(GHIAHistoryRaw.query.pages)[0].revisions[0]["*"]);
-        const hasGHIAEdit = Reflect.has(GHIAHistory, `U:${target}`);
-        if (hasGHIAEdit) {
-            nslist[8].count += GHIAHistory[`U:${target}`].length;
-        }
+        const GHIAEditCount = Reflect.has(GHIAHistory, `U:${target}`) ? GHIAHistory[`U:${target}`].reduce((p, { changedFiles: { length } }) => p + length, 0) : 0;
+        nslist[8].count += GHIAEditCount;
         const table = $(`<table class="wikitable sortable"><thead><tr><th>名字空间</th><th>编辑次数</th>${isPatrolViewable ? "<th>被巡查次数</th><th>被手动巡查次数</th>" : ""}<th>不同页面数量</th>><th>创建页面数量</th></tr></thead><tbody></tbody></table>`).find("tbody");
         p.html(`该用户在本站未被删除的编辑共有${list.length}次${isPatrolViewable ? `（其中有${globalInfo.patrolled}次编辑被巡查，${globalInfo.patrolled - globalInfo.autopatrolled}次编辑被手动巡查<sup style="color: blue;">[注：通过api编辑不会自动巡查]</sup>）` : ""}，共编辑${globalInfo.distinct.size}个不同页面，创建了${globalInfo.new}个页面。按名字空间划分如下：`);
 
@@ -114,9 +112,9 @@ $(() => (async () => {
             chartData.push({ value: count, name: +nsnumber === 0 ? "（主）" : upperFirstCase(ns[+nsnumber]) });
         });
         table.closest("table").insertAfter(p).tablesorter();
-        if (hasGHIAEdit) {
+        if (GHIAEditCount > 0) {
             const GHIAInfo = $("<p>");
-            GHIAInfo.text(`注：来自 GHIA 库的编辑共有 ${GHIAHistory[`U:${target}`].length} 笔，这些编辑均会被统计为“未被删除的编辑”，且不会被统计为“被巡查”“被手动巡查”“不同页面”和“创建页面”。`);
+            GHIAInfo.text(`注：来自 GHIA 库的编辑共有 ${GHIAEditCount} 笔，这些编辑均会被统计为“未被删除的编辑”，且不会被统计为“被巡查”“被手动巡查”“不同页面”和“创建页面”。`);
             table.closest("table").after(GHIAInfo);
         }
 
