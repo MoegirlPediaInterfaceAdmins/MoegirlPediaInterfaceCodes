@@ -58,12 +58,12 @@ for (const { hash, date, authorName, _authorEmail, signatureKey, committerName, 
     if (!Array.isArray(history[username])) {
         history[username] = [];
     }
-    const changedFiles = [];
+    let changedFiles = 0;
     if (Array.isArray(diff?.files)) {
         console.info("\tdiff.files:", diff.files);
         for (const { file, changes, before, after, binary } of diff.files) {
             if ((binary ? before !== after : changes > 0) && file.startsWith("src/")) {
-                changedFiles.push(file);
+                changedFiles++;
             }
         }
         console.info("\tchangedFiles:", changedFiles);
