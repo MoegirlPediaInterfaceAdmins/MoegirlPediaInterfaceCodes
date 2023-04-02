@@ -24,10 +24,11 @@ const GITHUB_EVENT = await jsonModule.readFile(process.env.GITHUB_EVENT_PATH);
 const { before, after } = GITHUB_EVENT;
 const isBeforeExists = before && after && (await git.branch(["--contains", before]).catch(() => ({ current: "" }))).current.length > 0;
 console.info("commits:", { before, after, isBeforeExists });
-const commits = [after];
+const commits = [after || "HEAD"];
 if (isBeforeExists) {
     commits.unshift(before);
 }
+console.info("final commits:", commits);
 const changedFiles = before && after ? (await git.raw(["diff-tree", "-c", "-r", "--no-commit-id", "--name-only", ...commits])).trim() : "";
 startGroup("changedFiles:");
 console.info(changedFiles);
