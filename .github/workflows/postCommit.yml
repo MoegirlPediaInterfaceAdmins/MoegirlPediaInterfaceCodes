@@ -89,6 +89,40 @@ jobs:
         run: node scripts/postCommit/linguist-generated.js
       - name: Show git status & push
         run: node scripts/postCommit/push.js
-      - name: Run linter test # Name MUST NOT be changed.
-        uses: ./.github/linter test
-        if: ${{ env.linterTest == 'true' }}
+  linter_test:
+    runs-on: ubuntu-latest
+    needs: postCommit
+    if: ${{ env.linterTest == 'true' }}
+    steps:
+      # 与 linter test 保持同步
+      - uses: actions/checkout@v3
+      - name: Use Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: lts/*
+          check-latest: true
+          cache: npm
+      - name: "Prepare: Install dependencies"
+        run: npm run ci
+      - name: Reload the cache
+        uses: actions/cache@v3
+        with:
+          path: .cache
+          key: cache@${{ github.ref }}
+      - name: Check eslint environment
+        run: npx eslint --env-info && mkdir -p .cache && echo ---- && ls -lhA .cache
+      - name: Run eslint
+        run: npx eslint --exit-on-fatal-error --max-warnings 0 --cache --cache-strategy content --cache-location ".cache/" --ext js ./src
+      - name: Run stylelint
+        run: npx stylelint --max-warnings 0 --cache --cache-strategy content --cache-location ".cache/" "src/**/*.css"
+      - name: Run v8r
+        run: echo "::group::v8r output" && npx v8r && echo "::endgroup::"
+      - name: Check .mailmap
+        run: node scripts/emailmapChecker/index.js
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v2
+        with:
+          languages: javascript
+          config-file: ./.github/codeql-config.yml
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v2
