@@ -70,6 +70,10 @@ for (const { hash, date, authorName, _authorEmail, signatureKey, committerName, 
     } else {
         console.info("\tNothing changed by this commit.");
     }
+    if (changedFiles === 0) {
+        console.info("\tNothing in src/ has been changed, skip.");
+        continue;
+    }
     history[username].push({
         commit: hash,
         datetime: date,
