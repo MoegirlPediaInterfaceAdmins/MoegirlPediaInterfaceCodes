@@ -6,7 +6,7 @@ src/**/*.yaml linguist-generated=false
 src/*.yaml linguist-generated=false
 
 # From generatePolyfill
-src/gadgets/libPolyfill/MediaWiki:Gadget-libPolyfill.js linguist-generated=true
+src/global/zh/MediaWiki:GHIAHistory.json linguist-generated=true
 
 # From browserify
 src/gadgets/cron/MediaWiki:Gadget-cron.js linguist-generated=true
