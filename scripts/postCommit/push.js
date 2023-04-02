@@ -43,6 +43,8 @@ const triggerLinterTest = (force = false) => {
     }
     if (!detectContentChanged(changedFiles.split("\n")) && !force) {
         console.info("Nothing need to lint, exit.");
+        console.info("Exposed outputs, exit."); //DEBUG
+        console.info("Done."); //DEBUG
         process.exit(0);
     }
     const { commits, head_commit } = GITHUB_EVENT;
@@ -55,7 +57,7 @@ const triggerLinterTest = (force = false) => {
     endGroup();
     setOutput("commits", JSON.stringify(allCommits));
     setOutput("linterTest", "true");
-    console.info("Exposed envs, exit.");
+    console.info("Exposed outputs, exit.");
     console.info("Done.");
     process.exit(0);
 };
@@ -84,4 +86,4 @@ if (!Array.isArray(changedFilesFromEnv) || changedFilesFromEnv.length === 0) {
     console.info("Unable to get changed files.");
     triggerLinterTest();
 }
-triggerLinterTest(true || detectContentChanged(changedFilesFromEnv));
+triggerLinterTest(detectContentChanged(changedFilesFromEnv));
