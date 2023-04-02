@@ -49,10 +49,6 @@ jobs:
       # 由于仅手动发起，故无需检查
       # - name: Check .mailmap
       #   run: node scripts/emailmapChecker/index.js
-  CodeQL:
-    runs-on: macos-latest
-    needs: linter_test
-    steps:
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v2
         with:

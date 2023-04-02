@@ -108,7 +108,7 @@ jobs:
           node-version: lts/*
           check-latest: true
           cache: npm
-      - name: "Prepare: Install dependencies"
+      - name: Install dependencies
         run: npm run ci
       - name: Reload the cache
         uses: actions/cache@v3
@@ -126,11 +126,6 @@ jobs:
       # 由于可能非手动发起，故需检查
       - name: Check .mailmap
         run: node scripts/emailmapChecker/index.js
-  CodeQL:
-    runs-on: macos-latest
-    needs: linter_test
-    steps:
-      - uses: actions/checkout@v3
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v2
         with:

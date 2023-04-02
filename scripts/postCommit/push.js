@@ -39,14 +39,10 @@ endGroup();
 const triggerLinterTest = (force = false) => {
     if (!isPush && !isPullRequest && !force) {
         console.info("This workflow is not triggered by `push` or `pull_request`, exit.");
-        setOutput("linterTest", "true"); console.info("Exposed outputs, exit."); //DEBUG
-        console.info("Done."); //DEBUG
         process.exit(0);
     }
     if (!detectContentChanged(changedFiles.split("\n")) && !force) {
         console.info("Nothing need to lint, exit.");
-        setOutput("linterTest", "true"); console.info("Exposed outputs, exit."); //DEBUG
-        console.info("Done."); //DEBUG
         process.exit(0);
     }
     const { commits, head_commit } = GITHUB_EVENT;
@@ -59,7 +55,7 @@ const triggerLinterTest = (force = false) => {
     endGroup();
     setOutput("commits", JSON.stringify(allCommits));
     setOutput("linterTest", "true");
-    console.info("Exposed outputs, exit.");
+    console.info('Exposed outputs "commits" and "linterTest" , exit.');
     console.info("Done.");
     process.exit(0);
 };
