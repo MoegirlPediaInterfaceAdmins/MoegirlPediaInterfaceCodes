@@ -35,7 +35,6 @@ on:
 
 concurrency:
   group: ${{ github.workflow_ref }}
-  cancel-in-progress: true
 
 env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
