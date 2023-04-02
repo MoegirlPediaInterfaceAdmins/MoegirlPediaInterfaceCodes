@@ -43,7 +43,7 @@ const triggerLinterTest = (force = false) => {
     }
     if (!detectContentChanged(changedFiles.split("\n")) && !force) {
         console.info("Nothing need to lint, exit.");
-        console.info("Exposed outputs, exit."); //DEBUG
+        setOutput("linterTest", "true");console.info("Exposed outputs, exit."); //DEBUG
         console.info("Done."); //DEBUG
         process.exit(0);
     }
