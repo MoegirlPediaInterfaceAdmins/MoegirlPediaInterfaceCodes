@@ -39,11 +39,13 @@ endGroup();
 const triggerLinterTest = (force = false) => {
     if (!isPush && !isPullRequest && !force) {
         console.info("This workflow is not triggered by `push` or `pull_request`, exit.");
+        setOutput("linterTest", "true"); console.info("Exposed outputs, exit."); //DEBUG
+        console.info("Done."); //DEBUG
         process.exit(0);
     }
     if (!detectContentChanged(changedFiles.split("\n")) && !force) {
         console.info("Nothing need to lint, exit.");
-        setOutput("linterTest", "true");console.info("Exposed outputs, exit."); //DEBUG
+        setOutput("linterTest", "true"); console.info("Exposed outputs, exit."); //DEBUG
         console.info("Done."); //DEBUG
         process.exit(0);
     }
