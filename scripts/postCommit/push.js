@@ -1,6 +1,6 @@
 import console from "../modules/console.js";
 console.info("Initialization done.");
-import { startGroup, endGroup, exportVariable } from "@actions/core";
+import { startGroup, endGroup, setOutput } from "@actions/core";
 import { git } from "../modules/git.js";
 import { isInGithubActions, isPush, isPullRequest } from "../modules/octokit.js";
 import jsonModule from "../modules/jsonModule.js";
@@ -53,8 +53,8 @@ const triggerLinterTest = (force = false) => {
     startGroup("Found commits:");
     console.info(allCommits);
     endGroup();
-    exportVariable("commits", JSON.stringify(allCommits));
-    exportVariable("linterTest", "true");
+    setOutput("commits", JSON.stringify(allCommits));
+    setOutput("linterTest", "true");
     console.info("Exposed envs, exit.");
     console.info("Done.");
     process.exit(0);
