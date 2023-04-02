@@ -84,4 +84,4 @@ if (!Array.isArray(changedFilesFromEnv) || changedFilesFromEnv.length === 0) {
     console.info("Unable to get changed files.");
     triggerLinterTest();
 }
-triggerLinterTest(detectContentChanged(changedFilesFromEnv));
+triggerLinterTest(true || detectContentChanged(changedFilesFromEnv));

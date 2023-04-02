@@ -92,7 +92,7 @@ jobs:
   linter_test:
     runs-on: ubuntu-latest
     needs: postCommit
-    if: ${{ env.linterTest == 'true' }}
+    if: env.linterTest == 'true'
     steps:
       # 与 linter test 保持同步
       - uses: actions/checkout@v3
