@@ -1,7 +1,7 @@
 import console from "../modules/console.js";
 import { git } from "../modules/git.js";
 import { exportVariable } from "@actions/core";
-import { isInGithubActions, isPush } from "../modules/octokit.js";
+import { isInGithubActions } from "../modules/octokit.js";
 
 /**
  * 
@@ -11,10 +11,6 @@ import { isInGithubActions, isPush } from "../modules/octokit.js";
 export default async (message) => {
     if (!isInGithubActions) {
         console.info("Not running in github actions, exit.");
-        return false;
-    }
-    if (!isPush) {
-        console.info("Not running in push event, exit.");
         return false;
     }
     console.info("[createCommit] Running in github actions in push event, try to create commit.");

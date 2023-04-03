@@ -2,7 +2,7 @@ import console from "../modules/console.js";
 console.info("Initialization done.");
 import { startGroup, endGroup, setOutput } from "@actions/core";
 import { git } from "../modules/git.js";
-import { isInGithubActions, isPush, isPullRequest } from "../modules/octokit.js";
+import { isInGithubActions, isPullRequest } from "../modules/octokit.js";
 import jsonModule from "../modules/jsonModule.js";
 
 const contentConfigs = [
@@ -37,10 +37,6 @@ endGroup();
  * @return {never} 
  */
 const triggerLinterTest = (force = false) => {
-    if (!isPush && !isPullRequest && !force) {
-        console.info("This workflow is not triggered by `push` or `pull_request`, exit.");
-        process.exit(0);
-    }
     if (!detectContentChanged(changedFiles.split("\n")) && !force) {
         console.info("Nothing need to lint, exit.");
         process.exit(0);
@@ -59,8 +55,8 @@ const triggerLinterTest = (force = false) => {
     console.info("Done.");
     process.exit(0);
 };
-if (!isPush) {
-    console.info("Running in github actions, but not in push event, skip checking unpushed commits...");
+if (isPullRequest) {
+    console.info("Running in github actions, but in pull request event, skip checking unpushed commits...");
     triggerLinterTest();
 }
 console.info("Running in github actions, start to check unpushed commits...");
