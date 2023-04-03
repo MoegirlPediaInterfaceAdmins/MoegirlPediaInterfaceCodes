@@ -1,7 +1,7 @@
 import console from "../modules/console.js";
 import { git } from "../modules/git.js";
 import { exportVariable } from "@actions/core";
-import { isInGithubActions } from "../modules/octokit.js";
+import { isInGithubActions, isPullRequest } from "../modules/octokit.js";
 
 /**
  * 
@@ -13,7 +13,11 @@ export default async (message) => {
         console.info("Not running in github actions, exit.");
         return false;
     }
-    console.info("[createCommit] Running in github actions in push event, try to create commit.");
+    if (isPullRequest) {
+        console.info("Running in github actions, but in pull request event, skip creating commits...");
+        return false;
+    }
+    console.info("[createCommit] Running in github actions, try to create commit.");
     console.info("[createCommit] message:", message);
     await git.add(".");
     const changedFiles = (await git.diffSummary(["--cached"])).files.map(({ file }) => file);
