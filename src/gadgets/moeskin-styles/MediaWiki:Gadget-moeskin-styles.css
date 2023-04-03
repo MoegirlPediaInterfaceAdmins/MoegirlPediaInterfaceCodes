@@ -7,7 +7,7 @@ body.skin-moeskin #moe-global-background {
 }
 
 /* 在常规屏幕设备上使文章区域略微透明，以便展示背景图片 */
-@media (width <= 768px) {
+@media (width >= 768px) {
     body.skin-moeskin #moe-main-container {
         --theme-card-background-color: rgb(255 255 255 / 94%);
     }
@@ -75,7 +75,7 @@ aside#moe-global-siderail #moe-custom-sidenav-block h2 {
 }
 
 /* 移动设备优化 */
-@media (width >= 576px) {
+@media (width <= 576px) {
 
     /* 清除浮动 */
     body.skin-moeskin .mw-parser-output > * {
@@ -94,7 +94,7 @@ aside#moe-global-siderail #moe-custom-sidenav-block h2 {
 }
 
 /* 优化[[T:Navbox]]在窄屏设备的体验 */
-@media (width >= 768px) {
+@media (width <= 768px) {
     html > body.skin-moeskin .navbox {
         border: 1px solid #AAA;
         clear: both;
@@ -177,7 +177,7 @@ a > img {
     flex: 1;
 }
 
-@media (width >= 768px) {
+@media (width <= 768px) {
     .skin-moeskin #mw-search-top-table {
         flex-direction: column;
     }
@@ -187,7 +187,7 @@ a > img {
     }
 }
 
-@media (width <= 768px) {
+@media (width >= 768px) {
     .skin-moeskin #mw-search-top-table {
         justify-content: space-between;
     }
@@ -205,7 +205,7 @@ a > img {
 }
 
 /* 优化[[T:注解]]在窄屏设备的体验 */
-@media (width >= 768px) {
+@media (width <= 768px) {
     html > body.skin-moeskin sup.mobileref {
         display: none;
     }
