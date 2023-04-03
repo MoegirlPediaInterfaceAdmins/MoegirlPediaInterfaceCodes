@@ -15,7 +15,7 @@ const labels = ["ci:prefetch"];
 
 const prefetchTargetsPath = "scripts/prefetch/targets.yaml";
 /**
- * @type {{ type: "npm", moduleName: string, gadget: { name: string, fileName: string }, distFilePath: string, version?: string, appendCode?: string, ignoreSemverDiff?: semver.ReleaseType[] }[]}
+ * @type {({ type: "npm", moduleName: string, gadget: { name: string, fileName: string }, distFilePath: string, version?: string, appendCode?: string, ignoreSemverDiff?: semver.ReleaseType[] } | { type: "custom", gadget: { name: string, fileName: string }, url: string })[]}
  */
 const prefetchTargets = await yamlModule.readFile(prefetchTargetsPath);
 startGroup("prefetchTargets:");
@@ -26,7 +26,7 @@ const registryBaseUrl = (await exec("npm config get registry --global")).trim();
 const fileList = [];
 for (const prefetchTarget of prefetchTargets) {
     console.info("target:", prefetchTarget);
-    const { type, moduleName, gadget: { name, fileName }, distFilePath, version, appendCode, ignoreSemverDiff } = prefetchTarget;
+    const { type, moduleName, gadget: { name, fileName }, distFilePath, version, appendCode, ignoreSemverDiff, url } = prefetchTarget;
     const file = path.join("src/gadgets", name, fileName);
     fileList.push(file);
     console.info(`[${name}]`, "Start to fetch...");
@@ -35,6 +35,13 @@ for (const prefetchTarget of prefetchTargets) {
             const packageName = `${moduleName}${typeof version === "string" ? `@${version}` : ""}`;
             const filePath = path.posix.join("npm", packageName, distFilePath);
             const url = new URL(filePath, "https://cdn.jsdelivr.net/");
+            console.info(`[${name}]`, `url: ${url}`);
+            const response = await fetch(url, {
+                method: "GET",
+            });
+            return await response.text();
+        }
+        if (type === "custom") {
             console.info(`[${name}]`, `url: ${url}`);
             const response = await fetch(url, {
                 method: "GET",
@@ -78,28 +85,30 @@ for (const prefetchTarget of prefetchTargets) {
         }
     }
     console.info(`[${name}]`, "wrote the code file and eslintrc successfully.");
-    const registryUrl = `${new URL(moduleName, registryBaseUrl)}`;
-    console.info(`[${name}]`, "Start to fetch the package info:", registryUrl);
-    const packageInfoResponse = await fetch(registryUrl, {
-        method: "GET",
-    });
-    const packageInfo = await packageInfoResponse.json();
-    startGroup("Successfully get the package info:");
-    console.info(packageInfo);
-    endGroup();
-    const distVersions = Object.keys(packageInfo.versions);
-    console.info(`[${name}]`, "distVersions:", distVersions);
-    const targetVersion = semver.maxSatisfying(distVersions, version || "*");
-    console.info(`[${name}]`, "targetVersion:", targetVersion);
-    await createCommit(`auto(Gadget-${name}): bump ${moduleName} to ${targetVersion} by prefetch`);
-    if (packageInfo["dist-tags"].latest !== targetVersion) {
-        const releaseType = semver.diff(packageInfo["dist-tags"].latest, targetVersion);
-        if (!Array.isArray(ignoreSemverDiff) || !ignoreSemverDiff.includes(releaseType)) {
-            await createIssue(
-                `[prefetch] Found new verion ${moduleName}@${packageInfo["dist-tags"].latest} higher than ${targetVersion}`,
-                `Found new verion \`${moduleName}@${packageInfo["dist-tags"].latest}\` higher than \`${targetVersion}\`, while [\`${prefetchTargetsPath}\`](${prefetchTargetsPath}) configured as \`${moduleName}@${version || "*"}\`, please consider to upgrade it: ${new URL(path.posix.join("package", name), "https://www.npmjs.com/")}`,
-                labels,
-            );
+    if (type === "npm") {
+        const registryUrl = `${new URL(moduleName, registryBaseUrl)}`;
+        console.info(`[${name}]`, "Start to fetch the package info:", registryUrl);
+        const packageInfoResponse = await fetch(registryUrl, {
+            method: "GET",
+        });
+        const packageInfo = await packageInfoResponse.json();
+        startGroup("Successfully get the package info:");
+        console.info(packageInfo);
+        endGroup();
+        const distVersions = Object.keys(packageInfo.versions);
+        console.info(`[${name}]`, "distVersions:", distVersions);
+        const targetVersion = semver.maxSatisfying(distVersions, version || "*");
+        console.info(`[${name}]`, "targetVersion:", targetVersion);
+        await createCommit(`auto(Gadget-${name}): bump ${moduleName} to ${targetVersion} by prefetch`);
+        if (packageInfo["dist-tags"].latest !== targetVersion) {
+            const releaseType = semver.diff(packageInfo["dist-tags"].latest, targetVersion);
+            if (!Array.isArray(ignoreSemverDiff) || !ignoreSemverDiff.includes(releaseType)) {
+                await createIssue(
+                    `[prefetch] Found new verion ${moduleName}@${packageInfo["dist-tags"].latest} higher than ${targetVersion}`,
+                    `Found new verion \`${moduleName}@${packageInfo["dist-tags"].latest}\` higher than \`${targetVersion}\`, while [\`${prefetchTargetsPath}\`](${prefetchTargetsPath}) configured as \`${moduleName}@${version || "*"}\`, please consider to upgrade it: ${new URL(path.posix.join("package", name), "https://www.npmjs.com/")}`,
+                    labels,
+                );
+            }
         }
     }
 }

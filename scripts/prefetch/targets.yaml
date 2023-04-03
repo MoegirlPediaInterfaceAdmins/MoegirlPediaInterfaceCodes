@@ -29,3 +29,9 @@
     fileName: MediaWiki:Gadget-localforage.js
   distFilePath: dist/localforage.js
   version: "1"
+
+- type: custom
+  gadget:
+    name: Wikiplus
+    fileName: MediaWiki:Gadget-Wikiplus.js
+  url: https://wikiplus-app.com/Main.js
