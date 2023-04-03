@@ -22,7 +22,7 @@ html.sidebarHiddenOn body.sidebarHidden #sidebarHidden-logo-link {
     left: 1em;
 }
 
-@media screen and (min-width: 982px) {
+@media screen and (width >= 982px) {
     html.sidebarHiddenOn #sidebarHidden-logo-link {
         left: 11em;
     }
@@ -82,7 +82,7 @@ html.sidebarHiddenOn #sidebarHidden-arrow:hover {
     background-color: rgb(223 245 255);
 }
 
-@media screen and (min-width: 982px) {
+@media screen and (width >= 982px) {
     html.sidebarHiddenOn #sidebarHidden-arrow {
         left: 10.3em;
     }

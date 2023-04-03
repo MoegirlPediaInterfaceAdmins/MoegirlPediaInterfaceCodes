@@ -7,14 +7,14 @@ body.skin-moeskin #moe-global-background {
 }
 
 /* 在常规屏幕设备上使文章区域略微透明，以便展示背景图片 */
-@media (min-width: 768px) {
+@media (width <= 768px) {
     body.skin-moeskin #moe-main-container {
         --theme-card-background-color: rgb(255 255 255 / 94%);
     }
 }
 
 /* 修复全局顶部活动展示区的图片缝隙 */
-body.skin-moeskin #moe-main-container>#moe-topbanner-container>#moe-topbanner {
+body.skin-moeskin #moe-main-container > #moe-topbanner-container > #moe-topbanner {
     padding: 0;
     line-height: 0;
     overflow: hidden;
@@ -44,7 +44,7 @@ aside#moe-global-siderail #moe-custom-sidenav-block h2 {
 }
 
 /* @fix OO.ui.Dialog的图层顺序不应低于#moe-global-header */
-.oo-ui-windowManager-modal>div.oo-ui-dialog {
+.oo-ui-windowManager-modal > div.oo-ui-dialog {
     z-index: 20;
 }
 
@@ -75,10 +75,10 @@ aside#moe-global-siderail #moe-custom-sidenav-block h2 {
 }
 
 /* 移动设备优化 */
-@media (max-width: 576px) {
+@media (width >= 576px) {
 
     /* 清除浮动 */
-    body.skin-moeskin .mw-parser-output>* {
+    body.skin-moeskin .mw-parser-output > * {
         float: unset !important;
     }
 
@@ -94,8 +94,8 @@ aside#moe-global-siderail #moe-custom-sidenav-block h2 {
 }
 
 /* 优化[[T:Navbox]]在窄屏设备的体验 */
-@media (max-width: 768px) {
-    html>body.skin-moeskin .navbox {
+@media (width >= 768px) {
+    html > body.skin-moeskin .navbox {
         border: 1px solid #AAA;
         clear: both;
         padding: 1px;
@@ -104,46 +104,46 @@ aside#moe-global-siderail #moe-custom-sidenav-block h2 {
         background: #FDFDFD;
     }
 
-    html>body.skin-moeskin .navbox-subgroup {
+    html > body.skin-moeskin .navbox-subgroup {
         background: #FDFDFD;
     }
 
-    html>body.skin-moeskin .navbox-group {
+    html > body.skin-moeskin .navbox-group {
         white-space: nowrap;
     }
 
-    html>body.skin-moeskin .navbox table {
+    html > body.skin-moeskin .navbox table {
         width: 100% !important;
         margin: 0 !important;
     }
 
-    html>body.skin-moeskin .navbox-subgroup .navbox-group,
-    html>body.skin-moeskin .navbox-abovebelow {
+    html > body.skin-moeskin .navbox-subgroup .navbox-group,
+    html > body.skin-moeskin .navbox-abovebelow {
         background: #E6F6E6;
     }
 
-    html>body.skin-moeskin .navbox .TabLabel {
+    html > body.skin-moeskin .navbox .TabLabel {
         text-align: left;
     }
 
-    html>body.skin-moeskin .navbox-group,
-    html>body.skin-moeskin .navbox-list,
-    html>body.skin-moeskin .navbox-title {
+    html > body.skin-moeskin .navbox-group,
+    html > body.skin-moeskin .navbox-list,
+    html > body.skin-moeskin .navbox-title {
         display: block;
         width: 100% !important;
         box-sizing: border-box;
     }
 
-    html>body.skin-moeskin .navbox-group+* {
+    html > body.skin-moeskin .navbox-group + * {
         border-left: 0 !important;
         border-top: 2px solid #FDFDFD;
     }
 
-    html>body.skin-moeskin .navbox-group+.navbox-list>.navbox-subgroup {
+    html > body.skin-moeskin .navbox-group + .navbox-list > .navbox-subgroup {
         border-left: 0.75em solid transparent;
     }
 
-    html>body.skin-moeskin .navbox td[rowspan] {
+    html > body.skin-moeskin .navbox td[rowspan] {
         display: none;
     }
 }
@@ -153,12 +153,12 @@ img:not([height]) {
     height: auto;
 }
 
-a>img {
+a > img {
     max-width: 100%;
 }
 
-.noresize a>img,
-.infoBoxIcon a>img {
+.noresize a > img,
+.infoBoxIcon a > img {
     max-width: unset;
 }
 
@@ -172,12 +172,12 @@ a>img {
     display: flex;
 }
 
-.skin-moeskin #mw-search-top-table>div:first-of-type {
+.skin-moeskin #mw-search-top-table > div:first-of-type {
     float: unset !important;
     flex: 1;
 }
 
-@media (max-width: 768px) {
+@media (width >= 768px) {
     .skin-moeskin #mw-search-top-table {
         flex-direction: column;
     }
@@ -187,7 +187,7 @@ a>img {
     }
 }
 
-@media (min-width: 768px) {
+@media (width <= 768px) {
     .skin-moeskin #mw-search-top-table {
         justify-content: space-between;
     }
@@ -205,12 +205,12 @@ a>img {
 }
 
 /* 优化[[T:注解]]在窄屏设备的体验 */
-@media (max-width: 768px) {
-    html>body.skin-moeskin sup.mobileref {
+@media (width >= 768px) {
+    html > body.skin-moeskin sup.mobileref {
         display: none;
     }
 
-    html>body.skin-moeskin sup.mobileref::after {
+    html > body.skin-moeskin sup.mobileref::after {
         content: " (" attr(title) ")";
         display: inline;
     }

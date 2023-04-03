@@ -1058,7 +1058,7 @@ body.ns-2 div#catlinks {
 }
 
 /* 适用于屏幕像素宽度大于400px的设备 */
-@media (min-width: 400px) {
+@media (width >= 400px) {
     /* .container {
         width: 85%;
         padding: 0;
@@ -1066,8 +1066,7 @@ body.ns-2 div#catlinks {
 }
 
 /* 适用于屏幕像素宽度大于800px的设备 */
-@media (min-width: 800px) {
-
+@media (width >= 800px) {
     /* .container {
         width: 80%;
     } */

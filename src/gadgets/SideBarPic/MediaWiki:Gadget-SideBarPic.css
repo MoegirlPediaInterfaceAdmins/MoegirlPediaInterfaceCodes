@@ -17,7 +17,7 @@ body.sideBarPic-executed #wglogo {
     display: none;
 }
 
-@media screen and (max-width: 600px) {
+@media screen and (width >= 600px) {
 
     /* 低像素设备隐藏 */
     .sidebar-character {
@@ -36,7 +36,7 @@ body.sideBarPic.skin-vector:not(.DeceasedPerson) div#mw-panel div.portal {
     padding-right: 0.95em;
 }
 
-body.sideBarPic.skin-vector:not(.DeceasedPerson) div#mw-panel #p-logo+div.portal {
+body.sideBarPic.skin-vector:not(.DeceasedPerson) div#mw-panel #p-logo + div.portal {
     padding-top: 1.1em;
     margin-top: 0;
 }
