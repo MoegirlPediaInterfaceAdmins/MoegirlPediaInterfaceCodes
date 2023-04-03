@@ -17,7 +17,7 @@ body.sideBarPic-executed #wglogo {
     display: none;
 }
 
-@media screen and (width >= 600px) {
+@media screen and (width <= 600px) {
 
     /* 低像素设备隐藏 */
     .sidebar-character {
