@@ -9,3 +9,4 @@ plugins:
   postcss-font-variant: {}
   postcss-discard-comments: {}
   postcss-logical: {}
+  "@csstools/postcss-media-minmax": {}
