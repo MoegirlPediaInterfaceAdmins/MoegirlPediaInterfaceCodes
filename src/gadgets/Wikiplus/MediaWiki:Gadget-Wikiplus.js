@@ -6,7 +6,6 @@
  *     url: "https://wikiplus-app.com/Main.js"
  */
 /* global mw */
-/// <reference path="../typings/jquery/jquery.d.ts"/>
 /**
  * Wikiplus
  * Author: +Eridanus Sora/@妹空酱

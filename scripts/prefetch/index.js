@@ -58,7 +58,7 @@ for (const prefetchTarget of prefetchTargets) {
     for (const [k, v] of Object.entries(prefetchTarget)) {
         code.push(` *     ${k}: ${JSON.stringify(v, null, 1).replace(/\n */g, " ")}`);
     }
-    code.push(" */", data);
+    code.push(" */", data.replace(/(?<=\n)\/\/\/ *<reference [^\n]+\n?/ig, ""));
     if (typeof appendCode === "string") {
         code.push(appendCode);
     }
