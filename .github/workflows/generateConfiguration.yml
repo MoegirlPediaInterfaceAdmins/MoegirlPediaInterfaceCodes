@@ -21,11 +21,11 @@ jobs:
           node-version: lts/*
           check-latest: true
           cache: npm
-      - name: "Prepare: Install dependencies"
+      - name: Install dependencies
         run: npm run ci
-      - name: "Prepare: Prepare git"
+      - name: Prepare git
         run: node scripts/postCommit/prepareGit.js
-      - name: "Prepare: Expose GitHub Runtime"
+      - name: Expose GitHub Runtime
         uses: crazy-max/ghaction-github-runtime@v2
       - name: Generate unrecognizable features
         run: node scripts/generateUnrecognizableFeatures/index.js
