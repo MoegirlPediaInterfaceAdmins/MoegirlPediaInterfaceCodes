@@ -69,6 +69,7 @@
     - disable-nest-alert
     - uploader
     - temp-editcheck
+    - editdraft
 
 - name: maintenance
   gadgets:

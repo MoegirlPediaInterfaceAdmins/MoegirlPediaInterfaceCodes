@@ -66,11 +66,11 @@ jobs:
           node-version: lts/*
           check-latest: true
           cache: npm
-      - name: "Prepare: Install dependencies"
+      - name: Install dependencies
         run: npm run ci
-      - name: "Prepare: Git config"
+      - name: Git config
         run: node scripts/postCommit/prepareGit.js
-      - name: "Prepare: Expose GitHub Runtime"
+      - name: Expose GitHub Runtime
         uses: crazy-max/ghaction-github-runtime@v2
       - name: Auto browserify generator
         run: node scripts/browserify/index.js
