@@ -405,6 +405,54 @@
             }, 16);
         });
     }
+    // 小工具使用统计移除默认启用的小工具
+    function gadgetUsageRemoveDefaultGadgets() {
+        const defaultStrings = ["默认", "預設", "默認"];
+        const defaultGadgets = [];
+        const usageTable = document.querySelector(".mw-spcontent > table");
+        for (const ele of usageTable.querySelectorAll("tr")) {
+            const [{ innerText: gadgetName }, { innerText: usercount }, { innerText: activeusers }] = ele.children;
+            if (defaultStrings.includes(usercount.trim()) && defaultStrings.includes(activeusers.trim())) {
+                ele.style.display = "none";
+                defaultGadgets.push(gadgetName);
+            }
+        }
+        if (defaultGadgets.length > 0) {
+            const div = document.createElement("div");
+            const table = document.createElement("table");
+            table.classList.add("wikitable");
+            const caption = document.createElement("caption");
+            caption.innerText = wgULS("默认小工具", "預設小工具");
+            table.append(caption);
+            const thead = document.createElement("thead");
+            const headTr = document.createElement("tr");
+            const th = document.createElement("th");
+            th.innerText = "小工具";
+            table.append(thead);
+            thead.append(headTr);
+            headTr.append(th);
+            const tbody = document.createElement("tbody");
+            table.append(tbody);
+            for (const gadget of defaultGadgets) {
+                const tr = document.createElement("tr");
+                const td = document.createElement("td");
+                td.innerText = gadget;
+                tbody.append(tr);
+                tr.append(td);
+            }
+            usageTable.before(div);
+            div.append(usageTable);
+            const usageCaption = document.createElement("caption");
+            usageCaption.innerText = document.querySelector("#firstHeading").innerText;
+            usageTable.append(usageCaption);
+            div.append(table);
+            div.style.display = "flex";
+            div.style.flexWrap = "wrap";
+            div.style.alignContent = "flex-start";
+            div.style.justifyContent = "space-evenly";
+            div.style.alignItems = "flex-start";
+        }
+    }
 
     await $.ready;
 
@@ -518,6 +566,10 @@
     //只在ns0和ns2的子页面加载预加载工具
     if (![0, 2].includes(mw.config.get("wgNamespaceNumber")) || mw.config.get("wgNamespaceNumber") === 2 && !mw.config.get("wgPageName").includes("/")) {
         $("#multiboilerplateform").remove();
+    }
+    // 小工具使用统计移除默认启用的小工具
+    if (mw.config.get("wgCanonicalSpecialPageName") === "GadgetUsage") {
+        gadgetUsageRemoveDefaultGadgets();
     }
     // 水印
     const wgCurRevisionId = mw.config.get("wgCurRevisionId") || -1;
