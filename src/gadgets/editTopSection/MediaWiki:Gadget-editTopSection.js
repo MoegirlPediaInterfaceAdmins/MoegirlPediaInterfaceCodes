@@ -9,7 +9,7 @@ $(() => {
             case "moeskin":
             default:
                 mw.hook("moeskin.pagetools").add(({ addPageToolsButton }) => {
-                    const $btn = addPageToolsButton("<span style=\"align-self:center;font:0.7em bold;\">序</span>", wgULS("编辑序言", "編輯序言"));
+                    const $btn = addPageToolsButton("<span style=\"align-self:center;\">序</span>", wgULS("编辑序言", "編輯序言"));
                     $btn.attr({
                         id: "ca-editTopSection",
                         href: `${$("a.page-tool-link#ca-edit").attr("href")}&section=0`,
