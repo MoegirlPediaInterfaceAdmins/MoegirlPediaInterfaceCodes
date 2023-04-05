@@ -17,13 +17,27 @@ jobs:
       - uses: actions/checkout@v3
       - name: Use Node.js
         uses: actions/setup-node@v3
+        id: setup-node
         with:
           node-version: lts/*
           check-latest: true
           cache: npm
-      - name: Install dependencies
+      - uses: actions/cache/restore@v3
+        name: Try to restore node_modules from cache
+        id: cache
+        with:
+          path: node_modules
+          key: nodejs-${{ steps.setup-node.outputs.node-version }}_npm-${{ steps.setup-node.outputs.npm-version }}_package-lock-${{ hashFiles('package-lock.json') }}
+      - name: Install dependencies if no cache for node_modules
         run: npm run ci
-      - name: Reload the cache
+        if: steps.cache.outputs.cache-hit != 'true'
+      - uses: actions/cache/save@v3
+        name: Save node_modules to cache
+        id: cache
+        with:
+          path: node_modules
+          key: ${{ steps.cache.outputs.cache-primary-key }}
+      - name: Reload the builder and linter cache
         uses: actions/cache@v3
         with:
           path: .cache
