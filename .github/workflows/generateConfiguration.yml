@@ -33,7 +33,6 @@ jobs:
         if: steps.cache.outputs.cache-hit != 'true'
       - uses: actions/cache/save@v3
         name: Save node_modules to cache
-        id: cache
         with:
           path: node_modules
           key: ${{ steps.cache.outputs.cache-primary-key }}
