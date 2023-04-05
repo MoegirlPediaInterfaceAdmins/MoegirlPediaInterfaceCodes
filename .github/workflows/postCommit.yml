@@ -67,16 +67,16 @@ jobs:
           node-version: lts/*
           check-latest: true
           cache: npm
-      - name: Get npm version
-        id: npm-version
+      - name: Generate cache primary key based on nodejs's and npm's version and package-lock.json's hash
+        id: version
         shell: bash
-        run: echo "version=$(npm -v | grep -oP '^\d+')" >> ${GITHUB_OUTPUT}
+        run: echo "version=node@$(node -v | grep -oP '(?<=^v)\d+')_npm@$(npm -v | grep -oP '^\d+')_package-lock@$(openssl dgst -sha3-512 package-lock.json | grep -oP '[\da-f]{128}')" >> ${GITHUB_OUTPUT} && cat ${GITHUB_OUTPUT}
       - uses: actions/cache/restore@v3
         name: Try to restore node_modules from cache
         id: cache
         with:
           path: node_modules
-          key: nodejs@${{ steps.setup-node.outputs.node-version }}_npm@${{ steps.npm-version.outputs.version }}_package-lock@${{ hashFiles('package-lock.json') }}
+          key: ${{ steps.version.outputs.version }}
       - name: Install dependencies if no cache for node_modules
         run: npm run ci
         if: steps.cache.outputs.cache-hit != 'true'
@@ -130,16 +130,16 @@ jobs:
           node-version: lts/*
           check-latest: true
           cache: npm
-      - name: Get npm version
-        id: npm-version
+      - name: Generate cache primary key based on nodejs's and npm's version and package-lock.json's hash
+        id: version
         shell: bash
-        run: echo "version=$(npm -v | grep -oP '^\d+')" >> ${GITHUB_OUTPUT}
+        run: echo "version=node@$(node -v | grep -oP '(?<=^v)\d+')_npm@$(npm -v | grep -oP '^\d+')_package-lock@$(openssl dgst -sha3-512 package-lock.json | grep -oP '[\da-f]{128}')" >> ${GITHUB_OUTPUT} && cat ${GITHUB_OUTPUT}
       - uses: actions/cache/restore@v3
         name: Try to restore node_modules from cache
         id: cache
         with:
           path: node_modules
-          key: nodejs@${{ steps.setup-node.outputs.node-version }}_npm@${{ steps.npm-version.outputs.version }}_package-lock@${{ hashFiles('package-lock.json') }}
+          key: ${{ steps.version.outputs.version }}
       - name: Install dependencies if no cache for node_modules
         run: npm run ci
         if: steps.cache.outputs.cache-hit != 'true'
