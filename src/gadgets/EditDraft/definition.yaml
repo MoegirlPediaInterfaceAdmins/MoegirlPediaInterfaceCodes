@@ -26,6 +26,7 @@ dependencies:
   - ext.gadget.site-lib
   - ext.gadget.LocalObjectStorage
   - ext.gadget.libPolyfill
+  - ext.gadget.cron
 
 _sites:
   - zh
@@ -33,5 +34,5 @@ _sites:
 _section: editing
 
 _files:
-  - MediaWiki:Gadget-editdraft.js
-  - MediaWiki:Gadget-editdraft.css
+  - MediaWiki:Gadget-EditDraft.js
+  - MediaWiki:Gadget-EditDraft.css
