@@ -19,7 +19,7 @@ jobs:
           node-version: lts/*
           check-latest: true
           cache: npm
-      - name: "Prepare: Install dependencies"
+      - name: Install dependencies
         run: npm ci
       - name: test
         run: node scripts/test/test.js
