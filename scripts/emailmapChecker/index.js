@@ -8,9 +8,8 @@ import { isInGithubActions } from "../modules/octokit.js";
 const detectIfBot = (name, email) => name.endsWith("[bot]") || email.split("@")[1] === "github.com";
 
 /**
- * 
  * @param {string[]} types 
- * @returns 
+ * @returns {Promise<{ type: string; email: string; name: string | null; }[]>}
  */
 const getGitConfigs = async (types) => (await Promise.all(types.map(async (type) => ({ type, email: (await git.getConfig(`${type}.email`)).value, name: (await git.getConfig(`${type}.name`)).value })))).filter(({ email }) => email);
 const localGitConfigs = await getGitConfigs(["user", "author", "committer"]);

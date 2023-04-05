@@ -68,6 +68,11 @@ jobs:
           cache: npm
       - name: Install dependencies
         run: npm run ci
+      - name: Reload the cache
+        uses: actions/cache@v3
+        with:
+          path: .cache
+          key: cache@${{ github.ref }}
       - name: Git config
         run: node scripts/postCommit/prepareGit.js
       - name: Expose GitHub Runtime
@@ -99,7 +104,6 @@ jobs:
     env:
       commits: ${{ needs.postCommit.outputs.commits }}
     steps:
-      # 与 linter test 保持同步
       - uses: actions/checkout@v3
       - name: Use Node.js
         uses: actions/setup-node@v3
@@ -122,7 +126,6 @@ jobs:
         run: npx stylelint --max-warnings 0 --cache --cache-strategy content --cache-location ".cache/" "src/**/*.css"
       - name: Run v8r
         run: echo "::group::v8r output" && npx v8r && echo "::endgroup::"
-      # 由于可能非手动发起，故需检查
       - name: Check .mailmap
         run: node scripts/emailmapChecker/index.js
       - name: Initialize CodeQL
