@@ -12,9 +12,10 @@ const isInMasterBranch = process.env.GITHUB_REF === "refs/heads/master";
 const isPush = ["push"].includes(process.env.GITHUB_EVENT_NAME);
 const isPullRequest = ["pull_request"].includes(process.env.GITHUB_EVENT_NAME);
 const octokitBaseOptions = {
-    owner: isInGithubActions ? process.env.GITHUB_REPOSITORY_OWNER : undefined,
-    repo: isInGithubActions ? process.env.GITHUB_REPOSITORY.split("/")[1] : undefined,
+    owner: isInGithubActions ? process.env.GITHUB_REPOSITORY_OWNER : null,
+    repo: isInGithubActions ? process.env.GITHUB_REPOSITORY.split("/")[1] : null,
 };
+const workflowLink = isInGithubActions ? `https://github.com/MoegirlPediaInterfaceAdmins/MoegirlPediaInterfaceCodes/actions/runs/${process.env.GITHUB_RUN_ID}` : null;
 class OctokitWithRetry extends Octokit.plugin(retry) {
     constructor(authStrategy, auth) {
         if (authStrategy && auth) {
@@ -40,6 +41,7 @@ console.log("isInGithubActions:", isInGithubActions);
 console.log("isInMasterBranch:", isInMasterBranch);
 console.log("isPush:", isPush);
 console.log("isPullRequest:", isPullRequest);
+console.info("workflowLink:", workflowLink);
 console.log("octokitBaseOptions:", octokitBaseOptions);
 console.log("auth:", auth);
 endGroup();
@@ -104,5 +106,5 @@ const createIssue = async (issueTitle, issueBody, labels) => {
     endGroup();
     return issue_number;
 };
-export { octokit, isInMasterBranch, octokitBaseOptions, createIssue, isInGithubActions, isPush, isPullRequest, OctokitWithRetry };
-export default { octokit, isInMasterBranch, octokitBaseOptions, createIssue, isInGithubActions, isPush, isPullRequest, OctokitWithRetry };
+export { octokit, isInMasterBranch, octokitBaseOptions, createIssue, isInGithubActions, isPush, isPullRequest, OctokitWithRetry, workflowLink };
+export default { octokit, isInMasterBranch, octokitBaseOptions, createIssue, isInGithubActions, isPush, isPullRequest, OctokitWithRetry, workflowLink };

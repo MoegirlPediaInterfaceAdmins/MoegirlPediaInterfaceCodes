@@ -30,8 +30,10 @@
   distFilePath: dist/localforage.js
   version: "1"
 
-- type: custom
+- type: npm
+  moduleName: wikiplus-core
   gadget:
     name: Wikiplus
     fileName: MediaWiki:Gadget-Wikiplus.js
-  url: https://wikiplus-app.com/Main.js
+  distFilePath: dist/Main.js
+  version: "4"
