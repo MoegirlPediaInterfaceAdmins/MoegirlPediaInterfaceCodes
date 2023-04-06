@@ -36,6 +36,10 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
     if (window.HotCat && !window.HotCat.nodeName || conf.wgAction === "edit") {
         return;
     }
+    const userRights = await mw.user.getRights();
+    const autopatrol = userRights.includes("autopatrol");
+    window.hotcat_no_autocommit = !autopatrol;
+    window.hotcat_del_needs_diff = !autopatrol;
     const HC = window.HotCat = {
         messages: {
             cat_removed: "removed [[Category:$1]]",
@@ -82,13 +86,13 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
         addmulti: "<span>+<sup>+</sup></span>",
         multi_tooltip: "Modify several categories",
         disable: function () {
-            const ns = conf.wgNamespaceNumber;
-            const nsIds = conf.wgNamespaceIds;
-            return ns < 0 || ns === 10 || ns === 828 || ns === 8 || ns === 6 && !conf.wgArticleId || ns === 2 && /\.(js|css)$/.test(conf.wgTitle) || nsIds && (ns === nsIds.creator || ns === nsIds.timedtext || ns === nsIds.institution);
+            const ns = mw.config.get("wgNamespaceNumber");
+            const nsIds = mw.config.get("wgNamespaceIds");
+            return ns < 0 || ns === nsIds.template || ns === nsIds.module || ns === nsIds.mediawiki || ns === nsIds.file && !mw.config.get("wgArticleId") || ns === nsIds.creator || ns === nsIds.timedtext || ns === nsIds.institution || mw.config.get("wgPageContentModel") !== "wikitext";
         },
         uncat_regexp: /\{\{\s*[Uu]ncategorized\s*[^}]*\}\}\s*(<!--.*?-->\s*)?/g,
-        existsYes: "//upload.wikimedia.org/wikipedia/commons/thumb/b/be/P_yes.svg/20px-P_yes.svg.png",
-        existsNo: "//upload.wikimedia.org/wikipedia/commons/thumb/4/42/P_no.svg/20px-P_no.svg.png",
+        existsYes: "https://img.moegirl.org.cn/common/thumb/b/be/P_yes.svg/20px-P_yes.svg.png",
+        existsNo: "https://img.moegirl.org.cn/common/thumb/4/42/P_no.svg/20px-P_no.svg.png",
         template_categories: {},
         engine_names: {
             searchindex: "Search index",
@@ -101,8 +105,8 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
         upload_disabled: false,
         blacklist: null,
         bg_changed: "#FCA",
-        no_autocommit: false,
-        del_needs_diff: false,
+        no_autocommit: !autopatrol,
+        del_needs_diff: !autopatrol,
         suggest_delay: 100,
         editbox_width: 40,
         suggestions: "combined",
@@ -162,11 +166,6 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
         }
     }
     const loadTrigger = new LoadTrigger(2);
-    await mw.loader.using(["mediawiki.user"]);
-    const userRights = await mw.user.getRights();
-    const autopatrol = userRights.includes("autopatrol");
-    window.hotcat_no_autocommit = !autopatrol;
-    window.hotcat_del_needs_diff = !autopatrol;
     loadTrigger.loaded(); // 原本要加载 MediaWiki:Gadget-HotCat.js/local_defaults 后才执行的，被删除了就直接执行了
     if (conf.wgUserLanguage !== "en") { // 原本要异步加载翻译的，直接内嵌了
         const local = {
@@ -210,15 +209,6 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
             },
             disambig_category: "消歧义页",
             blacklist: /(?:不可|已)索引页面|(?:调用重复模板参数|有(?:过多高开销解析器函数调用|忽略显示标题|模板循环|脚本错误|投票|参考文献错误)|含有(?:略过模板参数|受损文件链接)|展开模板后长度超过上限|扩展深度超出限制|使用无效自封闭HTML标签|受到保护无法编辑|即将删除)的页面|有错误的Scribunto模块|隐藏分类|页面的节点数超出限制|需要帮助/i,
-            no_autocommit: !autopatrol,
-            del_needs_diff: !autopatrol,
-            existsYes: "https://img.moegirl.org.cn/common/thumb/b/be/P_yes.svg/20px-P_yes.svg.png",
-            existsNo: "https://img.moegirl.org.cn/common/thumb/4/42/P_no.svg/20px-P_no.svg.png",
-            disable: function () {
-                const ns = mw.config.get("wgNamespaceNumber");
-                const nsIds = mw.config.get("wgNamespaceIds");
-                return ns < 0 || ns === nsIds.template || ns === nsIds.module || ns === nsIds.mediawiki || ns === nsIds.file && !mw.config.get("wgArticleId") || ns === nsIds.creator || ns === nsIds.timedtext || ns === nsIds.institution || mw.config.get("wgPageContentModel") !== "wikitext";
-            },
         };
         $.extend(HC, local, true);
     }
