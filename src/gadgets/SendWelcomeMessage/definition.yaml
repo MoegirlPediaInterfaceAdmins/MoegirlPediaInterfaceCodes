@@ -28,7 +28,7 @@ dependencies:
 _sites:
   - zh
 
-_section: administration
+_section: user
 
 _files:
   - MediaWiki:Gadget-SendWelcomeMessage.js
