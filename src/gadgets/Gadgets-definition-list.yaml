@@ -52,6 +52,7 @@
     - usergroup
     - queryContributions
     - userpageDelete
+    - SendWelcomeMessage
 
 - name: editing
   gadgets:
@@ -105,7 +106,6 @@
     - abusefilter33test
     - flagEditWar
     - flagBlocked
-    - SendWelcomeMessage
 
 - name: system
   gadgets:
