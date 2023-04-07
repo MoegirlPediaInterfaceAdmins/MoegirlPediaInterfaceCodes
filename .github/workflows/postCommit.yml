@@ -102,9 +102,9 @@ jobs:
       - name: Gadget-polyfill generator
         run: node scripts/generatePolyfill/index.js
       - name: Gadgets-definition Generator
-        run: node scripts/gadgetsDefinitionGenerator/index.js
+        run: node scripts/generateGadgetsDefinition/index.js
       - name: Conventional Commits scopes generator
-        run: node scripts/conventionalCommitsScopesGenerator/index.js
+        run: node scripts/generateConventionalCommitsScopes/index.js
       - name: Commits History generator
         run: node scripts/ganerateCommitsHistory/index.js
       - name: linguist-generated
