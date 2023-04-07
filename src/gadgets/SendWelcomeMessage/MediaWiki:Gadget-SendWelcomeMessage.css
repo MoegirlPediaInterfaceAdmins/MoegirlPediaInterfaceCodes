@@ -1,0 +1,25 @@
+#welcomeAsk,
+.welcomeAsk,
+#welcomeAskFinished {
+    border: #bef 1px solid;
+    margin: 0 3px 0 7px;
+}
+
+#welcomeYes,
+#welcomeNo,
+#welcomeCancel {
+    cursor: pointer;
+    color: purple;
+}
+
+.sendWelcomeMessageLink.unsend::after {
+    content: "S";
+    color: purple;
+    line-height: 1;
+    vertical-align: super;
+    font-size: smaller;
+}
+
+.sendWelcomeMessageLink {
+    text-decoration: none !important;
+}
