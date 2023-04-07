@@ -105,6 +105,7 @@
     - abusefilter33test
     - flagEditWar
     - flagBlocked
+    - SendWelcomeMessage
 
 - name: system
   gadgets:
