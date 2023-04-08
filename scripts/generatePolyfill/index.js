@@ -154,6 +154,7 @@ if (generatedUrlResponse?.status >= 400 && polyfillIOUrlResponse?.status >= 400)
     );
     process.exit(0);
 }
-console.info("Success generatedUrl:", generatedUrlResponse.status, generatedUrlResponse.statusText);
-console.info("Success polyfillIOUrl:", polyfillIOUrlResponse.status, polyfillIOUrlResponse.statusText);
+console.info("Success:");
+console.info("\tgeneratedUrl:", generatedUrlResponse.status, generatedUrlResponse.statusText);
+console.info("\tpolyfillIOUrl:", polyfillIOUrlResponse.status, polyfillIOUrlResponse.statusText);
 console.info("Done.");
