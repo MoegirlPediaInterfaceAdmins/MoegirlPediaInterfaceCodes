@@ -104,9 +104,10 @@ for (const prefetchTarget of prefetchTargets) {
             const releaseType = semver.diff(packageInfo["dist-tags"].latest, targetVersion);
             if (!Array.isArray(ignoreSemverDiff) || !ignoreSemverDiff.includes(releaseType)) {
                 await createIssue(
-                    `[prefetch] Found new ${releaseType} verion ${moduleName}@${packageInfo["dist-tags"].latest} higher than ${targetVersion}`,
-                    `Found new verion ${releaseType} \`${moduleName}@${packageInfo["dist-tags"].latest}\` higher than \`${targetVersion}\`, while [\`${prefetchTargetsPath}\`](${prefetchTargetsPath}) configured as \`${moduleName}@${version || "*"}\`, please consider to upgrade it: ${new URL(path.posix.join("package", name), "https://www.npmjs.com/")}`,
+                    `[prefetch] Found new ${releaseType} verion of ${moduleName}`,
+                    `Found new ${releaseType} verion of ${moduleName} that is higher than \`${targetVersion}\`, while [\`${prefetchTargetsPath}\`](${prefetchTargetsPath}) configured as \`${moduleName}@${version || "*"}\`, please consider to upgrade it: ${new URL(path.posix.join("package", name), "https://www.npmjs.com/")}`,
                     labels,
+                    `New ${releaseType} verion: \`${moduleName}@${packageInfo["dist-tags"].latest}\``,
                 );
             }
         }

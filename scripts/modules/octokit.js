@@ -15,7 +15,7 @@ const octokitBaseOptions = {
     owner: isInGithubActions ? process.env.GITHUB_REPOSITORY_OWNER : null,
     repo: isInGithubActions ? process.env.GITHUB_REPOSITORY.split("/")[1] : null,
 };
-const workflowLink = isInGithubActions ? `https://github.com/MoegirlPediaInterfaceAdmins/MoegirlPediaInterfaceCodes/actions/runs/${process.env.GITHUB_RUN_ID}` : null;
+const workflowLink = isInGithubActions ? `https://github.com/${octokitBaseOptions.owner}/${octokitBaseOptions.repo}/actions/runs/${process.env.GITHUB_RUN_ID}` : null;
 class OctokitWithRetry extends Octokit.plugin(retry) {
     constructor(authStrategy, auth) {
         if (authStrategy && auth) {
@@ -45,7 +45,14 @@ console.info("workflowLink:", workflowLink);
 console.log("octokitBaseOptions:", octokitBaseOptions);
 console.log("auth:", auth);
 endGroup();
-const createIssue = async (issueTitle, issueBody, labels) => {
+/**
+ * @param {string} issueTitle 
+ * @param {string} issueBody 
+ * @param {string[]} labels 
+ * @param {string} [replyBody] 
+ * @returns {Promise<number>}
+ */
+const createIssue = async (issueTitle, issueBody, labels, replyBody) => {
     if (!isInMasterBranch) {
         console.info("Not running in the master branch, exit.");
         return;
@@ -58,8 +65,10 @@ const createIssue = async (issueTitle, issueBody, labels) => {
     console.info(issues);
     endGroup();
     let issue_number;
-    const runUrl = `https://github.com/${octokitBaseOptions.owner}/${octokitBaseOptions.repo}/actions/runs/${process.env.GITHUB_RUN_ID}`;
-    const body = `${assignees.map((assignee) => `@${assignee}`).join(" ")} Occured at ${runUrl}`;
+    let body = `${assignees.map((assignee) => `@${assignee}`).join(" ")} Occured at ${workflowLink}`;
+    if (replyBody?.length > 0) {
+        body += `\n\n<hr>\n\n${replyBody}`;
+    }
     for (const { number, title, body } of issues) {
         console.info("[createIssue] Checking issue:", { number, title, body });
         if (title !== issueTitle || body !== issueBody) {

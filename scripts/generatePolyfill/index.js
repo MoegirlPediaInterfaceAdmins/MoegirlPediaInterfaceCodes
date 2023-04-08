@@ -8,7 +8,7 @@ import path from "path";
 import jsonModule from "../modules/jsonModule.js";
 import yamlModule from "../modules/yamlModule.js";
 import { exportVariable } from "@actions/core";
-import { createIssue, isInGithubActions, workflowLink } from "../modules/octokit.js";
+import { createIssue, isInGithubActions } from "../modules/octokit.js";
 import { create as createArtifactClient } from "@actions/artifact";
 
 exportVariable("linguist-generated-generatePolyfill", JSON.stringify(["src/gadgets/libPolyfill/MediaWiki:Gadget-libPolyfill.js"]));
@@ -81,15 +81,16 @@ if (newUnrecognizableFeatures.length === 0 && !hasUnparsableUnrecognizableFeatur
         console.info("New unrecognizable features found:", newUnrecognizableFeatures);
         await createIssue(
             "[generatePolyfill] New unrecognizable features detected from polyfill.io",
-            `These new unrecognizable features detected from polyfill.io:\n\`\`\` json\n${JSON.stringify(newUnrecognizableFeatures, null, 4)}\n\`\`\``,
+            "These new unrecognizable features detected from polyfill.io:",
             labels,
+            `newUnrecognizableFeatures:\n\`\`\`json\n${JSON.stringify(newUnrecognizableFeatures, null, 4)}\n\`\`\``,
         );
     }
     if (hasUnparsableUnrecognizableFeatures) {
         console.info("New unparsable unrecognizable features found.");
         await createIssue(
             "[generatePolyfill] New unparsable unrecognizable features detected from polyfill.io",
-            `Found new unparsable unrecognizable features detected from polyfill.io, please check it manually: <${workflowLink}>`,
+            "Found new unparsable unrecognizable features detected from polyfill.io, please check it manually.",
             labels,
         );
     }
@@ -114,30 +115,49 @@ if (typeof generatedUrl !== "string") {
         "Unable to retrieve the generated url via `/(?<=script.src = \")[^\"]+/`, please check [`src/gadgets/libPolyfill/MediaWiki:Gadget-libPolyfill.js`](src/gadgets/libPolyfill/MediaWiki:Gadget-libPolyfill.js)",
         labels,
     );
-    process.exec(0);
+    process.exit(0);
 }
 console.info("generatedUrl:", generatedUrl);
+const polyfillIOUrl = new URL(generatedUrl);
+polyfillIOUrl.hostname = "polyfill.io";
+console.info("polyfillIOUrl:", polyfillIOUrl);
 /**
- * @type {Response}
+ * @type {Response | TypeError}
  */
 const generatedUrlResponse = await fetch(generatedUrl, {
     method: "HEAD",
-}).catch(async (e) => {
-    console.error("Unable to fetch", generatedUrl, ":", e);
-    await createIssue(
-        "[generatePolyfill] Unable to fetch the generated url",
-        `Unable to fetch the generated url \`${generatedUrl}\`, please check it manually: <${workflowLink}>`,
-        labels,
-    );
-    process.exec(0);
+}).catch((e) => {
+    console.error("Unable to fetch generatedUrl", generatedUrl, ":", e);
+    return e;
 });
-if (generatedUrlResponse.status >= 400) {
-    console.error("Unable to fetch", generatedUrl, ": network failed -", generatedUrlResponse.status, generatedUrlResponse.statusText);
+/**
+ * @type {Response | TypeError}
+ */
+const polyfillIOUrlResponse = await fetch(polyfillIOUrl, {
+    method: "HEAD",
+}).catch((e) => {
+    console.error("Unable to fetch polyfillIOUrl", polyfillIOUrl, ":", e);
+    return e;
+});
+if (generatedUrlResponse instanceof TypeError && polyfillIOUrlResponse instanceof TypeError) {
+    console.error("Both generatedUrl and polyfillIOUrl is not able to be fetched!");
     await createIssue(
         "[generatePolyfill] Unable to fetch the generated url",
-        `Unable to fetch the generated url \`${generatedUrl}\`, reason: ${generatedUrlResponse.status} - ${generatedUrlResponse.statusText}`,
+        `Unable to fetch the generated url \`${generatedUrl}\` and polyfill.io's one, please check it manually.`,
         labels,
+        `Reason:\n* generatedUrl: ${generatedUrlResponse.name} - ${generatedUrlResponse.message}\n* polyfillIOUrl: ${polyfillIOUrlResponse.name} - ${polyfillIOUrlResponse.message}`,
     );
-    process.exec(0);
+    process.exit(0);
+}
+if (generatedUrlResponse?.status >= 400 && polyfillIOUrlResponse?.status >= 400) {
+    console.error("Unable to fetch generatedUrl: network failed -", generatedUrlResponse.status, generatedUrlResponse.statusText);
+    console.error("Unable to fetch polyfillIOUrl: network failed -", polyfillIOUrlResponse.status, polyfillIOUrlResponse.statusText);
+    await createIssue(
+        "[generatePolyfill] Unable to fetch the generated url",
+        `Unable to fetch the generated url \`${generatedUrl}\` and polyfill.io's one, please check it manually.`,
+        labels,
+        `Status:\n* generatedUrl: ${generatedUrlResponse.status} - ${generatedUrlResponse.statusText}\n* polyfillIOUrl: ${polyfillIOUrlResponse.status} - ${polyfillIOUrlResponse.statusText}`,
+    );
+    process.exit(0);
 }
 console.info("Success:", generatedUrlResponse.status, generatedUrlResponse.statusText, ", exit.");
