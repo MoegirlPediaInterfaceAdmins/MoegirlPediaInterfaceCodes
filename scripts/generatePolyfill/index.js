@@ -7,7 +7,7 @@ import fs from "fs";
 import path from "path";
 import jsonModule from "../modules/jsonModule.js";
 import yamlModule from "../modules/yamlModule.js";
-import { exportVariable } from "@actions/core";
+import { exportVariable, startGroup, endGroup } from "@actions/core";
 import { createIssue, isInGithubActions } from "../modules/octokit.js";
 import { create as createArtifactClient } from "@actions/artifact";
 
@@ -40,7 +40,10 @@ console.info("Start to analyse the temporary bundle file...");
 const analysisReport = [...new Set(JSON.parse(await exec(`npx @financial-times/js-features-analyser analyse --file ${path.relative(".", bundlePath)}`)))].sort();
 const features = analysisReport.filter((feature) => !unrecognizableFeatures.includes(feature));
 console.info("\tDone.");
-console.info("\tfeatures", JSON.stringify(features, null, 4));
+console.info("\tfeatures");
+startGroup("features:");
+console.info(JSON.stringify(features, null, 4));
+endGroup();
 const newUnrecognizableFeatures = [];
 console.info("Start to download polyfill file...");
 const url = new URL("https://polyfill.io/v3/polyfill.js");
@@ -117,10 +120,16 @@ if (typeof generatedUrl !== "string") {
     );
     process.exit(0);
 }
-console.info("generatedUrl:", generatedUrl);
+console.info("generatedUrl:");
+startGroup("generatedUrl:");
+console.info(generatedUrl);
+endGroup();
 const polyfillIOUrl = new URL(generatedUrl);
 polyfillIOUrl.hostname = "polyfill.io";
-console.info("polyfillIOUrl:", `${polyfillIOUrl}`);
+console.info("polyfillIOUrl:");
+startGroup("polyfillIOUrl:");
+console.info(polyfillIOUrl);
+endGroup();
 /**
  * @type {(Response | TypeError)[]}
  */
@@ -130,7 +139,7 @@ const [generatedUrlResponse, polyfillIOUrlResponse] = await Promise.all([
 ].map(([type, url]) => fetch(url, {
     method: "HEAD",
 }).catch((e) => {
-    console.error("Unable to fetch ", type, ":", e);
+    console.error("Unable to fetch", type, ":", e);
     return e;
 })));
 if (generatedUrlResponse instanceof TypeError && polyfillIOUrlResponse instanceof TypeError) {
@@ -155,6 +164,22 @@ if (generatedUrlResponse?.status >= 400 && polyfillIOUrlResponse?.status >= 400)
     process.exit(0);
 }
 console.info("Success:");
-console.info("\tgeneratedUrl:", generatedUrlResponse.status, generatedUrlResponse.statusText);
-console.info("\tpolyfillIOUrl:", polyfillIOUrlResponse.status, polyfillIOUrlResponse.statusText);
+/**
+ * @type {[string, Response | TypeError][]}
+ */
+const results = [
+    ["generatedUrl", generatedUrlResponse],
+    ["polyfillIOUrl", polyfillIOUrlResponse],
+];
+for (const [type, response] of results) {
+    const msg = [];
+    if (response instanceof TypeError) {
+        msg.push("network failed -", response.name, response.message);
+    } else if (response.status >= 400) {
+        msg.push("backend failed -", response.status, response.statusText);
+    } else {
+        msg.push("success -", response.status, response.statusText, "Content-Length:", response.headers.get("content-length"));
+    }
+    console.info(`\t${type}`, ...msg);
+}
 console.info("Done.");
