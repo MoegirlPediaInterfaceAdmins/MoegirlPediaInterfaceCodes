@@ -120,25 +120,19 @@ if (typeof generatedUrl !== "string") {
 console.info("generatedUrl:", generatedUrl);
 const polyfillIOUrl = new URL(generatedUrl);
 polyfillIOUrl.hostname = "polyfill.io";
-console.info("polyfillIOUrl:", polyfillIOUrl);
+console.info("polyfillIOUrl:", `${polyfillIOUrl}`);
 /**
- * @type {Response | TypeError}
+ * @type {(Response | TypeError)[]}
  */
-const generatedUrlResponse = await fetch(generatedUrl, {
+const [generatedUrlResponse, polyfillIOUrlResponse] = await Promise.all([
+    ["generatedUrl", generatedUrl],
+    ["polyfillIOUrl", polyfillIOUrl],
+].map(([type, url]) => fetch(url, {
     method: "HEAD",
 }).catch((e) => {
-    console.error("Unable to fetch generatedUrl", generatedUrl, ":", e);
+    console.error("Unable to fetch ", type, ":", e);
     return e;
-});
-/**
- * @type {Response | TypeError}
- */
-const polyfillIOUrlResponse = await fetch(polyfillIOUrl, {
-    method: "HEAD",
-}).catch((e) => {
-    console.error("Unable to fetch polyfillIOUrl", polyfillIOUrl, ":", e);
-    return e;
-});
+})));
 if (generatedUrlResponse instanceof TypeError && polyfillIOUrlResponse instanceof TypeError) {
     console.error("Both generatedUrl and polyfillIOUrl is not able to be fetched!");
     await createIssue(
@@ -160,4 +154,6 @@ if (generatedUrlResponse?.status >= 400 && polyfillIOUrlResponse?.status >= 400)
     );
     process.exit(0);
 }
-console.info("Success:", generatedUrlResponse.status, generatedUrlResponse.statusText, ", exit.");
+console.info("Success generatedUrl:", generatedUrlResponse.status, generatedUrlResponse.statusText);
+console.info("Success polyfillIOUrl:", polyfillIOUrlResponse.status, polyfillIOUrlResponse.statusText);
+console.info("Done.");
