@@ -132,6 +132,7 @@ $(() => {
                         text: message,
                         tags: "Welcome to MoegirlPedia|Automation tool",
                         createonly: true,
+                        watchlist: "unwatch",
                     });
                     /*
                         $("#welcomeAsk").empty().append('<span id="welcomeAskFinished">通信成功！继续努力哦~</span>');
