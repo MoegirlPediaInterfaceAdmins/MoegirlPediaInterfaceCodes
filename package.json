@@ -55,7 +55,7 @@
         "simple-git": "^3.17.0",
         "stylelint": "^15.4.0",
         "stylelint-config-standard": "^32.0.0",
-        "typescript": "^5.0.3",
+        "typescript": "^5.0.4",
         "uglify-js": "^3.17.4",
         "unassertify": "^3.0.1",
         "v8r": "^1.0.0",
