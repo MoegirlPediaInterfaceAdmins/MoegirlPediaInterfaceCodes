@@ -10,12 +10,13 @@
 
 ## 仓库架构
 
+### 仓库文件架构
+
 本仓库包含多组文件用以实现不同用途，详情见下。
 
 <details><summary>仓库架构详情</summary>
 
 - [`.github`](.github) 文件夹用以保存 GitHub Dependabot 和 GitHub Actions 所需配置文件，其中：
-  - [`.github/workflows/Linter test.yml`](.github/workflows/Linter_test.yml) 用以保存使用 [eslint](https://eslint.org/)、[stylelint](https://stylelint.io/) 和 [pajv](https://www.npmjs.com/package/pajv) 进行代码测试流程，该流程成功完成时会触发[机器人](https://zh.moegirl.org.cn/User:AnnAngela-dbot)的[编译流程](#编译流程)；
   - [`.github/workflows/postCommit.yml`](.github/workflows/postCommit.yml) 用以保存自动化流程，包含自动配置 Conventional Commits（约定式提交）所需 scope（作用域）信息、自动导入来自 npm 和指定页面的代码、自动补全小工具列表和自动生成 polyfill 文件；
   - [`.github/workflows/generateUnrecognizableFeatures.yml`](.github/workflows/generateUnrecognizableFeatures.yml) 用以定时生成 [`scripts/generatePolyfill/unrecognizableFeatures.json`](scripts/generatePolyfill/unrecognizableFeatures.json) 以减少生成 polyfill 时的网络请求；
     - [`.github/workflows/auto_assign.yml`](.github/workflows/auto_assign.yml) 用以自动对 pull request 和 issue 添加 assignees 和 reviewers（若有）。
@@ -31,6 +32,7 @@
   - [`scripts/postCommit/push.js`](scripts/postCommit/push.js) 用来推送由 Github Actions 做出的更改；
   - [`scripts/generateUnrecognizableFeatures/index.js`](scripts/generateUnrecognizableFeatures/index.js) 用来生成 [`scripts/generatePolyfill/unrecognizableFeatures.json`](scripts/generatePolyfill/unrecognizableFeatures.json) 以减少生成 polyfill 时的网络请求；
   - [`scripts/emailmapChecker/index.js`](scripts/emailmapChecker/index.js) 用来检查相关用户是否将其萌娘百科用户名和邮箱地址添加到 [`.mailmap`](.mailmap)，若当前环境为本地则检测 git 配置文件里的邮箱地址，若当前环境为 Github Actions 则检查相关 commits 的邮箱地址。
+  - [`scripts/ci/before.js`](scripts/ci/before.js) 和 [`scripts/ci/after.js`](scripts/ci/after.js) 用来在 `npm run ci` 里自动替换 [`package-lock.json`](package-lock.json) 里的 `resolved` 对应的 registry 为你本地设置的 registry，有助于加快安装速度。
 - 自动化工具的配置文件：
   - [`.eslintrc.yaml`](.eslintrc.yaml) 配置 eslint，由于所有 Javascript 代码都需经过编译，故其 `parserOptions.ecmaVersion` 被指定为 `latest` 以便充分利用最新标准；
   - [`tsconfig.json`](tsconfig.json) 配置 tsc，由于需要生成能通过小工具扩展验证的代码，故其 `compilerOptions.target` 被指定为 `ES3`；
@@ -51,6 +53,14 @@
 
 - [小工具部分](src/gadgets)：通过 `definition.yaml` 的 `_sites` 属性指定站点；
 - [用户组代码](src/groups) 和 [全站代码](src/global)：通过文件夹名指定站点。
+
+### 仓库 npm 脚本
+
+本仓库包含下列脚本：
+
+- `npm run test` 方便检测代码错误；
+- `npm run format` 可修正可被自动修正的错误；
+- `npm run ci` 可通过临时修改镜像源的方式加快 `npm ci` 速度。
 
 ## 自动化流程
 

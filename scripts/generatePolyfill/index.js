@@ -40,7 +40,7 @@ console.info("Start to analyse the temporary bundle file...");
 const analysisReport = [...new Set(JSON.parse(await exec(`npx @financial-times/js-features-analyser analyse --file ${path.relative(".", bundlePath)}`)))].sort();
 const features = analysisReport.filter((feature) => !unrecognizableFeatures.includes(feature));
 console.info("\tDone.");
-console.info("\tfeatures");
+console.info("\tfeatures:");
 startGroup("features:");
 console.info(JSON.stringify(features, null, 4));
 endGroup();
@@ -138,6 +138,9 @@ const [generatedUrlResponse, polyfillIOUrlResponse] = await Promise.all([
     ["polyfillIOUrl", polyfillIOUrl],
 ].map(([type, url]) => fetch(url, {
     method: "HEAD",
+    headers: {
+        "user-agent": TARGET_UA,
+    },
 }).catch((e) => {
     console.error("Unable to fetch", type, ":", e);
     return e;
