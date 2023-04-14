@@ -111,6 +111,7 @@ $(() => (async () => {
             letype: "block",
             leend: moment().startOf("day").subtract(7, "days").toISOString(),
             lelimit: "10",
+            formatversion: 2,
         }));
         if (blockLogResult && blockLogResult.query && blockLogResult.query.logevents) {
             const blocklogevents = blockLogResult.query.logevents;
@@ -149,23 +150,22 @@ $(() => (async () => {
                     action,
                     actionhidden,
                     suppressed,
-                    title: __target,
+                    title,
                     user,
                     timestamp,
                     tags,
-                    parsedcomment: comment,
+                    parsedcomment,
                     params,
-                    userhidden: _userhidden,
+                    userhidden,
                 }) => {
                     const {
                         duration: _duration,
                         expiry,
                         flags: _flags,
                     } = params || {};
-                    const _loghidden = typeof actionhidden === "string" || typeof suppressed === "string";
+                    const _loghidden = actionhidden || suppressed;
                     const loghidden = !hasSuppressionlogRight && _loghidden;
-                    const _target = loghidden ? loghiddenMsg : __target;
-                    const userhidden = typeof _userhidden === "string";
+                    const _target = loghidden ? loghiddenMsg : title;
                     const flagsExist = Array.isArray(_flags);
                     const flags = loghidden ? [loghiddenMsg] : flagsExist ? _flags : ["noautoblock"];
                     if (_loghidden && hasSuppressionlogRight) {
@@ -216,7 +216,7 @@ $(() => (async () => {
                         actions[action] || action,
                         endTime,
                         flags ? flags.length > 0 ? `<ul class="blocklogevents-ul">${flags.map((f) => `<li class="blocklogevents-flags-${f}" ${blocklogFlags[f] ? "" : "style=\"font-style: italic;\""} title="${f}">${blocklogFlags[f] || f}</li>`).join("")}</ul>` : "（无）" : "-",
-                        (comment || "（无）") + (tags.length ? `<br>（<a href="/Special:%E6%A0%87%E7%AD%BE" title="Special:标签">${tags.length}个标签</a>：${tags.join("、")}）` : ""),
+                        (parsedcomment || "（无）") + (tags.length ? `<br>（<a href="/Special:%E6%A0%87%E7%AD%BE" title="Special:标签">${tags.length}个标签</a>：${tags.join("、")}）` : ""),
                         (action === "unblock" ? "-" : loghidden ? loghiddenMsg : `<span class="mw-logevent-actionlink"><a href="/Special:%E8%A7%A3%E9%99%A4%E5%B0%81%E7%A6%81/${encodeURIComponent(target)}" title="Special:解除封禁/${target}">解封</a> | <a href="/Special:%E5%B0%81%E7%A6%81/${encodeURIComponent(target)}" title="Special:封禁/${target}">更改封禁</a></span>`) + (hasDeletelogentryRight ? `<hr style="margin: 2px 7px;"><a href="/index.php?action=historysubmit&type=logging&revisiondelete=1&ids%5B${encodeURIComponent(logid)}%5D=1" title="删除/还原版本">显示/隐藏选择的版本</a>` : ""),
                     ].forEach((data, index) => {
                         const cell = blocklogevent.children("td").eq(index);
@@ -251,6 +251,7 @@ $(() => (async () => {
             list: "abuselog",
             afllimit: "500",
             aflprop: "timestamp|user|action|filter|result|ids|title",
+            formatversion: 2,
         }));
         if (abuseLogResult && abuseLogResult.query && abuseLogResult.query.abuselog) {
             const veryFirstAbuselogId = abuseLogResult.query.abuselog.slice(-1)[0].id;
