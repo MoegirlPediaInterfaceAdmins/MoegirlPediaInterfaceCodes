@@ -73,14 +73,16 @@ $(() => {
                     throw data.error;
                 }
                 textStatus.text("[标记成功]");
-                await sleep(3000);
+                setTimeout(() => {
+                    textStatus.remove();
+                }, 3000);
             } catch (error) {
                 textStatus.text(`[标记失败：${error instanceof Error ? error.name : error.code}，请在3秒后重试]`);
                 console.error("[patrolPlus]", error);
                 await sleep(3000);
                 container.show();
+                textStatus.remove();
             }
-            textStatus.remove();
             document.body.classList.remove("patrolPlusRunning");
             container.removeClass("running");
             running = false;
