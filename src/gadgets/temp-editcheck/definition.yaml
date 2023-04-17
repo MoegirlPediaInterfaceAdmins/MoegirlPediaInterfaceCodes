@@ -19,6 +19,7 @@ package: false
 rights:
   - edit
   - skipcaptcha
+  - disabled
 
 peers: []
 
