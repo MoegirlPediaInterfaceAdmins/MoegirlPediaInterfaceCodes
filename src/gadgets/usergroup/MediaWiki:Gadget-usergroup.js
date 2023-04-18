@@ -211,28 +211,31 @@
             ele.classList.add("markrights");
             const url = new URL(new mw.Uri(ele.href));
             let username;
-            if (/^\/User:[^/=%]+/.test(url.pathname)) {
+            const pathname = decodeURIComponent(url.pathname);
+            const title = url.searchParams.get("title");
+            if (/^\/User:[^/=%]+/.test(pathname)) {
                 username = url.pathname.match(/^\/User:([^/=%]+)/)[1].replace(/_/g, " ");
-            } else if (/^User:[^/=%]+/.test(url.searchParams.get("title"))) {
-                username = url.searchParams.get("title").match(/^User:([^/=%]+)/)[1].replace(/_/g, " ");
+            } else if (/^User:[^/=%]+/.test(pathname)) {
+                username = title.match(/^User:([^/=%]+)/)[1].replace(/_/g, " ");
             }
-            if (username) {
-                ele.dataset.username = username;
-                for (const group of groupsKey) {
-                    if (cache.groups[group].includes(username)) {
-                        const sup = document.createElement("sup");
-                        sup.classList.add(`markrights-${group}`);
-                        ele.after(sup);
-                    }
+            if (!username) {
+                continue;
+            }
+            ele.dataset.username = username;
+            for (const group of groupsKey) {
+                if (cache.groups[group].includes(username)) {
+                    const sup = document.createElement("sup");
+                    sup.classList.add(`markrights-${group}`);
+                    ele.after(sup);
                 }
-                if (!ele.classList.contains("markBlockInfo")) {
-                    const blockInfo = blockCache[username];
-                    if (blockInfo && blockInfo.timestamp) {
-                        markBlocked(ele, blockInfo);
-                    } else {
-                        ele.classList.add("unknownBlockInfo");
-                        unknownUsernames.add(username);
-                    }
+            }
+            if (!ele.classList.contains("markBlockInfo")) {
+                const blockInfo = blockCache[username];
+                if (blockInfo && blockInfo.timestamp) {
+                    markBlocked(ele, blockInfo);
+                } else {
+                    ele.classList.add("unknownBlockInfo");
+                    unknownUsernames.add(username);
                 }
             }
         }
