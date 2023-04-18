@@ -214,8 +214,8 @@
             const pathname = decodeURIComponent(url.pathname);
             const title = url.searchParams.get("title");
             if (/^\/User:[^/=%]+/.test(pathname)) {
-                username = url.pathname.match(/^\/User:([^/=%]+)/)[1].replace(/_/g, " ");
-            } else if (/^User:[^/=%]+/.test(pathname)) {
+                username = pathname.match(/^\/User:([^/=%]+)/)[1].replace(/_/g, " ");
+            } else if (/^User:[^/=%]+/.test(title)) {
                 username = title.match(/^User:([^/=%]+)/)[1].replace(/_/g, " ");
             }
             if (!username) {
