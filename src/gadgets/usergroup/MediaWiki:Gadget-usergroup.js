@@ -311,7 +311,7 @@
         for (const group of groupsKey) {
             for (const node of querySelectorAll(`.markrights-${group}`)) {
                 let nextElementSibling = node.nextElementSibling;
-                while ([...nextElementSibling.classList].filter((className) => className.startsWith("markrights-")).length > 0) {
+                while (nextElementSibling && [...nextElementSibling.classList].filter((className) => className.startsWith("markrights-")).length > 0) {
                     const nextNextElementSibling = nextElementSibling.nextElementSibling;
                     if (nextElementSibling.classList.contains(`.markrights-${group}`)) {
                         nextElementSibling.remove();
