@@ -257,6 +257,7 @@
     "CharacterData.prototype.constructor",
     "CharacterData.prototype.data",
     "CharacterData.prototype.length",
+    "CharacterData.prototype.nextElementSibling",
     "CharacterData.prototype.remove",
     "CharacterData.prototype.replaceWith",
     "Clipboard.prototype.constructor",
