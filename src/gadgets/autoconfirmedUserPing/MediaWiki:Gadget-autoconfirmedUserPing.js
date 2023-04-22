@@ -153,7 +153,7 @@ $(() => (async () => {
                     list: "users",
                     ususers: chunk.join("|"),
                     usprop: "implicitgroups|blockinfo|registration",
-                })).query.users.filter((u) => u.implicitgroups.includes("autoconfirmed") && !u.blockedby && moment().diff(moment(u.registration), "days") > 30).map((u) => u.name);
+                })).query.users.filter((u) => u.implicitgroups.includes("autoconfirmed") && !u.blockedby && moment().diff(moment(u.registration), "days") > 33).map((u) => u.name);
                 console.log(`[ACUserPing] Chunk ${i + 1}: Got preliminary result.`, prelimRes);
                 const lastEdit = (await Promise.all(prelimRes.map(async (u) => {
                     await sleep();
