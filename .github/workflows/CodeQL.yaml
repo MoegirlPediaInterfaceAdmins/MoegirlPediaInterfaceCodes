@@ -3,12 +3,12 @@ name: CodeQL
 on:
   push:
     paths:
-      - ./**/*.js
+      - "**/*.js"
       - "!scripts/test/*.js"
       - .github/workflows/CodeQL.yaml
   pull_request:
     paths:
-      - ./**/*.js
+      - "**/*.js"
       - "!scripts/test/*.js"
       - .github/workflows/CodeQL.yaml
   workflow_dispatch:
