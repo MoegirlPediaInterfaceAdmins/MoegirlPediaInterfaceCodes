@@ -31,7 +31,7 @@ $(() => {
         default:
             $slCard = $(`<div class="moe-card" id="p-sl"><div class="mw-parser-output"><h3 style="margin-top: 0px;">${wgULS("短链接", "短網址")}</h3></div></div>`);
             $(".moe-siderail-sticky").append($slCard);
-            $("#p-sl h3").after('<div style="display:flex"><div style="width:0.25rem;border-radius:99em;background:#0000001a;margin-right:1rem"></div><ul id="p-sl-list" style="list-style:none"></ul></div>');
+            $("#p-sl h3").after('<div style="display:flex"><div style="width:0.25rem;border-radius:99em;background:rgba(0,0,0,0.102);margin-right:1rem"></div><ul id="p-sl-list" style="list-style:none"></ul></div>');
             break;
         case "vector":
             $("#mw-panel").append(`<div class="portal" id="p-sl" aria-labelledby="p-sl-label" style="position:sticky;top:0;"><h3 lang="zh-CN" dir="ltr" id="p-sl-label">${wgULS("短链接", "短網址")}</h3></div>`);
