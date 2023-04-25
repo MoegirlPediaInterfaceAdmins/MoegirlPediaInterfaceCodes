@@ -1,6 +1,9 @@
+/**
+ * @source https://en.wikipedia.org/wiki/_?oldid=1006234032
+ * 更新后请同步更新上面链接到最新版本
+ */
 "use strict";
 // See [[mw:Reference Tooltips]]
-// Source https://en.wikipedia.org/wiki/MediaWiki:Gadget-ReferenceTooltips.js
 /* eslint-disable no-use-before-define */
 
 (() => {
@@ -304,13 +307,13 @@
                 }
             }
             onBodyClick = (e) => {
-                if (!this.tooltip && !this.$ref.hasClass("rt-target")) {
+                if (!this.tooltip && !this.$ref?.hasClass("rt-target")) {
                     return;
                 }
 
                 let $current = $(e.target);
 
-                const contextMatchesParameter = function(parameter) {
+                const contextMatchesParameter = function (parameter) {
                     return this === parameter;
                 };
 
