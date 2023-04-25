@@ -28,7 +28,7 @@ console.info("Start to fetch raw history");
 const { all: rawHistory } = await git.log({
     format: {
         hash: "%H",
-        date: "%aI",
+        _date: "%aI",
         authorName: "%aN",
         _authorEmail: "%aE",
         committerName: "%cN",
@@ -42,7 +42,8 @@ console.info(rawHistory);
 endGroup();
 const history = {};
 startGroup("Raw history parsing:");
-for (const { hash, date, authorName, _authorEmail, signatureKey, committerName, _committerEmail, diff } of rawHistory) {
+for (const { hash, _date, authorName, _authorEmail, signatureKey, committerName, _committerEmail, diff } of rawHistory) {
+    const date = Date(_date).toISOString();
     const authorEmail = _authorEmail.toLowerCase();
     const committerEmail = _committerEmail.replace(/ò$/, "").trim().toLowerCase();
     console.info("Parsing:", { date, hash, authorName, authorEmail, committerName, committerEmail, signatureKey, diff });
