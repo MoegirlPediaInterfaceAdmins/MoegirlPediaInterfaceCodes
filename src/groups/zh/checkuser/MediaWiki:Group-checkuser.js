@@ -7,7 +7,7 @@
         /**
          * @type { HTMLAnchorElement[] }
          */
-        const nodes = document.querySelector("#mw-content-text")?.querySelectorAll("a") || [];
+        const nodes = document.querySelector("#mw-content-text")?.querySelectorAll('a[href*="user:" i]') || [];
         for (const usernameNode of nodes) {
             try {
                 const uri = new mw.Uri(usernameNode.href);
