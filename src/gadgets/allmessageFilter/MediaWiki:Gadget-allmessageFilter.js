@@ -70,7 +70,7 @@
             $(".TablePager_nav-prev div").on("click", function () {
                 if ($(this).hasClass("TablePager_nav-disabled")) { return false; }
                 index -= length;
-                if (index < 0) { index = 0; }
+                index = Math.max(index, 0);
                 load(am.slice(index, index + length));
             });
             $(".TablePager_nav-next div").on("click", function () {

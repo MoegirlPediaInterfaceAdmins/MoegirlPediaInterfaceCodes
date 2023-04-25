@@ -52,7 +52,7 @@
                     break;
                 }
                 ip = ipCidr[1];
-                cidr = ipCidr[2] ? ipCidr[2] : null;
+                cidr = ipCidr[2] || null;
                 blocs = ip.split(".");
                 for (x = 0; x < blocs.length; x++) {
                     bloc = parseInt(blocs[x], 10);
@@ -103,7 +103,7 @@
                     break;
                 }
                 ip = ipCidr[1];
-                cidr = ipCidr[2] ? ipCidr[2] : null;
+                cidr = ipCidr[2] || null;
                 const abbrevs = ip.match(/::/g);
                 if (abbrevs && abbrevs.length > 0) {
                     const colons = ip.match(/:/g);
@@ -120,7 +120,7 @@
                 }
                 blocs = ip.split(":");
                 for (x = 0; x <= 7; x++) {
-                    bloc = blocs[x] ? blocs[x] : "0";
+                    bloc = blocs[x] || "0";
                     const intBlock = parseInt(bloc, 16);
                     binBlock = intBlock.toString(2);
                     while (binBlock.length < 16) {
