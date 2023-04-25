@@ -10,7 +10,6 @@ on:
       - src/**/definition.yaml
       - src/gadgets/Gadgets-definition-list.yaml
       - .github/workflows/postCommit.yml
-      - .github/linter test/action.yaml
       - .vscode/json-schemas/gadget-definition.json
       - .browserslistrc
       - .*.yaml
@@ -24,7 +23,6 @@ on:
       - src/**/definition.yaml
       - src/gadgets/Gadgets-definition-list.yaml
       - .github/workflows/postCommit.yml
-      - .github/linter test/action.yaml
       - .vscode/json-schemas/gadget-definition.json
       - .browserslistrc
       - .*.yaml
@@ -34,7 +32,7 @@ on:
     - cron: 15 0 * * *
 
 concurrency:
-  group: ${{ github.workflow_ref }}
+  group: ${{ github.workflow_ref }}-${{ github.ref }}
 
 env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -164,10 +162,3 @@ jobs:
         run: echo "::group::v8r output" && npx v8r && echo "::endgroup::"
       - name: Check .mailmap
         run: node scripts/emailmapChecker/index.js
-      - name: Initialize CodeQL
-        uses: github/codeql-action/init@v2
-        with:
-          languages: javascript
-          config-file: ./.github/codeql-config.yml
-      - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@v2
