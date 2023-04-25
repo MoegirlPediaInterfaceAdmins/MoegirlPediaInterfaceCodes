@@ -9,29 +9,32 @@
          */
         const nodes = document.querySelector("#mw-content-text")?.querySelectorAll("a") || [];
         for (const usernameNode of nodes) {
-            const uri = new mw.Uri(usernameNode.href);
-            let username = decodeURIComponent(uri.path).substring(1);
-            if (!/user:/i.test(username)) {
-                username = uri.query.title;
-            }
-            if (!/user:/i.test(username)) {
-                break;
-            }
-            const node = document.createElement("button");
-            node.classList.add("copyUsername");
-            node.innerText = "复制用户名";
-            node.dataset.username = username;
-            usernameNode.addEventListener("click", async () => {
-                try {
-                    await navigator.clipboard.writeText(username);
-                    node.innerText = "复制成功";
-                } catch (e) {
-                    console.error("copyUsername", e);
-                    node.innerText = "复制失败，请查看控制台";
-                } finally {
-                    node.dataset.timestamp = Date.now();
+            try {
+                const uri = new mw.Uri(usernameNode.href);
+                let username = decodeURIComponent(uri.path).substring(1);
+                if (!/user:/i.test(username)) {
+                    username = uri.query.title;
                 }
-            });
+                if (!/user:/i.test(username)) {
+                    continue;
+                }
+                const node = document.createElement("button");
+                node.classList.add("copyUsername");
+                node.innerText = "复制用户名";
+                node.dataset.username = username;
+                node.addEventListener("click", async () => {
+                    try {
+                        await navigator.clipboard.writeText(username);
+                        node.innerText = "复制成功";
+                    } catch (e) {
+                        console.error("copyUsername", e);
+                        node.innerText = "复制失败，请查看控制台";
+                    } finally {
+                        node.dataset.timestamp = Date.now();
+                    }
+                });
+                usernameNode.after(node);
+            } catch { }
         }
         setInterval(() => {
             const now = Date.now();
