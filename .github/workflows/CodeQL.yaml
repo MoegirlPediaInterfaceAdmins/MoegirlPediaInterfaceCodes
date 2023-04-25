@@ -1,4 +1,4 @@
-name: post commit CI
+name: CodeQL
 
 on:
   push:
