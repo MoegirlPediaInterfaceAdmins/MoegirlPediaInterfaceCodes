@@ -570,7 +570,7 @@
                             .removeAttr("id");
                         break;
                     case "commentedText":
-                        this.id = `rt-${Math.random().slice(2)}`;
+                        this.id = `rt-${`${Math.random()}`.slice(2)}`;
                         this.$content = $(document.createTextNode(this.te.comment));
                         break;
                 }
