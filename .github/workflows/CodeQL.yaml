@@ -5,10 +5,12 @@ on:
     paths:
       - ./**/*.js
       - "!scripts/test/*.js"
+      - .github/workflows/CodeQL.yaml
   pull_request:
     paths:
       - ./**/*.js
       - "!scripts/test/*.js"
+      - .github/workflows/CodeQL.yaml
   workflow_dispatch:
   schedule:
     - cron: 15 0 * * *
