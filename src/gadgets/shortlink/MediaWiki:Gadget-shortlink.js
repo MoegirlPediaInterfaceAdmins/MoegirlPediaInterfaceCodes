@@ -2,16 +2,35 @@
 // <pre>
 $(() => {
     const wgArticleId = mw.config.get("wgArticleId") || -1;
+    if (wgArticleId <= 0) {
+        return;
+    }
     const wgCurRevisionId = mw.config.get("wgCurRevisionId") || -1;
     const wgRevisionId = mw.config.get("wgRevisionId") || -1;
     const wgDiffOldId = mw.config.get("wgDiffOldId") || -1;
     const wgDiffNewId = mw.config.get("wgDiffNewId") || -1;
-    if (wgArticleId <= 0 && wgRevisionId <= 0 && wgCurRevisionId <= 0 && wgDiffOldId <= 0 && wgDiffNewId <= 0) {
-        return;
+    const wgServer = mw.config.get("wgServer");
+    const wgScriptPath = mw.config.get("wgScriptPath");
+    const vector = mw.config.get("skin") === "vector" ? true : false;
+
+    // 初始化工具栏
+    $("body").css("height", "auto");
+    if (vector) {
+        $("#mw-panel").append(`<div class="portal" id="p-sl" aria-labelledby="p-sl-label" style="position:sticky;top:0;"><h3 lang="zh-CN" dir="ltr" id="p-sl-label">${wgULS("短链接", "短網址")}</h3></div>`);
+        $("#p-sl h3").after('<div class="body"><ul id="p-sl-list"></ul></div>');
+    } else {
+        $("#moe-sitenotice-container>.moe-wikitext-output").css("height", "270px"); // 稍微缩短公告栏长度以免侧栏过长
+        const $slCard = $(`<div class="moe-card" id="p-sl"><div class="mw-parser-output"><h3 style="margin-top: 0px;">${wgULS("短链接", "短網址")}</h3></div></div>`);
+        if (document.getElementById("moe-custom-sidenav-block")) {
+            $("#moe-custom-sidenav-block").after($slCard);
+        } else {
+            $("#moe-siderail-sitenotice").after($slCard);
+        }
+        $("#p-sl h3").after('<div style="display:flex"><div style="width:0.25rem;border-radius:99em;background:#0000001a;margin-right:1rem"></div><ul id="p-sl-list" style="list-style:none"></ul></div>');
     }
-    const $body = $("body");
-    const $mwPanel = $("#mw-panel");
-    $body.css("height", "auto");
+    const $list = $("#p-sl-list");
+
+    // 链接信息
     const links = [{
         id: "page",
         href: `curid=${wgArticleId}`,
@@ -65,23 +84,53 @@ $(() => {
             wikitext: `[[Special:差异/${wgDiffOldId}/${wgDiffNewId}]]`,
         });
     }
-    $mwPanel.append(`<div class="portal" role="navigation" id="p-sl" aria-labelledby="p-sl-label" style="position: sticky; top: 0;"><h3 lang="zh-CN" dir="ltr" id="p-sl-label">${wgULS("短链接", "短網址")}</h3><div class="body"><ul>${links.map((l) => `<li id="sl-${l.id}"><a href="${mw.config.get("wgServer")}${mw.config.get("wgScriptPath")}/_?${l.href}" title="${l.title}">${l.text}</a><br><span>（<a data-copy-content="${l.wikitext}" data-type="wikitext" href="javascript:void(0);"></a>）</span><br><span>（<a data-copy-content="${mw.config.get("wgServer")}${mw.config.get("wgScriptPath")}/_?${l.href}" data-type="${wgULS("短链接", "短網址")}" href="javascript:void(0);"></a>）</span></li>`).join("\n")}</ul></div></div>`);
-    const markStatus = (ele, status) => ele.innerText = status ? `${ele.dataset.type}${wgULS("复制成功", "複製成功")}` : `${wgULS("复制", "複製")}${ele.dataset.type}`;
-    $("#mw-panel a[data-type]").each((_, ele) => {
+
+    // 在短链栏添加复制项
+    const addItem = (link) => {
+        const $item = $(`<li id="sl-${link.id}"></li>`);
+        $item.append(`<a href="${wgServer}${wgScriptPath}/_?${link.href}">${link.text}</a>`);
+        if(vector) {
+            $item.append(`<div>（<a data-copy-content="${link.wikitext}" data-type="wikitext"></a>）</div>`);
+            $item.append(`<div>（<a data-copy-content="${wgServer}${wgScriptPath}/_?${link.href}" data-type="${wgULS("短链接", "短網址")}"></a>）</div>`);
+        } else {
+            $item.append(`<div>（<a data-copy-content="${link.wikitext}" data-type="wikitext"></a><wbr>丨<a data-copy-content="${wgServer}${wgScriptPath}/_?${link.href}" data-type="${wgULS("短链接", "短網址")}"></a>）</div>`);
+        }
+        $list.append($item);
+    };
+
+    // 标记复制状态
+    const markStatus = (ele, status) => {
+        ele.innerText = status ?
+            `${ele.dataset.type}${wgULS("复制成功", "複製成功")}`
+            :
+            `${wgULS("复制", "複製")}${ele.dataset.type}`;
+    };
+
+    // 初始化复制栏
+    for(const item of links) {
+        addItem(item);
+    }
+    $("#p-sl-list a[data-type]").each((_, ele) => {
         markStatus(ele, false);
     });
-    const valueNode = $("<pre/>", {
-        css: {
-            position: "absolute",
-            left: "-99999px",
-            "z-index": "-99999",
-        },
-    }).appendTo("body");
-    $("#mw-panel a[data-copy-content]").on("click", async function () {
-        const self = $(this);
+
+    // 点击复制操作
+    $("#p-sl-list a[data-type]").on("click", async function() {
         if (typeof navigator.clipboard?.writeText === "function") {
             await navigator.clipboard.writeText(this.dataset.copyContent);
         } else {
+            // 除了IE以外的浏览器基本都支持navigator.clipboard.writeText() - https://caniuse.com/mdn-api_clipboard_writetext
+            // 没有就改为添加一个不可见pre，加入内容后选中并复制。
+            const valueNode = $("<pre/>", {
+                css: {
+                    position: "absolute",
+                    left: "-99999px",
+                    "z-index": "-99999",
+                    opacity: 0,
+                },
+            }).appendTo("body");
+
+            // 保存当前用户所选中的内容以便在复制后恢复
             const selection = window.getSelection();
             const rangeCount = selection.rangeCount;
             let range;
@@ -91,6 +140,7 @@ $(() => {
             valueNode.text(this.dataset.copyContent);
             selection.selectAllChildren(valueNode[0]);
             document.execCommand("copy");
+            // 延时恢复用户选中
             window.setTimeout(() => {
                 selection.removeAllRanges();
                 if (rangeCount > 0) {
@@ -100,20 +150,14 @@ $(() => {
             }, 7);
         }
         markStatus(this, true);
-        self.data("last-time", new Date().getTime()).addClass("text-modified");
-        return false;
+        setTimeout(() => {
+            markStatus(this, false);
+        }, 3000);
     });
-    setInterval(() => {
-        $("#mw-panel a[data-copy-content].text-modified").each(function () {
-            const self = $(this);
-            if (self.data("last-time") < new Date().getTime() - 3000) {
-                markStatus(this, false);
-                self.removeClass("text-modified");
-            }
-        });
-    }, 1000);
     $(window).on("resize", () => {
-        $mwPanel.height($body.height());
+        if(vector) {
+            $("#mw-panel").height($("body").height());
+        }
     });
 });
 // </pre>
