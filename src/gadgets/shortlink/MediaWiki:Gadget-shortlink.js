@@ -20,11 +20,7 @@ $(() => {
         case "moeskin":
             $("#moe-sitenotice-container>.moe-wikitext-output").css("height", "270px"); // 稍微缩短公告栏长度以免侧栏过长
             $slCard = $(`<div class="moe-card" id="p-sl"><div class="mw-parser-output"><h3 style="margin-top: 0px;">${wgULS("短链接", "短網址")}</h3></div></div>`);
-            if (document.getElementById("moe-custom-sidenav-block")) {
-                $("#moe-custom-sidenav-block").after($slCard);
-            } else {
-                $("#moe-siderail-sitenotice").after($slCard);
-            }
+            $(".moe-siderail-sticky").append($slCard);
             $("#p-sl h3").after('<div style="display:flex"><div style="width:0.25rem;border-radius:99em;background:#0000001a;margin-right:1rem"></div><ul id="p-sl-list" style="list-style:none"></ul></div>');
             break;
         case "vector":
