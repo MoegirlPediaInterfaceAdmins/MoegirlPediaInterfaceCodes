@@ -1,24 +1,34 @@
 "use strict";
 // <pre>
 $(() => {
-    const wgArticleId = mw.config.get("wgArticleId") || -1;
+    const {
+        wgArticleId = -1,
+        wgCurRevisionId = -1,
+        wgRevisionId = -1,
+        wgDiffOldId = -1,
+        wgDiffNewId = -1,
+        wgServer,
+        wgScriptPath,
+        skin,
+    } = mw.config.get([
+        "wgArticleId",
+        "wgCurRevisionId",
+        "wgRevisionId",
+        "wgDiffOldId",
+        "wgDiffNewId",
+        "wgServer",
+        "wgScriptPath",
+        "skin",
+    ]);
     if (wgArticleId <= 0) {
         return;
     }
-    const wgCurRevisionId = mw.config.get("wgCurRevisionId") || -1;
-    const wgRevisionId = mw.config.get("wgRevisionId") || -1;
-    const wgDiffOldId = mw.config.get("wgDiffOldId") || -1;
-    const wgDiffNewId = mw.config.get("wgDiffNewId") || -1;
-    const wgServer = mw.config.get("wgServer");
-    const wgScriptPath = mw.config.get("wgScriptPath");
-    const skin = mw.config.get("skin");
-
     // 初始化工具栏
     $("body").css("height", "auto");
     let $slCard;
     switch (skin) {
         case "moeskin":
-            $("#moe-sitenotice-container>.moe-wikitext-output").css("height", "270px"); // 稍微缩短公告栏长度以免侧栏过长
+        default:
             $slCard = $(`<div class="moe-card" id="p-sl"><div class="mw-parser-output"><h3 style="margin-top: 0px;">${wgULS("短链接", "短網址")}</h3></div></div>`);
             $(".moe-siderail-sticky").append($slCard);
             $("#p-sl h3").after('<div style="display:flex"><div style="width:0.25rem;border-radius:99em;background:#0000001a;margin-right:1rem"></div><ul id="p-sl-list" style="list-style:none"></ul></div>');
@@ -26,6 +36,7 @@ $(() => {
         case "vector":
             $("#mw-panel").append(`<div class="portal" id="p-sl" aria-labelledby="p-sl-label" style="position:sticky;top:0;"><h3 lang="zh-CN" dir="ltr" id="p-sl-label">${wgULS("短链接", "短網址")}</h3></div>`);
             $("#p-sl h3").after('<div class="body"><ul id="p-sl-list"></ul></div>');
+            break;
     }
     const $list = $("#p-sl-list");
 
@@ -135,7 +146,7 @@ $(() => {
 
             // 保存当前用户所选中的内容以便在复制后恢复
             const selection = window.getSelection();
-            const rangeCount = selection.rangeCount;
+            const { rangeCount } = selection;
             let range;
             if (rangeCount > 0) {
                 range = selection.getRangeAt(0);
