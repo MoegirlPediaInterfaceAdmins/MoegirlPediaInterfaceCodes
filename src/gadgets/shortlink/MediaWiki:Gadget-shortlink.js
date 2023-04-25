@@ -101,10 +101,10 @@ $(() => {
         $item.append(`<a href="${wgServer}${wgScriptPath}/_?${link.href}">${link.text}</a>`);
         switch (skin) {
             case "moeskin":
+            default:
                 $item.append(`<div>（<a data-copy-content="${link.wikitext}" data-type="wikitext"></a><wbr>丨<a data-copy-content="${wgServer}${wgScriptPath}/_?${link.href}" data-type="${wgULS("短链接", "短網址")}"></a>）</div>`);
                 break;
             case "vector":
-            default:
                 $item.append(`<div>（<a data-copy-content="${link.wikitext}" data-type="wikitext"></a>）</div>`);
                 $item.append(`<div>（<a data-copy-content="${wgServer}${wgScriptPath}/_?${link.href}" data-type="${wgULS("短链接", "短網址")}"></a>）</div>`);
                 break;
