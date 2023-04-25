@@ -11,22 +11,25 @@ $(() => {
     const wgDiffNewId = mw.config.get("wgDiffNewId") || -1;
     const wgServer = mw.config.get("wgServer");
     const wgScriptPath = mw.config.get("wgScriptPath");
-    const vector = mw.config.get("skin") === "vector" ? true : false;
+    const skin = mw.config.get("skin");
 
     // 初始化工具栏
     $("body").css("height", "auto");
-    if (vector) {
-        $("#mw-panel").append(`<div class="portal" id="p-sl" aria-labelledby="p-sl-label" style="position:sticky;top:0;"><h3 lang="zh-CN" dir="ltr" id="p-sl-label">${wgULS("短链接", "短網址")}</h3></div>`);
-        $("#p-sl h3").after('<div class="body"><ul id="p-sl-list"></ul></div>');
-    } else {
-        $("#moe-sitenotice-container>.moe-wikitext-output").css("height", "270px"); // 稍微缩短公告栏长度以免侧栏过长
-        const $slCard = $(`<div class="moe-card" id="p-sl"><div class="mw-parser-output"><h3 style="margin-top: 0px;">${wgULS("短链接", "短網址")}</h3></div></div>`);
-        if (document.getElementById("moe-custom-sidenav-block")) {
-            $("#moe-custom-sidenav-block").after($slCard);
-        } else {
-            $("#moe-siderail-sitenotice").after($slCard);
-        }
-        $("#p-sl h3").after('<div style="display:flex"><div style="width:0.25rem;border-radius:99em;background:#0000001a;margin-right:1rem"></div><ul id="p-sl-list" style="list-style:none"></ul></div>');
+    let $slCard;
+    switch (skin) {
+        case "moeskin":
+            $("#moe-sitenotice-container>.moe-wikitext-output").css("height", "270px"); // 稍微缩短公告栏长度以免侧栏过长
+            $slCard = $(`<div class="moe-card" id="p-sl"><div class="mw-parser-output"><h3 style="margin-top: 0px;">${wgULS("短链接", "短網址")}</h3></div></div>`);
+            if (document.getElementById("moe-custom-sidenav-block")) {
+                $("#moe-custom-sidenav-block").after($slCard);
+            } else {
+                $("#moe-siderail-sitenotice").after($slCard);
+            }
+            $("#p-sl h3").after('<div style="display:flex"><div style="width:0.25rem;border-radius:99em;background:#0000001a;margin-right:1rem"></div><ul id="p-sl-list" style="list-style:none"></ul></div>');
+            break;
+        case "vector":
+            $("#mw-panel").append(`<div class="portal" id="p-sl" aria-labelledby="p-sl-label" style="position:sticky;top:0;"><h3 lang="zh-CN" dir="ltr" id="p-sl-label">${wgULS("短链接", "短網址")}</h3></div>`);
+            $("#p-sl h3").after('<div class="body"><ul id="p-sl-list"></ul></div>');
     }
     const $list = $("#p-sl-list");
 
@@ -89,11 +92,15 @@ $(() => {
     const addItem = (link) => {
         const $item = $(`<li id="sl-${link.id}"></li>`);
         $item.append(`<a href="${wgServer}${wgScriptPath}/_?${link.href}">${link.text}</a>`);
-        if(vector) {
-            $item.append(`<div>（<a data-copy-content="${link.wikitext}" data-type="wikitext"></a>）</div>`);
-            $item.append(`<div>（<a data-copy-content="${wgServer}${wgScriptPath}/_?${link.href}" data-type="${wgULS("短链接", "短網址")}"></a>）</div>`);
-        } else {
-            $item.append(`<div>（<a data-copy-content="${link.wikitext}" data-type="wikitext"></a><wbr>丨<a data-copy-content="${wgServer}${wgScriptPath}/_?${link.href}" data-type="${wgULS("短链接", "短網址")}"></a>）</div>`);
+        switch (skin) {
+            case "moeskin":
+                $item.append(`<div>（<a data-copy-content="${link.wikitext}" data-type="wikitext"></a><wbr>丨<a data-copy-content="${wgServer}${wgScriptPath}/_?${link.href}" data-type="${wgULS("短链接", "短網址")}"></a>）</div>`);
+                break;
+            case "vector":
+            default:
+                $item.append(`<div>（<a data-copy-content="${link.wikitext}" data-type="wikitext"></a>）</div>`);
+                $item.append(`<div>（<a data-copy-content="${wgServer}${wgScriptPath}/_?${link.href}" data-type="${wgULS("短链接", "短網址")}"></a>）</div>`);
+                break;
         }
         $list.append($item);
     };
@@ -107,7 +114,7 @@ $(() => {
     };
 
     // 初始化复制栏
-    for(const item of links) {
+    for (const item of links) {
         addItem(item);
     }
     $("#p-sl-list a[data-type]").each((_, ele) => {
@@ -115,7 +122,7 @@ $(() => {
     });
 
     // 点击复制操作
-    $("#p-sl-list a[data-type]").on("click", async function() {
+    $("#p-sl-list a[data-type]").on("click", async function () {
         if (typeof navigator.clipboard?.writeText === "function") {
             await navigator.clipboard.writeText(this.dataset.copyContent);
         } else {
@@ -154,10 +161,10 @@ $(() => {
             markStatus(this, false);
         }, 3000);
     });
-    $(window).on("resize", () => {
-        if(vector) {
+    if (skin === "vector") {
+        $(window).on("resize", () => {
             $("#mw-panel").height($("body").height());
-        }
-    });
+        });
+    }
 });
 // </pre>
