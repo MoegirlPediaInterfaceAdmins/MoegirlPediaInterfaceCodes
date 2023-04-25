@@ -43,7 +43,7 @@ endGroup();
 const history = {};
 startGroup("Raw history parsing:");
 for (const { hash, _date, authorName, _authorEmail, signatureKey, committerName, _committerEmail, diff } of rawHistory) {
-    const date = Date(_date).toISOString();
+    const date = new Date(_date).toISOString();
     const authorEmail = _authorEmail.toLowerCase();
     const committerEmail = _committerEmail.replace(/ò$/, "").trim().toLowerCase();
     console.info("Parsing:", { date, hash, authorName, authorEmail, committerName, committerEmail, signatureKey, diff });
