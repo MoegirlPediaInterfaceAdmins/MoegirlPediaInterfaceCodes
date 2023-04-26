@@ -24,7 +24,6 @@ peers: []
 
 dependencies:
   - mediawiki.api
-  - mediawiki.ForeignApi
   - moment
   - mediawiki.user
 

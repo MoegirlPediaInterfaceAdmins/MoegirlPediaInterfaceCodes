@@ -92,15 +92,22 @@ $(() => (async () => {
             nslist[item.ns].distinct.add(item.title);
             globalInfo.distinct.add(item.title);
         });
-        const GHIAHistoryRaw = await api.post({
-            action: "query",
-            titles: "MediaWiki:GHIAHistory.json",
-            prop: "revisions",
-            rvprop: ["content"],
-            rvlimit: 1,
-            rvdir: "older",
+        const GHIAHistoryRaw = await $.ajax({
+            url: "https://zh.moegirl.org.cn/api.php",
+            data: {
+                action: "query",
+                titles: "MediaWiki:GHIAHistory.json",
+                prop: "revisions",
+                rvprop: "content",
+                rvlimit: 1,
+                rvdir: "older",
+                format: "json",
+                formatversion: 2,
+            },
+            dataType: "jsonp",
+            type: "GET",
         });
-        const GHIAHistory = JSON.parse(Object.values(GHIAHistoryRaw.query.pages)[0].revisions[0]["*"]);
+        const GHIAHistory = JSON.parse(GHIAHistoryRaw.query.pages[0].revisions[0].content);
         const GHIAEditCount = Reflect.has(GHIAHistory, `U:${target}`) ? GHIAHistory[`U:${target}`].reduce((p, { changedFiles }) => p + changedFiles, 0) : 0;
         nslist[8].count += GHIAEditCount;
         const table = $(`<table class="wikitable sortable"><thead><tr><th>名字空间</th><th>编辑次数</th>${isPatrolViewable ? "<th>被巡查次数</th><th>被手动巡查次数</th>" : ""}<th>不同页面数量</th>><th>创建页面数量</th></tr></thead><tbody></tbody></table>`).find("tbody");
