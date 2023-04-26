@@ -5,8 +5,8 @@ const rawMailMap = await fs.promises.readFile(".mailmap", { encoding: "utf-8" })
 startGroup("Raw .mailmap:");
 console.info(rawMailMap);
 endGroup();
-const mailmapSet = rawMailMap.replace(/#[^\n]*/g, "").match(/(?<=<)[^>\n]+/g).map((email) => email.toLowerCase());
-startGroup("mailmapSet:");
-console.info(mailmapSet);
+const mailmap = Object.fromEntries(rawMailMap.replace(/#[^\n]*/g, "").match(/(?<=\n|$)[^>\n]+/g).map((l) => [l.split(" <").slice(1).join(" <").toLowerCase(), l.split(" <")[0]]));
+startGroup("mailmap:");
+console.info(mailmap);
 endGroup();
-export default mailmapSet;
+export default mailmap;
