@@ -93,7 +93,7 @@ $(() => (async () => {
             globalInfo.distinct.add(item.title);
         });
         let GHIAEditCount = 0;
-        if (mw.config.get("wgServerName") === "zh.moegirl.org.cn") {
+        if (["zh.moegirl.org.cn", "mzh.moegirl.org.cn"].includes(mw.config.get("wgServerName"))) {
             const { query: { pages: [{ revisions: [{ content }] }] } } = await api.post({
                 action: "query",
                 titles: "MediaWiki:GHIAHistory.json",
