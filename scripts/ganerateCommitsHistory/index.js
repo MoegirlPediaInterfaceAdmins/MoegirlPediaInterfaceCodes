@@ -10,7 +10,7 @@ const githubWebInterfaceFlowSignature = {
 };
 
 import console from "../modules/console.js";
-import mailmap from "../modules/mailmapSet.js";
+import mailmap from "../modules/mailmap.js";
 import { startGroup, endGroup, exportVariable } from "@actions/core";
 import { isInMasterBranch } from "../modules/octokit.js";
 import { git } from "../modules/git.js";
