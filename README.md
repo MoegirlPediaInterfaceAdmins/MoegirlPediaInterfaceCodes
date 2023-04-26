@@ -2,7 +2,7 @@
 
 萌娘百科界面代码库
 
-[![post commit CI](https://github.com/MoegirlPediaInterfaceAdmins/MoegirlPediaInterfaceCodes/actions/workflows/postCommit.yml/badge.svg)](https://github.com/MoegirlPediaInterfaceAdmins/MoegirlPediaInterfaceCodes/actions/workflows/postCommit.yml)
+[![post commit CI](https://github.com/MoegirlPediaInterfaceAdmins/MoegirlPediaInterfaceCodes/actions/workflows/postCommit.yml/badge.svg)](https://github.com/MoegirlPediaInterfaceAdmins/MoegirlPediaInterfaceCodes/actions/workflows/postCommit.yml) [![MoegirlPediaInterfaceAdmins Project](https://img.shields.io/badge/MoegirlPediaInterfaceAdmins-Project-blue?style=flat&logo=github&labelColor=343B42)](https://github.com/orgs/MoegirlPediaInterfaceAdmins/projects/1/views/1)
 
 欢迎来到萌娘百科界面代码库，本仓库由[萌娘百科界面管理员](https://zh.moegirl.org.cn/_?curid=489391)所组成的[团队](https://github.com/MoegirlPediaInterfaceAdmins)维护，旨在以自动化的方式减轻维护界面代码的复杂度。
 
