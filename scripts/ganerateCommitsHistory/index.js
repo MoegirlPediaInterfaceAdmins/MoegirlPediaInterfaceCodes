@@ -38,6 +38,7 @@ const { all: rawHistory } = await git.log({
     },
     "--stat": "10000",
 });
+console.info("Successfully fetched raw history.");
 startGroup("Raw history:");
 console.info(rawHistory);
 endGroup();
