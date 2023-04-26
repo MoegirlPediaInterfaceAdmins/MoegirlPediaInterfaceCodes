@@ -34,7 +34,7 @@ for (const file of await findPolyfillFiles()) {
 console.info("Start to compile src/ to temporary bundle file...");
 const bundlePath = path.join(tempPath, "bundle.js");
 console.log("bundlePath:", bundlePath);
-await exec(`npx tsc --project tsconfig.json --outFile ${bundlePath}`);
+await exec(`npx tsc --project tsconfig.production.json --outFile ${bundlePath}`);
 console.info("\tDone.");
 console.info("Start to analyse the temporary bundle file...");
 const analysisReport = [...new Set(JSON.parse(await exec(`npx @financial-times/js-features-analyser analyse --file ${path.relative(".", bundlePath)}`)))].sort();
