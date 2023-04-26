@@ -92,24 +92,21 @@ $(() => (async () => {
             nslist[item.ns].distinct.add(item.title);
             globalInfo.distinct.add(item.title);
         });
-        const GHIAHistoryRaw = await $.ajax({
-            url: "https://zh.moegirl.org.cn/api.php",
-            data: {
+        let GHIAEditCount = 0;
+        if (mw.config.get("wgServerName") === "zh.moegirl.org.cn") {
+            const { query: { pages: [{ revisions: [{ content }] }] } } = await api.post({
                 action: "query",
                 titles: "MediaWiki:GHIAHistory.json",
                 prop: "revisions",
-                rvprop: "content",
+                rvprop: ["content"],
                 rvlimit: 1,
                 rvdir: "older",
-                format: "json",
                 formatversion: 2,
-            },
-            dataType: "jsonp",
-            type: "GET",
-        });
-        const GHIAHistory = JSON.parse(GHIAHistoryRaw.query.pages[0].revisions[0].content);
-        const GHIAEditCount = Reflect.has(GHIAHistory, `U:${target}`) ? GHIAHistory[`U:${target}`].reduce((p, { changedFiles }) => p + changedFiles, 0) : 0;
-        nslist[8].count += GHIAEditCount;
+            });
+            const GHIAHistory = JSON.parse(content);
+            GHIAEditCount = Reflect.has(GHIAHistory, `U:${target}`) ? GHIAHistory[`U:${target}`].reduce((p, { changedFiles }) => p + changedFiles, 0) : 0;
+            nslist[8].count += GHIAEditCount;
+        }
         const table = $(`<table class="wikitable sortable"><thead><tr><th>名字空间</th><th>编辑次数</th>${isPatrolViewable ? "<th>被巡查次数</th><th>被手动巡查次数</th>" : ""}<th>不同页面数量</th>><th>创建页面数量</th></tr></thead><tbody></tbody></table>`).find("tbody");
         p.html(`该用户在本站未被删除的编辑共有 ${list.length} 次${isPatrolViewable ? `（其中有 ${globalInfo.patrolled} 次编辑被巡查，${globalInfo.patrolled - globalInfo.autopatrolled} 次编辑被手动巡查<sup style="color: blue;">[注：通过api编辑不会自动巡查]</sup>）` : ""}，共编辑 ${globalInfo.distinct.size} 个不同页面，创建了 ${globalInfo.new} 个页面。按名字空间划分如下：`);
 
