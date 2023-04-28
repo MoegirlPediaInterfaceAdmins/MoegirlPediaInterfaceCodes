@@ -24,9 +24,9 @@
     }
     const parser = new DOMParser();
     const root = parser.parseFromString(html, "text/html");
-    const reason = root.querySelectorAll(".mw-parser-output > .infoBox.will2Be2Deleted #reason");
-    const actor = root.querySelectorAll(".mw-parser-output > .infoBox.will2Be2Deleted #actor a");
+    const reason = root.querySelector(".mw-parser-output > .infoBox.will2Be2Deleted #reason");
+    const actor = root.querySelector(".mw-parser-output > .infoBox.will2Be2Deleted #actor a");
     if (reason && actor) {
-        wpReason.value = `删除被挂删的页面，[[User_talk:${actor[0].innerText}|${actor[0].innerText}]]的挂删理由：''${reason[0].innerText}''`;
+        wpReason.value = `删除被挂删的页面，[[User_talk:${actor.innerText}|${actor.innerText}]]的挂删理由：''${reason.innerText}''`;
     }
 })();
