@@ -5,8 +5,7 @@
 /* eslint-disable require-atomic-updates, no-use-before-define */
 "use strict";
 /**
-  * https://commons.wikimedia.org/wiki/MediaWiki:Gadget-HotCat.js
-  * 同步到 https://commons.wikimedia.org/w/index.php?title=MediaWiki:Gadget-HotCat.js&oldid=578342698
+  * 全部内容引自 https://commons.wikimedia.org/wiki/MediaWiki:Gadget-HotCat.js
   * 合并了 User:Func 对繁体分类的修正，本页面 diff：https://zh.moegirl.org.cn/_?diff=5710070&oldid=5611586 ，User:Func 的修正参见 https://zh.moegirl.org.cn/_?diff=4533156&oldid=5710033
   * 修改了alert为OOUI版本
   **/

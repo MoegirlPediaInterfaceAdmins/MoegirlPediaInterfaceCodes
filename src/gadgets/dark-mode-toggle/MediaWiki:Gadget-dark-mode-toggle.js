@@ -6,7 +6,7 @@
  * Enables or disables the dark-mode gadget.
  *
  * Authors: [[User:SD0001]], [[User:Nardog]]
- * 当前版本修改自 https://en.wikipedia.org/w/index.php?title=MediaWiki:Gadget-dark-mode-toggle.js&oldid=1084628333
+ * 全部内容引自 https://en.wikipedia.org/wiki/MediaWiki:Gadget-dark-mode.js
  **/
 // 'Dark mode' and 'Light mode' messages must match the ::before content in
 // [[MediaWiki:Gadget-dark-mode-toggle-pagestyles.css]] and [[MediaWiki:Gadget-dark-mode.css]], respectively.

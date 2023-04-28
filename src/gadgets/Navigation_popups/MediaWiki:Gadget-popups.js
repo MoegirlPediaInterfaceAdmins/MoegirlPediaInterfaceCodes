@@ -1,5 +1,5 @@
 /**
- * @source https://en.wikipedia.org/wiki/_?oldid=1141136990
+ * @source https://en.wikipedia.org/wiki/_?oldid=1151460389
  * 更新后请同步更新上面链接到最新版本
  */
 /*
@@ -1739,7 +1739,6 @@ $(() => {
         function parse_inline_wiki(_str) {
             let str = _str;
             str = parse_inline_images(str);
-            str = parse_inline_formatting(str);
             str = str.replace(/<(?:)math>(.*?)<\/math>/gi, "");
             let date = new Date();
             let minutes = date.getUTCMinutes();
@@ -1747,7 +1746,7 @@ $(() => {
                 minutes = `0${minutes}`;
             }
             date = f("?:?, ? ? ? (UTC)", date.getUTCHours(), minutes, date.getUTCDate(), Insta.conf.locale.months[date.getUTCMonth()], date.getUTCFullYear());
-            return str
+            str = str
                 .replace(/~{5}(?!~)/g, date).replace(/~{4}(?!~)/g, `${Insta.conf.user.name} ${date}`).replace(/~{3}(?!~)/g, Insta.conf.user.name)
                 .replace(RegExp(`\\[\\[:((?:${Insta.conf.locale.category}|Image|File|${Insta.conf.locale.image}|${Insta.conf.wiki.interwiki}):[^|]*?)\\]\\](\\w*)`, "gi"), ($0, $1, $2) => f("<a href='?'>?</a>", Insta.conf.paths.articles + htmlescape_attr($1), htmlescape_text($1) + htmlescape_text($2)))
                 .replace(RegExp(`\\[\\[(?:${Insta.conf.locale.category}|${Insta.conf.wiki.interwiki}):.*?\\]\\]`, "gi"), "")
@@ -1762,6 +1761,7 @@ $(() => {
                 .replace(/\[(news|ftp|mailto|gopher|irc):(\/*)(.*?)\]/g, ($0, $1, $2, $3) => f("<a class='external' href='?:?'>?:?</a>", htmlescape_attr($1), htmlescape_attr($2) + htmlescape_attr($3), htmlescape_text($1), htmlescape_text($2) + htmlescape_text($3)))
                 .replace(/(^| )(https?|news|ftp|mailto|gopher|irc):(\/*)([^ $]*[^.,!?;: $])/g, ($0, $1, $2, $3, $4) => f("?<a class='external' href='?:?'>?:?</a>", htmlescape_text($1), htmlescape_attr($2), htmlescape_attr($3) + htmlescape_attr($4), htmlescape_text($2), htmlescape_text($3) + htmlescape_text($4)))
                 .replace("__NOTOC__", "").replace("__NOINDEX__", "").replace("__INDEX__", "").replace("__NOEDITSECTION__", "");
+            return parse_inline_formatting(str);
         }
         while (remain()) {
             if (compareLineStringOrReg(/^(={1,6})(.*)\1(.*)$/)) {
@@ -3284,7 +3284,7 @@ $(() => {
                 if (getValueOf("popupImageLinks")) {
                     trail = `&list=imageusage&iutitle=${art}`;
                 }
-                url += `titles=${art}&prop=revisions|imageinfo&rvprop=content${trail}`;
+                url += `titles=${art}&prop=revisions|imageinfo${/* @TODO 萌百尚未更新1.32， rvslots 参数尚未支持 */ "" /* &rvslots=main */}&rvprop=content${trail}`;
                 htmlGenerator = APIimagepagePreviewHTML;
                 break;
             }
@@ -3298,7 +3298,7 @@ $(() => {
                 } else {
                     url += `titles=${article.removeAnchor().urlString()}`;
                 }
-                url += "&prop=revisions|pageprops|info|images|categories&rvprop=ids|timestamp|flags|comment|user|content&cllimit=max&imlimit=max";
+                url += `&prop=revisions|pageprops|info|images|categories${/* @TODO 萌百尚未更新1.32， rvslots 参数尚未支持 */ "" /* &rvslots=main */}&rvprop=ids|timestamp|flags|comment|user|content&cllimit=max&imlimit=max`;
                 htmlGenerator = APIrevisionPreviewHTML;
                 break;
         }
@@ -3454,7 +3454,7 @@ $(() => {
             }
             html.push(`<td>${reallyContribs ? minor : ""}<a href="${col3url}">${col3txt}</a></td>`);
             let comment = "";
-            const c = h[i].comment || h[i].content;
+            const c = h[i].comment || (typeof h[i].slots !== "undefined" ? h[i].slots.main.content : null);
             if (c) {
                 comment = new Previewmaker(c, new Title(curart).toUrl()).editSummaryPreview();
             } else if (h[i].commenthidden) {
@@ -3555,7 +3555,7 @@ $(() => {
                 download.owner = null;
                 return;
             }
-            const content = page && page.revisions && page.revisions[0].contentmodel === "wikitext" ? page.revisions[0].content : null;
+            const content = page && page.revisions && page.revisions[0].contentmodel === "wikitext" ? page.revisions[0].content : null; // @TODO 萌百尚未更新1.32， rvslots 参数尚未支持 /* page && page.revisions && page.revisions[0] && page.revisions[0].slots && page.revisions[0].slots.main &&  */ page?.revisions?.[0]?.slots?.main?.contentmodel === "wikitext" ? page.revisions[0].content : null;
             if (typeof content === "string") {
                 download.data = content;
                 download.lastModified = new Date(page.revisions[0].timestamp);
@@ -3590,7 +3590,7 @@ $(() => {
         const popupid = obj.requestid;
         if (obj.query && obj.query.pages) {
             const page = anyChild(obj.query.pages);
-            const content = page && page.revisions && page.revisions[0].contentmodel === "wikitext" ? page.revisions[0].content : null;
+            const content = page && page.revisions && page.revisions[0].contentmodel === "wikitext" ? page.revisions[0].content : null; // @TODO 萌百尚未更新1.32， rvslots 参数尚未支持 /* page && page.revisions && page.revisions[0] && page.revisions[0].slots && page.revisions[0].slots.main &&  */ page?.revisions?.[0]?.slots?.main?.contentmodel === "wikitext" ? page.revisions[0].content : null;
             if (typeof content === "string" && pg && pg.current && pg.current.link && pg.current.link.navpopup) {
                 const p = new Previewmaker(content, pg.current.link.navpopup.article, pg.current.link.navpopup);
                 p.makePreview();
@@ -3602,7 +3602,7 @@ $(() => {
         try {
             const jsObj = getJsObj(download.data);
             const page = anyChild(jsObj.query.pages);
-            const content = page && page.revisions && page.revisions[0].contentmodel === "wikitext" ? page.revisions[0].content : null;
+            const content = page && page.revisions && page.revisions[0].contentmodel === "wikitext" ? page.revisions[0].content : null; // @TODO 萌百尚未更新1.32， rvslots 参数尚未支持 /* page && page.revisions && page.revisions[0] && page.revisions[0].slots && page.revisions[0].slots.main &&  */ page?.revisions?.[0]?.slots?.main?.contentmodel === "wikitext" ? page.revisions[0].content : null;
             let ret = "";
             let alt = "";
             try {
@@ -3625,7 +3625,7 @@ $(() => {
             if (page && page.imagerepository === "shared") {
                 const art = new Title(article);
                 const encart = encodeURIComponent(`File:${art.stripNamespace()}`);
-                const shared_url = `${pg.wiki.apicommonsbase}?format=json&formatversion=2&callback=pg.fn.APIsharedImagePagePreviewHTML&requestid=${navpop.idNumber}&action=query&prop=revisions&rvprop=content&titles=${encart}`;
+                const shared_url = `${pg.wiki.apicommonsbase}?format=json&formatversion=2&callback=pg.fn.APIsharedImagePagePreviewHTML&requestid=${navpop.idNumber}&action=query&prop=revisions${/* @TODO 萌百尚未更新1.32， rvslots 参数尚未支持 */ "" /* &rvslots=main */}&rvprop=content&titles=${encart}`;
                 ret = `${ret}<hr />${popupString("Image from Commons")}: <a href="${pg.wiki.commonsbase}?title=${encart}">${popupString("Description page")}</a>`;
                 mw.loader.load(shared_url);
             }
@@ -5375,7 +5375,7 @@ $(() => {
             pendingNavpopTask(navpop);
             let url = `${pg.wiki.apiwikibase}?format=json&formatversion=2&action=query&`;
             url += `revids=${navpop.diffData.oldRev.revid}|${navpop.diffData.newRev.revid}`;
-            url += "&prop=revisions&rvprop=ids|timestamp|content";
+            url += `&prop=revisions${/* @TODO 萌百尚未更新1.32， rvslots 参数尚未支持 */ "" /* &rvslots=main */}&rvprop=ids|timestamp|content`;
             getPageWithCaching(url, doneDiff, navpop);
             return true;
         };
@@ -5531,8 +5531,8 @@ $(() => {
         };
     }
     function insertDiff(navpop) {
-        let oldlines = navpop.diffData.oldRev.revision.content.split("\n");
-        let newlines = navpop.diffData.newRev.revision.content.split("\n");
+        let oldlines = navpop.diffData.oldRev.revision/* @TODO 萌百尚未更新1.32， rvslots 参数尚未支持 *//* .slots.main */.content.split("\n");
+        let newlines = navpop.diffData.newRev.revision/* @TODO 萌百尚未更新1.32， rvslots 参数尚未支持 *//* .slots.main */.content.split("\n");
         let inner = stripOuterCommonLines(oldlines, newlines, getValueOf("popupDiffContextLines"));
         oldlines = inner.a;
         newlines = inner.b;
@@ -6075,7 +6075,7 @@ $(() => {
         const uN = l.article.userName();
         const tool = getValueOf("popupEditCounterTool");
         let url;
-        const defaultToolUrl = "//tools.wmflabs.org/supercount/index.php?user=$1&project=$2.$3";
+        const defaultToolUrl = `https://xtools.wmflabs.org/ec?user=$1&project=$2.$3&uselang=${mw.config.get("wgUserLanguage")}`;
         switch (tool) {
             case "custom":
                 url = simplePrintf(getValueOf("popupEditCounterUrl"), [encodeURIComponent(uN), toolDbName()]);
@@ -6101,7 +6101,7 @@ $(() => {
         if (!saneLinkCheck(l)) {
             return null;
         }
-        const base = "http://vs.aka-online.de/cgi-bin/globalwpsearch.pl?timeout=120&search=";
+        const base = `https://global-search.toolforge.org/?uselang=${mw.config.get("wgUserLanguage")}&q=`;
         const article = l.article.urlString({
             keepSpaces: true,
         });

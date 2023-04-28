@@ -3,7 +3,7 @@
  * 更新后请同步更新上面链接到最新版本
  */
 /**
- * https://commons.wikimedia.org/w/index.php?oldid=494706072
+ * https://commons.wikimedia.org/wiki/MediaWiki:Gadget-UserMessages.js
  */
 "use strict";
 (async () => {
@@ -26,7 +26,7 @@
         pendingSetTimeouts = 0;
         oldValue = "";
         userNameExists = 2;
-        constructor ($userInputField, $outputField, stCallBack, callingObject, CBValidChange) {
+        constructor($userInputField, $outputField, stCallBack, callingObject, CBValidChange) {
             this.$userInputField = $userInputField;
             this.$outputField = $outputField;
             this.callingObject = callingObject;
