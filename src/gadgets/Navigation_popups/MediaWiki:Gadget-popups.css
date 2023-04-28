@@ -163,6 +163,10 @@ a.popup_change_title_link {
     padding: 0 !important;
 }
 
+.popupPreview td:first-child {
+    word-break: keep-all;
+}
+
 .popupPreview td:last-child {
     word-break: break-all;
 }
