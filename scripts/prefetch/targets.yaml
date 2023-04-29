@@ -29,11 +29,3 @@
     fileName: MediaWiki:Gadget-localforage.js
   distFilePath: dist/localforage.js
   version: "1"
-
-- type: npm
-  moduleName: wikiplus-core
-  gadget:
-    name: Wikiplus
-    fileName: MediaWiki:Gadget-Wikiplus.js
-  distFilePath: dist/Main.js
-  version: "4"
