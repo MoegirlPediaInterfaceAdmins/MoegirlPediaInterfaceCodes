@@ -1,17 +1,6 @@
 "use strict";
 (async () => {
     const sleep = (ms) => new Promise((res) => setTimeout(res, ms));
-    for (let i = 0; i < Number.MAX_SAFE_INTEGER; i++) {
-        await sleep(100);
-        if (!window._WikiplusPages) {
-            if (i++ % 20 === 0) {
-                console.info("Wikiplus init running.");
-            }
-            continue;
-        }
-        console.info("Wikiplus init done.");
-        break;
-    }
     if (mw.config.get("skin") !== "moeskin" || !document.querySelector("#ca-edit")) {
         return;
     }
