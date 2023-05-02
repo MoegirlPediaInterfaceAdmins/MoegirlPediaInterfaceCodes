@@ -7,7 +7,7 @@ body.skin-moeskin #moe-global-background {
 }
 
 /* 在常规屏幕设备上使文章区域略微透明，以便展示背景图片 */
-@media (width >= 768px) {
+@media (width > 768px) {
     body.skin-moeskin #moe-main-container {
         --theme-card-background-color: rgb(255 255 255 / 94%);
     }
