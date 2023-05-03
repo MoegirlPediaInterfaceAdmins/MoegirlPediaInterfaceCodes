@@ -33,9 +33,11 @@ globals:
   ace: readonly
 
 plugins:
+  - "@annangela/prefer-reflect"
   - prefer-arrow-functions
 
 rules:
+  "@annangela/prefer-reflect/prefer-reflect": error
   prefer-arrow-functions/prefer-arrow-functions:
     - error
     - classPropertiesAllowed: true

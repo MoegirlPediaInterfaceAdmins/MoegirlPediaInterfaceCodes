@@ -54,22 +54,22 @@
             }
             return null;
         };
-        
+
         /* gallery-slideshow */
         if (["loading", "loaded", "executing", "ready", "error"].includes(mw.loader.getState("mediawiki.page.gallery.slideshow"))) {
-            const {getImageInfo} = mw.GallerySlideshow.prototype;
-            mw.GallerySlideshow.prototype.getImageInfo = function($img) {
+            const { getImageInfo } = mw.GallerySlideshow.prototype;
+            mw.GallerySlideshow.prototype.getImageInfo = function ($img) {
                 if ($img.attr("src") === undefined) {
                     $img.attr("src", $img.data("lazy-src"));
                 }
-                return getImageInfo.call(this, $img);
+                return getImageInfo.bind(this)($img);
             };
             $("li.gallerycarousel").remove();
-            mw.util.$content.find(".mw-gallery-slideshow").each(function() {
+            mw.util.$content.find(".mw-gallery-slideshow").each(function () {
                 new mw.GallerySlideshow(this);
             });
         }
-        
+
         /* MultiMediaViewer */
         if (mw.config.get("wgMediaViewerOnClick") && ["loading", "loaded", "executing", "ready"].includes(mw.loader.getState("mmv.bootstrap.autostart"))) {
             await mw.loader.using("mmv.bootstrap.autostart");
@@ -232,7 +232,7 @@
     /* PageTools */
     applyPageTools();
     /* linkConfirm */
-    if ("ontouchstart" in document && !location.host.startsWith("mobile")) {
+    if (Reflect.has(document, "ontouchstart") && !location.host.startsWith("mobile")) {
         externalLinkConfirm();
     }
 })();

@@ -61,7 +61,7 @@ $(() => {
                         label: String(i),
                     }));
                 });
-                
+
             const current_selection = new OO.ui.TextInputWidget({
                 value: selection,
             });
@@ -195,8 +195,8 @@ $(() => {
                 "float": "right",
             });
             $("#wiki-blame-close > a").removeClass("oo-ui-buttonElement-button");
-            $("#wiki-blame-close > a").css({"text-decoration": "none"});
-            $("#wiki-blame-close").css({"float": "right"});
+            $("#wiki-blame-close > a").css({ "text-decoration": "none" });
+            $("#wiki-blame-close").css({ "float": "right" });
         }
         getBodyHeight() {
             return this.content.$element.outerHeight(true) + 10;
@@ -260,9 +260,9 @@ $(() => {
             this.content.addPages(page_list);
             this.$body.append(close.$element, this.content.$element);
             $("#wiki-blame-close > a").removeClass("oo-ui-buttonElement-button");
-            $("#wiki-blame-close > a").css({"text-decoration": "none"});
-            $("#wiki-blame-booklet").css({"margin-top": "20px"});
-            $("#wiki-blame-close").css({"float": "right"});
+            $("#wiki-blame-close > a").css({ "text-decoration": "none" });
+            $("#wiki-blame-booklet").css({ "margin-top": "20px" });
+            $("#wiki-blame-close").css({ "float": "right" });
         }
 
         getBodyHeight = () => 500;
@@ -307,14 +307,14 @@ $(() => {
                 remaining -= BATCH_SIZE;
                 progress.innerText = `${Math.min(+progress.innerText + BATCH_SIZE, limit)}`;
                 // 如果还有更多版本，修改rvcontinue参数，否则退出循环
-                if ("continue" in data) {
+                if (Reflect.has(data, "continue")) {
                     cont = data.continue.rvcontinue;
                 } else {
                     break;
                 }
             }
             // 去除被版本删除的版本
-            revisions = revisions.filter((r) => "*" in r);
+            revisions = revisions.filter((r) => Reflect.has(r, "*"));
             const revisions_list = [];
             const target_revisions = [];
             for (let i = 0; i < revisions.length; i++) {
