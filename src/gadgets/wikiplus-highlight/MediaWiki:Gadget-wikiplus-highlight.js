@@ -23,7 +23,7 @@
 	}
 	mw.libs.wphl = mw.libs.wphl || {}; // 开始加载
 
-	const version = '2.59.2',
+	const version = '2.59.4',
 		newAddon = 0;
 
 	/** @type {typeof mw.storage} */
@@ -107,8 +107,8 @@
 	// 路径
 	const CDN = '//fastly.jsdelivr.net',
 		CM_CDN = 'npm/codemirror@5.65.3',
-		MW_CDN = 'gh/bhsd-harry/codemirror-mediawiki@1.1.10',
-		PARSER_CDN = 'gh/bhsd-harry/wikiparser-node@0.9.7-b',
+		MW_CDN = 'gh/bhsd-harry/codemirror-mediawiki@1.1.11',
+		PARSER_CDN = 'npm/wikiparser-node@0.11.0-b',
 		REPO_CDN = `npm/wikiplus-highlight@${majorVersion}`;
 
 	const {config: {values: {
@@ -171,7 +171,7 @@
 		contextmenu: 'mediawiki.Title',
 		lint: `${CM_CDN}/addon/lint/lint.min.js`,
 		annotateScrollbar: `${CM_CDN}/addon/scroll/annotatescrollbar.min.js`,
-		parser: `${PARSER_CDN}/extensions/editor.min.js`,
+		parser: `${PARSER_CDN}/extensions/base.min.js`,
 		lintWikitext: `${REPO_CDN}/lint.min.js`,
 	};
 
@@ -821,30 +821,19 @@
 	);
 
 	/**
-	 * 对编辑框调用jQuery.val方法时从CodeMirror获取文本
-	 * @type {{get: (elem: HTMLTextAreaElement) => string, set: (elem: HTMLTextAreaElement, value: string) => void}}
-	 */
-	const {
-		get = elem => elem.value,
-		set = (elem, value) => {
-			elem.value = value;
-		},
-	} = $.valHooks.textarea || {};
-
-	/**
 	 * 是否是Wikiplus编辑区
 	 * @param {HTMLTextAreaElement} elem textarea元素
 	 */
 	const isWikiplus = elem => elem.id === 'Wikiplus-Quickedit' || elem.id === 'Wikiplus-Setting-Input';
 	$.valHooks.textarea = {
 		/** @override */ get(elem) {
-			return isWikiplus(elem) && cm ? cm.getValue() : get(elem);
+			return isWikiplus(elem) && cm ? cm.getValue() : elem.value;
 		},
 		/** @override */ set(elem, value) {
 			if (isWikiplus(elem) && cm) {
 				cm.setValue(value);
 			} else {
-				set(elem, value);
+				elem.value = value;
 			}
 		},
 	};
