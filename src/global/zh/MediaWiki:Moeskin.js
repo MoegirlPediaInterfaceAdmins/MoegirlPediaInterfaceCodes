@@ -10,7 +10,7 @@
      * fixWikiLove
      * @FIXME WikiLove
      */
-    async function fixWikiLove() {
+    const fixWikiLove = async () => {
         /** @type {JQuery<HTMLAnchorElement>} */
         const $wikiLoveBtn = $("#moe-page-tools a#ca-wikilove");
         if (!$wikiLoveBtn.length) {
@@ -21,7 +21,7 @@
             e.preventDefault();
             $.wikiLove.openDialog();
         });
-    }
+    };
 
     /**
      * fix a few image issues by extending mw.Title.newFromImg
@@ -29,7 +29,7 @@
      */
     async function fixImage() {
         await mw.loader.using("mediawiki.Title");
-        mw.Title.newFromImg = function(img) {
+        mw.Title.newFromImg = (img) => {
             let matches, i, regex;
             const thumbPhpRegex = /thumb\.php/,
                 regexes = [
@@ -81,7 +81,7 @@
     /**
      * @returns {JQuery<HTMLDivElement>}
      */
-    function useCustomSidenavBlock() {
+    const useCustomSidenavBlock = () => {
         let $block = $("aside#moe-global-siderail #moe-custom-sidenav-block");
         if (!$block.length) {
             $block = $("<div>", {
@@ -96,7 +96,7 @@
             $("aside#moe-global-siderail .moe-siderail-sticky").before($block);
         }
         return $block;
-    }
+    };
     /**
      * @param {string} portletId
      * @param {string} href
@@ -107,7 +107,7 @@
      * @param {string?} nextnode
      * @returns {HTMLLIElement}
      */
-    function addPortletLink(portletId, href, text, id, tooltip, accesskey, nextnode) {
+    const addPortletLink = (portletId, href, text, id, tooltip, accesskey, nextnode) => {
         const $block = useCustomSidenavBlock();
         const $li = $("<li>", {
             id,
@@ -123,7 +123,7 @@
         );
         $block.find("#moe-custom-sidenav-block-list").append($li);
         return $li.get(0);
-    }
+    };
     // assign functions
     try {
         /**
@@ -152,7 +152,7 @@
     mw.hook("moeskin.addPortletLink").fire({ addPortletLink, useCustomSidenavBlock });
 
     /* applyPageTools */
-    function applyPageTools() {
+    const applyPageTools = () => {
         /**
          * @returns {JQuery<HTMLDivElement>}
          */
@@ -167,7 +167,7 @@
          * @param {('action' | 'extra')?} type
          * @returns {JQuery<HTMLAnchorElement>}
          */
-        function addPageToolsButton(icon, tooltip, type = "action") {
+        const addPageToolsButton = (icon, tooltip, type = "action") => {
             const $pageTools = usePageTools();
             const $button = usePageToolsButton();
             $button.find("> .xicon").append(icon || "?");
@@ -184,16 +184,16 @@
             }
 
             return $button;
-        }
+        };
         mw.hook("moeskin.pagetools").fire({
             usePageTools,
             usePageToolsButton,
             addPageToolsButton,
         });
-    }
+    };
 
     /** 外部链接提示 */
-    async function externalLinkConfirm() {
+    const externalLinkConfirm = async () => {
         await mw.loader.using(["ext.gadget.site-lib", "oojs-ui-windows", "oojs-ui-core"]);
         /** @param {URL} url */
         const getConfirmMessage = (url) => {
@@ -221,7 +221,7 @@
             const response = await OO.ui.confirm(getConfirmMessage(hrefURL));
             response && window.open(hrefURL.href);
         });
-    }
+    };
 
     /* 等待 document 加载完毕 */
     await $.ready;

@@ -34,12 +34,8 @@
     const wgUrlProtocols = mw.config.get("wgUrlProtocols");
     const entityRegexBase = "&(?:(?:n(?:bsp|dash)|m(?:dash|inus)|lt|e[mn]sp|thinsp|amp|quot|gt|shy|zwn?j|lrm|rlm|Alpha|Beta|Epsilon|Zeta|Eta|Iota|Kappa|[Mm]u|micro|Nu|[Oo]micron|[Rr]ho|Tau|Upsilon|Chi)|#x[0-9a-fA-F]+);\n*";
     const breakerRegexBase = `\\[(?:\\[|(?:${wgUrlProtocols}))|\\{(?:\\{\\{?|\\|)|<(?:[:A-Z_a-z\u00C0-\u00D6\u00D8-\u00F6\u00F8-\u02FF\u0370-\u037D\u037F-\u1FFF\u200C\u200D\u2070-\u218F\u2C00-\u2FEF\u3001-\uD7FF\uF900-\uFDCF\uFDF0-\uFFFD][:\\w\u00C0-\u00D6\u00D8-\u00F6\u00F8-\u02FF\u0370-\u037D\u037F-\u1FFF\u200C\u200D\u2070-\u218F\u2C00-\u2FEF\u3001-\uD7FF\uF900-\uFDCF\uFDF0-\uFFFD-\\.\u00B7\u0300-\u036F\u203F-\u203F-\u2040]*(?=/?>| |\n)|!--[^]*?-->\n*)|(?:${wgUrlProtocols.replace("|\\/\\/", "")})[^\\s"<>[\\]{-}]*[^\\s",\\.:;<>[\\]{-}]\n*|^(?:=|[*#:;]+\n*|-{4,}\n*)|\\\\'\\\\'(?:\\\\')?|~{3,5}\n*|${entityRegexBase}`;
-    function breakerRegexWithPrefix(prefix) {
-        return new RegExp(`(${prefix})\n*|${breakerRegexBase}`, "gm");
-    }
-    function nowikiTagBreakerRegex(tagName) {
-        return new RegExp(`(</${tagName}>)\n*|${entityRegexBase}`, "gm");
-    }
+    const breakerRegexWithPrefix = (prefix) => new RegExp(`(${prefix})\n*|${breakerRegexBase}`, "gm");
+    const nowikiTagBreakerRegex = (tagName) => new RegExp(`(</${tagName}>)\n*|${entityRegexBase}`, "gm");
     const defaultBreakerRegex = new RegExp(breakerRegexBase, "gm");
     const wikilinkBreakerRegex = breakerRegexWithPrefix("]][a-zA-Z]*");
     const namedExternalLinkBreakerRegex = breakerRegexWithPrefix("]");
@@ -50,24 +46,24 @@
     const tagBreakerRegexCache = {};
     const nowikiTagBreakerRegexCache = {};
 
-    function syncScrollX() {
+    const syncScrollX = () => {
         wpTextbox0.scrollLeft = wpTextbox1.scrollLeft;
-    }
+    };
 
-    function syncScrollY() {
+    const syncScrollY = () => {
         wpTextbox0.scrollTop = wpTextbox1.scrollTop;
-    }
+    };
 
-    function highlightSyntax() {
+    const highlightSyntax = () => {
         lastText = wpTextbox1.value;
-        const text = `${lastText.replace(/['\\]/g, "\\$&")}\n`;
+        const text = `${lastText.replace(/['\\]/g, "\\BODY")}\n`;
         let i = 0;
 
         let css = "";
         let spanNumber = 0;
         let lastColor;
 
-        function writeText(text, color) {
+        const writeText = (text, color) => {
             if (color !== lastColor) {
                 css += "'}";
                 if (color) {
@@ -78,9 +74,9 @@
                 spanNumber++;
             }
             css += text;
-        }
+        };
 
-        function highlightBlock(color, breakerRegex, _assumedBold, _assumedItalic) {
+        const highlightBlock = (color, breakerRegex, _assumedBold, _assumedItalic) => {
             let match;
             let assumedBold = _assumedBold;
             let assumedItalic = _assumedItalic;
@@ -230,7 +226,7 @@
                 }
                 breakerRegex.lastIndex = i;
             }
-        }
+        };
 
         const startTime = Date.now();
         highlightBlock("", defaultBreakerRegex);
@@ -278,21 +274,21 @@
         }
 
         syntaxStyleTextNode.nodeValue = `${css.substring(2).replace(/\n/g, "\\A ")}'}#wpTextbox0>span::after{visibility:hidden}`;
-    }
+    };
 
-    function syncTextDirection() {
+    const syncTextDirection = () => {
         wpTextbox0.dir = wpTextbox1.dir;
-    }
+    };
 
-    function syncParent() {
+    const syncParent = () => {
         if (wpTextbox1.previousSibling !== wpTextbox0) {
             wpTextbox1.parentNode.insertBefore(wpTextbox0, wpTextbox1);
             parentObserver.disconnect();
             parentObserver.observe(wpTextbox1.parentNode, { childList: true });
         }
-    }
+    };
 
-    function highlightSyntaxIfNeeded() {
+    const highlightSyntaxIfNeeded = () => {
         if (wpTextbox1.value !== lastText) {
             highlightSyntax();
         }
@@ -307,9 +303,9 @@
             wpTextbox0.style.height = height;
             wpTextbox1.style.marginTop = `-${height}`;
         }
-    }
+    };
 
-    function setup() {
+    const setup = () => {
         wpTextbox1 = document.getElementById("wpTextbox1");
         if (!wpTextbox1) {
             return;
@@ -317,7 +313,7 @@
         if (document.getElementById("wpTextbox0")) {
             return;
         }
-        function configureColor(parameterName, hardcodedFallback, defaultOk) {
+        const configureColor = (parameterName, hardcodedFallback, defaultOk) => {
             if (typeof syntaxHighlighterConfig[parameterName] === "undefined") {
                 syntaxHighlighterConfig[parameterName] = syntaxHighlighterSiteConfig[parameterName];
             }
@@ -333,7 +329,7 @@
             } else {
                 syntaxHighlighterConfig[parameterName] = hardcodedFallback;
             }
-        }
+        };
 
         configureColor("backgroundColor", "#FFF", false);
         configureColor("foregroundColor", "#000", false);
@@ -452,7 +448,7 @@
         parentObserver.observe(wpTextbox1.parentNode, { childList: true });
         highlightSyntaxIfNeededIntervalID = setInterval(highlightSyntaxIfNeeded, 500);
         highlightSyntax();
-    }
+    };
 
     const wgAction = mw.config.get("wgAction");
     const layoutEngine = $.client.profile().layout;

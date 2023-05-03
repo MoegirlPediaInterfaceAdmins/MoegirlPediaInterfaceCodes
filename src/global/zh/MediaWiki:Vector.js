@@ -8,7 +8,7 @@
 (async () => {
     /* 函数定义体 */
     /* 滚动公告 */
-    function startScroll() {
+    const startScroll = () => {
         $("body > #content > #siteNotice .scrollDiv:not(.scrolling), #moe-sitenotice-container > .moe-sitenotice .scrollDiv:not(.scrolling)").addClass("scrolling").each((_, ele) => {
             const self = $(ele);
             self.children().each((_, child) => {
@@ -26,8 +26,8 @@
             children.slice(1).css("top", `${Math.ceil(firstChildHeight)}px`);
             firstChild.css("top", "0");
         });
-    }
-    function autoScroll() {
+    };
+    const autoScroll = () => {
         setInterval(() => {
             if (!document.hidden) {
                 $("body > #content > #siteNotice .scrollDiv.scrolling, #moe-sitenotice-container > .moe-sitenotice .scrollDiv.scrolling").each((_, ele) => {
@@ -61,7 +61,7 @@
                 });
             }
         }, 5000);
-    }
+    };
     /* 函数执行体 */
     await $.ready;
     // 滚动公告

@@ -265,9 +265,7 @@ $(() => {
             $("#wiki-blame-close").css({"float": "right"});
         }
 
-        getBodyHeight() {
-            return 500;
-        }
+        getBodyHeight = () => 500;
     }
 
     //helper functions
@@ -359,12 +357,12 @@ $(() => {
         }
     };
 
-    const getSelected = function () {
+    const getSelected = () => {
         let text = "";
         text = window.getSelection().toString();
         return text;
     };
-    const createDialog = function () {
+    const createDialog = () => {
         const myDialog = new WikiBlameDialog({
             id: "wiki-blame-dialog-popup",
             size: "medium",
@@ -378,7 +376,7 @@ $(() => {
         windowManager.openWindow(myDialog);
     };
 
-    const createDiffDialog = function (revisions_list) {
+    const createDiffDialog = (revisions_list) => {
         const windowManager = window.wikiBlameWindowManager;
         if (windowManager.currentWindow &&
             window.wikiBlameWindowManager.currentWindow.getElementId() === "wiki-blame-dialog-popup") { windowManager.currentWindow.close(); }

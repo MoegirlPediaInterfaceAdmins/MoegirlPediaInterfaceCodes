@@ -45,7 +45,7 @@
                 get list() {
                     return externalTransformations.map((transformation) => Object.assign(Object.create(null), transformation));
                 },
-                add({ type, match, decode, encode }) {
+                add: ({ type, match, decode, encode }) => {
                     if (type.includes("|")) {
                         console.error(`LocalObjectStorage can't accept type name "${type}" including "|", skip...`);
                         return false;

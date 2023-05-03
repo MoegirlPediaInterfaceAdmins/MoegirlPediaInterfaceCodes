@@ -68,7 +68,7 @@ $(() => {
                 // Fallback to parent handler
                 return super.getActionProcess(action);
             }
-            async flagTemplate() {
+            flagTemplate = async () => {
                 const api = new mw.Api();
                 const d = await api.postWithToken("csrf", {
                     action: "edit",
@@ -84,7 +84,7 @@ $(() => {
                 if (d.error) {
                     throw d.error.code;
                 }
-            }
+            };
         }
 
         const windowManager = new OO.ui.WindowManager();

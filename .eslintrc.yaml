@@ -32,7 +32,16 @@ globals:
   Cron: readonly
   ace: readonly
 
+plugins:
+  - prefer-arrow-functions
+
 rules:
+  prefer-arrow-functions/prefer-arrow-functions:
+    - error
+    - classPropertiesAllowed: true
+      disallowPrototype: true
+      returnStyle: implicit
+      singleReturnOnly: false
   logical-assignment-operators: error
   no-new-func: error
   no-new-object: error

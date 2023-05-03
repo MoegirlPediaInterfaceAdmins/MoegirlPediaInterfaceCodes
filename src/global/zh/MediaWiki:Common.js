@@ -26,10 +26,10 @@
         return `\n${this.getAllResponseHeaders().toLowerCase()}`.includes(`\n${name.toLowerCase()}: `) ? getResponseHeader.bind(this)(name) : (console.info(`Refused to get unsafe header "${name}"\n`, this, "\n", new Error().stack), null);
     };
     // Extension:MultimediaViewer的半透明化修改，用于保持背景文字处于原位，本应修改插件达成的，暂时先用JavaScript应急处理下
-    function multimediaViewer() {
+    const multimediaViewer = () => {
         const _scrollTo = window.scrollTo;
         let flag = location.hash.startsWith("#/media/");
-        window.scrollTo = function scrollTo(x_option, y) {
+        window.scrollTo = (x_option, y) => {
             if (flag) {
                 console.info("Prevent multimediaViewer called");
             } else if (y === undefined) {
@@ -77,9 +77,9 @@
                 mw.config.set("wgMultimediaViewerInjected", "off");
             }
         }, 137);
-    }
+    };
     // 跨站重定向页顶链接
-    function crossDomain_link(url) {
+    const crossDomain_link = (url) => {
         const link = url.query.title;
         const domain = url.host;
         const crossDomain = $("<div/>");
@@ -88,8 +88,8 @@
         anchor.attr("href", `${url}`).text(`${link} 【来自 ${domain} 的跨站重定向】`);
         crossDomain.append(anchor);
         $("#contentSub").prepend(crossDomain);
-    }
-    function crossDomain_link_moeskin(url) {
+    };
+    const crossDomain_link_moeskin = (url) => {
         const link = url.query.title;
         const domain = url.host;
         const crossDomain = $("<div/>");
@@ -98,9 +98,9 @@
         anchor.attr("href", `${url}`).text(`${link} 【来自 ${domain} 的跨站重定向】`);
         crossDomain.append(anchor);
         $("#tagline").after(crossDomain);
-    }
+    };
     // 复制修改内容
-    async function copyRights() {
+    const copyRights = async () => {
         await mw.loader.using("mediawiki.util");
         const div =
             $("<div>", {
@@ -133,9 +133,9 @@
             }, 0);
             // }
         });
-    }
+    };
     // 页顶活动通知
-    async function noticeActivityClose() {
+    const noticeActivityClose = async () => {
         const noticeActivity = $("body").children("#content, #app").find("#notice-activity");
         const isMoeskin = mw.config.get("skin") === "moeskin";
         const styles = mw.config.get("skin") === "moeskin" ? {
@@ -235,17 +235,17 @@
                 link.trigger("click");
             }
         }
-    }
+    };
     // 页顶通知
-    function parseLocalStorageItemAsArray(key) {
+    const parseLocalStorageItemAsArray = (key) => {
         try {
             const result = JSON.parse(localStorage.getItem(key));
             return Array.isArray(result) ? result : [];
         } catch {
             return [];
         }
-    }
-    async function topNoticeScroll() {
+    };
+    const topNoticeScroll = async () => {
         const siteNotice = $("body.skin-vector > #content > #siteNotice, body.skin-moeskin > #app > #moe-full-container > #moe-main-container > main > #moe-global-sidenav #moe-sidenav-sitenotice");
         const noticeType = {
             pinnedAnnouncement: "置顶公告",
@@ -312,9 +312,9 @@
                 title: "有新的站务通知（点击通知空白处关闭）",
             });
         }
-    }
+    };
     // 跨站重定向页顶链接
-    async function crossDomainDetect() {
+    const crossDomainDetect = async () => {
         await mw.loader.using(["mediawiki.Uri"]);
         const rdfrom = new mw.Uri().query.rdfrom;
         if (rdfrom) {
@@ -330,24 +330,24 @@
                 }
             }
         }
-    }
+    };
     // 修复用户页左侧栏头像链接
-    async function leftPanelAvatarLink() {
+    const leftPanelAvatarLink = async () => {
         await mw.loader.using(["mediawiki.Uri"]);
         $("#t-viewavatar > a").each((_, ele) => {
             const uri = new mw.Uri(ele.href);
             uri.host = uri.host.replace("zh.moegirl", "commons.moegirl");
             ele.href = uri;
         });
-    }
+    };
     // 修正hash跳转错误
-    async function hashJump() {
+    const hashJump = async () => {
         await mw.loader.using(["jquery.makeCollapsible"]);
         $(".mw-collapsible").makeCollapsible();
         const hash = location.hash;
         location.hash = "";
         location.hash = hash;
-    }
+    };
     /* 函数执行体 */
     await $.ready;
     // Extension:MultimediaViewer的半透明化修改
@@ -362,7 +362,7 @@
     }
     // 修复代码编辑器$.ucFirst引用错误
     $.extend({
-        ucFirst: function (_s) {
+        ucFirst: (_s) => {
             const s = `${_s}`;
             return s.charAt(0).toUpperCase() + s.substring(1);
         },

@@ -57,7 +57,7 @@ $(() => {
         cronTime: "* * * * * *",
         start: true,
         runOnInit: true,
-        onTick: function () {
+        onTick: () => {
             textNode.text(moment().format("A h[:]mm[:]ss"));
         },
     });

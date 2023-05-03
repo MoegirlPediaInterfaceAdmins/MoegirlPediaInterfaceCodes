@@ -44,7 +44,7 @@ $(() => {
     ];
     const apiPrefix = `${mw.config.get("wgServer")}${mw.config.get("wgScriptPath")}/api.php`;
     const newPageMax = 50;
-    const writeCountNum = function (pages, plus) {
+    const writeCountNum = (pages, plus) => {
         let strCount = "";
         let page;
         if (pages.length !== 0) {
@@ -70,9 +70,9 @@ $(() => {
     };
     let showAllUnbind = [];
     let showAll = false;
-    const prepareList = function (pages, countMax) {
+    const prepareList = (pages, countMax) => {
         const $list = $("#patrollTooltipList").empty();
-        const addItem = function (istart, iend) {
+        const addItem = (istart, iend) => {
             for (let idx = istart; idx < iend; ++idx) {
                 const page = pages[idx];
                 const link = `${encodeURIComponent(page.title)}&redirect=no&rcid=${page.rcid}`;
@@ -150,7 +150,7 @@ $(() => {
                     delay: -1, //延迟关闭，单位毫秒，值为0时表示立刻关闭
                     speed: 600, //关闭时的效果，淡出速度
                     close: true, //是否显示关闭按钮
-                    callback: function () {
+                    callback: () => {
                         $.noop(); //点击关闭后的事件
                     },
                 };
@@ -197,18 +197,18 @@ $(() => {
                 cttBody.show();
                 const ctt = {
                     body: cttBody,
-                    content: function () {
+                    content: () => {
                         self.show();
                         return self;
                     },
-                    position: function () {
+                    position: () => {
                         const p = $(param.selector).position();
                         cttBody.css({
                             top: p.top + param.top,
                             left: p.left + param.left,
                         });
                     },
-                    hide: function () {
+                    hide: () => {
                         cttClose.hide();
                         cttBody.off();
                         cttContent.slideUp(param.speed, () => {
@@ -218,15 +218,15 @@ $(() => {
                         param.callback();
                     },
                     timer: null,
-                    show: function () {
+                    show: () => {
                         if (cttContent.html() === "") {
                             cttContent.append(ctt.content()).css("height", `${cttContent[0].scrollHeight}px`).hide().slideDown(param.speed, () => {
                                 cttContent.css("height", "");
                                 cttBody.on({
-                                    mouseover: function () {
+                                    mouseover: () => {
                                         cttClose.show();
                                     },
-                                    mouseout: function () {
+                                    mouseout: () => {
                                         cttClose.hide();
                                     },
                                 });
@@ -248,7 +248,7 @@ $(() => {
         })(jQuery);
     };
     let ttListShow = false;
-    const generateList = function (pages) {
+    const generateList = (pages) => {
         if (ttListShow) {
             prepareList(pages, 10);
         } else {
@@ -271,14 +271,14 @@ $(() => {
                         const ctt = $("#patrollTooltip").cvtooltip({
                             left: $(window).width() - ($("#pt-patroll").offset().left + $("#pt-patroll").outerWidth()),
                             top: $("#pt-patroll").offset().top + $("#pt-patroll").height() + 10,
-                            callback: function () {
+                            callback: () => {
                                 ttListShow = false;
                                 showAll = false;
                                 $ptPatroll.off("mouseover.autohide mouseout");
                             },
                         });
                         let tipCloseTimer;
-                        const clearHideTimer = function () {
+                        const clearHideTimer = () => {
                             if (tipCloseTimer) {
                                 clearTimeout(tipCloseTimer);
                                 tipCloseTimer = null;
@@ -286,7 +286,7 @@ $(() => {
                         };
                         ctt.body.on("mouseover.autohide", clearHideTimer);
                         $ptPatroll.on("mouseover.autohide", clearHideTimer);
-                        const setHideTimer = function () {
+                        const setHideTimer = () => {
                             if (!tipCloseTimer) {
                                 tipCloseTimer = setTimeout(ctt.hide, 1000);
                             }
@@ -352,9 +352,9 @@ $(() => {
         }
     };
     // 加入标记巡查按钮
-    const addPatrollLink = (function () {
+    const addPatrollLink = (() => {
         let checked = false;
-        const addlink = function (page) {
+        const addlink = (page) => {
             let $patrollinks = $("<a></a>", {
                 href: `index.php?title=${encodeURIComponent(page.title)}&rcid=${encodeURIComponent(page.rcid)}`,
                 text: "标记此页面为已巡查",
@@ -363,7 +363,7 @@ $(() => {
                 "class": "patrollink",
             }).append("[").append($patrollinks).append("]");
             $("div.printfooter").before($divPatrolllink);
-            const markAsPatrol = function (e) {
+            const markAsPatrol = (e) => {
                 e.preventDefault();
                 const data = {
                     rcid: page.rcid,
@@ -388,7 +388,7 @@ $(() => {
             };
             $patrollinks.on("click", markAsPatrol);
         };
-        return function (pages) {
+        return (pages) => {
             if (!checked && $("div.patrollink").length === 0) {
                 const pageName = mw.config.get("wgPageName");
                 for (let idx = 0; idx < pages.length; ++idx) {

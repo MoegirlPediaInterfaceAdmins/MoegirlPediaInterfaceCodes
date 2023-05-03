@@ -1,3 +1,4 @@
+/* eslint-disable prefer-arrow-functions/prefer-arrow-functions */
 /**
  * @source https://commons.wikimedia.org/wiki/_?oldid=578342698
  * 更新后请同步更新上面链接到最新版本
@@ -25,7 +26,7 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
      * @type {{ wgServer: string, [keys: string]: any }}
      */
     const conf = new Proxy({}, {
-        get: function (_, name) {
+        get: (_, name) => {
             if (name === "wgServer") {
                 return `https://${location.hostname}`;
             }
@@ -84,7 +85,7 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
         },
         addmulti: "<span>+<sup>+</sup></span>",
         multi_tooltip: "Modify several categories",
-        disable: function () {
+        disable: () => {
             const ns = mw.config.get("wgNamespaceNumber");
             const nsIds = mw.config.get("wgNamespaceIds");
             return ns < 0 || ns === nsIds.template || ns === nsIds.module || ns === nsIds.mediawiki || ns === nsIds.file && !mw.config.get("wgArticleId") || ns === nsIds.creator || ns === nsIds.timedtext || ns === nsIds.institution || mw.config.get("wgPageContentModel") !== "wikitext";
@@ -115,7 +116,7 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
         single_minor: true,
         dont_add_to_watchlist: false,
         shortcuts: null,
-        addShortcuts: function (map) {
+        addShortcuts: (map) => {
             if (!map) {
                 return;
             }

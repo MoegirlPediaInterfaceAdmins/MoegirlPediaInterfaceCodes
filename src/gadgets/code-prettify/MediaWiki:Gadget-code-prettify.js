@@ -112,7 +112,7 @@ $(() => {
     const PR_NOCODE = "nocode";
     const REGEXP_PRECEDER_PATTERN = "(?:^^\\.?|[+-]|[!=]=?=?|\\#|%=?|&&?=?|\\(|\\*=?|[+\\-]=|->|\\/=?|::?|<<?=?|>>?>?=?|,|;|\\?|@|\\[|~|{|\\^\\^?=?|\\|\\|?=?|break|case|continue|delete|do|else|finally|instanceof|return|throw|try|typeof)\\s*";
 
-    function combinePrefixPatterns(regexs) {
+    const combinePrefixPatterns = (regexs) => {
         let capturedGroupIndex = 0;
         let needToFoldCase = false;
         let ignoreCase = false;
@@ -135,7 +135,7 @@ $(() => {
             r: 13,
         };
 
-        function decodeEscape(charsetPart) {
+        const decodeEscape = (charsetPart) => {
             let cc0 = charsetPart.charCodeAt(0);
             if (cc0 !== 92) {
                 return cc0;
@@ -151,17 +151,17 @@ $(() => {
             }
             return charsetPart.charCodeAt(1);
 
-        }
+        };
 
-        function encodeEscape(charCode) {
+        const encodeEscape = (charCode) => {
             if (charCode < 32) {
                 return (charCode < 16 ? "\\x0" : "\\x") + charCode.toString(16);
             }
             const ch = String.fromCharCode(charCode);
             return ch === "\\" || ch === "-" || ch === "]" || ch === "^" ? `\\${ch}` : ch;
-        }
+        };
 
-        function caseFoldCharset(charSet) {
+        const caseFoldCharset = (charSet) => {
             const charsetParts = charSet.substring(1, charSet.length - 1).match(new RegExp("\\\\u[0-9A-Fa-f]{4}" + "|\\\\x[0-9A-Fa-f]{2}" + "|\\\\[0-3][0-7]{0,2}" + "|\\\\[0-7]{1,2}" + "|\\\\[\\s\\S]" + "|-" + "|[^-\\\\]", "g"));
             const ranges = [];
             const inverse = charsetParts[0] === "^";
@@ -216,9 +216,9 @@ $(() => {
             }
             out.push("]");
             return out.join("");
-        }
+        };
 
-        function allowAnywhereFoldCaseAndRenumberGroups(regex) {
+        const allowAnywhereFoldCaseAndRenumberGroups = (regex) => {
             const parts = regex.source.match(new RegExp("(?:" + "\\[(?:[^\\x5C\\x5D]|\\\\[\\s\\S])*\\]" + "|\\\\u[A-Fa-f0-9]{4}" + "|\\\\x[A-Fa-f0-9]{2}" + "|\\\\[0-9]+" + "|\\\\[^ux0-9]" + "|\\(\\?[:!=]" + "|[\\(\\)\\^]" + "|[^\\x5B\\x5C\\(\\)\\^]+" + ")", "g"));
             const n = parts.length;
             const capturedGroups = [];
@@ -276,7 +276,7 @@ $(() => {
                 }
             }
             return parts.join("");
-        }
+        };
         const rewritten = [];
         for (let i = 0, n = regexs.length; i < n; ++i) {
             const regex = regexs[i];
@@ -286,16 +286,16 @@ $(() => {
             rewritten.push(`(?:${allowAnywhereFoldCaseAndRenumberGroups(regex)})`);
         }
         return new RegExp(rewritten.join("|"), ignoreCase ? "gi" : "g");
-    }
+    };
 
-    function extractSourceSpans(node, isPreformatted) {
+    const extractSourceSpans = (node, isPreformatted) => {
         const nocode = /(?:^|\s)nocode(?:\s|$)/;
         const chunks = [];
         let length = 0;
         const spans = [];
         let k = 0;
 
-        function walk(node) {
+        const walk = (node) => {
             const type = node.nodeType;
             if (type === 1) {
                 if (nocode.test(node.className)) {
@@ -324,15 +324,15 @@ $(() => {
                     spans[k++ << 1 | 1] = node;
                 }
             }
-        }
+        };
         walk(node);
         return {
             sourceCode: chunks.join("").replace(/\n$/, ""),
             spans: spans,
         };
-    }
+    };
 
-    function appendDecorations(sourceNode, basePos, sourceCode, langHandler, out) {
+    const appendDecorations = (sourceNode, basePos, sourceCode, langHandler, out) => {
         if (!sourceCode) {
             return;
         }
@@ -348,22 +348,22 @@ $(() => {
         };
         langHandler(job);
         out.push(...job.decorations);
-    }
+    };
     const notWs = /\S/;
 
-    function childContentWrapper(element) {
+    const childContentWrapper = (element) => {
         let wrapper = undefined;
         for (let c = element.firstChild; c; c = c.nextSibling) {
             const type = c.nodeType;
             wrapper = type === 1 ? wrapper ? element : c : type === 3 ? notWs.test(c.nodeValue) ? element : wrapper : wrapper;
         }
         return wrapper === element ? undefined : wrapper;
-    }
+    };
 
-    function createSimpleLexer(shortcutStylePatterns, fallthroughStylePatterns) {
+    const createSimpleLexer = (shortcutStylePatterns, fallthroughStylePatterns) => {
         const shortcuts = {};
         let tokenizer;
-        (function () {
+        (() => {
             const allPatterns = shortcutStylePatterns.concat(fallthroughStylePatterns);
             const allRegexs = [];
             const regexKeys = {};
@@ -386,7 +386,7 @@ $(() => {
             tokenizer = combinePrefixPatterns(allRegexs);
         })();
         const nPatterns = fallthroughStylePatterns.length;
-        const decorate = function (job) {
+        const decorate = (job) => {
             const sourceCode = job.sourceCode,
                 basePos = job.basePos;
             const sourceNode = job.sourceNode;
@@ -449,9 +449,9 @@ $(() => {
             job.decorations = decorations;
         };
         return decorate;
-    }
+    };
 
-    function sourceDecorator(options) {
+    const sourceDecorator = (options) => {
         const shortcutStylePatterns = [],
             fallthroughStylePatterns = [];
         if (options.tripleQuotedStrings) {
@@ -503,7 +503,7 @@ $(() => {
         }
         fallthroughStylePatterns.push([PR_LITERAL, /^@[a-z_$][a-z_$@0-9]*/i, null], [PR_TYPE, /^(?:[@_]?[A-Z]+[a-z][A-Za-z_$@0-9]*|\w+_t\b)/, null], [PR_PLAIN, /^[a-z_$][a-z_$@0-9]*/i, null], [PR_LITERAL, new RegExp("^(?:" + "0x[a-f0-9]+" + "|(?:\\d(?:_\\d+)*\\d*(?:\\.\\d*)?|\\.\\d\\+)" + "(?:e[+\\-]?\\d+)?" + ")" + "[a-z]*", "i"), null, "0123456789"], [PR_PLAIN, /^\\[\s\S]?/, null], [PR_PUNCTUATION, new RegExp(punctuation), null]);
         return createSimpleLexer(shortcutStylePatterns, fallthroughStylePatterns);
-    }
+    };
     const decorateSource = sourceDecorator({
         keywords: ALL_KEYWORDS,
         hashComments: true,
@@ -512,7 +512,7 @@ $(() => {
         regexLiterals: true,
     });
 
-    function numberLines(node, startLineNum, isPreformatted) {
+    const numberLines = (node, startLineNum, isPreformatted) => {
         const nocode = /(?:^|\s)nocode(?:\s|$)/;
         const lineBreak = /\r\n?|\n/;
         const document = node.ownerDocument;
@@ -522,7 +522,7 @@ $(() => {
         }
         const listItems = [li];
 
-        function walk(node) {
+        const walk = (node) => {
             const type = node.nodeType;
             if (type === 1 && !nocode.test(node.className)) {
                 if ("br" === node.nodeName.toLowerCase()) {
@@ -552,9 +552,9 @@ $(() => {
                     }
                 }
             }
-        }
+        };
 
-        function breakAfter(_lineEndNode) {
+        const breakAfter = (_lineEndNode) => {
             let lineEndNode = _lineEndNode;
             while (!lineEndNode.nextSibling) {
                 lineEndNode = lineEndNode.parentNode;
@@ -563,7 +563,7 @@ $(() => {
                 }
             }
 
-            function breakLeftOf(limit, copy) {
+            const breakLeftOf = (limit, copy) => {
                 const rightSide = copy ? limit.cloneNode(false) : limit;
                 const parent = limit.parentNode;
                 if (parent) {
@@ -576,14 +576,14 @@ $(() => {
                     }
                 }
                 return rightSide;
-            }
+            };
             let copiedListItem = breakLeftOf(lineEndNode.nextSibling, 0);
             for (let parent;
                 (parent = copiedListItem.parentNode) && parent.nodeType === 1;) {
                 copiedListItem = parent;
             }
             listItems.push(copiedListItem);
-        }
+        };
         for (let i = 0; i < listItems.length; ++i) {
             walk(listItems[i]);
         }
@@ -603,9 +603,9 @@ $(() => {
             ol.appendChild(li);
         }
         node.appendChild(ol);
-    }
+    };
 
-    function recombineTagsAndDecorations(job) {
+    const recombineTagsAndDecorations = (job) => {
         let isIE8OrEarlier = /\bMSIE\s(\d+)/.exec(navigator.userAgent);
         isIE8OrEarlier &&= +isIE8OrEarlier[1] <= 8;
         const newlineRe = /\n/g;
@@ -683,10 +683,10 @@ $(() => {
                 sourceNode.style.display = oldDisplay;
             }
         }
-    }
+    };
     const langHandlerRegistry = {};
 
-    function registerLangHandler(handler, fileExtensions) {
+    const registerLangHandler = (handler, fileExtensions) => {
         for (let i = fileExtensions.length; --i >= 0;) {
             const ext = fileExtensions[i];
             if (!Object.prototype.hasOwnProperty.bind(langHandlerRegistry)(ext)) {
@@ -695,15 +695,15 @@ $(() => {
                 console.warn("cannot override language handler %s", ext);
             }
         }
-    }
+    };
 
-    function langHandlerForExtension(_extension, source) {
+    const langHandlerForExtension = (_extension, source) => {
         let extension = _extension;
         if (!(extension && Object.prototype.hasOwnProperty.bind(langHandlerRegistry)(extension))) {
             extension = /^\s*</.test(source) ? "default-markup" : "default-code";
         }
         return langHandlerRegistry[extension];
-    }
+    };
     registerLangHandler(decorateSource, ["default-code"]);
     registerLangHandler(createSimpleLexer([], [
         [PR_PLAIN, /^[^<?]+/],
@@ -795,7 +795,7 @@ $(() => {
         [PR_STRING, /^[\s\S]+/],
     ]), ["regex"]);
 
-    function applyDecorator(job) {
+    const applyDecorator = (job) => {
         const opt_langExtension = job.langExtension;
         try {
             const sourceAndSpans = extractSourceSpans(job.sourceNode, job.pre);
@@ -810,9 +810,9 @@ $(() => {
                 console.log(e && e.stack || e);
             }
         }
-    }
+    };
 
-    function $prettyPrintOne(sourceCodeHtml, opt_langExtension, opt_numberLines) {
+    const $prettyPrintOne = (sourceCodeHtml, opt_langExtension, opt_numberLines) => {
         const nl = opt_numberLines || false;
         const langExtension = opt_langExtension || null;
         let container = document.createElement("div");
@@ -833,15 +833,13 @@ $(() => {
         };
         applyDecorator(job);
         return container.innerHTML;
-    }
+    };
 
-    function $prettyPrint(opt_whenDone, opt_root) {
+    const $prettyPrint = (opt_whenDone, opt_root) => {
         const root = opt_root || document.body;
         const doc = root.ownerDocument || document;
 
-        function byTagName(tn) {
-            return root.getElementsByTagName(tn);
-        }
+        const byTagName = (tn) => root.getElementsByTagName(tn);
         let codeSegments = [byTagName("pre"), byTagName("code"), byTagName("xmp")];
         const elements = [];
         for (let i = 0; i < codeSegments.length; ++i) {
@@ -853,9 +851,7 @@ $(() => {
         let clock = Date;
         if (!clock.now) {
             clock = {
-                now: function () {
-                    return +new Date();
-                },
+                now: () => +new Date(),
             };
         }
         let k = 0;
@@ -866,7 +862,7 @@ $(() => {
         const codeRe = /^code$/i;
         const preCodeXmpRe = /^(?:pre|code|xmp)$/i;
 
-        function doWork() {
+        const doWork = () => {
             const endTime = window.PR_SHOULD_USE_CONTINUATION ? clock.now() + 250 : Infinity;
             for (; k < elements.length && clock.now() < endTime; k++) {
                 const cs = elements[k];
@@ -945,9 +941,9 @@ $(() => {
             } else if ("function" === typeof opt_whenDone) {
                 opt_whenDone();
             }
-        }
+        };
         doWork();
-    }
+    };
     window.PR = {
         createSimpleLexer: createSimpleLexer,
         registerLangHandler: registerLangHandler,

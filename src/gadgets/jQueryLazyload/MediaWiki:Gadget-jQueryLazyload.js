@@ -35,14 +35,14 @@
     * @param {Object}   objects  The objects to merge together
     * @returns {Object}          Merged values of defaults and options
     */
-    const extend = function (_deep, ..._args) {
+    const extend = (_deep, ..._args) => {
 
         const extended = {};
         const deep = typeof _deep === "boolean" ? _deep : false;
         const args = [...typeof _deep !== "boolean" ? [_deep] : [], ..._args];
 
         /* Merge the object into the extended object */
-        const merge = function (obj) {
+        const merge = (obj) => {
             for (const prop in obj) {
                 if (Object.prototype.hasOwnProperty.bind(obj)(prop)) {
                     /* If deep merge and property is an object, merge properties */
@@ -147,9 +147,7 @@
     }
 
 
-    window.lazyload = function (images, options) {
-        return new LazyLoad(images, options);
-    };
+    window.lazyload = (images, options) => new LazyLoad(images, options);
 
     if (window.jQuery) {
         jQuery.fn.lazyload = function (_options) {

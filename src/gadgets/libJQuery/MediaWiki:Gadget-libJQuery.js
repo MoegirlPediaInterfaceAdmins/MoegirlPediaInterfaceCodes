@@ -5,24 +5,18 @@
 "use strict";
 (function ($, mw) {
     $.extend({
-        createIcon(iconClass) {
-            return $("<span>", {
-                "class": `ui-icon ${iconClass} jquery-inline-icon`,
-                text: " ",
-            });
-        },
-        createNotifyArea(textNode, icon, state) {
-            return $("<div>", {
-                "class": "ui-widget",
-            }).append($("<div>", {
-                "class": `${state} ui-corner-all`,
-                style: "margin-top:20px; padding:0.7em;",
-            }).append($("<p>").append($.createIcon(icon).css("margin-right", ".3em"), textNode)));
-        },
+        createIcon: (iconClass) => $("<span>", {
+            "class": `ui-icon ${iconClass} jquery-inline-icon`,
+            text: " ",
+        }),
+        createNotifyArea: (textNode, icon, state) => $("<div>", {
+            "class": "ui-widget",
+        }).append($("<div>", {
+            "class": `${state} ui-corner-all`,
+            style: "margin-top:20px; padding:0.7em;",
+        }).append($("<p>").append($.createIcon(icon).css("margin-right", ".3em"), textNode))),
         /* @deprecated since 1.26 */
-        ucFirst(str) {
-            return str.charAt(0).toUpperCase() + str.slice(1);
-        },
+        ucFirst: (str) => str.charAt(0).toUpperCase() + str.slice(1),
     });
     mw.messages.set({
         "libjq-cancel-title": "关闭该对话框 [Esc]",
