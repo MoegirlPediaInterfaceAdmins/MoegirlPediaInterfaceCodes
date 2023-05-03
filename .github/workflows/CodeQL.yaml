@@ -6,11 +6,13 @@ on:
       - "**.js"
       - "!scripts/test/*.js"
       - .github/workflows/CodeQL.yaml
+      - .github/codeql-config.yml
   pull_request:
     paths:
       - "**.js"
       - "!scripts/test/*.js"
       - .github/workflows/CodeQL.yaml
+      - .github/codeql-config.yml
   workflow_dispatch:
   schedule:
     - cron: 15 0 * * *
