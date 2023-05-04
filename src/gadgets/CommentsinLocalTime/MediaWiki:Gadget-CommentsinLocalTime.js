@@ -16,7 +16,7 @@
 "use strict";
 $(() => {
     const monthsHave31Days = [0, 2, 4, 6, 7, 9, 11];
-    function format(then, type) {
+    const format = (then, type) => {
         switch (type) {
             case "fromToNow": {
                 const now = moment().startOf("minute");
@@ -63,29 +63,15 @@ $(() => {
             case "YearMonthDayDayofweek":
                 return then.format("YYYY[年]MM[月]DD[日] dddd");
         }
-    }
-    function display(then) {
-        return then.calendar(null, {
-            sameDay: function () {
-                return `[今天${format(then, "HourMinuteTimezone")}]`;
-            },
-            nextDay: function () {
-                return `[明天${format(then, "HourMinuteTimezone")}]`;
-            },
-            nextWeek: function () {
-                return `[${format(then, "YearMonthDayDayofweek")} (${format(then, "fromToNow")}) ${format(then, "HourMinuteTimezone")}]`;
-            },
-            lastDay: function () {
-                return `[昨天${format(then, "HourMinuteTimezone")}]`;
-            },
-            lastWeek: function () {
-                return `[${format(then, "YearMonthDayDayofweek")} (${format(then, "fromToNow")}) ${format(then, "HourMinuteTimezone")}]`;
-            },
-            sameElse: function () {
-                return `[${format(then, "YearMonthDayDayofweek")} (${format(then, "fromToNow")}) ${format(then, "HourMinuteTimezone")}]`;
-            },
-        });
-    }
+    };
+    const display = (then) => then.calendar(null, {
+        sameDay: () => `[今天${format(then, "HourMinuteTimezone")}]`,
+        nextDay: () => `[明天${format(then, "HourMinuteTimezone")}]`,
+        nextWeek: () => `[${format(then, "YearMonthDayDayofweek")} (${format(then, "fromToNow")}) ${format(then, "HourMinuteTimezone")}]`,
+        lastDay: () => `[昨天${format(then, "HourMinuteTimezone")}]`,
+        lastWeek: () => `[${format(then, "YearMonthDayDayofweek")} (${format(then, "fromToNow")}) ${format(then, "HourMinuteTimezone")}]`,
+        sameElse: () => `[${format(then, "YearMonthDayDayofweek")} (${format(then, "fromToNow")}) ${format(then, "HourMinuteTimezone")}]`,
+    });
     window.LocalComments = {
         enabled: true,
         formats: {
@@ -94,9 +80,7 @@ $(() => {
             other: display,
         },
         tooltipFormats: [
-            function (_, originalText) {
-                return `原始时间戳：${originalText}`;
-            },
+            (_, originalText) => `原始时间戳：${originalText}`,
             "[年月日星时：]LLLL",
             "[ISO 8601式：]YYYY-MM-DDTHH:mmZ",
         ],
@@ -124,10 +108,8 @@ $(() => {
     }
     const proseTags = window.LocalComments.proseTags.join("\n").toUpperCase().split("\n");
     const codeTags = [...window.LocalComments.codeTags, "time"].join(", ");
-    function formatMoment(then, fmt, originalText) {
-        return fmt instanceof Function ? fmt(then, originalText) : then.format(fmt);
-    }
-    function formatTimestamp() {
+    const formatMoment = (then, fmt, originalText) => fmt instanceof Function ? fmt(then, originalText) : then.format(fmt);
+    const formatTimestamp = () => {
         document.querySelectorAll(".LocalComments").forEach((elt) => {
             const iso = elt.getAttribute("datetime");
             const then = moment(iso, moment.ISO_8601);
@@ -148,17 +130,17 @@ $(() => {
             elt.innerText = text;
             elt.title = window.LocalComments.tooltipFormats.map((fmt) => formatMoment(then, fmt, elt.dataset.originalText)).join("\n");
         });
-    }
+    };
     /**
      * @param {number} _
      * @param {HTMLElement} root
      */
-    function parser(_, root) {
+    const parser = (_, root) => {
         if (!root || !Reflect.has(document, "createNodeIterator")) {
             return;
         }
         const iter = document.createNodeIterator(root, NodeFilter.SHOW_TEXT, {
-            acceptNode: function (node) {
+            acceptNode: (node) => {
                 const isInProse = proseTags.includes(node.parentElement.nodeName) || !$(node).closest(codeTags).length;
                 const isDateNode = isInProse && window.LocalComments.parseRegExp.test(node.data);
                 return isDateNode ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT;
@@ -201,7 +183,7 @@ $(() => {
             }
             prefixNode = iter.nextNode();
         }
-    }
+    };
     // await Promise.all([
     //     mw.loader.using(["moment"]),
     //     $.ready,

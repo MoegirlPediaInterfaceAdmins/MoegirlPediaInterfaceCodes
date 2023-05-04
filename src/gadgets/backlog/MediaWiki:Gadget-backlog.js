@@ -2,7 +2,7 @@
 "use strict";
 $(() => (async () => {
     const monthsHave31Days = [0, 2, 4, 6, 7, 9, 11];
-    const diffDate = function (_a, _b) {
+    const diffDate = (_a, _b) => {
         const a = moment(_a);
         const b = moment(_b);
         const isBefore = b.isBefore(a);

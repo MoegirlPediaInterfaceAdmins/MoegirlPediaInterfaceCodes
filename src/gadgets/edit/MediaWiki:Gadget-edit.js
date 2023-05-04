@@ -43,7 +43,7 @@ $(() => {
         });
     }
     // 编辑请求
-    const prefixNumber = function (num) {
+    const prefixNumber = (num) => {
         let result = `${num}`;
         if (result.length === 1) {
             result = `0${result}`;

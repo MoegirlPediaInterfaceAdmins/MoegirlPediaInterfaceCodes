@@ -3,7 +3,7 @@
 (async () => {
     /* 函数定义体 */
     // 一键复制用户名
-    function copyUsername() {
+    const copyUsername = () => {
         /**
          * @type { HTMLAnchorElement[] }
          */
@@ -46,7 +46,7 @@
                 }
             }
         }, 1000);
-    }
+    };
     await Promise.all([
         $.ready,
         mw.loader.using(["mediawiki.Uri"]),

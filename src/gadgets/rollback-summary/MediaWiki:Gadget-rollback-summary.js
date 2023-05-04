@@ -17,7 +17,7 @@ $(() => {
         notoken: wgULS('参数"token"必须被设置', '參數"token"必須被設置'),
         nouser: wgULS('参数"user"必须被设置', '參數"user"必須被設置'),
     };
-    const loop = function (_, ele) {
+    const loop = (_, ele) => {
         const self = $(ele);
         self.data("href", self.attr("href")).removeAttr("href") //取消拖动链接回退
             .attr("title", `${ele.title}（启用自定义摘要）`).css("cursor", "pointer").append("<sup>+</sup>");
@@ -28,7 +28,7 @@ $(() => {
         ele.onmouseout = $.noop;
         ele.onmousedown = $.noop;
     };
-    const exit = function () {
+    const exit = () => {
         const rbcount = $("#rbcount");
         let count = 3;
         setInterval(() => {

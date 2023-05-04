@@ -55,7 +55,7 @@ $(() => {
          * @param {number} steps 
          * @param {QSWindow} dialog
          */
-        constructor (steps, dialog) {
+        constructor(steps, dialog) {
             this.steps = steps;
             this.dialog = dialog;
             this.progressLogWidget.$element.append(this.$progressLogList);
@@ -113,9 +113,7 @@ $(() => {
             ],
         };
 
-        static bolbLabel(text) {
-            return $("<span>").addClass("AnnTools_bolb").text(text);
-        }
+        static bolbLabel = (text) => $("<span>").addClass("AnnTools_bolb").text(text);
 
         template = "Template:讨论版页顶/档案馆";
         date = new Date();
@@ -146,7 +144,7 @@ $(() => {
             align: "top",
         });
 
-        constructor (config) {
+        constructor(config) {
             super(config);
             this.hideProgress();
         }

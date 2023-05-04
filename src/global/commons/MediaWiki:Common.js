@@ -3,7 +3,7 @@
 (async () => {
     const allowedInNamespace = [-1, -2, 6, 14, 8, 10, 12, 828].includes(mw.config.get("wgNamespaceNumber"));
     const allowedGroups = ["sysop", "patroller", "staff"];
-    const allowedInGroup = mw.config.get("wgUserGroups").filter((group) => { return allowedGroups.includes(group); }).length > 0;
+    const allowedInGroup = mw.config.get("wgUserGroups").filter((group) => allowedGroups.includes(group)).length > 0;
 
     const body = document.body;
     const html = document.documentElement;
@@ -37,7 +37,7 @@
     });
     /* 函数定义体 */
     // 禁止编辑相关
-    async function editSet() {
+    const editSet = async () => {
         await mw.loader.using(["mediawiki.util"]);
         if (/\.(?:js|css)$/.test(mw.util.getParamValue("title") || location.pathname)) {
             return;
@@ -63,18 +63,18 @@
                 });
             });
         }
-    }
+    };
     // 页顶返回主站
-    function topGoback() {
+    const topGoback = () => {
         if (`${new mw.Uri(document.referrer)}`.startsWith(`${`${mw.config.get("wgServer").replace("commons.moegirl", "zh.moegirl")}${mw.config.get("wgScriptPath")}`}/`)) {
             $("#back").removeAttr("style").on("click", () => {
                 if (history.length > 1) { history.go(-1); }
                 else { location.href = document.referrer; }
             });
         }
-    }
+    };
     // 文件信息
-    function fileInfo() {
+    const fileInfo = () => {
         if ($(".fileInfo")[0]) {
             $(".mw-ui-button-group.mw-mmv-filepage-buttons:first").prepend($("<a/>", {
                 "class": "mw-mmv-view-expanded mw-ui-button mw-ui-icon",
@@ -83,7 +83,7 @@
                 window.open(mw.config.get("wgServer").replace("commons.moegirl", "zh.moegirl") + mw.config.get("wgScriptPath") + location.pathname + location.search, "_blank");
             }));
         }
-    }
+    };
     // 主站用户页链接
     function zhUserPage() {
         $("#mw-content-text a").each(function () {
@@ -101,7 +101,7 @@
         });
     }
     // 授权协议检测
-    function license() {
+    const license = () => {
         if (mw.config.get("wgCanonicalSpecialPageName") === "Upload") {
             const wpLicense = $("#wpLicense");
             wpLicense.val("Copyright").trigger("change");
@@ -121,9 +121,9 @@
                 location.replace(`${mw.config.get("wgServer") + mw.config.get("wgScriptPath")}/index.php?title=${wgPageName}&action=edit&authorized=1`);
             }
         }
-    }
+    };
     // 文件页面
-    async function filePage() {
+    const filePage = async () => {
         if (mw.config.get("wgNamespaceNumber") === 6 && (mw.config.get("wgArticleId") || -1) > 0 && mw.config.get("wgAction") === "view" && (mw.config.get("wgRevisionId") || -1) === (mw.config.get("wgCurRevisionId") || -2) && !document.querySelector(".license-info")) {
             if (document.querySelector(".common-box") && mw.config.get("wgUserId", -1) > 0) {
                 await mw.loader.using("mediawiki.api");
@@ -136,7 +136,7 @@
             const loginbutton = document.querySelector("#pt-login a");
             $("#mw-imagepage-content, #mw-imagepage-content .mw-parser-output").last().append(`<table class="common-box license-info" style="margin: 0.5em 10%; width:80%; background: #FBFBFB; border-left: 10px solid Salmon;"><tbody><tr><td style="padding: 2px 0 2px 0.5em"><img alt="Red copyright.svg" src="https://img.moegirl.org.cn/common/1/1d/Red_copyright.svg" width="50" height="50"></td><td style="padding: 0.25em 0.5em"><div><span style="font-weight: bold;">由于上传者未填写授权协议</span>，本作品默认仅以介绍为目的在此百科中以非盈利性方式合理使用。</div>${loginbutton || editbutton ? `<div>您知道该文件的作者是如何授权的吗？如果您知道的话欢迎<span style="font-weight: bold;">${editbutton ? `<a href="${editbutton.href}">编辑该页面</a>` : `<a href="${mw.config.get("wgServer")}${mw.config.get("wgScriptPath")}/index.php?title=Special:%E7%94%A8%E6%88%B7%E7%99%BB%E5%BD%95&returntoquery=action%3Dedit&returnto=${encodeURIComponent(mw.config.get("wgPageName"))}">登录后编辑该页面</a>`}</span>填写授权协议~~</div>` : ""}</td></tr></tbody></table>`);
         }
-    }
+    };
     //Summary预加载
     if (["edit", "submit"].includes(mw.config.get("wgAction"))) {
         const wpSummary = $('[name="wpSummary"]');

@@ -56,9 +56,7 @@ $(() => {
             c: 10,
         };
 
-        static bolbLabel(text) {
-            return $("<span>").addClass("AnnTools_bolb").text(text);
-        }
+        static bolbLabel = (text) => $("<span>").addClass("AnnTools_bolb").text(text);
 
         panelLayout = new OO.ui.PanelLayout({
             scrollable: false,

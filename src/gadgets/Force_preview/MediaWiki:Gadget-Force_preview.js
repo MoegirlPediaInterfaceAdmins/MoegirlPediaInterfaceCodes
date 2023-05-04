@@ -2,7 +2,7 @@
 $(() => {
     const wgPermittedGroups = ["autoconfirmed"]; //默认只允许自动确认用户绕过强制预览。
     //检测两个数组是否有重复元素
-    function intersects(arr1, arr2) {
+    const intersects = (arr1, arr2) => {
         if (!Array.isArray(arr1) || !Array.isArray(arr2)) { return false; }
         for (let i1 = 0, l1 = arr1.length; i1 < l1; i1++) {
             if (arr1.indexOf(arr1[i1]) === -1) { continue; } // 检测是否为空位
@@ -12,7 +12,7 @@ $(() => {
             }
         }
         return false;
-    }
+    };
     if (mw.config.get("wgAction") !== "edit" || intersects(mw.config.get("wgUserGroups"), wgPermittedGroups) && +mw.user.options.get("gadget-ForcePreviewUponUserRequest", 0) !== 1) {
         return;
     }
@@ -31,7 +31,7 @@ $(() => {
     }
     saveButton.attr("disabled", "disabled").val("预览一次后才可保存内容").css("font-weight", "normal").parent().removeClass("oo-ui-widget-enabled oo-ui-flaggedElement-primary oo-ui-flaggedElement-progressive").addClass("oo-ui-widget-disabled");
     const hook = mw.hook("wikipage.editform");
-    const hookFunc = function hookFunc() {
+    const hookFunc = () => {
         const previewArea = previewContainer.children(".mw-content-ltr, .mw-content-rtl");
         if (previewArea[0] && previewArea.is(":not(:empty)")) {
             if (!isPreviewedLive) {
@@ -53,7 +53,7 @@ $(() => {
     let captureSupported = false;
     try {
         const options = Reflect.defineProperty({}, "capture", {
-            get: function () {
+            get: () => {
                 captureSupported = true;
                 return undefined;
             },

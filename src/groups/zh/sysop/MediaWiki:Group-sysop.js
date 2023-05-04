@@ -8,14 +8,14 @@
     const sleep = (ms) => new Promise((res) => setTimeout(res, ms));
     /* 函数定义块 */
     //添加删除原因链接
-    function addLink($obj, act) {
+    const addLink = ($obj, act) => {
         const href = $obj.css("margin-left", "1em")[0].href,
             reasonPageName = href.slice(href.indexOf("title=") + 6, href.indexOf("&action"));
         $obj.before(`<a target="_blank" href="/${reasonPageName}">浏览${act}原因</a>`);
-    }
+    };
     //防滥用过滤器相关
     // eslint-disable-next-line no-unused-vars
-    function abuseLog() {
+    const abuseLog = () => {
         if ($(".mw-special-AbuseLog")[0]) {
             const rawInput = $('input[name="wpSearchFilter"]').val().split("|");
             const needToggle = new Set();
@@ -46,7 +46,7 @@
                     },
                 });
                 input.on({
-                    click: function () {
+                    click: () => {
                         if ($("body").hasClass("AbuseFilterHidden")) {
                             input.val("隐藏");
                             localStorage.getItem("AnnTools-abuseLog-hidden", "false");
@@ -65,9 +65,9 @@
                 }
             }
         }
-    }
+    };
     //防滥用过滤器列表
-    function AbuseList() {
+    const AbuseList = () => {
         const idList = $(".TablePager_col_af_id a"),
             // lvList = $(".TablePager_col_af_hidden"),
             idLength = idList.last().text().length;
@@ -85,9 +85,9 @@
                 $ele.prepend('<span style="speak:none;visibility:hidden;color:transparent;">已</span>');
             }
         }); */
-    }
+    };
     //评论栏管理链接
-    function flowthreadAdminLink() {
+    const flowthreadAdminLink = () => {
         const link = $("<div/>", {
             id: "flowthreadAdminLink",
             css: {
@@ -98,16 +98,16 @@
         }).append(`<a href="${mw.config.get("wgServer")}${mw.config.get("wgScriptPath")}/MediaWiki:Flowthread-blacklist" style="margin-right:8px;" target="_blank">关键词过滤名单</a>`)
             .append(`<a href="${mw.config.get("wgServer")}${mw.config.get("wgScriptPath")}/Special:%E7%AE%A1%E7%90%86FlowThread%E8%AF%84%E8%AE%BA" target="_blank">评论管理</a>`);
         $("#flowthread").append(link);
-    }
+    };
     //i18n语言链接
-    function i18nLink() {
+    const i18nLink = () => {
         $('#mw-content-text a.new[href$="/zh-cn"], #mw-content-text a.new[href$="/zh-tw"], #mw-content-text a.new[href$="/zh-hk"]').each((_, ele) => {
             $(ele).removeClass("new").attr({
                 title: ele.title.replace(/\/zh-[a-z]+|（页面不存在）/g, ""),
                 href: ele.href.replace(/\/zh-[a-z]+/g, ""),
             });
         });
-    }
+    };
     /* 函数执行块 */
     await $.ready;
     //删除、保护、版本删除原因浏览链接

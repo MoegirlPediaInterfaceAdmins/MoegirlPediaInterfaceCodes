@@ -32,7 +32,18 @@ globals:
   Cron: readonly
   ace: readonly
 
+plugins:
+  - "@annangela/prefer-reflect"
+  - prefer-arrow-functions
+
 rules:
+  "@annangela/prefer-reflect/prefer-reflect": error
+  prefer-arrow-functions/prefer-arrow-functions:
+    - error
+    - classPropertiesAllowed: true
+      disallowPrototype: true
+      returnStyle: implicit
+      singleReturnOnly: false
   logical-assignment-operators: error
   no-new-func: error
   no-new-object: error

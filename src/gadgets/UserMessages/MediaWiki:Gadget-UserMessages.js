@@ -47,12 +47,12 @@
                 $userInputField.trigger("keyup");
             });
         }
-        isValidIP(username) {
+        isValidIP = (username) => {
             if (mw.util.isIPv4Address(username)) {
                 return true;
             } //IP v.4
             return mw.util.isIPv6Address(username); //IP v.6
-        }
+        };
         setToIP(tmpUNE) {
             const o = this;
             o.userNameExists = -1;

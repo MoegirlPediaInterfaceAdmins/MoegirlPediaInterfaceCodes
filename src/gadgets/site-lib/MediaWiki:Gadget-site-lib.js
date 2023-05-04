@@ -1,5 +1,5 @@
 "use strict";
-window.wgUXS = function (wg, hans, hant, cn, tw, hk, sg, zh, mo, my) {
+window.wgUXS = (wg, hans, hant, cn, tw, hk, sg, zh, mo, my) => {
     const ret = {
         zh: zh || hans || hant || cn || tw || hk || sg || mo || my,
         "zh-hans": hans || cn || sg || my,
@@ -13,13 +13,9 @@ window.wgUXS = function (wg, hans, hant, cn, tw, hk, sg, zh, mo, my) {
     return ret[wg] || zh || hans || hant || cn || tw || hk || sg || mo || my; //保證每一語言有值
 };
 
-window.wgULS = function (hans, hant, cn, tw, hk, sg, zh, mo, my) {
-    return window.wgUXS(mw.config.get("wgUserLanguage"), hans, hant, cn, tw, hk, sg, zh, mo, my);
-};
+window.wgULS = (hans, hant, cn, tw, hk, sg, zh, mo, my) => window.wgUXS(mw.config.get("wgUserLanguage"), hans, hant, cn, tw, hk, sg, zh, mo, my);
 
-window.wgUVS = function (hans, hant, cn, tw, hk, sg, zh, mo, my) {
-    return window.wgUXS(mw.config.get("wgUserVariant"), hans, hant, cn, tw, hk, sg, zh, mo, my);
-};
+window.wgUVS = (hans, hant, cn, tw, hk, sg, zh, mo, my) => window.wgUXS(mw.config.get("wgUserVariant"), hans, hant, cn, tw, hk, sg, zh, mo, my);
 
 /**
  * Map addPortletLink to mw.util 

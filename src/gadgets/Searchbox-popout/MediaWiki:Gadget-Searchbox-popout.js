@@ -3,12 +3,12 @@
 $(() => {
     const $simpleSearch = $("#simpleSearch");
     $("input#searchInput").on({
-        focus() {
+        focus: () => {
             $simpleSearch.animate({
                 width: 339,
             }, 339);
         },
-        blur() {
+        blur: () => {
             $simpleSearch.animate({
                 width: 226,
             }, 339);

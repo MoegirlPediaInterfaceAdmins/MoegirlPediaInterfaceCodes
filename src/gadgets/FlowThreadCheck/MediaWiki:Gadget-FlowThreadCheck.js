@@ -9,15 +9,11 @@ $(() => {
         };
     checkBox.node.appendTo("body");
 
-    function checkBoxFadeIn() {
-        return checkBox.node.fadeIn(370).delay(370);
-    }
+    const checkBoxFadeIn = () => checkBox.node.fadeIn(370).delay(370);
 
-    function checkBoxFadeOut() {
-        return checkBox.node.fadeOut(370).delay(370);
-    }
+    const checkBoxFadeOut = () => checkBox.node.fadeOut(370).delay(370);
 
-    function checkText(text) {
+    const checkText = (text) => {
         const errorText = [];
         rules.forEach((v) => {
             if (v[1].test(text)) {
@@ -35,9 +31,9 @@ $(() => {
                 table.append($("<tr/>").append($("<td/>").addClass("first").text(table.find("tr").length))/* .append($('<td/>').text(n[0])) */.append($("<td/>").append(n[1].map((t) => `<code>${$("<span/>").text(t).html()}</code>`).join("<br/>"))));
             });
         }
-    }
+    };
 
-    function showCheckBox(_, ele) {
+    const showCheckBox = (_, ele) => {
         const text = $(ele).closest(".comment-replybox").find("textarea").val();
         if (/\s{1307,}/.test(text)) {
             return oouiDialog.alert("输入内容有误，请不要输入那么多空格", {
@@ -56,7 +52,7 @@ $(() => {
             $.ajax({
                 url: `${mw.config.get("wgServer")}${mw.config.get("wgScriptPath")}/MediaWiki:Flowthread-blacklist?action=raw`,
                 type: "GET",
-                success: function (data) {
+                success: (data) => {
                     rules.length = 0;
                     rules.push(...data.split("\n"));
                     rules.splice(0, 5);
@@ -71,16 +67,16 @@ $(() => {
                     });
                     checkText(text);
                 },
-                error: function () {
+                error: () => {
                     showCheckBox.bind(ele)();
                 },
             });
         } else {
             checkText(text);
         }
-    }
+    };
 
-    function addCheckButton() {
+    const addCheckButton = () => {
         $(".comment-submit").each((_, ele) => {
             const submitButton = $(ele);
             if (submitButton.data("addCheckButton") === true) {
@@ -94,7 +90,7 @@ $(() => {
         if (container.length > 0) {
             mw.hook("wikipage.content").fire(container);
         }
-    }
+    };
 
     checkBox.on("click", checkBoxFadeOut);
     addCheckButton();
