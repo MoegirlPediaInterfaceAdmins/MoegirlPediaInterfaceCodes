@@ -390,7 +390,7 @@ $(() => {
     };
 
     //处理mouseup事件
-    $("#bodyContent").on("mouseup", (e) => {
+    $(mw.config.get("skin") === "moeskin" ? "#mw-body" : "#bodyContent").on("mouseup", (e) => {
         let selection = getSelected();
         if (selection) {
             if ($(".wiki-blame-popup").length === 0) {
@@ -410,6 +410,7 @@ $(() => {
                     autoFlip: false,
                 });
                 popup.$element.addClass("wiki-blame-popup");
+                console.log(e.target);
                 $(e.target).append(popup.$element);
                 popup.toggle(true);
                 const margin_top = $("#bodyContent .oo-ui-popupWidget-body-padded").css("marginTop");
