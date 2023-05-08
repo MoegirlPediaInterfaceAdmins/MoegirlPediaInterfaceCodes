@@ -40,7 +40,7 @@
         "cron": "^2.3.0",
         "duplexify": "^4.1.2",
         "envify": "^4.1.0",
-        "eslint": "^8.39.0",
+        "eslint": "^8.40.0",
         "eslint-plugin-prefer-arrow-functions": "^3.1.4",
         "esmify": "^2.1.1",
         "hash-wasm": "^4.9.0",
