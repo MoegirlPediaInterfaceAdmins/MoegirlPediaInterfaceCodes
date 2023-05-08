@@ -1,11 +1,4 @@
 - type: npm
-  moduleName: wikiplus-highlight
-  gadget:
-    name: wikiplus-highlight
-    fileName: MediaWiki:Gadget-wikiplus-highlight.js
-  distFilePath: main.js
-
-- type: npm
   moduleName: luxon
   gadget:
     name: luxon
