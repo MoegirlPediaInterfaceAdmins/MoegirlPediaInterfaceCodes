@@ -169,7 +169,7 @@ a > img {
 
 /* @fix 临时修复[[T:Info]] img 元素的高度 */
 @media (width <=576px) {
-    #mw-content-text .infoBox .infoBoxIcon img:not([height]) {
+    #mw-content-text .infoBox .infoBoxIcon img {
         height: auto;
     }
 }
