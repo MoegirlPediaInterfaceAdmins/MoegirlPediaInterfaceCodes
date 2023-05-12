@@ -325,6 +325,12 @@ a.extiw:visited:hover span.heimu {
     color: #D1C4E9;
 }
 
+/* 胡话模板配合CSS */
+s.just-kidding-text {
+    color: #666;
+    text-decoration-color: #000;
+}
+
 /* info类模板 */
 .infoBox {
     margin: 0 auto;
