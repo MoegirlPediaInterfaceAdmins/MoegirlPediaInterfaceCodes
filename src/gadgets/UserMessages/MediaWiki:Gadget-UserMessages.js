@@ -835,7 +835,7 @@
         ["UserMessages/WikiMarkupLanguage", "WikiMarkupLanguage", "需要学习Wiki语法", umsg.umFlagUM, "关于Wiki语法"],
         ["UserMessages/CutAndPasteMoving", "C&Pmoving", "剪贴移动提醒（1=页面名）", umsg.umFlagP2, "请勿剪切移动页面"],
         ["UserMessages/EditUserPage", "EditUserPage", "编辑他人用户页面（1=页面名）", umsg.umFlagP2, "请勿编辑他人用户页面"],
-        ["UserMessages/HumorTemplate", "HumorTemplate", "违规字词转换（1=选填页面名，2=选填行为）", umsg.umFlagP2 + umsg.umFlagP3, "关于幽默模板的使用"],
+        ["UserMessages/HumorTemplate", "HumorTemplate", "滥用幽默模板（1=选填页面名，2=选填行为）", umsg.umFlagP2 + umsg.umFlagP3, "关于幽默模板的使用"],
         ["UserMessages/ConversionViolation", "ConversionViolation", "违规字词转换（1=选填页面名，2=选填行为）", umsg.umFlagP2 + umsg.umFlagP3, "关于您近期的编辑"],
         ["UserMessages/FileLicense", "IncorrrectFileLicense", "文件授权协议错误（1=文件名）", umsg.umFlagMQ, "关于您近期上传的文件"],
         ["UserMessages/FileLicense2", "IncorrrectFileLicense2", "截图文件授权协议错误（1=文件名）", umsg.umFlagMQ, "关于您近期上传的截图文件"],
