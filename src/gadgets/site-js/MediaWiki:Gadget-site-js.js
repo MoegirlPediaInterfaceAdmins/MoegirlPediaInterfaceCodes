@@ -588,6 +588,18 @@
             }
         }
     }
+    // 临时修复svg缩略图损坏
+    $('img[srcset*=".svg"]').each(function() {
+        $(this).attr("src", $(this).attr("src").replaceAll("thumb/", "").replaceAll(/\.svg\/.*/g, ".svg"));
+        $(this).attr("srcset", $(this).attr("srcset").replaceAll("thumb/", "").replaceAll(/\.svg\/[^ ]*/g, ".svg"));
+    });
+    $("img[data-lazy-src*='.svg']").each(function () {
+        $(this)
+            .attr("src", $(this).attr("data-lazy-src").replaceAll("thumb/", "").replaceAll(/\.svg\/.*/g, ".svg"))
+            .attr("srcset", $(this).attr("data-lazy-srcset")?.replaceAll("thumb/", "").replaceAll(/\.svg\/[^ ]*/g, ".svg"))
+            .removeAttr("data-lazy-state");
+        $(this).replaceWith($(this).clone());
+    });
     $window.triggerHandler("resize");
     $window.on("load", () => {
         $window.triggerHandler("resize");
