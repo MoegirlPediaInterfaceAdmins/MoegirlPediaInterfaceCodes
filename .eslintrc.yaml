@@ -31,6 +31,7 @@ globals:
   MOE_SKIN_GLOBAL_DATA_REF: readonly
   Cron: readonly
   ace: readonly
+  libCachedCode: readonly
 
 plugins:
   - "@annangela/prefer-reflect"
