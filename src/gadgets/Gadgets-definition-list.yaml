@@ -70,6 +70,7 @@
     - disable-nest-alert
     - uploader
     - temp-editcheck
+    - temp-svgFix
 
 - name: maintenance
   gadgets:
