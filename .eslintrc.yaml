@@ -32,6 +32,7 @@ globals:
   Cron: readonly
   ace: readonly
   libCachedCode: readonly
+  CodeMirror: readonly
 
 plugins:
   - "@annangela/prefer-reflect"

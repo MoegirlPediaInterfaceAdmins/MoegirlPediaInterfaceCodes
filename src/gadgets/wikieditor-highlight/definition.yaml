@@ -24,6 +24,7 @@ peers: []
 dependencies:
   - oojs-ui-core
   - ext.gadget.libPolyfill
+  - ext.gadget.libCachedCode
 
 _sites:
   - zh
@@ -31,4 +32,8 @@ _sites:
 _section: editing
 
 _files:
+  - MediaWiki:Gadget-wikieditor-highlight_codemirror-mediawiki.css
+  - MediaWiki:Gadget-wikieditor-highlight_codemirror-mediawiki.js
+  - MediaWiki:Gadget-wikieditor-highlight_CodeMirror.js
+  - MediaWiki:Gadget-wikieditor-highlight.css
   - MediaWiki:Gadget-wikieditor-highlight.js
