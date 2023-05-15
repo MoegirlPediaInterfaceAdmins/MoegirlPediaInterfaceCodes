@@ -1,0 +1,32 @@
+ResourceLoader: true
+
+hidden: false
+
+default: false
+
+supportsUrlLoad: false
+
+targets: []
+
+skins: []
+
+actions: []
+
+type: general
+
+package: false
+
+rights: []
+
+peers: []
+
+dependencies:
+  - mediawiki.Uri
+
+_sites:
+  - zh
+
+_section: editing
+
+_files:
+  - MediaWiki:Gadget-temp-svgFix.js
