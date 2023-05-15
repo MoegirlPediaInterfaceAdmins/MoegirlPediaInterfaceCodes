@@ -600,6 +600,8 @@
         img.removeAttribute("data-lazy-srcset");
         img.removeAttribute("data-lazy-state");
         img.classList.remove("lazyload");
+        img.after(img.cloneNode(deep));
+        img.remove();
     }
     $window.triggerHandler("resize");
     $window.on("load", () => {
