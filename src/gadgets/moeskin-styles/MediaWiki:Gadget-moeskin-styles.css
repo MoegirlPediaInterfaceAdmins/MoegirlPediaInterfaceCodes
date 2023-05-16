@@ -157,6 +157,7 @@ aside#moe-global-siderail #moe-custom-sidenav-block h2 {
 #mw-content-text .infoBox .infoBoxIcon img {
     max-width: unset;
 }
+
 @media (width <=576px) {
     #mw-content-text .infoBox .infoBoxIcon img {
         width: 2rem;
