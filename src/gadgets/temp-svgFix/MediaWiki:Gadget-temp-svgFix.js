@@ -4,7 +4,7 @@ $(() => {
     /**
      * @type { HTMLImageElement[] }
      */
-    const svgs = Array.from(document.querySelectorAll('img[src$=".svg.png"]'));
+    const svgs = Array.from(document.querySelectorAll('img[src$=".svg.png"], img[data-lazy-src$=".svg.png"]'));
     for (const img of svgs) {
         try {
             const src = img.src || img.dataset.lazySrc;
