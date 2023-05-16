@@ -54,7 +54,7 @@
             "https://npm.elemecdn.com/codemirror@5.65.1/addon/edit/matchbrackets.js",
             "https://npm.elemecdn.com/wikiplus-highlight@2.22.5/matchtags.js",
         ].map((url) => libCachedCode.injectCachedCode(url, "script")));
-        window.codemirrorMediawiki();
+        window.codemirrorMediawiki(CodeMirror);
         if (ns === 274) {
             await Promise.all([
                 "https://npm.elemecdn.com/codemirror@5.65.1/mode/javascript/javascript.js",
