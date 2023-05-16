@@ -102,7 +102,7 @@
                 canonicalurle: "canonicalurle",
                 格式化数字: "formatnum",
                 formatnum: "formatnum",
-                语法: "grammar",
+                "语法": "grammar",
                 grammar: "grammar",
                 性别: "gender",
                 gender: "gender",
