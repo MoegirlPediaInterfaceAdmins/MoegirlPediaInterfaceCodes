@@ -148,28 +148,18 @@ aside#moe-global-siderail #moe-custom-sidenav-block h2 {
     }
 }
 
-/* @fix 临时修复 img 元素的宽高 */
-img:not([height]) {
-    height: auto;
-}
-
-a > img {
-    max-width: 100%;
-}
-
-.noresize a > img,
-.infoBoxIcon a > img {
-    max-width: unset;
-}
-
 :is(.image-box, .image-clip, .fit-image) img.lazyload[data-lazy-state="pending"] {
     height: 100vh !important;
     width: 100vw !important;
 }
 
-/* @fix 临时修复[[T:Info]] img 元素的高度 */
+/* 调整 [[T:Info]] 图标大小 */
+#mw-content-text .infoBox .infoBoxIcon img {
+    max-width: unset;
+}
 @media (width <=576px) {
     #mw-content-text .infoBox .infoBoxIcon img {
+        width: 2rem;
         height: auto;
     }
 }
