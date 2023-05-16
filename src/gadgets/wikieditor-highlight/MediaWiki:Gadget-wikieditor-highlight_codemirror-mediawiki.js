@@ -1,5 +1,5 @@
 /* eslint-disable */
-(function (CodeMirror) {
+window.codemirrorMediawiki = function (CodeMirror) {
     'use strict';
 
     var permittedHtmlTags = {
@@ -949,4 +949,4 @@
             token: eatNowiki
         };
     });
-}(CodeMirror));
+};
