@@ -1,3 +1,4 @@
+/* eslint-disable quote-props */
 /**
  * @source https://fastly.jsdelivr.net/gh/bhsd-harry/LLWiki@2.16/otherwiki/gadget-CodeMirror.json
  */
@@ -46,7 +47,7 @@
                 __目录__: "toc",
                 __toc__: "toc",
                 __无编辑段落__: "noeditsection",
-                __无段落编辑__: "noeditsection",
+                "__无段落编辑__": "noeditsection",
                 __noeditsection__: "noeditsection",
                 __不转换标题__: "notitleconvert",
                 __notitleconvert__: "notitleconvert",
