@@ -120,6 +120,7 @@ jobs:
     if: success() && needs.postCommit.outputs.needLinterTest == 'true'
     env:
       commits: ${{ needs.postCommit.outputs.commits }}
+      status: skipped
     steps:
       - uses: actions/checkout@v3
       - name: Use Node.js
@@ -163,8 +164,12 @@ jobs:
         run: echo "::group::v8r output" && npx v8r && echo "::endgroup::"
       - name: Check .mailmap
         run: node scripts/emailmapChecker/index.js
+      - name: Marked as success
+        id: mark
+        shell: bash
+        run: echo "success=true" >> ${GITHUB_OUTPUT}
     outputs:
-      linterTest: true
+      linterTest: ${{ env.status }}
   webhook:
     runs-on: ubuntu-latest
     needs:
