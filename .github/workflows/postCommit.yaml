@@ -181,7 +181,7 @@ jobs:
     needs:
       - postCommit
       - linter_test
-    if: success() || failure()
+    if: always()
     env:
       needs: ${{ toJson(needs) }}
     steps:
