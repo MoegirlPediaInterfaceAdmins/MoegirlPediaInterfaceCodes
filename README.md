@@ -77,6 +77,8 @@
 - 执行 `npx postcss src/**/*.css --base src/ -d dist/ --verbose` 以编译 `*.css` 代码；
 - 根据模板生成 `MediaWiki:Gadgets-definition` 页面。
 
+如需手动唤起机器人，请到 [`post commit CI` workflow](https://github.com/MoegirlPediaInterfaceAdmins/MoegirlPediaInterfaceCodes/actions/workflows/postCommit.yaml) 处，选择 `Branch` 为 `master`，输入值为 `true`，手动执行该 workflow。
+
 ## 已知问题
 
 - [TypeScript 5.0](https://devblogs.microsoft.com/typescript/announcing-typescript-5-0/#deprecations-and-default-changes:~:text=and%20setting%20values%3A-,%2D%2Dtarget%3A%20ES3,-%2D%2Dout) 将 `target: ES3` 编译选项[标记为弃用](https://github.com/microsoft/TypeScript/issues/51909#issue-1498969440:~:text=configurations%20as%20deprecated%3A-,target%3A%20ES3,-noImplicitUseStrict)，而萌娘百科目前（2023年3月）使用的 [MediaWiki 1.31.7](https://zh.moegirl.org.cn/Special:%E7%89%88%E6%9C%AC#mw-version-software:~:text=MediaWiki-,1.31.7,-PHP) 存在 bug 无法解析使用保留字作为点号属性名（`foo.return` 会报错），[这在 MediaWiki 1.33 被修复](https://www.mediawiki.org/wiki/MediaWiki_1.33/wmf.19#Core_changes:~:text=Make%20JSMinPlus%20allow%20reserved%20words%20as%20property%20name%20(ES5))。
