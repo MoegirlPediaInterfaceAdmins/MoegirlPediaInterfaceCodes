@@ -25,6 +25,7 @@ dependencies:
   - oojs-ui-core
   - ext.gadget.libPolyfill
   - ext.gadget.libCachedCode
+  - ext.gadget.LocalObjectStorage
 
 _sites:
   - zh
