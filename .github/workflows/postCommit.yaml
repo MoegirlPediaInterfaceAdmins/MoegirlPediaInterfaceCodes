@@ -112,11 +112,12 @@ jobs:
         run: node scripts/postCommit/push.js
     outputs:
       commits: ${{ steps.output.outputs.commits }}
-      linterTest: ${{ steps.output.outputs.linterTest }}
+      needLinterTest: ${{ steps.output.outputs.linterTest }}
+      postCommit: true
   linter_test:
     runs-on: ubuntu-latest
     needs: postCommit
-    if: success() && needs.postCommit.outputs.linterTest == 'true'
+    if: success() && needs.postCommit.outputs.needLinterTest == 'true'
     env:
       commits: ${{ needs.postCommit.outputs.commits }}
     steps:
@@ -162,6 +163,8 @@ jobs:
         run: echo "::group::v8r output" && npx v8r && echo "::endgroup::"
       - name: Check .mailmap
         run: node scripts/emailmapChecker/index.js
+    outputs:
+      linterTest: true
   webhook:
     runs-on: ubuntu-latest
     needs:
