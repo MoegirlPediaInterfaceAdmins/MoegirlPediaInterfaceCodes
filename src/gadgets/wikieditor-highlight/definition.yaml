@@ -33,8 +33,5 @@ _sites:
 _section: editing
 
 _files:
-  - MediaWiki:Gadget-wikieditor-highlight_codemirror-mediawiki.css
-  - MediaWiki:Gadget-wikieditor-highlight_codemirror-mediawiki.js
-  - MediaWiki:Gadget-wikieditor-highlight_CodeMirror.js
   - MediaWiki:Gadget-wikieditor-highlight.css
   - MediaWiki:Gadget-wikieditor-highlight.js
