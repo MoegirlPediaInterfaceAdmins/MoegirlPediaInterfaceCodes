@@ -1,7 +1,7 @@
 import console from "../modules/console.js";
 console.info("Initialization done.");
 import mailmap from "../modules/mailmap.js";
-import { git } from "../modules/git.js";
+import git from "../modules/git.js";
 import { startGroup, endGroup } from "@actions/core";
 import { isInGithubActions } from "../modules/octokit.js";
 

@@ -3,6 +3,7 @@ import { startGroup, endGroup } from "@actions/core";
 import { isInMasterBranch, isInGithubActions, workflowLink } from "../modules/octokit.js";
 import jsonModule from "../modules/jsonModule.js";
 import generateHMACSignature from "../modules/generateHMACSignature.js";
+import git from "../modules/git.js";
 if (!isInGithubActions) {
     console.info("Not running in github actions, exit.");
     process.exit(0);
@@ -39,15 +40,19 @@ for (const [job, { result }] of Object.entries(NEEDS)) {
 if (data.success) {
     try {
         const GITHUB_EVENT = await jsonModule.readFile(process.env.GITHUB_EVENT_PATH);
-        startGroup("GITHUB_EVENT");
-        console.info(JSON.stringify(GITHUB_EVENT, null, 4));
-        endGroup();
-        data.headCommitId = GITHUB_EVENT?.head_commit?.id;
-        data.headCommitMessage = GITHUB_EVENT?.head_commit?.message;
+        const head_commit = Reflect.has(GITHUB_EVENT, "head_commit") ? GITHUB_EVENT.head_commit : (await git.log({
+            format: {
+                id: "%H",
+                message: "%B",
+            },
+            maxCount: 1,
+        })).latest;
+        data.headCommitId = head_commit.id;
+        data.headCommitMessage = head_commit.message;
     } catch { }
 }
+console.info("Data:", data);
 const body = Buffer.from(JSON.stringify(data), "utf-8");
-console.info("body:", body.toString("base64"));
 for (let retryTime = 0; retryTime < 10; retryTime++) {
     try {
         const result = await (await fetch("https://echo.zuplo.io/", {
