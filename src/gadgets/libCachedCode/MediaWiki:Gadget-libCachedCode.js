@@ -27,9 +27,11 @@
             return;
         }
     };
+    const batchInjectCachedCode = (urls, type) => Promise.all(urls.map((url) => injectCachedCode(url, type)));
     window.libCachedCode = {
         getCachedCode,
         getCachedCodeUrl,
         injectCachedCode,
+        batchInjectCachedCode,
     };
 })();
