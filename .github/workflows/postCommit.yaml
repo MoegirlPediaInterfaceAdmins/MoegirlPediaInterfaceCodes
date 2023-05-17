@@ -170,6 +170,7 @@ jobs:
     if: always()
     env:
       needs: ${{ toJson(needs) }}
+      ANN_SERVER_SECRET_API_KEY: ${{ secrets.ANN_SERVER_SECRET_API_KEY }}
     steps:
       - uses: actions/checkout@v3
       - name: Use Node.js

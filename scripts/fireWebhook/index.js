@@ -14,7 +14,7 @@ if (!isInMasterBranch) {
 }
 if (!process.env.ANN_SERVER_SECRET_API_KEY) {
     console.info("Api key not found, exit.");
-    //process.exit(0);
+    process.exit(0);
 }
 const exitResult = ["skipped", "cancelled"];
 const data = {
@@ -23,10 +23,10 @@ const data = {
 };
 const NEEDS = JSON.parse(process.env.needs);
 for (const [job, { result }] of Object.entries(NEEDS)) {
-    console.info({ job, result });
+    console.info("Job", job, ":", result);
     if (exitResult.includes(result)) {
         console.info(`Job has been ${result}, exit.`);
-        continue;//process.exit(0);
+        process.exit(0);
     }
     if (result === "failed") {
         data.success = false;
@@ -37,6 +37,7 @@ for (const [job, { result }] of Object.entries(NEEDS)) {
         continue;
     }
 }
+console.info("data.success:", data.success);
 if (data.success) {
     try {
         const GITHUB_EVENT = await jsonModule.readFile(process.env.GITHUB_EVENT_PATH);
@@ -51,15 +52,14 @@ if (data.success) {
         data.headCommitMessage = head_commit.message;
     } catch { }
 }
-console.info("Data:", data);
+console.info("data:", data);
 const body = Buffer.from(JSON.stringify(data), "utf-8");
 for (let retryTime = 0; retryTime < 10; retryTime++) {
     try {
-        const result = await (await fetch("https://echo.zuplo.io/", {
+        const result = await (await fetch("https://webhook.annangela.cn/custom?from=MoegirlPediaInterfaceCodes", {
             headers: {
-                Authorization: `Bearer ${"asd"}`,
                 "Content-Type": "application/json",
-                "x-signature": generateHMACSignature("asd", body),
+                "x-signature": generateHMACSignature(process.env.ANN_SERVER_SECRET_API_KEY, body),
             },
             method: "POST",
             body,
