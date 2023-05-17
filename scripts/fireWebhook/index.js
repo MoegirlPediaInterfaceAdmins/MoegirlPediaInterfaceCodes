@@ -55,6 +55,7 @@ if (data.success) {
 console.info("data:", data);
 const body = Buffer.from(JSON.stringify(data), "utf-8");
 for (let retryTime = 0; retryTime < 10; retryTime++) {
+    console.info(`Attempt #${retryTime} running...`);
     try {
         const result = await (await fetch("https://webhook.annangela.cn/custom?from=MoegirlPediaInterfaceCodes", {
             headers: {
@@ -64,9 +65,7 @@ for (let retryTime = 0; retryTime < 10; retryTime++) {
             method: "POST",
             body,
         })).json();
-        startGroup("Result:");
-        console.info(result);
-        endGroup();
+        console.info(`Attempt #${retryTime} success, result:`, result);
         console.info("Done.");
         process.exit(0);
     } catch (e) {
