@@ -18,6 +18,7 @@ if (!process.env.ANN_SERVER_SECRET_API_KEY) {
 const exitResult = ["skipped", "cancelled"];
 const data = {
     success: true,
+    workflowRunPage: workflowLink,
 };
 const NEEDS = JSON.parse(process.env.needs);
 for (const [job, { result }] of Object.entries(NEEDS)) {
@@ -35,12 +36,15 @@ for (const [job, { result }] of Object.entries(NEEDS)) {
         continue;
     }
 }
-console.info(data.success);
 if (data.success) {
-    const GITHUB_EVENT = await jsonModule.readFile(process.env.GITHUB_EVENT_PATH);
-    data.headCommitId = GITHUB_EVENT.head_commit.id;
-    data.headCommitMessage = GITHUB_EVENT.head_commit.message;
-    data.workflowRunPage = workflowLink;
+    try {
+        const GITHUB_EVENT = await jsonModule.readFile(process.env.GITHUB_EVENT_PATH);
+        startGroup("GITHUB_EVENT");
+        console.info(JSON.stringify(GITHUB_EVENT, null, 4));
+        endGroup();
+        data.headCommitId = GITHUB_EVENT?.head_commit?.id;
+        data.headCommitMessage = GITHUB_EVENT?.head_commit?.message;
+    } catch { }
 }
 const body = Buffer.from(JSON.stringify(data), "utf-8");
 console.info("body:", body.toString("base64"));
