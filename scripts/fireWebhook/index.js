@@ -22,7 +22,7 @@ for (let retryTime = 0; retryTime < 10; retryTime++) {
                 "Content-Type": "application/json",
             },
             method: "POST",
-            body: JSON.stringify({ foo: true }),
+            body: process.env.needs,
         })).json();
         startGroup("Result:");
         console.info(result);

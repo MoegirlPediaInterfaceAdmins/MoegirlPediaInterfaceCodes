@@ -3,3 +3,10 @@ tabWidth: 4
 semi: true
 singleQuote: false
 printWidth: 200
+
+overrides:
+  - files:
+      - "**/*.yaml"
+      - "**.yaml"
+    options:
+      tabWidth: 2

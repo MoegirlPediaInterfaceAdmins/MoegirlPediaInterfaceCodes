@@ -1,7 +1,7 @@
 import console from "../modules/console.js";
 import fs from "fs";
 import yaml from "yaml";
-const { assignees } = yaml.parse(fs.readFileSync(".github/auto_assign.yml", { encoding: "utf-8" }));
+const { assignees } = yaml.parse(fs.readFileSync(".github/auto_assign.yaml", { encoding: "utf-8" }));
 import { startGroup, endGroup } from "@actions/core";
 import { Octokit } from "@octokit/rest";
 import { retry } from "@octokit/plugin-retry";

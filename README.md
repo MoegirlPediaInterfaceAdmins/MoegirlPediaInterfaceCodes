@@ -2,7 +2,7 @@
 
 萌娘百科界面代码库
 
-[![post commit CI](https://github.com/MoegirlPediaInterfaceAdmins/MoegirlPediaInterfaceCodes/actions/workflows/postCommit.yml/badge.svg)](https://github.com/MoegirlPediaInterfaceAdmins/MoegirlPediaInterfaceCodes/actions/workflows/postCommit.yml) [![MoegirlPediaInterfaceAdmins Project](https://img.shields.io/badge/MoegirlPediaInterfaceAdmins-Project-blue?style=flat&logo=github&labelColor=343B42)](https://github.com/orgs/MoegirlPediaInterfaceAdmins/projects/1/views/1)
+[![post commit CI](https://github.com/MoegirlPediaInterfaceAdmins/MoegirlPediaInterfaceCodes/actions/workflows/postCommit.yaml/badge.svg)](https://github.com/MoegirlPediaInterfaceAdmins/MoegirlPediaInterfaceCodes/actions/workflows/postCommit.yaml) [![MoegirlPediaInterfaceAdmins Project](https://img.shields.io/badge/MoegirlPediaInterfaceAdmins-Project-blue?style=flat&logo=github&labelColor=343B42)](https://github.com/orgs/MoegirlPediaInterfaceAdmins/projects/1/views/1)
 
 欢迎来到萌娘百科界面代码库，本仓库由[萌娘百科界面管理员](https://zh.moegirl.org.cn/_?curid=489391)所组成的[团队](https://github.com/MoegirlPediaInterfaceAdmins)维护，旨在以自动化的方式减轻维护界面代码的复杂度。
 
@@ -17,9 +17,9 @@
 <details><summary>仓库架构详情</summary>
 
 - [`.github`](.github) 文件夹用以保存 GitHub Dependabot 和 GitHub Actions 所需配置文件，其中：
-  - [`.github/workflows/postCommit.yml`](.github/workflows/postCommit.yml) 用以保存自动化流程，包含自动配置 Conventional Commits（约定式提交）所需 scope（作用域）信息、自动导入来自 npm 和指定页面的代码、自动补全小工具列表和自动生成 polyfill 文件；
-  - [`.github/workflows/generateUnrecognizableFeatures.yml`](.github/workflows/generateUnrecognizableFeatures.yml) 用以定时生成 [`scripts/generatePolyfill/unrecognizableFeatures.json`](scripts/generatePolyfill/unrecognizableFeatures.json) 以减少生成 polyfill 时的网络请求；
-    - [`.github/workflows/auto_assign.yml`](.github/workflows/auto_assign.yml) 用以自动对 pull request 和 issue 添加 assignees 和 reviewers（若有）。
+  - [`.github/workflows/postCommit.yaml`](.github/workflows/postCommit.yaml) 用以保存自动化流程，包含自动配置 Conventional Commits（约定式提交）所需 scope（作用域）信息、自动导入来自 npm 和指定页面的代码、自动补全小工具列表和自动生成 polyfill 文件；
+  - [`.github/workflows/generateUnrecognizableFeatures.yaml`](.github/workflows/generateUnrecognizableFeatures.yaml) 用以定时生成 [`scripts/generatePolyfill/unrecognizableFeatures.json`](scripts/generatePolyfill/unrecognizableFeatures.json) 以减少生成 polyfill 时的网络请求；
+    - [`.github/workflows/auto_assign.yaml`](.github/workflows/auto_assign.yaml) 用以自动对 pull request 和 issue 添加 assignees 和 reviewers（若有）。
 - [`.vscode/settings.json`](.vscode/settings.json) 用来保存 Conventional Commits（约定式提交）所需 scope（作用域）信息；
 - [`scripts`](scripts) 文件夹用以保存流程所需代码，其中：
   - [`scripts/postCommit/prepareGit.js`](scripts/postCommit/prepareGit.js) 用来准备 Github Actions 上的 git 环境，自动生成 author 和 committer 的相关信息；
