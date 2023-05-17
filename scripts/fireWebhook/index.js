@@ -35,6 +35,7 @@ for (const [job, { result }] of Object.entries(NEEDS)) {
         continue;
     }
 }
+console.info(data.success);
 if (data.success) {
     const GITHUB_EVENT = await jsonModule.readFile(process.env.GITHUB_EVENT_PATH);
     data.headCommitId = GITHUB_EVENT.head_commit.id;
