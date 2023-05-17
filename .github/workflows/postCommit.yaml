@@ -54,8 +54,6 @@ permissions:
 jobs:
   postCommit:
     runs-on: ubuntu-latest
-    env:
-      status: skipped
     steps:
       - uses: actions/checkout@v3
         with:
@@ -112,21 +110,15 @@ jobs:
       - name: Show git status & push
         id: output
         run: node scripts/postCommit/push.js
-      - name: Marked as success
-        id: mark
-        shell: bash
-        run: echo "status=success" >> ${GITHUB_ENV}
     outputs:
       commits: ${{ steps.output.outputs.commits }}
-      needLinterTest: ${{ steps.output.outputs.linterTest }}
-      postCommit: ${{ env.status }}
+      linterTest: ${{ steps.output.outputs.linterTest }}
   linter_test:
     runs-on: ubuntu-latest
     needs: postCommit
-    if: success() && needs.postCommit.outputs.needLinterTest == 'true'
+    if: success() && needs.postCommit.outputs.linterTest == 'true'
     env:
       commits: ${{ needs.postCommit.outputs.commits }}
-      status: skipped
     steps:
       - uses: actions/checkout@v3
       - name: Use Node.js
@@ -170,12 +162,6 @@ jobs:
         run: echo "::group::v8r output" && npx v8r && echo "::endgroup::"
       - name: Check .mailmap
         run: node scripts/emailmapChecker/index.js
-      - name: Marked as success
-        id: mark
-        shell: bash
-        run: echo "status=success" >> ${GITHUB_ENV}
-    outputs:
-      linterTest: ${{ env.status }}
   webhook:
     runs-on: ubuntu-latest
     needs:
@@ -214,3 +200,6 @@ jobs:
           key: ${{ steps.cache.outputs.cache-primary-key }}
       - name: Fire the webhook of AnnAngela's server
         run: node scripts/fireWebhook/index.js
+      - name: test
+        shell: bash
+        run: openssl list -digest-algorithms

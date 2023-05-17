@@ -1,2 +1,7 @@
 import crypto from "crypto";
-const generateHMACSignature = (key, raw, algorithm) => crypto.createHmac(algorithm, key).update(raw).digest("hex");
+/**
+ * @param {string} key 
+ * @param {Buffer} raw 
+ * @param {string} [algorithm] 
+ */
+const generateHMACSignature = (key, raw, algorithm) => `${algorithm}=${crypto.createHmac(algorithm, key).update(raw).digest("hex")}`;
