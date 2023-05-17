@@ -2,6 +2,7 @@ import console from "../modules/console.js";
 import { startGroup, endGroup } from "@actions/core";
 import { isInMasterBranch, isInGithubActions, workflowLink } from "../modules/octokit.js";
 import jsonModule from "../modules/jsonModule.js";
+import generateHMACSignature from "../modules/generateHMACSignature.js";
 if (!isInGithubActions) {
     console.info("Not running in github actions, exit.");
     process.exit(0);
@@ -40,16 +41,18 @@ if (data.success) {
     data.headCommitMessage = GITHUB_EVENT.head_commit.message;
     data.workflowRunPage = workflowLink;
 }
-
+const body = Buffer.from(JSON.stringify(data), "utf-8");
+console.info("body:", body.toString("base64"));
 for (let retryTime = 0; retryTime < 10; retryTime++) {
     try {
         const result = await (await fetch("https://echo.zuplo.io/", {
             headers: {
                 Authorization: `Bearer ${"asd"}`,
                 "Content-Type": "application/json",
+                "x-signature": generateHMACSignature("asd", body),
             },
             method: "POST",
-            body: process.env.needs,
+            body,
         })).json();
         startGroup("Result:");
         console.info(result);

@@ -200,6 +200,3 @@ jobs:
           key: ${{ steps.cache.outputs.cache-primary-key }}
       - name: Fire the webhook of AnnAngela's server
         run: node scripts/fireWebhook/index.js
-      - name: test
-        shell: bash
-        run: openssl list -digest-algorithms
