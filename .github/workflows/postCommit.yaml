@@ -30,7 +30,7 @@ on:
   workflow_dispatch:
     inputs:
       manuallyLinterTest:
-        description: 如需手动触发格式检查，请选择 `true`
+        description: 如需手动触发格式检查，请选择上方 Branch 为 master，下方为 true
         type: choice
         default: "false"
         options:
