@@ -386,9 +386,9 @@
             $ele.addClass("margin-left-set");
         });
     };
-    // 页面历史表单部分按钮改为 post
+    // 页面历史表单、日志部分按钮改为 post
     const historyForm = () => {
-        const form = $("#mw-history-compare");
+        const form = $("#mw-history-compare, #mw-log-deleterevision-submit");
         // form.find('[name="editchangetags"], [name="revisiondelete"]').attr("formmethod", "post"); // 不知为何，该方式不生效
         form.find('[name="editchangetags"], [name="revisiondelete"]').on("click", () => {
             form.attr("method", "post");
