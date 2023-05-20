@@ -19,8 +19,12 @@
         if (["script", "javascript", "js"].includes(type)) {
             const script = document.createElement("script");
             script.src = await getCachedCodeUrl(url);
-            document.head.append(script);
-            return;
+            return await new Promise((res) => {
+                script.addEventListener("load", () => {
+                    res();
+                });
+                document.head.append(script);
+            });
         }
         if (["css", "style"].includes(type)) {
             mw.loader.addStyleTag(await getCachedCode(url));
