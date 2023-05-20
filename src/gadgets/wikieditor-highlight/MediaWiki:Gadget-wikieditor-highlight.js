@@ -19,8 +19,8 @@
         ], "style");
         await libCachedCode.batchInjectCachedCode([
             "https://npm.elemecdn.com/codemirror@5.65.1/lib/codemirror.js",
-            "https://npm.elemecdn.com/codemirror@5.65.1/addon/edit/matchbrackets.js",
-            "https://npm.elemecdn.com/wikiplus-highlight@2.22.5/matchtags.js",
+            // "https://npm.elemecdn.com/codemirror@5.65.1/addon/edit/matchbrackets.js",
+            // "https://npm.elemecdn.com/wikiplus-highlight@2.22.5/matchtags.js",
         ], "script");
         await libCachedCode.batchInjectCachedCode([
             "https://npm.elemecdn.com/@bhsd/codemirror-mediawiki@1.1.12/mediawiki.js",
