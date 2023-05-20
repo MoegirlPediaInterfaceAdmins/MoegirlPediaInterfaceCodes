@@ -29,10 +29,9 @@ class ReadableFromString extends Readable {
 }
 
 /**
- * 
  * @param {uglify.MinifyOptions} [opts] 
  */
-export default function uglifyStream(opts) {
+export default (opts) => {
     const stream = duplexify();
 
     const writer = concatStream({ encoding: "string" }, (source) => {
@@ -47,4 +46,4 @@ export default function uglifyStream(opts) {
     stream.setWritable(writer);
 
     return stream;
-}
+};
