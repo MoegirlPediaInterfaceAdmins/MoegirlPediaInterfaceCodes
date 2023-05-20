@@ -5,6 +5,8 @@ on:
     paths:
       - scripts/**/*.js
       - "!scripts/test/*.js"
+      - "!scripts/generateUnrecognizableFeatures/*.js"
+      - "!scripts/detectHardcodedOutdatedNPMPackages/*.js"
       - src/**/*.js
       - src/**/*.css
       - src/**/definition.yaml
@@ -18,6 +20,8 @@ on:
     paths:
       - scripts/**/*.js
       - "!scripts/test/*.js"
+      - "!scripts/generateUnrecognizableFeatures/*.js"
+      - "!scripts/detectHardcodedOutdatedNPMPackages/*.js"
       - src/**/*.js
       - src/**/*.css
       - src/**/definition.yaml
@@ -92,7 +96,7 @@ jobs:
         with:
           path: node_modules
           key: ${{ steps.cache.outputs.cache-primary-key }}
-      - name: Reload the builder and linter cache
+      - name: Reload the linter cache
         uses: actions/cache@v3
         with:
           path: .cache
@@ -155,7 +159,7 @@ jobs:
         with:
           path: node_modules
           key: ${{ steps.cache.outputs.cache-primary-key }}
-      - name: Reload the builder and linter cache
+      - name: Reload the linter cache
         uses: actions/cache@v3
         with:
           path: .cache
