@@ -1,4 +1,5 @@
-import exec from "./exec.js";
+import console from "../modules/console.js";
+import exec from "../modules/exec.js";
 import { startGroup, endGroup } from "@actions/core";
 
 exec("npm config get registry --global").then((output) => console.info("npm config get registry --global:", output));
@@ -9,7 +10,7 @@ const cachedPackageInfo = new Map();
  */
 const fetchNPMPackageInfo = async (pkg) => {
     const registryUrl = `${new URL(pkg, registryBaseUrl)}`;
-    console.info("[fetchNPMPackageVersion]", `[${pkg}]`, "Start to fetch the package,info:", registryUrl);
+    console.info("[fetchNPMPackageVersion]", `[${pkg}]`, "Start to fetch the package info:", registryUrl);
     let packageInfo;
     if (!cachedPackageInfo.has(pkg)) {
         console.info("[fetchNPMPackageVersion]", `[${pkg}]`, "There is no cache, fetching...");
@@ -17,7 +18,7 @@ const fetchNPMPackageInfo = async (pkg) => {
             method: "GET",
         });
         packageInfo = await packageInfoResponse.json();
-        console.info("[fetchNPMPackageVersion]", `[${pkg}]`, "Successfully get the package,info, and wrote in cache.");
+        console.info("[fetchNPMPackageVersion]", `[${pkg}]`, "Successfully get the package info, and wrote in cache.");
         cachedPackageInfo.set(pkg, packageInfo);
     } else {
         console.info("[fetchNPMPackageVersion]", `[${pkg}]`, "There is a cache, not need to fetch.");
