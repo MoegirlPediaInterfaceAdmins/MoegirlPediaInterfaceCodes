@@ -4,7 +4,6 @@ import { exportVariable } from "@actions/core";
 import { isInGithubActions, isPullRequest } from "../modules/octokit.js";
 
 /**
- * 
  * @param {string} message 
  * @returns {Promise<CommitResult & { commit_long: string } | false>}
  */
