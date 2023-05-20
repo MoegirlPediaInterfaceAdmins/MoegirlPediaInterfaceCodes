@@ -1,0 +1,45 @@
+name: Detect hardcoded-outdated NPM packages
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: 0 0 * * * # Every day
+
+concurrency: detectHardcodedOutdatedNPMPackages
+
+env:
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+jobs:
+  generateConfiguration:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Use Node.js
+        uses: actions/setup-node@v3
+        id: setup-node
+        with:
+          node-version: lts/*
+          check-latest: true
+          cache: npm
+      - name: Generate cache primary key based on nodejs's and npm's version and package-lock.json's hash
+        id: version
+        shell: bash
+        run: echo "version=node@$(node -v | grep -oP '(?<=^v)\d+')_npm@$(npm -v | grep -oP '^\d+')_package-lock@$(openssl dgst -sha3-512 package-lock.json | grep -oP '[\da-f]{128}')" >> ${GITHUB_OUTPUT} && cat ${GITHUB_OUTPUT}
+      - uses: actions/cache/restore@v3
+        name: Try to restore node_modules from cache
+        id: cache
+        with:
+          path: node_modules
+          key: ${{ steps.version.outputs.version }}
+      - name: Install dependencies if no cache for node_modules
+        run: npm run ci
+        if: steps.cache.outputs.cache-hit != 'true'
+      - uses: actions/cache/save@v3
+        if: steps.cache.outputs.cache-hit != 'true'
+        name: Save node_modules to cache
+        with:
+          path: node_modules
+          key: ${{ steps.cache.outputs.cache-primary-key }}
+      - name: Detect hardcoded-outdated NPM packages
+        run: node scripts/detectHardcodedOutdatedNPMPackages/index.js
