@@ -50,7 +50,7 @@
         "postcss-cli": "^10.0.0",
         "postcss-discard-comments": "^6.0.0",
         "postcss-font-variant": "^5.0.0",
-        "postcss-logical": "^6.1.0",
+        "postcss-logical": "^6.2.0",
         "postcss-selector-matches": "^4.0.0",
         "postcss-selector-not": "^7.0.1",
         "semver": "^7.5.1",
