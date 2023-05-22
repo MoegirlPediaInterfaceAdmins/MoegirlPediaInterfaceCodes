@@ -45,5 +45,5 @@ mw.hook("InPageEdit").add((ctx) => {
             $(".page-tool-link#ca-inpageedit").insertAfter($(".page-tool-link#ca-edit"));
             break;
         }
-    };
+    }
 });
