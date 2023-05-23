@@ -20,7 +20,7 @@ endGroup();
 for (const src of scripts) {
     // await libCachedCode.injectCachedCode("https://npm.elemecdn.com/wikiplus-core@4.0.11/dist/Main.js", "script");
     const content = await fs.promises.readFile(src, { encoding: "utf-8" });
-    const matches = content.match(/(?<=npm\.elemecdn\.com\/)[^@/]+@\d+(?:\.\d+)*/g);
+    const matches = content.match(/(?<=npm\.elemecdn\.com\/)[^@/]+@v?\d+(?:\.\d+)*[^/]*/g);
     if (!Array.isArray(matches)) {
         continue;
     }
