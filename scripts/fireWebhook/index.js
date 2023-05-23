@@ -28,7 +28,7 @@ for (const [job, { result }] of Object.entries(NEEDS)) {
         console.info(`Job has been ${result}, exit.`);
         process.exit(0);
     }
-    if (result === "failed") {
+    if (result === "failure") {
         data.success = false;
         if (!Array.isArray(data.failedJobs)) {
             data.failedJobs = [];
