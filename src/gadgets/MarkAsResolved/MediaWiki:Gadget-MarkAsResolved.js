@@ -4,6 +4,7 @@ $(() => {
     const wgUserGroups = mw.config.get("wgUserGroups");
     if (!/^萌娘百科_talk:讨论版\/[^存]+$/.test(mw.config.get("wgPageName"))) { return; }
     if (!wgUserGroups.includes("sysop") && !wgUserGroups.includes("patroller")) { return; }
+    if (mw.config.get("wgCurRevisionId") !== mw.config.get("wgRevisionId")) { return; }
     const $body = $("body");
     $("#mw-notification-area").appendTo($body);
     const api = new mw.Api();
