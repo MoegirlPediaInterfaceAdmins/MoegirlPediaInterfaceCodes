@@ -12,6 +12,8 @@ $(() => {
     const handlePatroll = async (title, _revid) => await api.postWithToken("patrol", {
         action: "patrol",
         format: "json",
+        revid: _revid,
+        /* 在L57中更改了获取revid的方式，这段理论上应该不用了
         revid: await (async () => {
             if (typeof _revid !== "number") {
                 const data = await api.post({
@@ -29,6 +31,7 @@ $(() => {
             }
             return _revid;
         })(),
+        */
     });
     const sleep = (t) => new Promise((res) => setTimeout(res, t));
     $("abbr.unpatrolled").each((_, ele) => {
@@ -47,6 +50,8 @@ $(() => {
         } else {
             uri = new mw.Uri(container.closest("li, tr").find(".mw-changeslist-history").first().attr("href"));
             title = uri.query.title;
+            // 对于创建新页面的编辑直接获取其第一个有data-mw-revid的祖先元素的此数据
+            revid = Number(self.closest("[data-mw-revid]").attr("data-mw-revid"));
         }
         if (!list.includes(title)) {
             list.push(title);
