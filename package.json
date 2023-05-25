@@ -29,7 +29,7 @@
         "@types/echarts": "^4.9.17",
         "@types/jquery": "^3.5.14",
         "@types/moment": "^2.13.0",
-        "@types/oojs-ui": "^0.46.1",
+        "@types/oojs-ui": "^0.46.2",
         "@wikimedia/types-wikimedia": "^0.4.0",
         "async-lock": "^1.4.0",
         "autoprefixer": "^10.4.14",
