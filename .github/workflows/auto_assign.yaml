@@ -7,4 +7,5 @@ jobs:
   add-reviews:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v3
       - uses: kentaro-m/auto-assign-action@v1.2.5
