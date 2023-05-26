@@ -20,18 +20,20 @@ const require = () => window.luxon;
     var root, factory, _$CronJob_4 = createModuleFactory(function(module, exports) {
         module.exports = function(CronTime, spawn) {
             function fnWrap(cmd) {
-                var args, options, command;
+                let command, args;
                 switch (typeof cmd) {
                   case "string":
-                    return command = (args = cmd.split(" ")).shift(), spawn.bind(void 0, command, args);
+                    return args = cmd.split(" "), command = args.shift(), spawn.bind(void 0, command, args);
 
                   case "object":
+                    var options;
                     if (command = cmd && cmd.command) return args = cmd.args, options = cmd.options, spawn.bind(void 0, command, args, options);
                 }
                 return cmd;
             }
             function CJ(cronTime, onTick, onComplete, startNow, timeZone, context, runOnInit, utcOffset, unrefTimeout) {
-                for (var _cronTime = cronTime, argCount = 0, i = 0; i < arguments.length; i++) void 0 !== arguments[i] && argCount++;
+                let _cronTime = cronTime, argCount = 0;
+                for (let i = 0; i < arguments.length; i++) void 0 !== arguments[i] && argCount++;
                 return "string" != typeof cronTime && 1 === argCount && (onTick = cronTime.onTick, onComplete = cronTime.onComplete, context = cronTime.context, startNow = cronTime.start || cronTime.startNow || cronTime.startJob, timeZone = cronTime.timeZone, runOnInit = cronTime.runOnInit, _cronTime = cronTime.cronTime, utcOffset = cronTime.utcOffset, unrefTimeout = cronTime.unrefTimeout), this.context = context || this, this._callbacks = [], this.onComplete = fnWrap(onComplete), this.cronTime = new CronTime(_cronTime, timeZone, utcOffset), this.unrefTimeout = unrefTimeout, addCallback.call(this, fnWrap(onTick)), runOnInit && (this.lastExecution = new Date(), fireOnTick.call(this)), startNow && start.call(this), this;
             }
             function addCallback(callback) {
@@ -39,24 +41,32 @@ const require = () => window.luxon;
             }
             CJ.prototype.addCallback = addCallback, CJ.prototype.setTime = function(time) {
                 if ("object" != typeof time) throw new Error("time must be an instance of CronTime.");
-                this.stop(), this.cronTime = time, this.start();
+                var wasRunning = this.running;
+                this.stop(), this.cronTime = time, wasRunning && this.start();
             }, CJ.prototype.nextDate = function() {
                 return this.cronTime.sendAt();
             };
-            var fireOnTick = function() {
-                for (var i = this._callbacks.length - 1; 0 <= i; i--) this._callbacks[i].call(this.context, this.onComplete);
+            const fireOnTick = function() {
+                for (let i = this._callbacks.length - 1; 0 <= i; i--) this._callbacks[i].call(this.context, this.onComplete);
             }, start = (CJ.prototype.fireOnTick = fireOnTick, CJ.prototype.nextDates = function(i) {
                 return this.cronTime.sendAt(i);
             }, function() {
-                var MAXDELAY, self, timeout, remaining, startTime;
-                function _setTimeout(timeout) {
-                    startTime = Date.now(), self._timeout = setTimeout(callbackWrapper, timeout), self.unrefTimeout && "function" == typeof self._timeout.unref && self._timeout.unref();
+                if (!this.running) {
+                    const MAXDELAY = 2147483647, self = this;
+                    let timeout = this.cronTime.getTimeout(), remaining = 0, startTime;
+                    function _setTimeout(timeout) {
+                        startTime = Date.now(), self._timeout = setTimeout(callbackWrapper, timeout), self.unrefTimeout && "function" == typeof self._timeout.unref && self._timeout.unref();
+                    }
+                    function callbackWrapper() {
+                        var diff = startTime + timeout - Date.now();
+                        if (0 < diff) {
+                            let newTimeout = self.cronTime.getTimeout();
+                            newTimeout > diff && (newTimeout = diff), remaining += newTimeout;
+                        }
+                        self.lastExecution = new Date(), remaining ? (remaining > MAXDELAY ? (remaining -= MAXDELAY, timeout = MAXDELAY) : (timeout = remaining, remaining = 0), _setTimeout(timeout)) : (self.running = !1, self.runOnce || self.start(), self.fireOnTick());
+                    }
+                    this.cronTime.realDate && (this.runOnce = !0), 0 <= timeout ? (this.running = !0, timeout > MAXDELAY && (remaining = timeout - MAXDELAY, timeout = MAXDELAY), _setTimeout(timeout)) : this.stop();
                 }
-                function callbackWrapper() {
-                    var newTimeout, diff = startTime + timeout - Date.now();
-                    0 < diff && (newTimeout = self.cronTime.getTimeout(), remaining += newTimeout = diff < newTimeout ? diff : newTimeout), self.lastExecution = new Date(), remaining ? (MAXDELAY < remaining ? (remaining -= MAXDELAY, timeout = MAXDELAY) : (timeout = remaining, remaining = 0), _setTimeout(timeout)) : (self.running = !1, self.runOnce || self.start(), self.fireOnTick());
-                }
-                this.running || (MAXDELAY = 2147483647, timeout = (self = this).cronTime.getTimeout(), remaining = 0, this.cronTime.realDate && (this.runOnce = !0), 0 <= timeout ? (this.running = !0, MAXDELAY < timeout && (remaining = timeout - MAXDELAY, timeout = MAXDELAY), _setTimeout(timeout)) : this.stop());
             });
             return CJ.prototype.start = start, CJ.prototype.lastDate = function() {
                 return this.lastExecution;
@@ -105,24 +115,30 @@ const require = () => window.luxon;
                     this.zone = zone;
                 }
                 void 0 !== utcOffset && (this.utcOffset = utcOffset);
-                var that = this;
-                TIME_UNITS.map(timeUnit => {
+                const that = this;
+                TIME_UNITS.forEach(timeUnit => {
                     that[timeUnit] = {};
                 }), this.source instanceof Date || this.source instanceof luxon.DateTime ? (this.source instanceof Date && (this.source = luxon.DateTime.fromJSDate(this.source)), this.realDate = !0) : (this._parse(this.source), this._verifyParse());
             }
             return CT.prototype = {
                 _verifyParse: function() {
-                    for (var months = Object.keys(this.month), dom = Object.keys(this.dayOfMonth), ok = !1, lastWrongMonth = NaN, i = 0; i < months.length; i++) {
-                        for (var m = months[i], con = MONTH_CONSTRAINTS[parseInt(m, 10)], j = 0; j < dom.length; j++) dom[j] <= con && (ok = !0);
+                    var months = Object.keys(this.month), dom = Object.keys(this.dayOfMonth);
+                    let ok = !1, lastWrongMonth = NaN;
+                    for (let i = 0; i < months.length; i++) {
+                        var m = months[i], con = MONTH_CONSTRAINTS[parseInt(m, 10)];
+                        for (let j = 0; j < dom.length; j++) dom[j] <= con && (ok = !0);
                         ok || (lastWrongMonth = m, console.warn(`Month '${m}' is limited to '${con}' days.`));
                     }
-                    if (!ok) for (var notOkCon = MONTH_CONSTRAINTS[parseInt(lastWrongMonth, 10)], k = 0; k < dom.length; k++) {
-                        var notOkDay = dom[k];
-                        notOkCon < notOkDay && (delete this.dayOfMonth[notOkDay], notOkDay = Number(notOkDay) % notOkCon, this.dayOfMonth[notOkDay] = !0);
+                    if (!ok) {
+                        var notOkCon = MONTH_CONSTRAINTS[parseInt(lastWrongMonth, 10)];
+                        for (let k = 0; k < dom.length; k++) {
+                            var notOkDay = dom[k];
+                            notOkCon < notOkDay && (delete this.dayOfMonth[notOkDay], notOkDay = Number(notOkDay) % notOkCon, this.dayOfMonth[notOkDay] = !0);
+                        }
                     }
                 },
                 sendAt: function(i) {
-                    var date = this.realDate ? this.source : luxon.DateTime.local();
+                    let date = this.realDate ? this.source : luxon.DateTime.local();
                     if (this.zone && (date = date.setZone(this.zone)), void 0 !== this.utcOffset) {
                         var offset = 60 <= this.utcOffset || this.utcOffset <= -60 ? this.utcOffset / 60 : this.utcOffset;
                         let utcZone = "UTC";
@@ -143,7 +159,7 @@ const require = () => window.luxon;
                     return this.toJSON().join(" ");
                 },
                 toJSON: function() {
-                    var self = this;
+                    const self = this;
                     return TIME_UNITS.map(function(timeName) {
                         return self._wcOrAll(timeName);
                     });
@@ -152,7 +168,8 @@ const require = () => window.luxon;
                     return this._getNextDateFrom(start, zone);
                 },
                 _getNextDateFrom: function(start, zone) {
-                    var date = start = start instanceof Date ? luxon.DateTime.fromJSDate(start) : start, firstDate = start.toMillis();
+                    let date = start = start instanceof Date ? luxon.DateTime.fromJSDate(start) : start;
+                    var firstDate = start.toMillis();
                     if (zone && (date = date.setZone(zone)), this.realDate || 0 < date.millisecond && (date = date.set({
                         millisecond: 0,
                         second: date.second + 1
@@ -234,8 +251,8 @@ const require = () => window.luxon;
                             minute: 0,
                             second: 0
                         }), this._forwardDSTJump(0, 0, date)) {
-                            var [ diff, newDate ] = this._findPreviousDSTJump(date), date = newDate;
-                            if (diff) break;
+                            var [ diff, newDate ] = this._findPreviousDSTJump(date);
+                            if (date = newDate, diff) break;
                         }
                     }
                     return date;
@@ -287,12 +304,13 @@ const require = () => window.luxon;
                 },
                 _wcOrAll: function(type) {
                     if (this._hasAll(type)) return "*";
-                    var time, all = [];
-                    for (time in this[type]) all.push(time);
+                    var all = [];
+                    for (const time in this[type]) all.push(time);
                     return all.join(",");
                 },
                 _hasAll: function(type) {
-                    for (var constraints = CONSTRAINTS[TIME_UNITS.indexOf(type)], i = constraints[0], n = constraints[1]; i < n; i++) if (!(i in this[type])) return !1;
+                    var constraints = CONSTRAINTS[TIME_UNITS.indexOf(type)];
+                    for (let i = constraints[0], n = constraints[1]; i < n; i++) if (!(i in this[type])) return !1;
                     return !0;
                 },
                 _parse: function(source) {
@@ -302,23 +320,29 @@ const require = () => window.luxon;
                     })).trim().split(/\s+/);
                     if (units.length < TIME_UNITS_LEN - 1) throw new Error("Too few fields");
                     if (units.length > TIME_UNITS_LEN) throw new Error("Too many fields");
-                    for (var unitsLen = units.length, i = 0; i < TIME_UNITS_LEN; i++) {
+                    var unitsLen = units.length;
+                    for (let i = 0; i < TIME_UNITS_LEN; i++) {
                         var cur = units[i - (TIME_UNITS_LEN - unitsLen)] || PARSE_DEFAULTS[i];
                         this._parseField(cur, TIME_UNITS[i], CONSTRAINTS[i]);
                     }
                 },
                 _parseField: function(value, type, constraints) {
-                    for (var pointer, typeObj = this[type], low = constraints[0], high = constraints[1], allRanges = (value.split(",").forEach(field => {
+                    const typeObj = this[type];
+                    let pointer;
+                    const low = constraints[0], high = constraints[1];
+                    value.split(",").forEach(field => {
                         var wildcardIndex = field.indexOf("*");
                         if (-1 !== wildcardIndex && 0 !== wildcardIndex) throw new Error(`Field (${field}) has an invalid wildcard expression`);
-                    }), (value = value.replace(RE_WILDCARDS, low + "-" + high)).split(",")), i = 0; i < allRanges.length; i++) {
+                    });
+                    var allRanges = (value = value.replace(RE_WILDCARDS, low + "-" + high)).split(",");
+                    for (let i = 0; i < allRanges.length; i++) {
                         if (!allRanges[i].match(RE_RANGE)) throw new Error(`Field (${type}) cannot be parsed`);
                         allRanges[i].replace(RE_RANGE, ($0, lower, upper, step) => {
                             lower = parseInt(lower, 10), upper = parseInt(upper, 10) || void 0;
                             var wasStepDefined = !isNaN(parseInt(step, 10));
                             if ("0" === step) throw new Error(`Field (${type}) has a step of zero`);
                             if (step = parseInt(step, 10) || 1, upper && upper < lower) throw new Error(`Field (${type}) has an invalid range`);
-                            if (lower < low || upper && high < upper || !upper && high < lower) throw new Error(`Field value (${value}) is out of range`);
+                            if (lower < low || upper && upper > high || !upper && lower > high) throw new Error(`Field value (${value}) is out of range`);
                             for (lower = Math.min(Math.max(low, ~~Math.abs(lower)), high), upper = upper ? Math.min(high, ~~Math.abs(upper)) : wasStepDefined ? high : lower, pointer = lower; typeObj[pointer] = !0, (pointer += step) <= upper; );
                         });
                     }
@@ -327,7 +351,8 @@ const require = () => window.luxon;
         };
     }), _$_empty_2 = createModuleFactory(function(module, exports) {}), _$cron_3 = {};
     root = this, factory = function(luxon, childProcess) {
-        var exports = {}, childProcess = childProcess && childProcess.spawn;
+        const exports = {};
+        childProcess = childProcess && childProcess.spawn;
         const CronTime = _$CronTime_5({})(luxon), CronJob = _$CronJob_4({})(CronTime, childProcess);
         return luxon.DateTime.prototype.getWeekDay = function() {
             return 7 === this.weekday ? 0 : this.weekday;
