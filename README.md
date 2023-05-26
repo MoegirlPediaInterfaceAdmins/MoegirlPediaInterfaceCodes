@@ -107,8 +107,8 @@
 所以我们建议你通过以下方式提交贡献：
 
 - 使用 [Linux on Windows with WSL](https://learn.microsoft.com/zh-cn/windows/wsl/install)；
-- 使用 Linux 系统（可以是远程服务器、本地 Docker 容器等）；
-- 使用 macOS [GitHub Desktop](https://desktop.github.com/)；
+- 使用 Linux 系统（可以是远程服务器、本地虚拟机、本地 Docker 容器等）；
+- 使用 macOS 系统；
 - 使用 [GitHub Codespaces](https://github.com/features/codespaces)（对个人用户有免费额度）。
 
 然后，我们建议你使用 [Visual Studio Code](https://code.visualstudio.com/)，本仓库专为 VSCode 配置。我们也建议你搭配以下 VSCode 扩展结合本仓库提供的配置以优化体验：
@@ -119,4 +119,4 @@
 - 远程开发：
   - 在 Linux on Windows with WSL 里：[Remote - WSL](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-wsl) 扩展；
   - 在运行 Linux 的本地 Docker 容器里：[Remote - Containers](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers) 扩展；
-  - 在运行 Linux 的远程服务器里：[Remote - SSH](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-ssh) 扩展和 [Remote - SSH: Editing Configuration Files](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-ssh-edit) 扩展。
+  - 在运行 Linux 的本地虚拟机或远程服务器里：[Remote - SSH](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-ssh) 扩展和 [Remote - SSH: Editing Configuration Files](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-ssh-edit) 扩展。
