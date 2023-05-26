@@ -27,6 +27,7 @@ dependencies:
   - mediawiki.user
   - jquery.tablesorter
   - ext.gadget.libPolyfill
+  - ext.gadget.libCachedCode
 
 _sites:
   - zh
