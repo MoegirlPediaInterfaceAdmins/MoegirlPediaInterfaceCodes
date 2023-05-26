@@ -27,6 +27,7 @@ dependencies:
   - mediawiki.ForeignApi
   - oojs-ui
   - ext.gadget.libPolyfill
+  - ext.gadget.libCachedCode
 
 _sites:
   - zh
