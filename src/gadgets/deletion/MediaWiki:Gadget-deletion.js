@@ -26,7 +26,7 @@ $(() => (async () => {
     const api = new mw.Api();
     const $root = $(".mw-category-generated"), $items = $root.find("li");
     const $control = $("<p id='batdel-control'>");
-    const $portlet = $(mw.util.addPortletLink("p-cactions", "#", wgULS("批量删除本分类下页面", "批量刪除本分類下頁面"), "ca-batdel", wgULS("批量删除本分类下页面", "批量刪除本分類下頁面"))).addClass("sysop-show"), $portletAnchor = $portlet.find("a");
+    const $portlet = $(mw.util.addPortletLink("p-cactions", "#", wgULS("批量删除本分类下页面", "批次刪除本分類下頁面"), "ca-batdel", wgULS("批量删除本分类下页面", "批次刪除本分類下頁面"))).addClass("sysop-show"), $portletAnchor = $portlet.find("a");
     const pages = [];
 
     // Auto load flag status (for delcats)
@@ -144,7 +144,7 @@ $(() => (async () => {
         // Fire hook for userlink gadget
         mw.hook("wikipage.content").fire($(".mw-userlink.batdel-bypass"));
         // Restore portlet link text
-        $portletAnchor.text(wgULS("批量删除本分类下页面", "批量刪除本分類下頁面"));
+        $portletAnchor.text(wgULS("批量删除本分类下页面", "批次刪除本分類下頁面"));
     }
 
     // Deletion buttons
@@ -196,13 +196,13 @@ $(() => (async () => {
         });
         runDeletion.on("click", async () => {
             if (globalDeletionLock || !await oouiDialog.confirm(`${wgULS("您确定要删除这些页面吗？", "您確定要刪除這些頁面嗎？")}（${wgULS("选中了", "選中了")}${$items.find(".batdel-select:checked").length}${wgULS("个页面", "個頁面")}）`, {
-                title: wgULS("批量删除分类页面工具", "批量刪除分類頁面工具"),
+                title: wgULS("批量删除分类页面工具", "批次刪除分類頁面工具"),
             })) {
                 return;
             }
 
             let deletionReason = isDelCat ? "" : await oouiDialog.prompt(`${wgULS("请输入删除理由", "請輸入刪除理由")}`, {
-                title: wgULS("批量删除分类页面工具", "批量刪除分類頁面工具"),
+                title: wgULS("批量删除分类页面工具", "批次刪除分類頁面工具"),
                 size: "medium",
                 required: true,
             });
@@ -210,7 +210,7 @@ $(() => (async () => {
             // Temporary fix, remove after libOOUIDialog is fixed
             while (!isDelCat && deletionReason === "") {
                 deletionReason = await oouiDialog.prompt(`${wgULS("请输入删除理由", "請輸入刪除理由")}`, {
-                    title: wgULS("批量删除分类页面工具", "批量刪除分類頁面工具"),
+                    title: wgULS("批量删除分类页面工具", "批次刪除分類頁面工具"),
                     size: "medium",
                     required: true,
                 });
