@@ -1,0 +1,9 @@
+env:
+    node: true
+    browser: false
+
+parserOptions:
+    sourceType: module
+
+ignorePatterns:
+    - generatePolyfill/template.js
