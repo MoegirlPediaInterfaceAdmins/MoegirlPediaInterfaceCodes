@@ -16,7 +16,8 @@ type: general
 
 package: false
 
-rights: []
+rights: 
+  - disabled
 
 peers: []
 
