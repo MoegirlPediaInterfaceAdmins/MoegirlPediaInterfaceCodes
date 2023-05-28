@@ -382,7 +382,7 @@
     crossDomainDetect();
     // 修复用户页左侧栏头像链接
     leftPanelAvatarLink();
-    if (wgUserGroups.includes('user')) {
+    if (wgUserGroups.includes("user")) {
         topNoticeScroll();
     }
     // 禁止移动被挂删的页面
