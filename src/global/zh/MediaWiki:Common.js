@@ -16,11 +16,11 @@
         274, //Widget
         828, //Module
     ];
-    /* 检查是否为维护组成员 */
-    const wgUserGroups = mw.config.get("wgUserGroups");
-    const isMGPMGUser = wgUserGroups.includes("patroller") || wgUserGroups.includes("sysop");
+    /* 检查是否为维护人员 */
+    const allowedGroups = ["sysop", "patroller", "staff"];
+    const allowedInGroup = mw.config.get("wgUserGroups").filter((group) => allowedGroups.includes(group)).length > 0;
     /* MediaViewer#populateStatsFromXhr 错误屏蔽 */
-    const getResponseHeader = XMLHttpRequest.prototype.getResponseHeader;
+    const { getResponseHeader } = XMLHttpRequest.prototype;
     XMLHttpRequest.prototype.getResponseHeader = function (name) {
         return `\n${this.getAllResponseHeaders().toLowerCase()}`.includes(`\n${name.toLowerCase()}: `) ? getResponseHeader.bind(this)(name) : (console.info(`Refused to get unsafe header "${name}"\n`, this, "\n", new Error().stack), null);
     };
@@ -261,7 +261,7 @@
             const currentLinks = [];
             const newLinks = [];
             links.each((_, link) => {
-                const href = link.href;
+                const { href } = link;
                 const text = link.text.trim();
                 currentLinks.push(href);
                 if (!existLinks.includes(href)) {
@@ -315,11 +315,11 @@
     // 跨站重定向页顶链接
     const crossDomainDetect = async () => {
         await mw.loader.using(["mediawiki.Uri"]);
-        const rdfrom = new mw.Uri().query.rdfrom;
+        const { rdfrom } = new mw.Uri().query;
         if (rdfrom) {
             const rdfromUri = new mw.Uri(rdfrom);
             if (!rdfromUri.host.includes([104, 109, 111, 101].map((n) => String.fromCharCode(n)).join(""))) {
-                const query = rdfromUri.query;
+                const { query } = rdfromUri;
                 if (query.title && query.redirect === "no") {
                     if (mw.config.get("skin") === "moeskin") {
                         crossDomain_link_moeskin(rdfromUri);
@@ -343,7 +343,7 @@
     const hashJump = async () => {
         await mw.loader.using(["jquery.makeCollapsible"]);
         $(".mw-collapsible").makeCollapsible();
-        const hash = location.hash;
+        const { hash } = location;
         location.hash = "";
         location.hash = hash;
     };
@@ -356,7 +356,7 @@
         $("body").addClass("mainpage");
     }
     // 复制内容版权声明
-    if (window.getSelection && !isMGPMGUser && !["edit", "submit"].includes(mw.config.get("wgAction")) && copyRightsNameSpaces.includes(mw.config.get("wgNamespaceNumber"))) {
+    if (window.getSelection && !allowedInGroup && !["edit", "submit"].includes(mw.config.get("wgAction")) && copyRightsNameSpaces.includes(mw.config.get("wgNamespaceNumber"))) {
         copyRights();
     }
     // 修复代码编辑器$.ucFirst引用错误
@@ -381,8 +381,12 @@
     crossDomainDetect();
     // 修复用户页左侧栏头像链接
     leftPanelAvatarLink();
-    if (wgUserGroups.includes("user")) {
+    if (mw.config.get("wgUserGroups").includes('user')) {
         topNoticeScroll();
+    }
+    // 禁止移动被挂删的页面
+    if (!allowedInGroup && $(".will2Be2Deleted")[0]) {
+        $("#ca-move").remove();
     }
     // 以下代码必须在全部内容加载完成后才能正常工作
     $(window).on("load", () => {

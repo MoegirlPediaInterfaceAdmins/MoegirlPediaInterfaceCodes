@@ -5,13 +5,13 @@
     const allowedGroups = ["sysop", "patroller", "staff"];
     const allowedInGroup = mw.config.get("wgUserGroups").filter((group) => allowedGroups.includes(group)).length > 0;
 
-    const body = document.body;
+    const { body } = document;
     const html = document.documentElement;
     const $body = $(body);
     const $window = $(window);
     /* 浮动滚动条 */
     $window.on("resize", () => {
-        const innerWidth = window.innerWidth;
+        const { innerWidth } = window;
         let scrollbarWidth;
         switch ("scroll") {
             case getComputedStyle(body).overflowY: {
@@ -161,6 +161,10 @@
     zhUserPage();
     // 授权协议检测
     license();
+    // 禁止移动被挂删的页面
+    if (!allowedInGroup && $(".will2Be2Deleted")[0]) {
+        $("#ca-move").remove();
+    }
     $window.on("load", () => {
         editSet();
     });
