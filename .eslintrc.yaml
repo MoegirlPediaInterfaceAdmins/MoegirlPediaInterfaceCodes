@@ -6,6 +6,8 @@ env:
   es2021: true
   es2022: true
 
+root: true
+
 parserOptions:
   ecmaVersion: latest
 
