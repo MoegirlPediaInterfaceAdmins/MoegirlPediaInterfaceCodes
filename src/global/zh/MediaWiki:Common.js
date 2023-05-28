@@ -6,6 +6,7 @@
 "use strict";
 (async () => {
     /* 函数定义体 */
+    const { wgUserGroups, wgServer, wgScriptPath, wgPageName, wgAction, skin, wgNamespaceNumber, wgMainPageTitle } = mw.config.get();
     /* 以下为允许添加版权声明的名字空间列表 */
     const copyRightsNameSpaces = [
         0, // （主）
@@ -18,7 +19,7 @@
     ];
     /* 检查是否为维护人员 */
     const allowedGroups = ["sysop", "patroller", "staff"];
-    const allowedInGroup = mw.config.get("wgUserGroups").filter((group) => allowedGroups.includes(group)).length > 0;
+    const allowedInGroup = wgUserGroups.filter((group) => allowedGroups.includes(group)).length > 0;
     /* MediaViewer#populateStatsFromXhr 错误屏蔽 */
     const { getResponseHeader } = XMLHttpRequest.prototype;
     XMLHttpRequest.prototype.getResponseHeader = function (name) {
@@ -108,7 +109,7 @@
                     left: "-99999px",
                     "z-index": "-99999",
                 },
-                html: `<pre></pre><br>\n阅读更多：${/%/.test(mw.util.wikiUrlencode(mw.config.get("wgPageName"))) ? `${mw.config.get("wgPageName")}（${mw.config.get("wgServer")}${mw.config.get("wgScriptPath")}/${encodeURIComponent(mw.config.get("wgPageName"))} ）` : `${mw.config.get("wgServer")}${mw.config.get("wgScriptPath")}/${mw.config.get("wgPageName")}`}<br>\n本文引自萌娘百科(${mw.config.get("wgServer").replace(/^\/\//, "https://")} )，文字内容默认使用《知识共享 署名-非商业性使用-相同方式共享 3.0 中国大陆》协议。`,
+                html: `<pre></pre><br>\n阅读更多：${/%/.test(mw.util.wikiUrlencode(wgPageName)) ? `${wgPageName}（${wgServer}${wgScriptPath}/${encodeURIComponent(wgPageName)} ）` : `${wgServer}${wgScriptPath}/${wgPageName}`}<br>\n本文引自萌娘百科(${wgServer.replace(/^\/\//, "https://")} )，文字内容默认使用《知识共享 署名-非商业性使用-相同方式共享 3.0 中国大陆》协议。`,
             }).appendTo("body"),
             valueNode = div.find("pre");
         $("#mw-content-text").on("copy", () => {
@@ -136,8 +137,8 @@
     // 页顶活动通知
     const noticeActivityClose = async () => {
         const noticeActivity = $("body").children("#content, #app").find("#notice-activity");
-        const isMoeskin = mw.config.get("skin") === "moeskin";
-        const styles = mw.config.get("skin") === "moeskin" ? {
+        const isMoeskin = skin === "moeskin";
+        const styles = skin === "moeskin" ? {
             visible: {
                 "user-select": "none",
                 "text-align": "center",
@@ -321,7 +322,7 @@
             if (!rdfromUri.host.includes([104, 109, 111, 101].map((n) => String.fromCharCode(n)).join(""))) {
                 const { query } = rdfromUri;
                 if (query.title && query.redirect === "no") {
-                    if (mw.config.get("skin") === "moeskin") {
+                    if (skin === "moeskin") {
                         crossDomain_link_moeskin(rdfromUri);
                     } else {
                         crossDomain_link(rdfromUri);
@@ -352,11 +353,11 @@
     // Extension:MultimediaViewer的半透明化修改
     multimediaViewer();
     // Add "mainpage" class to the body element
-    if (mw.config.get("wgMainPageTitle") === mw.config.get("wgPageName") && mw.config.get("wgAction") === "view") {
+    if (wgMainPageTitle === wgPageName && wgAction === "view") {
         $("body").addClass("mainpage");
     }
     // 复制内容版权声明
-    if (window.getSelection && !allowedInGroup && !["edit", "submit"].includes(mw.config.get("wgAction")) && copyRightsNameSpaces.includes(mw.config.get("wgNamespaceNumber"))) {
+    if (window.getSelection && !allowedInGroup && !["edit", "submit"].includes(wgAction) && copyRightsNameSpaces.includes(wgNamespaceNumber)) {
         copyRights();
     }
     // 修复代码编辑器$.ucFirst引用错误
@@ -381,7 +382,7 @@
     crossDomainDetect();
     // 修复用户页左侧栏头像链接
     leftPanelAvatarLink();
-    if (mw.config.get("wgUserGroups").includes('user')) {
+    if (wgUserGroups.includes('user')) {
         topNoticeScroll();
     }
     // 禁止移动被挂删的页面
