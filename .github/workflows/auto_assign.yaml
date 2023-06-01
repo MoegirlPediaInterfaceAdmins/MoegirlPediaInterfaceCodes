@@ -1,11 +1,15 @@
 name: "Auto Assign"
 on:
   pull_request_target:
-    types: [opened, ready_for_review]
+    types:
+      - opened
+      - ready_for_review
 
 jobs:
   add-reviews:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: kentaro-m/auto-assign-action@v1.2.5
+      - name: add assignees and reviewers
+        run: |
+          gh pr edit ${{ github.pull_request.id }} --add-assignee $(yq eval '.assignees | join(",")' .github/auto_assign.yaml) --add-reviewer $(yq eval '.reviewers | join(",")' .github/auto_assign.yaml)
