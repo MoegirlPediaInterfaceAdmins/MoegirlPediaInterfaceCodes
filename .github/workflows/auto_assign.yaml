@@ -5,6 +5,9 @@ on:
       - opened
       - ready_for_review
 
+env:
+  GH_TOKEN: ${{ github.token }}
+
 jobs:
   add-reviews:
     runs-on: ubuntu-latest
