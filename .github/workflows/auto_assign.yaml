@@ -15,4 +15,4 @@ jobs:
       - uses: actions/checkout@v3
       - name: add assignees and reviewers
         run: |
-          gh pr edit ${{ github.pull_request.id }} --add-assignee "$(yq eval '.assignees | join(",")' .github/auto_assign.yaml)" --add-reviewer "$(yq eval '.reviewers | join(",")' .github/auto_assign.yaml)"
+          gh pr edit ${{ github.event.pull_request.number }} --add-assignee "$(yq eval '.assignees | join(",")' .github/auto_assign.yaml)" --add-reviewer "$(yq eval '.reviewers | join(",")' .github/auto_assign.yaml)"
