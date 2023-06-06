@@ -8,8 +8,7 @@ on:
 env:
   GH_TOKEN: ${{ github.token }}
 
-permissions:
-  pull-requests: write
+permissions: write-all
 
 jobs:
   add-reviews:
