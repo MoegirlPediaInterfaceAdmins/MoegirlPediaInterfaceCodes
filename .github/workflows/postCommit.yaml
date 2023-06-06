@@ -16,6 +16,7 @@ on:
       - .browserslistrc
       - .*.yaml
       - package-lock.json
+  merge_group:
   pull_request:
     paths:
       - scripts/**/*.js
