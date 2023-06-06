@@ -33,4 +33,5 @@ div.vectorMenu li.checkuser-show {
 
 .copyUsername {
     margin-left: 0.5rem;
+    user-select: none;
 }

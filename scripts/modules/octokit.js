@@ -1,7 +1,7 @@
 import console from "../modules/console.js";
 import fs from "fs";
 import yaml from "yaml";
-const { assignees } = yaml.parse(fs.readFileSync(".github/auto_assign.yml", { encoding: "utf-8" }));
+const { assignees } = yaml.parse(fs.readFileSync(".github/auto_assign.yaml", { encoding: "utf-8" }));
 import { startGroup, endGroup } from "@actions/core";
 import { Octokit } from "@octokit/rest";
 import { retry } from "@octokit/plugin-retry";
@@ -15,7 +15,7 @@ const octokitBaseOptions = {
     owner: isInGithubActions ? process.env.GITHUB_REPOSITORY_OWNER : null,
     repo: isInGithubActions ? process.env.GITHUB_REPOSITORY.split("/")[1] : null,
 };
-const workflowLink = isInGithubActions ? `https://github.com/MoegirlPediaInterfaceAdmins/MoegirlPediaInterfaceCodes/actions/runs/${process.env.GITHUB_RUN_ID}` : null;
+const workflowLink = isInGithubActions ? `https://github.com/${octokitBaseOptions.owner}/${octokitBaseOptions.repo}/actions/runs/${process.env.GITHUB_RUN_ID}` : null;
 class OctokitWithRetry extends Octokit.plugin(retry) {
     constructor(authStrategy, auth) {
         if (authStrategy && auth) {
@@ -45,39 +45,48 @@ console.info("workflowLink:", workflowLink);
 console.log("octokitBaseOptions:", octokitBaseOptions);
 console.log("auth:", auth);
 endGroup();
-const createIssue = async (issueTitle, issueBody, labels) => {
+/**
+ * @param {string} issueTitle 
+ * @param {string} issueBody 
+ * @param {string[]} labels 
+ * @param {string} [replyBody] 
+ * @returns {Promise<number>}
+ */
+const createIssue = async (issueTitle, issueBody, labels, replyBody) => {
     if (!isInMasterBranch) {
-        console.info("Not running in the master branch, exit.");
+        console.info("[createIssue]", "Not running in the master branch, exit.");
         return;
     }
-    console.info("[createIssue] Running in the master branch, searching current opened issue with labels:", labels);
+    console.info("[createIssue]", "Running in the master branch, searching current opened issue with labels:", labels);
     const issues = (await octokit.rest.issues.listForRepo({
         labels: labels.join(","),
     })).data;
-    startGroup("[createIssue] Current opened issue:");
+    startGroup("[createIssue]", "Current opened issue:");
     console.info(issues);
     endGroup();
     let issue_number;
-    const runUrl = `https://github.com/${octokitBaseOptions.owner}/${octokitBaseOptions.repo}/actions/runs/${process.env.GITHUB_RUN_ID}`;
-    const body = `${assignees.map((assignee) => `@${assignee}`).join(" ")} Occured at ${runUrl}`;
+    let body = `${assignees.map((assignee) => `@${assignee}`).join(" ")} Occured at ${workflowLink}`;
+    if (replyBody?.length > 0) {
+        body += `\n\n<hr>\n\n${replyBody}`;
+    }
     for (const { number, title, body } of issues) {
-        console.info("[createIssue] Checking issue:", { number, title, body });
+        console.info("[createIssue]", "Checking issue:", { number, title, body });
         if (title !== issueTitle || body !== issueBody) {
-            console.info("[createIssue] Issue is not relative, ignore.");
+            console.info("[createIssue]", "Issue is not relative, ignore.");
             continue;
         }
         if (typeof issue_number !== "number") {
-            console.info("[createIssue] Issue is relative, reuse it:", issue_number);
+            console.info("[createIssue]", "Issue is relative, reuse it:", issue_number);
             issue_number = number;
             continue;
         }
-        console.info("[createIssue] Issue is duplicated, start to close issue...");
+        console.info("[createIssue]", "Issue is duplicated, start to close issue...");
         const result = await octokit.rest.issues.update({
             issue_number: number,
             state: "closed",
             state_reason: "not_planned",
         });
-        startGroup("[createIssue] Successfully closed the issue:");
+        startGroup("[createIssue]", "Successfully closed the issue:");
         console.info(result);
         endGroup();
     }
@@ -88,9 +97,9 @@ const createIssue = async (issueTitle, issueBody, labels) => {
             labels,
             assignees,
         };
-        console.info("[createIssue] No relative issue found, start to create issue:", options);
+        console.info("[createIssue]", "No relative issue found, start to create issue:", options);
         const result = await octokit.rest.issues.create(options);
-        startGroup("[createIssue] Successfully created the issue:");
+        startGroup("[createIssue]", "Successfully created the issue:");
         console.info(result);
         endGroup();
         issue_number = result.data.number;
@@ -99,9 +108,9 @@ const createIssue = async (issueTitle, issueBody, labels) => {
         issue_number,
         body,
     };
-    console.info("[createIssue] Start to reply the relative issue:", options);
+    console.info("[createIssue]", "Start to reply the relative issue:", options);
     const result = await octokit.rest.issues.createComment(options);
-    startGroup("[createIssue] Successfully replied the relative the issue:");
+    startGroup("[createIssue]", "Successfully replied the relative the issue:");
     console.info(result);
     endGroup();
     return issue_number;

@@ -2,11 +2,11 @@
 (async () => {
     /* 函数定义块 */
     //添加删除原因链接
-    function addLink($obj, act) {
+    const addLink = ($obj, act) => {
         const href = $obj.css("margin-left", "1em")[0].href,
             reasonPageName = href.slice(href.indexOf("title=") + 6, href.indexOf("&action"));
         $obj.before(`<a target="_blank" href="/${reasonPageName}">浏览${act}原因</a>`);
-    }
+    };
     /* 函数执行块 */
     await $.ready;
     //删除、保护、版本删除原因浏览链接

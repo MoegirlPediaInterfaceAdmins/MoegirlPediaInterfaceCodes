@@ -19,13 +19,13 @@
             length = +$("#mw-table_pager_limit_label").val();
         let index = 0,
             filter, rfilter, am;
-        const enablePrevLink = function enablePrevLink(b) {
+        const enablePrevLink = (b) => {
             if (!b) { $(".TablePager_nav-prev div").removeClass("TablePager_nav-enabled").addClass("TablePager_nav-disabled"); } else { $(".TablePager_nav-prev div").removeClass("TablePager_nav-disabled").addClass("TablePager_nav-enabled"); }
         };
-        const enableNextLink = function enableNextLink(b) {
+        const enableNextLink = (b) => {
             if (!b) { $(".TablePager_nav-next div").removeClass("TablePager_nav-enabled").addClass("TablePager_nav-disabled"); } else { $(".TablePager_nav-next div").removeClass("TablePager_nav-disabled").addClass("TablePager_nav-enabled"); }
         };
-        const check = function check(am) {
+        const check = (am) => {
             if (am.length <= length) {
                 enableNextLink(false);
                 enablePrevLink(false);
@@ -70,7 +70,7 @@
             $(".TablePager_nav-prev div").on("click", function () {
                 if ($(this).hasClass("TablePager_nav-disabled")) { return false; }
                 index -= length;
-                if (index < 0) { index = 0; }
+                index = Math.max(index, 0);
                 load(am.slice(index, index + length));
             });
             $(".TablePager_nav-next div").on("click", function () {

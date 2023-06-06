@@ -70,11 +70,9 @@ $(() => {
             IPESubmitting = 1;
             return;
         }
-        if ($path.is("#ssi-rightButtons > .btn-primary")) {
-            if (IPESubmitting === 1) {
-                IPESubmitting = 2;
-                return;
-            }
+        if ($path.is("#ssi-rightButtons > .btn-primary") && IPESubmitting === 1) {
+            IPESubmitting = 2;
+            return;
         }
         IPESubmitting = 0;
     }), {

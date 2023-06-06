@@ -1,11 +1,4 @@
 - type: npm
-  moduleName: wikiplus-highlight
-  gadget:
-    name: wikiplus-highlight
-    fileName: MediaWiki:Gadget-wikiplus-highlight.js
-  distFilePath: main.js
-
-- type: npm
   moduleName: luxon
   gadget:
     name: luxon
@@ -29,11 +22,3 @@
     fileName: MediaWiki:Gadget-localforage.js
   distFilePath: dist/localforage.js
   version: "1"
-
-- type: npm
-  moduleName: wikiplus-core
-  gadget:
-    name: Wikiplus
-    fileName: MediaWiki:Gadget-Wikiplus.js
-  distFilePath: dist/Main.js
-  version: "4"

@@ -2,12 +2,12 @@
 
 /* 全局背景图片 */
 body.skin-moeskin #moe-global-background {
-    --theme-background-color: rgb(20 17 29);
-    --background-url: url("https://app.moegirl.org.cn/background/2023NewYear/moeskin_aichat.jpg");
+    --theme-background-color: rgb(185 214 244);
+    --background-url: url("https://app.moegirl.org.cn/background/2023Summer/moeskin_2.jpg");
 }
 
 /* 在常规屏幕设备上使文章区域略微透明，以便展示背景图片 */
-@media (width >= 768px) {
+@media (width > 768px) {
     body.skin-moeskin #moe-main-container {
         --theme-card-background-color: rgb(255 255 255 / 94%);
     }
@@ -75,7 +75,7 @@ aside#moe-global-siderail #moe-custom-sidenav-block h2 {
 }
 
 /* 移动设备优化 */
-@media (width <= 576px) {
+@media (width <=576px) {
 
     /* 清除浮动 */
     body.skin-moeskin .mw-parser-output > * {
@@ -94,7 +94,7 @@ aside#moe-global-siderail #moe-custom-sidenav-block h2 {
 }
 
 /* 优化[[T:Navbox]]在窄屏设备的体验 */
-@media (width <= 768px) {
+@media (width <=768px) {
     html > body.skin-moeskin .navbox {
         border: 1px solid #AAA;
         clear: both;
@@ -148,23 +148,21 @@ aside#moe-global-siderail #moe-custom-sidenav-block h2 {
     }
 }
 
-/* @fix 临时修复 img 元素的宽高 */
-img:not([height]) {
-    height: auto;
-}
-
-a > img {
-    max-width: 100%;
-}
-
-.noresize a > img,
-.infoBoxIcon a > img {
-    max-width: unset;
-}
-
 :is(.image-box, .image-clip, .fit-image) img.lazyload[data-lazy-state="pending"] {
     height: 100vh !important;
     width: 100vw !important;
+}
+
+/* 调整 [[T:Info]] 图标大小 */
+#mw-content-text .infoBox .infoBoxIcon img {
+    max-width: unset;
+}
+
+@media (width <=576px) {
+    #mw-content-text .infoBox .infoBoxIcon img {
+        width: 2rem;
+        height: auto;
+    }
 }
 
 /* 搜索页样式 */
@@ -177,7 +175,7 @@ a > img {
     flex: 1;
 }
 
-@media (width <= 768px) {
+@media (width <=768px) {
     .skin-moeskin #mw-search-top-table {
         flex-direction: column;
     }
@@ -187,7 +185,7 @@ a > img {
     }
 }
 
-@media (width >= 768px) {
+@media (width >=768px) {
     .skin-moeskin #mw-search-top-table {
         justify-content: space-between;
     }
@@ -205,7 +203,7 @@ a > img {
 }
 
 /* 优化[[T:注解]]在窄屏设备的体验 */
-@media (width <= 768px) {
+@media (width <=768px) {
     html > body.skin-moeskin sup.mobileref {
         display: none;
     }

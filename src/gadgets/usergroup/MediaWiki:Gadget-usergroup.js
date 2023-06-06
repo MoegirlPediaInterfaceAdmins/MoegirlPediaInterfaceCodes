@@ -1,8 +1,7 @@
 // <pre>
 "use strict";
-// https://zh.moegirl.org.cn/MediaWiki:Gadget-usergroup.js
-$(() => (async () => {
-    // await mw.loader.using(["moment", "mediawiki.api", "mediawiki.Uri", "mediawiki.user", "ext.gadget.LocalObjectStorage"]);
+(async () => {
+    await $.ready;
     const localObjectStorage = new LocalObjectStorage("usergroup");
     // 以下为需要获取的用户组的列表，按从前往后顺序排序
     // 每个数组第二个元素为颜色，可用关键字、rgba等，参见 [[MediaWiki:Gadget-usergroup.js/color]]
@@ -123,9 +122,9 @@ $(() => (async () => {
     const toLocalTimeZoneString = (date = new Date()) => `${date.getFullYear()}/${fixZero(date.getMonth() + 1)}/${fixZero(date.getDate())} ${fixZero(date.getHours())}:${fixZero(date.getMinutes())}:${fixZero(date.getSeconds())}.${fixZero(date.getMilliseconds(), 3)}`;
     try {
         cache = await localObjectStorage.getItem("cache");
-        if (!$.isPlainObject(cache)
+        if (!cache
             || typeof cache.timestamp !== "number" || cache.timestamp < new Date().getTime() - 30 * 60 * 1000
-            || !$.isPlainObject(cache.groups)) {
+            || !cache.groups) {
             throw new Error();
         } else {
             for (const i of groupsKey) {
@@ -179,44 +178,67 @@ $(() => (async () => {
         }
     }
     await localObjectStorage.setItem("blockCache", blockCache);
+    /**
+     * @type { <E extends Element = HTMLElement>(selectors: string) => E[] }
+     */
+    const querySelectorAll = (selector) => [...document.querySelectorAll(selector)];
+    const markBlocked = (ele, blockInfo) => {
+        ele.classList.add("markBlockInfo");
+        ele.classList.remove("unknownBlockInfo");
+        if (blockInfo.isBlocked) {
+            ele.style.textDecoration = "underline wavy";
+            const sup = document.createElement("sup");
+            sup.classList.add("detailedBlockInfo");
+            sup.title = blockInfo.info;
+            ele.after(sup);
+        }
+    };
     const hook = async () => {
         const unknownUsernames = new Set();
-        $("a.mw-userlink:not(.markrights), .userlink > a:not(.markrights)").each((_, ele) => {
-            const self = $(ele);
-            if (self.closest(".navbox").length) {
-                return;
+        for (const ele of querySelectorAll("a.mw-userlink:not(.markrights), .userlink > a:not(.markrights)")) {
+            let parent = ele.parentElement;
+            let inNavbox = false;
+            while (parent) {
+                if (parent.classList.contains("navbox")) {
+                    inNavbox = true;
+                    break;
+                }
+                parent = parent.parentElement;
+            }
+            if (inNavbox) {
+                continue;
             }
             ele.classList.add("markrights");
-            const uri = new mw.Uri(ele.href);
+            const url = new URL(new mw.Uri(ele.href));
             let username;
-            const path = decodeURIComponent(uri.path);
-            if (/^\/User:[^/=%]+/.test(path)) {
-                username = path.match(/^\/User:([^/=%]+)/)[1].replace(/_/g, " ");
-            } else if (/^User:[^/=%]+/.test(uri.query.title)) {
-                username = uri.query.title.match(/^User:([^/=%]+)/)[1].replace(/_/g, " ");
+            const pathname = decodeURIComponent(url.pathname);
+            const title = url.searchParams.get("title");
+            if (/^\/User:[^/=%]+/.test(pathname)) {
+                username = pathname.match(/^\/User:([^/=%]+)/)[1].replace(/_/g, " ");
+            } else if (/^User:[^/=%]+/.test(title)) {
+                username = title.match(/^User:([^/=%]+)/)[1].replace(/_/g, " ");
             }
-            if (username) {
-                ele.dataset.username = username;
-                groupsKey.forEach((group) => {
-                    if (cache.groups[group].includes(username)) {
-                        self.after(`<sup class="markrights-${group}"></sup>`);
-                    }
-                });
-                if (!self.hasClass("markBlockInfo")) {
-                    const blockInfo = blockCache[username];
-                    if (blockInfo && blockInfo.timestamp) {
-                        self.addClass("markBlockInfo").removeClass("unknownBlockInfo");
-                        if (blockInfo.isBlocked) {
-                            self.css("text-decoration", "underline wavy");
-                            self.after(`<sup class="detailedBlockInfo" title="${blockInfo.info}">[封+]</sup>`);
-                        }
-                    } else {
-                        self.addClass("unknownBlockInfo");
-                        unknownUsernames.add(username);
-                    }
+            if (!username) {
+                continue;
+            }
+            ele.dataset.username = username;
+            for (const group of groupsKey) {
+                if (cache.groups[group].includes(username)) {
+                    const sup = document.createElement("sup");
+                    sup.classList.add(`markrights-${group}`);
+                    ele.after(sup);
                 }
             }
-        });
+            if (!ele.classList.contains("markBlockInfo")) {
+                const blockInfo = blockCache[username];
+                if (blockInfo && blockInfo.timestamp) {
+                    markBlocked(ele, blockInfo);
+                } else {
+                    ele.classList.add("unknownBlockInfo");
+                    unknownUsernames.add(username);
+                }
+            }
+        }
         if (unknownUsernames.size > 0) {
             const has_apihighlimits = (await mw.user.getRights()).includes("apihighlimits");
             const singleRequestLimit = has_apihighlimits ? 500 : 50;
@@ -277,28 +299,34 @@ $(() => (async () => {
                     };
                 }
             }
-            $(".unknownBlockInfo").each((_, ele) => {
+            for (const ele of querySelectorAll(".unknownBlockInfo")) {
                 const { username } = ele.dataset;
                 const blockInfo = blockCache[username];
                 if (blockInfo && blockInfo.timestamp) {
-                    const self = $(ele);
-                    self.addClass("markBlockInfo").removeClass("unknownBlockInfo");
-                    if (blockInfo.isBlocked) {
-                        self.css("text-decoration", "underline wavy");
-                        self.after(`<sup class="detailedBlockInfo" title="${blockInfo.info}">[封+]</sup>`);
-                    }
+                    markBlocked(ele, blockInfo);
                 }
-            });
+            }
             await localObjectStorage.setItem("blockCache", blockCache);
         }
         for (const group of groupsKey) {
-            $(`.markrights-${group}`).nextUntil(':not([class*="markrights-"])').filter(`.markrights-${group}`).remove();
+            for (const node of querySelectorAll(`.markrights-${group}`)) {
+                let nextElementSibling = node.nextElementSibling;
+                while (nextElementSibling && [...nextElementSibling.classList].filter((className) => className.startsWith("markrights-")).length > 0) {
+                    const nextNextElementSibling = nextElementSibling.nextElementSibling;
+                    if (nextElementSibling.classList.contains(`.markrights-${group}`)) {
+                        nextElementSibling.remove();
+                    }
+                    nextElementSibling = nextNextElementSibling;
+                }
+            }
         }
     };
     hook();
     mw.hook("wikipage.content").add(hook);
     mw.hook("anntools.usergroup").add(hook);
-    $(window).on("load", hook);
+    if (document.readyState !== "complete") {
+        $(window).on("load", hook);
+    }
     const style = ["sup[class^=markrights-]+sup[class^=markrights-] { margin-left: 2px; }"];
     for (const [group, color] of groups) {
         style.push(`.markrights-${group} { color: ${color}; }`);
@@ -310,5 +338,5 @@ $(() => (async () => {
         }
     }
     mw.loader.addStyleTag(style.join("\n"));
-})());
+})();
 // </pre>

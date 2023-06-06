@@ -10,21 +10,12 @@
 // declare var InPageEdit: {
 //     [key: string]: any;
 // };
-// interface JQueryStatic {
-//     cachedScript(...args: any[]): any;
-// }
 $(() => (async () => {
     const pagename = mw.config.get("wgPageName");
     if (mw.config.get("wgNamespaceNumber") !== 8 || pagename.includes(".js") || pagename.includes(".css")) {
         return;
     }
     // await mw.loader.using(["mediawiki.api", "oojs-ui"]);
-
-    $.cachedScript = (url, options) => $.ajax($.extend(options || {}, {
-        dataType: "script",
-        cache: true,
-        url,
-    }));
 
     const pageid = mw.config.get("wgArticleId");
     const basepage = pagename.replace(/\/.*?$/, "");
@@ -164,7 +155,7 @@ $(() => (async () => {
                 },
             ],
         };
-        constructor (config) {
+        constructor(config) {
             // Parent constructor
             super(config);
 
@@ -351,7 +342,7 @@ $(() => (async () => {
 
             if (!window.OpenCC && this.config.useOpenCC) {
                 // Load in order to prevent reference error
-                await $.cachedScript("https://npm.elemecdn.com/opencc-js@latest");
+                await libCachedCode.injectCachedCode("https://npm.elemecdn.com/opencc-js@1.0.5/dist/umd/cn2t.js", "script");
                 /* global OpenCC */
             }
 

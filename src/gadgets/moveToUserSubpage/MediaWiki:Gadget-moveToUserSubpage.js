@@ -18,9 +18,7 @@ $(() => {
         $("#mw-notification-area").appendTo($body);
 
         const pagename = mw.config.get("wgPageName");
-        const convTemplate = function (str, name, val) {
-            return str.replaceAll(`$${name}`, val);
-        };
+        const convTemplate = (str, name, val) => str.replaceAll(`$${name}`, val);
         class MTUSWindow extends OO.ui.ProcessDialog {
             static static = {
                 ...super.static,

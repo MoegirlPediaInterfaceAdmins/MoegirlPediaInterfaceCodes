@@ -3,14 +3,13 @@
  * 这里的任何JavaScript将在 MoeSkin 皮肤下加载
  * 请尊重萌娘百科版权，以下代码复制需要注明原自萌娘百科，并且附上URL地址http://zh.moegirl.org.cn/MediaWiki:MoeSkin.js
  * 版权协定：知识共享 署名-非商业性使用-相同方式共享 3.0
- *  loader模块 写法参见 https://www.mediawiki.org/wiki/ResourceLoader/Modules#mw.loader.load
  */
 (async () => {
     /**
      * fixWikiLove
      * @FIXME WikiLove
      */
-    async function fixWikiLove() {
+    const fixWikiLove = async () => {
         /** @type {JQuery<HTMLAnchorElement>} */
         const $wikiLoveBtn = $("#moe-page-tools a#ca-wikilove");
         if (!$wikiLoveBtn.length) {
@@ -21,7 +20,7 @@
             e.preventDefault();
             $.wikiLove.openDialog();
         });
-    }
+    };
 
     /**
      * fix a few image issues by extending mw.Title.newFromImg
@@ -29,7 +28,7 @@
      */
     async function fixImage() {
         await mw.loader.using("mediawiki.Title");
-        mw.Title.newFromImg = function(img) {
+        mw.Title.newFromImg = (img) => {
             let matches, i, regex;
             const thumbPhpRegex = /thumb\.php/,
                 regexes = [
@@ -54,22 +53,22 @@
             }
             return null;
         };
-        
+
         /* gallery-slideshow */
         if (["loading", "loaded", "executing", "ready", "error"].includes(mw.loader.getState("mediawiki.page.gallery.slideshow"))) {
-            const {getImageInfo} = mw.GallerySlideshow.prototype;
-            mw.GallerySlideshow.prototype.getImageInfo = function($img) {
+            const { getImageInfo } = mw.GallerySlideshow.prototype;
+            mw.GallerySlideshow.prototype.getImageInfo = function ($img) {
                 if ($img.attr("src") === undefined) {
                     $img.attr("src", $img.data("lazy-src"));
                 }
-                return getImageInfo.call(this, $img);
+                return getImageInfo.bind(this)($img);
             };
             $("li.gallerycarousel").remove();
-            mw.util.$content.find(".mw-gallery-slideshow").each(function() {
+            mw.util.$content.find(".mw-gallery-slideshow").each(function () {
                 new mw.GallerySlideshow(this);
             });
         }
-        
+
         /* MultiMediaViewer */
         if (mw.config.get("wgMediaViewerOnClick") && ["loading", "loaded", "executing", "ready"].includes(mw.loader.getState("mmv.bootstrap.autostart"))) {
             await mw.loader.using("mmv.bootstrap.autostart");
@@ -81,7 +80,7 @@
     /**
      * @returns {JQuery<HTMLDivElement>}
      */
-    function useCustomSidenavBlock() {
+    const useCustomSidenavBlock = () => {
         let $block = $("aside#moe-global-siderail #moe-custom-sidenav-block");
         if (!$block.length) {
             $block = $("<div>", {
@@ -96,7 +95,7 @@
             $("aside#moe-global-siderail .moe-siderail-sticky").before($block);
         }
         return $block;
-    }
+    };
     /**
      * @param {string} portletId
      * @param {string} href
@@ -107,7 +106,7 @@
      * @param {string?} nextnode
      * @returns {HTMLLIElement}
      */
-    function addPortletLink(portletId, href, text, id, tooltip, accesskey, nextnode) {
+    const addPortletLink = (portletId, href, text, id, tooltip, accesskey, nextnode) => {
         const $block = useCustomSidenavBlock();
         const $li = $("<li>", {
             id,
@@ -123,7 +122,7 @@
         );
         $block.find("#moe-custom-sidenav-block-list").append($li);
         return $li.get(0);
-    }
+    };
     // assign functions
     try {
         /**
@@ -152,7 +151,7 @@
     mw.hook("moeskin.addPortletLink").fire({ addPortletLink, useCustomSidenavBlock });
 
     /* applyPageTools */
-    function applyPageTools() {
+    const applyPageTools = () => {
         /**
          * @returns {JQuery<HTMLDivElement>}
          */
@@ -167,7 +166,7 @@
          * @param {('action' | 'extra')?} type
          * @returns {JQuery<HTMLAnchorElement>}
          */
-        function addPageToolsButton(icon, tooltip, type = "action") {
+        const addPageToolsButton = (icon, tooltip, type = "action") => {
             const $pageTools = usePageTools();
             const $button = usePageToolsButton();
             $button.find("> .xicon").append(icon || "?");
@@ -184,16 +183,16 @@
             }
 
             return $button;
-        }
+        };
         mw.hook("moeskin.pagetools").fire({
             usePageTools,
             usePageToolsButton,
             addPageToolsButton,
         });
-    }
+    };
 
     /** 外部链接提示 */
-    async function externalLinkConfirm() {
+    const externalLinkConfirm = async () => {
         await mw.loader.using(["ext.gadget.site-lib", "oojs-ui-windows", "oojs-ui-core"]);
         /** @param {URL} url */
         const getConfirmMessage = (url) => {
@@ -221,7 +220,7 @@
             const response = await OO.ui.confirm(getConfirmMessage(hrefURL));
             response && window.open(hrefURL.href);
         });
-    }
+    };
 
     /* 等待 document 加载完毕 */
     await $.ready;
@@ -232,7 +231,7 @@
     /* PageTools */
     applyPageTools();
     /* linkConfirm */
-    if ("ontouchstart" in document && !location.host.startsWith("mobile")) {
+    if (Reflect.has(document, "ontouchstart") && !location.host.startsWith("mobile")) {
         externalLinkConfirm();
     }
 })();

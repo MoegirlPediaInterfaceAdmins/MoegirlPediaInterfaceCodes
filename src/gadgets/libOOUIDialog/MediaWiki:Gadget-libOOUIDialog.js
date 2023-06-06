@@ -64,8 +64,6 @@
         }
     }]));
     const sanity = $("<span>");
-    window.oouiDialog.sanitize = function (text) {
-        return sanity.text(text).html();
-    };
+    window.oouiDialog.sanitize = (text) => sanity.text(text).html();
 })();
 // </pre>

@@ -1,7 +1,7 @@
 import console from "../modules/console.js";
 console.info("Initialization done.");
 import { startGroup, endGroup, setOutput } from "@actions/core";
-import { git } from "../modules/git.js";
+import git from "../modules/git.js";
 import { isInGithubActions, isPullRequest } from "../modules/octokit.js";
 import jsonModule from "../modules/jsonModule.js";
 
@@ -15,7 +15,7 @@ const contentConfigs = [
 /**
  * @type {(files: string[]) => boolean}
  */
-const detectContentChanged = (files) => files.filter((file) => file.startsWith("src/") || contentConfigs.includes(file) || /^\.[^.\\]+\.yaml$/.test(file)).length > 0;
+const detectContentChanged = (files) => files.filter((file) => file.startsWith("src/") || contentConfigs.includes(file) || /^\.[^./]+\.yaml$/.test(file)).length > 0;
 if (!isInGithubActions) {
     console.info("Not running in github actions, exit.");
     process.exit(0);

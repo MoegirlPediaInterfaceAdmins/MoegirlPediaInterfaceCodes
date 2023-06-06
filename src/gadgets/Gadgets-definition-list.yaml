@@ -27,6 +27,7 @@
     - SideBarPic
     - SpecialWikitext
     - hideAutopromoteLog
+    - temp-svgFix
 
 - name: skin
   gadgets:
@@ -52,6 +53,7 @@
     - usergroup
     - queryContributions
     - userpageDelete
+    - SendWelcomeMessage
 
 - name: editing
   gadgets:
@@ -136,3 +138,4 @@
     - echarts4
     - echarts5
     - echarts
+    - libCachedCode

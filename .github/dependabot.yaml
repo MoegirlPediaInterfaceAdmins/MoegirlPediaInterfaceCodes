@@ -13,6 +13,7 @@ updates:
       timezone: "Asia/Shanghai"
     commit-message:
       prefix: "npm"
+      include: "scope"
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
@@ -21,3 +22,4 @@ updates:
       timezone: "Asia/Shanghai"
     commit-message:
       prefix: "github-actions"
+      include: "scope"

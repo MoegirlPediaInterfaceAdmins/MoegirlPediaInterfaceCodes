@@ -21,7 +21,8 @@ rights:
 
 peers: []
 
-dependencies: []
+dependencies:
+  - mediawiki.api
 
 _sites:
   - zh

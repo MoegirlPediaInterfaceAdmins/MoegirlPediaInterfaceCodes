@@ -2,11 +2,11 @@
 /* 这里的任何JavaScript将在全站加载
  * 请尊重萌娘百科版权，以下代码复制需要注明原自萌娘百科，并且附上URL地址http://zh.moegirl.org.cn/MediaWiki:Common.js
  * 版权协定：知识共享 署名-非商业性使用-相同方式共享 3.0 中国大陆
- *  loader模块 写法参见 https://www.mediawiki.org/wiki/ResourceLoader/Modules#mw.loader.load
  */
 "use strict";
 (async () => {
     /* 函数定义体 */
+    const { wgUserGroups, wgServer, wgScriptPath, wgPageName, wgAction, skin, wgNamespaceNumber, wgMainPageTitle } = mw.config.get();
     /* 以下为允许添加版权声明的名字空间列表 */
     const copyRightsNameSpaces = [
         0, // （主）
@@ -17,19 +17,19 @@
         274, //Widget
         828, //Module
     ];
-    /* 检查是否为维护组成员 */
-    const wgUserGroups = mw.config.get("wgUserGroups");
-    const isMGPMGUser = wgUserGroups.includes("patroller") || wgUserGroups.includes("sysop");
+    /* 检查是否为维护人员 */
+    const allowedGroups = ["sysop", "patroller", "staff"];
+    const allowedInGroup = wgUserGroups.filter((group) => allowedGroups.includes(group)).length > 0;
     /* MediaViewer#populateStatsFromXhr 错误屏蔽 */
-    const getResponseHeader = XMLHttpRequest.prototype.getResponseHeader;
+    const { getResponseHeader } = XMLHttpRequest.prototype;
     XMLHttpRequest.prototype.getResponseHeader = function (name) {
         return `\n${this.getAllResponseHeaders().toLowerCase()}`.includes(`\n${name.toLowerCase()}: `) ? getResponseHeader.bind(this)(name) : (console.info(`Refused to get unsafe header "${name}"\n`, this, "\n", new Error().stack), null);
     };
     // Extension:MultimediaViewer的半透明化修改，用于保持背景文字处于原位，本应修改插件达成的，暂时先用JavaScript应急处理下
-    function multimediaViewer() {
+    const multimediaViewer = () => {
         const _scrollTo = window.scrollTo;
         let flag = location.hash.startsWith("#/media/");
-        window.scrollTo = function scrollTo(x_option, y) {
+        window.scrollTo = (x_option, y) => {
             if (flag) {
                 console.info("Prevent multimediaViewer called");
             } else if (y === undefined) {
@@ -77,9 +77,9 @@
                 mw.config.set("wgMultimediaViewerInjected", "off");
             }
         }, 137);
-    }
+    };
     // 跨站重定向页顶链接
-    function crossDomain_link(url) {
+    const crossDomain_link = (url) => {
         const link = url.query.title;
         const domain = url.host;
         const crossDomain = $("<div/>");
@@ -88,8 +88,8 @@
         anchor.attr("href", `${url}`).text(`${link} 【来自 ${domain} 的跨站重定向】`);
         crossDomain.append(anchor);
         $("#contentSub").prepend(crossDomain);
-    }
-    function crossDomain_link_moeskin(url) {
+    };
+    const crossDomain_link_moeskin = (url) => {
         const link = url.query.title;
         const domain = url.host;
         const crossDomain = $("<div/>");
@@ -98,9 +98,9 @@
         anchor.attr("href", `${url}`).text(`${link} 【来自 ${domain} 的跨站重定向】`);
         crossDomain.append(anchor);
         $("#tagline").after(crossDomain);
-    }
+    };
     // 复制修改内容
-    async function copyRights() {
+    const copyRights = async () => {
         await mw.loader.using("mediawiki.util");
         const div =
             $("<div>", {
@@ -109,7 +109,7 @@
                     left: "-99999px",
                     "z-index": "-99999",
                 },
-                html: `<pre></pre><br>\n阅读更多：${/%/.test(mw.util.wikiUrlencode(mw.config.get("wgPageName"))) ? `${mw.config.get("wgPageName")}（${mw.config.get("wgServer")}${mw.config.get("wgScriptPath")}/${encodeURIComponent(mw.config.get("wgPageName"))} ）` : `${mw.config.get("wgServer")}${mw.config.get("wgScriptPath")}/${mw.config.get("wgPageName")}`}<br>\n本文引自萌娘百科(${mw.config.get("wgServer").replace(/^\/\//, "https://")} )，文字内容默认使用《知识共享 署名-非商业性使用-相同方式共享 3.0 中国大陆》协议。`,
+                html: `<pre></pre><br>\n阅读更多：${/%/.test(mw.util.wikiUrlencode(wgPageName)) ? `${wgPageName}（${wgServer}${wgScriptPath}/${encodeURIComponent(wgPageName)} ）` : `${wgServer}${wgScriptPath}/${wgPageName}`}<br>\n本文引自萌娘百科(${wgServer.replace(/^\/\//, "https://")} )，文字内容默认使用《知识共享 署名-非商业性使用-相同方式共享 3.0 中国大陆》协议。`,
             }).appendTo("body"),
             valueNode = div.find("pre");
         $("#mw-content-text").on("copy", () => {
@@ -133,12 +133,12 @@
             }, 0);
             // }
         });
-    }
+    };
     // 页顶活动通知
-    async function noticeActivityClose() {
+    const noticeActivityClose = async () => {
         const noticeActivity = $("body").children("#content, #app").find("#notice-activity");
-        const isMoeskin = mw.config.get("skin") === "moeskin";
-        const styles = mw.config.get("skin") === "moeskin" ? {
+        const isMoeskin = skin === "moeskin";
+        const styles = skin === "moeskin" ? {
             visible: {
                 "user-select": "none",
                 "text-align": "center",
@@ -235,17 +235,17 @@
                 link.trigger("click");
             }
         }
-    }
+    };
     // 页顶通知
-    function parseLocalStorageItemAsArray(key) {
+    const parseLocalStorageItemAsArray = (key) => {
         try {
             const result = JSON.parse(localStorage.getItem(key));
             return Array.isArray(result) ? result : [];
         } catch {
             return [];
         }
-    }
-    async function topNoticeScroll() {
+    };
+    const topNoticeScroll = async () => {
         const siteNotice = $("body.skin-vector > #content > #siteNotice, body.skin-moeskin > #app > #moe-full-container > #moe-main-container > main > #moe-global-sidenav #moe-sidenav-sitenotice");
         const noticeType = {
             pinnedAnnouncement: "置顶公告",
@@ -262,7 +262,7 @@
             const currentLinks = [];
             const newLinks = [];
             links.each((_, link) => {
-                const href = link.href;
+                const { href } = link;
                 const text = link.text.trim();
                 currentLinks.push(href);
                 if (!existLinks.includes(href)) {
@@ -312,17 +312,17 @@
                 title: "有新的站务通知（点击通知空白处关闭）",
             });
         }
-    }
+    };
     // 跨站重定向页顶链接
-    async function crossDomainDetect() {
+    const crossDomainDetect = async () => {
         await mw.loader.using(["mediawiki.Uri"]);
-        const rdfrom = new mw.Uri().query.rdfrom;
+        const { rdfrom } = new mw.Uri().query;
         if (rdfrom) {
             const rdfromUri = new mw.Uri(rdfrom);
             if (!rdfromUri.host.includes([104, 109, 111, 101].map((n) => String.fromCharCode(n)).join(""))) {
-                const query = rdfromUri.query;
+                const { query } = rdfromUri;
                 if (query.title && query.redirect === "no") {
-                    if (mw.config.get("skin") === "moeskin") {
+                    if (skin === "moeskin") {
                         crossDomain_link_moeskin(rdfromUri);
                     } else {
                         crossDomain_link(rdfromUri);
@@ -330,39 +330,39 @@
                 }
             }
         }
-    }
+    };
     // 修复用户页左侧栏头像链接
-    async function leftPanelAvatarLink() {
+    const leftPanelAvatarLink = async () => {
         await mw.loader.using(["mediawiki.Uri"]);
         $("#t-viewavatar > a").each((_, ele) => {
             const uri = new mw.Uri(ele.href);
             uri.host = uri.host.replace("zh.moegirl", "commons.moegirl");
             ele.href = uri;
         });
-    }
+    };
     // 修正hash跳转错误
-    async function hashJump() {
+    const hashJump = async () => {
         await mw.loader.using(["jquery.makeCollapsible"]);
         $(".mw-collapsible").makeCollapsible();
-        const hash = location.hash;
+        const { hash } = location;
         location.hash = "";
         location.hash = hash;
-    }
+    };
     /* 函数执行体 */
     await $.ready;
     // Extension:MultimediaViewer的半透明化修改
     multimediaViewer();
     // Add "mainpage" class to the body element
-    if (mw.config.get("wgMainPageTitle") === mw.config.get("wgPageName") && mw.config.get("wgAction") === "view") {
+    if (wgMainPageTitle === wgPageName && wgAction === "view") {
         $("body").addClass("mainpage");
     }
     // 复制内容版权声明
-    if (window.getSelection && !isMGPMGUser && !["edit", "submit"].includes(mw.config.get("wgAction")) && copyRightsNameSpaces.includes(mw.config.get("wgNamespaceNumber"))) {
+    if (window.getSelection && !allowedInGroup && !["edit", "submit"].includes(wgAction) && copyRightsNameSpaces.includes(wgNamespaceNumber)) {
         copyRights();
     }
     // 修复代码编辑器$.ucFirst引用错误
     $.extend({
-        ucFirst: function (_s) {
+        ucFirst: (_s) => {
             const s = `${_s}`;
             return s.charAt(0).toUpperCase() + s.substring(1);
         },
@@ -384,6 +384,10 @@
     leftPanelAvatarLink();
     if (wgUserGroups.includes("user")) {
         topNoticeScroll();
+    }
+    // 禁止移动被挂删的页面
+    if (!allowedInGroup && $(".will2Be2Deleted")[0]) {
+        $("#ca-move").remove();
     }
     // 以下代码必须在全部内容加载完成后才能正常工作
     $(window).on("load", () => {

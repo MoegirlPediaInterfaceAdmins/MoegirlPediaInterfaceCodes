@@ -18,7 +18,9 @@ const browserifyTargets = await yamlModule.readFile("scripts/browserify/targets.
 startGroup("browserifyTargets:");
 console.info(browserifyTargets);
 endGroup();
-const tempPath = await mkdtmp(true);
+const tempPath = await mkdtmp({
+    local: true,
+});
 const inputPath = path.join(tempPath, "input.js");
 const [nomalOutput, jsonOutput] = await Promise.all([exec("npm ls"), exec("npm ls --json")]);
 console.info("npm ls:", nomalOutput);

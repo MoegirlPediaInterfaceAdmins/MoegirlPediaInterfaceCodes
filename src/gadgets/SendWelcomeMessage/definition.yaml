@@ -1,0 +1,35 @@
+ResourceLoader: true
+
+hidden: false
+
+default: false
+
+supportsUrlLoad: false
+
+targets: []
+
+skins: []
+
+actions: []
+
+type: general
+
+package: false
+
+rights:
+  - patrolleredit
+
+peers: []
+
+dependencies:
+  - ext.gadget.libOOUIDialog
+  - mediawiki.api
+
+_sites:
+  - zh
+
+_section: user
+
+_files:
+  - MediaWiki:Gadget-SendWelcomeMessage.js
+  - MediaWiki:Gadget-SendWelcomeMessage.css

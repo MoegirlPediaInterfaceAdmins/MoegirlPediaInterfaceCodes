@@ -11,7 +11,7 @@
 
     /* 与[[Module:SpecialWikitext]]保持一致 */
     const wikiTextKey = "_addText";
-    function lua_addText(input_str, new_str, _escape) {
+    const lua_addText = (input_str, new_str, _escape) => {
         let input_string = input_str;
         if (new_str !== "") {
             if (input_string !== "") {
@@ -27,8 +27,8 @@
             input_string += text;
         }
         return input_string;
-    }
-    function lua_getString(str) {
+    };
+    const lua_getString = (str) => {
         let test_str = /[^\n]*\*\//.exec(str);
         if (test_str) {
             test_str = test_str[0] || "";
@@ -42,8 +42,8 @@
             return trim_check.substr(1, trim_check.length - 2);
         }
         return test_str;
-    }
-    function lua_getContentText(str) {
+    };
+    const lua_getContentText = (str) => {
         let wikitext = "";
         try {
             str.replace(new RegExp(`${wikiTextKey}\\s*\\{[^c\\}]*content\\s*:\\s*[^\n]*`, "g"), (text) => {
@@ -60,8 +60,8 @@
             return "";
         }
         return wikitext;
-    }
-    function lua_getObjText(str) {
+    };
+    const lua_getObjText = (str) => {
         let wikitext = "";
         try {
             str.replace(new RegExp(`${wikiTextKey}\\s*[\\=:]\\s*[^\n]*`, "g"), (text) => {
@@ -77,8 +77,8 @@
             return "";
         }
         return wikitext;
-    }
-    function lua_getCSSwikitext(input_string) {
+    };
+    const lua_getCSSwikitext = (input_string) => {
         let wikitext = "";
         const css_text = getCleanText(input_string || $("#wpTextbox1").val() || "");
         if (css_text === "") {
@@ -87,8 +87,8 @@
         wikitext = lua_addText(wikitext, lua_getContentText(css_text), true);
         wikitext = lua_addText(wikitext, lua_getObjText(css_text), true);
         return wikitext;
-    }
-    function lua_getJSwikitext(input_string) {
+    };
+    const lua_getJSwikitext = (input_string) => {
         let wikitext = "";
         const js_text = getCleanText(input_string || $("#wpTextbox1").val() || "");
         if (js_text === "") {
@@ -96,8 +96,8 @@
         }
         wikitext = lua_addText(wikitext, lua_getObjText(js_text), true);
         return wikitext;
-    }
-    function lua_getJSONwikitext(input_string) {
+    };
+    const lua_getJSONwikitext = (input_string) => {
         let wikitext = "";
         const json_text = getCleanText(input_string || $("#wpTextbox1").val() || "");
         if (json_text === "") {
@@ -125,8 +125,8 @@
             return "";
         }
         return wikitext;
-    }
-    function lua_check(input_string, content_model) {
+    };
+    const lua_check = (input_string, content_model) => {
         const contentModel = `${content_model || mw.config.get("wgPageContentModel")}`.toLowerCase();
         switch (contentModel) {
             case "json":
@@ -142,7 +142,7 @@
             default:
                 return "";
         }
-    }
+    };
     /* 与[[Module:SpecialWikitext]]保持一致 */
 
     const api = new mw.Api();

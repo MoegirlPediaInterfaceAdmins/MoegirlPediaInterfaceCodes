@@ -1,5 +1,4 @@
 /**
- * 
  * @param {any[]} a 
  * @param {any[]} b 
  * @returns 

@@ -1,7 +1,7 @@
 import console from "../modules/console.js";
 console.info("Initialization done.");
-import mailmapSet from "../modules/mailmapSet.js";
-import { git } from "../modules/git.js";
+import mailmap from "../modules/mailmap.js";
+import git from "../modules/git.js";
 import { startGroup, endGroup } from "@actions/core";
 import { isInGithubActions } from "../modules/octokit.js";
 
@@ -30,10 +30,10 @@ if (isInGithubActions) {
     endGroup();
     for (const { author: { email: authorEmail, name: authorName }, committer: { email: committerEmail, name: committerName }, id, message, url } of allCommits) {
         const failure = [];
-        if (!detectIfBot(authorName, authorEmail) && !mailmapSet.includes(authorEmail)) {
+        if (!detectIfBot(authorName, authorEmail) && !Reflect.has(mailmap, authorEmail)) {
             failure.push(`author: ${authorName} <${authorEmail}>`);
         }
-        if (!detectIfBot(committerName, committerEmail) && !mailmapSet.includes(committerEmail)) {
+        if (!detectIfBot(committerName, committerEmail) && !Reflect.has(mailmap, committerEmail)) {
             failure.push(`committer: ${committerName} <${committerEmail}>`);
         }
         if (failure.length > 0) {
@@ -52,7 +52,7 @@ if (isInGithubActions) {
     console.info(localGitConfigs);
     endGroup();
     for (const { type, email, name } of localGitConfigs) {
-        if (!mailmapSet.includes(email)) {
+        if (!Reflect.has(mailmap, email)) {
             failures.push({ type, failure: `${name} <${email}>` });
         }
     }

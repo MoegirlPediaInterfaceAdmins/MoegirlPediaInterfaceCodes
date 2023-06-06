@@ -2,7 +2,7 @@
 
 萌娘百科界面代码库
 
-[![Linter test](https://github.com/MoegirlPediaInterfaceAdmins/MoegirlPediaInterfaceCodes/actions/workflows/Linter%20test.yml/badge.svg)](https://github.com/MoegirlPediaInterfaceAdmins/MoegirlPediaInterfaceCodes/actions/workflows/Linter%20test.yml)  [![post commit CI](https://github.com/MoegirlPediaInterfaceAdmins/MoegirlPediaInterfaceCodes/actions/workflows/postCommit.yml/badge.svg)](https://github.com/MoegirlPediaInterfaceAdmins/MoegirlPediaInterfaceCodes/actions/workflows/postCommit.yml)
+[![post commit CI](https://github.com/MoegirlPediaInterfaceAdmins/MoegirlPediaInterfaceCodes/actions/workflows/postCommit.yaml/badge.svg)](https://github.com/MoegirlPediaInterfaceAdmins/MoegirlPediaInterfaceCodes/actions/workflows/postCommit.yaml) [![MoegirlPediaInterfaceAdmins Project](https://img.shields.io/badge/MoegirlPediaInterfaceAdmins-Project-blue?style=flat&logo=github&labelColor=343B42)](https://github.com/orgs/MoegirlPediaInterfaceAdmins/projects/1/views/1)
 
 欢迎来到萌娘百科界面代码库，本仓库由[萌娘百科界面管理员](https://zh.moegirl.org.cn/_?curid=489391)所组成的[团队](https://github.com/MoegirlPediaInterfaceAdmins)维护，旨在以自动化的方式减轻维护界面代码的复杂度。
 
@@ -10,27 +10,29 @@
 
 ## 仓库架构
 
+### 仓库文件架构
+
 本仓库包含多组文件用以实现不同用途，详情见下。
 
 <details><summary>仓库架构详情</summary>
 
 - [`.github`](.github) 文件夹用以保存 GitHub Dependabot 和 GitHub Actions 所需配置文件，其中：
-  - [`.github/workflows/Linter test.yml`](.github/workflows/Linter_test.yml) 用以保存使用 [eslint](https://eslint.org/)、[stylelint](https://stylelint.io/) 和 [pajv](https://www.npmjs.com/package/pajv) 进行代码测试流程，该流程成功完成时会触发[机器人](https://zh.moegirl.org.cn/User:AnnAngela-dbot)的[编译流程](#编译流程)；
-  - [`.github/workflows/postCommit.yml`](.github/workflows/postCommit.yml) 用以保存自动化流程，包含自动配置 Conventional Commits（约定式提交）所需 scope（作用域）信息、自动导入来自 npm 和指定页面的代码、自动补全小工具列表和自动生成 polyfill 文件；
-  - [`.github/workflows/generateUnrecognizableFeatures.yml`](.github/workflows/generateUnrecognizableFeatures.yml) 用以定时生成 [`scripts/generatePolyfill/unrecognizableFeatures.json`](scripts/generatePolyfill/unrecognizableFeatures.json) 以减少生成 polyfill 时的网络请求；
-    - [`.github/workflows/auto_assign.yml`](.github/workflows/auto_assign.yml) 用以自动对 pull request 和 issue 添加 assignees 和 reviewers（若有）。
+  - [`.github/workflows/postCommit.yaml`](.github/workflows/postCommit.yaml) 用以保存自动化流程，包含自动配置 Conventional Commits（约定式提交）所需 scope（作用域）信息、自动导入来自 npm 和指定页面的代码、自动补全小工具列表和自动生成 polyfill 文件；
+  - [`.github/workflows/generateUnrecognizableFeatures.yaml`](.github/workflows/generateUnrecognizableFeatures.yaml) 用以定时生成 [`scripts/generatePolyfill/unrecognizableFeatures.json`](scripts/generatePolyfill/unrecognizableFeatures.json) 以减少生成 polyfill 时的网络请求；
+    - [`.github/workflows/auto_assign.yaml`](.github/workflows/auto_assign.yaml) 用以自动对 pull request 和 issue 添加 assignees 和 reviewers（若有）。
 - [`.vscode/settings.json`](.vscode/settings.json) 用来保存 Conventional Commits（约定式提交）所需 scope（作用域）信息；
 - [`scripts`](scripts) 文件夹用以保存流程所需代码，其中：
   - [`scripts/postCommit/prepareGit.js`](scripts/postCommit/prepareGit.js) 用来准备 Github Actions 上的 git 环境，自动生成 author 和 committer 的相关信息；
   - [`scripts/browserify/index.js`](scripts/browserify/index.js) 用来通过 [browserify](https://browserify.org/) 库导入来自 npm 的代码，其目标在 [`scripts/browserify/targets.yaml`](scripts/browserify/targets.yaml) 中定义；
   - [`scripts/prefetch/index.js`](scripts/prefetch/index.js) 用来导入来自指定页面的代码，其目标在 [`scripts/prefetch/targets.yaml`](scripts/prefetch/targets.yaml) 中定义；
   - [`scripts/generatePolyfill/index.js`](scripts/generatePolyfill/index.js) 用来自动生成 polyfill 文件，该代码使用了来自《金融时报》的 [polyfill.io](https://polyfill.io/v3/)（[Financial-Times/polyfill-service](https://github.com/Financial-Times/polyfill-service)）和 [Financial-Times/polyfill-library](https://github.com/Financial-Times/polyfill-library)；
-  - [`scripts/gadgetsDefinitionGenerator/index.js`](scripts/gadgetsDefinitionGenerator/index.js) 用来自动补全小工具列表，当发现新增小工具时，该代码会自动将对应小工具插入到 [`src/gadgets/Gadgets-definition-list.yaml`](src/gadgets/Gadgets-definition-list.yaml) 的响应列表的末尾；
-  - [`scripts/conventionalCommitsScopesGenerator/index.js`](scripts/conventionalCommitsScopesGenerator/index.js) 用来自动配置 Conventional Commits（约定式提交）所需 scope（作用域）信息；
+  - [`scripts/generateGadgetsDefinition/index.js`](scripts/generateGadgetsDefinition/index.js) 用来自动补全小工具列表，当发现新增小工具时，该代码会自动将对应小工具插入到 [`src/gadgets/Gadgets-definition-list.yaml`](src/gadgets/Gadgets-definition-list.yaml) 的响应列表的末尾；
+  - [`scripts/generateConventionalCommitsScopes/index.js`](scripts/generateConventionalCommitsScopes/index.js) 用来自动配置 Conventional Commits（约定式提交）所需 scope（作用域）信息；
   - [`scripts/postCommit/linguist-generated.js`](scripts/postCommit/linguist-generated.js) 用来自动生成 [`.gitattributes`](.gitattributes) 以告知 Github 如何区分代码是否自动生成；
   - [`scripts/postCommit/push.js`](scripts/postCommit/push.js) 用来推送由 Github Actions 做出的更改；
   - [`scripts/generateUnrecognizableFeatures/index.js`](scripts/generateUnrecognizableFeatures/index.js) 用来生成 [`scripts/generatePolyfill/unrecognizableFeatures.json`](scripts/generatePolyfill/unrecognizableFeatures.json) 以减少生成 polyfill 时的网络请求；
   - [`scripts/emailmapChecker/index.js`](scripts/emailmapChecker/index.js) 用来检查相关用户是否将其萌娘百科用户名和邮箱地址添加到 [`.mailmap`](.mailmap)，若当前环境为本地则检测 git 配置文件里的邮箱地址，若当前环境为 Github Actions 则检查相关 commits 的邮箱地址。
+  - [`scripts/ci/before.js`](scripts/ci/before.js) 和 [`scripts/ci/after.js`](scripts/ci/after.js) 用来在 `npm run ci` 里自动替换 [`package-lock.json`](package-lock.json) 里的 `resolved` 对应的 registry 为你本地设置的 registry，有助于加快安装速度。
 - 自动化工具的配置文件：
   - [`.eslintrc.yaml`](.eslintrc.yaml) 配置 eslint，由于所有 Javascript 代码都需经过编译，故其 `parserOptions.ecmaVersion` 被指定为 `latest` 以便充分利用最新标准；
   - [`tsconfig.json`](tsconfig.json) 配置 tsc，由于需要生成能通过小工具扩展验证的代码，故其 `compilerOptions.target` 被指定为 `ES3`；
@@ -52,6 +54,14 @@
 - [小工具部分](src/gadgets)：通过 `definition.yaml` 的 `_sites` 属性指定站点；
 - [用户组代码](src/groups) 和 [全站代码](src/global)：通过文件夹名指定站点。
 
+### 仓库 npm 脚本
+
+本仓库包含下列脚本：
+
+- `npm run test` 方便检测代码错误；
+- `npm run format` 可修正可被自动修正的错误；
+- `npm run ci` 可通过临时修改镜像源的方式加快 `npm ci` 速度。
+
 ## 自动化流程
 
 - 每周一 00:00 UTC 会自动触发一次 generateUnrecognizableFeatures CI；
@@ -63,9 +73,11 @@
 
 机器人通过以下流程编译代码，然后提交到萌百：
 
-- 执行 `tsc --build --verbose` 以编译 `*.js` 代码；
+- 执行 `tsc --project tsconfig.production.json` 以编译 `*.js` 代码；
 - 执行 `npx postcss src/**/*.css --base src/ -d dist/ --verbose` 以编译 `*.css` 代码；
 - 根据模板生成 `MediaWiki:Gadgets-definition` 页面。
+
+如需手动唤起机器人，请到 [`post commit CI` workflow](https://github.com/MoegirlPediaInterfaceAdmins/MoegirlPediaInterfaceCodes/actions/workflows/postCommit.yaml) 处，选择 `Branch` 为 `master`，输入值为 `true`，手动执行该 workflow。
 
 ## 已知问题
 
@@ -95,8 +107,8 @@
 所以我们建议你通过以下方式提交贡献：
 
 - 使用 [Linux on Windows with WSL](https://learn.microsoft.com/zh-cn/windows/wsl/install)；
-- 使用 Linux 系统（可以是远程服务器、本地 Docker 容器等）；
-- 使用 macOS [GitHub Desktop](https://desktop.github.com/)；
+- 使用 Linux 系统（可以是远程服务器、本地虚拟机、本地 Docker 容器等）；
+- 使用 macOS 系统；
 - 使用 [GitHub Codespaces](https://github.com/features/codespaces)（对个人用户有免费额度）。
 
 然后，我们建议你使用 [Visual Studio Code](https://code.visualstudio.com/)，本仓库专为 VSCode 配置。我们也建议你搭配以下 VSCode 扩展结合本仓库提供的配置以优化体验：
@@ -107,4 +119,4 @@
 - 远程开发：
   - 在 Linux on Windows with WSL 里：[Remote - WSL](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-wsl) 扩展；
   - 在运行 Linux 的本地 Docker 容器里：[Remote - Containers](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers) 扩展；
-  - 在运行 Linux 的远程服务器里：[Remote - SSH](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-ssh) 扩展和 [Remote - SSH: Editing Configuration Files](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-ssh-edit) 扩展。
+  - 在运行 Linux 的本地虚拟机或远程服务器里：[Remote - SSH](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-ssh) 扩展和 [Remote - SSH: Editing Configuration Files](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-ssh-edit) 扩展。

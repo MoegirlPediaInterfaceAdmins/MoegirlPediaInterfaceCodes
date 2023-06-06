@@ -142,15 +142,9 @@
         };
         const truthy = ["1", "on", "true", "yes"];
         $body.addClass("tab");
-        function getOwnPropertyNamesLength(obj) {
-            return Reflect.ownKeys(obj).length;
-        }
-        function toLowerFirstCase(str) {
-            return str.substring(0, 1).toLowerCase() + str.substring(1);
-        }
-        function toUpperFirstCase(str) {
-            return str.substring(0, 1).toUpperCase() + str.substring(1);
-        }
+        const getOwnPropertyNamesLength = (obj) => Reflect.ownKeys(obj).length;
+        const toLowerFirstCase = (str) => str.substring(0, 1).toLowerCase() + str.substring(1);
+        const toUpperFirstCase = (str) => str.substring(0, 1).toUpperCase() + str.substring(1);
         mw.hook("wikipage.content").add((content) => {
             content.find(".Tabs").each(function () {
                 const self = $(this);
@@ -257,7 +251,7 @@
     /**
      * @param {JQuery<HTMLDivElement>} $content 
      */
-    function templateFix($content) {
+    const templateFix = ($content) => {
         const target = $();
         $content.find(templateStr).each((_, ele) => {
             if (ele.isTemplateFixed === "true") {
@@ -289,9 +283,9 @@
                 });
             }
         }
-    }
+    };
     /* 修正验证码 */
-    async function tcc() {
+    const tcc = async () => {
         const tcBtn = document.getElementById("TencentCaptchaBtn");
         if (tcBtn && !tcBtn.disabled) {
             const originText = tcBtn.innerText;
@@ -316,20 +310,20 @@
                 capture: true,
             });
         }
-    }
+    };
     /* 域名跳转提示 */
-    function domainChangedAlert() {
+    const domainChangedAlert = () => {
         $body.before('<div style="background: #3366CC; color: white; text-align: center; padding: .5rem; position: static;" id="domainChangedAlert"><p>萌娘百科已将域名替换为 <code>*.moegirl.org<b><u>.cn</u></b></code>，原有域名可能访问困难，请更换您的书签等的页面地址。</p></div>');
         $body.css({
             "background-position-y": $("#domainChangedAlert").outerHeight(),
             position: "relative",
         });
-    }
+    };
     /* 水印 */
     // https://github.com/zloirock/core-js/blob/v3.29.1/packages/core-js/modules/es.unescape.js
     const hex2 = /^[\da-f]{2}$/i;
     const hex4 = /^[\da-f]{4}$/i;
-    function unescapeString(string) {
+    const unescapeString = (string) => {
         const str = `${string}`;
         let result = "";
         const length = str.length;
@@ -357,16 +351,14 @@
             result += chr;
         }
         return result;
-    }
-    function watermark(txt, size) {
+    };
+    const watermark = (txt, size) => {
         $("<div>").attr("style", `position: fixed !important; z-index: 99999 !important; inset: 0px !important; background-image: url("data:image/svg+xml;base64,${btoa(`<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}"><foreignObject width="${size}" height="${size}"><html xmlns="http://www.w3.org/1999/xhtml" style="width: ${size}px; height: ${size}px;"><head></head><body style="width: ${size}px; height: ${size}px; margin: 0px;"><div style="width: 100% !important; height: 100% !important; opacity: .17 !important; font-size: 24px !important; position: relative !important; color: black !important;"><div style="transform: rotate(-15deg) translateX(-50%) translateY(-50%) !important; word-break: break-all !important; top: 36% !important; left: 50% !important; position: absolute !important; width: 100% !important; text-align: center !important;">${unescapeString(encodeURIComponent(txt))}</div></div></body></html></foreignObject></svg>`)}") !important; background-repeat: repeat !important; pointer-events: none !important; display: block !important; visibility: visible !important; width: unset !important; height: unset !important; opacity: unset !important; background-color: unset !important;`).appendTo("body");
-    }
+    };
     /* 获取特定名字空间前缀正则表达式 */
-    function getNamespacePrefixRegex(namespaceNumber) {
-        return RegExp(`^(?:${Object.entries(mw.config.get("wgNamespaceIds")).filter((config) => config[1] === namespaceNumber).map((config) => config[0].toLowerCase()).join("|")}):`, "i");
-    }
+    const getNamespacePrefixRegex = (namespaceNumber) => RegExp(`^(?:${Object.entries(mw.config.get("wgNamespaceIds")).filter((config) => config[1] === namespaceNumber).map((config) => config[0].toLowerCase()).join("|")}):`, "i");
     // 列表侧边距
-    function listMarginLeft() {
+    const listMarginLeft = () => {
         $(".mw-parser-output ul:not(.margin-left-set), .mw-parser-output ol:not(.margin-left-set), #mw-content-text > pre.prettyprint ul:not(.margin-left-set), #mw-content-text > pre.prettyprint ol:not(.margin-left-set)").each((_, ele) => {
             const $ele = $(ele);
             if (/none.+none/i.test($ele.css("list-style")) || $ele.is(".gallery")) {
@@ -393,10 +385,10 @@
             }
             $ele.addClass("margin-left-set");
         });
-    }
-    // 页面历史表单部分按钮改为 post
-    function historyForm() {
-        const form = $("#mw-history-compare");
+    };
+    // 页面历史表单、日志部分按钮改为 post
+    const historyForm = () => {
+        const form = $("#mw-history-compare, #mw-log-deleterevision-submit");
         // form.find('[name="editchangetags"], [name="revisiondelete"]').attr("formmethod", "post"); // 不知为何，该方式不生效
         form.find('[name="editchangetags"], [name="revisiondelete"]').on("click", () => {
             form.attr("method", "post");
@@ -404,9 +396,9 @@
                 form.removeAttr("method");
             }, 16);
         });
-    }
+    };
     // 小工具使用统计移除默认启用的小工具
-    function gadgetUsageRemoveDefaultGadgets() {
+    const gadgetUsageRemoveDefaultGadgets = () => {
         const defaultStrings = ["默认", "預設", "默認"];
         const defaultGadgets = [];
         const usageTable = document.querySelector(".mw-spcontent > table");
@@ -452,7 +444,7 @@
             div.style.justifyContent = "space-evenly";
             div.style.alignItems = "flex-start";
         }
-    }
+    };
 
     await $.ready;
 

@@ -3,24 +3,28 @@
 (async () => {
     /* 函数定义体 */
     // 一键复制用户名
-    function copyUsername() {
-        $('a[href^="/User:" i], a[href*="?title=User:" i], a[href*="&title=User:" i]').after('<button class="copyUsername">复制用户名</button>');
-        for (const node of document.querySelectorAll(".copyUsername")) {
-            node.addEventListener("click", async () => {
-                const usernameNode = $(node).prev();
-                if (!usernameNode.is("a")) {
-                    return;
+    const copyUsername = () => {
+        /**
+         * @type { HTMLAnchorElement[] }
+         */
+        const nodes = document.querySelector("#mw-content-text")?.querySelectorAll('a[href*="user:" i]') || [];
+        for (const usernameNode of nodes) {
+            try {
+                const uri = new mw.Uri(usernameNode.href);
+                let username = decodeURIComponent(uri.path).substring(1);
+                if (!/user:/i.test(username)) {
+                    username = uri.query.title;
                 }
-                const uri = new mw.Uri(usernameNode.attr("href"));
-                let text = "";
-                if (usernameNode.is('a[href^="/User:" i]')) {
-                    text = decodeURIComponent(uri.path).substring(1);
-                } else {
-                    text = uri.query.title;
+                if (!/user:/i.test(username)) {
+                    continue;
                 }
-                if (text.length > 0 && text.toLowerCase().startsWith("user:")) {
+                const node = document.createElement("button");
+                node.classList.add("copyUsername");
+                node.innerText = "复制用户名";
+                node.dataset.username = username;
+                node.addEventListener("click", async () => {
                     try {
-                        await navigator.clipboard.writeText(text);
+                        await navigator.clipboard.writeText(username);
                         node.innerText = "复制成功";
                     } catch (e) {
                         console.error("copyUsername", e);
@@ -28,8 +32,9 @@
                     } finally {
                         node.dataset.timestamp = Date.now();
                     }
-                }
-            });
+                });
+                usernameNode.after(node);
+            } catch { }
         }
         setInterval(() => {
             const now = Date.now();
@@ -40,8 +45,8 @@
                     node.innerText = "复制用户名";
                 }
             }
-        });
-    }
+        }, 1000);
+    };
     await Promise.all([
         $.ready,
         mw.loader.using(["mediawiki.Uri"]),

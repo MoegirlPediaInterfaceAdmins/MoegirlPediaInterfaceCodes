@@ -6,7 +6,7 @@
  * Enables or disables the dark-mode gadget.
  *
  * Authors: [[User:SD0001]], [[User:Nardog]]
- * 当前版本修改自 https://en.wikipedia.org/w/index.php?title=MediaWiki:Gadget-dark-mode-toggle.js&oldid=1084628333
+ * 全部内容引自 https://en.wikipedia.org/wiki/MediaWiki:Gadget-dark-mode.js
  **/
 // 'Dark mode' and 'Light mode' messages must match the ::before content in
 // [[MediaWiki:Gadget-dark-mode-toggle-pagestyles.css]] and [[MediaWiki:Gadget-dark-mode.css]], respectively.
@@ -41,7 +41,7 @@ $(() => {
     const nextnode = mw.config.get("skin") !== "minerva" && "#pt-watchlist";
     const portletLink = mw.util.addPortletLink("p-personal", "#", label, "pt-darkmode", tooltip, "", nextnode);
 
-    function toggleMode() {
+    const toggleMode = () => {
         const newState = +!mw.user.options.get("gadget-dark-mode");
         new mw.Api().saveOption("gadget-dark-mode", newState);
         mw.user.options.set("gadget-dark-mode", newState);
@@ -88,7 +88,7 @@ $(() => {
                     }&modules=ext.gadget.dark-mode&only=styles&skin=${mw.config.get("skin")}`,
             }).appendTo(document.head);
         }
-    }
+    };
 
     $(portletLink).on("click", (e) => {
         e.preventDefault();
@@ -102,7 +102,7 @@ $(() => {
     }
 
     if (window.wpDarkModeAutoToggle) {
-        const toggleBasedOnSystemColourScheme = function () {
+        const toggleBasedOnSystemColourScheme = () => {
             const systemSchemeNow = matchMedia("(prefers-color-scheme: dark)").matches;
             const systemSchemeLast = mw.storage.get("dark-mode-system-scheme") === "1";
 

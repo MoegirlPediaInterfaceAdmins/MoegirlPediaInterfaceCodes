@@ -22,7 +22,8 @@ rights:
 
 peers: []
 
-dependencies: []
+dependencies:
+  - ext.gadget.libCachedCode
 
 _sites:
   - zh
@@ -32,4 +33,3 @@ _section: editing
 _files:
   - MediaWiki:Gadget-Wikiplus.css
   - MediaWiki:Gadget-Wikiplus.js
-  - MediaWiki:Gadget-Wikiplus-activation.js

@@ -6,6 +6,8 @@ env:
   es2021: true
   es2022: true
 
+root: true
+
 parserOptions:
   ecmaVersion: latest
 
@@ -31,8 +33,21 @@ globals:
   MOE_SKIN_GLOBAL_DATA_REF: readonly
   Cron: readonly
   ace: readonly
+  libCachedCode: readonly
+  CodeMirror: readonly
+
+plugins:
+  - "@annangela/prefer-reflect"
+  - prefer-arrow-functions
 
 rules:
+  "@annangela/prefer-reflect/prefer-reflect": error
+  prefer-arrow-functions/prefer-arrow-functions:
+    - error
+    - classPropertiesAllowed: true
+      disallowPrototype: true
+      returnStyle: implicit
+      singleReturnOnly: false
   logical-assignment-operators: error
   no-new-func: error
   no-new-object: error

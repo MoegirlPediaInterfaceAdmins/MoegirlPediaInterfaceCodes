@@ -2,7 +2,7 @@ ResourceLoader: true
 
 hidden: false
 
-default: true
+default: false
 
 supportsUrlLoad: false
 
@@ -19,6 +19,7 @@ package: false
 rights:
   - edit
   - skipcaptcha
+  - disabled
 
 peers: []
 

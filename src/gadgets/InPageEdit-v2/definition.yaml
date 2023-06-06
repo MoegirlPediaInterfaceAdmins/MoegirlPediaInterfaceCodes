@@ -24,6 +24,7 @@ peers: []
 
 dependencies:
   - mediawiki.api
+  - ext.gadget.libCachedCode
 
 _sites:
   - zh
@@ -31,6 +32,5 @@ _sites:
 _section: editing
 
 _files:
-  - MediaWiki:Gadget-InPageEdit-v2-hook.js
   - MediaWiki:Gadget-InPageEdit-v2.css
   - MediaWiki:Gadget-InPageEdit-v2.js

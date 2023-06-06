@@ -31,7 +31,7 @@ for (const gadgetDirent of await fs.promises.readdir(gadgetBaseRoot, { withFileT
         if (gadgetDefinition._files.filter((file) => !_files.includes(file)).length + _files.filter((file) => !gadgetDefinition._files.includes(file)).length > 0) {
             gadgetDefinition._files = [...gadgetDefinition._files.filter((file) => _files.includes(file)), ..._files.filter((file) => !gadgetDefinition._files.includes(file))];
             await yamlModule.writeFile(path.join(gadgetBaseRoot, gadget, "definition.yaml"), gadgetDefinition);
-            await createCommit(`auto(Gadget-${gadget}): gadget definition updated by gadgetsDefinitionGenerator`);
+            await createCommit(`auto(Gadget-${gadget}): gadget definition updated by generateGadgetsDefinition`);
         }
         console.info(`[${gadget}]`, "_section:", _section);
         let sectionExist = false;

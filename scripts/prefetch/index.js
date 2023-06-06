@@ -6,10 +6,10 @@ import fs from "fs";
 import path from "path";
 import { startGroup, endGroup, exportVariable } from "@actions/core";
 import { createIssue } from "../modules/octokit.js";
-import exec from "../modules/exec.js";
 import modulePath from "../modules/modulePath.js";
 import jsonModule from "../modules/jsonModule.js";
 import semver from "semver";
+import fetchNPMPackageInfo from "../modules/fetchNPMPackageInfo.js";
 
 const labels = ["ci:prefetch"];
 
@@ -21,8 +21,6 @@ const prefetchTargets = await yamlModule.readFile(prefetchTargetsPath);
 startGroup("prefetchTargets:");
 console.info(prefetchTargets);
 endGroup();
-exec("npm config get registry --global").then((output) => console.info("npm config get registry --global:", output));
-const registryBaseUrl = (await exec("npm config get registry --global")).trim();
 const fileList = [];
 for (const prefetchTarget of prefetchTargets) {
     console.info("target:", prefetchTarget);
@@ -86,15 +84,7 @@ for (const prefetchTarget of prefetchTargets) {
     }
     console.info(`[${name}]`, "wrote the code file and eslintrc successfully.");
     if (type === "npm") {
-        const registryUrl = `${new URL(moduleName, registryBaseUrl)}`;
-        console.info(`[${name}]`, "Start to fetch the package info:", registryUrl);
-        const packageInfoResponse = await fetch(registryUrl, {
-            method: "GET",
-        });
-        const packageInfo = await packageInfoResponse.json();
-        startGroup("Successfully get the package info:");
-        console.info(packageInfo);
-        endGroup();
+        const packageInfo = await fetchNPMPackageInfo(moduleName);
         const distVersions = Object.keys(packageInfo.versions);
         console.info(`[${name}]`, "distVersions:", distVersions);
         const targetVersion = semver.maxSatisfying(distVersions, version || "*");
@@ -104,9 +94,10 @@ for (const prefetchTarget of prefetchTargets) {
             const releaseType = semver.diff(packageInfo["dist-tags"].latest, targetVersion);
             if (!Array.isArray(ignoreSemverDiff) || !ignoreSemverDiff.includes(releaseType)) {
                 await createIssue(
-                    `[prefetch] Found new ${releaseType} verion ${moduleName}@${packageInfo["dist-tags"].latest} higher than ${targetVersion}`,
-                    `Found new verion ${releaseType} \`${moduleName}@${packageInfo["dist-tags"].latest}\` higher than \`${targetVersion}\`, while [\`${prefetchTargetsPath}\`](${prefetchTargetsPath}) configured as \`${moduleName}@${version || "*"}\`, please consider to upgrade it: ${new URL(path.posix.join("package", name), "https://www.npmjs.com/")}`,
+                    `[prefetch] Found new ${releaseType} verion of ${moduleName}`,
+                    `Found new ${releaseType} verion of ${moduleName} that is higher than \`${targetVersion}\`, while [\`${prefetchTargetsPath}\`](${prefetchTargetsPath}) configured as \`${moduleName}@${version || "*"}\`, please consider to upgrade it: ${new URL(path.posix.join("package", name), "https://www.npmjs.com/")}`,
                     labels,
+                    `New ${releaseType} verion: \`${moduleName}@${packageInfo["dist-tags"].latest}\``,
                 );
             }
         }

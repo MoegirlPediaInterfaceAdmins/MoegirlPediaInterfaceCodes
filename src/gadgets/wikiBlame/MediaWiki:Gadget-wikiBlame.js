@@ -61,6 +61,7 @@ $(() => {
                         label: String(i),
                     }));
                 });
+
             const current_selection = new OO.ui.TextInputWidget({
                 value: selection,
             });
@@ -107,6 +108,10 @@ $(() => {
                 label: "提交",
                 flags: ["progressive", "primary"],
             });
+            const close = new OO.ui.ButtonWidget({
+                id: "wiki-blame-close",
+                label: "✖",
+            });
             const progress = new OO.ui.LabelWidget({
                 id: "wiki-blame-progress",
                 label: "",
@@ -114,6 +119,7 @@ $(() => {
             const fieldSet = new OO.ui.FieldsetLayout({
                 label: "拷打编辑小工具",
             });
+            fieldSet.$header.append(close.$element);
             fieldSet.addItems([
                 new OO.ui.FieldLayout(current_selection, {
                     label: "选中文字",
@@ -177,6 +183,10 @@ $(() => {
                 const limit = revision_check.getValue();
                 queryRevisionApi(start_date, end_date, limit, selection);
             });
+            close.on("click", () => {
+                const windowManager = window.wikiBlameWindowManager;
+                windowManager.currentWindow.close();
+            });
             $("#start-year, #start-month, #start-day, #end-year, #end-month, #end-day").css({
                 display: "inline-block",
                 width: "33%",
@@ -184,6 +194,9 @@ $(() => {
             $(".oo-ui-fieldsetLayout-group .oo-ui-fieldLayout-align-right").css({
                 "float": "right",
             });
+            $("#wiki-blame-close > a").removeClass("oo-ui-buttonElement-button");
+            $("#wiki-blame-close > a").css({ "text-decoration": "none" });
+            $("#wiki-blame-close").css({ "float": "right" });
         }
         getBodyHeight() {
             return this.content.$element.outerHeight(true) + 10;
@@ -214,8 +227,12 @@ $(() => {
         initialize() {
             super.initialize();
             const page_list = [];
+            const server = mw.config.get("wgServer");
+            const script = mw.config.get("wgScript");
+            console.log(this.revision_list);
             for (const r of this.revision_list) {
-                const diff_table = `<table class="diff">
+                const diff_table = `<a href=${server}${script}?curid=${r.fromid}&oldid=${r.torevid} target="_blank">永久链接</a>
+                <table class="diff">
                     <colgroup>
                         <col class="diff-marker">
                         <col class="diff-content">
@@ -226,18 +243,29 @@ $(() => {
                         ${r["*"]}
                     </tbody>
                     </table>`;
-                page_list.push(new PageLayout(r.user + r.revid, undefined, diff_table, `${r.user} ${r.timestamp}`));
+                page_list.push(new PageLayout(r.user + r.fromrevid, undefined, diff_table, `${r.user} ${r.timestamp}`));
             }
+            const close = new OO.ui.ButtonWidget({
+                id: "wiki-blame-close",
+                label: "✖",
+            });
             this.content = new OO.ui.BookletLayout({
+                id: "wiki-blame-booklet",
                 outlined: true,
             });
+            close.on("click", () => {
+                const windowManager = window.wikiBlameWindowManager;
+                windowManager.currentWindow.close();
+            });
             this.content.addPages(page_list);
-            this.$body.append(this.content.$element);
+            this.$body.append(close.$element, this.content.$element);
+            $("#wiki-blame-close > a").removeClass("oo-ui-buttonElement-button");
+            $("#wiki-blame-close > a").css({ "text-decoration": "none" });
+            $("#wiki-blame-booklet").css({ "margin-top": "20px" });
+            $("#wiki-blame-close").css({ "float": "right" });
         }
 
-        getBodyHeight() {
-            return 500;
-        }
+        getBodyHeight = () => 500;
     }
 
     //helper functions
@@ -279,14 +307,14 @@ $(() => {
                 remaining -= BATCH_SIZE;
                 progress.innerText = `${Math.min(+progress.innerText + BATCH_SIZE, limit)}`;
                 // 如果还有更多版本，修改rvcontinue参数，否则退出循环
-                if ("continue" in data) {
+                if (Reflect.has(data, "continue")) {
                     cont = data.continue.rvcontinue;
                 } else {
                     break;
                 }
             }
             // 去除被版本删除的版本
-            revisions = revisions.filter((r) => "*" in r);
+            revisions = revisions.filter((r) => Reflect.has(r, "*"));
             const revisions_list = [];
             const target_revisions = [];
             for (let i = 0; i < revisions.length; i++) {
@@ -329,12 +357,12 @@ $(() => {
         }
     };
 
-    const getSelected = function () {
+    const getSelected = () => {
         let text = "";
         text = window.getSelection().toString();
         return text;
     };
-    const createDialog = function () {
+    const createDialog = () => {
         const myDialog = new WikiBlameDialog({
             id: "wiki-blame-dialog-popup",
             size: "medium",
@@ -348,7 +376,7 @@ $(() => {
         windowManager.openWindow(myDialog);
     };
 
-    const createDiffDialog = function (revisions_list) {
+    const createDiffDialog = (revisions_list) => {
         const windowManager = window.wikiBlameWindowManager;
         if (windowManager.currentWindow &&
             window.wikiBlameWindowManager.currentWindow.getElementId() === "wiki-blame-dialog-popup") { windowManager.currentWindow.close(); }
@@ -360,7 +388,7 @@ $(() => {
     };
 
     //处理mouseup事件
-    $("#bodyContent").on("mouseup", (e) => {
+    $(mw.config.get("skin") === "moeskin" ? "#mw-body" : "#bodyContent").on("mouseup", (e) => {
         let selection = getSelected();
         if (selection) {
             if ($(".wiki-blame-popup").length === 0) {
@@ -380,6 +408,7 @@ $(() => {
                     autoFlip: false,
                 });
                 popup.$element.addClass("wiki-blame-popup");
+                console.log(e.target);
                 $(e.target).append(popup.$element);
                 popup.toggle(true);
                 const margin_top = $("#bodyContent .oo-ui-popupWidget-body-padded").css("marginTop");

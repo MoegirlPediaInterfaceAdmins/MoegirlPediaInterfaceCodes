@@ -1,16 +1,14 @@
 "use strict";
 $(() => {
     //检测是否使用wikiplus
-    function useWikiplus() {
+    const useWikiplus = () => {
         if (typeof wikiplus === "object" || $("#MoeNotification")[0]) {
             return true;
         }
         return false;
-    }
+    };
     //针对不同的环境输出不同的字符串
-    function ifUseWikiplus(yT, nT) {
-        return `${useWikiplus() ? yT : nT}`;
-    }
+    const ifUseWikiplus = (yT, nT) => `${useWikiplus() ? yT : nT}`;
     //AbuseFilterEdit
     if (!$("body.mw-special-AbuseFilter")[0] && !$("#mw-abusefilter-warn-parameters")[0]) {
         return;
@@ -51,7 +49,7 @@ $(() => {
             pageName = `Mediawiki:${MACN.val()}`, preloadPage = `Mediawiki:${select.val()}`;
             $.ajax({
                 url: `${mw.config.get("wgServer")}${mw.config.get("wgScriptPath")}/api.php`,
-                beforeSend: function () {
+                beforeSend: () => {
                     MACT.text("正在检查");
                 },
                 type: "POST",
@@ -61,7 +59,7 @@ $(() => {
                     format: "json",
                     converttitles: " zh-cn",
                 },
-                success: function (data) {
+                success: (data) => {
                     if (data.query.pages["-1"]) {
                         MACT.text("该消息不存在！即将从新标签页访问该消息页面的创建页！");
                         window.setTimeout(() => {
@@ -74,7 +72,7 @@ $(() => {
                         }, 1730);
                     }
                 },
-                error: function () {
+                error: () => {
                     MACT.text("寿司娘来袭！无法检测页面是否存在！即将从新标签页访问该消息页面的编辑/创建页！");
                     window.setTimeout(() => {
                         window.open(`${mw.config.get("wgServer")}${mw.config.get("wgScriptPath")}/index.php?preload=${preloadPage}&action=edit&title=${pageName}`, "_blank");

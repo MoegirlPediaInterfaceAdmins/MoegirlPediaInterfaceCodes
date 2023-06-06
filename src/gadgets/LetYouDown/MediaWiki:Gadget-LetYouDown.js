@@ -2,7 +2,7 @@
 // <pre>
 $(() => {
     const container = $("#mw-content-text");
-    const getScrollTop = function () {
+    const getScrollTop = () => {
         const headings = $("#mw-content-text .mw-parser-output > :is(h1, h2)");
         return (headings.length >= 3 ? headings.last().offset().top : container.offset().top + container.outerHeight()) - 20;
     };
