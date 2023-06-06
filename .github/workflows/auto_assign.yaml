@@ -8,6 +8,9 @@ on:
 env:
   GH_TOKEN: ${{ github.token }}
 
+permissions:
+  pull-requests: write
+
 jobs:
   add-reviews:
     runs-on: ubuntu-latest
