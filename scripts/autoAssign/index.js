@@ -1,12 +1,12 @@
 import console from "../modules/console.js";
 console.info("Initialization done.");
 import yamlModule from "../modules/yamlModule.js";
-import { isInGithubActions, isPullRequest, octokit } from "../modules/octokit.js";
+import { isInGithubActions, octokit } from "../modules/octokit.js";
 import { startGroup, endGroup } from "@actions/core";
 import readWorkflowEvent from "../modules/workflowEvent.js";
 
-if (!isInGithubActions || !isPullRequest) {
-    console.info("Not in pull request, exit.");
+if (!isInGithubActions) {
+    console.info("Not in github actions, exit.");
     process.exit(0);
 }
 const { action, number } = await readWorkflowEvent();
