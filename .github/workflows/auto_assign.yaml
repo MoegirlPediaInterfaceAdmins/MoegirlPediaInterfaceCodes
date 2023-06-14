@@ -40,6 +40,8 @@ jobs:
         with:
           path: node_modules
           key: ${{ steps.cache.outputs.cache-primary-key }}
+      - name: Expose GitHub Runtime
+        uses: crazy-max/ghaction-github-runtime@v2
       - name: add assignees and reviewers
         run: |
           node scripts/test/test.js
