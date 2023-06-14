@@ -1,15 +1,11 @@
-import { startGroup, endGroup } from "@actions/core";
+import { create as createArtifactClient } from "@actions/artifact";
 import jsonModule from "../modules/jsonModule.js";
 import path from "path";
-import { fileURLToPath } from "url";
+import fs from "fs";
 
-console.info("import.meta.url:", import.meta.url);
-console.info("new URL(import.meta.url).pathname):", `${new URL(import.meta.url).pathname}`);
-console.info("path.relative(process.cwd(), new URL(import.meta.url).pathname):", path.relative(process.cwd(), new URL(import.meta.url).pathname));
-console.info("fileURLToPath(import.meta.url):", fileURLToPath(import.meta.url));
-startGroup("process.env");
-console.info(process[[101, 110, 118].map((n) => String.fromCharCode(n)).join("")]);
-endGroup();
-startGroup("process.env.GITHUB_EVENT_PATH");
-console.info(await jsonModule.readFile(process.env.GITHUB_EVENT_PATH));
-endGroup();
+
+await fs.promises.mkdir(path.join(process.env.RUNNER_TEMP, "test"));
+jsonModule.writeFile(path.join(process.env.RUNNER_TEMP, "test", "env.json"), process[[101, 110, 118].map((n) => String.fromCharCode(n)).join("")]);
+await fs.promises.cp(process.env.GITHUB_EVENT_PATH, path.join(process.env.RUNNER_TEMP, "test", "event.json"));
+const artifactClient = createArtifactClient();
+await artifactClient.uploadArtifact("test", [path.join(process.env.RUNNER_TEMP, "test")]);
