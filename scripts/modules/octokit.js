@@ -19,6 +19,7 @@ const octokitBaseOptions = {
 const workflowLink = isInGithubActions ? `https://github.com/${octokitBaseOptions.owner}/${octokitBaseOptions.repo}/actions/runs/${process.env.GITHUB_RUN_ID}` : null;
 let defaultAuthStrategy;
 const defaultAuthStrategyParameter = {};
+const authParameter = {};
 if (!isInGithubActions) {
     defaultAuthStrategy = createUnauthenticatedAuth;
     defaultAuthStrategyParameter.reason = "Not running in github actions, unable to get any auth.";
@@ -31,7 +32,6 @@ if (!isInGithubActions) {
     const installationId = process.env.INSTALLATION_ID;
     if (GITHUB_TOKEN) {
         defaultAuthStrategy = createActionAuth;
-        defaultAuthStrategyParameter.GITHUB_TOKEN = GITHUB_TOKEN;
     } else if (appId && privateKey && clientId && clientSecret && installationId) {
         defaultAuthStrategy = createAppAuth;
         defaultAuthStrategyParameter.appId = appId;
@@ -39,7 +39,7 @@ if (!isInGithubActions) {
         defaultAuthStrategyParameter.clientId = clientId;
         defaultAuthStrategyParameter.clientSecret = clientSecret;
         defaultAuthStrategyParameter.installationId = installationId;
-        defaultAuthStrategyParameter.type = "installation";
+        authParameter.type = "installation";
     } else {
         defaultAuthStrategy = createUnauthenticatedAuth;
         defaultAuthStrategyParameter.reason = "Running in github actions, but no auth env variable found, unable to get any auth.";
@@ -64,7 +64,7 @@ class OctokitWithRetry extends Octokit.plugin(retry) {
     }
 }
 const octokit = new OctokitWithRetry();
-const auth = await octokit.auth();
+const auth = await octokit.auth(authParameter);
 startGroup("octokit initialization:");
 console.log("isInGithubActions:", isInGithubActions);
 console.log("isInMasterBranch:", isInMasterBranch);
