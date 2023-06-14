@@ -5,8 +5,9 @@ const { assignees } = yaml.parse(fs.readFileSync(".github/auto_assign.yaml", { e
 import { startGroup, endGroup } from "@actions/core";
 import { Octokit } from "@octokit/rest";
 import { retry } from "@octokit/plugin-retry";
-import authAction from "@octokit/auth-action";
-import authUnauthenticated from "@octokit/auth-unauthenticated";
+import { createActionAuth } from "@octokit/auth-action";
+import { createUnauthenticatedAuth } from "@octokit/auth-unauthenticated";
+import { createAppAuth } from "@octokit/auth-app";
 const isInGithubActions = process.env.GITHUB_ACTIONS === "true";
 const isInMasterBranch = process.env.GITHUB_REF === "refs/heads/master";
 const isPush = ["push"].includes(process.env.GITHUB_EVENT_NAME);
@@ -16,14 +17,39 @@ const octokitBaseOptions = {
     repo: isInGithubActions ? process.env.GITHUB_REPOSITORY.split("/")[1] : null,
 };
 const workflowLink = isInGithubActions ? `https://github.com/${octokitBaseOptions.owner}/${octokitBaseOptions.repo}/actions/runs/${process.env.GITHUB_RUN_ID}` : null;
+let defaultAuthStrategy;
+const defaultAuthStrategyParameter = {};
+if (!isInGithubActions) {
+    defaultAuthStrategy = createUnauthenticatedAuth;
+    defaultAuthStrategyParameter.reason = "Not running in github actions, unable to get any auth.";
+} else {
+    const GITHUB_TOKEN = process.env.GITHUB_TOKEN || process.env.GH_TOKEN;
+    const appId = process.env.APP_ID;
+    const privateKey = process.env.PRIVATE_KEY;
+    const clientId = process.env.CLIENT_ID;
+    const clientSecret = process.env.CLIENT_SECRET;
+    if (GITHUB_TOKEN) {
+        defaultAuthStrategy = createActionAuth;
+        defaultAuthStrategyParameter.GITHUB_TOKEN = GITHUB_TOKEN;
+    } else if (appId && privateKey && clientId && clientSecret) {
+        defaultAuthStrategy = createAppAuth;
+        defaultAuthStrategyParameter.appId = appId;
+        defaultAuthStrategyParameter.privateKey = privateKey;
+        defaultAuthStrategyParameter.clientId = clientId;
+        defaultAuthStrategyParameter.clientSecret = clientSecret;
+    } else {
+        defaultAuthStrategy = createUnauthenticatedAuth;
+        defaultAuthStrategyParameter.reason = "Running in github actions, but no auth env variable found, unable to get any auth.";
+    }
+}
 class OctokitWithRetry extends Octokit.plugin(retry) {
     constructor(authStrategy, auth) {
         if (authStrategy && auth) {
             super({ authStrategy, auth });
         } else {
             super({
-                authStrategy: isInGithubActions && process.env.GITHUB_TOKEN ? authAction.createActionAuth : authUnauthenticated.createUnauthenticatedAuth,
-                auth: isInGithubActions ? process.env.GITHUB_TOKEN ? {} : { reason: "Running in github actions, but the `GITHUB_TOKEN` env variable is unset, unable to get any auth." } : { reason: "Not running in github actions, unable to get any auth." },
+                authStrategy: defaultAuthStrategy,
+                auth: defaultAuthStrategyParameter,
             });
         }
         // 非常神必，直接给 request 传入 { ...octokitBaseOptions, ...options } 没有任何作用，只能修改地址了

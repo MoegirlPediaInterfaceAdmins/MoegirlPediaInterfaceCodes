@@ -1,7 +1,7 @@
 import console from "../modules/console.js";
 import { startGroup, endGroup } from "@actions/core";
 import { isInMasterBranch, isInGithubActions, workflowLink } from "../modules/octokit.js";
-import jsonModule from "../modules/jsonModule.js";
+import readWorkflowEvent from "../modules/workflowEvent.js";
 import generateHMACSignature from "../modules/generateHMACSignature.js";
 import git from "../modules/git.js";
 if (!isInGithubActions) {
@@ -40,7 +40,7 @@ for (const [job, { result }] of Object.entries(NEEDS)) {
 console.info("data.success:", data.success);
 if (data.success) {
     try {
-        const GITHUB_EVENT = await jsonModule.readFile(process.env.GITHUB_EVENT_PATH);
+        const GITHUB_EVENT = await readWorkflowEvent();
         const head_commit = Reflect.has(GITHUB_EVENT, "head_commit") ? GITHUB_EVENT.head_commit : (await git.log({
             format: {
                 id: "%H",

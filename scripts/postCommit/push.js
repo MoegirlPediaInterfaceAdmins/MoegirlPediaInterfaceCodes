@@ -3,7 +3,7 @@ console.info("Initialization done.");
 import { startGroup, endGroup, setOutput } from "@actions/core";
 import git from "../modules/git.js";
 import { isInGithubActions, isPullRequest } from "../modules/octokit.js";
-import jsonModule from "../modules/jsonModule.js";
+import readWorkflowEvent from "../modules/workflowEvent.js";
 
 const contentConfigs = [
     "src/gadgets/Gadgets-definition-list.yaml",
@@ -20,7 +20,7 @@ if (!isInGithubActions) {
     console.info("Not running in github actions, exit.");
     process.exit(0);
 }
-const GITHUB_EVENT = await jsonModule.readFile(process.env.GITHUB_EVENT_PATH);
+const GITHUB_EVENT = await readWorkflowEvent();
 const { before, after } = GITHUB_EVENT;
 const isBeforeExists = before && after && (await git.branch(["--contains", before]).catch(() => ({ current: "" }))).current.length > 0;
 console.info("commits:", { before, after, isBeforeExists });
