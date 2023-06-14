@@ -10,6 +10,7 @@ env:
   PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
   CLIENT_ID: ${{ secrets.CLIENT_ID }}
   CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
+  INSTALLATION_ID: ${{ secrets.INSTALLATION_ID }}
 
 permissions: write-all
 

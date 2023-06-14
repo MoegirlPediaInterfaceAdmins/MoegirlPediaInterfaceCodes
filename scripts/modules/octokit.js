@@ -5,9 +5,9 @@ const { assignees } = yaml.parse(fs.readFileSync(".github/auto_assign.yaml", { e
 import { startGroup, endGroup } from "@actions/core";
 import { Octokit } from "@octokit/rest";
 import { retry } from "@octokit/plugin-retry";
+import { createAppAuth } from "@octokit/auth-app";
 import { createActionAuth } from "@octokit/auth-action";
 import { createUnauthenticatedAuth } from "@octokit/auth-unauthenticated";
-import { createAppAuth } from "@octokit/auth-app";
 const isInGithubActions = process.env.GITHUB_ACTIONS === "true";
 const isInMasterBranch = process.env.GITHUB_REF === "refs/heads/master";
 const isPush = ["push"].includes(process.env.GITHUB_EVENT_NAME);
@@ -28,15 +28,18 @@ if (!isInGithubActions) {
     const privateKey = process.env.PRIVATE_KEY;
     const clientId = process.env.CLIENT_ID;
     const clientSecret = process.env.CLIENT_SECRET;
+    const installationId = process.env.INSTALLATION_ID;
     if (GITHUB_TOKEN) {
         defaultAuthStrategy = createActionAuth;
         defaultAuthStrategyParameter.GITHUB_TOKEN = GITHUB_TOKEN;
-    } else if (appId && privateKey && clientId && clientSecret) {
+    } else if (appId && privateKey && clientId && clientSecret && installationId) {
         defaultAuthStrategy = createAppAuth;
         defaultAuthStrategyParameter.appId = appId;
         defaultAuthStrategyParameter.privateKey = privateKey;
         defaultAuthStrategyParameter.clientId = clientId;
         defaultAuthStrategyParameter.clientSecret = clientSecret;
+        defaultAuthStrategyParameter.installationId = installationId;
+        defaultAuthStrategyParameter.type = "installation";
     } else {
         defaultAuthStrategy = createUnauthenticatedAuth;
         defaultAuthStrategyParameter.reason = "Running in github actions, but no auth env variable found, unable to get any auth.";
