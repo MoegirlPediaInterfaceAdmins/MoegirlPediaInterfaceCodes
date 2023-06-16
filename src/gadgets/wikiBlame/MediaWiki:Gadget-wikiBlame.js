@@ -3,14 +3,14 @@
 /* eslint-disable no-use-before-define */
 "use strict";
 $(() => {
-    if (!["view"].includes(mw.config.get("wgAction")) && !mw.config.get("wgArticleId")) {
+    if (mw.config.get("wgAction") !== "view" || !mw.config.get("wgArticleId")) {
         return;
     }
 
     //dialog classes
     class WikiBlameDialog extends OO.ui.Dialog {
         static static = { ...super.static, name: "wikiBlameDialog" };
-        constructor(config) {
+        constructor (config) {
             super(config);
         }
 
@@ -206,7 +206,7 @@ $(() => {
 
     class PageLayout extends OO.ui.PageLayout {
         #label;
-        constructor(name, config, diff_table, label) {
+        constructor (name, config, diff_table, label) {
             super(name, config);
             this.#label = label;
             this.$element.append($(diff_table));
@@ -219,7 +219,7 @@ $(() => {
     class WikiBlameDiffDialog extends OO.ui.Dialog {
         static static = { ...super.static, name: "wikiBlameDiffDialog" };
         revision_list = undefined;
-        constructor(config, revision_list) {
+        constructor (config, revision_list) {
             super(config);
             this.revision_list = revision_list;
         }
