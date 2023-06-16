@@ -3,7 +3,7 @@
 /* eslint-disable no-use-before-define */
 "use strict";
 $(() => {
-    if (!mw.config.get("wgArticleId")) {
+    if (!["view"].includes(mw.config.get("wgAction")) && !mw.config.get("wgArticleId")) {
         return;
     }
 
