@@ -244,6 +244,22 @@
             });
         });
     }
+    /* T:注解 */
+    $(".annotation").each((_, ele) => {
+        const popup = new OO.ui.PopupWidget({
+            $content: $(ele).children(".annotation-content"),
+            padded: true,
+            autoFlip: false,
+        });
+        $(ele)
+            .append(popup.$element)
+            .on("mouseover", () => {
+                popup.toggle(true);
+            })
+            .on("mouseout", () => {
+                popup.toggle(false);
+            });
+    });
     /* 修正嵌套使用删除线、黑幕、彩色幕和胡话模板 */
     const templateTags = ["s", "del"];
     const templateClasses = [".heimu", ".colormu", ".just-kidding-text"];
