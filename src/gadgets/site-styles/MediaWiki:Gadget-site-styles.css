@@ -236,6 +236,26 @@
     margin: 0 -1px;
 }
 
+/* 注解 */
+.annotation>span {
+    cursor: pointer;
+}
+ 
+.annotation .oo-ui-popupWidget {
+    z-index: 10;
+}
+ 
+.annotation .oo-ui-popupWidget-popup {
+    width: fit-content !important;
+}
+ 
+.annotation .oo-ui-popupWidget-body {
+    width: fit-content;
+    min-width: 5.5em;
+    max-width: 18em !important;
+    overflow: auto;
+}
+
 /*
  * 感谢[[User:Great Brightstar]]的贡献，源码来自[[special:diff/834104]]
  * 以下是原注释：
