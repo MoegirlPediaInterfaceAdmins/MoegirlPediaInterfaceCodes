@@ -46,10 +46,15 @@ const triggerLinterTest = (force = false) => {
     if (head_commit && !allCommits.map(({ id }) => id).includes(head_commit.id)) {
         allCommits.push(head_commit);
     }
+    const foundCommits = allCommits.map((commit) => {
+        commit.author.email = commit.author.email.toLowerCase();
+        commit.committer.email = commit.committer.email.toLowerCase();
+        return commit;
+    });
     startGroup("Found commits:");
-    console.info(allCommits);
+    console.info(foundCommits);
     endGroup();
-    setOutput("commits", JSON.stringify(allCommits));
+    setOutput("commits", JSON.stringify(foundCommits));
     setOutput("linterTest", "true");
     console.info('Exposed outputs "commits" and "linterTest" , exit.');
     console.info("Done.");
