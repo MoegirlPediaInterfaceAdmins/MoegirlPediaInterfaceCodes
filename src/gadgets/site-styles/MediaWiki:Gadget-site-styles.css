@@ -252,7 +252,7 @@
 .annotation .oo-ui-popupWidget-body {
     width: fit-content;
     min-width: 5.5em;
-    max-width: 18em !important;
+    max-width: 11em !important;
     overflow: auto;
 }
 
