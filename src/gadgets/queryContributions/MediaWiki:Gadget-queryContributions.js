@@ -10,9 +10,8 @@ $(() => (async () => {
         return;
     }
     const userRights = await mw.user.getRights();
-    const isUnderRateLimit = !userRights.includes("noratelimit");
+    const hasApiHighLimits = !userRights.includes("apihighlimits");
     const isPatrolViewable = userRights.includes("patrol") || userRights.includes("patrolmarks");
-    const sleep = (ms = 1000) => new Promise((res) => setTimeout(res, ms));
     const upperFirstCase = (s) => /^[a-z]/.test(s) ? s.substring(0, 1).toUpperCase() + s.substring(1) : s;
     const api = new mw.Api();
     const ns = {
@@ -45,7 +44,7 @@ $(() => (async () => {
     };
     const p = $('<form style="max-width:100%;overflow-x:auto"><fieldset><legend style="position:sticky;left:.5em">用户贡献分布</legend><p id="queryContributions">是否需要加载用户贡献分布（对编辑数量较多的用户慎重使用！）<button id="confirmQueryContributions">确认</button> <button id="cancelQueryContributions">取消</button></p></fieldset></form>').insertAfter("#mw-content-text > form").find("#queryContributions");
     p.find("#confirmQueryContributions").on("click", async () => {
-        p.text(`加载中${isUnderRateLimit ? "（由于您没有“不受速率限制影响”[noratelimit]权限，故本次加载将需要较长时间，请稍等）" : ""}……`);
+        p.text(`加载中${hasApiHighLimits ? "（由于您没有“在API查询中使用更高的上限”[apihighlimits]权限，本次加载将需要较长时间，请稍等）" : ""}……`);
         const list = await (async () => {
             const result = [];
             const eol = Symbol();
@@ -63,9 +62,6 @@ $(() => (async () => {
                 if (_result.continue) {
                     uccontinue = _result.continue.uccontinue;
                     p[0].innerText += "…";
-                    if (isUnderRateLimit) {
-                        await sleep();
-                    }
                 } else {
                     uccontinue = eol;
                 }
