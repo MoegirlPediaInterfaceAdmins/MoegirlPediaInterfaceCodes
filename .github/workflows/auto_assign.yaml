@@ -12,8 +12,6 @@ env:
   CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
   INSTALLATION_ID: ${{ secrets.INSTALLATION_ID }}
 
-permissions: write-all
-
 jobs:
   add-reviews:
     runs-on: ubuntu-latest
