@@ -256,6 +256,12 @@
     overflow: auto;
 }
 
+/* 列表的上边距导致[[T:columns-list]]首列少一行 */
+.columns-list>ul,
+.columns-list>ol {
+    margin-top: 0;
+}
+
 /*
  * 感谢[[User:Great Brightstar]]的贡献，源码来自[[special:diff/834104]]
  * 以下是原注释：
