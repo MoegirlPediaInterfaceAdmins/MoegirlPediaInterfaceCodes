@@ -13,7 +13,6 @@ src/global/zh/MediaWiki:GHIAHistory.json linguist-generated=true
 
 # From browserify
 src/gadgets/cron/MediaWiki:Gadget-cron.js linguist-generated=true
-src/gadgets/libAsyncLock/MediaWiki:Gadget-libAsyncLock.js linguist-generated=true
 src/gadgets/libHashwasm/MediaWiki:Gadget-libHashwasm.js linguist-generated=true
 src/gadgets/libip/MediaWiki:Gadget-libip.js linguist-generated=true
 
