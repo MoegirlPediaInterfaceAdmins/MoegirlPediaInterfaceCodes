@@ -32,7 +32,6 @@
         "@types/moment": "^2.13.0",
         "@types/oojs-ui": "^0.46.4",
         "@wikimedia/types-wikimedia": "^0.4.1",
-        "async-lock": "^1.4.0",
         "autoprefixer": "^10.4.14",
         "browser-pack-flat": "^3.5.0",
         "browserify": "^17.0.0",

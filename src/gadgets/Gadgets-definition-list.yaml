@@ -131,7 +131,6 @@
     - libPolyfill
     - sidebaricons
     - libip
-    - libAsyncLock
     - luxon
     - libJSON5
     - echarts4
