@@ -257,8 +257,8 @@
 }
 
 /* 列表的上边距导致[[T:columns-list]]首列少一行 */
-.columns-list>ul,
-.columns-list>ol {
+.columns-list>ul:first-child,
+.columns-list>ol:first-child {
     margin-top: 0;
 }
 
