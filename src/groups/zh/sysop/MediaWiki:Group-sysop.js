@@ -5,7 +5,6 @@
  */
 "use strict";
 (async () => {
-    const sleep = (ms) => new Promise((res) => setTimeout(res, ms));
     /* 函数定义块 */
     //添加删除原因链接
     const addLink = ($obj, act) => {
@@ -86,19 +85,6 @@
             }
         }); */
     };
-    //评论栏管理链接
-    const flowthreadAdminLink = () => {
-        const link = $("<div/>", {
-            id: "flowthreadAdminLink",
-            css: {
-                "font-size": "12px",
-                color: "#999",
-                "text-align": "right",
-            },
-        }).append(`<a href="${mw.config.get("wgServer")}${mw.config.get("wgScriptPath")}/MediaWiki:Flowthread-blacklist" style="margin-right:8px;" target="_blank">关键词过滤名单</a>`)
-            .append(`<a href="${mw.config.get("wgServer")}${mw.config.get("wgScriptPath")}/Special:%E7%AE%A1%E7%90%86FlowThread%E8%AF%84%E8%AE%BA" target="_blank">评论管理</a>`);
-        $("#flowthread").append(link);
-    };
     //i18n语言链接
     const i18nLink = () => {
         $('#mw-content-text a.new[href$="/zh-cn"], #mw-content-text a.new[href$="/zh-tw"], #mw-content-text a.new[href$="/zh-hk"]').each((_, ele) => {
@@ -151,10 +137,5 @@
     if (mw.config.get("wgCanonicalSpecialPageName") === "ReplaceText" && $("#doAnnounce")[0]) {
         $("#doAnnounce").prop("checked", false);
     }
-    //评论管理，需要置底
-    while (!document.querySelector("#flowthread")) {
-        await sleep(100);
-    }
-    flowthreadAdminLink();
 })();
 // </pre>

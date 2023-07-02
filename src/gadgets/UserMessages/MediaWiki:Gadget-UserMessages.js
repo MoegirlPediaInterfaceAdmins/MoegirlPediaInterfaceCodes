@@ -847,7 +847,6 @@
         ["UserMessages/PersonalAttacks2", "PersonalAttacks", "人身攻击警告（仅适用于讨论区人身攻击）", umsg.umFlagUM, "人身攻击警告"],
         ["UserMessages/Signature", "NoSignature", "讨论时未签名（1=页面名）", umsg.umFlagP2, "关于您的签名"],
         ["UserMessages/Signature2", "WrongSignature", "签名违反讨论区管理方针", umsg.umFlagP2, "关于您的签名"],
-        ["UserMessages/CommentViolation", "CommentViolation", "发布违规评论（1=页面名，2=选填原因）", umsg.umFlagP2 + umsg.umFlagP3, "请勿发布违规评论"],
         ["UserMessages/EditWar", "EditWar", "通知编辑战参与者（1=页面名）", umsg.umFlagP2, "提醒您参与讨论"],
         ["UserMessages/EditWar2", "EditWar", "提醒即将构成编辑战（1=页面名）", umsg.umFlagP2, "编辑战提醒"],
         ["UserMessages/EditWar3", "EditWar", "警告编辑战用户（1=页面名，2=选填原因）", umsg.umFlagP2 + umsg.umFlagP3, "编辑战警告"],
