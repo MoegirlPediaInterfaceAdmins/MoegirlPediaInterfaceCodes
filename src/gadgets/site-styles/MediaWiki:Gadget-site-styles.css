@@ -418,55 +418,6 @@ table.wikitable-green {
     display: none !important;
 }
 
-/* 评论区
-.comment-container-top {
-    background-color: rgb(191 234 181 / 20%);
-}
-
-.comment-container-top>div:first-child {
-    background-color: rgb(18 152 34 / 47%);
-    color: #FFF;
-    font-weight: 700;
-}
-
-.post-content .comment-text {
-    position: static;
-}
-
-.post-content .comment-toolbar {
-    position: static;
-    display: flex;
-    justify-content: flex-start;
-}
-
-.post-content .flowthread-btn {
-    position: static;
-    margin-top: 3px;
-}
-
-.post-content .comment-submit {
-    position: static;
-    margin: -1px -1px 0 auto;
-}
-*/
-
-/* 评论区提示 */
-.action-view:is(.ns-0:not(.page-Mainpage), .ns-2, .ns-4, .ns-12)#bodyContent::after {
-    content: "因系统维护，评论区临时暂停所有功能";
-    border: 1px solid rgb(0 0 0 / 17%);
-    text-align: center;
-    font-size: small;
-    padding: 1em;
-    margin-top: 1rem;
-    color: #777;
-    display: block !important;
-    clear: both;
-}
-
-.action-view:is(.ns-0:not(.page-Mainpage), .ns-2, .ns-4, .ns-12)#bodyContent:is(:lang(zh-hant), :lang(zh-hk), :lang(zh-tw))::after {
-    content: "因系統維護，評論區臨時暫停所有功能";
-}
-
 /* Ruby 模板 */
 rb[data-id="template-ruby"]::before {
     content: "";
