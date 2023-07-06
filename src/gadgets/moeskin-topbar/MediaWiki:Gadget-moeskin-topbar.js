@@ -1,11 +1,25 @@
 "use strict";
-$(() => {
-    MOE_SKIN_GLOBAL_DATA_REF.value.moeskin_topbar = MOE_SKIN_GLOBAL_DATA_REF.value.moeskin_topbar
-        .replace(
-            /<li>https:\/\/commons.moegirl.org.cn\/.*\|最新(文件|档案|檔案)<\/li>/,
-            `<li>https://commons.moegirl.org.cn/Special:%E6%96%B0%E5%BB%BA%E6%96%87%E4%BB%B6|${wgULS("最新文件", "最新檔案")}</li>\n` +
-            `<li>Special:最新页面|${wgULS("最新页面", "最新頁面")}</li>\n` +
-            `<li>Special:日志|${wgULS("所有日志", "所有日誌")}</li>\n` +
-            `<li>Category:积压工作|${wgULS("积压工作", "積壓工作")}</li>`,
-        );
+Promise.all(
+    ["moeskin.instance", "moeskin.stores"].map((name) => new Promise(mw.hook(name).add)),
+).then((payload) => {
+    const skin = payload[0];
+    const stores = payload[1];
+    const { topbar } = stores.useNavigationStore(skin.pinia);
+    topbar.push(
+        topbar[0].children = [
+            ...topbar[0].children,
+            {
+                href: "/Special:最新页面",
+                text: wgULS("最新页面", "最新頁面"),
+            },
+            {
+                href: "/Special:日志",
+                text: wgULS("所有日志", "所有日誌"),
+            },
+            {
+                href: "/Category:积压工作",
+                text: wgULS("积压工作", "積壓工作"),
+            },
+        ],
+    );
 });
