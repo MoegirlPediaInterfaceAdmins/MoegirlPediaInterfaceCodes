@@ -65,6 +65,16 @@ $(() => {
                 subTypes: [],
             },
             // eslint-disable-next-line quote-props
+            "网络暴力": {
+                option: { data: "网络暴力", label: wgULS("网络暴力", "網路暴力") },
+                subTypes: [
+                    { data: "侮辱谩骂", label: wgULS("侮辱谩骂", "侮辱謾罵") },
+                    { data: "造谣诽谤", label: wgULS("造谣诽谤", "造謠誹謗") },
+                    { data: "人身攻击", label: wgULS("人身攻击", "人身攻擊") },
+                    { data: "地域歧视", label: wgULS("地域歧视", "地域歧視") },
+                ],
+            },
+            // eslint-disable-next-line quote-props
             "色情低俗": {
                 option: { data: "色情低俗", label: "色情低俗" },
                 subTypes: [
@@ -86,12 +96,6 @@ $(() => {
             "赌博诈骗": {
                 option: { data: "赌博诈骗", label: wgULS("赌博诈骗", "賭博詐騙") },
                 subTypes: [],
-            },
-            // eslint-disable-next-line quote-props
-            "人身攻击": {
-                option: { data: "人身攻击", label: wgULS("人身攻击", "人身攻擊") },
-                subTypes: [],
-                suggestToTalkBoard: true,
             },
             // eslint-disable-next-line quote-props
             "不实信息": {
@@ -120,7 +124,7 @@ $(() => {
         wgArticleId = wgArticleId;
         wgCurRevisionId = wgCurRevisionId;
         wgRevisionId = wgRevisionId;
-        constructor(config) {
+        constructor (config) {
             // Parent constructor
             super(config);
 
@@ -221,7 +225,7 @@ $(() => {
         }
         openSecondary(value) {
             const config = MGPReportDialog.types[value];
-            const subTypes = config.subTypes;
+            const {subTypes} = config;
             if (subTypes.length > 0) {
                 this.secondaryTypeSelectorField.$element.slideDown("fast", () => this.updateSize());
                 this.secondaryTypeSelector.setOptions([
