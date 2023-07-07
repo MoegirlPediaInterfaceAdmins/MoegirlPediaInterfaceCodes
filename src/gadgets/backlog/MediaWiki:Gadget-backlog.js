@@ -1,75 +1,31 @@
 // <pre>
 "use strict";
 $(() => (async () => {
-    const monthsHave31Days = [0, 2, 4, 6, 7, 9, 11];
     const diffDate = (_a, _b) => {
         const a = moment(_a);
         const b = moment(_b);
         const isBefore = b.isBefore(a);
-        let year = isBefore ? a.year() - b.year() : b.year() - a.year(),
-            month = isBefore ? a.month() - b.month() : b.month() - a.month(),
-            day = isBefore ? a.date() - b.date() : b.date() - a.date(),
-            hour = isBefore ? a.hour() - b.hour() : b.hour() - a.hour(),
-            minute = isBefore ? a.minute() - b.minute() : b.minute() - a.minute(),
-            second = isBefore ? a.second() - b.second() : b.second() - a.second();
-        if (second < 0) {
-            minute--;
-            second += 60;
-        }
-        if (minute < 0) {
-            hour--;
-            minute += 60;
-        }
-        if (hour < 0) {
-            day--;
-            hour += 24;
-        }
-        if (day < 0) {
-            month--;
-            if (monthsHave31Days.includes((isBefore ? b : a).month())) {
-                day += 31;
-            } else if ((isBefore ? b : a).month() === 1) {
-                if ((isBefore ? b : a).year() % 4 === 0) {
-                    day += 29;
-                } else {
-                    day += 28;
-                }
-            } else {
-                day += 30;
-            }
-        }
-        if (month < 0) {
-            year--;
-            month += 12;
+        let diff = b.diff(a);
+        if (isBefore) {
+            diff *= -1;
         }
         let result = "";
-        if (year > 0) {
-            result += `${year}年`;
-        }
-        if (month > 0) {
-            result += `${month}月`;
-        } else if (result !== "") {
-            result += `${0}月`;
-        }
-        if (day > 0) {
-            result += `${day}日`;
-        } else if (result !== "") {
-            result += `${0}日`;
-        }
-        if (hour > 0) {
-            result += `${hour}小时`;
-        } else if (result !== "") {
-            result += `${0}小时`;
-        }
-        if (minute > 0) {
-            result += `${minute}分`;
-        } else if (result !== "") {
-            result += `${0}分`;
-        }
-        if (second > 0) {
-            result += `${second}秒`;
-        } else if (result !== "") {
-            result += `${0}秒`;
+        const units = [
+            { label: "年", duration: 365 * 24 * 60 * 60 * 1000 },
+            { label: "月", duration: 30 * 24 * 60 * 60 * 1000 },
+            { label: "日", duration: 24 * 60 * 60 * 1000 },
+            { label: "小时", duration: 60 * 60 * 1000 },
+            { label: "分", duration: 60 * 1000 },
+            { label: "秒", duration: 1000 },
+        ];
+        for (const unit of units) {
+            if (diff >= unit.duration) {
+                const value = Math.floor(diff / unit.duration);
+                diff -= value * unit.duration;
+                if (value > 0) {
+                    result += `${value}${unit.label}`;
+                }
+            }
         }
         return result.replace(/(\d) /g, "$1").replace(/^(?:0\D+)+$/, "").replace(/(\D)(?:0\D+)+$/, "$1");
     };
