@@ -15,53 +15,36 @@
  */
 "use strict";
 $(() => {
-    const monthsHave31Days = [0, 2, 4, 6, 7, 9, 11];
     const format = (then, type) => {
         switch (type) {
             case "fromToNow": {
                 const now = moment().startOf("minute");
                 const isBefore = then.isBefore(now);
-                let year = isBefore ? now.year() - then.year() : then.year() - now.year(),
-                    month = isBefore ? now.month() - then.month() : then.month() - now.month(),
-                    day = isBefore ? now.date() - then.date() : then.date() - now.date();
-                if (day < 0) {
-                    month--;
-                    if (monthsHave31Days.includes((isBefore ? then : now).month())) {
-                        day += 31;
-                    } else if ((isBefore ? then : now).month() === 1) {
-                        if ((isBefore ? then : now).year() % 4 === 0) {
-                            day += 29;
-                        } else {
-                            day += 28;
+                let diff = now.diff(then);
+                let result = "";
+                const units = [
+                    { label: "年", duration: 365 * 24 * 60 * 60 * 1000 },
+                    { label: "个月", duration: 30 * 24 * 60 * 60 * 1000 },
+                    { label: "天", duration: 24 * 60 * 60 * 1000 },
+                ];
+                for (const unit of units) {
+                    if (diff >= unit.duration) {
+                        const value = Math.floor(diff / unit.duration);
+                        diff -= value * unit.duration;
+                        if (value > 0) {
+                            result += `${value}${unit.label}`;
                         }
-                    } else {
-                        day += 30;
                     }
                 }
-                if (month < 0) {
-                    year--;
-                    month += 12;
-                }
-                let result = "";
-                if (year > 0) {
-                    result += `${year}年`;
-                }
-                if (month > 0) {
-                    result += `${month}个月`;
-                } else if (result !== "") {
-                    result += "0个月";
-                }
-                if (day > 0) {
-                    result += `${day}天`;
-                } else if (result !== "") {
-                    result += "0天";
+                if (result === "") {
+                    result = "0个月0天";
                 }
                 return result + (isBefore ? "前" : "后");
             }
             case "HourMinuteTimezone":
-                return `${then.format(window.LocalComments.twentyFourHours || mw.config.get("LocalComments", {}).twentyFourHours ? "a hh:mm" : " LT")}(UTC+${then.utcOffset() / 60})`.replace("(UTC+-", "(UTC-");
+                return `${then.format(window.LocalComments.twentyFourHours || mw.config.get("LocalComments", {}).twentyFourHours ? "a hh:mm" : " LT")} (UTC+${then.utcOffset() / 60})`.replace("(UTC+-", "(UTC-");
             case "YearMonthDayDayofweek":
-                return then.format("YYYY[年]MM[月]DD[日] dddd");
+                return then.format("YYYY[年]M[月]D[日] dddd");
         }
     };
     const display = (then) => then.calendar(null, {
@@ -115,7 +98,7 @@ $(() => {
             const then = moment(iso, moment.ISO_8601);
             const now = moment();
             const withinHours = Math.abs(then.diff(now, "hours", true)) <= moment.relativeTimeThreshold("h");
-            const formats = window.LocalComments.formats;
+            const { formats } = window.LocalComments;
             let text;
             if (withinHours) {
                 text = formatMoment(then, formats.day || formats.other, elt.dataset.originalText);
