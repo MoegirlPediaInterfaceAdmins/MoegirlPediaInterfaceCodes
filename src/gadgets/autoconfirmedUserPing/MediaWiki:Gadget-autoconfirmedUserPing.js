@@ -1,7 +1,7 @@
 // <pre>
 "use strict";
 $(() => (async () => {
-    if (!mw.config.get("wgTitle").startsWith("提案/讨论中提案/")) {
+    if (!mw.config.get("wgPageName").startsWith("萌娘百科_talk:提案/讨论中提案/")) {
         return;
     }
     // await mw.loader.using(["mediawiki.api", "oojs-ui-core", "moment"]);
@@ -110,7 +110,7 @@ $(() => (async () => {
                 this.stepList]);
             this.updateSize();
 
-            this.addStep(wgULS("正在获取忽略用户名单...", "正在獲取忽略使用者名稱單..."));
+            this.addStep(wgULS("正在获取忽略用户名单...", "正在獲取忽略使用者名單...", null, null, "正在獲取忽略用戶名單 ..."));
             const bots = (await api.get({
                 action: "query",
                 list: "allusers",
