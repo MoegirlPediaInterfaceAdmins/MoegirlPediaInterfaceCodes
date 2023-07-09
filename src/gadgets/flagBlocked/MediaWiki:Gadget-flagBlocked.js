@@ -29,13 +29,13 @@ $(() => {
                 lelimit: 1,
                 letitle: pagename,
             })).query.logevents["0"];
-            const comment = data.comment;
-            const duration = data.params.duration;
+            const { comment } = data;
+            const { duration } = data.params;
             let blockTime = data.timestamp;
             if (!/never|infinite|indefinite|infinity/i.test(duration)) {
                 throw new Error("该用户未被永久封禁！");
             } else {
-                blockTime = moment(blockTime).utcOffset(8).format("YYYY年MM月DD日"); // 精确到日
+                blockTime = moment(blockTime).utcOffset(8).format("YYYY年M月D日"); // 精确到日
             }
             if (data.params.flags.includes("hiddenname") || Reflect.has(data, "suppressed")) {
                 throw new Error("用户名被隐藏或日志被监督！");

@@ -30,12 +30,12 @@ $(() => {
                 lelimit: 1,
                 letitle: pagename,
             })).query.logevents["0"];
-            const user = data.user;
+            const { user } = data;
             let endTime = data.params.details[0].expiry;
             if (endTime === "infinite") {
                 throw new Error("编辑战保护时长不应为「无限期」！");
             } else {
-                endTime = moment(endTime).utcOffset(8).format("YYYY年MM月DD日 HH:mm:ss [(CST)]");
+                endTime = moment(endTime).utcOffset(8).format("YYYY年M月D日 HH:mm:ss [(CST)]");
             }
             const template = `{{编辑战|sysop=${user}|end=${endTime}}}\n`, summary = `编辑战模板：由[[User_talk:${user}|${user}]]保护至${endTime}`;
 
