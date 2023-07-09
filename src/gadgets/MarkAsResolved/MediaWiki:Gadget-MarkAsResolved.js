@@ -19,7 +19,7 @@ $(() => {
             ...super.static,
             tagName: "div",
             name: "AnnTools_MarkAsResolved",
-            title: wgULS("公共讨论页段落状态标记工具"), // @TODO
+            title: wgULS("公共讨论页段落状态标记工具", "公共討論頁段落狀態標記工具"),
             actions: [
                 {
                     action: "cancel",
@@ -106,7 +106,7 @@ $(() => {
         }
 
         precommentMultilineTextInput = new OO.ui.MultilineTextInputWidget({
-            placeholder: wgULS("（但是如果不写就啥也没有）"), // @TODO
+            placeholder: wgULS("（但是如果不写就啥也没有）", "（但是如果不寫就啥也沒有）"),
             autosize: true,
         });
         get precomment() {
@@ -114,23 +114,23 @@ $(() => {
         }
 
         commentTextInput = new OO.ui.TextInputWidget({
-            placeholder: wgULS("（但是如果不写就啥也没有）"), // @TODO
+            placeholder: wgULS("（但是如果不写就啥也没有）", "（但是如果不寫就啥也沒有）"),
         });
         get comment() {
             return this.commentTextInput.getValue();
         }
 
-        constructor(config) {
+        constructor (config) {
             super(config);
         }
         initialize() {
             super.initialize();
             this.panelLayout.$element.append(...[
-                [this.sectionTitleWidget, wgULS("段落标题：")], // @TODO
-                [this.statusRadioSelect, wgULS("标记状态：")], // @TODO
-                [this.archiveOffsetNumberInput, wgULS("存档用时：")], // @TODO
-                [this.precommentMultilineTextInput, wgULS("前置留言：")], // @TODO
-                [this.commentTextInput, wgULS("内置留言：")], // @TODO
+                [this.sectionTitleWidget, wgULS("段落标题：", "段落標題：")],
+                [this.statusRadioSelect, wgULS("标记状态：", "標記狀態：")],
+                [this.archiveOffsetNumberInput, wgULS("存档用时：", "存檔用時：")],
+                [this.precommentMultilineTextInput, wgULS("前置留言：", "前置留言：")],
+                [this.commentTextInput, wgULS("内置留言：", "內置留言：")],
             ].map(([fieldWidget, labelText]) => new OO.ui.FieldLayout(fieldWidget, {
                 label: MARWindow.bolbLabel(labelText),
                 align: "top",
@@ -179,7 +179,7 @@ $(() => {
             if (action === "submit") {
                 return new OO.ui.Process($.when((async () => {
                     if (!this.status) {
-                        throw new OO.ui.Error(wgULS("请选择一个状态"), {
+                        throw new OO.ui.Error(wgULS("请选择一个状态", "請選擇一個狀態"), {
                             recoverable: false,
                         });
                     }
@@ -190,7 +190,7 @@ $(() => {
                         prop: "sections",
                     })).parse.sections.map(({ anchor, index }) => [anchor, index]));
                     if (!Reflect.has(toclist, this.sectionTitle)) {
-                        throw new OO.ui.Error(wgULS("小工具无法根据段落标题找到该段落，请移除该段落标题内的模板后再行操作……"), { // @TODO
+                        throw new OO.ui.Error(wgULS("小工具无法根据段落标题找到该段落，请移除该段落标题内的模板后再行操作……", "小工具無法根據段落標題找到該段落，請移除該段落標題內的模板後再行操作……"), {
                             recoverable: false,
                         });
                     }
@@ -199,7 +199,7 @@ $(() => {
                         await this.markAsResolved({ section });
                         this.close({ action });
                         mw.notify(wgULS("即将刷新……", "即將刷新……"), {
-                            title: wgULS("标记成功"), // @TODO
+                            title: wgULS("标记成功", "標記成功"),
                             type: "success",
                             tag: "AnnTools_MarkAsResolved",
                         });
@@ -244,7 +244,7 @@ $(() => {
         if (content.hasClass("saveNotice") || content.hasClass("MarkAsResolved")) { continue; }
         const sectionTitle = self.find(".mw-headline").attr("id");
         const button = $("<a>");
-        button.attr("href", "javascript:void(0);").prop("draggable", false).addClass("AnnTools_MarkAsResolved").text(wgULS("标记状态")); // @TODO
+        button.attr("href", "javascript:void(0);").prop("draggable", false).addClass("AnnTools_MarkAsResolved").text(wgULS("标记状态", "標記狀態"));
         self.find(".mw-editsection-bracket").first()
             .after('<span class="mw-editsection-divider"> | </span>')
             .after(button);
