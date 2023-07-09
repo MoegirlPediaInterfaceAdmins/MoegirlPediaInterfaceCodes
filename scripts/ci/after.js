@@ -10,7 +10,7 @@ const packageLockFile = "package-lock.json";
 
 console.info("Start to recover", packageLockFile);
 const tmpdir = await mkdtmp({
-    random: false,
+    subDir: process.env.RANDOM_UUID,
 });
 const backupedPackageLockFile = path.join(tmpdir, packageLockFile);
 console.info("Start to check backup file:", backupedPackageLockFile);

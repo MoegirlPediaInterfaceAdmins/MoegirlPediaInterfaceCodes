@@ -1,23 +1,26 @@
 import console, { originalConsole } from "../modules/console.js";
 console.info("Initialization done.");
 import jsonModule from "../modules/jsonModule.js";
-import exec from "../modules/exec.js";
+import testLatency from "../modules/testLatency.js";
 import mkdtmp from "../modules/mkdtmp.js";
 import fs from "fs";
 import path from "path";
 
 const packageLockFile = "package-lock.json";
 
-const localRegistry = await exec("npm config get registry");
 const registries = [
     "https://registry.npmjs.org/",
     "https://mirrors.cloud.tencent.com/npm/",
-].filter((registry) => registry !== localRegistry);
-console.info("localRegistry:", localRegistry);
-console.info("registries:", registries);
+];
+const targetPath = "index.json";
+const latency = await testLatency(registries.map((base) => `${base}${targetPath}`));
+const targetRegistry = latency.sort(([, a], [, b]) => a - b)[0][0].replace(targetPath, "");
+const otherRegistries = registries.filter((registry) => registry !== targetRegistry);
+console.info("targetRegistry:", targetRegistry);
+console.info("otherRegistries:", otherRegistries);
 console.info("Start to backup", packageLockFile);
 const tmpdir = await mkdtmp({
-    random: false,
+    subDir: process.env.RANDOM_UUID,
 });
 const backupedPackageLockFile = path.join(tmpdir, packageLockFile);
 await fs.promises.cp(packageLockFile, backupedPackageLockFile, { force: true, preserveTimestamps: true });
@@ -29,9 +32,9 @@ const modifiedCount = {};
 for (const key of Object.keys(packageLockFileContent.packages)) {
     if (typeof packageLockFileContent.packages[key].resolved === "string") {
         let url = packageLockFileContent.packages[key].resolved;
-        for (const registry of registries) {
+        for (const registry of otherRegistries) {
             if (url.startsWith(registry)) {
-                url = url.replace(registry, localRegistry);
+                url = url.replace(registry, targetRegistry);
                 if (typeof modifiedCount[registry] !== "number") {
                     modifiedCount[registry] = 0;
                 }

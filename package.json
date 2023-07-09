@@ -12,7 +12,7 @@
     "scripts": {
         "test": "eslint src && stylelint src/**/*.css && v8r && node scripts/emailmapChecker/index.js",
         "format": "eslint src --fix && stylelint src/**/*.css --fix",
-        "ci": "node scripts/ci/before.js && npm ci && node scripts/ci/after.js"
+        "ci": "export RANDOM_UUID=$(uuidgen) && node scripts/ci/before.js && npm ci && node scripts/ci/after.js"
     },
     "dependencies": {
         "@actions/artifact": "^1.1.1",
