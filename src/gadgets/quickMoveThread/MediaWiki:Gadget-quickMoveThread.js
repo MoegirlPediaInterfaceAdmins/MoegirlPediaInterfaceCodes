@@ -107,11 +107,13 @@ $(() => {
             dropdownToggle(visible) {
                 if (visible) {
                     // Manually resize
-                    // TODO: make this animated
                     const newHeight = parseFloat(this.$frame.css("height")) + 200;
                     this.withoutSizeTransitions(() => {
                         this.$frame.css("height", newHeight);
                         this.targetDropdownMenu.clip();
+                        $(this.$frame).animate({
+                            height: newHeight,
+                        }, 700);
                     });
                 } else {
                     this.updateSize();
