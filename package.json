@@ -21,7 +21,7 @@
         "@csstools/postcss-is-pseudo-class": "^4.0.0",
         "@csstools/postcss-media-minmax": "^1.0.5",
         "@financial-times/js-features-analyser": "^0.4.3",
-        "@octokit/auth-action": "^3.0.2",
+        "@octokit/auth-action": "^4.0.0",
         "@octokit/auth-app": "^5.0.6",
         "@octokit/auth-unauthenticated": "^4.0.1",
         "@octokit/plugin-retry": "^5.0.5",
