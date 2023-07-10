@@ -30,7 +30,7 @@
         "@types/echarts": "^4.9.18",
         "@types/jquery": "^3.5.14",
         "@types/moment": "^2.13.0",
-        "@types/oojs-ui": "^0.46.4",
+        "@types/oojs-ui": "^0.47.0",
         "@wikimedia/types-wikimedia": "^0.4.1",
         "autoprefixer": "^10.4.14",
         "browser-pack-flat": "^3.5.0",
