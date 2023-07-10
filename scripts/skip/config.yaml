@@ -1,0 +1,12 @@
+skipConditions:
+  - name: dependabot
+    conditions:
+      - property: author.name
+        operator: equal
+        value: dependabot[bot]
+      - property: author.email
+        operator: equal
+        value: 49699333+dependabot[bot]@users.noreply.github.com
+      - property: message
+        operator: startsWith
+        value: "npm(deps): bump"

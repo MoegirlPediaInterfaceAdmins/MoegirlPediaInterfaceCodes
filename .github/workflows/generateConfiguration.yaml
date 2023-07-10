@@ -24,22 +24,22 @@ jobs:
       - name: Generate cache primary key based on nodejs's and npm's version and package-lock.json's hash
         id: version
         shell: bash
-        run: echo "version=node@$(node -v | grep -oP '(?<=^v)\d+')_npm@$(npm -v | grep -oP '^\d+')_package-lock@$(openssl dgst -sha3-512 package-lock.json | grep -oP '[\da-f]{128}')" >> ${GITHUB_OUTPUT} && cat ${GITHUB_OUTPUT}
+        run: echo "hash=node@$(node -v | grep -oP '(?<=^v)\d+')_npm@$(npm -v | grep -oP '^\d+')_package-lock@$(openssl dgst -sha3-512 package-lock.json | grep -oP '[\da-f]{128}')" >> $GITHUB_OUTPUT && cat $GITHUB_OUTPUT
       - uses: actions/cache/restore@v3
         name: Try to restore node_modules from cache
         id: cache
         with:
           path: node_modules
-          key: ${{ steps.version.outputs.version }}
+          key: ${{ steps.version.outputs.hash }}
       - name: Install dependencies if no cache for node_modules
         run: npm run ci
-        if: steps.cache.outputs.cache-hit != 'true'
+        if: success() && steps.cache.outputs.cache-hit != 'true'
       - uses: actions/cache/save@v3
-        if: steps.cache.outputs.cache-hit != 'true'
+        if: success() && steps.cache.outputs.cache-hit != 'true'
         name: Save node_modules to cache
         with:
           path: node_modules
-          key: ${{ steps.cache.outputs.cache-primary-key }}
+          key: ${{ steps.version.outputs.hash }}
       - name: Prepare git
         run: node scripts/postCommit/prepareGit.js
       - name: Expose GitHub Runtime

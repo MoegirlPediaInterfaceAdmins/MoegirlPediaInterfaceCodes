@@ -64,10 +64,10 @@ permissions:
   pull-requests: read
   repository-projects: read
   security-events: write
-  statuses: read
+  statuses: write
 
 jobs:
-  postCommit:
+  skipCI:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -82,13 +82,13 @@ jobs:
       - name: Generate cache primary key based on nodejs's and npm's version and package-lock.json's hash
         id: version
         shell: bash
-        run: echo "version=node@$(node -v | grep -oP '(?<=^v)\d+')_npm@$(npm -v | grep -oP '^\d+')_package-lock@$(openssl dgst -sha3-512 package-lock.json | grep -oP '[\da-f]{128}')" >> ${GITHUB_OUTPUT} && cat ${GITHUB_OUTPUT}
+        run: echo "hash=node@$(node -v | grep -oP '(?<=^v)\d+')_npm@$(npm -v | grep -oP '^\d+')_package-lock@$(openssl dgst -sha3-512 package-lock.json | grep -oP '[\da-f]{128}')" >> $GITHUB_OUTPUT && cat $GITHUB_OUTPUT
       - uses: actions/cache/restore@v3
         name: Try to restore node_modules from cache
         id: cache
         with:
           path: node_modules
-          key: ${{ steps.version.outputs.version }}
+          key: ${{ steps.version.outputs.hash }}
       - name: Install dependencies if no cache for node_modules
         run: npm run ci
         if: success() && steps.cache.outputs.cache-hit != 'true'
@@ -97,12 +97,46 @@ jobs:
         name: Save node_modules to cache
         with:
           path: node_modules
-          key: ${{ steps.cache.outputs.cache-primary-key }}
-      - name: Reload the linter cache
-        uses: actions/cache@v3
+          key: ${{ steps.version.outputs.hash }}
+      - name: If needs to skip, skip now
+        run: node scripts/skip/index.js
+        id: skip
+    outputs:
+      skip: ${{ steps.skip.outputs.skip }}
+  postCommit:
+    runs-on: ubuntu-latest
+    needs:
+      - skipCI
+    if: success() && needs.skipCI.outputs.skip != 'true'
+    steps:
+      - uses: actions/checkout@v3
         with:
-          path: .cache
-          key: cache@${{ github.ref }}
+          fetch-depth: 0
+      - name: Use Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: lts/*
+          check-latest: true
+          cache: npm
+      - name: Generate cache primary key based on nodejs's and npm's version and package-lock.json's hash
+        id: version
+        shell: bash
+        run: echo "hash=node@$(node -v | grep -oP '(?<=^v)\d+')_npm@$(npm -v | grep -oP '^\d+')_package-lock@$(openssl dgst -sha3-512 package-lock.json | grep -oP '[\da-f]{128}')" >> $GITHUB_OUTPUT && cat $GITHUB_OUTPUT
+      - uses: actions/cache/restore@v3
+        name: Try to restore node_modules from cache
+        id: cache
+        with:
+          path: node_modules
+          key: ${{ steps.version.outputs.hash }}
+      - name: Install dependencies if no cache for node_modules
+        run: npm run ci
+        if: success() && steps.cache.outputs.cache-hit != 'true'
+      - uses: actions/cache/save@v3
+        if: success() && steps.cache.outputs.cache-hit != 'true'
+        name: Save node_modules to cache
+        with:
+          path: node_modules
+          key: ${{ steps.version.outputs.hash }}
       - name: Git config
         run: node scripts/postCommit/prepareGit.js
       - name: Expose GitHub Runtime
@@ -129,8 +163,10 @@ jobs:
       linterTest: ${{ steps.output.outputs.linterTest }}
   linter_test:
     runs-on: ubuntu-latest
-    needs: postCommit
-    if: success() && (needs.postCommit.outputs.linterTest == 'true' || github.event.inputs.manuallyLinterTest == 'true')
+    needs:
+      - skipCI
+      - postCommit
+    if: success() && needs.skipCI.outputs.skip != 'true' && (needs.postCommit.outputs.linterTest == 'true' || github.event.inputs.manuallyLinterTest == 'true')
     env:
       commits: ${{ needs.postCommit.outputs.commits }}
     steps:
@@ -144,13 +180,13 @@ jobs:
       - name: Generate cache primary key based on nodejs's and npm's version and package-lock.json's hash
         id: version
         shell: bash
-        run: echo "version=node@$(node -v | grep -oP '(?<=^v)\d+')_npm@$(npm -v | grep -oP '^\d+')_package-lock@$(openssl dgst -sha3-512 package-lock.json | grep -oP '[\da-f]{128}')" >> ${GITHUB_OUTPUT} && cat ${GITHUB_OUTPUT}
+        run: echo "hash=node@$(node -v | grep -oP '(?<=^v)\d+')_npm@$(npm -v | grep -oP '^\d+')_package-lock@$(openssl dgst -sha3-512 package-lock.json | grep -oP '[\da-f]{128}')" >> $GITHUB_OUTPUT && cat $GITHUB_OUTPUT
       - uses: actions/cache/restore@v3
         name: Try to restore node_modules from cache
         id: cache
         with:
           path: node_modules
-          key: ${{ steps.version.outputs.version }}
+          key: ${{ steps.version.outputs.hash }}
       - name: Install dependencies if no cache for node_modules
         run: npm run ci
         if: success() && steps.cache.outputs.cache-hit != 'true'
@@ -159,7 +195,7 @@ jobs:
         name: Save node_modules to cache
         with:
           path: node_modules
-          key: ${{ steps.cache.outputs.cache-primary-key }}
+          key: ${{ steps.version.outputs.hash }}
       - name: Reload the linter cache
         uses: actions/cache@v3
         with:
@@ -178,12 +214,10 @@ jobs:
   webhook:
     runs-on: ubuntu-latest
     needs:
+      - skipCI
       - postCommit
       - linter_test
-    if: always()
-    env:
-      needs: ${{ toJson(needs) }}
-      ANN_SERVER_SECRET_API_KEY: ${{ secrets.ANN_SERVER_SECRET_API_KEY }}
+    if: always() && needs.skipCI.outputs.skip != 'true'
     steps:
       - uses: actions/checkout@v3
       - name: Use Node.js
@@ -195,13 +229,13 @@ jobs:
       - name: Generate cache primary key based on nodejs's and npm's version and package-lock.json's hash
         id: version
         shell: bash
-        run: echo "version=node@$(node -v | grep -oP '(?<=^v)\d+')_npm@$(npm -v | grep -oP '^\d+')_package-lock@$(openssl dgst -sha3-512 package-lock.json | grep -oP '[\da-f]{128}')" >> ${GITHUB_OUTPUT} && cat ${GITHUB_OUTPUT}
+        run: echo "hash=node@$(node -v | grep -oP '(?<=^v)\d+')_npm@$(npm -v | grep -oP '^\d+')_package-lock@$(openssl dgst -sha3-512 package-lock.json | grep -oP '[\da-f]{128}')" >> $GITHUB_OUTPUT && cat $GITHUB_OUTPUT
       - uses: actions/cache/restore@v3
         name: Try to restore node_modules from cache
         id: cache
         with:
           path: node_modules
-          key: ${{ steps.version.outputs.version }}
+          key: ${{ steps.version.outputs.hash }}
       - name: Install dependencies if no cache for node_modules
         run: npm run ci
         if: success() && steps.cache.outputs.cache-hit != 'true'
@@ -210,6 +244,9 @@ jobs:
         name: Save node_modules to cache
         with:
           path: node_modules
-          key: ${{ steps.cache.outputs.cache-primary-key }}
+          key: ${{ steps.version.outputs.hash }}
       - name: Fire the webhook of AnnAngela's server
         run: node scripts/fireWebhook/index.js
+        env:
+          needs: ${{ toJson(needs) }}
+          ANN_SERVER_SECRET_API_KEY: ${{ secrets.ANN_SERVER_SECRET_API_KEY }}
