@@ -3,7 +3,7 @@ name: Generate configuration
 on:
   workflow_dispatch:
   schedule:
-    - cron: 0 0 * * 1 # Every Monday
+    - cron: 30 23 * * 0 # Every Monday
 
 concurrency: generateConfiguration
 

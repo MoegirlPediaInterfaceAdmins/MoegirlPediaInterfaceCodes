@@ -16,7 +16,7 @@ on:
   merge_group:
   workflow_dispatch:
   schedule:
-    - cron: 15 0 * * *
+    - cron: 45 23 * * *
 
 concurrency:
   group: ${{ github.workflow_ref }}-${{ github.ref }}
