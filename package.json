@@ -25,7 +25,7 @@
         "@octokit/auth-app": "^6.0.0",
         "@octokit/auth-unauthenticated": "^5.0.0",
         "@octokit/plugin-retry": "^6.0.0",
-        "@octokit/rest": "^19.0.13",
+        "@octokit/rest": "^20.0.1",
         "@types/cron": "^2.0.1",
         "@types/echarts": "^4.9.18",
         "@types/jquery": "^3.5.14",
