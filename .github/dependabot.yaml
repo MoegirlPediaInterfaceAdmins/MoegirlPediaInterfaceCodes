@@ -5,21 +5,21 @@
 
 version: 2
 updates:
-  - package-ecosystem: "npm" # See documentation for possible values
-    directory: "/" # Location of package manifests
+  - package-ecosystem: npm # See documentation for possible values
+    directory: / # Location of package manifests
     schedule:
-      interval: "daily"
-      time: "08:15"
-      timezone: "Asia/Shanghai"
+      interval: daily
+      time: 07:30
+      timezone: Asia/Shanghai
     commit-message:
-      prefix: "npm"
-      include: "scope"
-  - package-ecosystem: "github-actions"
-    directory: "/"
+      prefix: npm
+      include: scope
+  - package-ecosystem: github-actions
+    directory: /
     schedule:
-      interval: "daily"
-      time: "08:15"
-      timezone: "Asia/Shanghai"
+      interval: daily
+      time: 07:30
+      timezone: Asia/Shanghai
     commit-message:
-      prefix: "gha"
-      include: "scope"
+      prefix: gha
+      include: scope
