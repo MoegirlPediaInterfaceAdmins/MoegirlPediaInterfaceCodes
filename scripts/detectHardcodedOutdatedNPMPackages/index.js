@@ -42,7 +42,7 @@ for (const src of scripts) {
             continue;
         }
         console.info("latestVersion is greater than local version.");
-        outdatedPackages.push({ latestVersion, version });
+        outdatedPackages.push({ pkg, latestVersion, version });
     }
     if (outdatedPackages.length === 0) {
         console.info("No outdated package, continue.");
