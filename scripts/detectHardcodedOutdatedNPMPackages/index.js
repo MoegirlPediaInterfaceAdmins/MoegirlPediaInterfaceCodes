@@ -51,9 +51,9 @@ for (const src of scripts) {
     console.info("Outdated package:", outdatedPackages);
     await createIssue(
         "Found harcoded-outdated NPM packages.",
-        `The harcoded-outdated NPM packages are found in [\`${src}\`](${src}).`,
+        `The harcoded-outdated NPM packages are found in [\`../blob/master/${src}\`](${src}).`,
         labels,
-        `The harcoded-outdated NPM packages:\n\`\`\`json\n${JSON.stringify(outdatedPackages, null, 4)}\n\``,
+        `The harcoded-outdated NPM packages:\n\`\`\`json\n${JSON.stringify(outdatedPackages, null, 4)}\n\`\`\``,
     );
 }
 console.info("Done.");
