@@ -213,3 +213,8 @@ aside#moe-global-siderail #moe-custom-sidenav-block h2 {
         display: inline;
     }
 }
+
+/* chrome等浏览器搜索框两个叉 */
+.n-input__input-el::-webkit-search-cancel-button{
+    display: none;
+}
