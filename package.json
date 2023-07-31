@@ -8,7 +8,7 @@
     "private": true,,
     "engines": {
         "node": "^18.17 || ^20.1"
-    }
+    },
     "scripts": {
         "test": "eslint src && stylelint src/**/*.css && v8r && node scripts/emailmapChecker/index.js",
         "format": "eslint src --fix && stylelint src/**/*.css --fix",
