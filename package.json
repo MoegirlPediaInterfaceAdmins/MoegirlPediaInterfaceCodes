@@ -5,7 +5,7 @@
         "url": "https://github.com/MoegirlPediaInterfaceAdmins/MoegirlPediaInterfaceCodes.git"
     },
     "license": "",
-    "private": true,,
+    "private": true,
     "engines": {
         "node": "^18.17 || ^20.1"
     },
