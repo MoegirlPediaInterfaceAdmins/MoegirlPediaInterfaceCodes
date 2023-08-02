@@ -243,6 +243,9 @@
  
 .annotation .oo-ui-popupWidget {
     z-index: 10;
+    white-space: normal;
+    color: #000;
+    font-weight: normal;
 }
  
 .annotation .oo-ui-popupWidget-popup {
