@@ -19,7 +19,7 @@
         "@actions/core": "^1.10.0",
         "@annangela/eslint-plugin-prefer-reflect": "^2.0.1",
         "@csstools/postcss-is-pseudo-class": "^4.0.0",
-        "@csstools/postcss-media-minmax": "^1.0.6",
+        "@csstools/postcss-media-minmax": "^1.0.7",
         "@financial-times/js-features-analyser": "^0.4.3",
         "@octokit/auth-action": "^4.0.0",
         "@octokit/auth-app": "^6.0.0",
