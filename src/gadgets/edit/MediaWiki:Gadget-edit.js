@@ -99,7 +99,7 @@ $(() => {
 
     // 非维护组、技术组成员提出方针编辑请求时提醒需要走提案
     if (
-        decodeURIComponent(window.location.href).indexOf("Template:编辑请求") > -1 &&
+        new URLSearchParams(location.search).get("preload").startsWith("Template:编辑请求/") &&
         mw.config.get("wgNamespaceNumber") === 5 &&
         mw.config.get("wgAction") === "edit" &&
         !mw.config.get("wgUserGroups").some((value) => ["patroller", "sysop", "techeditor", "scripteditor", "interface-admin", "staff"].includes(value))
