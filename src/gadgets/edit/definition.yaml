@@ -21,7 +21,8 @@ rights:
 
 peers: []
 
-dependencies: []
+dependencies:
+  - ext.gadget.libOOUIDialog
 
 _sites:
   - zh
