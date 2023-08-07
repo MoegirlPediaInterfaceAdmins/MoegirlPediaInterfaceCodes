@@ -210,7 +210,7 @@
                 modal: true,
                 closeOnEscape: true,
                 position: [Math.round(($win.width() - Math.min($win.width(), 850)) / 2), Math.round(($win.height() - Math.min($win.height(), 800)) / 2)],
-                title: '用户讨论页留言小工具 - <span class="mw-parser-output"><a href="//commons.wikimedia.org/wiki/MediaWiki_talk:Gadget-UserMessages.js" target="_blank" rel="nofollow noreferrer noopener" class="external text">在维基共享报告错误和建议</a> | <a href="https://zh.moegirl.org.cn/Help:UserMessages%E5%B0%8F%E5%B7%A5%E5%85%B7" target="_blank" class="external text">点此查看帮助</a></span>',
+                title: '用户讨论页留言小工具 - <span class="mw-parser-output"><a href="//commons.wikimedia.org/wiki/MediaWiki_talk:Gadget-UserMessages.js" target="_blank" rel="nofollow noreferrer noopener" class="external text">在维基共享报告错误和建议</a> | <a href="/Help:UserMessages%E5%B0%8F%E5%B7%A5%E5%85%B7" target="_blank" class="external text">点此查看帮助</a></span>',
                 height: Math.min($win.height(), 800),
                 width: Math.min($win.width(), 850),
                 buttons: {

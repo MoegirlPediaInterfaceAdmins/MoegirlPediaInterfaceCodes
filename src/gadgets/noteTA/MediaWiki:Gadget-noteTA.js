@@ -210,7 +210,7 @@ mw.hook("wikipage.content").add(() => {
                         }
                     } catch (reason) {
                         console.info("noteTA-lang-changer:", reason);
-                        container.html(`<p class="mw-parser-output">发生错误，无法切换，请手动访问<b>【<a href="https://zh.moegirl.org.cn/Special:Preferences#mw-prefsection-personal-i18n" target="_blank" class="external text">设置页面 - 语言</a> - 内容语言变种】处</b>修改您的内容语言变种为 ${text}</p>`);
+                        container.html(`<p class="mw-parser-output">发生错误，无法切换，请手动访问<b>【<a href="/Special:Preferences#mw-prefsection-personal-i18n" target="_blank" class="external text">设置页面 - 语言</a> - 内容语言变种】处</b>修改您的内容语言变种为 ${text}</p>`);
                     }
                 }).filter(`[data-lang="${wgUserVariant}"]`).addClass("mw-ui-progressive");
                 $("#noteTA-lang-explainer").on("click", () => {

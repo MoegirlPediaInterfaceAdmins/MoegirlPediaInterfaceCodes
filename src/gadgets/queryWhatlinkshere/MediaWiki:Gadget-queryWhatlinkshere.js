@@ -220,7 +220,7 @@ $(() => (async () => {
             nslist[ns].redirect.push(title);
             global.redirect++;
         });
-        Object.entries(nslist).filter(([, { count }]) => count > 0).sort(([a], [b]) => a - b).forEach(([nsnumber, { count, redirect }]) => ul.append(`<li class="mw-parser-output">${upperFirstCase(nsids[nsnumber])}：${count}个页面${redirect.length > 0 ? `（其中有${redirect.length}个重定向页面：${redirect.map((title) => `<a target="_blank" rel="nofollow noreferrer noopener" class="external text" href="https://zh.moegirl.org.cn/index.php?title=${encodeURIComponent(title)}&amp;redirect=no">${title}</a>`).join("、")}）` : ""}`));
+        Object.entries(nslist).filter(([, { count }]) => count > 0).sort(([a], [b]) => a - b).forEach(([nsnumber, { count, redirect }]) => ul.append(`<li class="mw-parser-output">${upperFirstCase(nsids[nsnumber])}：${count}个页面${redirect.length > 0 ? `（其中有${redirect.length}个重定向页面：${redirect.map((title) => `<a target="_blank" rel="nofollow noreferrer noopener" class="external text" href="/index.php?title=${encodeURIComponent(title)}&amp;redirect=no">${title}</a>`).join("、")}）` : ""}`));
         whatembeddedin.after(ul);
     });
 })());
