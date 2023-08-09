@@ -2109,7 +2109,6 @@
     "StyleSheetList.prototype.length",
     "SubtleCrypto.prototype.constructor",
     "SubtleCrypto.prototype.digest",
-    "SubtleCrypto.prototype.sign",
     "Symbol.prototype",
     "Symbol.prototype.constructor",
     "Symbol.prototype.toString",
