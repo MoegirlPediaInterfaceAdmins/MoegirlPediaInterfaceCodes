@@ -119,7 +119,7 @@
     }
     //i18n语言链接
     i18nLink();
-    //授权巡查默认15天，机器用户授权增加预置时间选项
+    //授权巡查默认15天，机器用户授权增加预置时间选项，手确默认7天
     if (mw.config.get("wgCanonicalSpecialPageName") === "Userrights") {
         const wpExpiryPatroller = document.querySelector("#mw-input-wpExpiry-patroller");
         if (wpExpiryPatroller) {
@@ -131,6 +131,10 @@
         const wpExpiryFlood = document.querySelector("#mw-input-wpExpiry-flood");
         if (wpExpiryFlood) {
             Array.from(wpExpiryFlood.options).filter((ele) => ele.value === "1 day")[0].before(new Option("2小时", "2 hours"), new Option("6小时", "6 hours"), new Option("12小时", "12 hours"));
+        }
+        const wpExpiryManuallyConfirmed = document.querySelector("#mw-input-wpExpiry-manually-confirmed");
+        if (wpExpiryManuallyConfirmed && !["infinite", "existing"].includes(wpExpiryManuallyConfirmed.value)) {
+            wpExpiryPatroller.value = "1 week";
         }
     }
     //替换文本默认不勾选「通过Special:最近更改和监视列表通知这些编辑」
