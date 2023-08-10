@@ -7,7 +7,6 @@ import path from "path";
 import { startGroup, endGroup, exportVariable } from "@actions/core";
 import { createIssue } from "../modules/octokit.js";
 import modulePath from "../modules/modulePath.js";
-import jsonModule from "../modules/jsonModule.js";
 import semver from "semver";
 import fetchNPMPackageInfo from "../modules/fetchNPMPackageInfo.js";
 
@@ -73,13 +72,13 @@ for (const prefetchTarget of prefetchTargets) {
     });
     await fs.promises.writeFile(file, code.join("\n"));
     if (path.extname(file) === ".js") {
-        const eslintrc = await jsonModule.readFile(eslintrcName).catch(() => ({}));
+        const eslintrc = await yamlModule.readFile(eslintrcName).catch(() => ({}));
         if (!Array.isArray(eslintrc.ignorePatterns)) {
             eslintrc.ignorePatterns = [];
         }
         if (!eslintrc.ignorePatterns.includes(filename)) {
             eslintrc.ignorePatterns.push(filename);
-            await jsonModule.writeFile(eslintrcName, eslintrc);
+            await yamlModule.writeFile(eslintrcName, eslintrc);
         }
     }
     console.info(`[${name}]`, "wrote the code file and eslintrc successfully.");
