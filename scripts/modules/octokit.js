@@ -12,6 +12,7 @@ const isInGithubActions = process.env.GITHUB_ACTIONS === "true";
 const isInMasterBranch = process.env.GITHUB_REF === "refs/heads/master";
 const isPush = ["push"].includes(process.env.GITHUB_EVENT_NAME);
 const isPullRequest = ["pull_request"].includes(process.env.GITHUB_EVENT_NAME);
+const debugLoggingEnabled = process.env.ACTIONS_RUNNER_DEBUG === "true";
 const octokitBaseOptions = {
     owner: isInGithubActions ? process.env.GITHUB_REPOSITORY_OWNER : null,
     repo: isInGithubActions ? process.env.GITHUB_REPOSITORY.split("/")[1] : null,
@@ -70,6 +71,7 @@ console.log("isInGithubActions:", isInGithubActions);
 console.log("isInMasterBranch:", isInMasterBranch);
 console.log("isPush:", isPush);
 console.log("isPullRequest:", isPullRequest);
+console.log("debugLoggingEnabled:", debugLoggingEnabled);
 console.info("workflowLink:", workflowLink);
 console.log("octokitBaseOptions:", octokitBaseOptions);
 console.log("auth:", auth);
@@ -144,5 +146,5 @@ const createIssue = async (issueTitle, issueBody, labels, replyBody) => {
     endGroup();
     return issue_number;
 };
-export { octokit, isInMasterBranch, octokitBaseOptions, createIssue, isInGithubActions, isPush, isPullRequest, OctokitWithRetry, workflowLink };
-export default { octokit, isInMasterBranch, octokitBaseOptions, createIssue, isInGithubActions, isPush, isPullRequest, OctokitWithRetry, workflowLink };
+export { octokit, isInMasterBranch, octokitBaseOptions, createIssue, isInGithubActions, isPush, isPullRequest, OctokitWithRetry, workflowLink, debugLoggingEnabled };
+export default { octokit, isInMasterBranch, octokitBaseOptions, createIssue, isInGithubActions, isPush, isPullRequest, OctokitWithRetry, workflowLink, debugLoggingEnabled };
