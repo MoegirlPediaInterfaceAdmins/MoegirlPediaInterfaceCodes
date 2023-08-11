@@ -14,7 +14,6 @@ import mailmap from "../modules/mailmap.js";
 import { startGroup, endGroup, exportVariable } from "@actions/core";
 import { isInMasterBranch, debugLoggingEnabled, isInGithubActions } from "../modules/octokit.js";
 import mkdtmp from "../modules/mkdtmp.js";
-import jsonModule from "../modules/jsonModule.js";
 import { create as createArtifactClient } from "@actions/artifact";
 import git from "../modules/git.js";
 import { writeFile } from "../modules/jsonModule.js";
@@ -45,7 +44,7 @@ const { all: rawHistory } = await git.log({
     "--stat": "10000",
 });
 console.info("Successfully fetched raw history, upload it as a artifact...");
-await jsonModule.writeFile(rawHistoryPath, rawHistory);
+await writeFile(rawHistoryPath, rawHistory);
 if (isInGithubActions) {
     const artifactClient = createArtifactClient();
     await artifactClient.uploadArtifact("rawHistory.json", [rawHistoryPath], tempPath);
