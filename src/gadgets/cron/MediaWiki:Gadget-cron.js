@@ -174,10 +174,12 @@ const require = () => window.luxon;
                         millisecond: 0,
                         second: date.second + 1
                     })), date.invalid) throw new Error("ERROR: You specified an invalid date.");
-                    for (var timeout = Date.now() + 5e3; ;) {
+                    for (var maxMatch = luxon.DateTime.now().plus({
+                        years: 8
+                    }); ;) {
                         var diff = date - start;
-                        if (Date.now() > timeout) throw new Error(`Something went wrong. It took over five seconds to find the next execution time for the cron job.
-							Please refer to the canonical issue (https://github.com/kelektiv/node-cron/issues/467) and provide the following string if you would like to help debug:
+                        if (date > maxMatch) throw new Error(`Something went wrong. No execution date was found in the next 8 years.
+							Please provide the following string if you would like to help debug:
 							Time Zone: ${zone || '""'} - Cron String: ${this} - UTC offset: ${date.offset}
 							- current Date: ` + luxon.DateTime.local().toString());
                         if (date.month - 1 in this.month || 12 === Object.keys(this.month).length) {
