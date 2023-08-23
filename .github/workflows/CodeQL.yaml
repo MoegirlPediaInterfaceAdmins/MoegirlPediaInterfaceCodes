@@ -18,10 +18,6 @@ on:
   schedule:
     - cron: 15 23 * * * # Every 07:15 CST
 
-concurrency:
-  group: ${{ github.workflow_ref }}-${{ github.ref }}
-  cancel-in-progress: true
-
 permissions:
   actions: read
   checks: write
