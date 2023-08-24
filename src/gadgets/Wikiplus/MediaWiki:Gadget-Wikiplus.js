@@ -1,6 +1,6 @@
 "use strict";
 (async () => {
-    await libCachedCode.injectCachedCode("https://npm.elemecdn.com/wikiplus-core@4.0.11/dist/Main.js", "script");
+    await libCachedCode.injectCachedCode("https://npm.elemecdn.com/wikiplus-core@latest", "script");
     const sleep = (ms) => new Promise((res) => setTimeout(res, ms));
     if (mw.config.get("skin") !== "moeskin" || !document.querySelector("#ca-edit")) {
         return;
