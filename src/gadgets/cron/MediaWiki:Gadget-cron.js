@@ -340,12 +340,12 @@ const require = () => window.luxon;
                     for (let i = 0; i < allRanges.length; i++) {
                         if (!allRanges[i].match(RE_RANGE)) throw new Error(`Field (${type}) cannot be parsed`);
                         allRanges[i].replace(RE_RANGE, ($0, lower, upper, step) => {
-                            lower = parseInt(lower, 10), upper = parseInt(upper, 10) || void 0;
+                            lower = parseInt(lower, 10), upper = void 0 !== upper ? parseInt(upper, 10) : void 0;
                             var wasStepDefined = !isNaN(parseInt(step, 10));
                             if ("0" === step) throw new Error(`Field (${type}) has a step of zero`);
-                            if (step = parseInt(step, 10) || 1, upper && upper < lower) throw new Error(`Field (${type}) has an invalid range`);
-                            if (lower < low || upper && upper > high || !upper && lower > high) throw new Error(`Field value (${value}) is out of range`);
-                            for (lower = Math.min(Math.max(low, ~~Math.abs(lower)), high), upper = upper ? Math.min(high, ~~Math.abs(upper)) : wasStepDefined ? high : lower, pointer = lower; typeObj[pointer] = !0, (pointer += step) <= upper; );
+                            if (step = parseInt(step, 10) || 1, void 0 !== upper && upper < lower) throw new Error(`Field (${type}) has an invalid range`);
+                            if (lower < low || void 0 !== upper && upper > high || void 0 === upper && lower > high) throw new Error(`Field value (${value}) is out of range`);
+                            for (lower = Math.min(Math.max(low, ~~Math.abs(lower)), high), upper = void 0 !== upper ? Math.min(high, ~~Math.abs(upper)) : wasStepDefined ? high : lower, pointer = lower; typeObj[pointer] = !0, (pointer += step) <= upper; );
                         });
                     }
                 }
