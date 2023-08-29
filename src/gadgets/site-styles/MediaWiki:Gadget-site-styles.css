@@ -468,11 +468,6 @@ body .ajaxpoll {
     min-width: 400px;
 }
 
-/* 隐藏文件说明302 */
-.ns-6 #shared-image-desc {
-    display: none;
-}
-
 /* 侧边栏底图默认隐藏（通过小工具显示） */
 .sidebar-character {
     display: none;
