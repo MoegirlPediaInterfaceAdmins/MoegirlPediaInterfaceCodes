@@ -27,7 +27,6 @@ body.sideBarPic-executed #wglogo {
 
 body.sideBarPic.skin-vector:not(.DeceasedPerson) #mw-panel .portal {
     background-color: rgb(246 246 246 / 90%);
-
     margin-left: -0.75em;
     margin-right: 0;
     padding-left: 1.5em;
