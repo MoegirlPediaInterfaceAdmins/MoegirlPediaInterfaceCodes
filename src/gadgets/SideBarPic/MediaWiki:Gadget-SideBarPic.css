@@ -25,28 +25,19 @@ body.sideBarPic-executed #wglogo {
     }
 }
 
-body.sideBarPic.skin-vector:not(.DeceasedPerson) div#mw-panel div.portal {
+body.sideBarPic.skin-vector:not(.DeceasedPerson) #mw-panel .portal {
     background-color: rgb(246 246 246 / 90%);
 
-    /* padding-top: 0;
-    top: 212px */
     margin-left: -0.75em;
     margin-right: 0;
     padding-left: 1.5em;
     padding-right: 0.95em;
 }
 
-body.sideBarPic.skin-vector:not(.DeceasedPerson) div#mw-panel #p-logo + div.portal {
+body.sideBarPic.skin-vector:not(.DeceasedPerson) #mw-panel #p-logo + .portal {
     padding-top: 1.1em;
     margin-top: 0;
 }
-
-/* .sideBarPic.skin-vector:not(.DeceasedPerson) #mw-panel div#p-logo {
-    background: rgba(246, 246, 246, 0.73);
-    left: 0;
-    padding: 0 .5em;
-    top: -212px
-} */
 
 body.sideBarPic:not(.DeceasedPerson) .sidebar-character.active {
     display: block;
