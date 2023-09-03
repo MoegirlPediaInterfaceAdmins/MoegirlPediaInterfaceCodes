@@ -6,8 +6,9 @@ import fs from "fs";
 import path from "path";
 import fetchNPMPackageInfo from "../modules/fetchNPMPackageInfo.js";
 import semver from "semver";
-import { createIssue } from "../modules/octokit.js";
+import { createIssue, octokitBaseOptions } from "../modules/octokit.js";
 import { startGroup, endGroup } from "@actions/core";
+const { owner, repo } = octokitBaseOptions;
 
 const labels = ["ci:detectHardcodedOutdatedNPMPackages"];
 
@@ -35,6 +36,9 @@ for (const src of scripts) {
         }
         const [pkg, version] = match.split("@");
         const packageInfo = await fetchNPMPackageInfo(pkg);
+        /**
+         * @type { string }
+         */
         const latestVersion = packageInfo["dist-tags"].latest;
         console.info(pkg, "latestVersion:", latestVersion);
         if (semver.compare(latestVersion, version) !== 1) {
@@ -51,9 +55,9 @@ for (const src of scripts) {
     console.info("Outdated package:", outdatedPackages);
     await createIssue(
         "Found harcoded-outdated NPM packages.",
-        `The harcoded-outdated NPM packages are found in [\`../blob/master/${src}\`](${src}).`,
+        `The harcoded-outdated NPM packages are found in [\`https://github.com/${owner}/${repo}/blob/master/${src}\`](${src}).`,
         labels,
-        `The harcoded-outdated NPM packages:\n\`\`\`json\n${JSON.stringify(outdatedPackages, null, 4)}\n\`\`\``,
+        `The harcoded-outdated NPM packages:\n${outdatedPackages.map(({ pkg, latestVersion, version }) => `- [${pkg}](https://www.npmjs.com/package/${pkg}): ${version} -> ${latestVersion}`).join("\n")}))}`,
     );
 }
 console.info("Done.");
