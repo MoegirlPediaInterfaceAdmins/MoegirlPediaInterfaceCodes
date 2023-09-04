@@ -55,9 +55,9 @@ for (const src of scripts) {
     console.info("Outdated package:", outdatedPackages);
     await createIssue(
         "Found harcoded-outdated NPM packages.",
-        `The harcoded-outdated NPM packages are found in [\`https://github.com/${owner}/${repo}/blob/master/${src}\`](${src}).`,
+        `The harcoded-outdated NPM packages are found in [\`${src}\`](https://github.com/${owner}/${repo}/blob/master/${src}).`,
         labels,
-        `The harcoded-outdated NPM packages:\n${outdatedPackages.map(({ pkg, latestVersion, version }) => `- [${pkg}](https://www.npmjs.com/package/${pkg}): ${version} -> ${latestVersion}`).join("\n")}))}`,
+        `The harcoded-outdated NPM packages:\n${outdatedPackages.map(({ pkg, latestVersion, version }) => `- [${pkg}](https://www.npmjs.com/package/${pkg}): ${version} -> ${latestVersion}`).join("\n")}`,
     );
 }
 console.info("Done.");

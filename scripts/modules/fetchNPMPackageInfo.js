@@ -2,8 +2,8 @@ import console from "../modules/console.js";
 import exec from "../modules/exec.js";
 import { startGroup, endGroup } from "@actions/core";
 
-exec("npm config get registry --global").then((output) => console.info("npm config get registry --global:", output));
 const registryBaseUrl = (await exec("npm config get registry --global")).trim();
+console.info("npm config get registry --global:", registryBaseUrl);
 const cachedPackageInfo = new Map();
 /**
  * @param {string} pkg 
