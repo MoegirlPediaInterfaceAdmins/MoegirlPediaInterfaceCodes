@@ -70,7 +70,7 @@ jobs:
   skipCI:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - name: Use Node.js
@@ -109,7 +109,7 @@ jobs:
       - skipCI
     if: success() && needs.skipCI.outputs.skip != 'true'
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - name: Use Node.js
@@ -170,7 +170,7 @@ jobs:
     env:
       commits: ${{ needs.postCommit.outputs.commits }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Use Node.js
         uses: actions/setup-node@v3
         with:
@@ -219,7 +219,7 @@ jobs:
       - linter_test
     if: always() && needs.skipCI.outputs.skip != 'true'
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Use Node.js
         uses: actions/setup-node@v3
         with:
