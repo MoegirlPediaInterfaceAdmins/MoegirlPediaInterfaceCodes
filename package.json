@@ -15,7 +15,7 @@
         "ci": "export RANDOM_UUID=$(uuidgen) && node scripts/ci/before.js && npm ci && node scripts/ci/after.js"
     },
     "dependencies": {
-        "@actions/artifact": "^1.1.1",
+        "@actions/artifact": "^1.1.2",
         "@actions/core": "^1.10.0",
         "@annangela/eslint-plugin-prefer-reflect": "^2.0.1",
         "@csstools/postcss-is-pseudo-class": "^4.0.1",
