@@ -45,7 +45,7 @@ jobs:
       - name: Prepare git
         run: node scripts/postCommit/prepareGit.js
       - name: Expose GitHub Runtime
-        uses: crazy-max/ghaction-github-runtime@v2
+        uses: crazy-max/ghaction-github-runtime@v3
       - name: Generate unrecognizable features
         run: node scripts/generateUnrecognizableFeatures/index.js
       - name: Generate user rights schema
