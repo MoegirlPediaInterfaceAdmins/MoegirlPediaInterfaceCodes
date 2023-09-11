@@ -142,7 +142,7 @@ jobs:
       - name: Git config
         run: node scripts/postCommit/prepareGit.js
       - name: Expose GitHub Runtime
-        uses: crazy-max/ghaction-github-runtime@v2
+        uses: crazy-max/ghaction-github-runtime@v3
       - name: Auto browserify generator
         run: node scripts/browserify/index.js
       - name: Auto prefetch
