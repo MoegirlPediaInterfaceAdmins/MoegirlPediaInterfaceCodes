@@ -66,4 +66,10 @@
     // 滚动公告
     startScroll();
     autoScroll();
+
+    // 修复navbar中编辑链接从zh跳转到mobile或mzh
+    $('.navbar a.external.text[href$="&action=edit"]').each((_, ele) => {
+        const $ele = $(ele);
+        $ele.attr("href", $ele.attr("href").replace(/(mobile|mzh)\.moegirl\.org\.cn/, "zh.moegirl.org.cn"));
+    });
 })();
