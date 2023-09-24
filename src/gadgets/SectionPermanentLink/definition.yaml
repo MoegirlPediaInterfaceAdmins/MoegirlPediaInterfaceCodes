@@ -1,0 +1,33 @@
+ResourceLoader: true
+
+hidden: false
+
+default: false
+
+supportsUrlLoad: false
+
+targets: []
+
+skins: []
+
+actions: []
+
+type: general
+
+package: false
+
+rights:
+  - edit
+
+peers: []
+
+dependencies:
+  - ext.gadget.site-lib
+
+_sites:
+  - zh
+
+_section: user
+
+_files:
+  - MediaWiki:Gadget-SectionPermanentLink.js
