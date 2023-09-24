@@ -54,6 +54,7 @@
     - queryContributions
     - userpageDelete
     - SendWelcomeMessage
+    - SectionPermanentLink
 
 - name: editing
   gadgets:
