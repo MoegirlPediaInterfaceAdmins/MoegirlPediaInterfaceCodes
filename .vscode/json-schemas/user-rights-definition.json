@@ -42,6 +42,7 @@
                 "changetags",
                 "checkuser",
                 "checkuser-log",
+                "commentadmin-restricted",
                 "createaccount",
                 "createpage",
                 "createtalk",
