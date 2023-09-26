@@ -15,7 +15,6 @@
         ["honoredmaintainer", "#ff9800"],
         ["file-maintainer", "#fbd940"],
         ["interface-admin", "#3f51b5"],
-        ["scripteditor", "#1e88e5"],
         ["techeditor", "#039be5"],
         ["bot", "#00acc1"],
         ["flood", "#00acc1"],
@@ -80,12 +79,6 @@
             "zh-hant": "介",
             "zh-tw": "介",
             "zh-hk": "介",
-        },
-        scripteditor: {
-            zh: "脚",
-            "zh-hant": "指",
-            "zh-tw": "指",
-            "zh-hk": "指",
         },
         techeditor: {
             zh: "技",
@@ -310,7 +303,7 @@
         }
         for (const group of groupsKey) {
             for (const node of querySelectorAll(`.markrights-${group}`)) {
-                let nextElementSibling = node.nextElementSibling;
+                let { nextElementSibling } = node;
                 while (nextElementSibling && [...nextElementSibling.classList].filter((className) => className.startsWith("markrights-")).length > 0) {
                     const nextNextElementSibling = nextElementSibling.nextElementSibling;
                     if (nextElementSibling.classList.contains(`.markrights-${group}`)) {
