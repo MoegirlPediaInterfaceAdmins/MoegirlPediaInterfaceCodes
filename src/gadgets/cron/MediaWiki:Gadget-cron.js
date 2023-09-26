@@ -140,9 +140,9 @@ const require = () => window.luxon;
                 sendAt: function(i) {
                     let date = this.realDate ? this.source : luxon.DateTime.local();
                     if (this.zone && (date = date.setZone(this.zone)), void 0 !== this.utcOffset) {
-                        var offset = 60 <= this.utcOffset || this.utcOffset <= -60 ? this.utcOffset / 60 : this.utcOffset;
+                        var offsetHours = parseInt(60 <= this.utcOffset || this.utcOffset <= -60 ? this.utcOffset / 60 : this.utcOffset), offsetMins = 60 <= this.utcOffset || this.utcOffset <= -60 ? Math.abs(this.utcOffset - 60 * offsetHours) : 0, offsetMins = 10 <= offsetMins ? offsetMins : "0" + offsetMins;
                         let utcZone = "UTC";
-                        if ((offset = parseInt(offset)) < 0 ? utcZone += offset : 0 < offset && (utcZone += "+" + offset), (date = date.setZone(utcZone)).invalid) throw new Error("ERROR: You specified an invalid UTC offset.");
+                        if (parseInt(this.utcOffset) < 0 ? utcZone += `${0 === offsetHours ? "-0" : offsetHours}:` + offsetMins : utcZone += `+${offsetHours}:` + offsetMins, (date = date.setZone(utcZone)).invalid) throw new Error("ERROR: You specified an invalid UTC offset.");
                     }
                     if (this.realDate) {
                         if (luxon.DateTime.local() > date) throw new Error("WARNING: Date in past. Will never be fired.");
