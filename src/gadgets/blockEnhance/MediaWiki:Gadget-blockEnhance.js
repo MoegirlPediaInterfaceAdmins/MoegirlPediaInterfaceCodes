@@ -183,9 +183,6 @@
     if ($("input#mw-input-wpConfirm, input[name=wpConfirm]").val() === "") {
         autoBlock.setSelected(false);
     }
-    if (mw.config.get("wgUserGroups").includes("patroller")) {
-        autoBlock.setDisabled(true);
-    }
 
     let flag = false;
     const wpTarget = $('[name="wpTarget"]');

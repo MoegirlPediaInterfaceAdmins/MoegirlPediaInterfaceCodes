@@ -17,7 +17,6 @@ type: general
 package: false
 
 rights:
-  - noratelimit
   - patrolleredit
 
 peers: []

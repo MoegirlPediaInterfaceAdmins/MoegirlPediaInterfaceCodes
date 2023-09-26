@@ -102,7 +102,7 @@ $(() => {
         new URLSearchParams(location.search).get("preloadtitle").startsWith("编辑请求") &&
         mw.config.get("wgNamespaceNumber") === 5 &&
         mw.config.get("wgAction") === "edit" &&
-        !mw.config.get("wgUserGroups").some((value) => ["patroller", "sysop", "techeditor", "scripteditor", "interface-admin", "staff"].includes(value))
+        !mw.config.get("wgUserGroups").some((value) => ["patroller", "sysop", "techeditor", "interface-admin", "staff"].includes(value))
     ) {
         OO.ui.alert(
             $('<p>进行<b>实质性</b>修改时，需要通过<a href="/萌娘百科:提案" style="font-weight:bold">提案</a>或<a href="/萌娘百科:快速提案" style="font-weight:bold">快速提案</a>流程才可对方针和指引进行改动。</p><p>在讨论页发起的编辑请求仅可用于修正错别字等<b>非实质性</b>修改。</p>'),

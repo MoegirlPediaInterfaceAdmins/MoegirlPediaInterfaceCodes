@@ -18,7 +18,7 @@ package: false
 
 rights:
   - edit
-  - block
+  - patrolleredit
 
 peers: []
 
