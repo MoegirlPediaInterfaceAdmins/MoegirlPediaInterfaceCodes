@@ -42,7 +42,10 @@
             zh: "管",
         },
         patroller: {
-            zh: "巡",
+            zh: "维",
+            "zh-hant": "維",
+            "zh-tw": "維",
+            "zh-hk": "維",
         },
         bot: {
             zh: "机",
