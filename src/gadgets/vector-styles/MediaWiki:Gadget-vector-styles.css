@@ -11,13 +11,9 @@ body.skin-vector {
 }
 
 /* 侧边栏、顶部栏 */
-#content {
+#mw-head-base {
+    border-bottom: 1px solid #a7d7f9;
     position: relative;
-    z-index: 7;
-}
-
-#mw-navigation div.vectorMenu div.menu {
-    z-index: 9;
 }
 
 #mw-panel #p-logo {
