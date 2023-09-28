@@ -11,18 +11,18 @@
         ["checkuser", "#673ab7"],
         ["suppress", "#9c27b0"],
         ["sysop", "#ec407a"],
-        ["interface-admin", "#3f51b5"],
         ["patroller", "#f44336"],
         ["honoredmaintainer", "#ff9800"],
-        ["techeditor", "#039be5"],
+        ["interface-admin", "#3f51b5"],
         ["file-maintainer", "#fbd940"],
-        ["special-contributor", "#595c5f"],
+        ["techeditor", "#039be5"],
         ["bot", "#00acc1"],
         ["flood", "#00acc1"],
         ["ipblock-exempt", "#009688"],
         ["extendedconfirmed", "#2cd5c4"],
         ["manually-confirmed", "#009688"],
         ["goodeditor", "#1aa179"],
+        ["special-contributor", "#595c5f"],
     ].reverse();
     // 以下为上方用户组需要显示的文字列表，每个用户组需至少指定`zh`一种语言变种用以fallback，
     // 语言变种名称请使用**全小写**
