@@ -45,7 +45,7 @@
         "hash-wasm": "^4.9.0",
         "ip": "^2.0.0",
         "localforage": "^1.10.0",
-        "postcss": "^8.4.30",
+        "postcss": "^8.4.31",
         "postcss-cli": "^10.0.0",
         "postcss-discard-comments": "^6.0.0",
         "postcss-font-variant": "^5.0.0",
