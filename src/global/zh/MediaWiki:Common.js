@@ -6,7 +6,7 @@
 "use strict";
 (async () => {
     /* 函数定义体 */
-    const { wgUserGroups, wgServer, wgScriptPath, wgPageName, wgAction, skin, wgNamespaceNumber, wgMainPageTitle } = mw.config.get();
+    const { wgUserGroups, wgServer, wgServerName, wgScriptPath, wgPageName, wgAction, skin, wgNamespaceNumber, wgMainPageTitle } = mw.config.get();
     /* 以下为允许添加版权声明的名字空间列表 */
     const copyRightsNameSpaces = [
         0, // （主）
@@ -388,6 +388,13 @@
     // 禁止移动被挂删的页面
     if (!allowedInGroup && $(".will2Be2Deleted")[0]) {
         $("#ca-move").remove();
+    }
+    // 修正navbar、T:User中编辑链接从zh/mzh跳转到其他
+    if(["mzh.moegirl.org.cn", "zh.moegirl.org.cn"].includes(wgServerName)) {
+        $('.navbar a.external.text[href$="&action=edit"], .plainlinks.userlink .external').each((_, ele) => {
+            const $ele = $(ele);
+            $ele.attr("href", $ele.attr("href").replace(/(?:mobile|mzh|zh)\.moegirl\.org\.cn/, wgServerName));
+        });
     }
     // 以下代码必须在全部内容加载完成后才能正常工作
     $(window).on("load", () => {
