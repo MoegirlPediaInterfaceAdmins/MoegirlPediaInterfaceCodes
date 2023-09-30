@@ -242,7 +242,12 @@ $(() => {
                 e.preventDefault();
                 windowManager.openWindow(qmtDialog, { section, anchor });
             });
-            $ele.find(".mw-editsection-bracket").first().after('<span class="mw-editsection-divider"> | </span>').after(button); // 
+            const $splButton = $ele.find(".section-permanent-link");
+            if ($splButton[0]) {
+                $splButton.next(".mw-editsection-divider").after('<span class="mw-editsection-divider"> | </span>').after(button);
+            } else {
+                $ele.find(".mw-editsection-bracket").first().after('<span class="mw-editsection-divider"> | </span>').after(button);
+            } 
         });
     } catch (e) {
         /* eslint-disable */

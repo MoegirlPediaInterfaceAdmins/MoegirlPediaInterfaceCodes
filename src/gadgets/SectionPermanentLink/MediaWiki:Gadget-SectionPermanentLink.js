@@ -6,7 +6,7 @@ $(() => {
         $("#mw-content-text .mw-parser-output h2").each((_, ele) => {
             const $ele = $(ele);
             const $divider = $('<span class="mw-editsection-divider"> | </span>');
-            const $permanentLink = $(`<a data-thread-id="${$ele.find(".mw-headline").attr("id")}">${buttunText}</a>`);
+            const $permanentLink = $(`<a data-thread-id="${$ele.find(".mw-headline").attr("id")}" class="section-permanent-link">${buttunText}</a>`);
             if (!inHistory) {
                 $(ele)
                     .find(".mw-editsection-bracket")
