@@ -36,7 +36,7 @@
         "browserify": "^17.0.0",
         "common-shakeify": "^1.1.2",
         "concat-stream": "^2.0.0",
-        "cron": "^2.4.4",
+        "cron": "^3.0.0",
         "duplexify": "^4.1.2",
         "envify": "^4.1.0",
         "eslint": "^8.50.0",
