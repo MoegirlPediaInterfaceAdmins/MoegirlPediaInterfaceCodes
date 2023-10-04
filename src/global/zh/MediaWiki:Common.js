@@ -391,7 +391,7 @@
     }
     // 修正navbar、T:User中编辑链接从zh/mzh跳转到其他
     if(["mzh.moegirl.org.cn", "zh.moegirl.org.cn"].includes(wgServerName)) {
-        $('.navbar a.external.text[href$="&action=edit"], .plainlinks.userlink .external').each((_, ele) => {
+        $('a.external.text[href$="&action=edit"], .plainlinks.userlink .external').each((_, ele) => {
             const $ele = $(ele);
             $ele.attr("href", $ele.attr("href").replace(/(?:mobile|mzh|zh)\.moegirl\.org\.cn/, wgServerName));
         });
