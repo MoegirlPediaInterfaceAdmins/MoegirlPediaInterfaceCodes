@@ -27,7 +27,7 @@
         "@octokit/plugin-retry": "^6.0.1",
         "@octokit/rest": "^20.0.2",
         "@types/echarts": "^4.9.19",
-        "@types/jquery": "^3.5.20",
+        "@types/jquery": "^3.5.21",
         "@types/moment": "^2.13.0",
         "@types/oojs-ui": "^0.47.2",
         "@wikimedia/types-wikimedia": "^0.4.1",
