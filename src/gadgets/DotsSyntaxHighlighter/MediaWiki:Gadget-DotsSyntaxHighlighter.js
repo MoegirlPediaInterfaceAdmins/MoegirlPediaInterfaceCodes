@@ -346,10 +346,10 @@
         configureColor("tableColor", "#FFC", true);
         configureColor("templateColor", "#FFC", true);
         configureColor("wikilinkColor", "#EEF", true);
-        syntaxHighlighterConfig.nowikiTags = syntaxHighlighterConfig.nowikiTags || syntaxHighlighterSiteConfig.nowikiTags || ["nowiki", "pre"];
-        syntaxHighlighterConfig.sourceTags = syntaxHighlighterConfig.sourceTags || syntaxHighlighterSiteConfig.sourceTags || ["math", "syntaxhighlight", "source", "timeline", "hiero", "score"];
-        syntaxHighlighterConfig.voidTags = syntaxHighlighterConfig.voidTags || syntaxHighlighterSiteConfig.voidTags || ["br", "hr"];
-        syntaxHighlighterConfig.timeout = syntaxHighlighterConfig.timeout || syntaxHighlighterSiteConfig.timeout || 20;
+        syntaxHighlighterConfig.nowikiTags ||= syntaxHighlighterSiteConfig.nowikiTags || ["nowiki", "pre"];
+        syntaxHighlighterConfig.sourceTags ||= syntaxHighlighterSiteConfig.sourceTags || ["math", "syntaxhighlight", "source", "timeline", "hiero", "score"];
+        syntaxHighlighterConfig.voidTags ||= syntaxHighlighterSiteConfig.voidTags || ["br", "hr"];
+        syntaxHighlighterConfig.timeout ||= syntaxHighlighterSiteConfig.timeout || 20;
 
         syntaxHighlighterConfig.nowikiTags.forEach((tagName) => {
             nowikiTagBreakerRegexCache[tagName] = nowikiTagBreakerRegex(tagName);

@@ -490,7 +490,7 @@
                 }
                 return true;
             };
-            umsg.umIsValid = umsg.umIsValid && validRelatedUser() && validMedia() && validUser();
+            umsg.umIsValid &&= validRelatedUser() && validMedia() && validUser();
             if (umsg.umIsValid) {
                 submitButton.removeClass("ui-state-disabled");
                 if (umType & umsg.umFlagMQ) {

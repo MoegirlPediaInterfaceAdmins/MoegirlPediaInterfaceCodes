@@ -4097,11 +4097,11 @@ $(() => {
                     if (docElt) {
                         left = docElt.scrollLeft;
                     }
-                    left = left || document.body.scrollLeft || document.scrollLeft || 0;
+                    left ||= document.body.scrollLeft || document.scrollLeft || 0;
                     if (docElt) {
                         top = docElt.scrollTop;
                     }
-                    top = top || document.body.scrollTop || document.scrollTop || 0;
+                    top ||= document.body.scrollTop || document.scrollTop || 0;
                     x = e.clientX + left;
                     y = e.clientY + top;
                 } else {
