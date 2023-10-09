@@ -54,7 +54,6 @@
     - queryContributions
     - userpageDelete
     - SendWelcomeMessage
-    - SectionPermanentLink
 
 - name: editing
   gadgets:
@@ -72,6 +71,7 @@
     - disable-nest-alert
     - uploader
     - temp-editcheck
+    - SectionPermanentLink
 
 - name: maintenance
   gadgets:
