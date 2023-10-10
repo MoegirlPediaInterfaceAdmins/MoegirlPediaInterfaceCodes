@@ -132,7 +132,6 @@
     - libPolyfill
     - sidebaricons
     - libip
-    - luxon
     - libJSON5
     - echarts4
     - echarts5

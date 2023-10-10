@@ -21,8 +21,7 @@ rights:
 
 peers: []
 
-dependencies:
-  - ext.gadget.luxon
+dependencies: []
 
 _sites:
   - zh
