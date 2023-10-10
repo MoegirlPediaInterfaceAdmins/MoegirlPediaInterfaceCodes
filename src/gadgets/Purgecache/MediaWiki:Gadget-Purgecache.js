@@ -53,7 +53,7 @@ $(() => {
         });
     }
     li.append(containerNode);
-    new Cron.CronJob({
+    Cron.CronJob.from({
         cronTime: "* * * * * *",
         start: true,
         runOnInit: true,

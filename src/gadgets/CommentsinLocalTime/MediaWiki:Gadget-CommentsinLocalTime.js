@@ -180,7 +180,7 @@ $(() => {
         return;
     }
     // await mw.loader.using(["ext.gadget.cron"]);
-    new Cron.CronJob({
+    Cron.CronJob.from({
         cronTime: "0 * * * * *",
         start: true,
         onTick: () => {
