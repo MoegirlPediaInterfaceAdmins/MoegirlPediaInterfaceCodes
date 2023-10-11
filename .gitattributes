@@ -17,6 +17,5 @@ src/gadgets/libHashwasm/MediaWiki:Gadget-libHashwasm.js linguist-generated=true
 src/gadgets/libip/MediaWiki:Gadget-libip.js linguist-generated=true
 
 # From prefetch
-src/gadgets/luxon/MediaWiki:Gadget-luxon.js linguist-generated=true
 src/gadgets/libJSON5/MediaWiki:Gadget-libJSON5.js linguist-generated=true
 src/gadgets/localforage/MediaWiki:Gadget-localforage.js linguist-generated=true
