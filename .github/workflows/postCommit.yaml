@@ -4,9 +4,11 @@ on:
   push:
     paths:
       - scripts/**/*.js
+      - scripts/**/*.yaml
       - "!scripts/test/*.js"
       - "!scripts/generateUnrecognizableFeatures/*.js"
       - "!scripts/detectHardcodedOutdatedNPMPackages/*.js"
+      - "!scripts/detectHardcodedOutdatedNPMPackages/*.yaml"
       - "!scripts/autoAssign/*.js"
       - src/**/*.js
       - src/**/*.css
@@ -21,9 +23,11 @@ on:
   pull_request:
     paths:
       - scripts/**/*.js
+      - scripts/**/*.yaml
       - "!scripts/test/*.js"
       - "!scripts/generateUnrecognizableFeatures/*.js"
       - "!scripts/detectHardcodedOutdatedNPMPackages/*.js"
+      - "!scripts/detectHardcodedOutdatedNPMPackages/*.yaml"
       - "!scripts/autoAssign/*.js"
       - src/**/*.js
       - src/**/*.css
