@@ -22,8 +22,6 @@ rights:
 peers: []
 
 dependencies:
-  - moment
-  - ext.gadget.cron
   - ext.gadget.site-lib
 
 _sites:
@@ -34,3 +32,4 @@ _section: browsing
 
 _files:
   - MediaWiki:Gadget-Purgecache.js
+  - MediaWiki:Gadget-Purgecache.css
