@@ -1,28 +1,33 @@
 "use strict";
 // <pre>
 $(() => {
-    const li = mw.config.get("skin") === "vector" ? $("<li/>").appendTo("#p-personal > ul") : $("<div/>").prependTo("#moe-article-header-container #moe-article-header-top .right-block"),
-        textNode = $("<span/>");
-    let containerNode;
-    if (mw.config.get("wgNamespaceNumber") === -1) {
-        containerNode = $("<span/>");
-        containerNode.css({
-            cursor: "default",
-            "user-select": "none",
-        });
-        containerNode.append(wgULS("特殊页面（", "特殊頁面（")).append(textNode).append("）");
-    } else {
-        containerNode = $("<a/>");
-        const statusNode = $("<span/>").text(wgULS("清除页面缓存", "清除頁面快取"));
+    /**
+     * 由于moeskin需要两个按钮，用函数来生成
+     * @param {string} buttonText 按钮文本
+     * @param {string} purgingText 清除中文本
+     * @param {string} succesText 清除成功文本
+     * @param {string} failText 清除失败文本
+     * @returns {JQuery<HTMLElement>}
+     */
+    const $purgeButton = (
+        buttonText = wgULS("清除页面缓存", "清除頁面快取"),
+        purgingText = wgULS("正在清除缓存", "正在清除快取"),
+        succesText = wgULS("清除缓存成功！", "清除快取成功！"),
+        failText = wgULS("清除缓存失败，点击可重试", "清除快取失敗，點選可重試", null, null, "清除快取失敗，點擊可重試"),
+    ) => {
+        if (mw.config.get("wgNamespaceNumber") === -1) {
+            return $('<span class="special-page">特殊页面</span>');
+        }
+        const $statusNode = $('<span class="n-button__content" />').text(buttonText);
+        const $containerNode = $('<a class="n-button purgecache" />').append($statusNode);
         let runningStatus = false;
-        containerNode.attr("href", "javascript:void(0);");
-        containerNode.append(statusNode).append("（").append(textNode).append("）");
-        containerNode.on("click", async () => {
+
+        $containerNode.on("click", async () => {
             if (runningStatus) {
                 return;
             }
-            statusNode.text(wgULS("正在清除页面缓存 0/2……", "正在清除頁面快取 0/2……"));
-            statusNode.prepend('<img src="https://img.moegirl.org.cn/common/d/d1/Windows_10_loading.gif" style="height: 1em; margin-top: -.25em;">');
+            $statusNode.text(`${purgingText} 0/2`);
+            $statusNode.prepend('<img src="https://img.moegirl.org.cn/common/d/d1/Windows_10_loading.gif" style="height: 1em; margin-top: -.25em;">');
             runningStatus = true;
             const api = new mw.Api(),
                 opt = {
@@ -33,34 +38,47 @@ $(() => {
                 };
             try {
                 await api.post(opt);
-                statusNode.text(wgULS("正在清除页面缓存 1/2……", "正在清除頁面快取 1/2……"));
+                $statusNode.text(`${purgingText} 1/2`);
+                $statusNode.prepend('<img src="https://img.moegirl.org.cn/common/d/d1/Windows_10_loading.gif" style="height: 1em; margin-top: -.25em;">');
                 await new Promise((res) => {
-                    setTimeout(res, 370);
+                    setTimeout(res, 300);
                 });
                 await api.post(opt);
-                statusNode.text(wgULS("清除页面缓存成功！", "清除頁面快取成功！"));
+                $statusNode.text(succesText);
                 setTimeout(location.reload.bind(location), 1000);
             } catch {
-                statusNode.text(wgULS("清除页面缓存失败，点击可重试！", "清除頁面快取失敗，點選可重試！", null, null, "清除頁面快取失敗，點擊可重試！"));
+                $statusNode.text(failText);
                 // eslint-disable-next-line require-atomic-updates
                 runningStatus = false;
                 setTimeout(() => {
                     if (!runningStatus) {
-                        statusNode.text(wgULS("清除页面缓存", "清除頁面快取"));
+                        $statusNode.text(buttonText);
                     }
                 }, 5000);
             }
         });
+        return $containerNode;
+    };
+
+    switch (mw.config.get("skin")) {
+        case "vector":
+            $("#p-personal ul").append($('<li id="pt-purge" />').append($purgeButton()));
+            break;
+        case "moeskin":
+        default:
+            if(mw.config.get("wgAction") !== "view" || mw.config.get("wgNamespaceNumber") === -1) {
+                break;
+            }
+            $("#moe-article-header-top .right-block.flex").prepend(
+                $('<div class="flex" id="p-purge-cache"></div>').append($purgeButton().append(
+                    '<div aria-hidden="true" class="n-base-wave"></div>',
+                    '<div aria-hidden="true" class="n-button__border"></div>',
+                    '<div aria-hidden="true" class="n-button__state-border"></div>',
+                )));
+            $("#mobile-page-actions .mobile-edit-button").append(
+                $purgeButton(wgULS("清除缓存", "清除快取"), wgULS("正在清除", "正在清除"), wgULS("清除成功！", "清除成功！"), wgULS("清除失败，点击可重试", "清除失敗，點選可重試", null, null, "清除失敗，點擊可重試"))
+                    .append('<div aria-hidden="true" class="n-base-wave"></div>'),
+            );
     }
-    li.append(containerNode);
-    Cron.CronJob.from({
-        cronTime: "* * * * * *",
-        start: true,
-        runOnInit: true,
-        onTick: () => {
-            textNode.text(moment().format("A h[:]mm[:]ss"));
-        },
-    });
-    new Image().src = "https://img.moegirl.org.cn/common/d/d1/Windows_10_loading.gif";
 });
 // </pre>
