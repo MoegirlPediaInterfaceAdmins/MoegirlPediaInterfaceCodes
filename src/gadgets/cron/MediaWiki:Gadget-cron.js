@@ -4,6 +4,7 @@
  *     module: "cron"
  *     entry: "Cron"
  *     gadget: { "name": "cron", "fileName": "MediaWiki:Gadget-cron.js" }
+ *     namespaceImport: true
  */
 !function() {
     var _$_empty_2 = {}, _$errors_4 = {};
@@ -3785,10 +3786,28 @@
     !function(global) {
         !function() {
             "use strict";
-            var obj = (obj = _$dist_5) && obj.__esModule ? obj : {
-                default: obj
-            };
-            global.Cron = obj.default;
+            var m = function(obj, nodeInterop) {
+                if (!nodeInterop && obj && obj.__esModule) return obj;
+                if (null === obj || "object" != typeof obj && "function" != typeof obj) return {
+                    default: obj
+                };
+                nodeInterop = _getRequireWildcardCache(nodeInterop);
+                if (nodeInterop && nodeInterop.has(obj)) return nodeInterop.get(obj);
+                var key, newObj = {}, hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor;
+                for (key in obj) {
+                    var desc;
+                    "default" !== key && Object.prototype.hasOwnProperty.call(obj, key) && ((desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null) && (desc.get || desc.set) ? Object.defineProperty(newObj, key, desc) : newObj[key] = obj[key]);
+                }
+                newObj.default = obj, nodeInterop && nodeInterop.set(obj, newObj);
+                return newObj;
+            }(_$dist_5);
+            function _getRequireWildcardCache(nodeInterop) {
+                var cacheBabelInterop, cacheNodeInterop;
+                return "function" != typeof WeakMap ? null : (cacheBabelInterop = new WeakMap(), cacheNodeInterop = new WeakMap(), (_getRequireWildcardCache = function(nodeInterop) {
+                    return nodeInterop ? cacheNodeInterop : cacheBabelInterop;
+                })(nodeInterop));
+            }
+            global.Cron = m;
         }.call(this);
     }.call(this, "undefined" != typeof global ? global : "undefined" != typeof self ? self : "undefined" != typeof window ? window : {});
 }();
