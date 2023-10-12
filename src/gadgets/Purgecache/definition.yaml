@@ -34,3 +34,4 @@ _section: browsing
 
 _files:
   - MediaWiki:Gadget-Purgecache.js
+  - Purgecache.css
