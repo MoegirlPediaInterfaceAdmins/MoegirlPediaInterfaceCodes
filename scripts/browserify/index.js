@@ -28,7 +28,7 @@ const localPackageVersions = JSON.parse(jsonOutput).dependencies;
 const fileList = [];
 for (const browserifyTarget of browserifyTargets) {
     console.info("target:", browserifyTarget);
-    const { module, entry, gadget: { name, fileName }, exportValues, removePlugins, prependCode } = browserifyTarget;
+    const { module, entry, gadget: { name, fileName }, exportValues, removePlugins, prependCode, namespaceImport } = browserifyTarget;
     const file = path.join("src/gadgets", name, fileName);
     fileList.push(file);
     await fs.promises.rm(inputPath, {
@@ -36,10 +36,11 @@ for (const browserifyTarget of browserifyTargets) {
         force: true,
     });
     const hasExports = Array.isArray(exportValues) && exportValues.length > 0;
-    const reference = hasExports ? `{ ${exportValues.join(", ")} }` : "m";
+    const exportReference = namespaceImport ? "* as m" : hasExports ? `{ ${exportValues.join(", ")} }` : "m";
+    const importReference = namespaceImport ? "m" : hasExports ? `{ ${exportValues.join(", ")} }` : "m";
     await fs.promises.writeFile(inputPath, [
-        `import ${reference} from "${module}";`,
-        `global["${entry}"] = ${reference};`,
+        `import ${exportReference} from "${module}";`,
+        `global["${entry}"] = ${importReference};`,
     ].join("\n"));
     const codes = await new Promise((res, rej) => {
         console.info(`[${module}]`, "start generating...");

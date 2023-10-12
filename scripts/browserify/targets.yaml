@@ -7,6 +7,7 @@
     fileName: MediaWiki:Gadget-cron.js
   # cron@3 能正确携带 luxon
   # prependCode: const require = () => window.luxon;
+  namespaceImport: true
 
 - module: hash-wasm
   entry: hashwasm
