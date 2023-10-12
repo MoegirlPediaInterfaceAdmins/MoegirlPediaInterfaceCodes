@@ -22,8 +22,6 @@ rights:
 peers: []
 
 dependencies:
-  - moment
-  - ext.gadget.cron
   - ext.gadget.site-lib
 
 _sites:
