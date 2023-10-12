@@ -3758,7 +3758,7 @@
                     let newTimeout = this.cronTime.getTimeout();
                     newTimeout > diff && (newTimeout = diff), remaining += newTimeout;
                 }
-                this.lastExecution = new Date(), remaining ? (remaining > MAXDELAY ? (remaining -= MAXDELAY, timeout = MAXDELAY) : (timeout = remaining, remaining = 0), setCronTimeout(timeout)) : (this.running = !1, this.runOnce || this.start(), this.fireOnTick());
+                remaining ? (remaining > MAXDELAY ? (remaining -= MAXDELAY, timeout = MAXDELAY) : (timeout = remaining, remaining = 0), setCronTimeout(timeout)) : (this.lastExecution = new Date(), this.running = !1, this.runOnce || this.start(), this.fireOnTick());
             };
             0 <= timeout ? (this.running = !0, timeout > MAXDELAY && (remaining = timeout - MAXDELAY, timeout = MAXDELAY), setCronTimeout(timeout)) : this.stop();
         }
