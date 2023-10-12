@@ -31,7 +31,7 @@
     font-weight: 400;
 }
 
-.skin-moeskin .purgecache.n-button {
+.skin-moeskin #mobile-page-actions .purgecache.n-button {
     --n-bezier: cubic-bezier(.4, 0, .2, 1);
     --n-bezier-ease-out: cubic-bezier(0, 0, .2, 1);
     --n-ripple-duration: .6s;
