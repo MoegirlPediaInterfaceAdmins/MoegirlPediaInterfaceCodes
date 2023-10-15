@@ -494,7 +494,8 @@ div#simpleSearch button#searchButton {
 /* 首页部分元素隐藏 */
 body.page-Mainpage.rootpage-Mainpage #firstHeading,
 body.page-Mainpage.rootpage-Mainpage #siteSub,
-body.page-Mainpage.rootpage-Mainpage #contentSub {
+body.page-Mainpage.rootpage-Mainpage #contentSub,
+body.page-Mainpage.rootpage-Mainpage #siteNotice {
     display: none;
 }
 
