@@ -9,7 +9,7 @@ $(() => {
      * @param {string} failText 清除失败文本
      * @returns {JQuery<HTMLElement>}
     */
-    if (!mw.config.get("wgIsArticle")) {
+    if (!mw.config.get("wgIsArticle") || mw.config.get("wgPageName") === "Mainpage") {
         return;
     }
     const $purgeButton = (
