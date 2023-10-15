@@ -28,6 +28,7 @@
     - SpecialWikitext
     - hideAutopromoteLog
     - temp-svgFix
+    - legacyMainpage
 
 - name: skin
   gadgets:
