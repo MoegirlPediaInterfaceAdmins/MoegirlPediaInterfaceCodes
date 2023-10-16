@@ -42,7 +42,7 @@
         "eslint": "^8.51.0",
         "eslint-plugin-prefer-arrow-functions": "^3.1.4",
         "esmify": "^2.1.1",
-        "hash-wasm": "^4.9.0",
+        "hash-wasm": "^4.10.0",
         "ip": "^2.0.0",
         "localforage": "^1.10.0",
         "postcss": "^8.4.31",
@@ -60,6 +60,6 @@
         "uglify-js": "^3.17.4",
         "unassertify": "^3.0.1",
         "v8r": "^2.0.0",
-        "yaml": "^2.3.2"
+        "yaml": "^2.3.3"
     }
 }
