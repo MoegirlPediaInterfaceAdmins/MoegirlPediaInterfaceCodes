@@ -225,7 +225,7 @@ jobs:
       - skipCI
       - postCommit
       - linter_test
-    if: always() && needs.skipCI.outputs.skip != 'true'
+    if: always() && needs.skipCI.outputs.skip != 'true' && github.ref == 'refs/heads/master'
     steps:
       - uses: actions/checkout@v4
         with:
