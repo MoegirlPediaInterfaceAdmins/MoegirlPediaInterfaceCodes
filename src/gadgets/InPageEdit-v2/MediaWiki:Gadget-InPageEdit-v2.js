@@ -1,5 +1,5 @@
 "use strict";
-mw.loader.load("https://npm.elemecdn.com/mediawiki-inpageedit@latest/dist/InPageEdit.min.js");
+mw.loader.load("https://testingcf.jsdelivr.net/npm/mediawiki-inpageedit@latest");
 
 mw.hook("InPageEdit").add((ctx) => {
     const InPageEdit = ctx.InPageEdit,
