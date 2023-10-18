@@ -9,8 +9,7 @@
 .AnnTools_RadioSelectWidget_column_2.oo-ui-radioSelectWidget {
     display: flex;
     flex-wrap: wrap;
-    align-content: flex-start;
-    justify-content: flex-start;
+    place-content: start;
     align-items: flex-start;
 }
 
