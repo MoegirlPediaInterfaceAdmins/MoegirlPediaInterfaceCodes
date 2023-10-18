@@ -1,7 +1,6 @@
 .blocklogevents,
 .abuselogevents {
-    overflow-x: hidden;
-    overflow-y: scroll;
+    overflow: hidden scroll;
     padding: 0 0 1px;
     position: relative;
 }
