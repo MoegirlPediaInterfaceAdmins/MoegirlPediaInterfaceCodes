@@ -19,7 +19,7 @@ $(() => (async () => {
 
     const pageid = mw.config.get("wgArticleId");
     const basepage = pagename.replace(/\/.*?$/, "");
-    const api = new mw.Api(), zhAPI = location.hostname === "zh.moegirl.org.cn" ? api : new mw.ForeignApi("https://zh.moegirl.org.cn/api.php", { anonymous: true });
+    const api = new mw.Api(), zhAPI = /m?zh\.moegirl\.org\.cn/.test(location.hostname) ? api : new mw.ForeignApi("https://mzh.moegirl.org.cn/api.php", { anonymous: true });
 
     const lr_aivc = $.extend({
         main: ["zh-cn", "zh-tw", "zh-hk"],
@@ -342,7 +342,7 @@ $(() => (async () => {
 
             if (!window.OpenCC && this.config.useOpenCC) {
                 // Load in order to prevent reference error
-                await libCachedCode.injectCachedCode("https://npm.elemecdn.com/opencc-js@1.0.5/dist/umd/cn2t.js", "script");
+                await libCachedCode.injectCachedCode("https://npm.elemecdn.com/opencc-js@latest", "script");
                 /* global OpenCC */
             }
 
