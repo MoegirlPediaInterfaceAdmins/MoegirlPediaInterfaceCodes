@@ -468,8 +468,8 @@
     var intlNumCache = {};
     var intlRelCache = {};
     var sysLocaleCache = null;
-    function listStuff(loc, length, defaultOK, englishFn, intlFn) {
-        loc = loc.listingMode(defaultOK);
+    function listStuff(loc, length, englishFn, intlFn) {
+        loc = loc.listingMode();
         return "error" === loc ? null : ("en" === loc ? englishFn : intlFn)(length);
     }
     var PolyNumberFormatter = function() {
@@ -608,9 +608,9 @@
             return this.clone(_extends({}, alts = void 0 === alts ? {} : alts, {
                 defaultToEN: !1
             }));
-        }, _proto4.months = function(length, format, defaultOK) {
+        }, _proto4.months = function(length, format) {
             var _this2 = this;
-            return void 0 === format && (format = !1), listStuff(this, length, defaultOK = void 0 === defaultOK ? !0 : defaultOK, months, function() {
+            return void 0 === format && (format = !1), listStuff(this, length, months, function() {
                 var intl = format ? {
                     month: length,
                     day: "numeric"
@@ -619,7 +619,7 @@
                 }, formatStr = format ? "format" : "standalone";
                 return _this2.monthsCache[formatStr][length] || (_this2.monthsCache[formatStr][length] = function(f) {
                     for (var ms = [], i = 1; i <= 12; i++) {
-                        var dt = DateTime.utc(2016, i, 1);
+                        var dt = DateTime.utc(2009, i, 1);
                         ms.push(f(dt));
                     }
                     return ms;
@@ -627,9 +627,9 @@
                     return _this2.extract(dt, intl, "month");
                 })), _this2.monthsCache[formatStr][length];
             });
-        }, _proto4.weekdays = function(length, format, defaultOK) {
+        }, _proto4.weekdays = function(length, format) {
             var _this3 = this;
-            return void 0 === format && (format = !1), listStuff(this, length, defaultOK = void 0 === defaultOK ? !0 : defaultOK, weekdays, function() {
+            return void 0 === format && (format = !1), listStuff(this, length, weekdays, function() {
                 var intl = format ? {
                     weekday: length,
                     year: "numeric",
@@ -648,9 +648,9 @@
                     return _this3.extract(dt, intl, "weekday");
                 })), _this3.weekdaysCache[formatStr][length];
             });
-        }, _proto4.meridiems = function(defaultOK) {
+        }, _proto4.meridiems = function() {
             var _this4 = this;
-            return listStuff(this, void 0, defaultOK = void 0 === defaultOK ? !0 : defaultOK, function() {
+            return listStuff(this, void 0, function() {
                 return meridiems;
             }, function() {
                 var intl;
@@ -661,9 +661,9 @@
                     return _this4.extract(dt, intl, "dayperiod");
                 })), _this4.meridiemCache;
             });
-        }, _proto4.eras = function(length, defaultOK) {
+        }, _proto4.eras = function(length) {
             var _this5 = this;
-            return listStuff(this, length, defaultOK = void 0 === defaultOK ? !0 : defaultOK, eras, function() {
+            return listStuff(this, length, eras, function() {
                 var intl = {
                     era: length
                 };
@@ -792,7 +792,7 @@
     }(Zone);
     function normalizeZone(input, defaultZone) {
         var lowered;
-        return null == input ? defaultZone : input instanceof Zone ? input : "string" == typeof input ? "default" === (lowered = input.toLowerCase()) ? defaultZone : "local" === lowered || "system" === lowered ? SystemZone.instance : "utc" === lowered || "gmt" === lowered ? FixedOffsetZone.utcInstance : FixedOffsetZone.parseSpecifier(lowered) || IANAZone.create(input) : isNumber(input) ? FixedOffsetZone.instance(input) : "object" == typeof input && input.offset && "number" == typeof input.offset ? input : new InvalidZone(input);
+        return null == input ? defaultZone : input instanceof Zone ? input : "string" == typeof input ? "default" === (lowered = input.toLowerCase()) ? defaultZone : "local" === lowered || "system" === lowered ? SystemZone.instance : "utc" === lowered || "gmt" === lowered ? FixedOffsetZone.utcInstance : FixedOffsetZone.parseSpecifier(lowered) || IANAZone.create(input) : isNumber(input) ? FixedOffsetZone.instance(input) : "object" == typeof input && "offset" in input && "function" == typeof input.offset ? input : new InvalidZone(input);
     }
     var throwOnInvalid, now = function() {
         return Date.now();
@@ -1088,14 +1088,16 @@
         var _proto = Formatter.prototype;
         return _proto.formatWithSystemDefault = function(dt, opts) {
             return null === this.systemLoc && (this.systemLoc = this.loc.redefaultToSystem()), this.systemLoc.dtFormatter(dt, _extends({}, this.opts, opts)).format();
+        }, _proto.dtFormatter = function(dt, opts) {
+            return this.loc.dtFormatter(dt, _extends({}, this.opts, opts = void 0 === opts ? {} : opts));
         }, _proto.formatDateTime = function(dt, opts) {
-            return this.loc.dtFormatter(dt, _extends({}, this.opts, opts = void 0 === opts ? {} : opts)).format();
+            return this.dtFormatter(dt, opts).format();
         }, _proto.formatDateTimeParts = function(dt, opts) {
-            return this.loc.dtFormatter(dt, _extends({}, this.opts, opts = void 0 === opts ? {} : opts)).formatToParts();
+            return this.dtFormatter(dt, opts).formatToParts();
         }, _proto.formatInterval = function(interval, opts) {
-            return this.loc.dtFormatter(interval.start, _extends({}, this.opts, opts = void 0 === opts ? {} : opts)).dtf.formatRange(interval.start.toJSDate(), interval.end.toJSDate());
+            return this.dtFormatter(interval.start, opts).dtf.formatRange(interval.start.toJSDate(), interval.end.toJSDate());
         }, _proto.resolvedOptions = function(dt, opts) {
-            return this.loc.dtFormatter(dt, _extends({}, this.opts, opts = void 0 === opts ? {} : opts)).resolvedOptions();
+            return this.dtFormatter(dt, opts).resolvedOptions();
         }, _proto.num = function(n, p) {
             var opts;
             return void 0 === p && (p = 0), this.opts.forceSimple ? padStart(n, p) : (opts = _extends({}, this.opts), 0 < p && (opts.padTo = p), this.loc.numberFormatter(opts).format(n));
@@ -1607,9 +1609,22 @@
         };
         return new Duration(clear);
     }
-    function convert(matrix, fromMap, fromUnit, toMap, toUnit) {
-        var matrix = matrix[toUnit][fromUnit], raw = fromMap[fromUnit] / matrix, n = !(Math.sign(raw) === Math.sign(toMap[toUnit])) && 0 !== toMap[toUnit] && Math.abs(raw) <= 1 ? (n = raw) < 0 ? Math.floor(n) : Math.ceil(n) : Math.trunc(raw);
-        toMap[toUnit] += n, fromMap[fromUnit] -= n * matrix;
+    function durationToMillis(matrix, vals) {
+        for (var _vals$milliseconds, sum = null != (_vals$milliseconds = vals.milliseconds) ? _vals$milliseconds : 0, _iterator = _createForOfIteratorHelperLoose(reverseUnits.slice(1)); !(_step = _iterator()).done; ) {
+            var _step = _step.value;
+            vals[_step] && (sum += vals[_step] * matrix[_step].milliseconds);
+        }
+        return sum;
+    }
+    function normalizeValues(matrix, vals) {
+        var factor = durationToMillis(matrix, vals) < 0 ? -1 : 1;
+        orderedUnits$1.reduceRight(function(previous, current) {
+            var conv, previousVal;
+            return void 0 !== vals[current] ? (previous && (previousVal = vals[previous] * factor, conv = matrix[current][previous], previousVal = Math.floor(previousVal / conv), vals[current] += previousVal * factor, vals[previous] -= previousVal * conv * factor), current) : previous;
+        }, null), orderedUnits$1.reduce(function(previous, current) {
+            var fraction;
+            return void 0 !== vals[current] ? (previous && (fraction = vals[previous] % 1, vals[previous] -= fraction, vals[current] += fraction * matrix[previous][current]), current) : previous;
+        }, null);
     }
     var Duration = function() {
         function Duration(config) {
@@ -1679,7 +1694,8 @@
             });
             return this.isValid ? Formatter.create(this.loc, opts).formatDurationFromString(this, fmt) : "Invalid Duration";
         }, _proto.toHuman = function(opts) {
-            var _this = this, l = (void 0 === opts && (opts = {}), orderedUnits$1.map(function(unit) {
+            var l, _this = this;
+            return void 0 === opts && (opts = {}), this.isValid ? (l = orderedUnits$1.map(function(unit) {
                 var val = _this.values[unit];
                 return void 0 === val ? null : _this.loc.numberFormatter(_extends({
                     style: "unit",
@@ -1689,34 +1705,33 @@
                 })).format(val);
             }).filter(function(n) {
                 return n;
-            }));
-            return this.loc.listFormatter(_extends({
+            }), this.loc.listFormatter(_extends({
                 type: "conjunction",
                 style: opts.listStyle || "narrow"
-            }, opts)).format(l);
+            }, opts)).format(l)) : "Invalid Duration";
         }, _proto.toObject = function() {
             return this.isValid ? _extends({}, this.values) : {};
         }, _proto.toISO = function() {
             var s;
             return this.isValid ? (s = "P", 0 !== this.years && (s += this.years + "Y"), 0 === this.months && 0 === this.quarters || (s += this.months + 3 * this.quarters + "M"), 0 !== this.weeks && (s += this.weeks + "W"), 0 !== this.days && (s += this.days + "D"), 0 === this.hours && 0 === this.minutes && 0 === this.seconds && 0 === this.milliseconds || (s += "T"), 0 !== this.hours && (s += this.hours + "H"), 0 !== this.minutes && (s += this.minutes + "M"), 0 === this.seconds && 0 === this.milliseconds || (s += roundTo(this.seconds + this.milliseconds / 1e3, 3) + "S"), "P" === s && (s += "T0S"), s) : null;
         }, _proto.toISOTime = function(opts) {
-            if (void 0 === opts && (opts = {}), !this.isValid) return null;
-            var millis = this.toMillis();
-            if (millis < 0 || 864e5 <= millis) return null;
-            opts = _extends({
+            var millis;
+            return void 0 === opts && (opts = {}), !this.isValid || (millis = this.toMillis()) < 0 || 864e5 <= millis ? null : (opts = _extends({
                 suppressMilliseconds: !1,
                 suppressSeconds: !1,
                 includePrefix: !1,
                 format: "extended"
-            }, opts);
-            var millis = this.shiftTo("hours", "minutes", "seconds", "milliseconds"), fmt = "basic" === opts.format ? "hhmm" : "hh:mm", millis = (opts.suppressSeconds && 0 === millis.seconds && 0 === millis.milliseconds || (fmt += "basic" === opts.format ? "ss" : ":ss", opts.suppressMilliseconds && 0 === millis.milliseconds) || (fmt += ".SSS"), millis.toFormat(fmt));
-            return millis = opts.includePrefix ? "T" + millis : millis;
+            }, opts, {
+                includeOffset: !1
+            }), DateTime.fromMillis(millis, {
+                zone: "UTC"
+            }).toISOTime(opts));
         }, _proto.toJSON = function() {
             return this.toISO();
         }, _proto.toString = function() {
             return this.toISO();
         }, _proto.toMillis = function() {
-            return this.as("milliseconds");
+            return this.isValid ? durationToMillis(this.matrix, this.values) : NaN;
         }, _proto.valueOf = function() {
             return this.toMillis();
         }, _proto.plus = function(duration) {
@@ -1759,11 +1774,7 @@
             return this.isValid ? this.shiftTo(unit).get(unit) : NaN;
         }, _proto.normalize = function() {
             var vals;
-            return this.isValid ? (vals = this.toObject(), function(matrix, vals) {
-                reverseUnits.reduce(function(previous, current) {
-                    return void 0 !== vals[current] ? (previous && convert(matrix, vals, previous, vals, current), current) : previous;
-                }, null);
-            }(this.matrix, vals), clone$1(this, {
+            return this.isValid ? (vals = this.toObject(), normalizeValues(this.matrix, vals), clone$1(this, {
                 values: vals
             }, !0)) : this;
         }, _proto.rescale = function() {
@@ -1789,14 +1800,14 @@
                     var ak, lastUnit = k, own = 0;
                     for (ak in accumulated) own += this.matrix[ak][k] * accumulated[ak], accumulated[ak] = 0;
                     isNumber(vals[k]) && (own += vals[k]);
-                    var down, i = Math.trunc(own);
-                    for (down in accumulated[k] = (1e3 * own - 1e3 * (built[k] = i)) / 1e3, vals) orderedUnits$1.indexOf(down) > orderedUnits$1.indexOf(k) && convert(this.matrix, vals, down, built, k);
+                    var i = Math.trunc(own);
+                    accumulated[k] = (1e3 * own - 1e3 * (built[k] = i)) / 1e3;
                 } else isNumber(vals[k]) && (accumulated[k] = vals[k]);
             }
             for (key in accumulated) 0 !== accumulated[key] && (built[lastUnit] += key === lastUnit ? accumulated[key] : accumulated[key] / this.matrix[lastUnit][key]);
-            return clone$1(this, {
+            return normalizeValues(this.matrix, built), clone$1(this, {
                 values: built
-            }, !0).normalize();
+            }, !0);
         }, _proto.shiftToAll = function() {
             return this.isValid ? this.shiftTo("years", "months", "weeks", "days", "hours", "minutes", "seconds", "milliseconds") : this;
         }, _proto.negate = function() {
@@ -2134,7 +2145,7 @@
                 return (a - a % 7) / 7;
             } ], [ "days", dayDiff ] ]; _i < _differs.length; _i++) {
                 var _differs$_i = _differs[_i], unit = _differs$_i[0], _differs$_i = _differs$_i[1];
-                0 <= units.indexOf(unit) && (results[lowestOrder = unit] = _differs$_i(cursor, later), cursor = later < (highWater = earlier.plus(results)) ? (results[unit]--, earlier.plus(results)) : highWater);
+                0 <= units.indexOf(unit) && (results[lowestOrder = unit] = _differs$_i(cursor, later), later < (highWater = earlier.plus(results)) ? (results[unit]--, later < (cursor = earlier.plus(results)) && (highWater = cursor, results[unit]--, cursor = earlier.plus(results))) : cursor = highWater);
             }
             return [ cursor, results, highWater, lowestOrder ];
         }(earlier, later, units), cursor = earlier[0], results = earlier[1], highWater = earlier[2], earlier = earlier[3], remainingMillis = later - cursor, units = units.filter(function(u) {
@@ -2263,10 +2274,10 @@
             if (token.literal) return literal(t);
             switch (t.val) {
               case "G":
-                return oneOf(loc.eras("short", !1), 0);
+                return oneOf(loc.eras("short"), 0);
 
               case "GG":
-                return oneOf(loc.eras("long", !1), 0);
+                return oneOf(loc.eras("long"), 0);
 
               case "y":
                 return intUnit(oneToSix);
@@ -2290,10 +2301,10 @@
                 return intUnit(two);
 
               case "MMM":
-                return oneOf(loc.months("short", !0, !1), 1);
+                return oneOf(loc.months("short", !0), 1);
 
               case "MMMM":
-                return oneOf(loc.months("long", !0, !1), 1);
+                return oneOf(loc.months("long", !0), 1);
 
               case "L":
                 return intUnit(oneOrTwo);
@@ -2302,10 +2313,10 @@
                 return intUnit(two);
 
               case "LLL":
-                return oneOf(loc.months("short", !1, !1), 1);
+                return oneOf(loc.months("short", !1), 1);
 
               case "LLLL":
-                return oneOf(loc.months("long", !1, !1), 1);
+                return oneOf(loc.months("long", !1), 1);
 
               case "d":
                 return intUnit(oneOrTwo);
@@ -2382,16 +2393,16 @@
                 return intUnit(one);
 
               case "EEE":
-                return oneOf(loc.weekdays("short", !1, !1), 1);
+                return oneOf(loc.weekdays("short", !1), 1);
 
               case "EEEE":
-                return oneOf(loc.weekdays("long", !1, !1), 1);
+                return oneOf(loc.weekdays("long", !1), 1);
 
               case "ccc":
-                return oneOf(loc.weekdays("short", !0, !1), 1);
+                return oneOf(loc.weekdays("short", !0), 1);
 
               case "cccc":
-                return oneOf(loc.weekdays("long", !0, !1), 1);
+                return oneOf(loc.weekdays("long", !0), 1);
 
               case "Z":
               case "ZZ":
@@ -2435,9 +2446,13 @@
         },
         dayperiod: "a",
         dayPeriod: "a",
-        hour: {
+        hour12: {
             numeric: "h",
             "2-digit": "hh"
+        },
+        hour24: {
+            numeric: "H",
+            "2-digit": "HH"
         },
         minute: {
             numeric: "m",
@@ -2550,18 +2565,19 @@
         };
     }
     function formatOptsToTokens(formatOpts, locale) {
-        return formatOpts ? Formatter.create(locale, formatOpts).formatDateTimeParts(dummyDateTimeCache = dummyDateTimeCache || DateTime.fromMillis(1555555555555)).map(function(p) {
-            return function(part, formatOpts) {
+        var parts, resolvedOpts;
+        return formatOpts ? (parts = (locale = Formatter.create(locale, formatOpts).dtFormatter(dummyDateTimeCache = dummyDateTimeCache || DateTime.fromMillis(1555555555555))).formatToParts(), resolvedOpts = locale.resolvedOptions(), parts.map(function(p) {
+            return function(part, formatOpts, resolvedOpts) {
                 var isSpace, type = part.type, part = part.value;
                 return "literal" === type ? {
                     literal: !(isSpace = /^\s+$/.test(part)),
                     val: isSpace ? " " : part
-                } : (isSpace = formatOpts[type], (part = "object" == typeof (part = partTypeStyleToTokenVal[type]) ? part[isSpace] : part) ? {
+                } : (isSpace = formatOpts[type], "hour" === (part = type) && (part = null != formatOpts.hour12 ? formatOpts.hour12 ? "hour12" : "hour24" : null != formatOpts.hourCycle ? "h11" === formatOpts.hourCycle || "h12" === formatOpts.hourCycle ? "hour12" : "hour24" : resolvedOpts.hour12 ? "hour12" : "hour24"), (type = "object" == typeof (type = partTypeStyleToTokenVal[part]) ? type[isSpace] : type) ? {
                     literal: !1,
-                    val: part
+                    val: type
                 } : void 0);
-            }(p, formatOpts);
-        }) : null;
+            }(p, formatOpts, resolvedOpts);
+        })) : null;
     }
     var nonLeapLadder = [ 0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334 ], leapLadder = [ 0, 31, 60, 91, 121, 152, 182, 213, 244, 274, 305, 335 ];
     function unitOutOfRange(unit, value) {
@@ -2702,7 +2718,7 @@
     }
     function _toISOTime(o, extended, suppressSeconds, suppressMilliseconds, includeOffset, extendedZone) {
         var c = padStart(o.c.hour);
-        return extended ? (c = (c += ":") + padStart(o.c.minute), 0 === o.c.second && suppressSeconds || (c += ":")) : c += padStart(o.c.minute), 0 === o.c.second && suppressSeconds || (c += padStart(o.c.second), 0 === o.c.millisecond && suppressMilliseconds) || (c = (c += ".") + padStart(o.c.millisecond, 3)), includeOffset && (o.isOffsetFixed && 0 === o.offset && !extendedZone ? c += "Z" : c = o.o < 0 ? (c = (c += "-") + padStart(Math.trunc(-o.o / 60)) + ":") + padStart(Math.trunc(-o.o % 60)) : (c = (c += "+") + padStart(Math.trunc(o.o / 60)) + ":") + padStart(Math.trunc(o.o % 60))), extendedZone && (c += "[" + o.zone.ianaName + "]"), c;
+        return extended ? (c = (c += ":") + padStart(o.c.minute), 0 === o.c.millisecond && 0 === o.c.second && suppressSeconds || (c += ":")) : c += padStart(o.c.minute), 0 === o.c.millisecond && 0 === o.c.second && suppressSeconds || (c += padStart(o.c.second), 0 === o.c.millisecond && suppressMilliseconds) || (c = (c += ".") + padStart(o.c.millisecond, 3)), includeOffset && (o.isOffsetFixed && 0 === o.offset && !extendedZone ? c += "Z" : c = o.o < 0 ? (c = (c += "-") + padStart(Math.trunc(-o.o / 60)) + ":") + padStart(Math.trunc(-o.o % 60)) : (c = (c += "+") + padStart(Math.trunc(o.o / 60)) + ":") + padStart(Math.trunc(o.o % 60))), extendedZone && (c += "[" + o.zone.ianaName + "]"), c;
     }
     var defaultUnitValues = {
         month: 1,
@@ -2917,6 +2933,13 @@
         var _proto = DateTime.prototype;
         return _proto.get = function(unit) {
             return this[unit];
+        }, _proto.getPossibleOffsets = function() {
+            var localTS, ts2, oEarlier, oLater;
+            return this.isValid && !this.isOffsetFixed && (localTS = objToLocalTS(this.c), oEarlier = this.zone.offset(localTS - 864e5), oLater = this.zone.offset(localTS + 864e5), (oEarlier = this.zone.offset(localTS - 6e4 * oEarlier)) !== (oLater = this.zone.offset(localTS - 6e4 * oLater))) && (ts2 = localTS - 6e4 * oLater, oEarlier = tsToObj(localTS = localTS - 6e4 * oEarlier, oEarlier), oLater = tsToObj(ts2, oLater), oEarlier.hour === oLater.hour) && oEarlier.minute === oLater.minute && oEarlier.second === oLater.second && oEarlier.millisecond === oLater.millisecond ? [ clone(this, {
+                ts: localTS
+            }), clone(this, {
+                ts: ts2
+            }) ] : [ this ];
         }, _proto.resolvedLocaleOptions = function(opts) {
             opts = Formatter.create(this.loc.clone(opts = void 0 === opts ? {} : opts), opts).resolvedOptions(this);
             return {
