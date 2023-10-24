@@ -3732,8 +3732,8 @@
     }), _$job_6.CronJob = void 0;
     _$job_6.CronJob = class CronJob {
         constructor(cronTime, onTick, onComplete, start, timeZone, context, runOnInit, utcOffset, unrefTimeout) {
-            if (this.running = !1, this.unrefTimeout = !1, this.lastExecution = null, this.runOnce = !1, this._callbacks = [], this.context = null != context ? context : this, null != timeZone && null != utcOffset) throw new _$errors_4.ExclusiveParametersError("timeZone", "utcOffset");
-            this.cronTime = null != timeZone ? new _$time_7.CronTime(cronTime, timeZone, null) : null != utcOffset ? new _$time_7.CronTime(cronTime, null, utcOffset) : new _$time_7.CronTime(cronTime, timeZone, utcOffset), null != unrefTimeout && (this.unrefTimeout = unrefTimeout), null != onComplete && (this.onComplete = this._fnWrap(onComplete)), this.cronTime.realDate && (this.runOnce = !0), this.addCallback(this._fnWrap(onTick)), runOnInit && (this.lastExecution = new Date(), this.fireOnTick()), start && this.start();
+            if (this.running = !1, this.unrefTimeout = !1, this.lastExecution = null, this._callbacks = [], this.context = null != context ? context : this, null != timeZone && null != utcOffset) throw new _$errors_4.ExclusiveParametersError("timeZone", "utcOffset");
+            this.cronTime = null != timeZone ? new _$time_7.CronTime(cronTime, timeZone, null) : null != utcOffset ? new _$time_7.CronTime(cronTime, null, utcOffset) : new _$time_7.CronTime(cronTime, timeZone, utcOffset), null != unrefTimeout && (this.unrefTimeout = unrefTimeout), null != onComplete && (this.onComplete = this._fnWrap(onComplete)), this.addCallback(this._fnWrap(onTick)), runOnInit && (this.lastExecution = new Date(), this.fireOnTick()), start && this.start();
         }
         static from(params) {
             if (null != params.timeZone && null != params.utcOffset) throw new _$errors_4.ExclusiveParametersError("timeZone", "utcOffset");
@@ -3781,7 +3781,7 @@
                     let newTimeout = this.cronTime.getTimeout();
                     newTimeout > diff && (newTimeout = diff), remaining += newTimeout;
                 }
-                remaining ? (remaining > MAXDELAY ? (remaining -= MAXDELAY, timeout = MAXDELAY) : (timeout = remaining, remaining = 0), setCronTimeout(timeout)) : (this.lastExecution = new Date(), this.running = !1, this.runOnce || this.start(), this.fireOnTick());
+                remaining ? (remaining > MAXDELAY ? (remaining -= MAXDELAY, timeout = MAXDELAY) : (timeout = remaining, remaining = 0), setCronTimeout(timeout)) : (this.lastExecution = new Date(), this.running = !1, this.cronTime.realDate || this.start(), this.fireOnTick());
             };
             0 <= timeout ? (this.running = !0, timeout > MAXDELAY && (remaining = timeout - MAXDELAY, timeout = MAXDELAY), setCronTimeout(timeout)) : this.stop();
         }
