@@ -1,5 +1,0 @@
-name: "MoegirlPedia Interface Code CodeQL config"
-
-packs:
-  - codeql/javascript-experimental-atm-queries
-  - codeql/javascript-queries
