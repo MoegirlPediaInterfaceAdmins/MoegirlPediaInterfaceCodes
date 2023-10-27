@@ -10,13 +10,14 @@
     var _$_empty_2 = {}, _$errors_4 = {};
     Object.defineProperty(_$errors_4, "__esModule", {
         value: !0
-    }), _$errors_4.ExclusiveParametersError = void 0;
-    class ExclusiveParametersError extends Error {
+    }), _$errors_4.ExclusiveParametersError = _$errors_4.CronError = void 0;
+    class CronError extends Error {}
+    _$errors_4.CronError = CronError;
+    _$errors_4.ExclusiveParametersError = class extends CronError {
         constructor(param1, param2) {
             super(`You can't specify both ${param1} and ` + param2);
         }
-    }
-    _$errors_4.ExclusiveParametersError = ExclusiveParametersError;
+    };
     var _$luxon_9 = {};
     function _defineProperties(target, props) {
         for (var i = 0; i < props.length; i++) {
@@ -3496,7 +3497,7 @@
             if (timeZone) {
                 if (!_$luxon_9.DateTime.fromObject({}, {
                     zone: timeZone
-                }).isValid) throw new Error("Invalid timezone.");
+                }).isValid) throw new _$errors_4.CronError("Invalid timezone.");
                 this.timeZone = timeZone;
             }
             null != utcOffset && (this.utcOffset = utcOffset), source instanceof Date || source instanceof _$luxon_9.DateTime ? (this.source = source instanceof Date ? _$luxon_9.DateTime.fromJSDate(source) : source, this.realDate = !0) : (this.source = source, this._parse(this.source), this._verifyParse());
@@ -3521,10 +3522,10 @@
             let date = this.realDate && this.source instanceof _$luxon_9.DateTime ? this.source : _$luxon_9.DateTime.local();
             if (this.timeZone && (date = date.setZone(this.timeZone)), void 0 !== this.utcOffset) {
                 var sign = this.utcOffset < 0 ? "-" : "+", offsetHours = Math.trunc(this.utcOffset / 60), offsetHoursStr = String(Math.abs(offsetHours)).padStart(2, "0"), offsetHours = Math.abs(this.utcOffset - 60 * offsetHours), offsetHours = String(offsetHours).padStart(2, "0");
-                if (!(date = date.setZone(`UTC${sign}${offsetHoursStr}:` + offsetHours)).isValid) throw new Error("ERROR: You specified an invalid UTC offset.");
+                if (!(date = date.setZone(`UTC${sign}${offsetHoursStr}:` + offsetHours)).isValid) throw new _$errors_4.CronError("ERROR: You specified an invalid UTC offset.");
             }
             if (this.realDate) {
-                if (_$luxon_9.DateTime.local() > date) throw new Error("WARNING: Date in past. Will never be fired.");
+                if (_$luxon_9.DateTime.local() > date) throw new _$errors_4.CronError("WARNING: Date in past. Will never be fired.");
                 return date;
             }
             if (void 0 === i || isNaN(i) || i < 0) return this.getNextDateFrom(date);
@@ -3546,12 +3547,12 @@
             if (timeZone && (date = date.setZone(timeZone)), this.realDate || 0 < date.millisecond && (date = date.set({
                 millisecond: 0,
                 second: date.second + 1
-            })), !date.isValid) throw new Error("ERROR: You specified an invalid date.");
+            })), !date.isValid) throw new _$errors_4.CronError("ERROR: You specified an invalid date.");
             for (var maxMatch = _$luxon_9.DateTime.now().plus({
                 years: 8
             }); ;) {
                 var diff = date.toMillis() - start.toMillis();
-                if (date > maxMatch) throw new Error(`Something went wrong. No execution date was found in the next 8 years.
+                if (date > maxMatch) throw new _$errors_4.CronError(`Something went wrong. No execution date was found in the next 8 years.
 							Please provide the following string if you would like to help debug:
 							Time Zone: ${null != (_a = null == timeZone ? void 0 : timeZone.toString()) ? _a : '""'} - Cron String: ${this.source.toString()} - UTC offset: ${date.offset} - current Date: ` + _$luxon_9.DateTime.local().toString());
                 if (date.month in this.month || 12 === Object.keys(this.month).length) {
@@ -3636,7 +3637,7 @@
             let expectedMinute, expectedHour, actualMinute, actualHour, maybeJumpingPoint = date;
             let iteration = 0;
             do {
-                if (1440 < ++iteration) throw new Error(`ERROR: This DST checking related function assumes the input DateTime (${null != (_a = date.toISO()) ? _a : date.toMillis()}) is within 24 hours of a DST jump.`);
+                if (1440 < ++iteration) throw new _$errors_4.CronError(`ERROR: This DST checking related function assumes the input DateTime (${null != (_a = date.toISO()) ? _a : date.toMillis()}) is within 24 hours of a DST jump.`);
             } while (expectedMinute = maybeJumpingPoint.minute - 1, expectedHour = maybeJumpingPoint.hour, expectedMinute < 0 && (expectedMinute += 60, expectedHour = (expectedHour + 24 - 1) % 24), actualMinute = (maybeJumpingPoint = maybeJumpingPoint.minus({
                 minute: 1
             })).minute, actualHour = maybeJumpingPoint.hour, expectedMinute === actualMinute && expectedHour === actualHour);
@@ -3659,7 +3660,7 @@
             return endMinute in this.minute && 0 in this.second;
         }
         _checkTimeInSkippedRangeMultiHour(startHour, startMinute, endHour, endMinute) {
-            if (endHour <= startHour) throw new Error(`ERROR: This DST checking related function assumes the forward jump starting hour (${startHour}) is less than the end hour (${endHour})`);
+            if (endHour <= startHour) throw new _$errors_4.CronError(`ERROR: This DST checking related function assumes the forward jump starting hour (${startHour}) is less than the end hour (${endHour})`);
             const firstHourMinuteRange = Array.from({
                 length: 60 - startMinute
             }, (_, k) => startMinute + k), lastHourMinuteRange = Array.from({
@@ -3692,10 +3693,10 @@
             source = source.toLowerCase();
             var units = (source = (source = Object.keys(_$constants_3.PRESETS).includes(source) ? _$constants_3.PRESETS[source] : source).replace(/[a-z]{1,3}/gi, alias => {
                 if (Object.keys(_$constants_3.ALIASES).includes(alias)) return _$constants_3.ALIASES[alias].toString();
-                throw new Error("Unknown alias: " + alias);
+                throw new _$errors_4.CronError("Unknown alias: " + alias);
             })).trim().split(/\s+/);
-            if (units.length < _$constants_3.TIME_UNITS_LEN - 1) throw new Error("Too few fields");
-            if (units.length > _$constants_3.TIME_UNITS_LEN) throw new Error("Too many fields");
+            if (units.length < _$constants_3.TIME_UNITS_LEN - 1) throw new _$errors_4.CronError("Too few fields");
+            if (units.length > _$constants_3.TIME_UNITS_LEN) throw new _$errors_4.CronError("Too many fields");
             var unitsLen = units.length;
             for (const unit of _$constants_3.TIME_UNITS) {
                 var _a = null != (_a = units[_$constants_3.TIME_UNITS.indexOf(unit) - (_$constants_3.TIME_UNITS_LEN - unitsLen)]) ? _a : _$constants_3.PARSE_DEFAULTS[unit];
@@ -3707,19 +3708,18 @@
             let pointer;
             var constraints = _$constants_3.CONSTRAINTS[unit], low = constraints[0], high = constraints[1], constraints = (value.split(",").forEach(field => {
                 var wildcardIndex = field.indexOf("*");
-                if (-1 !== wildcardIndex && 0 !== wildcardIndex) throw new Error(`Field (${field}) has an invalid wildcard expression`);
+                if (-1 !== wildcardIndex && 0 !== wildcardIndex) throw new _$errors_4.CronError(`Field (${field}) has an invalid wildcard expression`);
             }), (value = value.replace(_$constants_3.RE_WILDCARDS, low + "-" + high)).split(","));
             for (const range of constraints) {
                 var match = [ ...range.matchAll(_$constants_3.RE_RANGE) ][0];
-                if (void 0 === (null == match ? void 0 : match[1])) throw new Error(`Field (${unit}) cannot be parsed`);
+                if (void 0 === (null == match ? void 0 : match[1])) throw new _$errors_4.CronError(`Field (${unit}) cannot be parsed`);
                 {
                     var [ , match, mUpper, mStep ] = match, match = parseInt(match, 10);
                     let upper = void 0 !== mUpper ? parseInt(mUpper, 10) : void 0;
-                    mUpper = void 0 !== mStep;
-                    if ("0" === mStep) throw new Error(`Field (${unit}) has a step of zero`);
-                    var step = parseInt(null != mStep ? mStep : "1", 10);
-                    if (void 0 !== upper && match > upper) throw new Error(`Field (${unit}) has an invalid range`);
-                    if (match < low || void 0 !== upper && upper > high || void 0 === upper && high < match) throw new Error(`Field value (${value}) is out of range`);
+                    var mUpper = void 0 !== mStep, step = parseInt(null != mStep ? mStep : "1", 10);
+                    if (0 === step) throw new _$errors_4.CronError(`Field (${unit}) has a step of zero`);
+                    if (void 0 !== upper && match > upper) throw new _$errors_4.CronError(`Field (${unit}) has an invalid range`);
+                    if (match < low || void 0 !== upper && upper > high || void 0 === upper && high < match) throw new _$errors_4.CronError(`Field value (${value}) is out of range`);
                     for (match = Math.min(Math.max(low, ~~Math.abs(match)), high), upper = void 0 !== upper ? Math.min(high, ~~Math.abs(upper)) : mUpper ? high : match, pointer = match; typeObj[pointer] = !0, (pointer += step) <= upper; );
                     "dayOfWeek" === unit && (!typeObj[0] && typeObj[7] && (typeObj[0] = typeObj[7]), delete typeObj[7]);
                 }
@@ -3731,6 +3731,9 @@
         value: !0
     }), _$job_6.CronJob = void 0;
     _$job_6.CronJob = class CronJob {
+        get runOnce() {
+            return this.cronTime.realDate;
+        }
         constructor(cronTime, onTick, onComplete, start, timeZone, context, runOnInit, utcOffset, unrefTimeout) {
             if (this.running = !1, this.unrefTimeout = !1, this.lastExecution = null, this._callbacks = [], this.context = null != context ? context : this, null != timeZone && null != utcOffset) throw new _$errors_4.ExclusiveParametersError("timeZone", "utcOffset");
             this.cronTime = null != timeZone ? new _$time_7.CronTime(cronTime, timeZone, null) : null != utcOffset ? new _$time_7.CronTime(cronTime, null, utcOffset) : new _$time_7.CronTime(cronTime, timeZone, utcOffset), null != unrefTimeout && (this.unrefTimeout = unrefTimeout), null != onComplete && (this.onComplete = this._fnWrap(onComplete)), this.addCallback(this._fnWrap(onTick)), runOnInit && (this.lastExecution = new Date(), this.fireOnTick()), start && this.start();
@@ -3756,7 +3759,7 @@
             "function" == typeof callback && this._callbacks.push(callback);
         }
         setTime(time) {
-            if (!(time instanceof _$time_7.CronTime)) throw new Error("time must be an instance of CronTime.");
+            if (!(time instanceof _$time_7.CronTime)) throw new _$errors_4.CronError("time must be an instance of CronTime.");
             var wasRunning = this.running;
             this.stop(), this.cronTime = time, wasRunning && this.start();
         }
@@ -3781,7 +3784,7 @@
                     let newTimeout = this.cronTime.getTimeout();
                     newTimeout > diff && (newTimeout = diff), remaining += newTimeout;
                 }
-                remaining ? (remaining > MAXDELAY ? (remaining -= MAXDELAY, timeout = MAXDELAY) : (timeout = remaining, remaining = 0), setCronTimeout(timeout)) : (this.lastExecution = new Date(), this.running = !1, this.cronTime.realDate || this.start(), this.fireOnTick());
+                remaining ? (remaining > MAXDELAY ? (remaining -= MAXDELAY, timeout = MAXDELAY) : (timeout = remaining, remaining = 0), setCronTimeout(timeout)) : (this.lastExecution = new Date(), this.running = !1, this.runOnce || this.start(), this.fireOnTick());
             };
             0 <= timeout ? (this.running = !0, timeout > MAXDELAY && (remaining = timeout - MAXDELAY, timeout = MAXDELAY), setCronTimeout(timeout)) : this.stop();
         }
