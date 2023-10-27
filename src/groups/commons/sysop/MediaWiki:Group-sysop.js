@@ -29,5 +29,9 @@
         $("#doAnnounce, #mw-search-ns0").prop("checked", false);
         $("#mw-search-ns6").prop("checked", true);
     }
+    //批量删除默认选择运行者为「you」
+    if (mw.config.get("wgCanonicalSpecialPageName") === "DeleteBatch" && $("#wpMode")[0]) {
+        $("#wpMode").val("you");
+    }
 })();
 // </pre>
