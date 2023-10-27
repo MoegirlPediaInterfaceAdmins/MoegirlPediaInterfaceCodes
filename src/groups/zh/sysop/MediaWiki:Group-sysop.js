@@ -140,7 +140,7 @@
         $("#doAnnounce").prop("checked", false);
     }
     //批量删除默认选择运行者为「you」
-    if (mw.config.get("wgCanonicalSpecialPageName") === "DeleteBatch" && $("#wpRunuser")[0]) {
+    if (mw.config.get("wgCanonicalSpecialPageName") === "DeleteBatch" && $("#wpMode")[0]) {
         $("#wpMode").val("you");
     }
 })();
