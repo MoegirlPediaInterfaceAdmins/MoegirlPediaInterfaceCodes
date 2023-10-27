@@ -139,5 +139,9 @@
     if (mw.config.get("wgCanonicalSpecialPageName") === "ReplaceText" && $("#doAnnounce")[0]) {
         $("#doAnnounce").prop("checked", false);
     }
+    //批量删除默认选择运行者为「you」
+    if (mw.config.get("wgCanonicalSpecialPageName") === "DeleteBatch" && $("#wpRunuser")[0]) {
+        $("#wpMode").val("you");
+    }
 })();
 // </pre>
