@@ -3,7 +3,7 @@
 /* 全局背景图片 */
 body.skin-moeskin #moe-global-background {
     --theme-background-color: rgb(185 214 244);
-    --background-url: url("https://storage.moegirl.org.cn/console-plus/uploads/2023/10/23/7b7ae84493d59754c65eb334f0102f39.jpeg");
+    --background-url: url("https://app.moegirl.org.cn/background/2023Anniversary/moeskin.jpg");
 }
 
 /* 在常规屏幕设备上使文章区域略微透明，以便展示背景图片 */
