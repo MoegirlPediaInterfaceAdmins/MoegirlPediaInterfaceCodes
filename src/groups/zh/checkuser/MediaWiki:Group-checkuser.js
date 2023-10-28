@@ -51,12 +51,8 @@
     // 一键复制用户名列表
     const copyUserlist = () => {
         const h3s = [...document.querySelectorAll("#mw-content-text > .mw-parser-output > h3"), document.querySelector("table.navbox")];
-        h3s.forEach((section, index) => {
-            const nextIndex = index + 1;
-            if (nextIndex >= h3s.length) {
-                return;
-            }
-            const nextSection = h3s[nextIndex];
+        h3s.slice(0, -1).forEach((section, index) => {
+            const nextSection = h3s[index + 1];
 
             const userlist = 
             for (let ele = section.nextElementSibling; ele && ele !== nextSection; ele = ele.nextElementSibling) {
