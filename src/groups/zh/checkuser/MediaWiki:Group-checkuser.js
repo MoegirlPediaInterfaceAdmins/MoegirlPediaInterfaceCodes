@@ -54,7 +54,7 @@
         h3s.slice(0, -1).forEach((section, index) => {
             const nextSection = h3s[index + 1];
 
-            const userlist = 
+            const userlist = [];
             for (let ele = section.nextElementSibling; ele && ele !== nextSection; ele = ele.nextElementSibling) {
                 const elements = ele.querySelectorAll("li > a");
                 const usernames = Array.from(elements)
