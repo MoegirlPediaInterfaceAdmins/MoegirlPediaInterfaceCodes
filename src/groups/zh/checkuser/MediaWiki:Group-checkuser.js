@@ -47,6 +47,46 @@
             }
         }, 1000);
     };
+
+    // 一键复制用户名列表
+    const copyUserlist = () => {
+        const h3s = [...document.querySelectorAll("#mw-content-text > .mw-parser-output > h3"), document.querySelector("table.navbox")];
+        h3s.forEach((section, index) => {
+            const nextIndex = index + 1;
+            if (nextIndex >= h3s.length) {
+                return;
+            }
+            const nextSection = h3s[nextIndex];
+
+            const userlist = (() => {
+                const result = [];
+                for (let ele = section.nextElementSibling; ele && ele !== nextSection; ele = ele.nextElementSibling) {
+                    const elements = ele.querySelectorAll("li > a");
+                    const usernames = Array.from(elements)
+                        .map((a) => a.textContent.trim())
+                        .filter((text) => text.match(/^user:/i));
+                    result.push(...usernames);
+                }
+                return result;
+            })();
+
+            const $bar = $(section.getElementsByClassName("mw-editsection")[0]);
+            const $divider = $('<span class="mw-editsection-divider"> | </span>');
+            const $copyButton = $(`<a class="section-username-list" title="共${userlist.length}个用户名">复制用户列表</a>`);
+            $bar.find(".mw-editsection-bracket").first().after($divider).after($copyButton);
+
+            $copyButton.on("click", () => {
+                navigator.clipboard.writeText(userlist.join("\n"));
+                $copyButton.text("复制列表成功");
+                setTimeout(() => {
+                    $copyButton.text("复制用户列表");
+                }, 2000);
+            });
+
+        });
+    };
+
+
     await Promise.all([
         $.ready,
         mw.loader.using(["mediawiki.Uri"]),
@@ -55,5 +95,6 @@
     // 一键复制用户名
     if (wgArticleId === 325714) {
         copyUsername();
+        copyUserlist();
     }
 })();
