@@ -1405,6 +1405,7 @@
     "Node.prototype.previousSibling",
     "Node.prototype.removeChild",
     "Node.prototype.replaceChild",
+    "Node.prototype.textContent",
     "NodeFilter",
     "NodeFilter.FILTER_ACCEPT",
     "NodeFilter.FILTER_REJECT",
