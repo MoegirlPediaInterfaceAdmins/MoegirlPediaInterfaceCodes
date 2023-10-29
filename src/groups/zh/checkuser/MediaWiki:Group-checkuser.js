@@ -68,11 +68,15 @@
             const $copyButton = $(`<a class="section-username-list" title="共${userlist.length}个用户名">复制用户列表</a>`);
             $bar.find(".mw-editsection-bracket").first().after($divider).after($copyButton);
 
+            let lastClicked = -1;
             $copyButton.on("click", () => {
                 navigator.clipboard.writeText(userlist.join("\n"));
                 $copyButton.text("复制列表成功");
+                lastClicked = Date.now() + 2000 - 2;
                 setTimeout(() => {
-                    $copyButton.text("复制用户列表");
+                    if (Date.now() > lastClicked) {
+                        $copyButton.text("复制用户列表");
+                    }
                 }, 2000);
             });
 
