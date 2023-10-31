@@ -56,7 +56,7 @@
 
             const userlist = [];
             for (let ele = section.nextElementSibling; ele && ele !== nextSection; ele = ele.nextElementSibling) {
-                const elements = ele.querySelectorAll("li > a");
+                const elements = ele.querySelectorAll("li:not(:has( small.checkuser-show)) > a");
                 const usernames = Array.from(elements)
                     .map((a) => a.textContent.trim())
                     .filter((text) => text.match(/^user:/i));
