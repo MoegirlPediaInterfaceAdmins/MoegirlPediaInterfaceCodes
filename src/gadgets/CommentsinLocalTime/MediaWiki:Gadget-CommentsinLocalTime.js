@@ -179,13 +179,10 @@ $(() => {
     if (!window.LocalComments.dynamic) {
         return;
     }
-    // await mw.loader.using(["ext.gadget.cron"]);
-    Cron.CronJob.from({
-        cronTime: "0 * * * * *",
-        start: true,
-        onTick: () => {
-            formatTimestamp();
-        },
-    });
+    const secondsLeft = 60 - moment().seconds();
+    setTimeout(() => {
+        formatTimestamp();
+        setInterval(formatTimestamp(), 60 * 1000);
+    }, secondsLeft * 1000);
 });
 //</pre>

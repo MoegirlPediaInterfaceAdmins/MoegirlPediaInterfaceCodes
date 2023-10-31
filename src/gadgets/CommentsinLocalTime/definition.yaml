@@ -23,7 +23,6 @@ peers: []
 dependencies:
   - ext.gadget.site-lib
   - moment
-  - ext.gadget.cron
 
 _sites:
   - zh
