@@ -39,7 +39,7 @@
     const batchInjectCachedCode = (urls, type) => Promise.all(urls.map((url) => injectCachedCode(url, type)));
     // 移除过期缓存（30 天内无使用）
     const expired = Date.now() - 30 * 24 * 60 * 60 * 1000;
-    for (const k of localObjectStorage._getAllKeys()) {
+    for (const k of localObjectStorage.getAllKeys()) {
         if (localObjectStorage.getItem(k).timestamp < expired) {
             localObjectStorage.removeItem(k);
         }

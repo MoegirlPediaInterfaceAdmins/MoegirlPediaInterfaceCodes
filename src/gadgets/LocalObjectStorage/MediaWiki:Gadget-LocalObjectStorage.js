@@ -80,11 +80,14 @@
         get _keyPrefix() {
             return this.#keyPrefix;
         }
-        _getAllKeys() {
+        #getAllKeys() {
             return Object.keys(localStorage).filter((key) => key.startsWith(this.#keyPrefix));
         }
+        getAllKeys() {
+            return this.#getAllKeys().map((n) => n.replace(this.#keyPrefix, ""));
+        }
         get length() {
-            return this._getAllKeys().length;
+            return this.#getAllKeys().length;
         }
         getItem(key, fallback) {
             const value = localStorage.getItem(`${this.#keyPrefix}${key}`);
@@ -145,13 +148,13 @@
             localStorage.removeItem(`${this.#keyPrefix}${key}`);
         }
         clear() {
-            this._getAllKeys().forEach((key) => {
+            this.#getAllKeys().forEach((key) => {
                 localStorage.removeItem(key);
             });
             this.length = 0;
         }
         key(index) {
-            return this._getAllKeys()[index];
+            return this.#getAllKeys()[index];
         }
     }
     window.LocalObjectStorage = LocalObjectStorage;
