@@ -111,8 +111,8 @@
             try {
                 return JSON.parse(value.replace("JSON|", ""));
             } catch (e) {
-                console.error(`LocalObjectStorage can's transform value of key "${key}" to JSON and return raw value...`);
-                return value;
+                console.error(`LocalObjectStorage can's transform value of key "${key}" to JSON and return \`undefined\`...`, e);
+                return undefined;
             }
         }
         setItem(key, value) {
@@ -130,7 +130,7 @@
                         localStorage.setItem(`${this.#keyPrefix}${key}`, `${type}|${encode(value)}`);
                         return;
                     } catch (e) {
-                        console.error(`LocalObjectStorage can's transform value of key "${key}" from type "${type}" and skip...`);
+                        console.error(`LocalObjectStorage can's transform value of key "${key}" from type "${type}" and skip...`, e);
                     }
                 }
             }
@@ -138,8 +138,7 @@
                 localStorage.setItem(`${this.#keyPrefix}${key}`, `JSON|${JSON.stringify(value)}`);
                 return;
             } catch (e) {
-                console.error(`LocalObjectStorage can's transform value of key "${key}" from JSON and store raw value...`);
-                localStorage.setItem(`${this.#keyPrefix}${key}`, value);
+                console.error(`LocalObjectStorage can's transform value of key "${key}" from JSON and skip...`, e);
             }
         }
         removeItem(key) {
