@@ -54,7 +54,12 @@ $(async () => {
                     Reflect.deleteProperty(cache, `${aid}-${cid}`);
                 });
             });
-            cache = Object.fromEntries(Object.entries(cache).sort(({ timestamp: a }, { timestamp: b }) => b - a).slice(0, 50));
+            const expired = Date.now() - 30 * 24 * 60 * 60 * 1000;
+            cache = Object.fromEntries(
+                Object.entries(cache)
+                    .filter(({ timestamp }) => timestamp < expired) // 移除过期缓存
+                    .sort(({ timestamp: a }, { timestamp: b }) => b - a).slice(0, 50), // 只保留最新 50 个页面
+            );
         } catch (e) {
             console.info("AnnTools-float-toc", e);
             cache = {};
