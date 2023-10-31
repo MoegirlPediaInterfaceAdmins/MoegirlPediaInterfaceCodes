@@ -10,11 +10,6 @@ $(() => {
     if (wgPageName.startsWith("萌娘百科_talk:讨论版/")) {
         $(".mw-editnotice + .mw-warning-with-logexcerpt").hide();
     }
-    const sanity = $("<span>");
-    const sanityClean = (h) => {
-        sanity.text(h);
-        return sanity.html();
-    };
     // 快速填写编辑摘要
     const wpSummary = $('[name="wpSummary"]');
     // $(".mw-summary-preset-item a").closest('.oo-ui-fieldLayout-header').width($('#wpSummary').width());
@@ -35,17 +30,6 @@ $(() => {
         $('.headerInputbox a[href*="preload=Template%3A权限申请%2F"], .headerInputbox a[href*="preload=Template%3A%E6%9D%83%E9%99%90%E7%94%B3%E8%AF%B7%2F"]').attr("target", "_self");
     }
 
-    if ($(".AbusefilterWarningNoHttp")[0]) {
-        const replaces = [];
-        $("#wpTextbox1").val($("#wpTextbox1").val().replace(/http:\/\/([a-z\d]+\.bilibili\.[a-z\d]+)/ig, (raw, $1) => {
-            const result = `https://${$1}`;
-            replaces.push(raw, result);
-        }));
-        oouiDialog.alert(`您的编辑内容含有以下 http 链接，已自动替换为对应的 https 链接：<ul><li>${replaces.map((raw, result) => `<code>${sanityClean(raw)}</code> → <code>${sanityClean(result)}</code>`)}</li></ul>`, {
-            title: "萌娘百科提醒您",
-            size: "medium",
-        });
-    }
     // 编辑请求
     const prefixNumber = (num) => {
         let result = `${num}`;
@@ -99,7 +83,7 @@ $(() => {
         }, 137);
     }
     //只在ns0和ns2的子页面加载预加载工具
-    if (![0, 2].includes(wgNamespaceNumber) || wgNamespaceNumber === 2 && !wgPageName.includes("/")) {
+    if (![0, 2].includes(wgNamespaceNumber) || wgNamespaceNumber === 2 && !wgPageName.includes("/") || mw.config.get("wgPageContentModel") !== "wikitext") {
         $("#multiboilerplateform").remove();
     }
     // 非维护组、技术组成员提出方针编辑请求时提醒需要走提案
