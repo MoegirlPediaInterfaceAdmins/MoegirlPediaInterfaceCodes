@@ -571,10 +571,6 @@
             passive: true,
         });
     });
-    //只在ns0和ns2的子页面加载预加载工具
-    if (![0, 2].includes(mw.config.get("wgNamespaceNumber")) || mw.config.get("wgNamespaceNumber") === 2 && !mw.config.get("wgPageName").includes("/")) {
-        $("#multiboilerplateform").remove();
-    }
     // 小工具使用统计移除默认启用的小工具
     if (mw.config.get("wgCanonicalSpecialPageName") === "GadgetUsage") {
         gadgetUsageRemoveDefaultGadgets();

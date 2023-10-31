@@ -4,14 +4,18 @@ $(() => {
     if (!["edit", "submit"].includes(mw.config.get("wgAction"))) {
         return;
     }
-    if (mw.config.get("wgPageName").startsWith("萌娘百科_talk:讨论版/")) {
+    const wgPageName = mw.config.get("wgPageName");
+    const wgNamespaceNumber = mw.config.get("wgNamespaceNumber");
+    
+    if (wgPageName.startsWith("萌娘百科_talk:讨论版/")) {
         $(".mw-editnotice + .mw-warning-with-logexcerpt").hide();
     }
-    const sanity = $(document.createElement("span"));
+    const sanity = $("<span>");
     const sanityClean = (h) => {
         sanity.text(h);
         return sanity.html();
     };
+    // 快速填写编辑摘要
     const wpSummary = $('[name="wpSummary"]');
     // $(".mw-summary-preset-item a").closest('.oo-ui-fieldLayout-header').width($('#wpSummary').width());
     $(".mw-summary-preset-item a").on("click", ({ target }) => {
@@ -51,8 +55,7 @@ $(() => {
         return result;
     };
     if (!$("ul.permissions-errors").find('a[href*="MoeAuth"]').length && !!$(".permissions-errors, #wpTextbox1[readonly]")[1] && mw.config.get("wgUserName") && !$(".newComment")[0]) {
-        const wgNamespaceNumber = mw.config.get("wgNamespaceNumber"),
-            ns = [];
+        const ns = [];
         if (wgNamespaceNumber < 0 || wgNamespaceNumber % 2 === 1) {
             return;
         }
@@ -69,7 +72,6 @@ $(() => {
         if (!ns[0]) {
             return;
         }
-        const wgPageName = mw.config.get("wgPageName");
         let page = mw.config.get("wgPageName");
         const pageToLowerCase = page.toLowerCase();
         for (const n of ns) {
@@ -96,11 +98,14 @@ $(() => {
             scrollTop: explainconflict.closest(".infoBox").offset().top - 2,
         }, 137);
     }
-
+    //只在ns0和ns2的子页面加载预加载工具
+    if (![0, 2].includes(wgNamespaceNumber) || wgNamespaceNumber === 2 && !wgPageName.includes("/")) {
+        $("#multiboilerplateform").remove();
+    }
     // 非维护组、技术组成员提出方针编辑请求时提醒需要走提案
     if (
         new URLSearchParams(location.search).get("preloadtitle").startsWith("编辑请求") &&
-        mw.config.get("wgNamespaceNumber") === 5 &&
+        wgNamespaceNumber === 5 &&
         mw.config.get("wgAction") === "edit" &&
         !mw.config.get("wgUserGroups").some((value) => ["patroller", "sysop", "techeditor", "interface-admin", "staff"].includes(value))
     ) {
