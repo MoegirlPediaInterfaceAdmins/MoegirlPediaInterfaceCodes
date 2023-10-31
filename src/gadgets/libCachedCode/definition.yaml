@@ -21,7 +21,8 @@ rights:
 
 peers: []
 
-dependencies: []
+dependencies:
+  - ext.gadget.LocalObjectStorage
 
 _sites:
   - zh
