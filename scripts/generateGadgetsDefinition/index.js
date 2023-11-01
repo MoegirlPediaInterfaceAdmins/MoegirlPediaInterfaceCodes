@@ -15,12 +15,14 @@ const gadgetsDefinitionList = await yamlModule.readFile(path.join(gadgetBaseRoot
 startGroup("gadgetsDefinitionList:");
 console.info(gadgetsDefinitionList);
 endGroup();
+const gadgets = [];
 for (const gadgetDirent of await fs.promises.readdir(gadgetBaseRoot, { withFileTypes: true })) {
     if (!gadgetDirent.isDirectory()) {
         continue;
     }
     const gadget = gadgetDirent.name;
     console.info("gadget:", gadget);
+    gadgets.push(gadget);
     try {
         /**
          * @type { { _section: string; _files: string[] } }
@@ -59,6 +61,16 @@ for (const gadgetDirent of await fs.promises.readdir(gadgetBaseRoot, { withFileT
         console.error(`[${gadget}]`, "error:", err);
         process.exit(1);
     }
+}
+console.info("Start to clean up unexist gadgets...");
+for (let i = 0; i < gadgetsDefinitionList.length; i++) {
+    gadgetsDefinitionList[i].gadgets = gadgetsDefinitionList[i].gadgets.filter((gadget) => {
+        if (gadgets.includes(gadget)) {
+            return true;
+        }
+        console.info("gadget not exist:", gadget);
+        return false;
+    });
 }
 startGroup("gadgetsDefinitionList final:");
 console.info(gadgetsDefinitionList);
