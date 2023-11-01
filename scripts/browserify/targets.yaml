@@ -1,14 +1,5 @@
 # @file 在这里添加lib之前记得先`npm i`安装一下，否则会报错“找不到库”
 
-- module: cron
-  entry: Cron
-  gadget:
-    name: cron
-    fileName: MediaWiki:Gadget-cron.js
-  # cron@3 能正确携带 luxon
-  # prependCode: const require = () => window.luxon;
-  namespaceImport: true
-
 - module: hash-wasm
   entry: hashwasm
   gadget:

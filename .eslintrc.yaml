@@ -27,7 +27,6 @@ globals:
   oouiDialog: readonly
   echarts: readonly
   MOE_SKIN_GLOBAL_DATA_REF: readonly
-  Cron: readonly
   ace: readonly
   libCachedCode: readonly
   CodeMirror: readonly
