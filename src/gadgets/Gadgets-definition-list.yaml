@@ -14,7 +14,6 @@
     - GothicMoe
     - noteTA
     - shortlink
-    - RecentchangesTagFilter
     - hideUnpatrolledFlag
     - extiw
     - disambigLink
@@ -37,7 +36,6 @@
     - Searchbox-integration
     - mwPanel
     - moeskin-topbar
-    - moeskin-topbar-patrolplus
     - sidebarHidden
     - dark-mode-toggle
     - dark-mode-toggle-pagestyles
@@ -68,7 +66,6 @@
     - Wikiplus
     - wikiplus-highlight
     - InPageEdit-v2
-    - EditDraft
     - enable-nest-highlight
     - disable-nest-alert
     - uploader
@@ -77,7 +74,6 @@
 - name: maintenance
   gadgets:
     - rollback-summary
-    - RollbackEverything
     - registerToDelete
     - moveToUserSubpage
     - userpageCat
@@ -86,7 +82,6 @@
     - patrolPlus
     - patrolCount
     - UserMessages
-    - AxUserMsg
     - autoconfirmedUserPing
     - widgetPreload
     - wikiBlame
@@ -114,27 +109,20 @@
   gadgets:
     - site-js
     - site-styles
-    - desktop-styles
     - vector-styles
     - moeskin-styles
-    - mobile-styles
     - edit
     - site-lib
     - libBottomRightCorner
     - libOOUIDialog
     - LocalObjectStorage
     - localforage
-    - moment-timezone
     - cron
     - jQueryLazyload
     - libHashwasm
     - libJQuery
     - libUtil
     - libPolyfill
-    - sidebaricons
     - libip
     - libJSON5
-    - echarts4
-    - echarts5
-    - echarts
     - libCachedCode
