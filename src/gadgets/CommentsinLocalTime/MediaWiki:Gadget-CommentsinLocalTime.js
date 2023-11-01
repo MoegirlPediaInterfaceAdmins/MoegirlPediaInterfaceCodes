@@ -179,10 +179,9 @@ $(() => {
     if (!window.LocalComments.dynamic) {
         return;
     }
-    const secondsLeft = 60 - moment().seconds();
     setTimeout(() => {
         formatTimestamp();
         setInterval(formatTimestamp(), 60 * 1000);
-    }, secondsLeft * 1000);
+    }, 60000 - Date.now() % 60000);
 });
 //</pre>
