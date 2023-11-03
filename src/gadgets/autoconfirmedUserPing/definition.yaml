@@ -17,7 +17,7 @@ type: general
 package: false
 
 rights:
-  - patrolleredit
+  - autopatrol
 
 peers: []
 
