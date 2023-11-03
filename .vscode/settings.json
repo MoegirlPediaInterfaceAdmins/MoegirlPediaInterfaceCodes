@@ -79,6 +79,7 @@
         "Gadget-localforage",
         "Gadget-Logout-confirm",
         "Gadget-MarkAsResolved",
+        "Gadget-MarkAsResolved-restricted",
         "Gadget-moeskin-classic",
         "Gadget-moeskin-styles",
         "Gadget-moeskin-topbar",
