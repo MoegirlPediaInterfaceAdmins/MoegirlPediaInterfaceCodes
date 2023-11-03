@@ -78,6 +78,7 @@
     - moveToUserSubpage
     - userpageCat
     - MarkAsResolved
+    - MarkAsResolved-restricted
     - quickMoveThread
     - patrolPlus
     - patrolCount
@@ -87,7 +88,6 @@
     - wikiBlame
     - quickSave
     - ContentAboveBelowImage
-    - MarkAsResolved-restricted
 
 - name: interface
   gadgets:
