@@ -15,23 +15,29 @@ const gadgetsDefinitionList = await yamlModule.readFile(path.join(gadgetBaseRoot
 startGroup("gadgetsDefinitionList:");
 console.info(gadgetsDefinitionList);
 endGroup();
-const gadgets = [];
-for (const gadgetDirent of await fs.promises.readdir(gadgetBaseRoot, { withFileTypes: true })) {
-    if (!gadgetDirent.isDirectory()) {
-        continue;
-    }
-    const gadget = gadgetDirent.name;
+const gadgetDirents = await fs.promises.readdir(gadgetBaseRoot, { withFileTypes: true });
+const gadgetDirs = await Promise.all(gadgetDirents.filter((dirent) => dirent.isDirectory()).map(async ({ name: gadget }) => ({ gadget, files: (await fs.promises.readdir(path.join(gadgetBaseRoot, gadget))).filter((file) => [".js", ".css"].includes(path.extname(path.join(gadgetBaseRoot, gadget, file)))) })));
+const gadgets = gadgetDirs.map(({ gadget }) => gadget);
+const gadgetFiles = gadgetDirs.flatMap(({ files: _files }) => _files);
+const duplicatedGadgetFiles = gadgetFiles.filter((file, index) => gadgetFiles.lastIndexOf(file) !== index);
+if (duplicatedGadgetFiles.length > 0) {
+    console.error("Found duplicated gadget files, exit:");
+    console.error(duplicatedGadgetFiles);
+    process.exit(1);
+}
+for (const { gadget, files } of gadgetDirs) {
     console.info("gadget:", gadget);
-    gadgets.push(gadget);
     try {
         /**
          * @type { { _section: string; _files: string[] } }
          */
         const gadgetDefinition = await yamlModule.readFile(path.join(gadgetBaseRoot, gadget, "definition.yaml"));
         const { _section } = gadgetDefinition;
-        const _files = (await fs.promises.readdir(path.join(gadgetBaseRoot, gadget))).filter((file) => [".js", ".css"].includes(path.extname(path.join(gadgetBaseRoot, gadget, file))));
-        if (gadgetDefinition._files.filter((file) => !_files.includes(file)).length + _files.filter((file) => !gadgetDefinition._files.includes(file)).length > 0) {
-            gadgetDefinition._files = [...gadgetDefinition._files.filter((file) => _files.includes(file)), ..._files.filter((file) => !gadgetDefinition._files.includes(file))];
+        const unexistFiles = gadgetDefinition._files.filter((file) => !gadgetFiles.includes(file));
+        const unindexedFiles = files.filter((file) => !gadgetDefinition._files.includes(file));
+        if (unexistFiles.length + unindexedFiles.length > 0) {
+            console.info("Found unexist or unindexed files, update definition.yaml and commit:", { unexistFiles, unindexedFiles });
+            gadgetDefinition._files = [...gadgetDefinition._files.filter((file) => gadgetFiles.includes(file)), ...unindexedFiles];
             await yamlModule.writeFile(path.join(gadgetBaseRoot, gadget, "definition.yaml"), gadgetDefinition);
             await createCommit(`auto(Gadget-${gadget}): gadget definition updated by generateGadgetsDefinition`);
         }
