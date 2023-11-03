@@ -87,6 +87,7 @@
     - wikiBlame
     - quickSave
     - ContentAboveBelowImage
+    - MarkAsResolved-restricted
 
 - name: interface
   gadgets:
