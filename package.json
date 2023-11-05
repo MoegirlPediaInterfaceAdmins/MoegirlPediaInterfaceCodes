@@ -38,7 +38,7 @@
         "concat-stream": "^2.0.0",
         "duplexify": "^4.1.2",
         "envify": "^4.1.0",
-        "eslint": "^8.52.0",
+        "eslint": "^8.53.0",
         "eslint-plugin-prefer-arrow-functions": "^3.2.4",
         "esmify": "^2.1.1",
         "hash-wasm": "^4.10.0",
@@ -59,6 +59,6 @@
         "uglify-js": "^3.17.4",
         "unassertify": "^3.0.1",
         "v8r": "^2.1.0",
-        "yaml": "^2.3.3"
+        "yaml": "^2.3.4"
     }
 }
