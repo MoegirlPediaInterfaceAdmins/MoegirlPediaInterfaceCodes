@@ -89,8 +89,9 @@
         mw.loader.using(["mediawiki.Uri"]),
     ]);
     const wgArticleId = mw.config.get("wgArticleId");
+    const wgIsArticle = mw.config.get("wgIsArticle");
     // 一键复制用户名
-    if (wgArticleId === 325714) {
+    if (wgArticleId === 325714 && wgIsArticle) {
         copyUsername();
         copyUserlist();
     }
