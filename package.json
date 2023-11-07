@@ -27,9 +27,9 @@
         "@octokit/plugin-retry": "^6.0.1",
         "@octokit/rest": "^20.0.2",
         "@types/echarts": "^4.9.20",
-        "@types/jquery": "^3.5.25",
+        "@types/jquery": "^3.5.26",
         "@types/moment": "^2.13.0",
-        "@types/oojs-ui": "^0.47.3",
+        "@types/oojs-ui": "^0.47.4",
         "@wikimedia/types-wikimedia": "^0.4.1",
         "autoprefixer": "^10.4.16",
         "browser-pack-flat": "^3.5.0",
@@ -38,7 +38,7 @@
         "concat-stream": "^2.0.0",
         "duplexify": "^4.1.2",
         "envify": "^4.1.0",
-        "eslint": "^8.52.0",
+        "eslint": "^8.53.0",
         "eslint-plugin-prefer-arrow-functions": "^3.2.4",
         "esmify": "^2.1.1",
         "hash-wasm": "^4.10.0",
@@ -59,6 +59,6 @@
         "uglify-js": "^3.17.4",
         "unassertify": "^3.0.1",
         "v8r": "^2.1.0",
-        "yaml": "^2.3.3"
+        "yaml": "^2.3.4"
     }
 }
