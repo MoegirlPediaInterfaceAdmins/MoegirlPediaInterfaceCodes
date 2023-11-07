@@ -139,7 +139,7 @@ $(() => {
 
         progress = new Progress(6, this);
         progressBarFieldLayout = new OO.ui.FieldLayout(this.progress.progressBarWidget, {
-            label: QSWindow.bolbLabel("执行进度"),
+            label: QSWindow.bolbLabel(wgULS("执行进度","執行進度")),
             align: "top",
         });
         progressLogFieldLayout = new OO.ui.FieldLayout(this.progress.progressLogWidget, {
@@ -174,7 +174,7 @@ $(() => {
             if (action === "submit") {
                 return new OO.ui.Process($.when((async () => {
                     this.showProgress();
-                    this.progress.log("开始检测段落标题……");
+                    this.progress.log(wgULS("开始检测段落标题……", "開始檢測段落標題……"));
                     const toclist = Object.fromEntries((await api.post({
                         action: "parse",
                         format: "json",
@@ -204,9 +204,9 @@ $(() => {
             return super.getActionProcess(action);
         }
         async quickSave({ section }) {
-            this.progress.log("标题存在！");
+            this.progress.log(wgULS("标题存在！", "標題存在！"));
             this.progress.nextStep();
-            this.progress.log("正在获取段落内容……");
+            this.progress.log(wgULS("正在获取段落内容……", "正在獲取段落內容……"));
             const sectionContent = (await api.post({
                 action: "parse",
                 format: "json",
@@ -221,7 +221,7 @@ $(() => {
                 sectionTitleRaw = this.sectionTitle;
             }
             this.progress.nextStep();
-            this.progress.log("正在存档该段落内容……");
+            this.progress.log(wgULS("正在存档该段落内容……", "正在存檔該段落內容……"));
             await api.postWithToken("csrf", {
                 action: "edit",
                 format: "json",
@@ -234,7 +234,7 @@ $(() => {
             });
             this.progress.nextStep();
             if ([543140, 443483].includes(wgArticleId)) { // 群组信息、注销
-                this.progress.log("本页面无需添加已存档标记！");
+                this.progress.log(wgULS("无需添加已存档标记，正在清空段落……", "無需添加已存檔標記，正在清空段落……"));
                 await api.postWithToken("csrf", {
                     action: "edit",
                     format: "json",
@@ -245,7 +245,7 @@ $(() => {
                     tags: "快速存档讨论串|Automation tool",
                 });
             } else {
-                this.progress.log("正在标记该段落为已存档……");
+                this.progress.log(wgULS("正在标记该段落为已存档……", "正在標記該段落為已存檔……"));
                 let sectionTitleSafe = this.sectionTitle;
                 if (/_\d+$/.test(this.sectionTitle) && document.getElementById(this.sectionTitle.replace(/_\d+$/, ""))) {
                     sectionTitleSafe = sectionTitleSafe.replace(/_\d+$/, "");
@@ -261,7 +261,7 @@ $(() => {
                 });
             }
             this.progress.nextStep();
-            this.progress.log("正在检查存档页面是否带有档案馆模板……");
+            this.progress.log(wgULS("正在检查存档页面是否带有档案馆模板……", "正在檢查存檔頁面是否帶有檔案館模板……"));
             const listResult = await api.post({
                 action: "query",
                 format: "json",
@@ -270,12 +270,12 @@ $(() => {
                 tltemplates: "Template:讨论版页顶/档案馆",
             });
             if (Array.isArray(Object.values(listResult.query.pages)[0].templates) && Object.values(listResult.query.pages)[0].templates.length > 0) {
-                this.progress.log("模板存在！");
+                this.progress.log(wgULS("模板存在！", "模板存在！"));
                 this.progress.finish();
                 return;
             }
             this.progress.nextStep();
-            this.progress.log("正在向存档页添加档案馆模板……");
+            this.progress.log(wgULS("正在向存档页添加档案馆模板……", "正在向存檔頁添加檔案館模板……"));
             await api.postWithToken("csrf", {
                 action: "edit",
                 format: "json",
