@@ -1,8 +1,10 @@
 // <pre>
 "use strict";
 $(() => {
-    const wgUserGroups = mw.config.get("wgUserGroups");
-    if (!/^萌娘百科_talk:讨论版\/[^存]+$/.test(mw.config.get("wgPageName"))) { return; }
+    const wgUserGroups = mw.config.get("wgUserGroups"),
+        wgArticleId = mw.config.get("wgArticleId"),
+        wgPageName = mw.config.get("wgPageName");
+    if (!/^萌娘百科_talk:讨论版\/[^存]+$/.test(wgPageName)) { return; }
     if (!wgUserGroups.includes("sysop") && !wgUserGroups.includes("patroller")) { return; }
     const $body = $("body");
     $("#mw-notification-area").appendTo($body);
@@ -117,7 +119,7 @@ $(() => {
 
         template = "Template:讨论版页顶/档案馆";
         date = new Date();
-        savePageTitle = `${mw.config.get("wgPageName")}/存档/${this.date.getFullYear()}年${this.date.getMonth() < 9 ? `0${this.date.getMonth() + 1}` : this.date.getMonth() + 1}月`;
+        savePageTitle = `${wgPageName}/存档/${this.date.getFullYear()}年${this.date.getMonth() < 9 ? `0${this.date.getMonth() + 1}` : this.date.getMonth() + 1}月`;
 
         panelLayout = new OO.ui.PanelLayout({
             scrollable: false,
@@ -176,7 +178,7 @@ $(() => {
                     const toclist = Object.fromEntries((await api.post({
                         action: "parse",
                         format: "json",
-                        pageid: mw.config.get("wgArticleId"),
+                        pageid: wgArticleId,
                         prop: "sections",
                     })).parse.sections.map(({ anchor, index }) => [anchor, index]));
                     if (!Reflect.has(toclist, this.sectionTitle)) {
@@ -205,14 +207,13 @@ $(() => {
             this.progress.log("标题存在！");
             this.progress.nextStep();
             this.progress.log("正在获取段落内容……");
-            const sectionContent = await $.ajax({
-                url: `${mw.config.get("wgServer")}${mw.config.get("wgScriptPath")}/index.php`,
-                data: {
-                    title: mw.config.get("wgPageName"),
-                    action: "raw",
-                    section,
-                },
-            });
+            const sectionContent = (await api.post({
+                action: "parse",
+                format: "json",
+                pageid: wgArticleId,
+                prop: "wikitext",
+                section,
+            })).parse.wikitext["*"];
             let sectionTitleRaw = sectionContent.match(/==(.*)==/);
             if (sectionTitleRaw && sectionTitleRaw[1]) {
                 sectionTitleRaw = sectionTitleRaw[1];
@@ -232,20 +233,33 @@ $(() => {
                 summary: `快速存档讨论串：/* ${this.sectionTitle} */`,
             });
             this.progress.nextStep();
-            this.progress.log("正在标记该段落为已存档……");
-            let sectionTitleSafe = this.sectionTitle;
-            if (/_\d+$/.test(this.sectionTitle) && document.getElementById(this.sectionTitle.replace(/_\d+$/, ""))) {
-                sectionTitleSafe = sectionTitleSafe.replace(/_\d+$/, "");
+            if ([543140, 443483].includes(wgArticleId)) { // 群组信息、注销
+                this.progress.log("本页面无需添加已存档标记！");
+                await api.postWithToken("csrf", {
+                    action: "edit",
+                    format: "json",
+                    pageid: wgArticleId,
+                    summary: `快速存档讨论串：/* ${this.sectionTitle} */`,
+                    text: "",
+                    section,
+                    tags: "快速存档讨论串|Automation tool",
+                });
+            } else {
+                this.progress.log("正在标记该段落为已存档……");
+                let sectionTitleSafe = this.sectionTitle;
+                if (/_\d+$/.test(this.sectionTitle) && document.getElementById(this.sectionTitle.replace(/_\d+$/, ""))) {
+                    sectionTitleSafe = sectionTitleSafe.replace(/_\d+$/, "");
+                }
+                await api.postWithToken("csrf", {
+                    action: "edit",
+                    format: "json",
+                    pageid: wgArticleId,
+                    summary: `快速存档讨论串：/* ${this.sectionTitle} */`,
+                    text: `==${sectionTitleRaw}==\n{{Saved|link=${this.savePageTitle}|title=${sectionTitleSafe.replace(/\|/g, "{{!}}")}}}`,
+                    section,
+                    tags: "快速存档讨论串|Automation tool",
+                });
             }
-            await api.postWithToken("csrf", {
-                action: "edit",
-                format: "json",
-                title: mw.config.get("wgPageName"),
-                summary: `快速存档讨论串：/* ${this.sectionTitle} */`,
-                text: `==${sectionTitleRaw}==\n{{Saved|link=${this.savePageTitle}|title=${sectionTitleSafe.replace(/\|/g, "{{!}}")}}}`,
-                section,
-                tags: "快速存档讨论串|Automation tool",
-            });
             this.progress.nextStep();
             this.progress.log("正在检查存档页面是否带有档案馆模板……");
             const listResult = await api.post({
