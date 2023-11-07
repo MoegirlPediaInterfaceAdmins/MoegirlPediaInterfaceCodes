@@ -36,12 +36,12 @@ $(() => {
 
         static statusList = mw.config.get("wgPageName") === "萌娘百科_talk:讨论版/操作申请/注销账号申请" ?
             [
-                ["w", "请求被撤回"],
+                ["w", wgULS("请求被撤回","請求被撤回")],
             ] : [
-                ["r", "问题已解决"],
-                ["p", "问题已答复"],
-                ["w", "请求被撤回"],
-                ["n", "无人回复"],
+                ["r", wgULS("问题已解决","問題已解決")],
+                ["p", wgULS("问题已答复","問題已答覆")],
+                ["w", wgULS("请求被撤回","請求被撤回")],
+                ["n", wgULS("无人回复","無人回覆")],
             ];
         static archiveOffsetsFromStatus = {
             ...Object.fromEntries(MARWindow.statusList.map(([status]) => [status, 3])),
