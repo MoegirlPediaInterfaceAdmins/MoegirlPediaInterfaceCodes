@@ -65,7 +65,7 @@ $(() => (async () => {
             list: "logevents",
             leprop: "ids|title|type|user|timestamp|details|parsedcomment|tags",
             letype: "block",
-            leend: moment().startOf("day").subtract(7, "days").toISOString(),
+            leend: moment().subtract(7, "days").toISOString(),
             lelimit: "10",
             formatversion: 2,
         }));
@@ -326,23 +326,19 @@ $(() => (async () => {
             domain: "library.moegirl.org.cn",
             cmtitle: "Category:即将删除的页面",
         }].map(async ({ domain, cmtitle }) => {
+            const api2 = domain === "zh.moegirl.org.cn" ? api : new mw.ForeignApi(`https://${domain}/api.php`, { anonymous: true });
             let count = 0;
             const eol = Symbol();
             let cmcontinue = undefined;
-            const f = async () => await $.ajax({
-                url: `https://${domain}/api.php`,
-                data: {
-                    action: "query",
-                    format: "json",
-                    list: "categorymembers",
-                    cmtitle,
-                    cmprop: "ids",
-                    cmtype: "page|subcat|file",
-                    cmlimit: "max",
-                    cmcontinue,
-                },
-                dataType: "jsonp",
-                type: "GET",
+            const f = async () => await api2.get({
+                action: "query",
+                format: "json",
+                list: "categorymembers",
+                cmtitle,
+                cmprop: "ids",
+                cmtype: "page|subcat|file",
+                cmlimit: "max",
+                cmcontinue,
             });
             while (cmcontinue !== eol) {
                 const _result = await autoRetryAsyncFunction(f);
