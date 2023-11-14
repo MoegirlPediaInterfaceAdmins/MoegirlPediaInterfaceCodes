@@ -28,6 +28,7 @@
     - hideAutopromoteLog
     - temp-svgFix
     - legacyMainpage
+    - zeroFill
 
 - name: skin
   gadgets:

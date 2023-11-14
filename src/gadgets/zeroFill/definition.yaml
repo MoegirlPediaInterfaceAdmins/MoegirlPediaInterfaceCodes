@@ -1,0 +1,31 @@
+ResourceLoader: true
+
+hidden: false
+
+default: false
+
+supportsUrlLoad: false
+
+targets: []
+
+skins: []
+
+actions: []
+
+type: styles
+
+package: false
+
+rights: []
+
+peers: []
+
+dependencies: []
+
+_sites:
+  - zh
+
+_section: browsing
+
+_files:
+  - MediaWiki:Gadget-zerofill.css
