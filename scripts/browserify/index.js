@@ -22,9 +22,12 @@ const tempPath = await mkdtmp({
     local: true,
 });
 const inputPath = path.join(tempPath, "input.js");
-const [nomalOutput, jsonOutput] = await Promise.all([exec("npm ls"), exec("npm ls --json")]);
-console.info("npm ls:", nomalOutput);
+const jsonOutput = await exec("npm ls --json");
+/**
+ * @type {{ [name: string]: { version: string } }}
+ */
 const localPackageVersions = JSON.parse(jsonOutput).dependencies;
+console.info("npm ls:", ["", ...Object.entries(localPackageVersions).map(([name, { version }]) => `* ${name}@${version}`)].join("\n"));
 const fileList = [];
 for (const browserifyTarget of browserifyTargets) {
     console.info("target:", browserifyTarget);
