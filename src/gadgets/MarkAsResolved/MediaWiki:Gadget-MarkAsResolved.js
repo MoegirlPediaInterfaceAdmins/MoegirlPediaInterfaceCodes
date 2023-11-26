@@ -179,9 +179,7 @@ $(() => {
             if (action === "submit") {
                 return new OO.ui.Process($.when((async () => {
                     if (!this.status) {
-                        throw new OO.ui.Error(wgULS("请选择一个状态", "請選擇一個狀態"), {
-                            recoverable: false,
-                        });
+                        throw new OO.ui.Error(wgULS("请选择一个状态", "請選擇一個狀態"));
                     }
                     const toclist = Object.fromEntries((await api.post({
                         action: "parse",
