@@ -2186,7 +2186,6 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
             callback(toResolve);
         } catch (req) {
             if (!req) {
-                // eslint-disable-next-line require-atomic-updates
                 noSuggestions = true;
             }
             callback(toResolve);
@@ -2885,7 +2884,6 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
                         const sTitle = converted[i].to.replace(`${HC.category_canonical}:`, "");
                         const sOrginal = inpIndex[converted[i].from.replace(`${HC.category_canonical}:`, "")];
                         if (Reflect.has(idxCopys, sTitle) && line) {
-                            // eslint-disable-next-line no-new
                             new CategoryEditor(line, copyCats[idxCopys[sTitle]], [inpageCats[sOrginal].match[2], sTitle], inpageCats[sOrginal].match[3], is_hidden);
                         } else {
                             console.log(sTitle);

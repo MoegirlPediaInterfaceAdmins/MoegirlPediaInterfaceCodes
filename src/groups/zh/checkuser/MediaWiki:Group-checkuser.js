@@ -1,4 +1,3 @@
-/* eslint-disable require-atomic-updates */
 "use strict";
 (async () => {
     /* 函数定义体 */
