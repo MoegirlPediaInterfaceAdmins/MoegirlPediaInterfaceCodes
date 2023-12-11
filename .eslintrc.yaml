@@ -5,6 +5,8 @@ env:
 
 root: true
 
+reportUnusedDisableDirectives: true
+
 parserOptions:
   ecmaVersion: latest
 

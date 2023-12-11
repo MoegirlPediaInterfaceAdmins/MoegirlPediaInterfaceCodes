@@ -6,7 +6,7 @@ import console from "../modules/console.js";
 const testLatency = async (urls, times = 5, timeout = 3000) => {
     console.info("[testLatency]", "urls:", urls);
     console.info("[testLatency]", "times:", times);
-    const latency =  await Promise.all(urls.map(async (url) => {
+    const latency = await Promise.all(urls.map(async (url) => {
         // console.info("[testLatency]", "testing:", url, "Start");
         const result = await Promise.allSettled(Array.from({ length: times }, async (/* _, i */) => {
             // console.info("[testLatency]", url, "#", i, "Start");
