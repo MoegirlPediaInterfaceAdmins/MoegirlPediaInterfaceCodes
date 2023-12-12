@@ -53,7 +53,7 @@
         "postcss-selector-not": "^7.0.1",
         "semver": "^7.5.4",
         "simple-git": "^3.21.0",
-        "stylelint": "^16.0.1",
+        "stylelint": "^16.0.2",
         "stylelint-config-standard": "^35.0.0",
         "typescript": "^5.3.3",
         "uglify-js": "^3.17.4",
