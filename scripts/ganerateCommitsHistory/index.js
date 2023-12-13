@@ -12,7 +12,7 @@ const githubWebInterfaceFlowSignature = {
 import console from "../modules/console.js";
 import mailmap from "../modules/mailmap.js";
 import { startGroup, endGroup, exportVariable } from "@actions/core";
-import { isInMasterBranch, debugLoggingEnabled, isInGithubActions } from "../modules/octokit.js";
+import { isInMasterBranch, debugLoggingEnabled, debugConsole, isInGithubActions } from "../modules/octokit.js";
 import mkdtmp from "../modules/mkdtmp.js";
 import jsonModule from "../modules/jsonModule.js";
 import { create as createArtifactClient } from "@actions/artifact";
@@ -51,7 +51,7 @@ if (isInGithubActions) {
 }
 if (debugLoggingEnabled) {
     startGroup("Raw history:");
-    console.info(rawHistory);
+    debugConsole.log(rawHistory);
     endGroup();
 }
 const history = {};
@@ -74,50 +74,45 @@ const removeSplitter = (str) => str.replace(/ò$/, "").trim();
 if (debugLoggingEnabled) {
     startGroup("Raw history parsing:");
 }
-const debugLog = (...args) => {
-    if (debugLoggingEnabled) {
-        console.info(...args);
-    }
-};
 for (const { hash, _date, authorName, _authorEmail, _signatureKey, committerName, _committerEmail, diff, coAuthors } of rawHistory) {
     const date = new Date(_date).toISOString();
     const authorEmail = _authorEmail.toLowerCase();
     const committerEmail = removeSplitter(_committerEmail).toLowerCase();
     const signatureKey = removeSplitter(_signatureKey);
-    debugLog("Parsing:", { date, hash, authorName, authorEmail, committerName, committerEmail, signatureKey, coAuthors, diff });
+    debugConsole.log("Parsing:", { date, hash, authorName, authorEmail, committerName, committerEmail, signatureKey, coAuthors, diff });
     let changedFiles = 0;
     if (Array.isArray(diff?.files)) {
-        debugLog("\tdiff.files:", diff.files);
+        debugConsole.log("\tdiff.files:", diff.files);
         for (const { file, changes, before, after, binary } of diff.files) {
             if ((binary ? before !== after : changes > 0) && file.startsWith("src/")) {
                 changedFiles++;
             }
         }
-        debugLog("\tchangedFiles:", changedFiles);
+        debugConsole.log("\tchangedFiles:", changedFiles);
     } else {
-        debugLog("\tNothing changed by this commit.");
+        debugConsole.log("\tNothing changed by this commit.");
     }
     if (changedFiles === 0) {
-        debugLog("\tNothing in src/ has been changed, skip.");
+        debugConsole.log("\tNothing in src/ has been changed, skip.");
         continue;
     }
     const isFromGithubWebInterface = signatureKey === githubWebInterfaceFlowSignature.signatureKey && committerName === githubWebInterfaceFlowSignature.committerName && committerEmail === githubWebInterfaceFlowSignature.committerEmail;
-    debugLog("\tisFromGithubWebInterface:", isFromGithubWebInterface);
+    debugConsole.log("\tisFromGithubWebInterface:", isFromGithubWebInterface);
     const name = isFromGithubWebInterface ? authorName : committerName;
     const email = (isFromGithubWebInterface ? authorEmail : committerEmail).toLowerCase();
-    debugLog("\tname:", name);
-    debugLog("\temail:", email);
+    debugConsole.log("\tname:", name);
+    debugConsole.log("\temail:", email);
     const username = `${Reflect.has(mailmap, email) ? "U:" : "GH:"}${name}`;
-    debugLog("\tusername:", username);
+    debugConsole.log("\tusername:", username);
     parser({ username, changedFiles, hash, date, indent: 1 });
     for (const coAuthorInfo of coAuthors.split(/\r*\n/).filter(({ length }) => length > 0)) {
-        debugLog("\tFound co-author:", coAuthorInfo);
+        debugConsole.log("\tFound co-author:", coAuthorInfo);
         const [coAuthorName, ..._coAuthorEmail] = coAuthorInfo.replace(/^Co-authored-by: /i, "").split(" <");
         const coAuthorEmail = _coAuthorEmail.join(" <").replace(/>$/, "").toLowerCase();
-        debugLog("\t\tcoAuthorName:", coAuthorName);
-        debugLog("\t\tcoAuthorEmail:", coAuthorEmail);
+        debugConsole.log("\t\tcoAuthorName:", coAuthorName);
+        debugConsole.log("\t\tcoAuthorEmail:", coAuthorEmail);
         const coAuthorUsername = Reflect.has(mailmap, coAuthorEmail) ? `U:${mailmap[coAuthorEmail]}` : `GH:${coAuthorName}`;
-        debugLog("\t\tcoAuthorUsername:", coAuthorUsername);
+        debugConsole.log("\t\tcoAuthorUsername:", coAuthorUsername);
         parser({ username: coAuthorUsername, changedFiles, hash, date, indent: 2 });
     }
 }
@@ -128,7 +123,7 @@ const usernames = Object.keys(history).sort();
 const sortedHistory = Object.fromEntries(Object.entries(history).sort(([a], [b]) => usernames.indexOf(a) - usernames.indexOf(b)));
 if (debugLoggingEnabled) {
     startGroup("Parsed history:");
-    console.info(sortedHistory);
+    debugConsole.info(sortedHistory);
     endGroup();
 }
 await jsonModule.writeFile("src/global/zh/MediaWiki:GHIAHistory.json", sortedHistory);

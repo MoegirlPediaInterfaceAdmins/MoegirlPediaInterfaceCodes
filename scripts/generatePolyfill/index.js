@@ -9,7 +9,7 @@ import jsonModule from "../modules/jsonModule.js";
 import yamlModule from "../modules/yamlModule.js";
 import { exportVariable, startGroup, endGroup } from "@actions/core";
 import { createIssue, isInGithubActions } from "../modules/octokit.js";
-import { create as createArtifactClient } from "@actions/artifact";
+import artifactClient from "@actions/artifact";
 
 exportVariable("linguist-generated-generatePolyfill", JSON.stringify(["src/gadgets/libPolyfill/MediaWiki:Gadget-libPolyfill.js"]));
 
@@ -63,7 +63,6 @@ await fs.promises.writeFile(codeFilePath, data, {
 });
 console.info("\tDone, upload it as a artifact...");
 if (isInGithubActions) {
-    const artifactClient = createArtifactClient();
     await artifactClient.uploadArtifact("polyfillGeneratedCode.js", [codeFilePath], tempPath);
 }
 console.info("\tDone.");

@@ -5,4 +5,4 @@ import { ISO } from "./toLocalTimeZoneStrings.js";
 export default new Proxy(originalConsole, {
     get: (t, p) => prefixable.includes(p) ? t[p].bind(t, `[${ISO()}]`) : t[p],
 });
-export { originalConsole };
+export { originalConsole, prefixable };
