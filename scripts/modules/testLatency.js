@@ -1,4 +1,5 @@
 import console from "../modules/console.js";
+import { debugConsole } from "../modules/debugLog.js";
 /**
  * @param {string[]} urls 
  * @return {Promise<[string, number][]>}
@@ -6,21 +7,24 @@ import console from "../modules/console.js";
 const testLatency = async (urls, times = 5, timeout = 3000) => {
     console.info("[testLatency]", "urls:", urls);
     console.info("[testLatency]", "times:", times);
+    console.info("[testLatency]", "timeout:", timeout);
     const latency = await Promise.all(urls.map(async (url) => {
-        // console.info("[testLatency]", "testing:", url, "Start");
-        const result = await Promise.allSettled(Array.from({ length: times }, async (/* _, i */) => {
-            // console.info("[testLatency]", url, "#", i, "Start");
+        debugConsole.log("[testLatency]", "testing:", url, "Start");
+        const result = await Promise.allSettled(Array.from({ length: times }, async (_, i) => {
+            debugConsole.log("[testLatency]", url, "#", i, "Start");
             const controller = new AbortController();
             const signal = controller.signal;
-            setTimeout(() => controller.abort(), timeout);
+            const timeoutRef = setTimeout(() => controller.abort(), timeout);
             const start = process.hrtime.bigint();
             await fetch(url, { method: "HEAD", signal });
             const end = process.hrtime.bigint();
-            // console.info("[testLatency]", url, "#", i, "end:", Number(end - start) / 10 ** 6);
-            return Number(end - start) / 10 ** 6;
+            clearTimeout(timeoutRef);
+            const latency = Number(end - start) / 10 ** 6;
+            debugConsole.log("[testLatency]", url, "#", i, "latency:", latency);
+            return latency;
         }));
-        // console.info("[testLatency]", "testing:", url, "end");
-        return [url, result.reduce((p, { status, value }) => status === "rejected" ? p : Math.min(p, value), Number.MAX_SAFE_INTEGER)];
+        debugConsole.log("[testLatency]", "testing:", url, "end");
+        return [url, result.reduce((p, { status, value, reason }) => status === "rejected" ? (debugConsole.error(reason), p) : Math.min(p, value), Number.MAX_SAFE_INTEGER)];
     }));
     console.info("[testLatency]", "latency:", latency);
     return latency;

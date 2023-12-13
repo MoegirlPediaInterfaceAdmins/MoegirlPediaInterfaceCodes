@@ -8,11 +8,11 @@ import { retry } from "@octokit/plugin-retry";
 import { createAppAuth } from "@octokit/auth-app";
 import { createActionAuth } from "@octokit/auth-action";
 import { createUnauthenticatedAuth } from "@octokit/auth-unauthenticated";
+import { debugLoggingEnabled, debugConsole } from "../modules/debugLog.js";
 const isInGithubActions = process.env.GITHUB_ACTIONS === "true";
 const isInMasterBranch = process.env.GITHUB_REF === "refs/heads/master";
 const isPush = ["push"].includes(process.env.GITHUB_EVENT_NAME);
 const isPullRequest = ["pull_request"].includes(process.env.GITHUB_EVENT_NAME);
-const debugLoggingEnabled = process.env.ACTIONS_RUNNER_DEBUG === "true";
 const octokitBaseOptions = {
     owner: isInGithubActions ? process.env.GITHUB_REPOSITORY_OWNER : null,
     repo: isInGithubActions ? process.env.GITHUB_REPOSITORY.split("/")[1] : null,
@@ -146,5 +146,5 @@ const createIssue = async (issueTitle, issueBody, labels, replyBody) => {
     endGroup();
     return issue_number;
 };
-export { octokit, isInMasterBranch, octokitBaseOptions, createIssue, isInGithubActions, isPush, isPullRequest, OctokitWithRetry, workflowLink, debugLoggingEnabled };
-export default { octokit, isInMasterBranch, octokitBaseOptions, createIssue, isInGithubActions, isPush, isPullRequest, OctokitWithRetry, workflowLink, debugLoggingEnabled };
+export { octokit, isInMasterBranch, octokitBaseOptions, createIssue, isInGithubActions, isPush, isPullRequest, OctokitWithRetry, workflowLink, debugLoggingEnabled, debugConsole };
+export default { octokit, isInMasterBranch, octokitBaseOptions, createIssue, isInGithubActions, isPush, isPullRequest, OctokitWithRetry, workflowLink, debugLoggingEnabled, debugConsole };
