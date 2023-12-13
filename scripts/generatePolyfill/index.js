@@ -9,7 +9,8 @@ import jsonModule from "../modules/jsonModule.js";
 import yamlModule from "../modules/yamlModule.js";
 import { exportVariable, startGroup, endGroup } from "@actions/core";
 import { createIssue, isInGithubActions } from "../modules/octokit.js";
-import artifactClient from "@actions/artifact";
+import artifact from "@actions/artifact";
+const ArtifactClient = artifact.default; // bug
 
 exportVariable("linguist-generated-generatePolyfill", JSON.stringify(["src/gadgets/libPolyfill/MediaWiki:Gadget-libPolyfill.js"]));
 
@@ -63,7 +64,7 @@ await fs.promises.writeFile(codeFilePath, data, {
 });
 console.info("\tDone, upload it as a artifact...");
 if (isInGithubActions) {
-    await artifactClient.uploadArtifact("polyfillGeneratedCode.js", [codeFilePath], tempPath);
+    await ArtifactClient.uploadArtifact("polyfillGeneratedCode.js", [codeFilePath], tempPath);
 }
 console.info("\tDone.");
 console.info("Start to find unrecognizable features...");
