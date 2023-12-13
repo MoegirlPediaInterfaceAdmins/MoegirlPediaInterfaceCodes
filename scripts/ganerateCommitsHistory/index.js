@@ -15,7 +15,7 @@ import { startGroup, endGroup, exportVariable } from "@actions/core";
 import { isInMasterBranch, debugLoggingEnabled, debugConsole, isInGithubActions } from "../modules/octokit.js";
 import mkdtmp from "../modules/mkdtmp.js";
 import jsonModule from "../modules/jsonModule.js";
-import { create as createArtifactClient } from "@actions/artifact";
+import artifactClient from "../modules/artifact.js";
 import git from "../modules/git.js";
 import createCommit from "../modules/createCommit.js";
 import path from "path";
@@ -46,7 +46,6 @@ const { all: rawHistory } = await git.log({
 console.info("Successfully fetched raw history, upload it as a artifact...");
 await jsonModule.writeFile(rawHistoryPath, rawHistory);
 if (isInGithubActions) {
-    const artifactClient = createArtifactClient();
     await artifactClient.uploadArtifact("rawHistory.json", [rawHistoryPath], tempPath);
 }
 if (debugLoggingEnabled) {
