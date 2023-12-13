@@ -212,7 +212,7 @@ jobs:
       - name: Check environment
         run: 'npx eslint --env-info && echo ---- && echo "stylelint: "$(npx stylelint --version) && echo ---- && echo "v8r: "$(npx v8r --version) && echo ---- && mkdir -vp .cache && echo ".cache:" && ls -lhA .cache'
       - name: Run eslint
-        run: npx eslint --exit-on-fatal-error --max-warnings 0 --cache --cache-strategy content --cache-location ".cache/" --ext js ./src
+        run: npx eslint --cache --cache-strategy content --cache-location ".cache/" --ext js --exit-on-fatal-error --formatter ./scripts/modules/eslint-formatter-gha.cjs --max-warnings 0 ./src
       - name: Run stylelint
         run: npx stylelint --cache --cache-strategy content --cache-location ".cache/"  --formatter github --max-warnings 0 "src/**/*.css"
       - name: Run v8r
