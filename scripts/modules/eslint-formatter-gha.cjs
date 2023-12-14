@@ -1,27 +1,61 @@
 // eslint-disable-next-line strict
 "use strict";
-const { startGroup, endGroup } = require("@actions/core");
-// eslint-disable-next-line no-unused-vars
-const { ESLint } = require("eslint");
-const severities = {
-    0: "debug",
-    1: "warning",
-    2: "error",
-};
+const { debug, notice, warning, error } = require("@actions/core");
+const deprecatedRules = [];
 /**
- * @type {ESLint.Formatter['format']}
+ * @type { import("eslint").ESLint.Formatter["format"] }
  */
 const formatter = (results) => {
-    if (results.length !== 0) {
-        startGroup("ESLint Annotations");
-        const result = [];
-        for (const { filePath, messages } of results) {
-            for (const { message, severity, line, column, endLine, endColumn, ruleId, fix } of messages) {
-                result.push(`::${severities[severity]} file=${filePath},line=${line},col=${column},endLine=${endLine},endColumn=${endColumn},title=ESLint problem::${message} (${ruleId}) ${fix ? "[maybe fixable]" : ""} - https://eslint.org/docs/latest/rules/${ruleId}`);
+    if (results.length === 0) {
+        return "Nothing is broken, everything is fine.";
+    }
+    for (const {
+        filePath, messages, usedDeprecatedRules,
+        // eslint-disable-next-line no-unused-vars
+        suppressedMessages, errorCount, fatalErrorCount, warningCount, fixableErrorCount, fixableWarningCount, output, source,
+    } of results) {
+        const baseAnnotationProperties = {
+            title: "ESLint Annotation",
+            file: filePath,
+        };
+        for (const { ruleId, replacedBy } of usedDeprecatedRules) {
+            if (deprecatedRules.includes(ruleId)) {
+                continue;
+            }
+            deprecatedRules.push(ruleId);
+            // @TODO: Switch to `warning` when eslint 9 is released
+            debug(`Deprecated rule: ${ruleId}. ${replacedBy.length > 0 ? `Please use ${replacedBy.join(" / ")} instead.` : ""} - https://eslint.org/docs/latest/rules/${ruleId}`, baseAnnotationProperties);
+        }
+        for (const {
+            message, severity, line, column, endLine, endColumn, ruleId, fix,
+            // eslint-disable-next-line no-unused-vars
+            messageId, nodeType, fatal, source, suggestions,
+        } of messages) {
+            const msg = `${message} (${ruleId}) ${fix ? "[maybe fixable]" : ""} - https://eslint.org/docs/latest/rules/${ruleId}`;
+            /**
+             * @type {NonNullable<Parameters<notice>[1]>}
+             */
+            const annotationProperties = {
+                ...baseAnnotationProperties,
+                startLine: line,
+                endLine,
+                startColumn: column,
+                endColumn,
+            };
+            switch (severity) {
+                case 0:
+                    notice(msg, annotationProperties);
+                    break;
+                case 1:
+                    warning(msg, annotationProperties);
+                    break;
+                case 2:
+                    error(msg, annotationProperties);
+                    break;
+                default:
+                    break;
             }
         }
-        console.info(result.join("\n"));
-        endGroup();
     }
     return "";
 };

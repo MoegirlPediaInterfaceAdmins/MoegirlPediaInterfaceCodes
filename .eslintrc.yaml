@@ -1,7 +1,7 @@
 env:
   browser: true
   jquery: true
-  es2024: true
+  es6: true
 
 root: true
 
@@ -47,7 +47,7 @@ rules:
       singleReturnOnly: false
   logical-assignment-operators: error
   no-new-func: error
-  no-new-object: error
+  no-object-constructor: error
   no-new-wrappers: error
   no-var: error
   prefer-const: error
