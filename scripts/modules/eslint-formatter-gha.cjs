@@ -33,7 +33,7 @@ const formatter = (results) => {
             // eslint-disable-next-line no-unused-vars
             messageId, nodeType, fatal, source, suggestions,
         } of messages) {
-            const msg = `${message} (${ruleId}) ${fix ? "[maybe fixable]" : ""} - https://eslint.org/docs/latest/rules/${ruleId}${isInGithubActions ? ` @ https://github.com/${process.env.GITHUB_REPOSITORY}/blob/${process.env.GITHUB_SHA}/${path.relative(process.cwd(), filePath)}` : ""}`;
+            const msg = `${message} (${ruleId}) ${fix ? "[maybe fixable]" : ""} - https://eslint.org/docs/latest/rules/${ruleId}${isInGithubActions ? ` @ https://github.com/${process.env.GITHUB_REPOSITORY}/blob/${process.env.GITHUB_SHAs.slice(0, 7)}/${path.relative(process.cwd(), filePath)}#L${line}${line !== endLine ? `-L${endLine}` : ""}` : ""}`;
             /**
              * @type {NonNullable<Parameters<notice>[1]>}
              */
