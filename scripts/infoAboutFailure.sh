@@ -1,2 +1,12 @@
-echo "::error title=关于代码检查失败的提示::如果代码检查失败，你可以通过以下方式查看错误原因：%0A1. 如果本次提交属于 Pull Request，你可以在该 PR 的 【Files changed】 标签页查看错误原因；%0A2. 如果本次提交属于直接推送 commit，你可以在该 commit 页查看错误原因。%0A你可能需要下拉到对应页面的最底部来查看未被修改的文件的错误原因。"
+base_url="https://github.com/$GITHUB_REPOSITORY"
+
+if [[ $GITHUB_REF == refs/pull/* ]]; then
+    IFS='/' read -ra parts <<< "$GITHUB_REF"
+    pull_number="${parts[2]}"
+    url="$base_url/pull/$pull_number/files"
+else
+    url="$base_url/commit/$GITHUB_SHA"
+fi
+
+echo "::error title=关于代码检查失败的提示::您可以访问以下页面查看原因（可能需要下拉到对应页面的最底部才能找到）： $url 。"
 exit 1

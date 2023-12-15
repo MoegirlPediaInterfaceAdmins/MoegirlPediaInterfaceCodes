@@ -1,5 +1,7 @@
 // eslint-disable-next-line strict
 "use strict";
+const isInGithubActions = process.env.GITHUB_ACTIONS === "true";
+const path = require("path");
 const { debug, notice, warning, error } = require("@actions/core");
 const deprecatedRules = [];
 /**
@@ -31,7 +33,7 @@ const formatter = (results) => {
             // eslint-disable-next-line no-unused-vars
             messageId, nodeType, fatal, source, suggestions,
         } of messages) {
-            const msg = `${message} (${ruleId}) ${fix ? "[maybe fixable]" : ""} - https://eslint.org/docs/latest/rules/${ruleId}`;
+            const msg = `${message} (${ruleId}) ${fix ? "[maybe fixable]" : ""} - https://eslint.org/docs/latest/rules/${ruleId}${isInGithubActions ? ` @ https://github.com/${process.env.GITHUB_REPOSITORY}/blob/${process.env.GITHUB_SHA}/${path.relative(process.cwd(), filePath)}` : ""}`;
             /**
              * @type {NonNullable<Parameters<notice>[1]>}
              */
