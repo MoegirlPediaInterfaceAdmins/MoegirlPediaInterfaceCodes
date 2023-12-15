@@ -204,21 +204,14 @@ jobs:
       - name: Check environment
         run: 'npx eslint --env-info && echo ---- && echo "stylelint: "$(npx stylelint --version) && echo ---- && echo "v8r: "$(npx v8r --version) && echo ---- && mkdir -vp .cache && echo ".cache:" && ls -lhA .cache'
       - name: Run eslint
-        run: npx eslint --cache --cache-strategy content --cache-location ".cache/" --ext js --exit-on-fatal-error --format ./scripts/modules/eslint-formatter-gha.cjs --max-warnings 0 ./src
+        run: npx eslint --cache --cache-strategy content --cache-location ".cache/" --ext js --exit-on-fatal-error --format ./scripts/modules/eslint-formatter-gha.cjs --max-warnings 0 ./src || bash infoAboutFailure.sh
       - name: Run stylelint
-        run: npx stylelint --cache --cache-strategy content --cache-location ".cache/"  --formatter github --max-warnings 0 "src/**/*.css"
+        run: npx stylelint --cache --cache-strategy content --cache-location ".cache/"  --formatter github --max-warnings 0 "src/**/*.css" || bash infoAboutFailure.sh
       - name: Run v8r
-        run: echo "::group::v8r output" && npx v8r && echo "::endgroup::"
+        run: echo "::group::v8r output" && npx v8r && echo "::endgroup::" || bash infoAboutFailure.sh 1
       - name: Check .mailmap
         if: needs.postCommit.result == 'success'
         run: node scripts/emailmapChecker/index.js
-      - name: Infomation about linter test failure
-        if: failure()
-        run: |
-          echo "如果代码检查失败，你可以通过以下方式查看错误原因："
-          echo "1. 如果本次提交属于 Pull Request，你可以在该 PR 的 【Files changed】 标签页查看错误原因；"
-          echo "2. 如果本次提交属于直接推送 commit，你可以在该 commit 页查看错误原因。"
-          echo "你可能需要下拉到对应页面的最底部来查看未被修改的文件的错误原因。"
   webhook:
     runs-on: ubuntu-latest
     needs:
