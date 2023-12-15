@@ -46,7 +46,7 @@
         "localforage": "^1.10.0",
         "postcss": "^8.4.32",
         "postcss-cli": "^11.0.0",
-        "postcss-discard-comments": "^6.0.0",
+        "postcss-discard-comments": "^6.0.1",
         "postcss-font-variant": "^5.0.0",
         "postcss-logical": "^7.0.0",
         "postcss-selector-matches": "^4.0.0",
