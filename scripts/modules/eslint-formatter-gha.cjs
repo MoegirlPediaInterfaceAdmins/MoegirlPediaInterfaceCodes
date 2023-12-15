@@ -42,6 +42,7 @@ const formatter = (results) => {
                 startColumn: column,
                 endColumn,
             };
+            debug(JSON.stringify({ msg, ...annotationProperties }, null, 4));
             switch (severity) {
                 case 0:
                     notice(msg, annotationProperties);
