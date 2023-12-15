@@ -208,7 +208,7 @@ jobs:
       - name: Run stylelint
         run: npx stylelint --cache --cache-strategy content --cache-location ".cache/"  --formatter github --max-warnings 0 "src/**/*.css" || bash infoAboutFailure.sh
       - name: Run v8r
-        run: echo "::group::v8r output" && npx v8r && echo "::endgroup::" || bash infoAboutFailure.sh 1
+        run: echo "::group::v8r output" && npx v8r && echo "::endgroup::" || bash infoAboutFailure.sh
       - name: Check .mailmap
         if: needs.postCommit.result == 'success'
         run: node scripts/emailmapChecker/index.js
