@@ -34,7 +34,7 @@ $(() => (async () => {
             try {
                 return await asyncFunction();
             } catch (e) {
-                console.error(`autoRetryAsyncFunction [${retryTimes - i + 1}/${retryTimes}`, e);
+                console.error(`autoRetryAsyncFunction [${retryTimes - i + 1}/${retryTimes}]`, e);
             }
         }
     };
