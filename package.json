@@ -22,7 +22,7 @@
         "@csstools/postcss-media-minmax": "^1.1.1",
         "@financial-times/js-features-analyser": "^0.4.3",
         "@octokit/auth-action": "^4.0.1",
-        "@octokit/auth-app": "^6.0.1",
+        "@octokit/auth-app": "^6.0.2",
         "@octokit/auth-unauthenticated": "^5.0.1",
         "@octokit/plugin-retry": "^6.0.1",
         "@octokit/rest": "^20.0.2",
