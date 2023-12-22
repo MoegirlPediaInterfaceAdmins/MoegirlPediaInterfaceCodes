@@ -2948,13 +2948,17 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
             setup(createCommitForm);
         } else {
             const url = `${conf.wgServer}${conf.wgScriptPath}/api.php?format=json&callback=HotCat.start&action=query&rawcontinue=&titles=${encodeURIComponent(conf.wgPageName)}&prop=info%7Crevisions&rvprop=content%7Ctimestamp%7Cids&meta=siteinfo&rvlimit=1&rvstartid=${conf.wgCurRevisionId}`;
-            const s = make("script");
+            /* const s = make("script");
             s.src = url;
             HC.start = function (json) {
                 setPage(json);
                 setup(createCommitForm);
             };
-            document.getElementsByTagName("head")[0].appendChild(s);
+            document.getElementsByTagName("head")[0].appendChild(s); */
+            $.getJSON(url, (json) => {
+                setPage(json);
+                setup(createCommitForm);
+            });
             setupTimeout = window.setTimeout(() => {
                 setup(createCommitForm);
             }, 4e3);
