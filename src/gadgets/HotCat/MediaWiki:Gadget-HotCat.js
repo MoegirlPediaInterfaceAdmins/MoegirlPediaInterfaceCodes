@@ -2958,7 +2958,7 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
                 setup(createCommitForm);
             };
             document.getElementsByTagName("head")[0].appendChild(s); */
-            $.getJSON(url, (json) => {
+            $.getJSON(url.replace("&allback=HotCat.start", ""), (json) => {
                 setPage(json);
                 setup(createCommitForm);
             });
