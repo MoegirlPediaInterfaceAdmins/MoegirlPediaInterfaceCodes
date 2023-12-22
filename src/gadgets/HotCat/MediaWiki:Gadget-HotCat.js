@@ -1,6 +1,6 @@
 /* eslint-disable prefer-arrow-functions/prefer-arrow-functions */
 /**
- * @source https://commons.wikimedia.org/wiki/_?oldid=578342698
+ * @source https://commons.wikimedia.org/wiki/_?oldid=818790002
  * 更新后请同步更新上面链接到最新版本
  */
 /* eslint-disable require-atomic-updates, no-use-before-define */
@@ -1253,7 +1253,9 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
                 v = capitalize(v);
             }
             if (this.text.value !== null && this.text.value !== v) {
+                const cursorPos = this.text.selectionStart;
                 this.text.value = v;
+                this.text.setSelectionRange(cursorPos, cursorPos);
             }
         }
         makeCall(url, callbackObj, engine, queryKey, cleanKey) {
@@ -2688,7 +2690,7 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
         labelCell.style.textAlign = "right";
         labelCell.style.verticalAlign = "middle";
         const form = document.getElementById("upload") || document.getElementById("mw-upload-form");
-        if (form) {
+        if (form && ip && ip.insertRow) {
             const newRow = ip.insertRow(-1);
             newRow.appendChild(labelCell);
             newRow.appendChild(lineCell);
@@ -2936,7 +2938,7 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
         const formContainer = make("div");
         formContainer.style.display = "none";
         document.body.appendChild(formContainer);
-        formContainer.innerHTML = `<form id="hotcatCommitForm" method="post" enctype="multipart/form-data" action="${conf.wgScript}?title=${encodeURIComponent(conf.wgPageName)}&action=submit"><input type="hidden" name="wpTextbox1"><input type="hidden" name="model" value="${conf.wgPageContentModel}"><input type="hidden" name="format" value="text/x-wiki"><input type="hidden" name="wpSummary" value=""><input type="checkbox" name="wpMinoredit" value="1"><input type="checkbox" name="wpWatchthis" value="1"><input type="hidden" name="wpAutoSummary" value="d41d8cd98f00b204e9800998ecf8427e"><input type="hidden" name="wpEdittime"><input type="hidden" name="wpStarttime"><input type="hidden" name="wpDiff" value="wpDiff"><input type="hidden" name="oldid" value="0"><input type="submit" name="hcCommit" value="hcCommit"><input type="hidden" name="wpEditToken"><input type="hidden" name="wpUltimateParam" value="1"><input type="hidden" name="wpChangeTags"><input type="hidden" value="ℳ𝒲♥𝓊𝓃𝒾𝒸ℴ𝒹ℯ" name="wpUnicodeCheck"></form>`;
+        formContainer.innerHTML = `<form id="hotcatCommitForm" method="post" enctype="multipart/form-data" action="${conf.wgScript}?title=${encodeURIComponent(conf.wgPageName)}&action=submit"><input type="hidden" name="wpTextbox1"><input type="hidden" name="model" value="${conf.wgPageContentModel}"><input type="hidden" name="format" value="text/x-wiki"><input type="hidden" name="wpSummary" value=""><input type="checkbox" name="wpMinoredit" value="1"><input type="checkbox" name="wpWatchthis" value="1"><input type="hidden" name="wpAutoSummary" value="d41d8cd98f00b204e9800998ecf8427e"><input type="hidden" name="wpEdittime"><input type="hidden" name="wpStarttime"><input type="hidden" name="wpDiff" value="wpDiff"><input type="hidden" name="oldid" value="0"><input type="hidden" name="wpIgnoreBlankSummary" value="1"><input type="submit" name="hcCommit" value="hcCommit"><input type="hidden" name="wpEditToken"><input type="hidden" name="wpUltimateParam" value="1"><input type="hidden" name="wpChangeTags"><input type="hidden" value="ℳ𝒲♥𝓊𝓃𝒾𝒸ℴ𝒹ℯ" name="wpUnicodeCheck"></form>`;
         commitForm = document.getElementById("hotcatCommitForm");
     }
     function getPage() {
