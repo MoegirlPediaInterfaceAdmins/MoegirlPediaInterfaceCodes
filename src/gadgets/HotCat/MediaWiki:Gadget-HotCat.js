@@ -9,6 +9,7 @@
   * 全部内容引自 https://commons.wikimedia.org/wiki/MediaWiki:Gadget-HotCat.js
   * 合并了 User:Func 对繁体分类的修正，本页面 diff：https://zh.moegirl.org.cn/_?diff=5710070&oldid=5611586 ，User:Func 的修正参见 https://zh.moegirl.org.cn/_?diff=4533156&oldid=5710033
   * 修改了alert为OOUI版本
+  * 修改了 jsonp 为原生请求 - https://github.com/MoegirlPediaInterfaceAdmins/MoegirlPediaInterfaceCodes/commit/134859937c596c818e4a33f9d174022dc79d7bb8
   **/
 // <nowiki>
 /**
