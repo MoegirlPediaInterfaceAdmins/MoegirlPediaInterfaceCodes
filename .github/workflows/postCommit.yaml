@@ -76,25 +76,10 @@ jobs:
           node-version: lts/*
           check-latest: true
           cache: npm
-      - name: Generate cache primary key based on nodejs's and npm's version and package-lock.json's hash
-        id: version
-        shell: bash
-        run: echo "hash=node@$(node -v | grep -oP '(?<=^v)\d+')_npm@$(npm -v | grep -oP '^\d+')_package-lock@$(openssl dgst -sha3-512 package-lock.json | grep -oP '[\da-f]{128}')" >> $GITHUB_OUTPUT && cat $GITHUB_OUTPUT
-      - uses: actions/cache/restore@v3
-        name: Try to restore node_modules from cache
-        id: cache
+      - name: Installing the dependencies
+        uses: AnnAngela/cached_node-modules@v1
         with:
-          path: node_modules
-          key: ${{ steps.version.outputs.hash }}
-      - name: Install dependencies if no cache for node_modules
-        run: npm run ci
-        if: success() && steps.cache.outputs.cache-hit != 'true'
-      - uses: actions/cache/save@v3
-        if: success() && steps.cache.outputs.cache-hit != 'true'
-        name: Save node_modules to cache
-        with:
-          path: node_modules
-          key: ${{ steps.version.outputs.hash }}
+          command: npm run ci
       - name: If needs to skip, skip now
         run: node scripts/skip/index.js
         id: skip
@@ -116,25 +101,10 @@ jobs:
           node-version: lts/*
           check-latest: true
           cache: npm
-      - name: Generate cache primary key based on nodejs's and npm's version and package-lock.json's hash
-        id: version
-        shell: bash
-        run: echo "hash=node@$(node -v | grep -oP '(?<=^v)\d+')_npm@$(npm -v | grep -oP '^\d+')_package-lock@$(openssl dgst -sha3-512 package-lock.json | grep -oP '[\da-f]{128}')" >> $GITHUB_OUTPUT && cat $GITHUB_OUTPUT
-      - uses: actions/cache/restore@v3
-        name: Try to restore node_modules from cache
-        id: cache
+      - name: Installing the dependencies
+        uses: AnnAngela/cached_node-modules@v1
         with:
-          path: node_modules
-          key: ${{ steps.version.outputs.hash }}
-      - name: Install dependencies if no cache for node_modules
-        run: npm run ci
-        if: success() && steps.cache.outputs.cache-hit != 'true'
-      - uses: actions/cache/save@v3
-        if: success() && steps.cache.outputs.cache-hit != 'true'
-        name: Save node_modules to cache
-        with:
-          path: node_modules
-          key: ${{ steps.version.outputs.hash }}
+          command: npm run ci
       - name: Git config
         run: node scripts/postCommit/prepareGit.js
       - name: Expose GitHub Runtime
@@ -177,25 +147,10 @@ jobs:
           node-version: lts/*
           check-latest: true
           cache: npm
-      - name: Generate cache primary key based on nodejs's and npm's version and package-lock.json's hash
-        id: version
-        shell: bash
-        run: echo "hash=node@$(node -v | grep -oP '(?<=^v)\d+')_npm@$(npm -v | grep -oP '^\d+')_package-lock@$(openssl dgst -sha3-512 package-lock.json | grep -oP '[\da-f]{128}')" >> $GITHUB_OUTPUT && cat $GITHUB_OUTPUT
-      - uses: actions/cache/restore@v3
-        name: Try to restore node_modules from cache
-        id: cache
+      - name: Installing the dependencies
+        uses: AnnAngela/cached_node-modules@v1
         with:
-          path: node_modules
-          key: ${{ steps.version.outputs.hash }}
-      - name: Install dependencies if no cache for node_modules
-        run: npm run ci
-        if: success() && steps.cache.outputs.cache-hit != 'true'
-      - uses: actions/cache/save@v3
-        if: success() && steps.cache.outputs.cache-hit != 'true'
-        name: Save node_modules to cache
-        with:
-          path: node_modules
-          key: ${{ steps.version.outputs.hash }}
+          command: npm run ci
       - name: Reload the linter cache
         uses: actions/cache@v3
         with:
@@ -229,25 +184,10 @@ jobs:
           node-version: lts/*
           check-latest: true
           cache: npm
-      - name: Generate cache primary key based on nodejs's and npm's version and package-lock.json's hash
-        id: version
-        shell: bash
-        run: echo "hash=node@$(node -v | grep -oP '(?<=^v)\d+')_npm@$(npm -v | grep -oP '^\d+')_package-lock@$(openssl dgst -sha3-512 package-lock.json | grep -oP '[\da-f]{128}')" >> $GITHUB_OUTPUT && cat $GITHUB_OUTPUT
-      - uses: actions/cache/restore@v3
-        name: Try to restore node_modules from cache
-        id: cache
+      - name: Installing the dependencies
+        uses: AnnAngela/cached_node-modules@v1
         with:
-          path: node_modules
-          key: ${{ steps.version.outputs.hash }}
-      - name: Install dependencies if no cache for node_modules
-        run: npm run ci
-        if: success() && steps.cache.outputs.cache-hit != 'true'
-      - uses: actions/cache/save@v3
-        if: success() && steps.cache.outputs.cache-hit != 'true'
-        name: Save node_modules to cache
-        with:
-          path: node_modules
-          key: ${{ steps.version.outputs.hash }}
+          command: npm run ci
       - name: Fire the webhook of AnnAngela's server
         run: node scripts/fireWebhook/index.js
         env:
