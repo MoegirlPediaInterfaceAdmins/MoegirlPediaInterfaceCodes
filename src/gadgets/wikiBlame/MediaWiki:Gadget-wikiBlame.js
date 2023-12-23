@@ -285,7 +285,7 @@ $(() => {
                 const params = {
                     action: "query",
                     prop: "revisions",
-                    rvprop: "ids|flags|timestamp|user|parsedcomment|tags|content",
+                    rvprop: "ids|timestamp|user|parsedcomment|tags|content",
                     titles: pagename,
                     rvlimit: BATCH_SIZE,
                     rvstart: start_date,
