@@ -3299,7 +3299,7 @@ $(() => {
                 } else {
                     url += `titles=${article.removeAnchor().urlString()}`;
                 }
-                url += `&prop=revisions|pageprops|info|images|categories${/* @TODO 萌百尚未更新1.32， rvslots 参数尚未支持 */ "" /* &rvslots=main */}&rvprop=ids|timestamp|flags|comment|user|content&cllimit=max&imlimit=max`;
+                url += `&prop=revisions|pageprops|info|images|categories${/* @TODO 萌百尚未更新1.32， rvslots 参数尚未支持 */ "" /* &rvslots=main */}&rvprop=ids|timestamp|comment|user|content&cllimit=max&imlimit=max`;
                 htmlGenerator = APIrevisionPreviewHTML;
                 break;
         }

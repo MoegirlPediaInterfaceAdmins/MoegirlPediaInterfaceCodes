@@ -17,7 +17,8 @@ type: general
 
 package: false
 
-rights: []
+rights: 
+  - autoconfirmed
 
 peers: []
 
