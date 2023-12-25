@@ -183,6 +183,7 @@ $(() => {
                     }
                     const toclist = Object.fromEntries((await api.post({
                         action: "parse",
+                        assertuser: mw.config.get("wgUserName"),
                         format: "json",
                         pageid: mw.config.get("wgArticleId"),
                         prop: "sections",
@@ -213,6 +214,7 @@ $(() => {
         async markAsResolved({ section }) {
             const d = await api.postWithToken("csrf", {
                 action: "edit",
+                assertuser: mw.config.get("wgUserName"),
                 pageid: mw.config.get("wgArticleId"),
                 section,
                 summary: `标记讨论串「/* ${this.sectionTitle} */」状态为【${this.statusLabel}】`,

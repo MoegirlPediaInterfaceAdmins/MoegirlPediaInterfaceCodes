@@ -81,6 +81,7 @@
                 const User = this.oldValue = this.callingObject.umCleanFileAndUser(val);
                 const query = {
                     action: "query",
+                    assertuser: mw.config.get("wgUserName"),
                     list: "allusers",
                     aufrom: User,
                     auto: User,
@@ -411,6 +412,7 @@
         umSeekUsers: (request, pCallback) => {
             const query = {
                 action: "query",
+                assertuser: mw.config.get("wgUserName"),
                 list: "allusers",
                 auprefix: request.term.replace(/^(?:User):/, ""),
             };
@@ -431,6 +433,7 @@
         umSeekFiles: (request, pCallback) => {
             const query = {
                 action: "query",
+                assertuser: mw.config.get("wgUserName"),
                 list: "allimages",
                 aiprefix: request.term.replace(/^(?:File|Image):/, ""),
             };
@@ -558,6 +561,7 @@
                 umsg.umPendingParser++;
                 const action = {
                     action: "parse",
+                    assertuser: mw.config.get("wgUserName"),
                     uselang: mw.config.get("wgUserLanguage"),
                     redirects: true,
                     prop: "text",
@@ -595,6 +599,7 @@
             }
             const query = {
                 action: "query",
+                assertuser: mw.config.get("wgUserName"),
                 prop: "info",
                 intoken: "edit",
                 titles: "FAQ", // Random title
@@ -634,6 +639,7 @@
         savePage: (page, summary, callback) => {
             const edit = {
                 action: "edit",
+                assertuser: mw.config.get("wgUserName"),
                 summary: summary,
                 tags: "UserMessages",
                 watchlist: page.watchlist || "preferences",

@@ -74,11 +74,12 @@ $(() => {
             if (uri.query.from) {
                 try {
                     await api.post({
+                        action: "rollback",
+                        assertuser: mw.config.get("wgUserName"),
                         title: uri.query.title,
                         user: uri.query.from,
                         summary,
                         token: uri.query.token,
-                        action: "rollback",
                         format: "json",
                     });
                     rbing.css("color", "green").html(`成功！${wgULS("将在", "將在")}<span id="rbcount">3</span>秒${wgULS("内刷新", "內重新整理")}`);

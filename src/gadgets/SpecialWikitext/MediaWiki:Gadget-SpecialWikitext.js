@@ -148,6 +148,7 @@
     const api = new mw.Api();
     const wgPageName = mw.config.get("wgPageName");
     const wgRevisionId = mw.config.get("wgRevisionId");
+    const wgUserName = mw.config.get("wgUserName");
     const noticeHTML = {
         loading: `<div class="mw-_addText-preview-loading"><div class="quotebox" style="margin: auto; width: 50%; padding: 6px; border: 1px solid #aaa; font-size: 88%; background-color: #F9F9F9;"><div class="mw-_addText-preview-loading-content" style="background-color: #F9F9F9; color: black; text-align: center; font-size: larger;"><img src="https://img.moegirl.org.cn/common/d/d1/Windows_10_loading.gif" decoding="async" data-file-width="64" data-file-height="64" style="width: 32px; height: 32px;"> ${wgULS("预览加载中...", "預覽載入中...")} </div></div></div>`,
         fail: `<img src="https://img.moegirl.org.cn/common/5/5f/Ambox_warning_orange.svg" decoding="async" data-file-width="48" data-file-height="48" width="32" height="32">${wgULS("预览加载失败", "預覽載入失敗")}`,
@@ -193,6 +194,7 @@
         }
         const params = {
             action: "parse",
+            assertuser: wgUserName,
             uselang: getLanguage(),
             useskin: mw.config.get("skin"),
             title: pagename,
@@ -235,6 +237,7 @@
         }
         const params = {
             action: "parse",
+            assertuser: wgUserName,
             uselang: getLanguage(),
             useskin: mw.config.get("skin"),
             format: "json",
@@ -280,6 +283,7 @@
         try {
             const data = await api.post({
                 action: "parse",
+                assertuser: wgUserName,
                 oldid: wgRevisionId,
                 prop: "wikitext",
             });
@@ -303,6 +307,7 @@
         try {
             const data = await api.post({
                 action: "parse", //get the original wikitext content of a page
+                assertuser: wgUserName,
                 uselang: getLanguage(),
                 useskin: mw.config.get("skin"),
                 title: `${pagename}${subPagename}`,
@@ -425,6 +430,7 @@
         const wikitext = `<div class="special-wikitext-preview-testcase-container">${wikitextPackage}</div>`;
         const params = {
             action: "parse",
+            assertuser: wgUserName,
             text: wikitext,
             contentmodel: "wikitext",
             prop: "text",

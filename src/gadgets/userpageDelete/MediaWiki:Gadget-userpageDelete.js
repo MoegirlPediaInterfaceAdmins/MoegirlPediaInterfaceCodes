@@ -72,6 +72,7 @@ $(() => {
                 const api = new mw.Api();
                 const d = await api.postWithToken("csrf", {
                     action: "edit",
+                    assertuser: mw.config.get("wgUserName"),
                     format: "json",
                     title: mw.config.get("wgPageName"),
                     text: "<noinclude>{{ns2d}}</noinclude>",
