@@ -1,6 +1,6 @@
 "use strict";
 $(() => {
-    const wgPermittedGroups = ["autoconfirmed"]; //默认只允许自动确认用户绕过强制预览。
+    const wgPermittedGroups = ["autoconfirmed", "staff"]; //默认只允许自动确认用户、STAFF绕过强制预览。
     //检测两个数组是否有重复元素
     const intersects = (arr1, arr2) => {
         if (!Array.isArray(arr1) || !Array.isArray(arr2)) { return false; }
