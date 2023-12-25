@@ -32,7 +32,6 @@ $(() => {
             const api = new mw.Api(),
                 opt = {
                     action: "purge",
-                    assertuser: mw.config.get("wgUserName"),
                     format: "json",
                     forcelinkupdate: true,
                     titles: mw.config.get("wgPageName"),
