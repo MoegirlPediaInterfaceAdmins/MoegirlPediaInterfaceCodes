@@ -3,7 +3,8 @@
 $(() => {
     const wgUserGroups = mw.config.get("wgUserGroups"),
         wgArticleId = mw.config.get("wgArticleId"),
-        wgPageName = mw.config.get("wgPageName");
+        wgPageName = mw.config.get("wgPageName"),
+        wgUserName = mw.config.get("wgUserName");
     if (!/^萌娘百科_talk:讨论版\/[^存]+$/.test(wgPageName)) { return; }
     if (!wgUserGroups.includes("sysop") && !wgUserGroups.includes("patroller")) { return; }
     const $body = $("body");
@@ -177,6 +178,7 @@ $(() => {
                     this.progress.log(wgULS("开始检测段落标题……", "開始檢測段落標題……"));
                     const toclist = Object.fromEntries((await api.post({
                         action: "parse",
+                        assertuser: wgUserName,
                         format: "json",
                         pageid: wgArticleId,
                         prop: "sections",
@@ -209,6 +211,7 @@ $(() => {
             this.progress.log(wgULS("正在获取段落内容……", "正在獲取段落內容……"));
             const sectionContent = (await api.post({
                 action: "parse",
+                assertuser: wgUserName,
                 format: "json",
                 pageid: wgArticleId,
                 prop: "wikitext",
@@ -224,6 +227,7 @@ $(() => {
             this.progress.log(wgULS("正在存档该段落内容……", "正在存檔該段落內容……"));
             await api.postWithToken("csrf", {
                 action: "edit",
+                assertuser: wgUserName,
                 format: "json",
                 title: this.savePageTitle,
                 text: sectionContent.replace(`==${sectionTitleRaw}==`, "").trim(),
@@ -237,6 +241,7 @@ $(() => {
                 this.progress.log(wgULS("无需添加已存档标记，正在清空段落……", "無需添加已存檔標記，正在清空段落……"));
                 await api.postWithToken("csrf", {
                     action: "edit",
+                    assertuser: wgUserName,
                     format: "json",
                     pageid: wgArticleId,
                     summary: `快速存档讨论串：/* ${this.sectionTitle} */`,
@@ -252,6 +257,7 @@ $(() => {
                 }
                 await api.postWithToken("csrf", {
                     action: "edit",
+                    assertuser: wgUserName,
                     format: "json",
                     pageid: wgArticleId,
                     summary: `快速存档讨论串：/* ${this.sectionTitle} */`,
@@ -264,6 +270,7 @@ $(() => {
             this.progress.log(wgULS("正在检查存档页面是否带有档案馆模板……", "正在檢查存檔頁面是否帶有檔案館模板……"));
             const listResult = await api.post({
                 action: "query",
+                assertuser: wgUserName,
                 format: "json",
                 prop: "templates",
                 titles: this.savePageTitle,
@@ -278,6 +285,7 @@ $(() => {
             this.progress.log(wgULS("正在向存档页添加档案馆模板……", "正在向存檔頁添加檔案館模板……"));
             await api.postWithToken("csrf", {
                 action: "edit",
+                assertuser: wgUserName,
                 format: "json",
                 title: this.savePageTitle,
                 prependtext: `{{${this.template}}}\n`,

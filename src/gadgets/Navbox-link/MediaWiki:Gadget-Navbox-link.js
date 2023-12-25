@@ -6,6 +6,7 @@ $(() => {
     }
     const pageNonExist = wgULS("（页面不存在）", "（頁面不存在）");
     const wgPageName = mw.config.get("wgPageName");
+    const wgUserName = mw.config.get("wgUserName");
     const api = new mw.Api();
     const targetLoc = $("<div>", {
         id: "not-listed-articles",
@@ -36,6 +37,7 @@ $(() => {
         e.stopPropagation();
         const result = await api.post({
             action: "query",
+            assertuser: wgUserName,
             redirects: "true",
             generator: "links",
             gplnamespace: "0",

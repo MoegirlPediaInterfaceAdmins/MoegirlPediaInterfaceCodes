@@ -20,6 +20,7 @@ $(() => (async () => {
         "library.moegirl.org.cn": "即将删除的页面",
     };
     const PAGENAME = mw.config.get("wgPageName");
+    const USERNAME = mw.config.get("wgUserName");
     // Make sure that all links open in a new tab when locked
     $("body").on("click", "a", (e) => globalDeletionLock ? window.open(e.target.href, "_blank") && false : null);
 
@@ -43,6 +44,7 @@ $(() => (async () => {
             while (aufrom !== eol) {
                 const _result = await api.post({
                     action: "query",
+                    assertuser: USERNAME,
                     list: "allusers",
                     aurights: "rollback",
                     aulimit: "max",
@@ -66,6 +68,7 @@ $(() => (async () => {
             while (gcmcontinue !== eol) {
                 const _result = await api.post({
                     action: "query",
+                    assertuser: USERNAME,
                     format: "json",
                     rvprop: "user",
                     prop: "revisions",
@@ -91,6 +94,7 @@ $(() => (async () => {
                 try {
                     const html = (await api.post({
                         action: "parse",
+                        assertuser: USERNAME,
                         pageid,
                         prop: "text",
                     })).parse.text["*"];
@@ -249,6 +253,7 @@ $(() => (async () => {
                     try {
                         await api.postWithToken("csrf", {
                             action: "delete",
+                            assertuser: USERNAME,
                             format: "json",
                             title: target,
                             tags: "Automation tool",

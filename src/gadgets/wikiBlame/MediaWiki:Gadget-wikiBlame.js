@@ -272,6 +272,7 @@ $(() => {
     const queryRevisionApi = async (start_date, end_date, limit, selection) => {
         const api = new mw.Api();
         const pagename = mw.config.get("wgPageName");
+        const username = mw.config.get("wgUserName");
         try {
             let remaining = limit;
             let cont = undefined;
@@ -284,6 +285,7 @@ $(() => {
             while (remaining > 0) {
                 const params = {
                     action: "query",
+                    assertuser: username,
                     prop: "revisions",
                     rvprop: "ids|timestamp|user|parsedcomment|tags|content",
                     titles: pagename,
@@ -340,6 +342,7 @@ $(() => {
                 try {
                     const rdata = await api.post({
                         action: "compare",
+                        assertuser: username,
                         fromrev: r.revid,
                         torelative: "prev",
                     });

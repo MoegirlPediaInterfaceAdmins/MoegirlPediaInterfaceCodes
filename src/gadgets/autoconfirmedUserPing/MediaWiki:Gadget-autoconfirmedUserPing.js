@@ -11,6 +11,7 @@ $(() => (async () => {
     const sleep = (ms = 1000) => new Promise((res) => setTimeout(res, ms));
     const hasHighLimit = (await mw.user.getRights()).includes("apihighlimits");
     const pageid = mw.config.get("wgArticleId");
+    const username = mw.config.get("wgUserName");
     let result = {};
 
     const $body = $("body");
@@ -113,12 +114,14 @@ $(() => (async () => {
             this.addStep(wgULS("正在获取忽略用户名单...", "正在獲取忽略使用者名單...", null, null, "正在獲取忽略用戶名單 ..."));
             const bots = (await api.get({
                 action: "query",
+                assertuser: username,
                 list: "allusers",
                 augroup: "bot",
                 aulimit: "max",
             })).query.allusers.map((u) => u.name);
             const MGUsers = JSON.parse((await api.get({
                 action: "parse",
+                assertuser: username,
                 page: "Module:UserGroup/data",
                 prop: "wikitext",
             })).parse.wikitext["*"]);
@@ -129,6 +132,7 @@ $(() => (async () => {
             this.addStep(wgULS("正在获取发言用户名单...", "正在獲取發言使用者名稱單..."));
             let contributorsResult = await api.get({
                 action: "query",
+                assertuser: username,
                 prop: "contributors",
                 pageids: pageid,
                 pclimit: "max",
@@ -137,6 +141,7 @@ $(() => (async () => {
             while (contributorsResult.continue) {
                 contributorsResult = await api.get({
                     action: "query",
+                    assertuser: username,
                     prop: "contributors",
                     pageids: pageid,
                     pclimit: "max",
@@ -150,6 +155,7 @@ $(() => (async () => {
                 this.addStep(wgULS(`正在复核用户条件...（第${i + 1}批）`, `正在複核使用者條件...（第${i + 1}批）`));
                 const prelimRes = (await api.get({
                     action: "query",
+                    assertuser: username,
                     list: "users",
                     ususers: chunk.join("|"),
                     usprop: "implicitgroups|blockinfo|registration",
@@ -161,6 +167,7 @@ $(() => (async () => {
                         u,
                         lastEdit: (await api.get({
                             action: "query",
+                            assertuser: username,
                             list: "usercontribs",
                             ucuser: u,
                             ucnamespace: "0|10|14|12|4",

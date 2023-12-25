@@ -23,6 +23,7 @@ $(() => {
             });
             const data = (await api.get({
                 action: "query",
+                assertuser: mw.config.get("wgUserName"),
                 list: "logevents",
                 letype: "block",
                 leprop: "timestamp|details|comment",

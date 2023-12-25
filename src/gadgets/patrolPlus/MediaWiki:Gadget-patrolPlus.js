@@ -11,6 +11,7 @@ $(() => {
 
     const handlePatroll = async (title, _revid) => await api.postWithToken("patrol", {
         action: "patrol",
+        assertuser: mw.config.get("wgUserName"),
         format: "json",
         revid: _revid,
         /* 在L57中更改了获取revid的方式，这段理论上应该不用了
@@ -18,6 +19,7 @@ $(() => {
             if (typeof _revid !== "number") {
                 const data = await api.post({
                     action: "query",
+                    assertuser: mw.config.get("wgUserName"),
                     prop: "revisions",
                     rvprop: "ids",
                     rvlimit: 1,

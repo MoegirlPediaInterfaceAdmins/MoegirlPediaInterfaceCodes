@@ -8,6 +8,7 @@ $(() => (async () => {
     if (typeof wgRelevantPageName !== "string" || wgRelevantPageName.length === 0) {
         return;
     }
+    const wgUserName = mw.config.get("wgUserName");
     const upperFirstCase = (s) => /^[a-z]/.test(s) ? s.substring(0, 1).toUpperCase() + s.substring(1) : s;
     const api = new mw.Api();
     const nsids = {
@@ -48,6 +49,7 @@ $(() => (async () => {
     }
     const pageinfo = Object.values((await api.post({
         action: "query",
+        assertuser: wgUserName,
         format: "json",
         prop: "info",
         titles: wgRelevantPageName,
@@ -70,6 +72,7 @@ $(() => (async () => {
             while (lhcontinue !== eol) {
                 const _result = await api.post({
                     action: "query",
+                    assertuser: wgUserName,
                     format: "json",
                     prop: "linkshere",
                     titles: target,
@@ -142,6 +145,7 @@ $(() => (async () => {
             while (eicontinue !== eol) {
                 const _result = await api.post({
                     action: "query",
+                    assertuser: wgUserName,
                     format: "json",
                     list: "embeddedin",
                     eititle: target,
@@ -163,6 +167,7 @@ $(() => (async () => {
             while (eicontinue !== eol) {
                 const _result = await api.post({
                     action: "query",
+                    assertuser: wgUserName,
                     format: "json",
                     list: "embeddedin",
                     eititle: target,

@@ -12,6 +12,7 @@ $(() => (async () => {
     const userRights = await mw.user.getRights();
     const hasApiHighLimits = !userRights.includes("apihighlimits");
     const isPatrolViewable = userRights.includes("patrol") || userRights.includes("patrolmarks");
+    const wgUserName = mw.config.get("wgUserName");
     const upperFirstCase = (s) => /^[a-z]/.test(s) ? s.substring(0, 1).toUpperCase() + s.substring(1) : s;
     const api = new mw.Api();
     const ns = {
@@ -52,6 +53,7 @@ $(() => (async () => {
             while (uccontinue !== eol) {
                 const _result = await api.post({
                     action: "query",
+                    assertuser: wgUserName,
                     format: "json",
                     list: "usercontribs",
                     ucuser: target,
@@ -92,6 +94,7 @@ $(() => (async () => {
         if (["zh.moegirl.org.cn", "mzh.moegirl.org.cn"].includes(mw.config.get("wgServerName"))) {
             const { query: { pages: [{ revisions: [{ content }] }] } } = await api.post({
                 action: "query",
+                assertuser: wgUserName,
                 titles: "MediaWiki:GHIAHistory.json",
                 prop: "revisions",
                 rvprop: ["content"],

@@ -55,6 +55,7 @@ $(() => {
                 type: "POST",
                 data: {
                     action: "query",
+                    assertuser: mw.config.get("wgUserName"),
                     titles: pageName,
                     format: "json",
                     converttitles: " zh-cn",

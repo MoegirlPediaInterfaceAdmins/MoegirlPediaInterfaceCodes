@@ -126,6 +126,7 @@ $(() => {
                     welcomeAsk.innerText = wgULS("正在通信中……");
                     const response = await api.postWithToken("csrf", {
                         action: "edit",
+                        assertuser: mw.config.get("wgUserName"),
                         format: "json",
                         title: userName,
                         summary: "欢迎来到萌娘百科",

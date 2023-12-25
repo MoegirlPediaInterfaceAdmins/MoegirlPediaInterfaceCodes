@@ -185,9 +185,11 @@ mw.hook("wikipage.content").add(() => {
     $(() => {
         $("#ca-varlang-1, #ca-varlang-2").remove();
         const wgUserId = mw.config.get("wgUserId");
+        
         if (typeof wgUserId === "number" && wgUserId > 0 && mw.config.get("wgAction") === "view" && localStorage.getItem("AnnTools-noteTA-alert") !== "true" && !document.querySelector("#noteTA-lang") && !/^\/zh-[a-z]+\//.test(location.pathname)) {
             const url = new mw.Uri();
             const wgUserVariant = mw.config.get("wgUserVariant");
+            const wgUserName = mw.config.get("wgUserName");
             if (!(Reflect.has(url.query, "variant") || Reflect.has(url.query, "uselang")) && !url.path.startsWith("/index.php") && name.includes(wgUserVariant)) {
                 $("body").append(`<div id="noteTA-lang" style="background: #3366CC; color: white; text-align: center; padding: .5rem; position: fixed; top: 0; left: 0; right: 0; z-index: 9999;"><p>检测到您当前使用的<b>内容</b>语言变体 ${wgUserVariant}${map[wgUserVariant]}会导致繁简转换无法正常工作，我们建议您切换到以下三种<b>内容</b>语言变体之一：</p><p><span class="noteTA-lang-changer mw-ui-button" data-lang="zh-cn">zh-cn（中国大陆）</span> <span class="noteTA-lang-changer mw-ui-button" data-lang="zh-hk">zh-hk（中国香港）</span> <span class="noteTA-lang-changer mw-ui-button" data-lang="zh-tw">zh-tw（台湾地区）</span> | <span id="noteTA-lang-explainer" class="mw-ui-button">了解更多</span> <span id="noteTA-lang-disable" class="mw-ui-button mw-ui-destructive">不再提示</span></div>`);
                 const container = $("#noteTA-lang");
@@ -199,6 +201,7 @@ mw.hook("wikipage.content").add(() => {
                     try {
                         const result = await api.postWithToken("csrf", {
                             action: "options",
+                            assertuser: wgUserName,
                             optionname: "variant",
                             optionvalue: lang,
                         });

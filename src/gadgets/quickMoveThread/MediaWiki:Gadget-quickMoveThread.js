@@ -13,7 +13,7 @@ $(() => {
         if (PAGENAME.startsWith("萌娘百科_talk:提案/") || RESTRICTION.includes("sysop")) {
             return;
         }
-
+        const USERNAME = mw.config.get("wgUserName");
         const PUBLICDB = ["技术实现", "权限变更", "操作申请", "方针政策", "页面相关", "提问求助", "群组信息"].filter(
             (v) => PAGENAME.substring(PAGENAME.lastIndexOf("/") + 1, PAGENAME.length) !== v,
         );
@@ -188,6 +188,7 @@ $(() => {
 
                 let original = (await api.get({
                     action: "parse",
+                    assertuser: USERNAME,
                     page: PAGENAME,
                     prop: "wikitext",
                     section: this.section,
@@ -200,6 +201,7 @@ $(() => {
                 console.log("[QuickMoveThread] Moving thread to target page");
                 await api.postWithToken("csrf", {
                     action: "edit",
+                    assertuser: USERNAME,
                     title: this.target,
                     section: "new",
                     sectiontitle: rawTitle,
@@ -212,6 +214,7 @@ $(() => {
                 console.log("[QuickMoveThread] Removing original thread");
                 await api.postWithToken("csrf", {
                     action: "edit",
+                    assertuser: USERNAME,
                     title: PAGENAME,
                     section: this.section,
                     text: `== ${rawTitle} ==\n{{movedto|${toAnchor}}}`,
