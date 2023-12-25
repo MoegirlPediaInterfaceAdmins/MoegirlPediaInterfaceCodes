@@ -115,6 +115,7 @@
         nousertalk: wgULS("阻止用户在封禁期间编辑自己的讨论页", "阻止使用者在封鎖期間編輯自己的對話頁", null, null, "阻止用戶在封鎖期間編輯自己的討論頁"),
         hiddenname: wgULS("隐藏用户名", "隱藏使用者名稱", null, null, "隱藏用戶名"),
     });
+    const wgUserName = mw.config.get("wgUserName");
     let cache;
     const api = new mw.Api();
     const eol = Symbol();
@@ -139,6 +140,7 @@
         while (aufrom !== eol) {
             const _result = await api.post({
                 action: "query",
+                assertuser: wgUserName,
                 list: "allusers",
                 augroup: groupsKey.join("|"),
                 aulimit: "max",
@@ -251,6 +253,7 @@
                 while (bkcontinue !== eol) {
                     const _result = await api.post({
                         action: "query",
+                        assertuser: wgUserName,
                         list: "blocks",
                         bkusers: target,
                         bklimit: "max",
