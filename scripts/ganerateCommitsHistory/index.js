@@ -23,7 +23,7 @@ import path from "path";
 exportVariable("linguist-generated-ganerateCommitsHistory", JSON.stringify(["src/global/zh/MediaWiki:GHIAHistory.json"]));
 
 if (!isInMasterBranch) {
-    console.info("Not running in non-master branch, exit.");
+    console.info("Not running in master branch, exit.");
     process.exit(0);
 }
 console.info("Initialization done.");
