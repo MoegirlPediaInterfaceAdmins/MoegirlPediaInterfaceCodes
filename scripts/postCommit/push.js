@@ -10,7 +10,7 @@ if (!isInGithubActions) {
     process.exit(0);
 }
 if (!upstream) {
-    console.info("Running in github actions, but HEAD is not tracking any remote branch, exit.");
+    console.info("Running in github actions, but HEAD does not point to a branch, exit.");
     process.exit(0);
 }
 const GITHUB_EVENT = await readWorkflowEvent();
