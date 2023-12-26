@@ -6,7 +6,7 @@ if (!isInGithubActions) {
     process.exit(0);
 }
 /**
- * @type { string | false } when false, it means the current branch does not point to a branch.
+ * @type { string | false } when false, it means the HEAD does not point to a branch.
  */
 let result;
 try {
