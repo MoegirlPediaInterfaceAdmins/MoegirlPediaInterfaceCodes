@@ -4,8 +4,13 @@ import { startGroup, endGroup } from "@actions/core";
 import git from "../modules/git.js";
 import { isInGithubActions } from "../modules/octokit.js";
 import readWorkflowEvent from "../modules/workflowEvent.js";
+import upstream from "../modules/getUpstream.js";
 if (!isInGithubActions) {
     console.info("Not running in github actions, exit.");
+    process.exit(0);
+}
+if (!upstream) {
+    console.info("Running in github actions, but HEAD is not tracking any remote branch, exit.");
     process.exit(0);
 }
 const GITHUB_EVENT = await readWorkflowEvent();
@@ -22,7 +27,7 @@ startGroup("changedFiles:");
 console.info(changedFiles);
 endGroup();
 console.info("Running in github actions, start to check unpushed commits...");
-const unpushedCommits = (await git.raw(["cherry", "-v"])).trim();
+const unpushedCommits = (await git.raw(["cherry", "-v", upstream])).trim();
 if (unpushedCommits.length === 0) {
     console.info("No unpushed commit.");
     process.exit(0);
