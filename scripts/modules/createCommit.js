@@ -14,7 +14,7 @@ export default async (message) => {
         return false;
     }
     if (!upstream) {
-        console.info("Running in github actions, but HEAD is not tracking any remote branch, exit.");
+        console.info("Running in github actions, but HEAD does not point to a branch, exit.");
         return false;
     }
     console.info("[createCommit] Running in github actions, try to create commit.");
