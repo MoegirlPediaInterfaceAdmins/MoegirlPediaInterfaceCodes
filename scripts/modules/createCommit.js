@@ -1,7 +1,8 @@
 import console from "../modules/console.js";
 import git from "../modules/git.js";
 import { exportVariable } from "@actions/core";
-import { isInGithubActions, isPullRequest } from "../modules/octokit.js";
+import { isInGithubActions } from "../modules/octokit.js";
+import upstream from "../modules/getUpstream.js";
 
 /**
  * @param {string} message 
@@ -12,8 +13,8 @@ export default async (message) => {
         console.info("Not running in github actions, exit.");
         return false;
     }
-    if (isPullRequest) {
-        console.info("Running in github actions, but in pull request event, skip creating commits...");
+    if (!upstream) {
+        console.info("Running in github actions, but HEAD is not tracking any remote branch, exit.");
         return false;
     }
     console.info("[createCommit] Running in github actions, try to create commit.");
