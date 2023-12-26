@@ -1,6 +1,6 @@
 "use strict";
 $(() => {
-    if (mw.config.get("wgNamespaceNumber") % 2 === 1) {
+    if (mw.config.get("wgNamespaceNumber") % 2 === 1 && mw.config.get("wgPageName") !== "萌娘百科_talk:讨论版") {
         const inHistory = !document.getElementsByClassName("mw-editsection")[0];
         const buttunText = wgULS("固定链接", "固定連結");
         $("#mw-content-text .mw-parser-output h2").each((_, ele) => {
