@@ -101,6 +101,7 @@
             try {
                 const data = await api.post({
                     action: "query",
+                    assertuser: mw.config.get("wgUserName"),
                     format: "json",
                     meta: "allmessages",
                     amfilter: filter,

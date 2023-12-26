@@ -57,10 +57,12 @@ $(() => (async () => {
         const userRights = await autoRetryAsyncFunction(async () => await mw.user.getRights());
         const hasSuppressionlogRight = userRights.includes("suppressionlog");
         const hasDeletelogentryRight = userRights.includes("deletelogentry");
+        const wgUserName = mw.config.get("wgUserName");
         let scrollFlag = false;
         const api = new mw.Api();
         const blockLogResult = await autoRetryAsyncFunction(async () => await api.post({
             action: "query",
+            assertuser: wgUserName,
             format: "json",
             list: "logevents",
             leprop: "ids|title|type|user|timestamp|details|parsedcomment|tags",
@@ -203,6 +205,7 @@ $(() => (async () => {
         }
         const abuseLogResult = await autoRetryAsyncFunction(async () => await api.post({
             action: "query",
+            assertuser: wgUserName,
             format: "json",
             list: "abuselog",
             afllimit: "500",
@@ -332,6 +335,7 @@ $(() => (async () => {
             let cmcontinue = undefined;
             const f = async () => await api2.get({
                 action: "query",
+                assertuser: wgUserName,
                 format: "json",
                 list: "categorymembers",
                 cmtitle,

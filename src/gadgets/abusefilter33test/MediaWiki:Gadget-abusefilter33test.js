@@ -24,6 +24,7 @@ $(() => (async () => {
     try {
         const __details = (await api.post({
             action: "query",
+            assertuser: mw.config.get("wgUserName"),
             list: "abuselog",
             afluser: user_name,
             afltitle: article_prefixedtext,
@@ -42,6 +43,7 @@ $(() => (async () => {
         progress.text(2);
         const _rules = (await api.post({
             action: "query",
+            assertuser: mw.config.get("wgUserName"),
             list: "abusefilters",
             abfstartid: +filter,
             abfendid: +filter,

@@ -12,6 +12,7 @@
 // };
 $(() => (async () => {
     const pagename = mw.config.get("wgPageName");
+    const username = mw.config.get("wgUserName");
     if (mw.config.get("wgNamespaceNumber") !== 8 || pagename.includes(".js") || pagename.includes(".css")) {
         return;
     }
@@ -44,6 +45,7 @@ $(() => (async () => {
     try {
         prepopContent = lr_aivc.autoPopulate ? (await api.get({
             action: "parse",
+            assertuser: username,
             pageid,
             prop: "wikitext",
         })).parse.wikitext["*"] : "";
@@ -355,6 +357,7 @@ $(() => (async () => {
                 const text = `{{NoteTA|${this.config.noteTAStr}}}<pre id="converted">-{}-${replaced}</pre>`;
                 const parsed = $($.parseHTML((await zhAPI.post({
                     action: "parse",
+                    assertuser: username,
                     text,
                     contentmodel: "wikitext",
                     prop: "text",
@@ -384,6 +387,7 @@ $(() => (async () => {
                 const text = this.textInputs[variant].getValue();
                 return api.postWithToken("csrf", {
                     action: "edit",
+                    assertuser: username,
                     title: variantPage(variant),
                     text,
                     summary: `自动转换自[[${pagename}]]`,
@@ -394,6 +398,7 @@ $(() => (async () => {
                 const text = this.textInputs[parent/* as string*/].getValue();
                 return api.postWithToken("csrf", {
                     action: "edit",
+                    assertuser: username,
                     title: variantPage(variant),
                     text,
                     summary: `自动转换自[[${pagename}]]（同步${parent}）`,

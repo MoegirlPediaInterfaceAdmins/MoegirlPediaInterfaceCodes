@@ -211,6 +211,7 @@
             timeout: 5000,
         }).post({
             action: "query",
+            assertuser: mw.config.get("wgUserName"),
             list: "allusers",
             aurights: "block|unblockself",
             aulimit: "max",

@@ -365,6 +365,7 @@ $(() => {
                 const sectiontitle = `【页面反馈】${this.primaryType}${this.secondaryType !== "none" ? ` - ${this.secondaryType}` : ""} @ ${this.wgPageName}`;
                 await api.postWithToken("csrf", {
                     action: "edit",
+                    assertuser: mw.config.get("wgUserName"),
                     title: "萌娘百科_talk:讨论版/提问求助",
                     section: "new",
                     sectiontitle,

@@ -10,6 +10,7 @@ $(() => {
     const wgCurRevisionId = mw.config.get("wgCurRevisionId");
     const wgArticleId = mw.config.get("wgArticleId");
     const wgPageName = mw.config.get("wgPageName");
+    const wgUserName = mw.config.get("wgUserName");
     const UNDEFINED = Symbol("UNDEFINED");
     const sleep = (ms) => new Promise((res) => setTimeout(res, ms));
     let unloading = false;
@@ -101,6 +102,7 @@ $(() => {
             try {
                 _apiResult = await api.post({
                     action: "query",
+                    assertuser: wgUserName,
                     format: "json",
                     prop: "revisions",
                     titles: wgPageName,

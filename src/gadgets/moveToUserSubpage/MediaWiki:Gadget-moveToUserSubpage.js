@@ -6,6 +6,7 @@ $(() => {
         const NS = [0, 10, 828];
         const pagens = mw.config.get("wgNamespaceNumber");
         const pageid = mw.config.get("wgArticleId");
+        const username = mw.config.get("wgUserName");
         const isModule = pagens === 828;
         if (pageid === 0 || $(".will2Be2Deleted")[0] || !mw.config.get("wgUserGroups").includes("patroller") && !mw.config.get("wgUserGroups").includes("sysop") || !NS.includes(pagens)) {
             return;
@@ -180,6 +181,7 @@ $(() => {
                 if (!this.warnings.multipleContribs) {
                     const contribs = (await api.get({
                         action: "query",
+                        assertuser: username,
                         prop: "contributors",
                         pageids: pageid,
                         pclimit: 2,
@@ -196,6 +198,7 @@ $(() => {
                 // 查询创建者用户名
                 const user = (await api.get({
                     action: "query",
+                    assertuser: username,
                     prop: "revisions",
                     titles: pagename,
                     rvprop: "user",
@@ -207,6 +210,7 @@ $(() => {
                 // 移动页面
                 const moveRes = await api.postWithToken("csrf", {
                     action: "move",
+                    assertuser: username,
                     from: pagename,
                     to: page,
                     movetalk: moveTalk,
@@ -224,6 +228,7 @@ $(() => {
                     // 留言
                     const notifRes = await api.postWithToken("csrf", {
                         action: "edit",
+                        assertuser: username,
                         format: "json",
                         title: `User talk:${user}`,
                         section: "new",

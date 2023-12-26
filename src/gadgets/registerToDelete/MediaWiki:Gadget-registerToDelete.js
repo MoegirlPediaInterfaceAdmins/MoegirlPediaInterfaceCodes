@@ -171,6 +171,7 @@ $(() => {
                 const template = /^en/.test(location.hostname) ? "Awaiting_deletion" : "即将删除";
                 const d = await api.postWithToken("csrf", {
                     action: "edit",
+                    assertuser: mw.config.get("wgUserName"),
                     format: "json",
                     title: mw.config.get("wgPageName"),
                     text: `<noinclude>{{${template}|1=${this.reason}|user=${mw.config.get("wgUserName")}}}</noinclude>`,
@@ -204,6 +205,7 @@ $(() => {
                 loadReason = true;
                 const { parse: { text: { ["*"]: html } } } = await new mw.Api().post({
                     action: "parse",
+                    assertuser: mw.config.get("wgUserName"),
                     page: mw.config.get("wgNamespaceNumber") === mw.config.get("wgNamespaceIds").file ? "MediaWiki:Filedelete-reason-dropdown" : "MediaWiki:Deletereason-dropdown",
                     prop: "text",
                 });

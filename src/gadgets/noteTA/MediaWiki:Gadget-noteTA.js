@@ -55,6 +55,7 @@ mw.hook("wikipage.content").add(() => {
                     try {
                         const results = await api.post({
                             action: "parse",
+                            assertuser: mw.config.get("wgUserName"),
                             title: "Template:CGroup/____SAND_BOX____",
                             text: wikitext_1,
                             prop: "text",
@@ -95,6 +96,7 @@ mw.hook("wikipage.content").add(() => {
                         try {
                             const results = await api.post({
                                 action: "parse",
+                                assertuser: mw.config.get("wgUserName"),
                                 title: actualTitle_1,
                                 text: `{{noteTA/multititle|${actualTitle_1}}}`,
                                 prop: "text",
@@ -185,6 +187,7 @@ mw.hook("wikipage.content").add(() => {
     $(() => {
         $("#ca-varlang-1, #ca-varlang-2").remove();
         const wgUserId = mw.config.get("wgUserId");
+        
         if (typeof wgUserId === "number" && wgUserId > 0 && mw.config.get("wgAction") === "view" && localStorage.getItem("AnnTools-noteTA-alert") !== "true" && !document.querySelector("#noteTA-lang") && !/^\/zh-[a-z]+\//.test(location.pathname)) {
             const url = new mw.Uri();
             const wgUserVariant = mw.config.get("wgUserVariant");
@@ -199,6 +202,7 @@ mw.hook("wikipage.content").add(() => {
                     try {
                         const result = await api.postWithToken("csrf", {
                             action: "options",
+                            assertuser: mw.config.get("wgUserName"),
                             optionname: "variant",
                             optionvalue: lang,
                         });

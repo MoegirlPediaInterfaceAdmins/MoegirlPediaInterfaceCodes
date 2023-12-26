@@ -15,6 +15,7 @@ $(() => {
         $("#mw-notification-area").appendTo("body");
 
         const pagename = mw.config.get("wgPageName");
+        const username = mw.config.get("wgUserName");
         const api = new mw.Api();
         try {
             mw.notify("正在查询日志……", {
@@ -24,6 +25,7 @@ $(() => {
             });
             const data = (await api.get({
                 action: "query",
+                assertuser: username,
                 list: "logevents",
                 letype: "protect",
                 leprop: "user|details",
@@ -47,6 +49,7 @@ $(() => {
                 });
                 let text = (await api.get({
                     action: "parse",
+                    assertuser: username,
                     prop: "wikitext",
                     page: pagename,
                     section: 0,
@@ -60,6 +63,7 @@ $(() => {
                 });
                 await api.postWithToken("csrf", {
                     action: "edit",
+                    assertuser: username,
                     title: pagename,
                     section: 0,
                     text,
@@ -75,6 +79,7 @@ $(() => {
                 });
                 await api.postWithToken("csrf", {
                     action: "edit",
+                    assertuser: username,
                     title: pagename,
                     section: 0,
                     prependtext: template,
