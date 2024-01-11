@@ -11,6 +11,7 @@ const packageLockFile = "package-lock.json";
 const registries = [
     "https://registry.npmjs.org/",
     "https://mirrors.cloud.tencent.com/npm/",
+    "https://registry.npmmirror.com/",
 ];
 const targetPath = "index.json";
 const latency = await testLatency(registries.map((base) => `${base}${targetPath}`));
