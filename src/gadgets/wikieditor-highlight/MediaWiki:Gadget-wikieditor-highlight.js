@@ -11,18 +11,24 @@
     const $textarea = $("#wpTextbox1");
     const isAdvanced = ["loading", "loaded", "executing", "ready"].includes(mw.loader.getState("ext.wikiEditor"));
     const lang = mw.config.get("wgNamespaceNumber") === 274 ? "html" : "mediawiki";
-    const init = async () => {
-        await import("https://testingcf.jsdelivr.net/npm/@bhsd/codemirror-mediawiki@2.1.2/mw/dist/base.min.js");
-        cm = await CodeMirror.fromTextArea($textarea[0], lang);
-        cm.defaultLint(true);
-        cm.prefer([
-            "highlightSpecialChars",
-            "highlightActiveLine",
-            "highlightWhitespace",
-            "bracketMatching",
-            "closeBrackets",
-        ]);
-    };
+    const init = () => new Promise((resolve) => {
+        const script = document.createElement("script");
+        script.addEventListener("load", async () => {
+            cm = await CodeMirror.fromTextArea($textarea[0], lang);
+            cm.defaultLint(true);
+            cm.prefer([
+                "highlightSpecialChars",
+                "highlightActiveLine",
+                "highlightWhitespace",
+                "bracketMatching",
+                "closeBrackets",
+            ]);
+            resolve();
+        });
+        script.type = "module";
+        script.src = "https://testingcf.jsdelivr.net/npm/@bhsd/codemirror-mediawiki@2.1.2/mw/dist/base.min.js";
+        document.head.appendChild(script);
+    });
     if (!isAdvanced) {
         init();
         return;
