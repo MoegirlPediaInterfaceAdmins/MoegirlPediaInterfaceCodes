@@ -12,9 +12,7 @@
     const isAdvanced = ["loading", "loaded", "executing", "ready"].includes(mw.loader.getState("ext.wikiEditor"));
     const lang = mw.config.get("wgNamespaceNumber") === 274 ? "html" : "mediawiki";
     const init = async () => {
-        await libCachedCode.batchInjectCachedCode([
-            "https://testingcf.jsdelivr.net/npm/@bhsd/codemirror-mediawiki@2.1.2/mw/dist/base.min.js",
-        ], "script");
+        await import("https://testingcf.jsdelivr.net/npm/@bhsd/codemirror-mediawiki@2.1.2/mw/dist/base.min.js");
         cm = await CodeMirror.fromTextArea($textarea[0], lang);
         cm.defaultLint(true);
     };
