@@ -24,7 +24,6 @@ peers: []
 dependencies:
   - oojs-ui-core
   - ext.gadget.libPolyfill
-  - ext.gadget.libCachedCode
   - ext.gadget.LocalObjectStorage
 
 _sites:
@@ -33,5 +32,4 @@ _sites:
 _section: editing
 
 _files:
-  - MediaWiki:Gadget-wikieditor-highlight.css
   - MediaWiki:Gadget-wikieditor-highlight.js
