@@ -1,0 +1,35 @@
+ResourceLoader: true
+
+hidden: false
+
+default: false
+
+supportsUrlLoad: false
+
+targets: []
+
+skins: []
+
+actions: []
+
+type: general
+
+package: false
+
+rights:
+  - techedit
+
+peers: []
+
+dependencies:
+  - oojs-ui-core
+  - ext.gadget.libPolyfill
+  - ext.gadget.LocalObjectStorage
+
+_sites:
+  - zh
+
+_section: editing
+
+_files:
+  - MediaWiki:Gadget-wikieditor-highlight-cm6.js
