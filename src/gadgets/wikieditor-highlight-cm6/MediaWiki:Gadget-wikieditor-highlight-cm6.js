@@ -7,15 +7,15 @@
     await $.ready;
 
     const localObjectStorage = new LocalObjectStorage("wikieditor-highlight");
-    let cm, state = localObjectStorage.getItem("wikieditor-codemirror", false);
+    let cm, state = localObjectStorage.getItem("wikieditor-codemirror", true);
     const $textarea = $("#wpTextbox1");
     const isAdvanced = ["loading", "loaded", "executing", "ready"].includes(mw.loader.getState("ext.wikiEditor"));
-    const lang = mw.config.get("wgNamespaceNumber") === 274 ? "html" : "mediawiki";
+    const ns = mw.config.get("wgNamespaceNumber");
+    const lang = ns === 274 ? "html" : "mediawiki";
     const init = () => new Promise((resolve) => {
         const script = document.createElement("script");
         script.addEventListener("load", async () => {
             cm = await CodeMirror.fromTextArea($textarea[0], lang);
-            cm.defaultLint(true);
             cm.prefer([
                 "highlightSpecialChars",
                 "highlightActiveLine",
@@ -23,17 +23,24 @@
                 "bracketMatching",
                 "closeBrackets",
             ]);
+            const [config] = await Promise.all([
+                libCachedCode.getCachedCode("https://testingcf.jsdelivr.net/npm/wikiparser-node/config/moegirl.json"),
+                cm.defaultLint(true, {include: ns === 10}),
+            ]);
+            try {
+                window.wikiparse.setConfig(JSON.parse(config));
+            } catch (e) {
+                console.error(e);
+            }
             resolve();
         });
         script.type = "module";
-        script.src = "https://testingcf.jsdelivr.net/npm/@bhsd/codemirror-mediawiki@2.1.2/mw/dist/base.min.js";
-        document.head.appendChild(script);
+        script.src = "https://testingcf.jsdelivr.net/npm/@bhsd/codemirror-mediawiki@2.1.4/mw/dist/base.min.js";
+        document.head.append(script);
     });
     if (!isAdvanced) {
         init();
         return;
-    } else if (state === null || !isAdvanced) {
-        state = true;
     }
     const btn = new OO.ui.ButtonWidget({
         classes: ["tool"], icon: "highlight", framed: false, title: "代码高亮开关",
@@ -47,12 +54,12 @@
         state = !state;
         localObjectStorage.setItem("wikieditor-codemirror", state);
     });
-    const group = $("#wikiEditor-section-main > .group-insert")[0];
     $textarea.on("wikiEditor-toolbar-doneInitialSections", () => {
         btn.$element.appendTo("#wikiEditor-section-main > .group-insert");
     });
+    const group = $("#wikiEditor-section-main > .group-insert")[0];
     if (group && !group.contains(btn.$element[0])) {
-        $textarea.trigger("wikiEditor-toolbar-doneInitialSections");
+        btn.$element.appendTo(group);
     }
     if (state) {
         await mw.loader.using("ext.wikiEditor");
