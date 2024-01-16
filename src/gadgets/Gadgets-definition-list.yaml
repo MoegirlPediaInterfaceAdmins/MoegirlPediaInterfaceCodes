@@ -71,6 +71,7 @@
     - disable-nest-alert
     - uploader
     - temp-editcheck
+    - wikieditor-highlight-cm6
 
 - name: maintenance
   gadgets:
