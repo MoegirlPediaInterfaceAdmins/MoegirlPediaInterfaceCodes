@@ -12,32 +12,34 @@
     const isAdvanced = ["loading", "loaded", "executing", "ready"].includes(mw.loader.getState("ext.wikiEditor"));
     const ns = mw.config.get("wgNamespaceNumber");
     const lang = ns === 274 ? "html" : "mediawiki";
-    const init = () => new Promise((resolve) => {
-        const script = document.createElement("script");
-        script.addEventListener("load", async () => {
-            cm = await CodeMirror.fromTextArea($textarea[0], lang);
-            cm.prefer([
-                "highlightSpecialChars",
-                "highlightActiveLine",
-                "highlightWhitespace",
-                "bracketMatching",
-                "closeBrackets",
-            ]);
-            const [config] = await Promise.all([
-                libCachedCode.getCachedCode("https://testingcf.jsdelivr.net/npm/wikiparser-node/config/moegirl.json"),
-                cm.defaultLint(true, {include: ns === 10}),
-            ]);
-            try {
-                window.wikiparse.setConfig(JSON.parse(config));
-            } catch (e) {
-                console.error(e);
-            }
-            resolve();
-        });
-        script.type = "module";
-        script.src = "https://testingcf.jsdelivr.net/npm/@bhsd/codemirror-mediawiki@2.1.4/mw/dist/base.min.js";
-        document.head.append(script);
-    });
+    const init = async () => {
+        if (!window.CodeMirror6) {
+            await new Promise((resolve) => {
+                const script = document.createElement("script");
+                script.addEventListener("load", resolve);
+                script.type = "module";
+                script.src = "https://testingcf.jsdelivr.net/npm/@bhsd/codemirror-mediawiki@2.1.7/mw/dist/base.min.js";
+                document.head.append(script);
+            });
+        }
+        cm = await window.CodeMirror6.fromTextArea($textarea[0], lang);
+        cm.prefer([
+            "highlightSpecialChars",
+            "highlightActiveLine",
+            "highlightWhitespace",
+            "bracketMatching",
+            "closeBrackets",
+        ]);
+        const [config] = await Promise.all([
+            libCachedCode.getCachedCode("https://testingcf.jsdelivr.net/npm/wikiparser-node/config/moegirl.json"),
+            cm.defaultLint(true, {include: ns === 10}),
+        ]);
+        try {
+            window.wikiparse?.setConfig(JSON.parse(config));
+        } catch (e) {
+            console.error(e);
+        }
+    };
     if (!isAdvanced) {
         init();
         return;
