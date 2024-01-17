@@ -33,5 +33,4 @@ _sites:
 _section: editing
 
 _files:
-  - MediaWiki:Gadget-wikieditor-highlight.css
   - MediaWiki:Gadget-wikieditor-highlight.js
