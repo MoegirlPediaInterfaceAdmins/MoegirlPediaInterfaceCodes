@@ -20,7 +20,7 @@
         "./.vscode/json-schemas/gadget-definition.json": "src/gadgets/*/definition.yaml"
     },
     "files.insertFinalNewline": true,
-    "eslint.experimental.useFlatConfig": false,
+    "eslint.experimental.useFlatConfig": true,
     "conventionalCommits.scopes": [
         "Gadget-abusefilter33test",
         "Gadget-abusefilterEdit",
