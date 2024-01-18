@@ -164,6 +164,8 @@ jobs:
         run: npx stylelint --cache --cache-strategy content --cache-location ".cache/"  --formatter github --max-warnings 0 "src/**/*.css"
       - name: Run v8r
         run: npx v8r
+      - name: Run postcss test
+        run: node scripts/postcss/index.js
       - name: Check .mailmap
         if: needs.postCommit.result == 'success'
         run: node scripts/emailmapChecker/index.js
