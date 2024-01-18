@@ -1,5 +1,5 @@
 import { exec } from "node:child_process";
-import { warning, startGroup, endGroup } from "@actions/core";
+import { debug, warning, startGroup, endGroup } from "@actions/core";
 import console from "../modules/console.js";
 
 console.info("Start to run postcss...");
@@ -33,6 +33,7 @@ for (const line of output.split("\n")) {
         const match = line.match(/Finished (.*?) in/)?.[1];
         if (match) {
             lastFileName = match;
+            debug(line, { match });
         }
     }
     if (line.includes("⚠")) {
@@ -48,6 +49,7 @@ for (const line of output.split("\n")) {
         const fileLink = `https://github.com/${process.env.GITHUB_REPOSITORY}/blob/${process.env.GITHUB_SHA.slice(0, 7)}/${encodeURI(`${lastFileName}#L${annotationProperties.startLine}`)}`;
         const msg = `${line.replace(/^.*?⚠\s*/, "")} @ ${fileLink}`;
         annotations.push([msg, annotationProperties]);
+        debug(line, { msg, annotationProperties, fileLink });
     }
 }
 
