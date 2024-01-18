@@ -4,6 +4,7 @@
     if (!["edit", "submit"].includes(mw.config.get("wgAction")) || mw.config.get("wgPageContentModel") !== "wikitext") {
         return;
     }
+    mw.loader.addStyleTag(".wikiEditor-ui-toolbar{z-index:7}");
     await $.ready;
 
     const localObjectStorage = new LocalObjectStorage("wikieditor-highlight");
