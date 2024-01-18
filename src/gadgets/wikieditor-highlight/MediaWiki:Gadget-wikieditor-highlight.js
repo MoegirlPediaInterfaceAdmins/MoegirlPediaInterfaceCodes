@@ -32,7 +32,7 @@
         ]);
         const [config] = await Promise.all([
             libCachedCode.getCachedCode("https://testingcf.jsdelivr.net/npm/wikiparser-node/config/moegirl.json"),
-            cm.defaultLint(true, {include: ns === 10}),
+            cm.defaultLint(true, { include: ns === 10 }),
         ]);
         try {
             window.wikiparse?.setConfig(JSON.parse(config));

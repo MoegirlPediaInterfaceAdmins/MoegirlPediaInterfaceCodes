@@ -20,7 +20,7 @@
                 case 2: { // User
                     return mw.config.get("wgPageName").match(/.*?:(.*?)(\/.*)*$/)[1];
                 }
-                case -1: {// Special pages
+                case -1: { // Special pages
                     try {
                         switch (mw.config.get("wgCanonicalSpecialPageName")) {
                             case "CentralAuth": // T131740

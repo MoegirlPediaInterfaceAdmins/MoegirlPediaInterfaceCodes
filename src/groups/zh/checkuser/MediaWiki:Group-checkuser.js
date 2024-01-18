@@ -78,10 +78,8 @@
                     }
                 }, 2000);
             });
-
         });
     };
-
 
     await Promise.all([
         $.ready,

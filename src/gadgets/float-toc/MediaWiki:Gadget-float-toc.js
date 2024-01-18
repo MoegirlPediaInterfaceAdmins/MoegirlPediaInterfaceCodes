@@ -20,8 +20,8 @@ $(async () => {
      */
     /**
      * 验证缓存有效性
-     * @param {*} _cache 
-     * @returns { { sections: section[], timestamp: number }[] } 
+     * @param {*} _cache
+     * @returns { { sections: section[], timestamp: number }[] }
      */
     const verifyCache = (_cache) => {
         let cache = JSON.parse(JSON.stringify(_cache));
@@ -74,11 +74,11 @@ $(async () => {
     if (
         document.querySelector("#toc > ul > li")
         && !(
-            document.body.classList.contains("widgetTalkTocEnable") ||
-            document.getElementsByClassName("heading").length > 0 && document.getElementById("heading") ||
-            document.getElementById("tocBox") ||
-            document.getElementById("toc2TableSetting") ||
-            document.querySelector(".toclimit-2, .toclimit-3, .toclimit-4, .toclimit-5, .toclimit-6, .toclimit-7")
+            document.body.classList.contains("widgetTalkTocEnable")
+            || document.getElementsByClassName("heading").length > 0 && document.getElementById("heading")
+            || document.getElementById("tocBox")
+            || document.getElementById("toc2TableSetting")
+            || document.querySelector(".toclimit-2, .toclimit-3, .toclimit-4, .toclimit-5, .toclimit-6, .toclimit-7")
         )
     ) { // 当有可信的目录时，不再请求 API
         hasTurstTOC = true;

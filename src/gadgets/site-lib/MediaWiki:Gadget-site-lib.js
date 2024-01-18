@@ -10,7 +10,7 @@ window.wgUXS = (wg, hans, hant, cn, tw, hk, sg, zh, mo, my) => {
         "zh-hk": hk || hant || mo || tw,
         "zh-mo": mo || hant || hk || tw,
     };
-    return ret[wg] || zh || hans || hant || cn || tw || hk || sg || mo || my; //保證每一語言有值
+    return ret[wg] || zh || hans || hant || cn || tw || hk || sg || mo || my; // 保證每一語言有值
 };
 
 window.wgULS = (hans, hant, cn, tw, hk, sg, zh, mo, my) => window.wgUXS(mw.config.get("wgUserLanguage"), hans, hant, cn, tw, hk, sg, zh, mo, my);
@@ -18,7 +18,7 @@ window.wgULS = (hans, hant, cn, tw, hk, sg, zh, mo, my) => window.wgUXS(mw.confi
 window.wgUVS = (hans, hant, cn, tw, hk, sg, zh, mo, my) => window.wgUXS(mw.config.get("wgUserVariant"), hans, hant, cn, tw, hk, sg, zh, mo, my);
 
 /**
- * Map addPortletLink to mw.util 
+ * Map addPortletLink to mw.util
  *
  * @deprecated: Use mw.util.addPortletLink instead.
  */
@@ -31,13 +31,15 @@ mw.log.deprecate(window, "addPortletLink", (...args) => mw.util.addPortletLink.b
  */
 mw.log.deprecate(window, "getURLParamValue", (...args) => mw.util.getParamValue.bind(mw.util)(...args), "Use mw.util.getParamValue() instead");
 
-/** 
+/**
  * Test if an element has a certain class
  *
  * @deprecated:  Use $(element).hasClass() instead.
  */
 mw.log.deprecate(window, "hasClass", (element, className) => $(element).hasClass(className), "Use jQuery#hasClass instead");
 
+// eslint-disable-next-line promise/prefer-await-to-then
 mw.log.deprecate(window, "importScriptCallback", (page, ready) => libCachedCode.injectCachedCode(`${mw.config.get("wgServer")}${mw.config.get("wgScript")}?title=${mw.util.wikiUrlencode(page)}&action=raw&ctype=text/javascript`, "script").then(ready), "Use `await libCachedCode.injectCachedCode(page, \"script\")` instead");
 
+// eslint-disable-next-line promise/prefer-await-to-then
 mw.log.deprecate(window, "importScriptURICallback", (page, ready) => libCachedCode.injectCachedCode(page, "script").then(ready), "Use `await libCachedCode.injectCachedCode(page, \"script\")` instead");

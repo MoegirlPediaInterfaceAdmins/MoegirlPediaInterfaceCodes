@@ -1,4 +1,4 @@
-//<pre>
+// <pre>
 // remake by [[User:Leranjun]]
 "use strict";
 $(() => (async () => {
@@ -181,4 +181,4 @@ $(() => (async () => {
         p.closest("fieldset").remove();
     });
 })());
-//</pre>
+// </pre>

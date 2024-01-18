@@ -1,4 +1,3 @@
-"use strict";
 /* eslint-disable no-use-before-define */
 // <pre>
 /**
@@ -6,6 +5,7 @@
    URL:https://zh.wikipedia.org/w/index.php?title=User:Zuohaocheng/patrollCount.js
    为代码能适用做出了适当修改
 */
+"use strict";
 $(() => {
     if (mw.config.get("wgAction") !== "view") {
         return;
@@ -142,16 +142,16 @@ $(() => {
             $.fn.cvtooltip = function (options) {
                 const self = $(this);
                 const defaults = {
-                    panel: "body", //该参数是加载气泡提示的容器，值不同可能会导致计算的位置不同，默认为添加至body容器
-                    selector: "", //用于计算定位的控件
-                    width: 0, //气泡提示宽度，完全手动设置
-                    left: 0, //距离panel参数的左边距
-                    top: 0, //距离panel参数的上边距
-                    delay: -1, //延迟关闭，单位毫秒，值为0时表示立刻关闭
-                    speed: 600, //关闭时的效果，淡出速度
-                    close: true, //是否显示关闭按钮
+                    panel: "body", // 该参数是加载气泡提示的容器，值不同可能会导致计算的位置不同，默认为添加至body容器
+                    selector: "", // 用于计算定位的控件
+                    width: 0, // 气泡提示宽度，完全手动设置
+                    left: 0, // 距离panel参数的左边距
+                    top: 0, // 距离panel参数的上边距
+                    delay: -1, // 延迟关闭，单位毫秒，值为0时表示立刻关闭
+                    speed: 600, // 关闭时的效果，淡出速度
+                    close: true, // 是否显示关闭按钮
                     callback: () => {
-                        $.noop(); //点击关闭后的事件
+                        $.noop(); // 点击关闭后的事件
                     },
                 };
                 const param = $.extend({}, defaults, options || {});
@@ -376,6 +376,7 @@ $(() => {
                     // window.data = [data, status, request]; // DEBUG
                     if (status === "success") {
                         $patrollinks.html('<span style="color:green">Marked as patrolled</span>'); // MediaWiki:Markedaspatrolled
+                        // eslint-disable-next-line camelcase
                         if (typeof kAjaxPatrolLinks_closeafter !== "undefined" && window.kAjaxPatrolLinks_closeafter === true) {
                             window.close();
                             // Firefox 2+ doesn't allow closing normal windows. If we're still here, open up the selfclosing page.

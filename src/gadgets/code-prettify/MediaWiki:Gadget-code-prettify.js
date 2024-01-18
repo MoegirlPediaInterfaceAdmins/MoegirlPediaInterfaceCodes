@@ -1,16 +1,13 @@
-"use strict";
-/* eslint-disable no-use-before-define */
+/* eslint-disable no-use-before-define, camelcase */
 /**
- * @source https://github.com/google/code-prettify/blob/master/src/prettify.js
+ * @source https://github.com/googlearchive/code-prettify/blob/453bd5f51e61245339b738b1bbdd42d7848722ba/src/prettify.js
  * 更新后请同步更新上面链接到最新版本
  */
 /**
  * @file 引自 https://github.com/google/code-prettify，遵守 APL2.0 协议，Copyright (C) 2006 Google Inc.
  */
-// 使用本js只是为了方便无法获得Google的js的用户使用，本文件各项权利按下列声明归各自所有者所有
-// 595行追加了加行号id属性功能
-/* https://github.com/google/code-prettify/blob/master/src/prettify.js */
 // <pre>
+"use strict";
 $(() => {
     if (mw.config.get("wgPageName").match(/\.js$/)) {
         $(".mw-code").addClass("prettyprint lang-js");
@@ -150,7 +147,6 @@ $(() => {
                 return parseInt(charsetPart.substring(2), 16);
             }
             return charsetPart.charCodeAt(1);
-
         };
 
         const encodeEscape = (charCode) => {
@@ -496,7 +492,7 @@ $(() => {
         if (keywords.length) {
             fallthroughStylePatterns.push([PR_KEYWORD, new RegExp(`^(?:${keywords.replace(/[\s,]+/g, "|")})\\b`), null]);
         }
-        shortcutStylePatterns.push([PR_PLAIN, /^\s+/, null, " \r\n	 "]);
+        shortcutStylePatterns.push([PR_PLAIN, /^\s+/, null, " \r\n\t "]);
         let punctuation = "^.[^\\s\\w.$@'\"`/\\\\]*";
         if (options.regexLiterals) {
             punctuation += "(?!s*/)";
@@ -718,7 +714,7 @@ $(() => {
         ["lang-in.tag", /^(<\/?[a-z][^<>]*>)/i],
     ]), ["default-markup", "htm", "html", "mxml", "xhtml", "xml", "xsl"]);
     registerLangHandler(createSimpleLexer([
-        [PR_PLAIN, /^[\s]+/, null, " 	\r\n"],
+        [PR_PLAIN, /^[\s]+/, null, " \t\r\n"],
         [PR_ATTRIB_VALUE, /^(?:"[^"]*"?|'[^']*'?)/, null, "\"'"],
     ], [
         [PR_TAG, /^^<\/?[a-z](?:[\w.:-]*\w)?|\/?>$/i],
@@ -967,7 +963,7 @@ $(() => {
 
     /* https://github.com/google/code-prettify/blob/master/src/lang-css.js */
     registerLangHandler(createSimpleLexer([
-        [PR_PLAIN, /^[ \t\r\n\f]+/, null, " 	\r\n\f"],
+        [PR_PLAIN, /^[ \t\r\n\f]+/, null, " \t\r\n\f"],
     ], [
         [PR_STRING, /^"(?:[^\n\r\f"\\]|\\(?:\r\n?|\n|\f)|\\[\s\S])*"/, null],
         [PR_STRING, /^'(?:[^\n\r\f'\\]|\\(?:\r\n?|\n|\f)|\\[\s\S])*'/, null],

@@ -1,5 +1,5 @@
 /* 放置于这里的JavaScript定制WikiLove，请见 https://www.mediawiki.org/wiki/Extension:WikiLove#Custom_configuration */
-//<nowiki>
+// <nowiki>
 "use strict";
 
 $.wikiLoveOptions = {
@@ -9,7 +9,7 @@ $.wikiLoveOptions = {
 };
 /*
  * defaultImageSize = "100px";
- * defaultText = 
+ * defaultText =
 `{| style="background-color: $5; border: 1px solid $6;"
 |rowspan="2" style="vertical-align: middle; padding: 5px;" | [[$3|$4]]
 |style="font-size: x-large; padding: 3px 3px 0 3px; height: 1.5em;" | '''$2'''
@@ -147,4 +147,4 @@ $.wikiLoveOptions.types.mgpSpecial = {
         },
     },
 };
-//</nowiki>
+// </nowiki>

@@ -2,7 +2,7 @@
 // Inspired by https://zh.wikipedia.org/wiki/MediaWiki:Gadget-CollapsibleSidebar.js
 $(() => {
     if (mw.config.get("skin") !== "vector" || mw.config.get("wgCanonicalSpecialPageName") === "Blankpage"
-        || getComputedStyle(document.body).direction !== "ltr") { //mw-sidebar-button
+        || getComputedStyle(document.body).direction !== "ltr") { // mw-sidebar-button
         return;
     }
     const localObjectStorage = new LocalObjectStorage("AnnTools-SidebarHidden");

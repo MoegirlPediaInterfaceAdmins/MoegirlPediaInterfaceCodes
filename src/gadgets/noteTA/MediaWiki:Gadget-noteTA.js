@@ -46,10 +46,10 @@ mw.hook("wikipage.content").add(() => {
                 $dialog.dialog({
                     title: wgULS("字词转换", "字詞轉換"),
                 });
-                let wikitext_1 = "";
+                let wikitext = "";
                 const $dom = $("#mw-content-text .mw-parser-output");
-                let collapse_1 = true;
-                const actualTitle_1 = mw.config.get("wgPageName").replace(/_/g, " ");
+                let collapse = true;
+                const actualTitle = mw.config.get("wgPageName").replace(/_/g, " ");
 
                 const parse = async () => {
                     try {
@@ -57,12 +57,12 @@ mw.hook("wikipage.content").add(() => {
                             action: "parse",
                             assertuser: mw.config.get("wgUserName"),
                             title: "Template:CGroup/____SAND_BOX____",
-                            text: wikitext_1,
+                            text: wikitext,
                             prop: "text",
                             variant: mw.config.get("wgUserVariant"),
                         });
                         $dialog.html(results.parse.text["*"]);
-                        if (collapse_1) {
+                        if (collapse) {
                             $dialog.find(".mw-collapsible").makeCollapsible();
                             $dialog.find(".mw-collapsible-toggle").on("click.mw-collapse", async (_, ele) => {
                                 const $collapsibleContent = $(ele).parent(".mw-collapsible").find(".mw-collapsible-content");
@@ -77,7 +77,7 @@ mw.hook("wikipage.content").add(() => {
                         return parse();
                     }
                 };
-                let maybeTitle_1 = parse;
+                let maybeTitle = parse;
                 const $noteTAtitle = $dom.find(".noteTA-title");
                 if ($noteTAtitle.length) {
                     const titleConv = $noteTAtitle.last().data("noteta-code");
@@ -87,98 +87,98 @@ mw.hook("wikipage.content").add(() => {
                     } else {
                         titleDesc = "";
                     }
-                    wikitext_1 += `<span style="float: right;">{{edit|${actualTitle_1}|section=0}}</span>\n`;
-                    wikitext_1 += "; 本文使用[[Help:繁简转换|标题手工转换]]\n";
-                    wikitext_1 += `* 转换标题为：-{D|${titleConv}}-${titleDesc}\n`;
-                    wikitext_1 += `* 实际标题为：-{R|${actualTitle_1}}-；当前显示为：-{|${titleConv}}-\n`;
+                    wikitext += `<span style="float: right;">{{edit|${actualTitle}|section=0}}</span>\n`;
+                    wikitext += "; 本文使用[[Help:繁简转换|标题手工转换]]\n";
+                    wikitext += `* 转换标题为：-{D|${titleConv}}-${titleDesc}\n`;
+                    wikitext += `* 实际标题为：-{R|${actualTitle}}-；当前显示为：-{|${titleConv}}-\n`;
                 } else {
-                    maybeTitle_1 = async () => {
+                    maybeTitle = async () => {
                         try {
                             const results = await api.post({
                                 action: "parse",
                                 assertuser: mw.config.get("wgUserName"),
-                                title: actualTitle_1,
-                                text: `{{noteTA/multititle|${actualTitle_1}}}`,
+                                title: actualTitle,
+                                text: `{{noteTA/multititle|${actualTitle}}}`,
                                 prop: "text",
                                 variant: "zh",
                             });
                             const $multititle = $(results.parse.text["*"]).find(".noteTA-multititle");
                             if ($multititle.length) {
-                                const textVariant_1 = {};
-                                const variantText_1 = {};
+                                const textVariant = {};
+                                const variantText = {};
                                 let multititleText = "";
                                 $multititle.children().each((_, ele) => {
                                     const $li = $(ele);
                                     const variant = $li.data("noteta-multititle-variant");
                                     const text = $li.text();
-                                    variantText_1[variant] = text;
-                                    if (textVariant_1[text]) {
-                                        textVariant_1[text].push(variant);
+                                    variantText[variant] = text;
+                                    if (textVariant[text]) {
+                                        textVariant[text].push(variant);
                                     } else {
-                                        textVariant_1[text] = [variant];
+                                        textVariant[text] = [variant];
                                     }
                                 });
                                 multititleText += "; 本文[[Help:繁简转换|标题可能经过转换]]\n";
                                 multititleText += "* 转换标题为：";
                                 const multititle = [],
-                                    titleConverted = variantText_1[mw.config.get("wgUserVariant")];
-                                for (const variant in variantText_1) {
-                                    const text = variantText_1[variant];
+                                    titleConverted = variantText[mw.config.get("wgUserVariant")];
+                                for (const variant in variantText) {
+                                    const text = variantText[variant];
                                     if (text === null) {
                                         continue;
                                     }
-                                    const variants = textVariant_1[text];
+                                    const variants = textVariant[text];
                                     for (let i = 0, l = variants.length; i < l; i++) {
-                                        variantText_1[variants[i]] = null;
+                                        variantText[variants[i]] = null;
                                     }
                                     const variantsName = variants.map((variant) => `-{R|{{MediaWiki:Variantname-${variant}}}}-`).join("、");
                                     multititle.push(`${variantsName}：-{R|${text}}-`);
                                 }
                                 multititleText += multititle.join("；");
-                                multititleText += `\n* 实际标题为：-{R|${actualTitle_1}}-；当前显示为：-{R|${titleConverted}}-\n`;
-                                wikitext_1 = multititleText + wikitext_1;
+                                multititleText += `\n* 实际标题为：-{R|${actualTitle}}-；当前显示为：-{R|${titleConverted}}-\n`;
+                                wikitext = multititleText + wikitext;
                             }
                             parse();
                         } catch {
-                            return maybeTitle_1();
+                            return maybeTitle();
                         }
                     };
                 }
                 const $noteTAgroups = $dom.find(".noteTA-group > *[data-noteta-group]");
                 if ($noteTAgroups.length > 1) {
-                    collapse_1 = true;
+                    collapse = true;
                 }
                 for (const json of new Set($noteTAgroups.map((_, ele) => JSON.stringify([$(ele).data("noteta-group-source"), $(ele).data("noteta-group")])))) {
                     const [source, group] = JSON.parse(json);
                     switch (source) {
                         case "template":
-                            wikitext_1 += `{{CGroup/${group}}}\n`;
+                            wikitext += `{{CGroup/${group}}}\n`;
                             break;
                         case "module":
-                            wikitext_1 += `{{#invoke:CGroupViewer|dialog|${group}}}\n`;
+                            wikitext += `{{#invoke:CGroupViewer|dialog|${group}}}\n`;
                             break;
                         case "none":
-                            wikitext_1 += `; 本文使用的公共转换组“${group}”尚未创建\n`;
-                            wikitext_1 += `* {{edit|Module:CGroup/${group}|创建公共转换组“${group}”}}\n`;
+                            wikitext += `; 本文使用的公共转换组“${group}”尚未创建\n`;
+                            wikitext += `* {{edit|Module:CGroup/${group}|创建公共转换组“${group}”}}\n`;
                             break;
                         default:
-                            wikitext_1 += `; 未知公共转换组“${group}”来源“${source}”\n`;
+                            wikitext += `; 未知公共转换组“${group}”来源“${source}”\n`;
                     }
                 }
                 const $noteTAlocal = $dom.find(".noteTA-local");
                 if ($noteTAlocal.length) {
-                    collapse_1 = true;
-                    wikitext_1 += `<span style="float: right;">{{edit|${actualTitle_1}|section=0}}</span>\n`;
-                    wikitext_1 += "; 本文使用[[Help:繁简转换|全文手工转换]]\n";
+                    collapse = true;
+                    wikitext += `<span style="float: right;">{{edit|${actualTitle}|section=0}}</span>\n`;
+                    wikitext += "; 本文使用[[Help:繁简转换|全文手工转换]]\n";
                     const $noteTAlocals = $noteTAlocal.children("*[data-noteta-code]");
                     for (const json of new Set($noteTAlocals.map((_, ele) => JSON.stringify([$(ele).data("noteta-code"), $(ele).data("noteta-desc")])))) {
                         const [localConv, desc] = JSON.parse(json),
                             localDesc = desc ? `<br>说明：${desc}` : "";
-                        wikitext_1 += `* -{D|${localConv}}-当前显示为：-{${localConv}}-${localDesc}\n`;
+                        wikitext += `* -{D|${localConv}}-当前显示为：-{${localConv}}-${localDesc}\n`;
                     }
                 }
-                wikitext_1 += "{{noteTA/footer}}\n";
-                maybeTitle_1();
+                wikitext += "{{noteTA/footer}}\n";
+                maybeTitle();
             } else {
                 $dialog.dialog("open");
             }
@@ -187,7 +187,7 @@ mw.hook("wikipage.content").add(() => {
     $(() => {
         $("#ca-varlang-1, #ca-varlang-2").remove();
         const wgUserId = mw.config.get("wgUserId");
-        
+
         if (typeof wgUserId === "number" && wgUserId > 0 && mw.config.get("wgAction") === "view" && localStorage.getItem("AnnTools-noteTA-alert") !== "true" && !document.querySelector("#noteTA-lang") && !/^\/zh-[a-z]+\//.test(location.pathname)) {
             const url = new mw.Uri();
             const wgUserVariant = mw.config.get("wgUserVariant");
@@ -218,7 +218,7 @@ mw.hook("wikipage.content").add(() => {
                     }
                 }).filter(`[data-lang="${wgUserVariant}"]`).addClass("mw-ui-progressive");
                 $("#noteTA-lang-explainer").on("click", () => {
-                    //open(mw.config.get("wgServer") + mw.config.get("wgScriptPath") +,"_blank");
+                    // open(mw.config.get("wgServer") + mw.config.get("wgScriptPath") +,"_blank");
                 }).hide();
                 $("#noteTA-lang-disable").on("click", () => {
                     $("#noteTA-lang").remove();

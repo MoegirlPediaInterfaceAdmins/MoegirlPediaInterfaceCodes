@@ -164,7 +164,7 @@ $(() => {
         }
         return data?.[property];
     };
-    $.ajax = function (option, ...args) {
+    $.ajax = async function (option, ...args) {
         if (running || unloading || typeof option === "string") {
             return ajax.bind($)(option, ...args);
         }
@@ -186,13 +186,14 @@ $(() => {
         }
         const jqXHR = ajax.bind($)(option, ...args);
         if (needFailWatcher) {
-            jqXHR.then((data) => {
+            try {
+                const data = await jqXHR;
                 if (data?.edit?.result !== "Success") {
                     failed = true;
                 }
-            }, () => {
+            } catch {
                 failed = true;
-            });
+            }
         }
         return jqXHR;
     };

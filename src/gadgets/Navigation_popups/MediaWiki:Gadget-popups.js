@@ -1,4 +1,4 @@
-/* eslint-disable prefer-arrow-functions/prefer-arrow-functions */
+/* eslint-disable prefer-arrow-functions/prefer-arrow-functions, no-use-before-define, camelcase */
 /**
  * @source https://en.wikipedia.org/wiki/_?oldid=1151460389
  * 更新后请同步更新上面链接到最新版本
@@ -9,7 +9,6 @@
  */
 // <pre>
 /* global wikEdUseWikEd, WikEdUpdateFrame */
-/* eslint-disable no-use-before-define */
 "use strict";
 $(() => {
     const popupStrings = {
@@ -50,7 +49,7 @@ $(() => {
         // (some actions also apply to user pages)
         /////////////////////////////////////
         actions: wgULS("操作", "動作"),
-        ///// view articles and view talk
+        // view articles and view talk
         popupsMenu: wgULS("Popups", "Popups"),
         "disable previews": wgULS("禁用预览", "禁用預覽"),
         togglePreviewsHint: wgULS("切换本页 Popups 的预览开关", "切換本頁 Popups 的預覽開關"),
@@ -72,7 +71,7 @@ $(() => {
         "the revision prior to revision %s of %s": wgULS("页面 $2 的修订版本 $1 之前的修订版本", "頁面 $2 的修訂版本 $1 之前的修訂版本"),
         "Toggle image size": wgULS("点击切换图片大小", "點擊切換圖片大小"),
         del: wgULS("删除", "删除"),
-        ///// delete, protect, move
+        // delete, protect, move
         "delete": wgULS("删除", "删除"),
         deleteHint: wgULS("删除 %s", "删除 %s"),
         undeleteShort: wgULS("恢复", "恢復"),
@@ -85,7 +84,7 @@ $(() => {
         "move page": wgULS("移动页面", "移動頁面"),
         MovepageHint: wgULS("修改 %s 的标题", "修改 %s 的標題"),
         edit: wgULS("编辑", "編輯"),
-        ///// edit articles and talk
+        // edit articles and talk
         "edit article": wgULS("编辑条目", "編輯條目"),
         editHint: wgULS("修改 %s 的内容", "修改 %s 的內容"),
         "edit talk": wgULS("编辑讨论页", "編輯對話頁", null, null, "編輯討論頁"),
@@ -95,7 +94,7 @@ $(() => {
         "null edit": wgULS("空编辑", "空編輯"),
         nullEditHint: wgULS("进行一次对 %s 的空编辑", "製造一次對 %s 的空編輯"),
         hist: wgULS("历史", "歷史"),
-        ///// history, diffs, editors, related
+        // history, diffs, editors, related
         history: wgULS("历史", "歷史"),
         historyHint: wgULS("%s 的修订历史", "%s 的修訂歷史"),
         last: wgULS("之前", "之前"), // [[MediaWiki:Last]]
@@ -130,7 +129,7 @@ $(() => {
         "related changes": wgULS("相关更改", "相關更改"),
         RecentchangeslinkedHint: wgULS("显示相关 %s 的修改", "顯示相關 %s 的修改"),
         editOld: wgULS("编辑旧版", "編輯舊版"),
-        ///// edit old version, or revert
+        // edit old version, or revert
         rv: wgULS("回退", "恢復"),
         revert: wgULS("回退", "恢復"),
         revertHint: wgULS("回退到 %s", "恢復到 %s"),
@@ -152,14 +151,14 @@ $(() => {
         "Bypass redirect": wgULS("忽略重定向", "忽略重新導向"),
         "Fix this redirect": wgULS("修复重定向", "修復重新導向"),
         disambig: wgULS("消歧义", "消歧義"),
-        ///// add or remove dab etc.
+        // add or remove dab etc.
         disambigHint: wgULS("消歧义这个链接到 [[%s]]", "消歧義這個連結到 [[%s]]"),
         "Click to disambiguate this link to:": wgULS("点击以消歧义这个链接到：", "點擊以消歧義這個連結到："),
         "remove this link": wgULS("移除链接", "移除連結"),
         "remove all links to this page from this article": wgULS("移除此条目到这页的所有链接", "移除此條目到這頁的所有連結"),
         "remove all links to this disambig page from this article": wgULS("移除此条目到这消歧义的所有链接", "移除此條目到這消歧義的所有連結"),
         mainlink: wgULS("主链接", "主連結"),
-        ///// links, watch, unwatch
+        // links, watch, unwatch
         wikiLink: wgULS("个内部链接", "個內部連結"),
         wikiLinks: wgULS("个内部链接", "個內部連結"),
         "links here": wgULS("链入", "鏈入"),
@@ -199,7 +198,7 @@ $(() => {
         // user-related actions and info
         /////////////////////////////////////
         user: wgULS("用户", "使用者", null, null, "用戶"),
-        ///// user page, talk, email, space
+        // user page, talk, email, space
         "user&nbsp;page": wgULS("用户页", "使用者頁", null, null, "用戶頁"),
         "user talk": wgULS("用户讨论", "使用者對話", null, null, "用戶討論"),
         "edit user talk": wgULS("编辑用户讨论", "編輯使用者對話", null, null, "編輯用戶討論"),
@@ -211,7 +210,7 @@ $(() => {
         // short form for userSpace link
         PrefixindexHint: wgULS("显示 %s 的用户页子页面", "顯示 %s 的使用者頁子頁面", null, null, "顯示 %s 的用戶頁子頁面"),
         count: wgULS("统计", "統計"),
-        ///// contributions, tree, log
+        // contributions, tree, log
         "edit counter": wgULS("编辑次数", "編輯次數"),
         katelinkHint: wgULS("%s 的编辑次数", "%s 的編輯次數"),
         contribs: wgULS("贡献", "貢獻"),
@@ -224,7 +223,7 @@ $(() => {
         "user log": wgULS("用户日志", "使用者日誌", null, null, "用戶日誌"),
         userLogHint: wgULS("显示 %s 的用户日志", "顯示 %s 的使用者日誌", null, null, "顯示 %s 的用戶日誌"),
         arin: wgULS("ARIN 查询", "ARIN 查詢"),
-        ///// ARIN lookup, block user or IP
+        // ARIN lookup, block user or IP
         "Look up %s in ARIN whois database": wgULS("在 ARIN Whois 数据库中查询 %s", "在 ARIN Whois 數據庫中查詢 %s"),
         unblockShort: wgULS("解除", "解除"),
         block: wgULS("封禁", "封鎖"),
@@ -343,8 +342,8 @@ $(() => {
     }
     function defaultPopupsContainer() {
         if (getValueOf("popupOnlyArticleLinks")) {
-            return document.querySelector(".skin-vector-2022 .vector-body") || document.getElementById("mw_content") || document.getElementById("content") || document.getElementById("article") ||
-                document.getElementsByTagName("article")?.[0] // moeskin
+            return document.querySelector(".skin-vector-2022 .vector-body") || document.getElementById("mw_content") || document.getElementById("content") || document.getElementById("article")
+                || document.getElementsByTagName("article")?.[0] // moeskin
                 || document;
         }
         return document;
@@ -1320,7 +1319,8 @@ $(() => {
             let lastmod = null;
             try {
                 lastmod = this.http.getResponseHeader("Last-Modified");
-            } catch { } if (lastmod) {
+            } catch { }
+            if (lastmod) {
                 return new Date(lastmod);
             }
             return null;
@@ -2008,7 +2008,8 @@ $(() => {
                 value = split[j].split(".").join("%");
                 try {
                     value = decodeURIComponent(value);
-                } catch { } split[j] = value.split("_").join(" ");
+                } catch { }
+                split[j] = value.split("_").join(" ");
             }
             return split.join("");
         }
@@ -3608,7 +3609,8 @@ $(() => {
             let alt = "";
             try {
                 alt = navpop.parentAnchor.childNodes[0].alt;
-            } catch { } if (alt) {
+            } catch { }
+            if (alt) {
                 ret = `${ret}<hr /><b>${popupString("Alt text:")}</b> ${pg.escapeQuotesHTML(alt)}`;
             }
             if (typeof content === "string") {
@@ -4742,7 +4744,7 @@ $(() => {
         }
         /**
          * No need to require dependencies by itself
-         * 
+         *
         mw.loader.using([
              "mediawiki.util",
              "mediawiki.api",
@@ -6150,9 +6152,11 @@ $(() => {
     }
     function getHistoryInfo(wikipage, whatNext) {
         log("getHistoryInfo");
-        getHistory(wikipage, whatNext ? (d) => {
-            whatNext(processHistory(d));
-        } : processHistory);
+        getHistory(wikipage, whatNext
+            ? (d) => {
+                whatNext(processHistory(d));
+            }
+            : processHistory);
     }
     function getHistory(wikipage, onComplete) {
         log("getHistory");

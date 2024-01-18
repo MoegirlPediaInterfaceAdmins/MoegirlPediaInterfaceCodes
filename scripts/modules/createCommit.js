@@ -5,8 +5,8 @@ import { isInGithubActions } from "../modules/octokit.js";
 import upstream from "../modules/getUpstream.js";
 
 /**
- * @param {string} message 
- * @returns {Promise<CommitResult & { commit_long: string } | false>}
+ * @param { string } message
+ * @returns { Promise<import("simple-git").CommitResult & { commit_long: string } | false> }
  */
 export default async (message) => {
     if (!isInGithubActions) {

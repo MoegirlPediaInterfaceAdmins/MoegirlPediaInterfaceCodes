@@ -9,10 +9,10 @@ $(() => (async () => {
     }
     const getLogVar = (varName) => $(`.mw-abuselog-details-${varName} .mw-abuselog-var-value .mw-abuselog-var-value`).text();
     const timestampVar = getLogVar("timestamp");
-    const user_name = getLogVar("user_name");
-    const article_prefixedtext = getLogVar("article_prefixedtext");
+    const userName = getLogVar("user_name");
+    const articlePrefixedtext = getLogVar("article_prefixedtext");
     const filter = [...document.querySelectorAll('a[href*="/Special:%E6%BB%A5%E7%94%A8%E8%BF%87%E6%BB%A4%E5%99%A8/"]')].filter(({ href }) => /%E6%BB%A5%E7%94%A8%E8%BF%87%E6%BB%A4%E5%99%A8\/[1-9]\d*$/.test(href))?.[0]?.href?.match?.(/[1-9]\d*$/)?.[0];
-    if (timestampVar.length === 0 || user_name.length === 0 || article_prefixedtext.length === 0 || typeof filter !== "string") {
+    if (timestampVar.length === 0 || userName.length === 0 || articlePrefixedtext.length === 0 || typeof filter !== "string") {
         return;
     }
     const symbolEnter = (str) => typeof str === "string" ? str.replace(/\n/g, "↵") : str;
@@ -26,8 +26,8 @@ $(() => (async () => {
             action: "query",
             assertuser: mw.config.get("wgUserName"),
             list: "abuselog",
-            afluser: user_name,
-            afltitle: article_prefixedtext,
+            afluser: userName,
+            afltitle: articlePrefixedtext,
             aflprop: "details",
             aflfilter: +filter,
         })).query.abuselog;
@@ -57,13 +57,13 @@ $(() => (async () => {
             throw "无法找到符合格式的规则";
         }
         for (const { details } of _details) {
-            const added_lines = details.added_lines || details.new_wikitext;
+            const addedLines = details.added_lines || details.new_wikitext;
             const result = [];
             const table = $("<table/>").css("width", "100%").addClass("wikitable abusefiltertest").hide();
             pTable.after(table);
             for (const sr of stringRules.values()) {
-                if (added_lines.includes(sr)) {
-                    const splits = added_lines.split(sr);
+                if (addedLines.includes(sr)) {
+                    const splits = addedLines.split(sr);
                     splits.forEach((str, i) => {
                         if (i === splits.length - 1) {
                             return;
@@ -85,15 +85,15 @@ $(() => (async () => {
             for (const rr of regexRules.values()) {
                 const regex = RegExp(`.{0,20}${rr}.{0,20}`, "ig");
                 const findstring = RegExp(rr, "ig");
-                if (regex.test(added_lines)) {
-                    const splits = added_lines.match(regex);
+                if (regex.test(addedLines)) {
+                    const splits = addedLines.match(regex);
                     let lastFromIndex = 0;
                     splits.forEach((str) => {
                         const string = str.match(findstring)[0];
                         const split = str.split(string);
                         const before = split[0];
                         const after = split.slice(1).join(string);
-                        const start = added_lines.indexOf(string, lastFromIndex);
+                        const start = addedLines.indexOf(string, lastFromIndex);
                         lastFromIndex = start + string.length;
                         result.push({
                             isRegex: true,

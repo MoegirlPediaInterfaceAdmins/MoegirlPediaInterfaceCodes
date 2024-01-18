@@ -19,7 +19,7 @@ $(() => {
     };
     const loop = (_, ele) => {
         const self = $(ele);
-        self.data("href", self.attr("href")).removeAttr("href") //取消拖动链接回退
+        self.data("href", self.attr("href")).removeAttr("href") // 取消拖动链接回退
             .attr("title", `${ele.title}（启用自定义摘要）`).css("cursor", "pointer").append("<sup>+</sup>");
         if ($(".ns-special")[0] && self.text().includes("10")) {
             self.parent().text(wgULS("[超过10次的编辑]", "[超過10次的編輯]")).attr("title", "超过10次的编辑请使用撤销功能，以便检查差异（自定义摘要小工具）");

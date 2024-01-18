@@ -1,3 +1,4 @@
+/* eslint-disable promise/catch-or-return */
 "use strict";
 Promise.all(
     ["moeskin.instance", "moeskin.stores"].map((name) => new Promise(mw.hook(name).add)),

@@ -4,7 +4,7 @@
     let running = false;
     const resArray = [];
     const sizes = ["small", "medium", "large", "larger"];
-    window.oouiDialog = Object.fromEntries(["alert", "confirm", "prompt"].map((method) => [method, async (text_jQuery, _option) => {
+    window.oouiDialog = Object.fromEntries(["alert", "confirm", "prompt"].map((method) => [method, async (textORjQuery, _option) => {
         const option = $.isPlainObject(_option) ? _option : {};
         const base = {
             size: "medium",
@@ -38,7 +38,7 @@
         try {
             let result;
             while (Number.MAX_SAFE_INTEGER > Number.MIN_SAFE_INTEGER) {
-                result = await OO.ui[method](text_jQuery instanceof $ ? text_jQuery : $("<p>").html(text_jQuery), $.extend({
+                result = await OO.ui[method](textORjQuery instanceof $ ? textORjQuery : $("<p>").html(textORjQuery), $.extend({
                     title: "萌娘百科提醒您",
                 }, option, base));
                 try {

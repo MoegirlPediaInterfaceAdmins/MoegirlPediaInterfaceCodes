@@ -6,7 +6,7 @@ const registryBaseUrl = (await exec("npm config get registry --global")).trim();
 console.info("npm config get registry --global:", registryBaseUrl);
 const cachedPackageInfo = new Map();
 /**
- * @param {string} pkg 
+ * @param {string} pkg
  */
 const fetchNPMPackageInfo = async (pkg) => {
     const registryUrl = `${new URL(pkg, registryBaseUrl)}`;

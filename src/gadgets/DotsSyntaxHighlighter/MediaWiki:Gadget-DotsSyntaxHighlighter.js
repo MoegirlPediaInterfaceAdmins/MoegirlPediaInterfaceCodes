@@ -320,11 +320,9 @@
 
             if (syntaxHighlighterConfig[parameterName] === "normal") {
                 syntaxHighlighterConfig[parameterName] = hardcodedFallback;
-            }
-            else if (typeof syntaxHighlighterConfig[parameterName] !== "undefined") {
+            } else if (typeof syntaxHighlighterConfig[parameterName] !== "undefined") {
                 return;
-            }
-            else if (typeof syntaxHighlighterConfig.defaultColor !== "undefined" && defaultOk) {
+            } else if (typeof syntaxHighlighterConfig.defaultColor !== "undefined" && defaultOk) {
                 syntaxHighlighterConfig[parameterName] = syntaxHighlighterConfig.defaultColor;
             } else {
                 syntaxHighlighterConfig[parameterName] = hardcodedFallback;
@@ -367,7 +365,7 @@
 
         wpTextbox0.dir = wpTextbox1.dir;
         wpTextbox0.id = "wpTextbox0";
-        wpTextbox0.lang = wpTextbox1.lang; //lang determines which font "monospace" is
+        wpTextbox0.lang = wpTextbox1.lang; // lang determines which font "monospace" is
         wpTextbox0.style.backgroundColor = syntaxHighlighterConfig.backgroundColor;
         wpTextbox0.style.borderBottomLeftRadius = wpTextbox1Style.borderBottomLeftRadius;
         wpTextbox0.style.borderBottomRightRadius = wpTextbox1Style.borderBottomRightRadius;
@@ -397,7 +395,7 @@
         wpTextbox0.style.tabSize = wpTextbox1Style.tabSize;
         wpTextbox0.style.whiteSpace = "pre-wrap";
         wpTextbox0.style.width = "100%";
-        wpTextbox0.style.wordWrap = "normal"; //see below
+        wpTextbox0.style.wordWrap = "normal"; // see below
 
         wpTextbox1.style.backgroundColor = "transparent";
         wpTextbox1.style.borderBottomLeftRadius = wpTextbox1Style.borderBottomLeftRadius;
@@ -418,7 +416,7 @@
         wpTextbox1.style.fontFamily = wpTextbox1Style.fontFamily;
         wpTextbox1.style.fontSize = wpTextbox1Style.fontSize;
         wpTextbox1.style.lineHeight = "normal";
-        wpTextbox1.style.marginBottom = wpTextbox1Style.marginBottom; //lock to pixel value because the top margin was also locked to a pixel value when it was moved to wpTextbox0
+        wpTextbox1.style.marginBottom = wpTextbox1Style.marginBottom; // lock to pixel value because the top margin was also locked to a pixel value when it was moved to wpTextbox0
         wpTextbox1.style.marginLeft = "0";
         wpTextbox1.style.marginRight = "0";
         wpTextbox1.style.overflowX = "auto";
@@ -428,12 +426,12 @@
         wpTextbox1.style.tabSize = wpTextbox1Style.tabSize;
         wpTextbox1.style.whiteSpace = "pre-wrap";
         wpTextbox1.style.width = "100%";
-        wpTextbox1.style.wordWrap = "normal"; //overall more visually appealing
+        wpTextbox1.style.wordWrap = "normal"; // overall more visually appealing
 
-        //lock both heights to pixel values so that the browser zoom feature works better
+        // lock both heights to pixel values so that the browser zoom feature works better
         wpTextbox1.style.height = wpTextbox0.style.height = `${wpTextbox1.offsetHeight}px`;
 
-        //insert wpTextbox0 underneath wpTextbox1
+        // insert wpTextbox0 underneath wpTextbox1
         wpTextbox1.style.marginTop = `${-wpTextbox1.offsetHeight}px`;
         wpTextbox1.parentNode.insertBefore(wpTextbox0, wpTextbox1);
 

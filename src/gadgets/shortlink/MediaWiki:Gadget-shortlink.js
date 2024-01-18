@@ -114,10 +114,9 @@ $(() => {
 
     // 标记复制状态
     const markStatus = (ele, status) => {
-        ele.innerText = status ?
-            `${ele.dataset.type}${wgULS("复制成功", "複製成功")}`
-            :
-            `${wgULS("复制", "複製")}${ele.dataset.type}`;
+        ele.innerText = status
+            ? `${ele.dataset.type}${wgULS("复制成功", "複製成功")}`
+            : `${wgULS("复制", "複製")}${ele.dataset.type}`;
     };
 
     // 初始化复制栏

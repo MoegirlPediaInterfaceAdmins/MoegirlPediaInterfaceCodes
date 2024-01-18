@@ -1,18 +1,18 @@
 // <pre>
-/* 这里的任何JavaScript将只为管理员加载 
+/* 这里的任何JavaScript将只为管理员加载
  * 请尊重萌娘百科版权，以下代码复制需要注明原自萌娘百科，并且附上URL地址http://zh.moegirl.org.cn/MediaWiki:Group-sysop.js
  * 版权协定：知识共享 署名-非商业性使用-相同方式共享 3.0
  */
 "use strict";
 (async () => {
     /* 函数定义块 */
-    //添加删除原因链接
+    // 添加删除原因链接
     const addLink = ($obj, act) => {
         const href = $obj.css("margin-left", "1em")[0].href,
             reasonPageName = href.slice(href.indexOf("title=") + 6, href.indexOf("&action"));
         $obj.before(`<a target="_blank" href="/${reasonPageName}">浏览${act}原因</a>`);
     };
-    //防滥用过滤器相关
+    // 防滥用过滤器相关
     // eslint-disable-next-line no-unused-vars
     const abuseLog = () => {
         if ($(".mw-special-AbuseLog")[0]) {
@@ -65,7 +65,7 @@
             }
         }
     };
-    //防滥用过滤器列表
+    // 防滥用过滤器列表
     const AbuseList = () => {
         const idList = $(".TablePager_col_af_id a"),
             // lvList = $(".TablePager_col_af_hidden"),
@@ -85,7 +85,7 @@
             }
         }); */
     };
-    //i18n语言链接
+    // i18n语言链接
     const i18nLink = () => {
         $('#mw-content-text a.new[href$="/zh-cn"], #mw-content-text a.new[href$="/zh-tw"], #mw-content-text a.new[href$="/zh-hk"]').each((_, ele) => {
             $(ele).removeClass("new").attr({
@@ -96,7 +96,7 @@
     };
     /* 函数执行块 */
     await $.ready;
-    //删除、保护、版本删除原因浏览链接
+    // 删除、保护、版本删除原因浏览链接
     if (mw.config.get("wgAction") === "delete") {
         if ($(".mw-delete-editreasons")[0]) {
             addLink($(".mw-delete-editreasons > a"), "删除");
@@ -111,15 +111,15 @@
     if (mw.config.get("wgCanonicalSpecialPageName") === "Revisiondelete" && $(".mw-revdel-editreasons")[0]) {
         addLink($(".mw-revdel-editreasons > a"), "删除");
     }
-    //防滥用过滤器日志
+    // 防滥用过滤器日志
     // abuseLog();
-    //防滥用过滤器列表
+    // 防滥用过滤器列表
     if (mw.config.get("wgPageName") === "Special:滥用过滤器") {
         AbuseList();
     }
-    //i18n语言链接
+    // i18n语言链接
     i18nLink();
-    //授权巡查默认15天，机器用户授权增加预置时间选项，手确默认7天
+    // 授权巡查默认15天，机器用户授权增加预置时间选项，手确默认7天
     if (mw.config.get("wgCanonicalSpecialPageName") === "Userrights") {
         const wpExpiryPatroller = document.querySelector("#mw-input-wpExpiry-patroller");
         if (wpExpiryPatroller && !document.getElementById("wpGroup-patroller").checked) {
@@ -135,11 +135,11 @@
             wpExpiryManuallyConfirmed.value = "1 week";
         }
     }
-    //替换文本默认不勾选「通过Special:最近更改和监视列表通知这些编辑」
+    // 替换文本默认不勾选「通过Special:最近更改和监视列表通知这些编辑」
     if (mw.config.get("wgCanonicalSpecialPageName") === "ReplaceText" && $("#doAnnounce")[0]) {
         $("#doAnnounce").prop("checked", false);
     }
-    //批量删除默认选择运行者为「you」
+    // 批量删除默认选择运行者为「you」
     if (mw.config.get("wgCanonicalSpecialPageName") === "DeleteBatch" && $("#wpMode")[0]) {
         $("#wpMode").val("you");
     }

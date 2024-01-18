@@ -19,7 +19,7 @@
             once: true,
         });
     });
-    Object.defineProperty(window, "polyfillPromise", {
+    Reflect.defineProperty(window, "polyfillPromise", {
         configurable: false,
         enumerable: true,
         writable: false,

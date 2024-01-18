@@ -14,8 +14,8 @@
         8, // MediaWiki
         10, // Template
         12, // Help
-        274, //Widget
-        828, //Module
+        274, // Widget
+        828, // Module
     ];
     /* 检查是否为维护人员 */
     const allowedGroups = ["sysop", "patroller", "staff"];
@@ -29,13 +29,13 @@
     const multimediaViewer = () => {
         const _scrollTo = window.scrollTo;
         let flag = location.hash.startsWith("#/media/");
-        window.scrollTo = (x_option, y) => {
+        window.scrollTo = (xORoption, y) => {
             if (flag) {
                 console.info("Prevent multimediaViewer called");
             } else if (y === undefined) {
-                _scrollTo(x_option);
+                _scrollTo(xORoption);
             } else {
-                _scrollTo(x_option, y);
+                _scrollTo(xORoption, y);
             }
         };
         setInterval(() => {
@@ -79,7 +79,7 @@
         }, 137);
     };
     // 跨站重定向页顶链接
-    const crossDomain_link = (url) => {
+    const crossDomainLink = (url) => {
         const link = url.query.title;
         const domain = url.host;
         const crossDomain = $("<div/>");
@@ -89,7 +89,7 @@
         crossDomain.append(anchor);
         $("#contentSub").prepend(crossDomain);
     };
-    const crossDomain_link_moeskin = (url) => {
+    const crossDomainLinkMoeskin = (url) => {
         const link = url.query.title;
         const domain = url.host;
         const crossDomain = $("<div/>");
@@ -102,8 +102,8 @@
     // 复制修改内容
     const copyRights = async () => {
         await mw.loader.using("mediawiki.util");
-        const div =
-            $("<div>", {
+        const div
+            = $("<div>", {
                 css: {
                     position: "absolute",
                     left: "-99999px",
@@ -116,8 +116,8 @@
             const selection = window.getSelection(),
                 value = selection.toString(),
                 range = selection.getRangeAt(0);
-            if (!value.length || value.length < 128 || //当复制内容为空或长度小于定值时不添加声明
-                $(selection.anchorNode).add(selection.basenode).add(selection.focusNode).closest(".Wikiplus-InterBox")[0]) { //如果选中了wikiplus的内容
+            if (!value.length || value.length < 128 // 当复制内容为空或长度小于定值时不添加声明
+                || $(selection.anchorNode).add(selection.basenode).add(selection.focusNode).closest(".Wikiplus-InterBox")[0]) { // 如果选中了wikiplus的内容
                 return;
             }
             valueNode.text(value);
@@ -126,7 +126,7 @@
                 e.originalEvent.clipboardData.setData("text/html", div.html());
             } else { */
             selection.selectAllChildren(div[0]);
-            window.setTimeout(() => { //以下将还原选区
+            window.setTimeout(() => { // 以下将还原选区
                 selection.removeAllRanges();
                 selection.addRange(range);
                 valueNode.empty();
@@ -138,43 +138,45 @@
     const noticeActivityClose = async () => {
         const noticeActivity = $("body").children("#content, #app").find("#notice-activity");
         const isMoeskin = skin === "moeskin";
-        const styles = skin === "moeskin" ? {
-            visible: {
-                "user-select": "none",
-                "text-align": "center",
-                "box-sizing": "inherit",
-                background: "none",
-                margin: "0",
-                border: "0",
-                font: "inherit",
-                "vertical-align": "baseline",
-                "text-decoration": "none",
-                position: "absolute",
-                top: ".2rem",
-                color: "#fff",
-                "background-color": "#00000080",
-                "border-radius": "99em",
-                padding: ".1rem .5rem",
-                "line-height": "1.5",
-                right: ".2rem",
-                "z-index": "999999",
-                cursor: "pointer",
-            },
-            hidden: {
-                top: "-0.8rem",
-            },
-        } : {
-            visible: {
-                position: "absolute",
-                right: "1rem",
-                top: "50%",
-                transform: "translate(0,-50%)",
-                fontSize: "1rem",
-            },
-            hidden: {
-                transform: "translate(0,0)",
-            },
-        };
+        const styles = skin === "moeskin"
+            ? {
+                visible: {
+                    "user-select": "none",
+                    "text-align": "center",
+                    "box-sizing": "inherit",
+                    background: "none",
+                    margin: "0",
+                    border: "0",
+                    font: "inherit",
+                    "vertical-align": "baseline",
+                    "text-decoration": "none",
+                    position: "absolute",
+                    top: ".2rem",
+                    color: "#fff",
+                    "background-color": "#00000080",
+                    "border-radius": "99em",
+                    padding: ".1rem .5rem",
+                    "line-height": "1.5",
+                    right: ".2rem",
+                    "z-index": "999999",
+                    cursor: "pointer",
+                },
+                hidden: {
+                    top: "-0.8rem",
+                },
+            }
+            : {
+                visible: {
+                    position: "absolute",
+                    right: "1rem",
+                    top: "50%",
+                    transform: "translate(0,-50%)",
+                    fontSize: "1rem",
+                },
+                hidden: {
+                    transform: "translate(0,0)",
+                },
+            };
         if (noticeActivity.length > 0) {
             await mw.loader.using(["user.options"]);
             if (+mw.user.options.get("gadget-noticeActivity") === 1) {
@@ -323,9 +325,9 @@
                 const { query } = rdfromUri;
                 if (query.title && query.redirect === "no") {
                     if (skin === "moeskin") {
-                        crossDomain_link_moeskin(rdfromUri);
+                        crossDomainLinkMoeskin(rdfromUri);
                     } else {
-                        crossDomain_link(rdfromUri);
+                        crossDomainLink(rdfromUri);
                     }
                 }
             }
@@ -390,7 +392,7 @@
         $("#ca-move").remove();
     }
     // 修正navbar、T:User中编辑链接从zh/mzh跳转到其他
-    if(["mzh.moegirl.org.cn", "zh.moegirl.org.cn"].includes(wgServerName)) {
+    if (["mzh.moegirl.org.cn", "zh.moegirl.org.cn"].includes(wgServerName)) {
         $('a.external.text[href$="&action=edit"], .plainlinks.userlink .external').each((_, ele) => {
             const $ele = $(ele);
             $ele.attr("href", $ele.attr("href").replace(/(?:mobile|mzh|zh)\.moegirl\.org\.cn/, wgServerName));

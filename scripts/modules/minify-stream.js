@@ -7,14 +7,14 @@ class ReadableFromString extends Readable {
     #string;
     #index = 0;
     /**
-     * @param {string} string 
+     * @param { string } string
      */
     constructor(string) {
         super();
         this.#string = string;
     }
     /**
-     * @param {number} size
+     * @param { number } size
      */
     _read(size) {
         const index = this.#index;
@@ -29,7 +29,7 @@ class ReadableFromString extends Readable {
 }
 
 /**
- * @param {uglify.MinifyOptions} [opts] 
+ * @param { uglify.MinifyOptions } [opts]
  */
 export default (opts) => {
     const stream = duplexify();

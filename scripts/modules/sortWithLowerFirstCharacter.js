@@ -1,5 +1,5 @@
 /**
- * @param {string} str 
+ * @param {string} str
  * @returns {string}
  */
 export const toLowerFirstCharacter = (str) => `${str[0].toLowerCase()}${str.slice(1)}`;

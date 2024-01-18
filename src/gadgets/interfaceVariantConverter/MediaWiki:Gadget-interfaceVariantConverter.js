@@ -3,7 +3,7 @@
 "use strict";
 // TODO: Fix MultilineTextInput initial height
 // Test: https://zh.moegirl.org.cn/index.php?oldid=5572397
-// declare var lr_aivc: {
+// declare var lrAivc: {
 //     [key: string]: any;
 // };
 // declare var OpenCC: any;
@@ -22,7 +22,7 @@ $(() => (async () => {
     const basepage = pagename.replace(/\/.*?$/, "");
     const api = new mw.Api(), zhAPI = /m?zh\.moegirl\.org\.cn/.test(location.hostname) ? api : new mw.ForeignApi("https://mzh.moegirl.org.cn/api.php", { anonymous: true });
 
-    const lr_aivc = $.extend({
+    const lrAivc = $.extend({
         main: ["zh-cn", "zh-tw", "zh-hk"],
         dependent: {
             "(main)": "zh-cn",
@@ -43,12 +43,14 @@ $(() => (async () => {
 
     let prepopContent = "";
     try {
-        prepopContent = lr_aivc.autoPopulate ? (await api.get({
-            action: "parse",
-            assertuser: username,
-            pageid,
-            prop: "wikitext",
-        })).parse.wikitext["*"] : "";
+        prepopContent = lrAivc.autoPopulate
+            ? (await api.get({
+                action: "parse",
+                assertuser: username,
+                pageid,
+                prop: "wikitext",
+            })).parse.wikitext["*"]
+            : "";
     } catch { }
     const toParams = (obj) => Object.entries(obj).map(([k, v]) => `${k}=${v}`).join("|");
     const variantPage = (variant) => variant === "(main)" ? `${basepage}` : `${basepage}/${variant}`;
@@ -80,7 +82,8 @@ $(() => (async () => {
         // Replace template names and parameters with IDs
         replaced = replaced.replace(REGEXP.template, (_, params) => {
             const paramList = params.split("|");
-            mappings.push(paramList[0]); paramList.shift();
+            mappings.push(paramList[0]);
+            paramList.shift();
             return `${paramList.reduce((acc, param) => {
                 const [first, ...rest] = param.split("=");
                 // If rest is not empty, it's a named parameter; otherwise, it's a positional parameter
@@ -105,7 +108,8 @@ $(() => (async () => {
         // Restore template names and parameters
         replaced = replaced.replace(REGEXP.template, (_, params) => {
             const paramList = params.split("|");
-            const name = mappings[paramList[0]]; paramList.shift();
+            const name = mappings[paramList[0]];
+            paramList.shift();
             return `${paramList.reduce((acc, param) => {
                 const [first, ...rest] = param.split("=");
                 // If rest is not empty, it's a named parameter; otherwise, it's a positional parameter
@@ -395,7 +399,7 @@ $(() => (async () => {
                     watchlist: this.config.watchlist,
                 });
             }).concat(Object.entries(this.config.dependent).map(([variant, parent]) => {
-                const text = this.textInputs[parent/* as string*/].getValue();
+                const text = this.textInputs[parent/* as string */].getValue();
                 return api.postWithToken("csrf", {
                     action: "edit",
                     assertuser: username,
@@ -415,7 +419,7 @@ $(() => (async () => {
     const aivcDialog = new AIVCWindow({
         size: "large",
         data: {
-            config: lr_aivc,
+            config: lrAivc,
             prepopContent,
         },
     });

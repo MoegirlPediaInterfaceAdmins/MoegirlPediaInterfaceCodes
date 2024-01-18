@@ -242,8 +242,8 @@
             }
         }
         if (unknownUsernames.size > 0) {
-            const has_apihighlimits = (await mw.user.getRights()).includes("apihighlimits");
-            const singleRequestLimit = has_apihighlimits ? 500 : 50;
+            const hasApihighlimits = (await mw.user.getRights()).includes("apihighlimits");
+            const singleRequestLimit = hasApihighlimits ? 500 : 50;
             const targets = [...unknownUsernames.values()];
             for (let i = 0, l = Math.ceil(targets.length / singleRequestLimit); i < l; i++) {
                 let bkcontinue = undefined;

@@ -1,5 +1,5 @@
-//通过选中文字快速找到编辑者和日期 by User:Bbrabbit
-//注意：此工具会绝赞产生大量API请求，非维护组谨慎使用。维护组：需要WAF豁免。
+// 通过选中文字快速找到编辑者和日期 by User:Bbrabbit
+// 注意：此工具会绝赞产生大量API请求，非维护组谨慎使用。维护组：需要WAF豁免。
 /* eslint-disable no-use-before-define */
 "use strict";
 $(() => {
@@ -7,32 +7,32 @@ $(() => {
         return;
     }
 
-    //dialog classes
+    // dialog classes
     class WikiBlameDialog extends OO.ui.Dialog {
         static static = { ...super.static, name: "wikiBlameDialog" };
-        constructor (config) {
+        constructor(config) {
             super(config);
         }
 
         initialize() {
             super.initialize();
             const selection = getSelected();
-            const current_date = new Date();
-            const current_year = current_date.getFullYear();
-            const current_month = current_date.getMonth() + 1;
-            const current_day = current_date.getUTCDate();
-            const start_year_list = [],
-                start_month_list = [],
-                start_day_list = [],
-                end_year_list = [],
-                end_month_list = [],
-                end_day_list = [];
-            for (let i = 2010; i <= current_year; i++) {
-                start_year_list.push(new OO.ui.MenuOptionWidget({
+            const currentDate = new Date();
+            const currentYear = currentDate.getFullYear();
+            const currentMonth = currentDate.getMonth() + 1;
+            const currentDay = currentDate.getUTCDate();
+            const startYearList = [],
+                startMonthList = [],
+                startDayList = [],
+                endYearList = [],
+                endMonthList = [],
+                endDayList = [];
+            for (let i = 2010; i <= currentYear; i++) {
+                startYearList.push(new OO.ui.MenuOptionWidget({
                     data: String(i),
                     label: String(i),
                 }));
-                end_year_list.push(new OO.ui.MenuOptionWidget({
+                endYearList.push(new OO.ui.MenuOptionWidget({
                     data: String(i),
                     label: String(i),
                 }));
@@ -41,10 +41,11 @@ $(() => {
                 .fill(1)
                 .map((x, y) => x + y)
                 .forEach((i) => {
-                    start_month_list.push(new OO.ui.MenuOptionWidget({
+                    startMonthList.push(new OO.ui.MenuOptionWidget({
                         data: String(i),
                         label: String(i),
-                    })); end_month_list.push(new OO.ui.MenuOptionWidget({
+                    }));
+                    endMonthList.push(new OO.ui.MenuOptionWidget({
                         data: String(i),
                         label: String(i),
                     }));
@@ -53,55 +54,56 @@ $(() => {
                 .fill(1)
                 .map((x, y) => x + y)
                 .forEach((i) => {
-                    start_day_list.push(new OO.ui.MenuOptionWidget({
+                    startDayList.push(new OO.ui.MenuOptionWidget({
                         data: String(i),
                         label: String(i),
-                    })); end_day_list.push(new OO.ui.MenuOptionWidget({
+                    }));
+                    endDayList.push(new OO.ui.MenuOptionWidget({
                         data: String(i),
                         label: String(i),
                     }));
                 });
 
-            const current_selection = new OO.ui.TextInputWidget({
+            const currentSelection = new OO.ui.TextInputWidget({
                 value: selection,
             });
-            const revision_check = new OO.ui.TextInputWidget({
+            const revisionCheck = new OO.ui.TextInputWidget({
                 value: "50",
             });
-            const start_date_label = new OO.ui.LabelWidget({
+            const startDateLabel = new OO.ui.LabelWidget({
                 label: "开始日期",
             });
-            const start_year = new OO.ui.DropdownWidget({
+            const startYear = new OO.ui.DropdownWidget({
                 menu: {
-                    items: start_year_list,
+                    items: startYearList,
                 },
             });
-            const start_month = new OO.ui.DropdownWidget({
+            const startMonth = new OO.ui.DropdownWidget({
                 menu: {
-                    items: start_month_list,
+                    items: startMonthList,
                 },
             });
-            const start_day = new OO.ui.DropdownWidget({
+            const startDay = new OO.ui.DropdownWidget({
                 menu: {
-                    items: start_day_list,
+                    items: startDayList,
                 },
             });
-            const end_date_label = new OO.ui.LabelWidget({
+            const endDateLabel = new OO.ui.LabelWidget({
                 label: "结束日期",
             });
-            const end_year = new OO.ui.DropdownWidget({
+            const endYear = new OO.ui.DropdownWidget({
                 menu: {
-                    items: end_year_list,
+                    items: endYearList,
                 },
             });
-            const end_month = new OO.ui.DropdownWidget({
+            const endMonth = new OO.ui.DropdownWidget({
                 menu: {
-                    items: end_month_list,
+                    items: endMonthList,
                 },
             });
-            const end_day = new OO.ui.DropdownWidget({
+            const endDay = new OO.ui.DropdownWidget({
                 menu: {
-                    items: end_day_list,
+                    items: endDayList,
                 },
             });
             const submit = new OO.ui.ButtonWidget({
@@ -121,41 +123,41 @@ $(() => {
             });
             fieldSet.$header.append(close.$element);
             fieldSet.addItems([
-                new OO.ui.FieldLayout(current_selection, {
+                new OO.ui.FieldLayout(currentSelection, {
                     label: "选中文字",
                     align: "top",
                 }),
-                new OO.ui.FieldLayout(revision_check, {
+                new OO.ui.FieldLayout(revisionCheck, {
                     label: "搜索数量",
                     align: "top",
                 }),
-                new OO.ui.FieldLayout(start_date_label, {
+                new OO.ui.FieldLayout(startDateLabel, {
                     align: "inline",
                 }),
-                new OO.ui.FieldLayout(start_year, {
+                new OO.ui.FieldLayout(startYear, {
                     id: "start-year",
                     align: "inline",
                 }),
-                new OO.ui.FieldLayout(start_month, {
+                new OO.ui.FieldLayout(startMonth, {
                     id: "start-month",
                     align: "inline",
                 }),
-                new OO.ui.FieldLayout(start_day, {
+                new OO.ui.FieldLayout(startDay, {
                     id: "start-day",
                     align: "inline",
                 }),
-                new OO.ui.FieldLayout(end_date_label, {
+                new OO.ui.FieldLayout(endDateLabel, {
                     align: "inline",
                 }),
-                new OO.ui.FieldLayout(end_year, {
+                new OO.ui.FieldLayout(endYear, {
                     id: "end-year",
                     align: "inline",
                 }),
-                new OO.ui.FieldLayout(end_month, {
+                new OO.ui.FieldLayout(endMonth, {
                     id: "end-month",
                     align: "inline",
                 }),
-                new OO.ui.FieldLayout(end_day, {
+                new OO.ui.FieldLayout(endDay, {
                     id: "end-day",
                     align: "inline",
                 }),
@@ -171,17 +173,17 @@ $(() => {
             });
             this.content.$element.append(fieldSet.$element);
             this.$body.append(this.content.$element);
-            start_year.getMenu().selectItemByData(String(current_year));
-            start_month.getMenu().selectItemByData(String(current_month));
-            start_day.getMenu().selectItemByData(String(current_day));
-            end_year.getMenu().selectItemByData(String(current_year));
-            end_month.getMenu().selectItemByData(String(current_month));
-            end_day.getMenu().selectItemByData(String(current_day));
+            startYear.getMenu().selectItemByData(String(currentYear));
+            startMonth.getMenu().selectItemByData(String(currentMonth));
+            startDay.getMenu().selectItemByData(String(currentDay));
+            endYear.getMenu().selectItemByData(String(currentYear));
+            endMonth.getMenu().selectItemByData(String(currentMonth));
+            endDay.getMenu().selectItemByData(String(currentDay));
             submit.on("click", () => {
-                const start_date = `${start_year.getMenu().findSelectedItem().getData()}-${`0${start_month.getMenu().findSelectedItem().getData()}`.slice(-2)}-${`0${start_day.getMenu().findSelectedItem().getData()}`.slice(-2)}T00:00:00Z`;
-                const end_date = `${end_year.getMenu().findSelectedItem().getData()}-${`0${end_month.getMenu().findSelectedItem().getData()}`.slice(-2)}-${`0${end_day.getMenu().findSelectedItem().getData()}`.slice(-2)}T23:59:59Z`;
-                const limit = revision_check.getValue();
-                queryRevisionApi(start_date, end_date, limit, selection);
+                const startDate = `${startYear.getMenu().findSelectedItem().getData()}-${`0${startMonth.getMenu().findSelectedItem().getData()}`.slice(-2)}-${`0${startDay.getMenu().findSelectedItem().getData()}`.slice(-2)}T00:00:00Z`;
+                const endDate = `${endYear.getMenu().findSelectedItem().getData()}-${`0${endMonth.getMenu().findSelectedItem().getData()}`.slice(-2)}-${`0${endDay.getMenu().findSelectedItem().getData()}`.slice(-2)}T23:59:59Z`;
+                const limit = revisionCheck.getValue();
+                queryRevisionApi(startDate, endDate, limit, selection);
             });
             close.on("click", () => {
                 const windowManager = window.wikiBlameWindowManager;
@@ -201,15 +203,14 @@ $(() => {
         getBodyHeight() {
             return this.content.$element.outerHeight(true) + 10;
         }
-
     }
 
     class PageLayout extends OO.ui.PageLayout {
         #label;
-        constructor (name, config, diff_table, label) {
+        constructor(name, config, diffTable, label) {
             super(name, config);
             this.#label = label;
-            this.$element.append($(diff_table));
+            this.$element.append($(diffTable));
         }
         setupOutlineItem() {
             this.outlineItem.setLabel(this.#label);
@@ -218,20 +219,20 @@ $(() => {
 
     class WikiBlameDiffDialog extends OO.ui.Dialog {
         static static = { ...super.static, name: "wikiBlameDiffDialog" };
-        revision_list = undefined;
-        constructor (config, revision_list) {
+        revisionList = undefined;
+        constructor(config, revisionList) {
             super(config);
-            this.revision_list = revision_list;
+            this.revisionList = revisionList;
         }
 
         initialize() {
             super.initialize();
-            const page_list = [];
+            const pageList = [];
             const server = mw.config.get("wgServer");
             const script = mw.config.get("wgScript");
-            console.log(this.revision_list);
-            for (const r of this.revision_list) {
-                const diff_table = `<a href=${server}${script}?curid=${r.fromid}&oldid=${r.torevid} target="_blank">永久链接</a>
+            console.log(this.revisionList);
+            for (const r of this.revisionList) {
+                const diffTable = `<a href=${server}${script}?curid=${r.fromid}&oldid=${r.torevid} target="_blank">永久链接</a>
                 <table class="diff">
                     <colgroup>
                         <col class="diff-marker">
@@ -243,7 +244,7 @@ $(() => {
                         ${r["*"]}
                     </tbody>
                     </table>`;
-                page_list.push(new PageLayout(r.user + r.fromrevid, undefined, diff_table, `${r.user} ${r.timestamp}`));
+                pageList.push(new PageLayout(r.user + r.fromrevid, undefined, diffTable, `${r.user} ${r.timestamp}`));
             }
             const close = new OO.ui.ButtonWidget({
                 id: "wiki-blame-close",
@@ -257,7 +258,7 @@ $(() => {
                 const windowManager = window.wikiBlameWindowManager;
                 windowManager.currentWindow.close();
             });
-            this.content.addPages(page_list);
+            this.content.addPages(pageList);
             this.$body.append(close.$element, this.content.$element);
             $("#wiki-blame-close > a").removeClass("oo-ui-buttonElement-button");
             $("#wiki-blame-close > a").css({ "text-decoration": "none" });
@@ -268,8 +269,8 @@ $(() => {
         getBodyHeight = () => 500;
     }
 
-    //helper functions
-    const queryRevisionApi = async (start_date, end_date, limit, selection) => {
+    // helper functions
+    const queryRevisionApi = async (startDate, endDate, limit, selection) => {
         const api = new mw.Api();
         const pagename = mw.config.get("wgPageName");
         const username = mw.config.get("wgUserName");
@@ -290,8 +291,8 @@ $(() => {
                     rvprop: "ids|timestamp|user|parsedcomment|tags|content",
                     titles: pagename,
                     rvlimit: BATCH_SIZE,
-                    rvstart: start_date,
-                    rvend: end_date,
+                    rvstart: startDate,
+                    rvend: endDate,
                     rvdir: "newer",
                 };
                 // 如需要rvcontinue参数，则添加。该参数不能为空，否则会报错
@@ -299,13 +300,13 @@ $(() => {
                     params.rvcontinue = cont;
                 }
                 const data = await api.get(params);
-                const page_id = Object.keys(data.query.pages)[0];
-                const revisions_result = data.query.pages[page_id].revisions;
-                if (revisions_result === undefined) {
+                const pageId = Object.keys(data.query.pages)[0];
+                const revisionsResult = data.query.pages[pageId].revisions;
+                if (revisionsResult === undefined) {
                     $("#wiki-blame-progress").html("<p style=\"color: red\">指定区间内无编辑或API错误</p>");
                     return;
                 }
-                revisions.push(...revisions_result);
+                revisions.push(...revisionsResult);
                 remaining -= BATCH_SIZE;
                 progress.innerText = `${Math.min(+progress.innerText + BATCH_SIZE, limit)}`;
                 // 如果还有更多版本，修改rvcontinue参数，否则退出循环
@@ -317,28 +318,28 @@ $(() => {
             }
             // 去除被版本删除的版本
             revisions = revisions.filter((r) => Reflect.has(r, "*"));
-            const revisions_list = [];
-            const target_revisions = [];
+            const revisionsList = [];
+            const targetRevisions = [];
             for (let i = 0; i < revisions.length; i++) {
                 const current = revisions[i];
                 // 特殊处理第一个版本
                 if (i === 0) {
                     if (current["*"].includes(selection)) {
-                        target_revisions.push(current);
+                        targetRevisions.push(current);
                     }
                     continue;
                 }
                 // 和前一个版本对比，如果多出了选择的文本，则加入列表
                 const previous = revisions[i - 1];
                 if (current["*"].includes(selection) && !previous["*"].includes(selection)) {
-                    target_revisions.push(current);
+                    targetRevisions.push(current);
                 }
             }
             // 重置进度
             progress.innerText = "0";
-            $("#wiki-blame-progress").html(`<p>/${target_revisions.length}</p>`).find("p").prepend(progress);
+            $("#wiki-blame-progress").html(`<p>/${targetRevisions.length}</p>`).find("p").prepend(progress);
 
-            await Promise.allSettled(target_revisions.map(async (r) => {
+            await Promise.allSettled(targetRevisions.map(async (r) => {
                 try {
                     const rdata = await api.post({
                         action: "compare",
@@ -348,13 +349,13 @@ $(() => {
                     });
                     rdata.compare.user = r.user;
                     rdata.compare.revid = rdata.torevid;
-                    const edit_date = new Date(r.timestamp);
-                    rdata.compare.timestamp = edit_date.toLocaleDateString();
-                    revisions_list.push(rdata.compare);
+                    const editDate = new Date(r.timestamp);
+                    rdata.compare.timestamp = editDate.toLocaleDateString();
+                    revisionsList.push(rdata.compare);
                 } catch { }
                 progress.innerText = `${+progress.innerText + 1}`;
             }));
-            createDiffDialog(revisions_list);
+            createDiffDialog(revisionsList);
         } catch (err) {
             console.log(err);
         }
@@ -379,18 +380,18 @@ $(() => {
         windowManager.openWindow(myDialog);
     };
 
-    const createDiffDialog = (revisions_list) => {
+    const createDiffDialog = (revisionsList) => {
         const windowManager = window.wikiBlameWindowManager;
-        if (windowManager.currentWindow &&
-            window.wikiBlameWindowManager.currentWindow.getElementId() === "wiki-blame-dialog-popup") { windowManager.currentWindow.close(); }
+        if (windowManager.currentWindow
+            && window.wikiBlameWindowManager.currentWindow.getElementId() === "wiki-blame-dialog-popup") { windowManager.currentWindow.close(); }
         const diffDialog = new WikiBlameDiffDialog({
             size: "larger",
-        }, revisions_list);
+        }, revisionsList);
         windowManager.addWindows([diffDialog]);
         windowManager.openWindow(diffDialog);
     };
 
-    //处理mouseup事件
+    // 处理mouseup事件
     $(mw.config.get("skin") === "moeskin" ? "#mw-body" : "#bodyContent").on("mouseup", (e) => {
         let selection = getSelected();
         if (selection) {
@@ -414,8 +415,8 @@ $(() => {
                 console.log(e.target);
                 $(e.target).append(popup.$element);
                 popup.toggle(true);
-                const margin_top = $("#bodyContent .oo-ui-popupWidget-body-padded").css("marginTop");
-                if (parseInt(margin_top) > 20) {
+                const marginTop = $("#bodyContent .oo-ui-popupWidget-body-padded").css("marginTop");
+                if (parseInt(marginTop) > 20) {
                     $("#bodyContent .oo-ui-popupWidget-body-padded").css("margin", "5px");
                 }
                 $("#bodyContent .oo-ui-buttonElement-button").css({
@@ -432,7 +433,6 @@ $(() => {
                     color: "#222",
                     "vertical-align": "inherit",
                 });
-
             }
         } else {
             $(".wiki-blame-popup").remove();

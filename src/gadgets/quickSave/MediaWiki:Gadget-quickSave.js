@@ -5,8 +5,12 @@ $(() => {
         wgArticleId = mw.config.get("wgArticleId"),
         wgPageName = mw.config.get("wgPageName"),
         wgUserName = mw.config.get("wgUserName");
-    if (!/^萌娘百科_talk:讨论版\/[^存]+$/.test(wgPageName)) { return; }
-    if (!wgUserGroups.includes("sysop") && !wgUserGroups.includes("patroller")) { return; }
+    if (!/^萌娘百科_talk:讨论版\/[^存]+$/.test(wgPageName)) {
+        return;
+    }
+    if (!wgUserGroups.includes("sysop") && !wgUserGroups.includes("patroller")) {
+        return;
+    }
     const $body = $("body");
     $("#mw-notification-area").appendTo($body);
     const api = new mw.Api();
@@ -26,7 +30,7 @@ $(() => {
             this.$message.append($("<span>").text(str));
         }
         /**
-         * @param {false | "success" | "failed"} status 
+         * @param {false | "success" | "failed"} status
          */
         setStatus(status) {
             if (!status) {
@@ -55,7 +59,7 @@ $(() => {
         currentStep = 0;
 
         /**
-         * @param {number} steps 
+         * @param {number} steps
          * @param {QSWindow} dialog
          */
         constructor(steps, dialog) {
@@ -140,7 +144,7 @@ $(() => {
 
         progress = new Progress(6, this);
         progressBarFieldLayout = new OO.ui.FieldLayout(this.progress.progressBarWidget, {
-            label: QSWindow.bolbLabel(wgULS("执行进度","執行進度")),
+            label: QSWindow.bolbLabel(wgULS("执行进度", "執行進度")),
             align: "top",
         });
         progressLogFieldLayout = new OO.ui.FieldLayout(this.progress.progressLogWidget, {
@@ -324,7 +328,9 @@ $(() => {
     for (const ele of $("#mw-content-text > .mw-parser-output > h2, #mw-content-text > .mw-parser-output > .discussionContainer > h2")) {
         const self = $(ele);
         const content = self.nextUntil("h2").not("h2");
-        if (content.hasClass("saveNotice")) { continue; }
+        if (content.hasClass("saveNotice")) {
+            continue;
+        }
         const sectionTitle = self.find(".mw-headline").attr("id");
         const button = $("<a>");
         button.attr("href", "javascript:void(0);").prop("draggable", false).addClass("AnnTools_QuickSave").text(wgULS("快速存档", "快速存檔"));

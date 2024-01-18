@@ -36,7 +36,6 @@
     * @returns {Object}          Merged values of defaults and options
     */
     const extend = (_deep, ..._args) => {
-
         const extended = {};
         const deep = typeof _deep === "boolean" ? _deep : false;
         const args = [...typeof _deep !== "boolean" ? [_deep] : [], ..._args];
@@ -71,7 +70,6 @@
             this.init();
         }
         init() {
-
             /* Without observers load everything and bail out early. */
             if (!window.IntersectionObserver) {
                 this.loadImages();
@@ -145,7 +143,6 @@
             this.settings = null;
         }
     }
-
 
     window.lazyload = (images, options) => new LazyLoad(images, options);
 

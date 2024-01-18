@@ -1,13 +1,12 @@
+/* eslint-disable no-use-before-define, promise/prefer-await-to-then, promise/catch-or-return */
 /**
  * @source https://en.wikipedia.org/wiki/_?oldid=1006234032
  * 更新后请同步更新上面链接到最新版本
  */
 "use strict";
 // See [[mw:Reference Tooltips]]
-/* eslint-disable no-use-before-define */
 
 (() => {
-
     // enwiki settings
     const REF_LINK_SELECTOR = '.reference, a[href^="#CITEREF"]',
         COMMENTED_TEXT_CLASS = "rt-commentedText",
@@ -60,8 +59,7 @@
         // https://stackoverflow.com/a/24600597 (sends to
         // https://developer.mozilla.org/en-US/docs/Browser_detection_using_the_user_agent)
         // and https://stackoverflow.com/a/14301832
-        IS_MOBILE = /Mobi|Android/i.test(navigator.userAgent) ||
-            typeof window.orientation !== "undefined",
+        IS_MOBILE = /Mobi|Android/i.test(navigator.userAgent) || typeof window.orientation !== "undefined",
         CLIENT_NAME = $.client.profile().name,
         $body = $(document.body),
         $window = $(window);
@@ -147,7 +145,6 @@
                     }
                 };
 
-
                 // TooltippedElement.$element and TooltippedElement.$originalElement will be different when
                 // the first is changed after its cloned version is hovered in a tooltip
                 this.$element = $element;
@@ -172,9 +169,8 @@
                         "click.rt": onStartEvent,
                     };
                     // Adds an ability to see tooltips for links
-                    if (this.type === "commentedText" &&
-                        (this.$element.closest("a").length ||
-                            this.$element.has("a").length
+                    if (this.type === "commentedText"
+                        && (this.$element.closest("a").length || this.$element.has("a").length
                         )) {
                         events["contextmenu.rt"] = onStartEvent;
                     }
@@ -225,11 +221,11 @@
                 const reallyShow = () => {
                     let viewportTop, refOffsetTop, teHref;
                     if (!this.$ref && !this.comment) {
-                        teHref = this.type === "supRef" ?
-                            this.$element.find("a").attr("href") :
-                            this.$element.attr("href"); // harvardRef
-                        this.$ref = teHref &&
-                            $(`#${$.escapeSelector(teHref.slice(1))}`);
+                        teHref = this.type === "supRef"
+                            ? this.$element.find("a").attr("href")
+                            : this.$element.attr("href"); // harvardRef
+                        this.$ref = teHref
+                            && $(`#${$.escapeSelector(teHref.slice(1))}`);
                         if (!this.$ref || !this.$ref.length || !this.$ref.text()) {
                             this.noRef = true;
                             return;
@@ -239,11 +235,11 @@
                     if (!tooltipInitiallyPresent && !this.comment) {
                         viewportTop = $window.scrollTop();
                         refOffsetTop = this.$ref.offset().top;
-                        if (!activatedByClick &&
-                            viewportTop < refOffsetTop &&
-                            viewportTop + $window.height() > refOffsetTop + this.$ref.height() &&
+                        if (!activatedByClick
+                            && viewportTop < refOffsetTop
+                            && viewportTop + $window.height() > refOffsetTop + this.$ref.height()
                             // There can be gadgets/scripts that make references horizontally scrollable.
-                            $window.width() > this.$ref.offset().left + this.$ref.width()) {
+                            && $window.width() > this.$ref.offset().left + this.$ref.width()) {
                             // Highlight the reference itself
                             this.$ref.addClass("rt-target");
                             return;
@@ -290,14 +286,13 @@
                 }
 
                 if (activatedByClick) {
-                    if (tooltipInitiallyPresent ||
-                        this.$ref && this.$ref.hasClass("rt-target")) {
+                    if (tooltipInitiallyPresent
+                        || this.$ref && this.$ref.hasClass("rt-target")) {
                         return;
                     }
                     setTimeout(() => {
                         $body.on("click.rt touchstart.rt", this.onBodyClick);
                     }, 0);
-
                 }
 
                 if (activatedByClick || tooltipInitiallyPresent) {
@@ -319,14 +314,11 @@
 
                 // The last condition is used to determine cases when a clicked tooltip is the current
                 // element's tooltip or one of its descendants
-                while ($current.length &&
-                    (!$current.hasClass("rt-tooltip") ||
-                        !$current.data("tooltip") ||
-                        !$current.data("tooltip").upToTopParent(
-                            contextMatchesParameter, [this.tooltip],
-                            true,
-                        )
-                    )) {
+                while ($current.length
+                    && (!$current.hasClass("rt-tooltip") || !$current.data("tooltip") || !$current.data("tooltip").upToTopParent(
+                        contextMatchesParameter, [this.tooltip],
+                        true,
+                    ))) {
                     $current = $current.parent();
                 }
                 if (!$current.length) {
@@ -405,9 +397,9 @@
                 this.activationMethodSelect = new OO.ui.RadioSelectWidget({
                     items: [this.hoverOption, this.clickOption],
                 });
-                this.activationMethodSelect.selectItem(activatedByClick ?
-                    this.clickOption :
-                    this.hoverOption,
+                this.activationMethodSelect.selectItem(activatedByClick
+                    ? this.clickOption
+                    : this.hoverOption,
                 );
                 this.activationMethodSelect.on("choose", (item) => {
                     if (item === this.clickOption) {
@@ -537,7 +529,6 @@
 
         class Tooltip {
             constructor(te) {
-
                 // This variable can change: one tooltip can be called from a harvard-style reference link
                 // that is put into different tooltips
                 this.te = te;
@@ -549,17 +540,9 @@
                             .contents()
                             .filter((i, ele) => {
                                 const $this = $(ele);
-                                return ele.nodeType === Node.TEXT_NODE ||
-                                    !($this.is(".mw-cite-backlink") ||
-                                        i === 0 &&
-                                        // Template:Cnote, Template:Note
-                                        ($this.is("b") ||
-                                            // Template:Note_label
-                                            $this.is("a") &&
-                                            $this.attr("href").indexOf("#ref") === 0
-                                        )
-
-                                    );
+                                return ele.nodeType === Node.TEXT_NODE
+                                    || !($this.is(".mw-cite-backlink") || i === 0 && (/* Template:Cnote, Template:Note */$this.is("b") || /* Template:Note_label */$this.is("a") && $this.attr("href").indexOf("#ref") === 0
+                                    ));
                             })
                             .clone(true);
                         break;
@@ -610,11 +593,8 @@
                         .on("mouseleave", (e) => {
                             // https://stackoverflow.com/q/47649442 workaround. Relying on relatedTarget
                             // alone has pitfalls: when alt-tabbing, relatedTarget is empty too
-                            if (CLIENT_NAME !== "chrome" ||
-                                (!e.originalEvent ||
-                                    e.originalEvent.relatedTarget !== null ||
-                                    !this.clickedTime ||
-                                    Date.now() - this.clickedTime > 50
+                            if (CLIENT_NAME !== "chrome"
+                                || (!e.originalEvent || e.originalEvent.relatedTarget !== null || !this.clickedTime || Date.now() - this.clickedTime > 50
                                 )) {
                                 this.upToTopParent((tt) => {
                                     tt.te.hideRef();
@@ -702,7 +682,6 @@
                 this.isPresent = true;
             }
             hide() {
-
                 this.disappearing = true;
 
                 if (this.$element.hasClass("rt-tooltip-above")) {
@@ -738,13 +717,11 @@
                 const teElement = this.te.$element.get(0);
                 if (ePageX !== undefined) {
                     tooltipTailOffsetX = ePageX;
-                    teOffsets = teElement.getClientRects &&
-                        teElement.getClientRects() ||
-                        teElement.getBoundingClientRect();
+                    teOffsets = teElement.getClientRects && teElement.getClientRects() || teElement.getBoundingClientRect();
                     if (teOffsets.length > 1) {
                         for (let i = teOffsets.length - 1; i >= 0; i--) {
-                            if (ePageY >= Math.round($window.scrollTop() + teOffsets[i].top) &&
-                                ePageY <= Math.round(
+                            if (ePageY >= Math.round($window.scrollTop() + teOffsets[i].top)
+                                && ePageY <= Math.round(
                                     $window.scrollTop() + teOffsets[i].top + teOffsets[i].height,
                                 )) {
                                 teOffset = teOffsets[i];
@@ -754,9 +731,7 @@
                 }
 
                 if (!teOffset) {
-                    teOffset = teElement.getClientRects &&
-                        teElement.getClientRects()[0] ||
-                        teElement.getBoundingClientRect();
+                    teOffset = teElement.getClientRects && teElement.getClientRects()[0] || teElement.getBoundingClientRect();
                 }
                 teOffset = {
                     top: $window.scrollTop() + teOffset.top,
@@ -768,7 +743,7 @@
                     tooltipTailOffsetX = (teOffset.left * 2 + teOffset.width) / 2;
                 }
                 if (CLIENT_NAME === "msie" && this.te.type === "supRef") {
-                    offsetYCorrection = - +this.te.$element.parent().css("font-size").replace("px", "") / 2;
+                    offsetYCorrection = -+this.te.$element.parent().css("font-size").replace("px", "") / 2;
                 }
                 this.$element.css({
                     top: teOffset.top - this.$element.outerHeight() - 7 + offsetYCorrection,
@@ -858,9 +833,9 @@
         activatedByClick = !!+settings[2];
         // The forth value was added later, so we provide for a default value. See comments below
         // for why we use "IS_TOUCHSCREEN && IS_MOBILE".
-        tooltipsForComments = settings[3] === undefined ?
-            IS_TOUCHSCREEN && IS_MOBILE :
-            !!+settings[3];
+        tooltipsForComments = settings[3] === undefined
+            ? IS_TOUCHSCREEN && IS_MOBILE
+            : !!+settings[3];
     } else {
         enabled = true;
         delay = 200;
@@ -877,5 +852,4 @@
     }
 
     mw.hook("wikipage.content").add(rt);
-
 })();

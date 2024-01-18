@@ -1,7 +1,7 @@
 import console from "../modules/console.js";
 import fs from "fs";
 import yaml from "yaml";
-const { assignees } = yaml.parse(fs.readFileSync(".github/auto_assign.yaml", { encoding: "utf-8" }));
+const { assignees } = yaml.parse(await fs.promises.readFile(".github/auto_assign.yaml", { encoding: "utf-8" }));
 import { startGroup, endGroup } from "@actions/core";
 import { Octokit } from "@octokit/rest";
 import { retry } from "@octokit/plugin-retry";
@@ -77,10 +77,10 @@ console.log("octokitBaseOptions:", octokitBaseOptions);
 console.log("auth:", auth);
 endGroup();
 /**
- * @param {string} issueTitle 
- * @param {string} issueBody 
- * @param {string[]} labels 
- * @param {string} [replyBody] 
+ * @param {string} issueTitle
+ * @param {string} issueBody
+ * @param {string[]} labels
+ * @param {string} [replyBody]
  * @returns {Promise<number>}
  */
 const createIssue = async (issueTitle, issueBody, labels, replyBody) => {

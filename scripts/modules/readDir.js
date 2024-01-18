@@ -1,7 +1,7 @@
 import path from "path";
 import fs from "fs";
 /**
- * @param {string} p 
+ * @param {string} p
  * @param {boolean} [removePrefix]
  * @returns {Promise<string[]>}
  */
