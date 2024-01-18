@@ -17,7 +17,7 @@
     "dependencies": {
         "@actions/artifact": "^2.0.1",
         "@actions/core": "^1.10.1",
-        "@annangela/eslint-config": "^4.0.5",
+        "@annangela/eslint-config": "^5.0.2",
         "@annangela/eslint-formatter-gha": "^1.1.2",
         "@annangela/eslint-plugin-prefer-reflect": "^2.2.2",
         "@csstools/postcss-is-pseudo-class": "^4.0.4",

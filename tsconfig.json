@@ -1,16 +1,14 @@
 {
+    "extends": [
+        // "@annangela/eslint-packages/tsconfig.browser.json",
+        "./node_modules/@annangela/eslint-config/dist/tsconfigs/tsconfig.browser.json"
+    ],
     "compilerOptions": {
-        "allowJs": true,
-        "removeComments": true,
-        "target": "ESNext",
         "outDir": "dist/",
-        "alwaysStrict": true,
-        "strict": true,
-        "downlevelIteration": true,
         "lib": [
             "ESNext",
             "DOM"
-        ]
+        ],
     },
     "include": [
         "src",
