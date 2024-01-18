@@ -33,7 +33,7 @@
         "@types/moment": "^2.13.0",
         "@types/oojs-ui": "^0.47.6",
         "@wikimedia/types-wikimedia": "^0.4.2",
-        "autoprefixer": "^10.4.16",
+        "autoprefixer": "^10.4.17",
         "browser-pack-flat": "^3.5.0",
         "browserify": "^17.0.0",
         "common-shakeify": "^1.1.2",
