@@ -29,7 +29,7 @@ const annotations = [];
  */
 let lastFileName;
 for (const line of output.split("\n")) {
-    if (line.startsWith("Finished")) {
+    if (line.trim().startsWith("Finished")) {
         const match = line.match(/Finished (.*?) in/)?.[1];
         if (match) {
             lastFileName = match;
