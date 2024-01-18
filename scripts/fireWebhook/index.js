@@ -41,15 +41,17 @@ console.info("data.success:", data.success);
 if (data.success) {
     try {
         const GITHUB_EVENT = await readWorkflowEvent();
-        const head_commit = Reflect.has(GITHUB_EVENT, "head_commit") ? GITHUB_EVENT.head_commit : (await git.log({
-            format: {
-                id: "%H",
-                message: "%B",
-            },
-            maxCount: 1,
-        })).latest;
-        data.headCommitId = head_commit.id;
-        data.headCommitMessage = head_commit.message;
+        const headCommit = Reflect.has(GITHUB_EVENT, "head_commit")
+            ? GITHUB_EVENT.head_commit
+            : (await git.log({
+                format: {
+                    id: "%H",
+                    message: "%B",
+                },
+                maxCount: 1,
+            })).latest;
+        data.headCommitId = headCommit.id;
+        data.headCommitMessage = headCommit.message;
     } catch { }
 }
 console.info("data:", data);

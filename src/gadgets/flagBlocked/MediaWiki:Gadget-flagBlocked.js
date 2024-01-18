@@ -53,7 +53,7 @@ $(() => {
                 title: pagename,
                 text: template,
                 minor: true,
-                nocreate: true, //无需创建不存在用户页的永久封禁用户的用户页
+                nocreate: true, // 无需创建不存在用户页的永久封禁用户的用户页
                 bot: usergroup.includes("flood"),
                 watchlist: "nochange",
                 summary: "标记永久封禁用户",

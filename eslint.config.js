@@ -25,6 +25,32 @@ for (const srcESlintrcFile of srcESlintrcFiles) {
 }
 
 /**
+ * @typedef { Pick<import("eslint").Linter.FlatConfig, "files" | "ignores"> } FileSpec
+ */
+/**
+ * @type { { browser: FileSpec, node: FileSpec } }
+ */
+const fileSpec = {
+    browser: {
+        files: [
+            "src/**/*",
+            "scripts/generatePolyfill/template.js",
+        ],
+        ignores,
+    },
+    node: {
+        files: [
+            "scripts/**/*",
+            "eslint.config.js",
+        ],
+        ignores: [
+            ...ignores,
+            "scripts/generatePolyfill/template.js",
+        ],
+    },
+};
+
+/**
  * @type { import("eslint").Linter.FlatConfig[] }
  */
 const config = [
@@ -35,15 +61,10 @@ const config = [
     },
     {
         ...configs.browser,
-        files: [
-            "src/**/*",
-        ],
-        ignores,
+        ...fileSpec.browser,
     },
     {
-        files: [
-            "src/**/*",
-        ],
+        ...fileSpec.browser,
         languageOptions: {
             globals: {
                 mw: false,
@@ -67,19 +88,53 @@ const config = [
     },
     {
         ...configs.node,
-        files: [
-            "scripts/**/*",
-            "eslint.config.js",
-        ],
-        ignores,
+        ...fileSpec.node,
     },
-    // Running in trusted environment
     {
+        ignores,
         rules: {
+            // other disabled rules for all files
+            "@stylistic/no-mixed-operators": "off",
+        },
+    },
+    {
+        ...fileSpec.browser,
+        rules: {
+            // other disabled rules for browser files
+            "promise/prefer-await-to-callbacks": "off",
+        },
+    },
+    {
+        ...fileSpec.node,
+        rules: {
+            // Running in trusted environment
             "security/detect-unsafe-regex": "off",
             "security/detect-object-injection": "off",
             "security/detect-non-literal-fs-filename": "off",
             "security/detect-non-literal-regexp": "off",
+            "security/detect-child-process": "off",
+            "n/no-extraneous-import": "off",
+            "n/no-process-exit": "off",
+
+            // github api use underscores naming
+            camelcase: [
+                "error",
+                {
+                    allow: [
+                        "pull_number",
+                        "issue_number",
+                        "head_commit",
+                        "commit_long",
+                        "state_reason",
+                        "workflow_id",
+                        "exclude_pull_requests",
+                        "per_page",
+                        "workflow_runs",
+                    ],
+                },
+            ],
+
+            // other disabled rules for node files
         },
     },
 ];

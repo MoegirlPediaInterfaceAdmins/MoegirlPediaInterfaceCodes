@@ -44,10 +44,16 @@ $(() => (async () => {
             wheeled = true;
             $("html, body").stop(true);
         });
-        if (!mw.config.get("wgUserGroups").includes("sysop") && !mw.config.get("wgUserGroups").includes("patroller")) { return; }
-        if (mw.config.get("wgArticleId") !== 38120) { return; }
+        if (!mw.config.get("wgUserGroups").includes("sysop") && !mw.config.get("wgUserGroups").includes("patroller")) {
+            return;
+        }
+        if (mw.config.get("wgArticleId") !== 38120) {
+            return;
+        }
         const container = $("#__anntools__inject__");
-        if (!container.length) { return; }
+        if (!container.length) {
+            return;
+        }
         container.removeAttr("style").empty().html("<div id=\"Anntools-backlog-loading\" style=\"text-align: center;\"><hr>正在加载中……</a>").show();
         const now = moment();
         const nowYear = RegExp(`${new Date().getFullYear()}年`, "g");
@@ -258,7 +264,7 @@ $(() => (async () => {
                 abuselogevents.forEach(({
                     action: _action,
                     filter: description,
-                    filter_id,
+                    filter_id: filterID,
                     id,
                     result: _result,
                     timestamp,
@@ -277,7 +283,7 @@ $(() => (async () => {
                         `<a href="/User:${encodeURIComponent(user)}" class="mw-userlink" title="User:${user}"><bdi>${user}</bdi></a><span class="mw-usertoollinks">（<a href="/User_talk:${encodeURIComponent(user)}" class="mw-usertoollinks-talk" title="User talk:${user}">讨论</a> | <a href="/Special:%E7%94%A8%E6%88%B7%E8%B4%A1%E7%8C%AE/${encodeURIComponent(user)}" class="mw-usertoollinks-contribs" title="Special:用户贡献/${user}">贡献</a><span class="checkuser-show"> | <a href="/Special:用户查核/${encodeURIComponent(user)}" class="mw-usertoollinks-checkuser" title="Special:用户查核/${user}">查核</a></span>）</span>`,
                         `<a href="/${encodeURIComponent(title)}" title="${title}">${title}</a>`,
                         `<span title="${_action}">${action}</span<`,
-                        `<a href="/Special:%E6%BB%A5%E7%94%A8%E8%BF%87%E6%BB%A4%E5%99%A8/${encodeURIComponent(filter_id)}" title="Special:滥用过滤器/${filter_id}">过滤器${filter_id}</a>`,
+                        `<a href="/Special:%E6%BB%A5%E7%94%A8%E8%BF%87%E6%BB%A4%E5%99%A8/${encodeURIComponent(filterID)}" title="Special:滥用过滤器/${filterID}">过滤器${filterID}</a>`,
                         description,
                         `<span title="${_result}">${result.join("、")}</span>`,
                         `<a href="/Special:%E6%BB%A5%E7%94%A8%E6%97%A5%E5%BF%97/${encodeURIComponent(id)}" title="Special:滥用日志/${id}">详情</a> | <a href="/Special:%E6%BB%A5%E7%94%A8%E8%BF%87%E6%BB%A4%E5%99%A8/examine/log/${encodeURIComponent(id)}" title="Special:滥用过滤器/examine/log/${id}">检查</a>${_result.includes("block") ? ` | <span class="mw-logevent-actionlink"><a href="/Special:%E8%A7%A3%E9%99%A4%E5%B0%81%E7%A6%81/${encodeURIComponent(user)}" title="Special:解除封禁/${user}">解封</a> | <a href="/Special:%E5%B0%81%E7%A6%81/${encodeURIComponent(user)}" title="Special:封禁/${user}">更改封禁</a></span>` : ""}`,
@@ -417,7 +423,9 @@ $(() => (async () => {
                 $(window).trigger("resize");
             },
         });
-        setTimeout(() => { $(window).trigger("resize"); }, 100);
+        setTimeout(() => {
+            $(window).trigger("resize");
+        }, 100);
     }
 })());
 // </pre>

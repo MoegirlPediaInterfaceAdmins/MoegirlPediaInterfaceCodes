@@ -24,10 +24,12 @@
         ], "script");
         await libCachedCode.batchInjectCachedCode([
             "https://npm.elemecdn.com/@bhsd/codemirror-mediawiki@1.1.12/mediawiki.js",
-            ...ns === 274 ? [
-                "https://npm.elemecdn.com/codemirror@5.65.1/mode/javascript/javascript.js",
-                "https://npm.elemecdn.com/codemirror@5.65.1/mode/css/css.js",
-            ] : [],
+            ...ns === 274
+                ? [
+                    "https://npm.elemecdn.com/codemirror@5.65.1/mode/javascript/javascript.js",
+                    "https://npm.elemecdn.com/codemirror@5.65.1/mode/css/css.js",
+                ]
+                : [],
         ], "script");
         const mwConfig = JSON.parse(await libCachedCode.getCachedCode("https://npm.elemecdn.com/@bhsd/codemirror-mediawiki@1.1.12/config.json"));
         if (ns === 274) {
@@ -59,9 +61,9 @@
         mw.hook("wiki-codemirror").fire(cm);
         $doc = $(cm.getWrapperElement());
         $.valHooks.textarea = {
-            get: (ele_1) => ele_1 === $textarea[0] && state ? cm.getValue() : ele_1.value,
-            set: (ele_3, val) => {
-                ele_3 === $textarea[0] && state ? cm.setValue(val) : ele_3.value = val;
+            get: (ele1) => ele1 === $textarea[0] && state ? cm.getValue() : ele1.value,
+            set: (ele3, val) => {
+                ele3 === $textarea[0] && state ? cm.setValue(val) : ele3.value = val;
             },
         };
         if (mw.loader.getState("jquery.ui.resizable") === "ready") {
@@ -143,9 +145,7 @@
         localObjectStorage.setItem("wikieditor-codemirror", state);
         shared();
     };
-    const initAndUpdate = () => {
-        init().then(update);
-    };
+    const initAndUpdate = async () => await init().then(update);
     const group = $("#wikiEditor-section-main > .group-insert")[0];
     $textarea.on("wikiEditor-toolbar-doneInitialSections", () => {
         btn.$element.appendTo("#wikiEditor-section-main > .group-insert");
@@ -154,6 +154,6 @@
         $textarea.trigger("wikiEditor-toolbar-doneInitialSections");
     }
     if (state) {
-        mw.loader.using("ext.wikiEditor").then(init).then(shared);
+        await mw.loader.using("ext.wikiEditor").then(init).then(shared);
     }
 })();

@@ -43,8 +43,8 @@
     $.extend($.fn, {
         /**
          * @this {JQuery<HTMLElement>}
-         * @param {keyof buttonConfig} which 
-         * @returns 
+         * @param {keyof buttonConfig} which
+         * @returns
          */
         specialButton(which) {
             return this.button({

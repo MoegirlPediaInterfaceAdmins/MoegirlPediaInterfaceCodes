@@ -2,7 +2,9 @@
 // <pre>
 (function (isCompleted) {
     function run() {
-        if (mw.config.get("wgNamespaceNumber") !== -1 || mw.config.get("wgCanonicalSpecialPageName") !== "Allmessages") { return; }
+        if (mw.config.get("wgNamespaceNumber") !== -1 || mw.config.get("wgCanonicalSpecialPageName") !== "Allmessages") {
+            return;
+        }
         mw.util.addCSS([
             ".TablePager_nav {",
             "    user-select: none;",
@@ -20,10 +22,18 @@
         let index = 0,
             filter, rfilter, am;
         const enablePrevLink = (b) => {
-            if (!b) { $(".TablePager_nav-prev div").removeClass("TablePager_nav-enabled").addClass("TablePager_nav-disabled"); } else { $(".TablePager_nav-prev div").removeClass("TablePager_nav-disabled").addClass("TablePager_nav-enabled"); }
+            if (!b) {
+                $(".TablePager_nav-prev div").removeClass("TablePager_nav-enabled").addClass("TablePager_nav-disabled");
+            } else {
+                $(".TablePager_nav-prev div").removeClass("TablePager_nav-disabled").addClass("TablePager_nav-enabled");
+            }
         };
         const enableNextLink = (b) => {
-            if (!b) { $(".TablePager_nav-next div").removeClass("TablePager_nav-enabled").addClass("TablePager_nav-disabled"); } else { $(".TablePager_nav-next div").removeClass("TablePager_nav-disabled").addClass("TablePager_nav-enabled"); }
+            if (!b) {
+                $(".TablePager_nav-next div").removeClass("TablePager_nav-enabled").addClass("TablePager_nav-disabled");
+            } else {
+                $(".TablePager_nav-next div").removeClass("TablePager_nav-disabled").addClass("TablePager_nav-enabled");
+            }
         };
         const check = (am) => {
             if (am.length <= length) {
@@ -63,18 +73,24 @@
             });
         };
         const init = function init() {
-            if (!$("#mw-allmessages-form")[0]) { return; }
+            if (!$("#mw-allmessages-form")[0]) {
+                return;
+            }
             $("#mw-allmessages-form").remove();
             $(".TablePager_nav td").remove();
             $(".TablePager_nav tr").append('<td style="width: 50%;" class="TablePager_nav-prev"><div class="TablePager_nav-disabled">上一页</div></td><td style="width: 50%;" class="TablePager_nav-next"><div class="TablePager_nav-disabled">下一页</div></td>');
             $(".TablePager_nav-prev div").on("click", function () {
-                if ($(this).hasClass("TablePager_nav-disabled")) { return false; }
+                if ($(this).hasClass("TablePager_nav-disabled")) {
+                    return false;
+                }
                 index -= length;
                 index = Math.max(index, 0);
                 load(am.slice(index, index + length));
             });
             $(".TablePager_nav-next div").on("click", function () {
-                if ($(this).hasClass("TablePager_nav-disabled")) { return false; }
+                if ($(this).hasClass("TablePager_nav-disabled")) {
+                    return false;
+                }
                 index += length;
                 load(am.slice(index, index + length));
             });
@@ -92,7 +108,9 @@
         $("<td/>").addClass("mw-input").append(submit).appendTo(table.find("tr:last"));
         const input = $("#mw-allmessages-filter");
         submit.on("click", async () => {
-            if (!input.val()) { return oouiDialog.alert("请输入内容以搜索系统消息"); }
+            if (!input.val()) {
+                return oouiDialog.alert("请输入内容以搜索系统消息");
+            }
             $("#mw-allmessages-filter-status").remove();
             init();
             filter = input.val();
@@ -117,9 +135,15 @@
             }
         });
         input.on("keypress", (e) => {
-            if (e.key === "Enter") { submit.trigger("click"); }
+            if (e.key === "Enter") {
+                submit.trigger("click");
+            }
         });
     }
-    if (isCompleted) { run(); } else { $(window).on("load", run); }
+    if (isCompleted) {
+        run();
+    } else {
+        $(window).on("load", run);
+    }
 })(document.readyState === "complete");
 // </pre>

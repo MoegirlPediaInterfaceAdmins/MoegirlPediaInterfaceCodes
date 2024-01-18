@@ -102,18 +102,30 @@ $(() => {
             $body.css("overflow", "auto");
         });
     } catch (e) {
-        /* eslint-disable */
-        var parseError = function (errLike, space) {
-            if (space === void 0) { space = 4; }
+        /* eslint-disable no-var, prefer-arrow-functions/prefer-arrow-functions, prefer-arrow-callback, prefer-template */
+        var parseError = function (errLike, _space/* ? */) {
+            let space = _space;
+            if (_space === void 0) {
+                space = 4;
+            }
             return JSON.stringify(errLike, function (_, v) {
                 if (v instanceof Error) {
                     var stack = [];
                     if (v.stack) {
-                        stack.push.apply(stack, v.stack.split("\n").map(function (n) { return n.trim(); }).filter(function (n) { var _a; return ((_a = n === null || n === void 0 ? void 0 : n.length) !== null && _a !== void 0 ? _a : -1) > 0; }));
+                        Reflect.apply(stack.push, stack, v.stack.split("\n").map(function (n) {
+                            return n.trim();
+                        }).filter(function (n) {
+                            var _a;
+                            return ((_a = n === null || n === void 0 ? void 0 : n.length) !== null && _a !== void 0 ? _a : -1) > 0;
+                        }));
                     }
-                    var keys = Object.keys(v).filter(function (key) { return !(Reflect.has(Error.prototype, key)); });
+                    var keys = Object.keys(v).filter(function (key) {
+                        return !Reflect.has(Error.prototype, key);
+                    });
                     if (keys.length) {
-                        stack.push(JSON.stringify(Object.fromEntries(keys.map(function (key) { return [key, v[key]]; })), null, space));
+                        stack.push(JSON.stringify(Object.fromEntries(keys.map(function (key) {
+                            return [key, v[key]];
+                        })), null, space));
                     }
                     return stack.join("\n").trim() || "";
                 }

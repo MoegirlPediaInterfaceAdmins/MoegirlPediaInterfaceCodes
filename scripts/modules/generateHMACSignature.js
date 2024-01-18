@@ -1,8 +1,7 @@
 import crypto from "crypto";
 /**
- * @param {string} key 
- * @param {Buffer} raw 
- * @param {string} [algorithm] 
+ * @param { crypto.BinaryLike } key
+ * @param { crypto.BinaryLike } raw
+ * @param { string } [algorithm] default `"SHA3-512"`
  */
-const generateHMACSignature = (key, raw, algorithm = "SHA3-512") => `${algorithm}=${crypto.createHmac(algorithm, key).update(raw).digest("hex")}`;
-export default generateHMACSignature;
+export default (key, raw, algorithm = "SHA3-512") => `${algorithm}=${crypto.createHmac(algorithm, key).update(raw).digest("hex")}`;

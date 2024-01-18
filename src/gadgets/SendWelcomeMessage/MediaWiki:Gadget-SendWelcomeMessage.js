@@ -1,5 +1,5 @@
 "use strict";
-//<pre>
+// <pre>
 $(() => {
     const message = "{{Welcome}} ——~~~~{{clear}}";
     if (mw.config.get("wgNamespaceIds").user_talk === mw.config.get("wgNamespaceNumber") && !mw.config.get("wgPageName").includes("/") && mw.config.get("wgEditMessage") === "creating") {
@@ -139,12 +139,11 @@ $(() => {
                         $("#welcomeAsk").empty().append('<span id="welcomeAskFinished">通信成功！继续努力哦~</span>');
                         console.debug(`和萌百服务器通信成功，编辑成功！ \n编辑详情：${JSON.stringify(data).replace(/[{}\"]/g, "").replace(/\:\,/, ",")}。`);
                         unbindFun();
-                        $(`#mw-content-text a.new[href="${href}"]`).removeClass("new sendWelcomeMessageLink unsend").attr("href", `/User_talk:${userName}`).off("click.sendWelcomeMessage"); //js<a>对象的href是绝对url……*/
+                        $(`#mw-content-text a.new[href="${href}"]`).removeClass("new sendWelcomeMessageLink unsend").attr("href", `/User_talk:${userName}`).off("click.sendWelcomeMessage"); //js<a>对象的href是绝对url…… */
                     console.info("Gadget-SendWelcomeMessage", "[api]", { userName, target, response });
                     welcomeAsk.innerText = wgULS("通信成功！继续努力哦~");
                     successCleanup(userName);
-                }
-                catch (e) {
+                } catch (e) {
                     console.error("Gadget-SendWelcomeMessage", "[api]", { userName, target }, e);
                     if (e instanceof Error) {
                         welcomeAsk.innerText = wgULS("通信失败，请稍候重试_(:з」∠)_");
@@ -179,4 +178,4 @@ $(() => {
         }
     }
 });
-//</pre>
+// </pre>

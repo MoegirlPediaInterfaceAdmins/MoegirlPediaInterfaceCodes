@@ -2,9 +2,15 @@
 "use strict";
 $(() => {
     const wgUserGroups = mw.config.get("wgUserGroups");
-    if (!/^萌娘百科_talk:讨论版\/[^存]+$/.test(mw.config.get("wgPageName"))) { return; }
-    if (!wgUserGroups.includes("goodeditor") && !wgUserGroups.includes("honoredmaintainer")) { return; }
-    if (mw.config.get("wgCurRevisionId") !== mw.config.get("wgRevisionId")) { return; }
+    if (!/^萌娘百科_talk:讨论版\/[^存]+$/.test(mw.config.get("wgPageName"))) {
+        return;
+    }
+    if (!wgUserGroups.includes("goodeditor") && !wgUserGroups.includes("honoredmaintainer")) {
+        return;
+    }
+    if (mw.config.get("wgCurRevisionId") !== mw.config.get("wgRevisionId")) {
+        return;
+    }
     const $body = $("body");
     $("#mw-notification-area").appendTo($body);
     const api = new mw.Api();
@@ -34,14 +40,15 @@ $(() => {
             ],
         };
 
-        static statusList = mw.config.get("wgPageName") === "萌娘百科_talk:讨论版/操作申请/注销账号申请" ?
-            [
-                ["w", wgULS("请求被撤回","請求被撤回")],
-            ] : [
-                ["r", wgULS("问题已解决","問題已解決")],
-                ["p", wgULS("问题已答复","問題已答覆")],
-                ["w", wgULS("请求被撤回","請求被撤回")],
-                ["n", wgULS("无人回复","無人回覆")],
+        static statusList = mw.config.get("wgPageName") === "萌娘百科_talk:讨论版/操作申请/注销账号申请"
+            ? [
+                ["w", wgULS("请求被撤回", "請求被撤回")],
+            ]
+            : [
+                ["r", wgULS("问题已解决", "問題已解決")],
+                ["p", wgULS("问题已答复", "問題已答覆")],
+                ["w", wgULS("请求被撤回", "請求被撤回")],
+                ["n", wgULS("无人回复", "無人回覆")],
             ];
         static archiveOffsetsFromStatus = {
             ...Object.fromEntries(MARWindow.statusList.map(([status]) => [status, 3])),
@@ -111,7 +118,7 @@ $(() => {
             return this.commentTextInput.getValue();
         }
 
-        constructor (config) {
+        constructor(config) {
             super(config);
         }
         initialize() {
@@ -232,7 +239,9 @@ $(() => {
     for (const ele of $("#mw-content-text > .mw-parser-output > h2, #mw-content-text > .mw-parser-output > .discussionContainer > h2")) {
         const self = $(ele);
         const content = self.nextUntil("h2").not("h2");
-        if (content.hasClass("saveNotice") || content.hasClass("MarkAsResolved")) { continue; }
+        if (content.hasClass("saveNotice") || content.hasClass("MarkAsResolved")) {
+            continue;
+        }
         const sectionTitle = self.find(".mw-headline").attr("id");
         const button = $("<a>");
         button.attr("href", "javascript:void(0);").prop("draggable", false).addClass("AnnTools_MarkAsResolved").text(wgULS("标记状态", "標記狀態"));

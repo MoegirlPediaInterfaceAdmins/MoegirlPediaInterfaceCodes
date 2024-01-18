@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 /**
  * @source https://commons.wikimedia.org/wiki/_?oldid=494706072
  * 更新后请同步更新上面链接到最新版本
@@ -32,7 +33,7 @@
             this.callingObject = callingObject;
             this.stCallBack = stCallBack;
             this.CBValidChange = CBValidChange;
-            $userInputField.on("keyup", ( /* e*/) => {
+            $userInputField.on("keyup", (/* e */) => {
                 const tmpUNE = this.userNameExists;
                 if (this.isValidIP($userInputField.val())) {
                     this.setToIP(tmpUNE);
@@ -50,8 +51,8 @@
         isValidIP = (username) => {
             if (mw.util.isIPv4Address(username)) {
                 return true;
-            } //IP v.4
-            return mw.util.isIPv6Address(username); //IP v.6
+            } // IP v.4
+            return mw.util.isIPv6Address(username); // IP v.6
         };
         setToIP(tmpUNE) {
             const o = this;
@@ -291,7 +292,8 @@
                         if (m) {
                             if (/&.+=/.test(m[1])) {
                                 return `File:${decodeURI(m[1]).match(/^(.+)&/)[1]}`;
-                            } return `File:${m[1]}`;
+                            }
+                            return `File:${m[1]}`;
                         }
                     } catch {
                     }
@@ -652,7 +654,7 @@
             edit.token = umsg.editToken;
             umsg.doAPICall(edit, callback);
         },
-        umNotifyUserExecuteCB: (/* result*/) => {
+        umNotifyUserExecuteCB: (/* result */) => {
             let encTitle = umsg.umUserTalkPrefix + $("#umUser").val();
             encTitle = encodeURIComponent(encTitle.replace(/ /g, "_")).replace(/%2F/ig, "/").replace(/%3A/ig, ":");
             const newLoc = `${mw.config.get("wgServer")}${mw.config.get("wgArticlePath").replace("$1", encTitle)}`;
@@ -691,7 +693,8 @@
                     if (!result) {
                         if ("function" === typeof pCallback) {
                             pCallback();
-                        } return;
+                        }
+                        return;
                     }
                     try {
                         if (params.list) {
@@ -828,9 +831,9 @@
         apiURL: mw.util.wikiScript("api"),
     };
     const builtinTemplate = [
-        /*!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        /*! !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
          * Append new messages at the bottom. Otherwise pre-selection for users will break.
-         !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!*/
+         !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! */
         //  ['Template name',             "Name in Sidebar", "Detailed text",                                                                          Type/Prompt statement,           'Talk summary'];
         ["UserMessages/Welcome", "Welcome", "欢迎新用户～", umsg.umFlagUM, "Welcome to Moegirlpedia~"],
         ["UserMessages/GoodEditor", "GoodEditor", "优质编辑者（1=选填原因）", umsg.umFlagP2, "恭喜您成为萌娘百科优质编辑者！"],
@@ -1081,9 +1084,9 @@
         });
     };
     const linktext = wgULS("向该用户发出提醒", "對此使用者發送提醒", null, null, "對此用戶發送提醒"), nsNr = mw.config.get("wgNamespaceNumber");
-    if (nsNr === 3 || nsNr === 2 ||
-        nsNr === -1 &&
-        ["Contributions", "DeletedContributions", "Block", "CentralAuth", "Userrights", "Listfiles", "Log"].includes(mw.config.get("wgCanonicalSpecialPageName"))) {
+    if (nsNr === 3 || nsNr === 2
+        || nsNr === -1
+        && ["Contributions", "DeletedContributions", "Block", "CentralAuth", "Userrights", "Listfiles", "Log"].includes(mw.config.get("wgCanonicalSpecialPageName"))) {
         const loadFullScript = () => {
             initCombobox($);
             umsg.umInstall();

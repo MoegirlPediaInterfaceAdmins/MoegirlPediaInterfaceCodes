@@ -205,11 +205,13 @@ $(() => (async () => {
                 return;
             }
 
-            let deletionReason = isDelCat ? "" : await oouiDialog.prompt(`${wgULS("请输入删除理由", "請輸入刪除理由")}`, {
-                title: wgULS("批量删除分类页面工具", "批次刪除分類頁面工具"),
-                size: "medium",
-                required: true,
-            });
+            let deletionReason = isDelCat
+                ? ""
+                : await oouiDialog.prompt(`${wgULS("请输入删除理由", "請輸入刪除理由")}`, {
+                    title: wgULS("批量删除分类页面工具", "批次刪除分類頁面工具"),
+                    size: "medium",
+                    required: true,
+                });
 
             // Temporary fix, remove after libOOUIDialog is fixed
             while (!isDelCat && deletionReason === "") {

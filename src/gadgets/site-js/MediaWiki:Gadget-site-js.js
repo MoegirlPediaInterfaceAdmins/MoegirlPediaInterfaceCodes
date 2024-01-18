@@ -47,7 +47,7 @@
     function tabs() {
         const defaultStyle = {
             purple: {
-                labelColor: " ", //anti check
+                labelColor: " ", // anti check
                 labelBackgroundColor: "#9070c0",
                 labelBorderColor: "#b090e0 #7050a0 #9070c0 #b090e0",
                 labelPadding: ".2em .3em .2em .3em",
@@ -265,7 +265,7 @@
     const templateClasses = [".heimu", ".colormu", ".just-kidding-text"];
     const templateStr = [...templateTags, ...templateClasses].join(", ");
     /**
-     * @param {JQuery<HTMLDivElement>} $content 
+     * @param {JQuery<HTMLDivElement>} $content
      */
     const templateFix = ($content) => {
         const target = $();
@@ -506,7 +506,7 @@
     //     $.ready,
     // ]);
     tabs();
-    //图片地址
+    // 图片地址
     setInterval(() => {
         $(document.querySelectorAll('img[src*="//img.moegirl.org/"]:not(.org-changed), img[src*="//commons.moegirl.org/"]:not(.org-changed)')).each((_, ele) => {
             try {

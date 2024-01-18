@@ -1,5 +1,5 @@
 // <pre>
-/** 
+/**
  * @author 小鸣@AOKI
  * @author [[User:Leranjun]] refactor
  * @author [[User:萌娘百科·娜娜奇]] moeskin support
@@ -59,13 +59,13 @@ $(() => {
                 option: { data: "placeholder", label: wgULS("请选择一项主要问题", "請選擇一項主要問題") },
                 subTypes: [],
             },
-            // eslint-disable-next-line quote-props
-            "违法违禁": {
+
+            违法违禁: {
                 option: { data: "违法违禁", label: wgULS("违法违禁", "違法違禁") },
                 subTypes: [],
             },
-            // eslint-disable-next-line quote-props
-            "网络暴力": {
+
+            网络暴力: {
                 option: { data: "网络暴力", label: wgULS("网络暴力", "網路暴力") },
                 subTypes: [
                     { data: "侮辱谩骂", label: wgULS("侮辱谩骂", "侮辱謾罵") },
@@ -74,8 +74,8 @@ $(() => {
                     { data: "地域歧视", label: wgULS("地域歧视", "地域歧視") },
                 ],
             },
-            // eslint-disable-next-line quote-props
-            "色情低俗": {
+
+            色情低俗: {
                 option: { data: "色情低俗", label: "色情低俗" },
                 subTypes: [
                     { data: "低俗信息", label: wgULS("低俗信息", "低俗資訊") },
@@ -84,21 +84,21 @@ $(() => {
                     { data: "色情视频", label: wgULS("色情视频", "色情影片", null, null, "色情視像") },
                 ],
             },
-            // eslint-disable-next-line quote-props
-            "血腥暴力": {
+
+            血腥暴力: {
                 option: { data: "血腥暴力", label: "血腥暴力" },
                 subTypes: [
                     { data: "暴恐血腥", label: "暴恐血腥" },
                     { data: "虐杀动物", label: wgULS("虐杀动物", "虐殺動物") },
                 ],
             },
-            // eslint-disable-next-line quote-props
-            "赌博诈骗": {
+
+            赌博诈骗: {
                 option: { data: "赌博诈骗", label: wgULS("赌博诈骗", "賭博詐騙") },
                 subTypes: [],
             },
-            // eslint-disable-next-line quote-props
-            "不实信息": {
+
+            不实信息: {
                 option: { data: "不实信息", label: wgULS("不实信息", "不實資訊") },
                 subTypes: [
                     { data: "不符合事实", label: wgULS("不符合事实", "不符合事實") },
@@ -111,8 +111,8 @@ $(() => {
                 subTypes: [],
                 suggestToTalkBoard: true,
             },
-            // eslint-disable-next-line quote-props
-            "其他反馈": {
+
+            其他反馈: {
                 option: { data: "其他反馈", label: wgULS("其他反馈", "其他反饋") },
                 subTypes: [],
                 suggestConfirmation: true,
@@ -124,7 +124,7 @@ $(() => {
         wgArticleId = wgArticleId;
         wgCurRevisionId = wgCurRevisionId;
         wgRevisionId = wgRevisionId;
-        constructor (config) {
+        constructor(config) {
             // Parent constructor
             super(config);
 
@@ -194,7 +194,6 @@ $(() => {
                 align: "inline",
             });
 
-
             this.reasonTextarea.$element.find(".oo-ui-labelElement-label").css("pointer-events", "none");
             this.secondaryTypeSelectorField.$element.hide();
             this.suggestToTalkBoardInputField.$element.hide();
@@ -225,7 +224,7 @@ $(() => {
         }
         openSecondary(value) {
             const config = MGPReportDialog.types[value];
-            const {subTypes} = config;
+            const { subTypes } = config;
             if (subTypes.length > 0) {
                 this.secondaryTypeSelectorField.$element.slideDown("fast", () => this.updateSize());
                 this.secondaryTypeSelector.setOptions([
@@ -414,7 +413,6 @@ $(() => {
                 console.error("Report [upload]", e);
                 throw wgULS("上传失败，请重试！", "上傳失敗，請重試！");
             }
-
         }
     }
 

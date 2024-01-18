@@ -1,16 +1,16 @@
 /**
  * @file 引自 [[enwp:Special:Permalink/1029979061]]，[[User:AnnAngela]] 作了较大幅度修改，参见[[Help:以本地时区显示签名时间]]
  */
-//<pre>
+// <pre>
 /**
  * Comments in local time
  * [[User:Mxn/CommentsInLocalTime]]
- * 
+ *
  * Adjust timestamps in comment signatures to use easy-to-understand, relative
  * local time instead of absolute UTC time.
- * 
+ *
  * Inspired by [[Wikipedia:Comments in Local Time]].
- * 
+ *
  * @author [[User:Mxn]]
  */
 "use strict";
@@ -76,8 +76,8 @@ $(() => {
         utcOffset: 0,
         ...window.LocalComments,
     };
-    if (!window.LocalComments.enabled ||
-        window.LocalComments.excludeNamespaces.includes(mw.config.get("wgNamespaceNumber")) || !["view", "submit"].includes(mw.config.get("wgAction"))) {
+    if (!window.LocalComments.enabled
+        || window.LocalComments.excludeNamespaces.includes(mw.config.get("wgNamespaceNumber")) || !["view", "submit"].includes(mw.config.get("wgAction"))) {
         return;
     }
     const timezoneAbbrs = {
@@ -184,4 +184,4 @@ $(() => {
         setInterval(formatTimestamp(), 60 * 1000);
     }, 60000 - Date.now() % 60000);
 });
-//</pre>
+// </pre>

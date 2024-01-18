@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 "use strict";
 // <pre>
 (async () => {
@@ -47,9 +48,9 @@
         let wikitext = "";
         try {
             str.replace(new RegExp(`${wikiTextKey}\\s*\\{[^c\\}]*content\\s*:\\s*[^\n]*`, "g"), (text) => {
-                const temp_text = (/content\s*:\s*[^\n]*/.exec(text) || ["content:"])[0].
-                    replace(/^[\s\uFEFF\xA0\t\r\n\f ;}]+|[\s\uFEFF\xA0\t\r\n\f ;}]+$/g, "").
-                    replace(/\s*content\s*:\s*/, "");
+                const temp_text = (/content\s*:\s*[^\n]*/.exec(text) || ["content:"])[0]
+                    .replace(/^[\s\uFEFF\xA0\t\r\n\f ;}]+|[\s\uFEFF\xA0\t\r\n\f ;}]+$/g, "")
+                    .replace(/\s*content\s*:\s*/, "");
                 if (wikitext !== "") {
                     wikitext += "\n";
                 }
@@ -65,8 +66,8 @@
         let wikitext = "";
         try {
             str.replace(new RegExp(`${wikiTextKey}\\s*[\\=:]\\s*[^\n]*`, "g"), (text) => {
-                const temp_text = text.replace(/^[\s\uFEFF\xA0\t\r\n\f ;}]+|[\s\uFEFF\xA0\t\r\n\f ;}]+$/g, "").
-                    replace(new RegExp(`${wikiTextKey}\\s*[\\=:]\\s*`), "");
+                const temp_text = text.replace(/^[\s\uFEFF\xA0\t\r\n\f ;}]+|[\s\uFEFF\xA0\t\r\n\f ;}]+$/g, "")
+                    .replace(new RegExp(`${wikiTextKey}\\s*[\\=:]\\s*`), "");
                 if (wikitext !== "") {
                     wikitext += "\n";
                 }
@@ -306,7 +307,7 @@
     const mwApplyNotice = async (pagename, subPagename) => {
         try {
             const data = await api.post({
-                action: "parse", //get the original wikitext content of a page
+                action: "parse", // get the original wikitext content of a page
                 assertuser: wgUserName,
                 uselang: getLanguage(),
                 useskin: mw.config.get("skin"),
@@ -348,7 +349,7 @@
                 }
                 $("#mw-clearyourcache").empty();
                 if (!document.querySelector("#wpTextbox1")) {
-                    addLoadingNotice();//放置提示，提示使用者等待AJAX
+                    addLoadingNotice();// 放置提示，提示使用者等待AJAX
                     mwGetFromNowRevision();
                 }
             } else if (document.querySelector("#mw-revision-info") && mwConfigIfMatchInLowerCase("wgAction", "view")) {

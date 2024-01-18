@@ -1,9 +1,8 @@
-/* eslint-disable prefer-arrow-functions/prefer-arrow-functions */
+/* eslint-disable prefer-arrow-functions/prefer-arrow-functions, require-atomic-updates, no-use-before-define, camelcase */
 /**
  * @source https://commons.wikimedia.org/wiki/_?oldid=818790002
  * 更新后请同步更新上面链接到最新版本
  */
-/* eslint-disable require-atomic-updates, no-use-before-define */
 "use strict";
 /**
   * 全部内容引自 https://commons.wikimedia.org/wiki/MediaWiki:Gadget-HotCat.js
@@ -151,8 +150,7 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
         register(callback) {
             if (this.needed <= 0) {
                 callback();
-            }
-            else {
+            } else {
                 this.queue.push(callback);
             }
         }
@@ -178,7 +176,7 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
                 cat_notFound: "分类“$1”未找到",
                 cat_exists: "分类“$1”已存在，不执行添加操作",
                 cat_resolved: "（已处理[[分类:$1]]的重定向）",
-                uncat_removed: "", //萌百没有Template:Uncategorized
+                uncat_removed: "", // 萌百没有Template:Uncategorized
                 separator: "; ",
                 prefix: "",
                 using: "——[[Help:HotCat小工具|HotCat]]",
@@ -232,8 +230,7 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
                     ul = initial.toUpperCase();
                 if (ll === ul) {
                     regex_name += initial;
-                }
-                else {
+                } else {
                     regex_name += `[${ll}${ul}]`;
                 }
             }
@@ -332,7 +329,7 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
         };
     }
     const substitute = substituteFactory();
-    const replaceShortcuts = function () {
+    const replaceShortcuts = (function () {
         const replaceHash = substituteFactory({
             indicator: "#",
             lbrace: "[",
@@ -342,7 +339,7 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
             const s = replaceHash(str, map);
             return HC.capitalizePageNames ? capitalize(s) : s;
         };
-    }();
+    })();
     const findCatsRE = new RegExp(`\\[\\[${wikiTextBlankOrBidi}(?:${HC.category_regexp})${wikiTextBlankOrBidi}:[^\\]]+\\]\\]`, "g");
     function replaceByBlanks(match) {
         return match.replace(/(\s|\S)/g, " ");
@@ -442,14 +439,12 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
             }
             if (i >= 0) {
                 before = before.substring(0, i + 1);
-            }
-            else {
+            } else {
                 before = "";
             }
             if (j < after.length) {
                 after = after.substring(j);
-            }
-            else {
+            } else {
                 after = "";
             }
             if (before.length && before.substring(before.length - 1).search(/\S/) >= 0 && after.length && after.substr(0, 1).search(/\S/) >= 0) {
@@ -467,7 +462,6 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
                     summary.push(HC.messages.cat_removed.replace(/\$1/g, toRemove));
                 }
             }
-
         }
         if (toAdd && toAdd.length) {
             matches = find_category(wikitext, toAdd);
@@ -492,8 +486,7 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
                 wikitext = wikitext.substring(0, cat_point) + (cat_point > 0 ? "\n" : "") + newcatstring + (!onCat ? "\n" : "");
                 if (suffix.length && suffix.substr(0, 1) !== "\n") {
                     wikitext += `\n${suffix}`;
-                }
-                else {
+                } else {
                     wikitext += suffix;
                 }
             } else {
@@ -518,7 +511,6 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
                     summary.push(HC.messages.uncat_removed);
                 }
             }
-
         }
         return {
             text: wikitext,
@@ -613,8 +605,7 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
                 span.appendChild(this.linkSpan);
                 if (after) {
                     after.parentNode.insertBefore(span, after.nextSibling);
-                }
-                else {
+                } else {
                     line.appendChild(span);
                 }
                 this.normalLinks = null;
@@ -791,7 +782,8 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
                         self.ime = false;
                         self.invokeSuggestions(false);
                     });
-                } catch { } $(text).on("blur", () => {
+                } catch { }
+                $(text).on("blur", () => {
                     self.usesComposition = false;
                     self.ime = false;
                 });
@@ -1193,7 +1185,8 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
                 this.catLink.style.cssText += "; text-decoration : line-through !important;";
                 try {
                     this.catLink.style.backgroundColor = HC.bg_changed;
-                } catch { } this.originalState = this.state;
+                } catch { }
+                this.originalState = this.state;
                 this.state = CategoryEditor.DELETED;
                 this.normalLinks.style.display = "none";
                 this.undelLink.style.display = "";
@@ -1272,8 +1265,7 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
                     if (titles && titles.length) {
                         if (cb.allTitles === null) {
                             cb.allTitles = titles;
-                        }
-                        else {
+                        } else {
                             cb.allTitles = cb.allTitles.concat(titles);
                         }
                         if (titles.exists) {
@@ -1652,16 +1644,14 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
                     this.list.style.width = `${w}px`;
                     if (is_rtl) {
                         left = right - w;
-                    }
-                    else {
+                    } else {
                         right = left + w;
                     }
                 }
                 let relative_offset = 0;
                 if (left < scroll) {
                     relative_offset = scroll - left;
-                }
-                else if (right > scroll + view_w) {
+                } else if (right > scroll + view_w) {
                     relative_offset = -(right - scroll - view_w);
                 }
                 if (is_rtl) {
@@ -2042,8 +2032,7 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
                 }
                 if (deleted.length === 1) {
                     shortSummary.push(`-${substitute(HC.messages.short_catchange, [null, deleted[0]])}`);
-                }
-                else if (deleted.length) {
+                } else if (deleted.length) {
                     shortSummary.push(`- ${multiChangeMsg(deleted.length)}`);
                 }
                 for (i = 0; i < added.length; i++) {
@@ -2051,8 +2040,7 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
                 }
                 if (added.length === 1) {
                     shortSummary.push(`+${substitute(HC.messages.short_catchange, [null, added[0]])}`);
-                }
-                else if (added.length) {
+                } else if (added.length) {
                     shortSummary.push(`+ ${multiChangeMsg(added.length)}`);
                 }
                 const arrow = is_rtl ? "←" : "→";
@@ -2303,8 +2291,7 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
         commitButton.onclick = multiSubmit;
         if (multiSpan) {
             multiSpan.parentNode.replaceChild(commitButton, multiSpan);
-        }
-        else {
+        } else {
             catLine.appendChild(commitButton);
         }
     }
@@ -2462,8 +2449,7 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
     function forceRedraw() {
         if (dummyElement.parentNode) {
             document.body.removeChild(dummyElement);
-        }
-        else {
+        } else {
             document.body.appendChild(dummyElement);
         }
     }
@@ -2525,8 +2511,7 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
                         const ind = $.inArray(item, sArr);
                         if (ind === -1) {
                             result.push(item);
-                        }
-                        else {
+                        } else {
                             sArr.splice(ind, 1);
                         }
                     }
@@ -2562,8 +2547,7 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
                             window.setTimeout(() => {
                                 if (!isMinorChange()) {
                                     $ct.val("");
-                                }
-                                else {
+                                } else {
                                     removeChangeTag();
                                 }
                             }, 500);
@@ -2694,7 +2678,7 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
             const newRow = ip.insertRow(-1);
             newRow.appendChild(labelCell);
             newRow.appendChild(lineCell);
-            form.onsubmit = function (oldSubmit) {
+            form.onsubmit = (function (oldSubmit) {
                 return function (...args) {
                     let do_submit = true;
                     if (oldSubmit) {
@@ -2728,7 +2712,7 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
                     }
                     return true;
                 };
-            }(form.onsubmit);
+            })(form.onsubmit);
         }
     }
     let cleanedText = null;
@@ -2825,8 +2809,7 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
             container.style.display = "";
             if (!hiddenCats) {
                 container.appendChild(catLine);
-            }
-            else {
+            } else {
                 container.insertBefore(catLine, hiddenCats);
             }
         }
@@ -3022,8 +3005,7 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
                 }
                 if (result === null) {
                     result = text;
-                }
-                else {
+                } else {
                     result += `\n${text}`;
                 }
             }
@@ -3081,4 +3063,4 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
     // ]);
     run();
 })();
-//</nowiki>
+// </nowiki>

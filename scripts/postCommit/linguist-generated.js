@@ -1,4 +1,3 @@
-
 import console from "../modules/console.js";
 console.info("Initialization done.");
 import fs from "fs";
