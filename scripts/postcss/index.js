@@ -8,7 +8,7 @@ startGroup("postcss output:");
  * @type { string }
  */
 const output = await new Promise((res, rej) => {
-    const childProcess = exec("npx postcss src/**/*.css --base src/ -d dist/ --verbose", (err, _, stderr) => {
+    const childProcess = exec("NO_COLOR=true npx postcss src/**/*.css --base src/ -d dist/ --verbose", (err, _, stderr) => {
         if (err) {
             rej(err);
         } else {
