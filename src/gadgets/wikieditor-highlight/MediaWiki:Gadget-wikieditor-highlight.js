@@ -27,13 +27,12 @@
         cm.prefer([
             "highlightSpecialChars",
             "highlightActiveLine",
-            "highlightWhitespace",
             "bracketMatching",
             "closeBrackets",
         ]);
         const [config] = await Promise.all([
             libCachedCode.getCachedCode("https://testingcf.jsdelivr.net/npm/wikiparser-node/config/moegirl.json"),
-            cm.defaultLint(true, { include: ns === 10 }),
+            cm.defaultLint(true, { include: [2, 10, 828].includes(ns) }),
         ]);
         try {
             window.wikiparse?.setConfig(JSON.parse(config));
