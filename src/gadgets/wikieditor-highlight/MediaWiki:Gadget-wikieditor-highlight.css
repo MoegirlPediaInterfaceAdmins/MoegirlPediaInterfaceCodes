@@ -1,0 +1,9 @@
+/* TODO: MW升级后WikiEditor扩展自带这条样式 */
+.wikiEditor-ui-toolbar {
+	z-index: 7;
+}
+
+/* 修复MoeSkin */
+#mw-content-text .cm-panel-lint > ul {
+	margin-left: 0;
+}
