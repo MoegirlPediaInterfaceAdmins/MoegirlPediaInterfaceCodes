@@ -10,7 +10,7 @@
 (() => {
     const script = document.createElement("script");
     script.src = "https://polyfill.alicdn.com/v3/polyfill.js?features=$$$FEATURES$$$";
-    script.async = true;
+    script.async = false;
     const polyfillPromise = new Promise((res) => {
         script.addEventListener("load", () => res(), {
             once: true,
