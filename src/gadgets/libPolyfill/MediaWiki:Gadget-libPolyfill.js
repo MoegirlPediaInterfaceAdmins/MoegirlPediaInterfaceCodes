@@ -25,4 +25,5 @@
         writable: false,
         value: polyfillPromise,
     });
+    document.head.appendChild(script);
 })();
