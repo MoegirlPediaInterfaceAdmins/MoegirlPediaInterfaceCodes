@@ -28,6 +28,7 @@
             "highlightActiveLine",
             "bracketMatching",
             "closeBrackets",
+            "allowMultipleSelections",
         ]);
         const [config] = await Promise.all([
             libCachedCode.getCachedCode("https://testingcf.jsdelivr.net/npm/wikiparser-node/config/moegirl.json"),
