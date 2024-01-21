@@ -9,7 +9,10 @@
  */
 (() => {
     const script = document.createElement("script");
-    script.src = "https://polyfill.alicdn.com/v3/polyfill.js?features=$$$FEATURES$$$";
+    const url = new URL("https://polyfill.alicdn.com/v3/polyfill.js");
+    url.searchParams.set("features", "$$$FEATURES$$$");
+    url.searchParams.set("_", btoa(navigator.userAgent));
+    script.src = url.toString();
     script.async = false;
     const polyfillPromise = new Promise((res) => {
         script.addEventListener("load", () => res(), {

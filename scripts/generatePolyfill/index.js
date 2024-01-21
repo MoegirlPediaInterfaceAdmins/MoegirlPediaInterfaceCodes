@@ -100,7 +100,7 @@ if (newUnrecognizableFeatures.length === 0 && !hasUnparsableUnrecognizableFeatur
 }
 console.info("Start to write polyfill file to gadget-libPolyfill ...");
 const flaggableFeatures = features.filter((feature) => !newUnrecognizableFeatures.includes(feature));
-const code = `${await fs.promises.readFile("scripts/generatePolyfill/template.js")}`.replace("$$$TARGET_CHROMIUM_VERSION$$$", TARGET_CHROMIUM_VERSION).replace("$$$TARGET_UA$$$", TARGET_UA).replace("$$$FLAGGABLE_FEATURES$$$", JSON.stringify(flaggableFeatures, null, 1).replace(/\n */g, " ")).replace("$$$FEATURES$$$", encodeURIComponent(flaggableFeatures.join(",")));
+const code = `${await fs.promises.readFile("scripts/generatePolyfill/template.js")}`.replace("$$$TARGET_CHROMIUM_VERSION$$$", TARGET_CHROMIUM_VERSION).replace("$$$TARGET_UA$$$", TARGET_UA).replace("$$$FLAGGABLE_FEATURES$$$", JSON.stringify(flaggableFeatures, null, 1).replace(/\n */g, " ")).replace("$$$FEATURES$$$", flaggableFeatures.join(","));
 await fs.promises.writeFile("src/gadgets/libPolyfill/MediaWiki:Gadget-libPolyfill.js", code);
 console.info("\tDone.");
 console.info("Start to generate .eslintrc.yaml ...");
