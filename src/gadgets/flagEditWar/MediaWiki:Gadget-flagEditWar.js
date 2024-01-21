@@ -1,7 +1,7 @@
 // <pre>
 "use strict";
 $(() => {
-    const protectLevel = ["sysop", "patrolleredit"];
+    const protectLevel = ["sysop", "patrolleredit", "extendedconfirmed", "techedit", "autoconfirmed"];
     if ($("#EditWarWarningEndTime")[0] || mw.config.get("wgNamespaceNumber") !== 0 || !mw.config.get("wgUserGroups").includes("sysop") || !protectLevel.includes(mw.config.get("wgRestrictionEdit")[0])) {
         return;
     }
