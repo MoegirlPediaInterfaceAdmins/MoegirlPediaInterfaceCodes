@@ -479,7 +479,7 @@ body,
 }
 
 /* 主标题字型调整 */
-#firstHeading {
+.skin-vector #firstHeading {
     font-weight: 500;
     padding-left: 0.25em;
 }
