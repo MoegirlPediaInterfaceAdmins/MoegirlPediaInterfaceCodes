@@ -43,7 +43,7 @@ jobs:
         with:
           fetch-depth: 0
           show-progress: false
-      - name: Get toe polyfill config
+      - name: Get the polyfill config
         id: polyfillConfig
         run: |
           echo "TARGET_POLYFILL_VERSION=$(yq '.TARGET_POLYFILL_VERSION' scripts/generatePolyfill/config.yaml)" >> $GITHUB_OUTPUT
