@@ -3,11 +3,13 @@ name: Generate Polyfill
 on:
   push:
     paths:
+      - .github/workflows/generatePolyfill.yaml
       - scripts/generatePolyfill/config.yaml
       - scripts/generatePolyfill/index.js
   merge_group:
   pull_request:
     paths:
+        - .github/workflows/generatePolyfill.yaml
         - scripts/generatePolyfill/config.yaml
         - scripts/generatePolyfill/index.js
   workflow_dispatch:
