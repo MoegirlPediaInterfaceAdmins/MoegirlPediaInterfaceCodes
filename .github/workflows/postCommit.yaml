@@ -6,7 +6,7 @@ on:
       - scripts/**/*.js
       - scripts/**/*.yaml
       - "!scripts/test/*.js"
-      - "!scripts/generateUnrecognizableFeatures/*.js"
+      - "!scripts/generatePolyfill/*.js"
       - "!scripts/detectHardcodedOutdatedNPMPackages/*.js"
       - "!scripts/detectHardcodedOutdatedNPMPackages/*.yaml"
       - "!scripts/autoAssign/*.js"
@@ -25,7 +25,7 @@ on:
       - scripts/**/*.js
       - scripts/**/*.yaml
       - "!scripts/test/*.js"
-      - "!scripts/generateUnrecognizableFeatures/*.js"
+      - "!scripts/generatePolyfill/*.js"
       - "!scripts/detectHardcodedOutdatedNPMPackages/*.js"
       - "!scripts/detectHardcodedOutdatedNPMPackages/*.yaml"
       - "!scripts/autoAssign/*.js"
