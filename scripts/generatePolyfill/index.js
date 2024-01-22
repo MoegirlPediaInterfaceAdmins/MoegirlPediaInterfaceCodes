@@ -2,10 +2,11 @@ import console from "../modules/console.js";
 console.info("Initialization done.");
 import fs from "node:fs";
 import path from "node:path";
+import { startGroup, endGroup } from "@actions/core";
 import semver from "semver";
 import jsonModule from "../modules/jsonModule.js";
 import yamlModule from "../modules/yamlModule.js";
-import { startGroup, endGroup } from "@actions/core";
+import createCommit from "../modules/createCommit.js";
 
 const polyfillGadgetDefinitionPath = "src/gadgets/libPolyfill/definition.yaml";
 const polyfillGadgetDefinition = await yamlModule.readFile(polyfillGadgetDefinitionPath);
@@ -134,4 +135,5 @@ for (const polyfill of polyfillListAllowed) {
 }
 polyfillGadgetDefinition._files = await getPolyfillGadgetFiles();
 await yamlModule.writeFile(polyfillGadgetDefinitionPath, polyfillGadgetDefinition);
+await createCommit("auto: regenerated polyfill files by generatePolyfill");
 console.info("Done.");
