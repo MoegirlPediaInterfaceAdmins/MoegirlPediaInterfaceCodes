@@ -4,9 +4,7 @@ src/**/*.json linguist-generated=false
 src/*.json linguist-generated=false
 src/**/*.yaml linguist-generated=false
 src/*.yaml linguist-generated=false
-
-# From generatePolyfill
-src/gadgets/libPolyfill/MediaWiki:Gadget-libPolyfill.js linguist-generated=true
+src/gadgets/libPolyfill/MediaWiki:Gadget-libPolyfill.*.js linguist-generated=true
 
 # From ganerateCommitsHistory
 src/global/zh/MediaWiki:GHIAHistory.json linguist-generated=true

@@ -11,6 +11,7 @@ const ignores = [
     "**/dist/**",
     "**/.*/**",
     "node_modules",
+    "src/gadgets/libPolyfill/MediaWiki:Gadget-libPolyfill.*.js",
 ];
 
 const srcESlintrcFiles = (await readDir("./src")).filter((n) => path.basename(n) === ".eslintrc.yaml");
@@ -34,7 +35,6 @@ const fileSpec = {
     browser: {
         files: [
             "src/**/*",
-            "scripts/generatePolyfill/template.js",
         ],
         ignores,
     },
@@ -43,10 +43,7 @@ const fileSpec = {
             "scripts/**/*",
             "eslint.config.js",
         ],
-        ignores: [
-            ...ignores,
-            "scripts/generatePolyfill/template.js",
-        ],
+        ignores,
     },
 };
 

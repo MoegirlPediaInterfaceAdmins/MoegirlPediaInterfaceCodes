@@ -1,30 +1,44 @@
 import console from "../modules/console.js";
 console.info("Initialization done.");
-import exec from "../modules/exec.js";
-import mkdtmp from "../modules/mkdtmp.js";
-import createCommit from "../modules/createCommit.js";
-import fs from "fs";
-import path from "path";
+import fs from "node:fs";
+import path from "node:path";
+import semver from "semver";
 import jsonModule from "../modules/jsonModule.js";
 import yamlModule from "../modules/yamlModule.js";
-import { exportVariable, startGroup, endGroup } from "@actions/core";
-import { createIssue, isInGithubActions } from "../modules/octokit.js";
-import artifactClient from "../modules/artifact.js";
+import { startGroup, endGroup } from "@actions/core";
 
-exportVariable("linguist-generated-generatePolyfill", JSON.stringify(["src/gadgets/libPolyfill/MediaWiki:Gadget-libPolyfill.js"]));
+const polyfillGadgetDefinitionPath = "src/gadgets/libPolyfill/definition.yaml";
+const polyfillGadgetDefinition = await yamlModule.readFile(polyfillGadgetDefinitionPath);
+const getPolyfillGadgetFiles = async () => (await fs.promises.readdir("src/gadgets/libPolyfill/")).filter((file) => file.startsWith("MediaWiki:Gadget-libPolyfill") && file.endsWith(".js"));
 
-const unrecognizableFeatures = await jsonModule.readFile("scripts/generatePolyfill/unrecognizableFeatures.json");
+/**
+ * @type { { TARGET_CHROMIUM_VERSION: string | number, TARGET_ALIASES: string[] } }
+ */
+const { TARGET_CHROMIUM_VERSION, TARGET_ALIASES } = await yamlModule.readFile("./scripts/generatePolyfill/config.yaml");
 
-const TARGET_CHROMIUM_VERSION = "70.0.3538.0";
-const TARGET_UA = `Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/${TARGET_CHROMIUM_VERSION} Safari/537.36`;
-const labels = ["ci:generatePolyfill"];
+const TARGET_VERSION = `${TARGET_CHROMIUM_VERSION}.0.0`;
+const { POLYFILL_PATH } = process.env;
 
-// const findPolyfillFiles = async () => (await fs.promises.readdir("src/gadgets/libPolyfill/")).filter((file) => file.startsWith("MediaWiki:Gadget-libPolyfill"));
-const polyfillFiles = ["MediaWiki:Gadget-libPolyfill.js"];
+if (!POLYFILL_PATH) {
+    throw new Error("No POLYFILL_PATH env variable.");
+}
+
+startGroup("Config:");
+console.info("TARGET_CHROMIUM_VERSION:", TARGET_CHROMIUM_VERSION);
+console.info("TARGET_ALIASES:", TARGET_ALIASES);
+console.info("TARGET_VERSION:", TARGET_VERSION);
+console.info("POLYFILL_PATH:", POLYFILL_PATH);
+endGroup();
+
+const polyfillGadgetFiles = await getPolyfillGadgetFiles();
+const polyfillMainJSONPath = path.join(POLYFILL_PATH, "main.json");
+const polyfillLibraryPath = path.join(POLYFILL_PATH, "library");
 
 console.info("Start to delete old polyfill files:");
-const tempPath = await mkdtmp();
-for (const file of polyfillFiles) {
+for (const file of polyfillGadgetFiles) {
+    if (file.startsWith("MediaWiki:Gadget-libPolyfill-")) {
+        continue;
+    }
     console.info("\tDeleteting", file);
     await fs.promises.rm(path.join("src/gadgets/libPolyfill/", file), {
         force: true,
@@ -32,157 +46,92 @@ for (const file of polyfillFiles) {
     });
     console.info("\tDeleteting", file, "done.");
 }
-console.info("Start to compile src/ to temporary bundle file...");
-const bundlePath = path.join(tempPath, "bundle.js");
-console.log("bundlePath:", bundlePath);
-await exec(`npx tsc --project tsconfig.production.json --outFile ${bundlePath}`);
-console.info("\tDone.");
-console.info("Start to analyse the temporary bundle file...");
-const analysisReport = [...new Set(JSON.parse(await exec(`npx @financial-times/js-features-analyser analyse --file ${path.relative(".", bundlePath)}`)))].sort();
-const features = analysisReport.filter((feature) => !unrecognizableFeatures.includes(feature));
-console.info("\tDone.");
-console.info("\tfeatures:");
-startGroup("features:");
-console.info(JSON.stringify(features, null, 4));
-endGroup();
-const newUnrecognizableFeatures = [];
-console.info("Start to download polyfill file...");
-const url = new URL("https://polyfill.io/v3/polyfill.js");
-url.searchParams.set("features", features.join(","));
-url.searchParams.set("ua", TARGET_UA);
-const dataResponse = await fetch(url, {
-    method: "GET",
-    headers: {
-        "user-agent": TARGET_UA,
-    },
-});
-const data = await dataResponse.text();
-const codeFilePath = path.join(tempPath, "polyfillGeneratedCode.js");
-await fs.promises.writeFile(codeFilePath, data, {
-    encoding: "utf-8",
-});
-console.info("\tDone, upload it as a artifact...");
-if (isInGithubActions) {
-    await artifactClient.uploadArtifact("polyfillGeneratedCode.js", [codeFilePath], tempPath);
-}
-console.info("\tDone.");
-console.info("Start to find unrecognizable features...");
-let hasUnparsableUnrecognizableFeatures = false;
-if (data.includes("These features were not recognised")) {
-    const match = data.match(/(?<=\n \* These features were not recognised:\n \* - )[^\n]+?(?=\s*\*\/)/)?.[0]?.split?.(/,-\s*/);
-    if (Array.isArray(match)) {
-        newUnrecognizableFeatures.push(...match);
-    } else {
-        hasUnparsableUnrecognizableFeatures = true;
-    }
-}
+console.info("Start to read polyfill JSON...");
+const polyfillMainJSONArray = Object.entries(await jsonModule.readFile(polyfillMainJSONPath)).map(([id, v]) => ({
+    id,
+    ...JSON.parse(v),
+}));
+const polyfillMainJSON = Object.fromEntries(polyfillMainJSONArray.map((v) => [v.id, v]));
+console.info("Get", polyfillMainJSONArray.length, "polyfill entries.");
+const polyfillList = polyfillMainJSONArray.filter(({ aliases }) => Array.isArray(aliases) && TARGET_ALIASES.some((targetAliases) => aliases.includes(targetAliases)));
+console.info("Get", polyfillList.length, "polyfill entries with aliases.");
+const polyfillListAllowed = polyfillList.filter(({ browsers }) => browsers?.chrome && semver.satisfies(TARGET_VERSION, browsers?.chrome));
+console.info("Get", polyfillListAllowed.length, "polyfill entries with aliases and target browsers.");
 
-if (newUnrecognizableFeatures.length === 0 && !hasUnparsableUnrecognizableFeatures) {
-    console.info("\tNone, done.");
-} else {
-    if (newUnrecognizableFeatures.length > 0) {
-        console.info("New unrecognizable features found:", newUnrecognizableFeatures);
-        await createIssue(
-            "[generatePolyfill] New unrecognizable features detected from polyfill.io",
-            "These new unrecognizable features detected from polyfill.io:",
-            labels,
-            `newUnrecognizableFeatures:\n\`\`\`json\n${JSON.stringify(newUnrecognizableFeatures, null, 4)}\n\`\`\``,
-        );
+const readPolyfillRawJS = async (dir) => {
+    console.info("\t[readPolyfillRawJS]", "Testing", dir);
+    if (await fs.promises.access(dir).then(() => true).catch(() => false)) {
+        console.info("\t[readPolyfillRawJS]", dir, "exist, reading raw js.");
+        return (await fs.promises.readFile(path.join(dir, "raw.js"), { encoding: "utf-8" })).split("\n");
     }
-    if (hasUnparsableUnrecognizableFeatures) {
-        console.info("New unparsable unrecognizable features found.");
-        await createIssue(
-            "[generatePolyfill] New unparsable unrecognizable features detected from polyfill.io",
-            "Found new unparsable unrecognizable features detected from polyfill.io, please check it manually.",
-            labels,
-        );
+    console.info("\t[readPolyfillRawJS]", dir, "not exist, return false.");
+    return false;
+};
+const polyfillAlreadyInjected = {};
+const getPolyfillContent = async (polyfill, _rootPolyfillID = false) => {
+    const rootPolyfillID = _rootPolyfillID || polyfill.id;
+    if (!Array.isArray(polyfillAlreadyInjected[rootPolyfillID])) {
+        polyfillAlreadyInjected[rootPolyfillID] = [];
     }
-}
-console.info("Start to write polyfill file to gadget-libPolyfill ...");
-const flaggableFeatures = features.filter((feature) => !newUnrecognizableFeatures.includes(feature));
-const code = `${await fs.promises.readFile("scripts/generatePolyfill/template.js")}`.replace("$$$TARGET_CHROMIUM_VERSION$$$", TARGET_CHROMIUM_VERSION).replace("$$$TARGET_UA$$$", TARGET_UA).replace("$$$FLAGGABLE_FEATURES$$$", JSON.stringify(flaggableFeatures, null, 1).replace(/\n */g, " ")).replace("$$$FEATURES$$$", flaggableFeatures.join(","));
-await fs.promises.writeFile("src/gadgets/libPolyfill/MediaWiki:Gadget-libPolyfill.js", code);
-console.info("\tDone.");
-console.info("Start to generate .eslintrc.yaml ...");
-const eslintrc = await yamlModule.readFile("src/gadgets/libPolyfill/.eslintrc.yaml").catch(() => ({}));
-eslintrc.ignorePatterns = polyfillFiles;
-console.info("New .eslintrc.yaml:", eslintrc);
-await yamlModule.writeFile("src/gadgets/libPolyfill/.eslintrc.yaml", eslintrc);
-await createCommit("auto(Gadget-libPolyfill): new polyfill generated by generatePolyfill");
-console.info("Done.");
-console.info("Start to test the generated url...");
-const generatedUrl = code.match(/(?<=script.src = ")[^"]+/)?.[0];
-if (typeof generatedUrl !== "string") {
-    await createIssue(
-        "[generatePolyfill] Unable to retrieve the generated url",
-        "Unable to retrieve the generated url via `/(?<=script.src = \")[^\"]+/`, please check [`src/gadgets/libPolyfill/MediaWiki:Gadget-libPolyfill.js`](src/gadgets/libPolyfill/MediaWiki:Gadget-libPolyfill.js)",
-        labels,
-    );
-    process.exit(0);
-}
-console.info("generatedUrl:");
-startGroup("generatedUrl:");
-console.info(generatedUrl);
-endGroup();
-const polyfillIOUrl = new URL(generatedUrl);
-polyfillIOUrl.hostname = "polyfill.io";
-console.info("polyfillIOUrl:");
-startGroup("polyfillIOUrl:");
-console.info(polyfillIOUrl);
-endGroup();
-/**
- * @type {(Response | TypeError)[]}
- */
-const [generatedUrlResponse, polyfillIOUrlResponse] = await Promise.all([
-    ["generatedUrl", generatedUrl],
-    ["polyfillIOUrl", polyfillIOUrl],
-].map(([type, url]) => fetch(url, {
-    method: "HEAD",
-    headers: {
-        "user-agent": TARGET_UA,
-    },
-}).catch((e) => {
-    console.error("Unable to fetch", type, ":", e);
-    return e;
-})));
-if (generatedUrlResponse instanceof TypeError && polyfillIOUrlResponse instanceof TypeError) {
-    console.error("Both generatedUrl and polyfillIOUrl is not able to be fetched!");
-    await createIssue(
-        "[generatePolyfill] Unable to fetch the generated url",
-        `Unable to fetch the generated url \`${generatedUrl}\` and polyfill.io's one, please check it manually.`,
-        labels,
-        `Reason:\n* generatedUrl: ${generatedUrlResponse.name} - ${generatedUrlResponse.message}\n* polyfillIOUrl: ${polyfillIOUrlResponse.name} - ${polyfillIOUrlResponse.message}`,
-    );
-    process.exit(0);
-}
-if (generatedUrlResponse?.status >= 400 && polyfillIOUrlResponse?.status >= 400) {
-    console.error("Unable to fetch generatedUrl: network failed -", generatedUrlResponse.status, generatedUrlResponse.statusText);
-    console.error("Unable to fetch polyfillIOUrl: network failed -", polyfillIOUrlResponse.status, polyfillIOUrlResponse.statusText);
-    await createIssue(
-        "[generatePolyfill] Unable to fetch the generated url",
-        `Unable to fetch the generated url \`${generatedUrl}\` and polyfill.io's one, please check it manually.`,
-        labels,
-        `Status:\n* generatedUrl: ${generatedUrlResponse.status} - ${generatedUrlResponse.statusText}\n* polyfillIOUrl: ${polyfillIOUrlResponse.status} - ${polyfillIOUrlResponse.statusText}`,
-    );
-    process.exit(0);
-}
-console.info("Success:");
-/**
- * @type {[string, Response | TypeError][]}
- */
-const results = [
-    ["generatedUrl", generatedUrlResponse],
-    ["polyfillIOUrl", polyfillIOUrlResponse],
-];
-for (const [type, response] of results) {
-    const msg = [];
-    if (response instanceof TypeError) {
-        msg.push("network failed -", response.name, response.message);
-    } else if (response.status >= 400) {
-        msg.push("backend failed -", response.status, response.statusText);
+    if (polyfillAlreadyInjected[rootPolyfillID].includes(polyfill.id)) {
+        console.info("\t[getPolyfillContent]", `[${polyfill.id}@${rootPolyfillID}]`, "Already injected, skip.");
+        return [];
+    }
+    polyfillAlreadyInjected[rootPolyfillID].push(polyfill.id);
+    console.info("\t[getPolyfillContent]", `[${polyfill.id}@${rootPolyfillID}]`, "Processing", polyfill.id);
+    const content = [];
+    const detectSource = polyfill.detectSource?.trim();
+    console.info("\t[getPolyfillContent]", `[${polyfill.id}@${rootPolyfillID}]`, "detectSource:", detectSource);
+    if (detectSource) {
+        content.push(`if (!(${detectSource})) {`);
+    }
+    console.info("\t[getPolyfillContent]", `[${polyfill.id}@${rootPolyfillID}]`, "dependencies:", polyfill.dependencies);
+    if (Array.isArray(polyfill.dependencies)) {
+        for (const dependency of polyfill.dependencies) {
+            content.push(...await getPolyfillContent(polyfillMainJSON[dependency], rootPolyfillID));
+        }
+    }
+    const polyfillRawJSFromBaseDir = await readPolyfillRawJS(path.join(polyfillLibraryPath, polyfill.baseDir));
+    if (Array.isArray(polyfillRawJSFromBaseDir)) {
+        console.info("\t[getPolyfillContent]", `[${polyfill.id}@${rootPolyfillID}]`, "polyfillRawJSFromBaseDir exist.");
+        content.push(...polyfillRawJSFromBaseDir);
     } else {
-        msg.push("success -", response.status, response.statusText, "Content-Length:", response.headers.get("content-length"));
+        const polyfillRawJSFromID = await readPolyfillRawJS(path.join(polyfillLibraryPath, polyfill.id));
+        if (Array.isArray(polyfillRawJSFromID)) {
+            console.info("\t[getPolyfillContent]", `[${polyfill.id}@${rootPolyfillID}]`, "polyfillRawJSFromID exist.");
+            content.push(...polyfillRawJSFromID);
+        } else {
+            throw new Error(`No raw.js found in ${path.join(polyfillLibraryPath, polyfill.baseDir)} or ${path.join(polyfillLibraryPath, polyfill.id)}`);
+        }
     }
-    console.info(`\t${type}`, ...msg);
+    if (detectSource) {
+        content.push("}");
+    }
+    console.info("\t[getPolyfillContent]", `[${polyfill.id}@${rootPolyfillID}]`, "Done.");
+    return content;
+};
+for (const polyfill of polyfillListAllowed) {
+    startGroup(`Parsing polyfill: ${polyfill.id}`);
+    const content = [
+        "\"use strict\";",
+        "/**",
+        " * Generated by scripts/generatePolyfill/index.js",
+        " * Options:",
+        ` *     polyfillFeature: ${polyfill.id}`,
+        ` *     polyfillAliases: ${Array.isArray(polyfill.aliases) ? polyfill.aliases.join(", ") : null}`,
+        ` *     targetChromiumVersion: ${TARGET_VERSION}`,
+        ` *     polyfillVersionRange: ${polyfill.browsers?.chrome ? `${semver.validRange(polyfill.browsers.chrome)} (${polyfill.browsers.chrome})` : null}`,
+        " */",
+        "(() => {",
+        ...await getPolyfillContent(polyfill),
+        "})();",
+    ];
+    const gadgetFilePath = path.join("src/gadgets/libPolyfill/", `MediaWiki:Gadget-libPolyfill.${polyfill.id}.js`);
+    console.info("Start to write polyfill file:", polyfill.id, "@", gadgetFilePath);
+    await fs.promises.writeFile(gadgetFilePath, content.join("\n"));
+    console.info("Done.");
+    endGroup();
 }
+polyfillGadgetDefinition._files = await getPolyfillGadgetFiles();
+await yamlModule.writeFile(polyfillGadgetDefinitionPath, polyfillGadgetDefinition);
 console.info("Done.");

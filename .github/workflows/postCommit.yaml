@@ -92,6 +92,7 @@ jobs:
     if: always() && needs.skipCI.result == 'success' && needs.skipCI.outputs.skip != 'true'
     steps:
       - uses: actions/checkout@v4
+        name: Checkout main repo
         with:
           fetch-depth: 0
           show-progress: false
@@ -113,8 +114,6 @@ jobs:
         run: node scripts/browserify/index.js
       - name: Auto prefetch
         run: node scripts/prefetch/index.js
-      - name: Gadget-polyfill generator
-        run: node scripts/generatePolyfill/index.js
       - name: Gadgets-definition Generator
         run: node scripts/generateGadgetsDefinition/index.js
       - name: Conventional Commits scopes generator
