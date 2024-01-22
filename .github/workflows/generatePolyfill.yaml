@@ -64,6 +64,7 @@ jobs:
           POLYFILL_PATH="${{ runner.temp }}/$(uuidgen)"
           echo "POLYFILL_PATH=$POLYFILL_PATH" >> $GITHUB_OUTPUT
           cat $GITHUB_OUTPUT
+          mkdir -pv $POLYFILL_PATH
           mv polyfill-service/polyfill-libraries/${{ steps.polyfillConfig.outputs.TARGET_POLYFILL_VERSION }}.json $POLYFILL_PATH/main.json
           mv polyfill-service/polyfill-libraries/${{ steps.polyfillConfig.outputs.TARGET_POLYFILL_VERSION }}/ $POLYFILL_PATH/library
           rm -rf polyfill-service
