@@ -10,7 +10,7 @@ import createCommit from "../modules/createCommit.js";
 
 const polyfillGadgetDefinitionPath = "src/gadgets/libPolyfill/definition.yaml";
 const polyfillGadgetDefinition = await yamlModule.readFile(polyfillGadgetDefinitionPath);
-const getPolyfillGadgetFiles = async () => (await fs.promises.readdir("src/gadgets/libPolyfill/")).filter((file) => file.startsWith("MediaWiki:Gadget-libPolyfill") && file.endsWith(".js"));
+const getPolyfillGadgetFiles = async () => (await fs.promises.readdir("src/gadgets/libPolyfill/")).filter((file) => path.extname(file) === ".js");
 
 /**
  * @type { { TARGET_CHROMIUM_VERSION: string | number, TARGET_ALIASES: string[] } }
@@ -33,7 +33,9 @@ endGroup();
 
 const polyfillGadgetFiles = await getPolyfillGadgetFiles();
 const polyfillMainJSONPath = path.join(POLYFILL_PATH, "main.json");
+const customPolyfillMainJSONPath = "./scripts/generatePolyfill/customPolyfill/main.json";
 const polyfillLibraryPath = path.join(POLYFILL_PATH, "library");
+const customPolyfillLibraryPath = "./scripts/generatePolyfill/customPolyfill/library";
 
 console.info("Start to delete old polyfill files:");
 for (const file of polyfillGadgetFiles) {
@@ -48,10 +50,20 @@ for (const file of polyfillGadgetFiles) {
     console.info("\tDeleteting", file, "done.");
 }
 console.info("Start to read polyfill JSON...");
-const polyfillMainJSONArray = Object.entries(await jsonModule.readFile(polyfillMainJSONPath)).map(([id, v]) => ({
-    id,
-    ...JSON.parse(v),
-}));
+const polyfillMainJSONArray = [
+    ...Object.entries(await jsonModule.readFile(polyfillMainJSONPath)).map(([id, v]) => ({
+        id,
+        ...JSON.parse(v),
+    })),
+    ...Object.entries(await jsonModule.readFile(customPolyfillMainJSONPath)).map(([id, v]) => ({
+        id,
+        ...v,
+    })),
+];
+console.info("Start to merge custom polyfill...");
+for (const dir of await fs.promises.readdir(customPolyfillLibraryPath)) {
+    await fs.promises.cp(path.join(customPolyfillLibraryPath, dir), path.join(polyfillLibraryPath, dir), { recursive: true });
+}
 const polyfillMainJSON = Object.fromEntries(polyfillMainJSONArray.map((v) => [v.id, v]));
 console.info("Get", polyfillMainJSONArray.length, "polyfill entries.");
 const polyfillList = polyfillMainJSONArray.filter(({ aliases }) => Array.isArray(aliases) && TARGET_ALIASES.some((targetAliases) => aliases.includes(targetAliases)));
@@ -60,13 +72,13 @@ const polyfillListAllowed = polyfillList.filter(({ browsers }) => browsers?.chro
 console.info("Get", polyfillListAllowed.length, "polyfill entries with aliases and target browsers.");
 
 const readPolyfillRawJS = async (dir) => {
-    console.info("\t[readPolyfillRawJS]", "Testing", dir);
-    if (await fs.promises.access(dir).then(() => true).catch(() => false)) {
-        console.info("\t[readPolyfillRawJS]", dir, "exist, reading raw js.");
-        return (await fs.promises.readFile(path.join(dir, "raw.js"), { encoding: "utf-8" })).split("\n");
+    const rawJSPath = path.join(dir, "raw.js");
+    try {
+        return (await fs.promises.readFile(rawJSPath, { encoding: "utf-8" })).trim().split("\n");
+    } catch (e) {
+        console.info("\t[readPolyfillRawJS]", rawJSPath, "not exist, return false:", e);
+        return false;
     }
-    console.info("\t[readPolyfillRawJS]", dir, "not exist, return false.");
-    return false;
 };
 const polyfillAlreadyInjected = {};
 const getPolyfillContent = async (polyfill, _rootPolyfillID = false) => {
@@ -80,7 +92,11 @@ const getPolyfillContent = async (polyfill, _rootPolyfillID = false) => {
     }
     polyfillAlreadyInjected[rootPolyfillID].push(polyfill.id);
     console.info("\t[getPolyfillContent]", `[${polyfill.id}@${rootPolyfillID}]`, "Processing", polyfill.id);
-    const content = [];
+    const content = [
+        "",
+        `// Polyfill ${polyfill.id} start`,
+        "",
+    ];
     const detectSource = polyfill.detectSource?.trim();
     console.info("\t[getPolyfillContent]", `[${polyfill.id}@${rootPolyfillID}]`, "detectSource:", detectSource);
     if (detectSource) {
@@ -108,6 +124,11 @@ const getPolyfillContent = async (polyfill, _rootPolyfillID = false) => {
     if (detectSource) {
         content.push("}");
     }
+    content.push(
+        "",
+        `// Polyfill ${polyfill.id} end`,
+        "",
+    );
     console.info("\t[getPolyfillContent]", `[${polyfill.id}@${rootPolyfillID}]`, "Done.");
     return content;
 };
@@ -127,7 +148,7 @@ for (const polyfill of polyfillListAllowed) {
         ...await getPolyfillContent(polyfill),
         "})();",
     ];
-    const gadgetFilePath = path.join("src/gadgets/libPolyfill/", `MediaWiki:Gadget-libPolyfill.${polyfill.id}.js`);
+    const gadgetFilePath = path.join("src/gadgets/libPolyfill/", `MediaWiki:Gadget-libPolyfill-${polyfill.id}.js`);
     console.info("Start to write polyfill file:", polyfill.id, "@", gadgetFilePath);
     await fs.promises.writeFile(gadgetFilePath, content.join("\n"));
     console.info("Done.");

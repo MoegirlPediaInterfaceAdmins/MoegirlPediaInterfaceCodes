@@ -4,7 +4,8 @@
         "./node_modules/@annangela/eslint-config/dist/tsconfigs/tsconfig.browser.json"
     ],
     "compilerOptions": {
-        "outDir": "dist/",
+        "outDir": "./dist/",
+        "baseUrl": ".",
         "lib": [
             "ESNext",
             "DOM"
@@ -12,6 +13,7 @@
     },
     "include": [
         "src",
+        "scripts",
     ],
     "exclude": [
         "dist",
