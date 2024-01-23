@@ -1,0 +1,15 @@
+TARGET_CHROMIUM_VERSION: 86
+
+TARGET_POLYFILL_VERSION: 3.111.0
+
+TARGET_ALIASES:
+  - default
+  - dom4
+  - es2015
+  - es2016
+  - es2017
+  - es2018
+  - es2019
+  - es2020
+  - es2021
+  - es2022

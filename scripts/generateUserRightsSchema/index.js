@@ -33,4 +33,4 @@ startGroup("new schema:");
 console.info(schema);
 endGroup();
 await jsonModule.writeFile(".vscode/json-schemas/user-rights-definition.json", schema);
-await createCommit("auto: regenerated user-rights-definition.json by generateUnrecognizableFeatures");
+await createCommit("auto: regenerated user-rights-definition.json by generateUserRightsSchema");

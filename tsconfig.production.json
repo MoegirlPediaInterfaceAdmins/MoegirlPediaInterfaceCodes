@@ -1,7 +1,13 @@
 {
     "extends": "./tsconfig.json",
     "compilerOptions": {
+        "outDir": "./dist/",
+        "baseUrl": "./",
+        "rootDir": "./src/",
         "target": "ES3",
         "ignoreDeprecations": "5.0",
     },
+    "exclude": [
+        "scripts",
+    ],
 }

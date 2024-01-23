@@ -17,20 +17,19 @@
 <details><summary>仓库架构详情</summary>
 
 - [`.github`](.github) 文件夹用以保存 GitHub Dependabot 和 GitHub Actions 所需配置文件，其中：
-  - [`.github/workflows/postCommit.yaml`](.github/workflows/postCommit.yaml) 用以保存自动化流程，包含自动配置 Conventional Commits（约定式提交）所需 scope（作用域）信息、自动导入来自 npm 和指定页面的代码、自动补全小工具列表和自动生成 polyfill 文件；
-  - [`.github/workflows/generateUnrecognizableFeatures.yaml`](.github/workflows/generateUnrecognizableFeatures.yaml) 用以定时生成 [`scripts/generatePolyfill/unrecognizableFeatures.json`](scripts/generatePolyfill/unrecognizableFeatures.json) 以减少生成 polyfill 时的网络请求；
-    - [`.github/workflows/auto_assign.yaml`](.github/workflows/auto_assign.yaml) 用以自动对 pull request 和 issue 添加 assignees 和 reviewers（若有）。
+  - [`.github/workflows/postCommit.yaml`](.github/workflows/postCommit.yaml) 用以保存自动化流程，包含自动配置 Conventional Commits（约定式提交）所需 scope（作用域）信息、自动导入来自 npm 和指定页面的代码、自动补全小工具列表；：
+  - [`.github/workflows/postCommit.yaml`](.github/workflows/postCommit.yaml) 用以自动生成 polyfill 文件；
+  - [`.github/workflows/auto_assign.yaml`](.github/workflows/auto_assign.yaml) 用以自动对 pull request 和 issue 添加 assignees 和 reviewers（若有）。
 - [`.vscode/settings.json`](.vscode/settings.json) 用来保存 Conventional Commits（约定式提交）所需 scope（作用域）信息；
 - [`scripts`](scripts) 文件夹用以保存流程所需代码，其中：
   - [`scripts/postCommit/prepareGit.js`](scripts/postCommit/prepareGit.js) 用来准备 Github Actions 上的 git 环境，自动生成 author 和 committer 的相关信息；
   - [`scripts/browserify/index.js`](scripts/browserify/index.js) 用来通过 [browserify](https://browserify.org/) 库导入来自 npm 的代码，其目标在 [`scripts/browserify/targets.yaml`](scripts/browserify/targets.yaml) 中定义；
   - [`scripts/prefetch/index.js`](scripts/prefetch/index.js) 用来导入来自指定页面的代码，其目标在 [`scripts/prefetch/targets.yaml`](scripts/prefetch/targets.yaml) 中定义；
-  - [`scripts/generatePolyfill/index.js`](scripts/generatePolyfill/index.js) 用来自动生成 polyfill 文件，该代码使用了来自《金融时报》的 [polyfill.io](https://polyfill.io/v3/)（[Financial-Times/polyfill-service](https://github.com/Financial-Times/polyfill-service)）和 [Financial-Times/polyfill-library](https://github.com/Financial-Times/polyfill-library)；
+  - [`scripts/generatePolyfill/index.js`](scripts/generatePolyfill/index.js) 用来自动生成 polyfill 文件，该代码使用了 [JakeChampion/polyfill-service 库](https://github.com/JakeChampion/polyfill-service)；
   - [`scripts/generateGadgetsDefinition/index.js`](scripts/generateGadgetsDefinition/index.js) 用来自动补全小工具列表，当发现新增小工具时，该代码会自动将对应小工具插入到 [`src/gadgets/Gadgets-definition-list.yaml`](src/gadgets/Gadgets-definition-list.yaml) 的响应列表的末尾；
   - [`scripts/generateConventionalCommitsScopes/index.js`](scripts/generateConventionalCommitsScopes/index.js) 用来自动配置 Conventional Commits（约定式提交）所需 scope（作用域）信息；
   - [`scripts/postCommit/linguist-generated.js`](scripts/postCommit/linguist-generated.js) 用来自动生成 [`.gitattributes`](.gitattributes) 以告知 Github 如何区分代码是否自动生成；
   - [`scripts/postCommit/push.js`](scripts/postCommit/push.js) 用来推送由 Github Actions 做出的更改；
-  - [`scripts/generateUnrecognizableFeatures/index.js`](scripts/generateUnrecognizableFeatures/index.js) 用来生成 [`scripts/generatePolyfill/unrecognizableFeatures.json`](scripts/generatePolyfill/unrecognizableFeatures.json) 以减少生成 polyfill 时的网络请求；
   - [`scripts/emailmapChecker/index.js`](scripts/emailmapChecker/index.js) 用来检查相关用户是否将其萌娘百科用户名和邮箱地址添加到 [`.mailmap`](.mailmap)，若当前环境为本地则检测 git 配置文件里的邮箱地址，若当前环境为 Github Actions 则检查相关 commits 的邮箱地址。
   - [`scripts/ci/before.js`](scripts/ci/before.js) 和 [`scripts/ci/after.js`](scripts/ci/after.js) 用来在 `npm run ci` 里自动替换 [`package-lock.json`](package-lock.json) 里的 `resolved` 对应的 registry 为你本地设置的 registry，有助于加快安装速度。
 - 自动化工具的配置文件：
@@ -64,7 +63,7 @@
 
 ## 自动化流程
 
-- 每周一 00:00 UTC 会自动触发一次 generateUnrecognizableFeatures CI；
+- 每周日 23:00 UTC 会自动触发一次 Generate Polyfill CI；
 - 每天 00:15 UTC（但愿，Github Actions的 cron 延迟真的好高 \_(:з」∠)\_）会自动触发一次 postCommit CI；
 - 每提交一次 commit（包括提交 pull request 和在 pull request 里提交新的 commit），postCommit CI 会触发；
 - 当 postCommit CI 检测到新内容时，会自动触发一次 Linter test。

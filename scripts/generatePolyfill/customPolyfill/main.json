@@ -1,0 +1,30 @@
+{
+    "crypto.randomUUID": {
+        "aliases": [
+            "default"
+        ],
+        "spec": "https://w3c.github.io/webcrypto/#Crypto-method-randomUUID",
+        "docs": "https://developer.mozilla.org/en-US/docs/Web/API/Crypto/randomUUID",
+        "notes": [
+            "In polyfill.io@3.111.0, there is no polyfill for this feature."
+        ],
+        "browsers": {
+            "android": "<92",
+            "chrome": "<92",
+            "edge": "<92",
+            "edge_mob": "<92",
+            "firefox": "<95",
+            "firefox_mob": "<95",
+            "ios_saf": "<15.4",
+            "op_mini": "<65",
+            "opera": "<78",
+            "safari": "<15.4",
+            "samsung_mob": "<16.0"
+        },
+        "baseDir": "crypto.randomUUID",
+        "hasTests": false,
+        "isTestable": false,
+        "isPublic": true,
+        "size": 2063
+    }
+}

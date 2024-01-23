@@ -1,0 +1,93 @@
+name: Generate Polyfill
+
+on:
+  push:
+    paths:
+      - .github/workflows/generatePolyfill.yaml
+      - scripts/generatePolyfill/config.yaml
+      - scripts/generatePolyfill/index.js
+  merge_group:
+  pull_request:
+    paths:
+        - .github/workflows/generatePolyfill.yaml
+        - scripts/generatePolyfill/config.yaml
+        - scripts/generatePolyfill/index.js
+  workflow_dispatch:
+  schedule:
+    - cron: 0 23 * * 0 # Every 07:00 CST Mon
+
+concurrency:
+  group: ${{ github.workflow_ref }}-${{ github.ref }}
+
+env:
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+permissions:
+  actions: write
+  checks: read
+  contents: write
+  deployments: read
+  issues: write
+  discussions: read
+  packages: read
+  pages: read
+  pull-requests: read
+  repository-projects: read
+  security-events: write
+  statuses: write
+
+jobs:
+  generatePolyfill:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        name: Checkout main repo
+        with:
+          fetch-depth: 0
+          show-progress: false
+      - name: Get the polyfill config
+        id: polyfillConfig
+        run: |
+          echo "TARGET_POLYFILL_VERSION=$(yq '.TARGET_POLYFILL_VERSION' scripts/generatePolyfill/config.yaml)" >> $GITHUB_OUTPUT
+          cat $GITHUB_OUTPUT
+      - uses: actions/checkout@v4
+        name: Checkout polyfill.io
+        with:
+          show-progress: false
+          repository: JakeChampion/polyfill-service
+          path: polyfill-service
+          sparse-checkout: |
+            polyfill-libraries/${{ steps.polyfillConfig.outputs.TARGET_POLYFILL_VERSION }}/
+            polyfill-libraries/${{ steps.polyfillConfig.outputs.TARGET_POLYFILL_VERSION }}.json
+          sparse-checkout-cone-mode: false
+      - name: Move polyfill.io
+        id: polyfill
+        run: |
+          POLYFILL_PATH="${{ runner.temp }}/$(uuidgen)"
+          echo "POLYFILL_PATH=$POLYFILL_PATH" >> $GITHUB_OUTPUT
+          cat $GITHUB_OUTPUT
+          mkdir -pv $POLYFILL_PATH
+          mv polyfill-service/polyfill-libraries/${{ steps.polyfillConfig.outputs.TARGET_POLYFILL_VERSION }}.json $POLYFILL_PATH/main.json
+          mv polyfill-service/polyfill-libraries/${{ steps.polyfillConfig.outputs.TARGET_POLYFILL_VERSION }}/ $POLYFILL_PATH/library
+          rm -rf polyfill-service
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+          check-latest: true
+          cache: npm
+      - name: Installing the dependencies
+        uses: AnnAngela/cached_node-modules@v2
+        with:
+          command: npm run ci
+      - name: Git config
+        run: node scripts/postCommit/prepareGit.js
+      - name: Gadget-polyfill generator
+        run: node scripts/generatePolyfill/index.js
+        env:
+          POLYFILL_PATH: ${{ steps.polyfill.outputs.POLYFILL_PATH }}
+      - name: Show git status & push
+        id: output
+        run: node scripts/postCommit/push.js
+        env:
+          DISPATCH_POST_COMMIT_WORKFLOW: true
