@@ -60,12 +60,14 @@ $(() => {
                 subTypes: [],
             },
 
-            违法违禁: {
+            // eslint-disable-next-line @stylistic/quote-props
+            "违法违禁": {
                 option: { data: "违法违禁", label: wgULS("违法违禁", "違法違禁") },
                 subTypes: [],
             },
 
-            网络暴力: {
+            // eslint-disable-next-line @stylistic/quote-props
+            "网络暴力": {
                 option: { data: "网络暴力", label: wgULS("网络暴力", "網路暴力") },
                 subTypes: [
                     { data: "侮辱谩骂", label: wgULS("侮辱谩骂", "侮辱謾罵") },
@@ -75,7 +77,8 @@ $(() => {
                 ],
             },
 
-            色情低俗: {
+            // eslint-disable-next-line @stylistic/quote-props
+            "色情低俗": {
                 option: { data: "色情低俗", label: "色情低俗" },
                 subTypes: [
                     { data: "低俗信息", label: wgULS("低俗信息", "低俗資訊") },
@@ -85,7 +88,8 @@ $(() => {
                 ],
             },
 
-            血腥暴力: {
+            // eslint-disable-next-line @stylistic/quote-props
+            "血腥暴力": {
                 option: { data: "血腥暴力", label: "血腥暴力" },
                 subTypes: [
                     { data: "暴恐血腥", label: "暴恐血腥" },
@@ -93,12 +97,14 @@ $(() => {
                 ],
             },
 
-            赌博诈骗: {
+            // eslint-disable-next-line @stylistic/quote-props
+            "赌博诈骗": {
                 option: { data: "赌博诈骗", label: wgULS("赌博诈骗", "賭博詐騙") },
                 subTypes: [],
             },
 
-            不实信息: {
+            // eslint-disable-next-line @stylistic/quote-props
+            "不实信息": {
                 option: { data: "不实信息", label: wgULS("不实信息", "不實資訊") },
                 subTypes: [
                     { data: "不符合事实", label: wgULS("不符合事实", "不符合事實") },
@@ -106,13 +112,15 @@ $(() => {
                 ],
                 suggestToTalkBoard: true,
             },
+
             "抄袭/侵权": {
                 option: { data: "抄袭/侵权", label: wgULS("抄袭/侵权", "抄襲/侵權") },
                 subTypes: [],
                 suggestToTalkBoard: true,
             },
 
-            其他反馈: {
+            // eslint-disable-next-line @stylistic/quote-props
+            "其他反馈": {
                 option: { data: "其他反馈", label: wgULS("其他反馈", "其他反饋") },
                 subTypes: [],
                 suggestConfirmation: true,
