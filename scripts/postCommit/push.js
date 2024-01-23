@@ -2,7 +2,7 @@ import console from "../modules/console.js";
 console.info("Initialization done.");
 import { startGroup, endGroup } from "@actions/core";
 import git from "../modules/git.js";
-import { isInGithubActions } from "../modules/octokit.js";
+import { isInGithubActions, octokit } from "../modules/octokit.js";
 import readWorkflowEvent from "../modules/workflowEvent.js";
 import upstream from "../modules/getUpstream.js";
 if (!isInGithubActions) {
@@ -37,3 +37,10 @@ console.info("Pulling new commits...");
 console.info("Successfully pulled the commits:", await git.pull(undefined, undefined, ["--rebase"]));
 console.info("Pushing these commits...");
 console.info("Successfully pushed the commits:", await git.push());
+if (process.env.DISPATCH_POST_COMMIT_WORKFLOW === "true") {
+    console.info("Dispatching postCommit workflow...");
+    await octokit.rest.actions.createWorkflowDispatch({
+        workflow_id: ".github/workflows/postCommit.yaml",
+        ref: upstream,
+    });
+}

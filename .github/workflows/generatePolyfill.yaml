@@ -89,3 +89,5 @@ jobs:
       - name: Show git status & push
         id: output
         run: node scripts/postCommit/push.js
+        env:
+          DISPATCH_POST_COMMIT_WORKFLOW: true
