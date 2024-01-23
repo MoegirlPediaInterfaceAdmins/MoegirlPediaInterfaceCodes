@@ -23,7 +23,7 @@ env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 permissions:
-  actions: read
+  actions: write
   checks: read
   contents: write
   deployments: read
