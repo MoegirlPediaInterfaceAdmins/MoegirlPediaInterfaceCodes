@@ -8,10 +8,18 @@
  *     polyfillVersionRange: <92.0.0-0 (< 92)
  */
 (() => {
+
+// Polyfill TypedArray.prototype.at start
+
 if (!("Int8Array"in self&&"at"in self.Int8Array.prototype)) {
+
+// Polyfill _ESAbstract.CreateMethodProperty start
+
+
+// Polyfill Object.defineProperty start
+
 if (!("defineProperty"in Object&&function(){try{var e={}
 return Object.defineProperty(e,"test",{value:42}),!0}catch(t){return!1}}())) {
-
 // Object.defineProperty
 (function (nativeDefineProperty) {
 
@@ -84,8 +92,9 @@ return Object.defineProperty(e,"test",{value:42}),!0}catch(t){return!1}}())) {
 		return object;
 	};
 }(Object.defineProperty));
-
 }
+
+// Polyfill Object.defineProperty end
 
 // _ESAbstract.CreateMethodProperty
 // 7.3.5. CreateMethodProperty ( O, P, V )
@@ -103,6 +112,13 @@ function CreateMethodProperty(O, P, V) { // eslint-disable-line no-unused-vars
 	Object.defineProperty(O, P, newDesc);
 }
 
+// Polyfill _ESAbstract.CreateMethodProperty end
+
+
+// Polyfill _ESAbstract.ToIntegerOrInfinity start
+
+
+// Polyfill _ESAbstract.ToNumber start
 
 // _ESAbstract.ToNumber
 // 7.1.3. ToNumber ( argument )
@@ -110,6 +126,7 @@ function ToNumber(argument) { // eslint-disable-line no-unused-vars
 	return Number(argument);
 }
 
+// Polyfill _ESAbstract.ToNumber end
 
 // _ESAbstract.ToIntegerOrInfinity
 /* global ToNumber */
@@ -131,6 +148,16 @@ function ToIntegerOrInfinity(argument) { // eslint-disable-line no-unused-vars
 	return integer;
 }
 
+// Polyfill _ESAbstract.ToIntegerOrInfinity end
+
+
+// Polyfill _ESAbstract.ToString start
+
+
+// Polyfill _ESAbstract.ToPrimitive start
+
+
+// Polyfill _ESAbstract.Call start
 
 // _ESAbstract.Call
 /* global IsCallable */
@@ -146,6 +173,16 @@ function Call(F, V /* [, argumentsList] */) { // eslint-disable-line no-unused-v
 	return F.apply(V, argumentsList);
 }
 
+// Polyfill _ESAbstract.Call end
+
+
+// Polyfill _ESAbstract.GetMethod start
+
+
+// Polyfill _ESAbstract.GetV start
+
+
+// Polyfill _ESAbstract.ToObject start
 
 // _ESAbstract.ToObject
 // 7.1.13 ToObject ( argument )
@@ -171,6 +208,7 @@ function ToObject(argument) { // eslint-disable-line no-unused-vars
 	return Object(argument);
 }
 
+// Polyfill _ESAbstract.ToObject end
 
 // _ESAbstract.GetV
 /* global ToObject */
@@ -183,6 +221,10 @@ function GetV(v, p) { // eslint-disable-line no-unused-vars
 	return o[p];
 }
 
+// Polyfill _ESAbstract.GetV end
+
+
+// Polyfill _ESAbstract.IsCallable start
 
 // _ESAbstract.IsCallable
 // 7.2.3. IsCallable ( argument )
@@ -195,6 +237,7 @@ function IsCallable(argument) { // eslint-disable-line no-unused-vars
 	return typeof argument === 'function';
 }
 
+// Polyfill _ESAbstract.IsCallable end
 
 // _ESAbstract.GetMethod
 /* global GetV, IsCallable */
@@ -215,6 +258,13 @@ function GetMethod(V, P) { // eslint-disable-line no-unused-vars
 	return func;
 }
 
+// Polyfill _ESAbstract.GetMethod end
+
+
+// Polyfill _ESAbstract.OrdinaryToPrimitive start
+
+
+// Polyfill _ESAbstract.Get start
 
 // _ESAbstract.Get
 // 7.3.1. Get ( O, P )
@@ -225,6 +275,10 @@ function Get(O, P) { // eslint-disable-line no-unused-vars
 	return O[P];
 }
 
+// Polyfill _ESAbstract.Get end
+
+
+// Polyfill _ESAbstract.Type start
 
 // _ESAbstract.Type
 // "Type(x)" is used as shorthand for "the type of x"...
@@ -250,6 +304,7 @@ function Type(x) { // eslint-disable-line no-unused-vars
 	}
 }
 
+// Polyfill _ESAbstract.Type end
 
 // _ESAbstract.OrdinaryToPrimitive
 /* global Get, IsCallable, Call, Type */
@@ -285,6 +340,7 @@ function OrdinaryToPrimitive(O, hint) { // eslint-disable-line no-unused-vars
 	throw new TypeError('Cannot convert to primitive.');
 }
 
+// Polyfill _ESAbstract.OrdinaryToPrimitive end
 
 // _ESAbstract.ToPrimitive
 /* global Type, GetMethod, Call, OrdinaryToPrimitive */
@@ -328,6 +384,7 @@ function ToPrimitive(input /* [, PreferredType] */) { // eslint-disable-line no-
 	return input;
 }
 
+// Polyfill _ESAbstract.ToPrimitive end
 
 // _ESAbstract.ToString
 /* global Type, ToPrimitive */
@@ -368,6 +425,10 @@ function ToString(argument) { // eslint-disable-line no-unused-vars
 	}
 }
 
+// Polyfill _ESAbstract.ToString end
+
+
+// Polyfill ArrayBuffer start
 
 // ArrayBuffer
 /*
@@ -1432,6 +1493,7 @@ function ToString(argument) { // eslint-disable-line no-unused-vars
 
 }(self));
 
+// Polyfill ArrayBuffer end
 
 // TypedArray.prototype.at
 /* global CreateMethodProperty, Uint8Array, ToIntegerOrInfinity, ToString */
@@ -1489,6 +1551,8 @@ function ToString(argument) { // eslint-disable-line no-unused-vars
 		CreateMethodProperty(self.Float64Array.prototype, 'at', at);
 	}
 })();
-
 }
+
+// Polyfill TypedArray.prototype.at end
+
 })();

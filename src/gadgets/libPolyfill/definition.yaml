@@ -29,7 +29,7 @@ _sites:
 _section: system
 
 _files:
+  - MediaWiki:Gadget-libPolyfill-Array.prototype.at.js
+  - MediaWiki:Gadget-libPolyfill-String.prototype.at.js
+  - MediaWiki:Gadget-libPolyfill-TypedArray.prototype.at.js
   - MediaWiki:Gadget-libPolyfill-crypto.randomUUID.js
-  - MediaWiki:Gadget-libPolyfill.Array.prototype.at.js
-  - MediaWiki:Gadget-libPolyfill.String.prototype.at.js
-  - MediaWiki:Gadget-libPolyfill.TypedArray.prototype.at.js
