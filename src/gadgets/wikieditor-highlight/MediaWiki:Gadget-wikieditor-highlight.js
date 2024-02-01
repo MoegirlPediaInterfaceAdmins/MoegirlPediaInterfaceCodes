@@ -18,7 +18,7 @@
                 const script = document.createElement("script");
                 script.addEventListener("load", resolve);
                 script.type = "module";
-                script.src = "https://testingcf.jsdelivr.net/npm/@bhsd/codemirror-mediawiki/mw/dist/base.js";
+                script.src = "https://testingcf.jsdelivr.net/npm/@bhsd/codemirror-mediawiki/dist/mw.min.js";
                 document.head.append(script);
             });
         }
