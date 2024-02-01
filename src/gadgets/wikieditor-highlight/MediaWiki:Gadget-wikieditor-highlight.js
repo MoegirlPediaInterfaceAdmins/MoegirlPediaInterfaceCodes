@@ -18,27 +18,11 @@
                 const script = document.createElement("script");
                 script.addEventListener("load", resolve);
                 script.type = "module";
-                script.src = "https://testingcf.jsdelivr.net/npm/@bhsd/codemirror-mediawiki/mw/dist/base.js";
+                script.src = "https://testingcf.jsdelivr.net/npm/@bhsd/codemirror-mediawiki/dist/mw.min.js";
                 document.head.append(script);
             });
         }
-        cm = await window.CodeMirror6.fromTextArea($textarea[0], lang);
-        cm.prefer([
-            "highlightSpecialChars",
-            "highlightActiveLine",
-            "bracketMatching",
-            "closeBrackets",
-            "allowMultipleSelections",
-        ]);
-        const [config] = await Promise.all([
-            libCachedCode.getCachedCode("https://testingcf.jsdelivr.net/npm/wikiparser-node/config/moegirl.json"),
-            cm.defaultLint(true, { include: [2, 10, 828].includes(ns) }),
-        ]);
-        try {
-            window.wikiparse?.setConfig(JSON.parse(config));
-        } catch (e) {
-            console.error(e);
-        }
+        window.CodeMirror6.fromTextArea($textarea[0], lang, ns);
     };
     if (!isAdvanced) {
         init();
