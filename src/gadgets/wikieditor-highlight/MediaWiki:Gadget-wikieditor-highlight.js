@@ -22,7 +22,7 @@
                 document.head.append(script);
             });
         }
-        window.CodeMirror6.fromTextArea($textarea[0], lang, ns);
+        cm = await window.CodeMirror6.fromTextArea($textarea[0], lang, ns);
     };
     if (!isAdvanced) {
         init();
