@@ -22,23 +22,7 @@
                 document.head.append(script);
             });
         }
-        cm = await window.CodeMirror6.fromTextArea($textarea[0], lang);
-        cm.prefer([
-            "highlightSpecialChars",
-            "highlightActiveLine",
-            "bracketMatching",
-            "closeBrackets",
-            "allowMultipleSelections",
-        ]);
-        const [config] = await Promise.all([
-            libCachedCode.getCachedCode("https://testingcf.jsdelivr.net/npm/wikiparser-node/config/moegirl.json"),
-            cm.defaultLint(true, { include: [2, 10, 828].includes(ns) }),
-        ]);
-        try {
-            window.wikiparse?.setConfig(JSON.parse(config));
-        } catch (e) {
-            console.error(e);
-        }
+        window.CodeMirror6.fromTextArea($textarea[0], lang, ns);
     };
     if (!isAdvanced) {
         init();
