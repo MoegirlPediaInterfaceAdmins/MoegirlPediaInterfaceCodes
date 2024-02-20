@@ -786,11 +786,17 @@
         }
         return !0;
     }, ip.isPrivate = function(addr) {
-        return /^(::f{4}:)?10\.([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})$/i.test(addr) || /^(::f{4}:)?192\.168\.([0-9]{1,3})\.([0-9]{1,3})$/i.test(addr) || /^(::f{4}:)?172\.(1[6-9]|2\d|30|31)\.([0-9]{1,3})\.([0-9]{1,3})$/i.test(addr) || /^(::f{4}:)?127\.([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})$/i.test(addr) || /^(::f{4}:)?169\.254\.([0-9]{1,3})\.([0-9]{1,3})$/i.test(addr) || /^f[cd][0-9a-f]{2}:/i.test(addr) || /^fe80:/i.test(addr) || /^::1$/.test(addr) || /^::$/.test(addr);
+        if (ip.isLoopback(addr)) return !0;
+        if (!ip.isV6Format(addr)) {
+            var ipl = ip.normalizeToLong(addr);
+            if (ipl < 0) throw new Error("invalid ipv4 address");
+            addr = ip.fromLong(ipl);
+        }
+        return /^(::f{4}:)?10\.([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})$/i.test(addr) || /^(::f{4}:)?192\.168\.([0-9]{1,3})\.([0-9]{1,3})$/i.test(addr) || /^(::f{4}:)?172\.(1[6-9]|2\d|30|31)\.([0-9]{1,3})\.([0-9]{1,3})$/i.test(addr) || /^(::f{4}:)?169\.254\.([0-9]{1,3})\.([0-9]{1,3})$/i.test(addr) || /^f[cd][0-9a-f]{2}:/i.test(addr) || /^fe80:/i.test(addr) || /^::1$/.test(addr) || /^::$/.test(addr);
     }, ip.isPublic = function(addr) {
         return !ip.isPrivate(addr);
     }, ip.isLoopback = function(addr) {
-        return /^(::f{4}:)?127\.([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})/.test(addr) || /^fe80::1$/.test(addr) || /^::1$/.test(addr) || /^::$/.test(addr);
+        return /\./.test(addr) || /:/.test(addr) || (addr = ip.fromLong(Number(addr))), /^(::f{4}:)?127\.([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})/.test(addr) || /^0177\./.test(addr) || /^0x7f\./i.test(addr) || /^fe80::1$/i.test(addr) || /^::1$/.test(addr) || /^::$/.test(addr);
     }, ip.loopback = function(family) {
         if ("ipv4" !== (family = _normalizeFamily(family)) && "ipv6" !== family) throw new Error("family must be ipv4 or ipv6");
         return "ipv4" === family ? "127.0.0.1" : "fe80::1";
@@ -810,6 +816,34 @@
         }), ipl >>> 0;
     }, ip.fromLong = function(ipl) {
         return `${ipl >>> 24}.${ipl >> 16 & 255}.${ipl >> 8 & 255}.` + (255 & ipl);
+    }, ip.normalizeToLong = function(addr) {
+        var parts = addr.split(".").map(part => part.startsWith("0x") || part.startsWith("0X") ? parseInt(part, 16) : part.startsWith("0") && "0" !== part && /^[0-7]+$/.test(part) ? parseInt(part, 8) : /^[1-9]\d*$/.test(part) || "0" === part ? parseInt(part, 10) : NaN);
+        if (parts.some(isNaN)) return -1;
+        let val = 0;
+        switch (parts.length) {
+          case 1:
+            val = parts[0];
+            break;
+
+          case 2:
+            if (255 < parts[0] || 16777215 < parts[1]) return -1;
+            val = parts[0] << 24 | 16777215 & parts[1];
+            break;
+
+          case 3:
+            if (255 < parts[0] || 255 < parts[1] || 65535 < parts[2]) return -1;
+            val = parts[0] << 24 | parts[1] << 16 | 65535 & parts[2];
+            break;
+
+          case 4:
+            if (parts.some(part => 255 < part)) return -1;
+            val = parts[0] << 24 | parts[1] << 16 | parts[2] << 8 | parts[3];
+            break;
+
+          default:
+            return -1;
+        }
+        return val >>> 0;
     };
     !function(global) {
         !function() {
