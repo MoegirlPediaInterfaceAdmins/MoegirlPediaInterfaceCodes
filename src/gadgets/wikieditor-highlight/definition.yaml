@@ -26,6 +26,7 @@ dependencies:
   - ext.gadget.libPolyfill
   - ext.gadget.libCachedCode
   - ext.gadget.LocalObjectStorage
+  - user.options
 
 _sites:
   - zh
