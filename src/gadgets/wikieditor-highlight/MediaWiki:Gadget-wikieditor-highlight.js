@@ -47,7 +47,7 @@
     if (group && !group.contains(btn.$element[0])) {
         btn.$element.appendTo(group);
     }
-    if (mw.user.options.get("usecodeeditor")) {
+    if (mw.config.get("wgPageContentModel") !== "wikitext" && mw.user.options.get("usecodeeditor")) {
         state = false;
     }
     if (state) {
