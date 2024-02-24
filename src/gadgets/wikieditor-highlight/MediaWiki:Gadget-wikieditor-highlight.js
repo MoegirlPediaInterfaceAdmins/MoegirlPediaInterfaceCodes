@@ -3,7 +3,7 @@
 (async () => {
     if (
         !["edit", "submit"].includes(mw.config.get("wgAction"))
-        || mw.user.options.get('usecodeeditor') && mw.config.get("wgPageContentModel") !== "wikitext"
+        || mw.user.options.get("usecodeeditor") && mw.config.get("wgPageContentModel") !== "wikitext"
     ) {
         return;
     }
