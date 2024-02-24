@@ -1,7 +1,10 @@
 "use strict";
 // 本页面大部分内容均直接或间接修改自[[MW:Extension:CodeMirror]]
 (async () => {
-    if (!["edit", "submit"].includes(mw.config.get("wgAction")) || mw.config.get("wgPageContentModel") !== "wikitext") {
+    if (
+        !["edit", "submit"].includes(mw.config.get("wgAction"))
+        || mw.user.options.get('usecodeeditor') && mw.config.get("wgPageContentModel") !== "wikitext"
+    ) {
         return;
     }
     await $.ready;
@@ -10,8 +13,6 @@
     let cm, state = localObjectStorage.getItem("wikieditor-codemirror", true);
     const $textarea = $("#wpTextbox1");
     const isAdvanced = ["loading", "loaded", "executing", "ready"].includes(mw.loader.getState("ext.wikiEditor"));
-    const ns = mw.config.get("wgNamespaceNumber");
-    const lang = ns === 274 ? "html" : "mediawiki";
     const init = async () => {
         if (!window.CodeMirror6) {
             await new Promise((resolve) => {
@@ -22,7 +23,7 @@
                 document.head.append(script);
             });
         }
-        cm = await window.CodeMirror6.fromTextArea($textarea[0], lang, ns);
+        cm = await window.CodeMirror6.fromTextArea($textarea[0]);
     };
     if (!isAdvanced) {
         init();
