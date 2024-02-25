@@ -1,10 +1,7 @@
 "use strict";
 // 本页面大部分内容均直接或间接修改自[[MW:Extension:CodeMirror]]
 (async () => {
-    if (
-        !["edit", "submit"].includes(mw.config.get("wgAction"))
-        || mw.user.options.get("usecodeeditor") && mw.config.get("wgPageContentModel") !== "wikitext"
-    ) {
+    if (!["edit", "submit"].includes(mw.config.get("wgAction"))) {
         return;
     }
     await $.ready;
@@ -24,6 +21,7 @@
             });
         }
         cm = await window.CodeMirror6.fromTextArea($textarea[0]);
+        $(".group-codeeditor-main").hide();
     };
     if (!isAdvanced) {
         init();
@@ -34,6 +32,7 @@
     }).on("click", async () => {
         if (cm) {
             cm.toggle();
+            $(".group-codeeditor-main").toggle();
         } else {
             await init();
         }
@@ -47,6 +46,9 @@
     const group = $("#wikiEditor-section-main > .group-insert")[0];
     if (group && !group.contains(btn.$element[0])) {
         btn.$element.appendTo(group);
+    }
+    if (mw.config.get("wgPageContentModel") !== "wikitext" && mw.user.options.get("usecodeeditor")) {
+        state = false;
     }
     if (state) {
         await mw.loader.using("ext.wikiEditor");
