@@ -69,7 +69,7 @@ mw.hook("wikipage.content").add(() => {
                     wikitext += `* 转换标题为：-{D|${titleConv}}-${titleDesc}\n`;
                     wikitext += `* 实际标题为：-{R|${actualTitle}}-；当前显示为：-{|${titleConv}}-\n`;
                 }
-                //conversation group
+                // conversation group
                 const $noteTAgroups = $dom.find(".noteTA-group > *[data-noteta-group]");
                 if ($noteTAgroups.length > 1) {
                     collapse = true;
@@ -92,7 +92,7 @@ mw.hook("wikipage.content").add(() => {
                     }
                 }
                 const $noteTAlocal = $dom.find(".noteTA-local");
-                //hidden rule in article
+                // hidden rule in article
                 if ($noteTAlocal.length) {
                     collapse = true;
                     wikitext += `<span style="float: right;">{{edit|${actualTitle}|section=0}}</span>\n`;
@@ -105,7 +105,7 @@ mw.hook("wikipage.content").add(() => {
                     }
                 }
                 wikitext += "{{noteTA/footer}}\n";
-                //API request
+                // API request
                 try {
                     const results = await api.post({
                         action: "parse",
@@ -130,7 +130,6 @@ mw.hook("wikipage.content").add(() => {
                 } catch {
                     $dialog.html(`<span class="noteTAViewer-error">${wgULS("网络错误", "網路錯誤", null, null, "網絡錯誤")}，${wgULS("请稍后再试", "請稍後再試")}</span>`);
                 }
-
             }
         });
     });

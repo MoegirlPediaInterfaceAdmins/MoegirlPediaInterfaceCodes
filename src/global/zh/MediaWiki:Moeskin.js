@@ -232,7 +232,7 @@
             title: "本页使用了标题或全文手工转换",
         }).append(noteTAbutton);
         $("#p-languages-group").append(noteTAicon);
-    }
+    };
     /* 等待 document 加载完毕 */
     await $.ready;
     /* fixWikiLove */
