@@ -1,28 +1,54 @@
 /**
- * @source https://zh.wikipedia.org/wiki/_?oldid=22973238 https://zh.wikipedia.org/wiki/_?oldid=31522320
+ * @source https://zh.wikipedia.org/wiki/_?oldid=22973238
  * 更新后请同步更新上面链接到最新版本
  */
 /*
- * 引自 https://zh.wikipedia.org/wiki/MediaWiki:Gadget-noteTA.css https://zh.wikipedia.org/wiki/MediaWiki:Gadget-noteTAvector.css
+ * 引自 https://zh.wikipedia.org/wiki/MediaWiki:Gadget-noteTA.css
  * User:AnnAngela做了整合
  */
-.noteTA-topicon {
-    padding-left: 0;
+#noteTA-lang {
+    background: #3366CC;
+    color: white;
+    text-align: center;
+    padding: .5rem;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 9999;
 }
 
-.noteTA-topicon ul li.icon span a {
-    background-image: url("//img.moegirl.org.cn/wikipedia/commons/thumb/c/cd/Zh_conversion_icon_m.svg/34px-Zh_conversion_icon_m.svg.png");
-    width: 46px;
-    height: 0;
-    overflow: hidden;
-    padding: 3.1em 0 0;
-    background-position: 5px 75%;
-}
-
-#noteTA-dialog a {
-    color: #36B;
-}
-
-[id^="mobile-noteTA-"  i] {
+[id^="mobile-noteTA-" i] {
     cursor: pointer;
+}
+
+/* 只有打开小工具才有的按钮动画, written by User:机智的小鱼君 */
+.noteTAViewer-button:hover {
+    border-color: #36ad6a;
+    color: #36ad6a;
+}
+
+.noteTAViewer-button:active {
+    border-color: #0c7a43;
+    color: #0c7a43;
+}
+
+.noteTAViewer-button::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 0.2em;
+    box-shadow: 0 0 0 6px #36ad6a;
+    opacity: 0;
+    transition: all 0.4s ease;
+    border-radius: 100vw;
+}
+
+.noteTAViewer-button:active::after {
+    transition: 0s;
+    box-shadow: 0 0 0 1px #36ad6a;
+    opacity: 1;
 }

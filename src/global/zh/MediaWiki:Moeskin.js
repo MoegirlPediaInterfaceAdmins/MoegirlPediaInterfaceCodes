@@ -221,7 +221,18 @@
             response && window.open(hrefURL.href);
         });
     };
-
+    /* noteTAIcon */
+    const noteTAIcon = () => {
+        const noteTAbutton = $('<button tabindex="0" type="button"/>')
+            .append('<span style="padding:1px 3px;">汉漢</span>');
+        const noteTAicon = $("<span/>").attr({
+            id: "p-noteTA-moeskin",
+            role: "navigation",
+            "class": "noteTA-button",
+            title: "本页使用了标题或全文手工转换",
+        }).append(noteTAbutton);
+        $("#p-languages-group").append(noteTAicon);
+    }
     /* 等待 document 加载完毕 */
     await $.ready;
     /* fixWikiLove */
@@ -233,5 +244,9 @@
     /* linkConfirm */
     if (Reflect.has(document, "ontouchstart") && !location.host.startsWith("mobile")) {
         externalLinkConfirm();
+    }
+    /* noteTAIcon */
+    if ($(".noteTA")[0]) {
+        noteTAIcon();
     }
 })();
