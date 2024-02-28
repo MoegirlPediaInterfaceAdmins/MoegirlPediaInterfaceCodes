@@ -15,7 +15,7 @@ mw.hook("wikipage.content").add(() => {
     const api = new mw.Api();
     const { wgUserVariant, wgUserName } = mw.config.get();
     $(() => {
-        if ($(".noteTA").length === 0 || $("#noteTA-vector-menu-tabs, #p-noteTA-moeskin")[0]) {
+        if ($(".noteTA").length === 0 || $("#noteTA-vector-menu-tabs")[0]) {
             return;
         }
         $("#p-variants").nextAll('.noteTA-menu, [class*="mw-indicator"], [id*="mw-indicator"]').remove();
