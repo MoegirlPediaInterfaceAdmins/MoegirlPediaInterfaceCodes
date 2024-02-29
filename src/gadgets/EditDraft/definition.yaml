@@ -1,0 +1,38 @@
+ResourceLoader: true
+
+hidden: false
+
+default: false
+
+supportsUrlLoad: false
+
+targets: []
+
+skins: []
+
+actions: []
+
+type: general
+
+package: false
+
+rights:
+  - edit
+
+peers: []
+
+dependencies:
+  - ext.gadget.libOOUIDialog
+  - ext.gadget.site-lib
+  - ext.gadget.LocalObjectStorage
+  - ext.gadget.libPolyfill
+  - ext.gadget.cron
+
+_sites:
+  - zh
+
+_section: editing
+
+_files:
+  - MediaWiki:Gadget-EditDraft.js
+  - MediaWiki:Gadget-EditDraft.css
