@@ -14,6 +14,7 @@
     "include": [
         "src",
         "scripts",
+        "node_modules/types-mediawiki",
     ],
     "exclude": [
         "dist",
