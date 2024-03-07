@@ -5,7 +5,7 @@ import { configs } from "@annangela/eslint-config";
 import readDir from "./scripts/modules/readDir.js";
 
 /**
- * @type { import("eslint").Linter.FlatConfigFileSpec }
+ * @type { import("eslint").Linter.FlatConfigFileSpec[] }
  */
 const ignores = [
     "**/dist/**",
