@@ -5,7 +5,7 @@ interface Transformation {
 
     encode: (any) => string;
 
-    decode: (any) => any;
+    decode: (string) => any;
 }
 
 declare class LocalObjectStorage {

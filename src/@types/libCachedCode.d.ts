@@ -1,7 +1,7 @@
 declare module libCachedCode {
     export function getCachedCode(url: string): Promise<string>;
 
-    export function getCachedCode(url: string): Promise<string>;
+    export function getCachedCodeUrl(url: string): Promise<string>;
 
     export function injectCachedCode(url: string, _type: string): Promise<void>;
 
