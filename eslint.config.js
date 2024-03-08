@@ -1,6 +1,5 @@
-import fs from "node:fs";
 import path from "node:path";
-import YAML from "yaml";
+import yamlModule from "./scripts/modules/yamlModule.js";
 import { configs } from "@annangela/eslint-config";
 import readDir from "./scripts/modules/readDir.js";
 
@@ -17,7 +16,7 @@ const ignores = [
 const srcESlintrcFiles = (await readDir("./src")).filter((n) => path.basename(n) === ".eslintrc.yaml");
 for (const srcESlintrcFile of srcESlintrcFiles) {
     const dir = path.dirname(srcESlintrcFile);
-    const srcESlintrc = YAML.parse(await fs.promises.readFile(srcESlintrcFile, { encoding: "utf-8" }));
+    const srcESlintrc = await yamlModule.readFile(srcESlintrcFile);
     if (Array.isArray(srcESlintrc.ignorePatterns)) {
         for (const ignorePattern of srcESlintrc.ignorePatterns) {
             ignores.push(path.join(dir, ignorePattern));

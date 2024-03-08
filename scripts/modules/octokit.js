@@ -1,7 +1,6 @@
 import console from "../modules/console.js";
-import fs from "fs";
-import yaml from "yaml";
-const { assignees } = yaml.parse(await fs.promises.readFile(".github/auto_assign.yaml", { encoding: "utf-8" }));
+import yamlModule from "../modules/yamlModule.js";
+const { assignees } = await yamlModule.readFile(".github/auto_assign.yaml");
 import { startGroup, endGroup } from "@actions/core";
 import { Octokit } from "@octokit/rest";
 import { retry } from "@octokit/plugin-retry";
