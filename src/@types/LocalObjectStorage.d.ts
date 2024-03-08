@@ -1,11 +1,11 @@
 interface Transformation {
     type: string;
 
-    match: (any) => boolean;
+    match: (arg: any) => boolean;
 
-    encode: (any) => string;
+    encode: (value: any) => string;
 
-    decode: (string) => any;
+    decode: (value: string) => any;
 }
 
 declare class LocalObjectStorage {
@@ -17,13 +17,13 @@ declare class LocalObjectStorage {
         }
     }
 
-    private #keyPrefix: string;
+    #keyPrefix: string;
 
     constructor(prefix?: string);
 
     get _keyPrefix(): string;
 
-    private #getAllKeys(): string[];
+    #getAllKeys(): string[];
 
     getAllKeys(): string[];
 
