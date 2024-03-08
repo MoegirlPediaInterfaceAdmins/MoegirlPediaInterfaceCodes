@@ -50,11 +50,11 @@
                         console.error(`LocalObjectStorage can't accept type name "${type}" including "|", skip...`);
                         return false;
                     }
-                    if (type === "JSON") {
+                    if (["JSON"].includes(type)) {
                         console.error(`LocalObjectStorage can't accept type name "${type}", skip...`);
                         return false;
                     }
-                    if (builtinTransformations.concat(LocalObjectStorage.plugins.transformations.list).filter(({ type: eType }) => eType === type).length > 0) {
+                    if ([...builtinTransformations, ...LocalObjectStorage.plugins.transformations.list].some(({ type: eType }) => eType === type)) {
                         console.error(`LocalObjectStorage can't accept duplicated type name "${type}", skip...`);
                         return false;
                     }
