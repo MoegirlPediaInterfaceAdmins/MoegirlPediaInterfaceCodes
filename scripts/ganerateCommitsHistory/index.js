@@ -8,6 +8,13 @@ const githubWebInterfaceFlowSignature = {
     committerEmail: "noreply@github.com",
     signatureKey: "4AEE18F83AFDEB23",
 };
+/**
+ * @param { string } file file path like "src/@types/libBottomRightCorner.d.ts"
+ * @returns { boolean }
+ */
+const pathValidator = (file) => file.startsWith("src/") && ![
+    "src/@types/",
+].some((blacklist) => file.startsWith(blacklist));
 
 import console from "../modules/console.js";
 import mailmap from "../modules/mailmap.js";
@@ -83,7 +90,7 @@ for (const { hash, _date, authorName, _authorEmail, _signatureKey, committerName
     if (Array.isArray(diff?.files)) {
         debugConsole.log("\tdiff.files:", diff.files);
         for (const { file, changes, before, after, binary } of diff.files) {
-            if ((binary ? before !== after : changes > 0) && file.startsWith("src/")) {
+            if ((binary ? before !== after : changes > 0) && pathValidator(file)) {
                 changedFiles++;
             }
         }
