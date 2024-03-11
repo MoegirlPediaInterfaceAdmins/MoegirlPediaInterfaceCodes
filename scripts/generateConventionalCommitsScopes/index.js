@@ -20,7 +20,7 @@ for (const dirent of dirents) {
     const prefix = type[0].toUpperCase() + type.slice(1).replace(/s$/, "");
     console.info(`[${type}]`, "prefix:", prefix);
     const listSet = new Set();
-    if (type === "gadgets") {
+    if (["gadgets", "@types"].includes(type)) {
         for (const item of await fs.promises.readdir(path.join("src", type))) {
             listSet.add(item);
         }
@@ -35,11 +35,10 @@ for (const dirent of dirents) {
     const list = sortWithLowerFirstCharacter([...listSet]);
     console.info(`[${type}]`, "list after sorting:", list);
     const scopes = list.map((_name) => {
-        let name;
+        let name = _name;
         switch (prefix) {
             case "Gadget":
             case "Group": {
-                name = _name;
                 break;
             }
             default: {
@@ -47,7 +46,7 @@ for (const dirent of dirents) {
                 break;
             }
         }
-        return `${prefix}-${name}`;
+        return `${prefix}/${name}`;
     });
     console.info(`[${type}]`, "scopes:", scopes);
     totalScopes.push(...scopes);
