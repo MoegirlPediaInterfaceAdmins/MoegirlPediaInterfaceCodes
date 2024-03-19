@@ -32,10 +32,6 @@ $(() => {
         regex: "regex",
         latex: "latex",
         tex: "latex",
-        wiki: "wiki",
-        wikitext: "wiki",
-        mediawiki: "wiki",
-        mw: "wiki",
     };
     const wgPageContentModel = mw.config.get("wgPageContentModel", "").toLowerCase();
     if (Reflect.has(acceptsLangs, wgPageContentModel)) {
@@ -1011,21 +1007,7 @@ $(() => {
         [PR_PUNCTUATION, /^[{}()[\]=]+/],
     ]), ["latex", "tex"]);
 
-    /* https://github.com/googlearchive/code-prettify/blob/master/src/lang-wiki.js */
-    registerLangHandler(createSimpleLexer([
-        [PR_PLAIN, /^[\t\n\r \xA0]+/, null, "\t\n\r \xA0"],
-        [PR_PUNCTUATION, /^[=*~^[\]]+/, null, "=*~^[]"],
-    ], [
-        ["lang-wiki.meta", /(?:^^|\r\n?|\n)(#[a-z]+)\b/],
-        [PR_LITERAL, /^(?:[A-Z][a-z][a-z0-9]+[A-Z][a-z][a-zA-Z0-9]+)\b/],
-        ["lang-", /^\{\{\{([\s\S]+?)\}\}\}/],
-        ["lang-", /^`([^\r\n`]+)`/],
-        [PR_STRING, /^https?:\/\/[^/?#\s]*(?:\/[^?#\s]*)?(?:\?[^#\s]*)?(?:#\S*)?/i],
-        [PR_PLAIN, /^(?:\r\n|[\s\S])[^#=*~^A-Zh{`[\r\n]*/],
-    ]), ["wiki"]);
-    registerLangHandler(createSimpleLexer([
-        [PR_KEYWORD, /^#[a-z]+/i, null, "#"],
-    ], []), ["wiki.meta"]);
+    // init
     $prettyPrint();
 });
 // </pre>
