@@ -224,8 +224,7 @@
                         teHref = this.type === "supRef"
                             ? this.$element.find("a").attr("href")
                             : this.$element.attr("href"); // harvardRef
-                        this.$ref = teHref
-                            && $(`#${$.escapeSelector(teHref.slice(1))}`);
+                        this.$ref = teHref && $(`#${$.escapeSelector(teHref.slice(1))}`);
                         if (!this.$ref || !this.$ref.length || !this.$ref.text()) {
                             this.noRef = true;
                             return;
