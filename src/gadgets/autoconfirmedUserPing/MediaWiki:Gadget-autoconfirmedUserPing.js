@@ -119,36 +119,80 @@ $(() => (async () => {
                 augroup: "bot",
                 aulimit: "max",
             })).query.allusers.map((u) => u.name);
+
             const MGUsers = JSON.parse((await api.get({
-                action: "parse",
+                action: "query",
+                format: "json",
                 assertuser: username,
-                page: "Module:UserGroup/data",
-                prop: "wikitext",
-            })).parse.wikitext["*"]);
-            const ignoreList = Array.from(new Set([...bots, ...MGUsers.bureaucrat, ...MGUsers.sysop, ...MGUsers.patroller, ...MGUsers.staff]));
+                prop: "revisions",
+                titles: "模块:UserGroup/data",
+                formatversion: 2,
+                rvprop: "content",
+            })).query.pages[0].revisions[0].content);
+
+            let blockLogEvents;
+            let blockLogEventsResult = [];
+            const firstEdit = (await api.get({
+                action: "query",
+                format: "json",
+                assertuser: username,
+                prop: "revisions",
+                pageids: pageid,
+                rvprop: "timestamp",
+                rvlimit: 1,
+                rvdir: "newer",
+            })).query.pages[pageid].revisions[0].timestamp;
+            const lestart = moment.utc();
+            const leend = moment.min(moment(firstEdit), lestart.clone().subtract(60, "days"));
+            do {
+                blockLogEvents = await api.get({
+                    action: "query",
+                    format: "json",
+                    assertuser: username,
+                    list: "logevents",
+                    leprop: "title|type|user|timestamp",
+                    letype: "block",
+                    lestart: lestart.format("YYYY-MM-DDTHH:mm:ss.SSS[Z]"),
+                    leend: leend.format("YYYY-MM-DDTHH:mm:ss.SSS[Z]"),
+                    lelimit: "max",
+                    lecontinue: blockLogEvents?.continue?.lecontinue ?? "|",
+                });
+                blockLogEventsResult = blockLogEventsResult.concat(blockLogEvents.query.logevents);
+            } while (blockLogEvents?.continue?.lecontinue);
+            const blockedByAbuseFilter = new Set();
+            const blockedByOthers = new Set();
+            blockLogEventsResult.reverse().forEach((e) => {
+                const blockedUser = e.title.replace(/^User:/, "");
+                if (e.action === "block" || e.action === "reblock") {
+                    if (e.user === "滥用过滤器") {
+                        blockedByAbuseFilter.add(blockedUser);
+                    } else {
+                        blockedByOthers.add(blockedUser);
+                    }
+                } else if (e.action === "unblock" && blockedByAbuseFilter.has(blockedUser)) {
+                    blockedByAbuseFilter.delete(blockedUser);
+                }
+            });
+
+            const ignoreList = Array.from(new Set([...bots, ...MGUsers.bureaucrat, ...MGUsers.sysop, ...MGUsers.patroller, ...MGUsers.staff, ...blockedByAbuseFilter, ...blockedByOthers]));
             const filterResult = (result) => result.query.pages[pageid].contributors.map((c) => c.name).filter((c) => !ignoreList.includes(c));
             console.log("[ACUserPing] Got ignored user list.", ignoreList);
 
             this.addStep(wgULS("正在获取发言用户名单...", "正在獲取發言使用者名稱單..."));
-            let contributorsResult = await api.get({
-                action: "query",
-                assertuser: username,
-                prop: "contributors",
-                pageids: pageid,
-                pclimit: "max",
-            });
-            let nonMGUsers = filterResult(contributorsResult);
-            while (contributorsResult.continue) {
+            let contributorsResult;
+            let nonMGUsers = [];
+            do {
                 contributorsResult = await api.get({
                     action: "query",
                     assertuser: username,
                     prop: "contributors",
                     pageids: pageid,
+                    pcexcludegroup: "bot|bureaucrat|sysop|patroller|staff",
                     pclimit: "max",
-                    pccontinue: contributorsResult.continue.pccontinue,
+                    pccontinue: contributorsResult?.continue?.pccontinue ?? "|",
                 });
                 nonMGUsers = nonMGUsers.concat(filterResult(contributorsResult));
-            }
+            } while (contributorsResult?.continue?.pccontinue);
             console.log("[ACUserPing] Got filtered list of users.", nonMGUsers);
 
             const validAC = await chunkify(nonMGUsers, hasHighLimit && 500 || undefined).reduce(async (acc, chunk, i) => {
