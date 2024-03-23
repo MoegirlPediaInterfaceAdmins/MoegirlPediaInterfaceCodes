@@ -14,18 +14,18 @@
 		importScripts('https://testingcf.jsdelivr.net/npm/wikiparser-node@1.6.2-b/bundle/bundle.min.js');
 		Parser.config = JSON.parse(config);
 		const entities = {'&': '&amp;', '<': '&lt;', '>': '&gt;'},
-			commentType = 'comment italic',
-			tagType = 'attr-name bold',
-			attrType = 'attr-name',
-			tableType = 'regex bold',
-			syntaxType = 'atrule bold',
-			linkType = 'atrule',
-			templateType = 'symbol bold',
-			magicType = 'property bold',
-			invokeType = 'property',
-			parameterType = 'symbol',
-			converterType = 'operator bold',
-			ruleType = 'operator',
+            commentType = 'comment italic',
+            tagType = 'attr-name bold',
+            attrType = 'attr-name',
+            tableType = 'regex bold',
+            syntaxType = 'atrule bold',
+            linkType = 'atrule',
+            templateType = 'symbol bold',
+            magicType = 'property bold',
+            invokeType = 'property',
+            parameterType = 'symbol',
+            converterType = 'operator bold',
+            ruleType = 'operator',
 			map = {
 				'table-inter': 'deleted',
 				hidden: commentType,
@@ -43,6 +43,7 @@
 				'attr-key': attrType,
 				'attr-value': attrType,
 				arg: tableType,
+				'arg-name': tableType,
 				'arg-default': 'regex',
 				template: templateType,
 				'template-name': templateType,
@@ -84,9 +85,13 @@
 		self.onmessage = ({data}) => {
 			const {code} = JSON.parse(data),
 				tree = Parser.parse(code).json();
-			const slice = (type, start, end) => {
+			const slice = (type, parentType, start, end) => {
 				const text = code.slice(start, end).replace(/[&<>]/gu, p => entities[p]);
-				return type in map ? `<span class="token ${map[type]}">${text}</span>` : text;
+				let t = type || parentType;
+				if (parentType === 'image-parameter') {
+					t = 'root';
+				}
+				return t in map ? `<span class="token ${map[t]}">${text}</span>` : text;
 			};
 			const stack = [];
 			let cur = tree,
@@ -95,42 +100,39 @@
 				out = false,
 				output = '';
 			while (last < code.length) {
-				const {childNodes, type, range: [, to]} = cur;
-				if (out) {
+				const {type, range: [, to], childNodes} = cur,
+					parentNode = stack[0]?.[0];
+				if (out || !childNodes?.length) {
+					const [, i] = stack[0];
 					if (last < to) {
-						output += slice(type, last, to);
+						output += slice(type, parentNode.type, last, to);
 						last = to;
 					}
-					const [parentNode, i] = stack[0];
 					index++;
 					if (index === parentNode.childNodes.length) {
 						cur = parentNode;
 						index = i;
 						stack.shift();
+						out = true;
 					} else {
 						cur = parentNode.childNodes[index];
 						out = false;
 						const {range: [from]} = cur;
 						if (last < from) {
-							output += slice(parentNode.type, last, from);
+							output += slice(parentNode.type, stack[1]?.[0].type, last, from);
 							last = from;
 						}
 					}
-				} else if (childNodes?.length) {
+				} else {
 					const child = childNodes[0],
 						{range: [from]} = child;
 					if (last < from) {
-						output += slice(type, last, from);
+						output += slice(type, parentNode?.type, last, from);
 						last = from;
 					}
 					stack.unshift([cur, index]);
 					cur = child;
 					index = 0;
-				} else {
-					const {range: [from]} = cur;
-					output += slice(type || cur.type, from, to);
-					last = to;
-					out = true;
 				}
 			}
 			postMessage(output);
@@ -145,13 +147,8 @@
 			mw: 'wiki',
 		},
 		contentModel = mw.config.get('wgPageContentModel').toLowerCase(),
-		config = JSON.stringify(
-            await (await fetch('/MediaWiki:Gadget-prism.json?action=raw&ctype=application/json')).json(),
-        ),
-		regexAlias = new RegExp(`\\blang(?:uage)?-(${Object.keys(alias).join('|')})\\b`, 'iu'),
-		filename = URL.createObjectURL(
-			new Blob([`(${String(workerJS)})('${config}')`], {type: 'application/javascript'}),
-		);
+		regexAlias = new RegExp(`\\blang(?:uage)?-(${Object.keys(alias).join('|')})\\b`, 'iu');
+    let config, filename;
 	const main = async ($content) => {
 		if (contentModel === 'wikitext') {
 			$content.find('pre[class*=lang-], pre[class*=language-], code[class*=lang-], code[class*=language-]')
@@ -159,7 +156,7 @@
 					this.className = this.className.replace(regexAlias, (_, lang) => `lang-${alias[lang]}`)
 						.replace(/\blinenums\b/u, 'line-numbers');
 				});
-			$content.find('pre[lang], code[lang]').addClass(function() {
+			$content.find('pre[lang], code.prettyprint[lang]').addClass(function() {
 				const lang = this.lang.toLowerCase();
 				return `${this.tagName === 'PRE' ? 'line-numbers ' : ''}lang-${alias[lang] ?? lang}`;
 			});
@@ -180,8 +177,14 @@
             },
         });
 		if ($block.filter('.lang-wiki, .language-wiki').length) {
+            config = JSON.stringify(
+                await (await fetch('/MediaWiki:Gadget-prism.json?action=raw&ctype=application/json')).json(),
+            );
+            filename = URL.createObjectURL(
+                new Blob([`(${String(workerJS)})('${config}')`], {type: 'application/javascript'}),
+            );
 			Object.assign(Prism, {filename});
-			Prism.languages['wiki'] = {};
+			Prism.languages['wiki'] ||= {};
 		}
 		$block.filter('pre').wrapInner('<code>').children('code').add($block.filter('code'))
 			.each((_, code) => {
