@@ -1730,7 +1730,6 @@
         regex: {
             pattern: RegExp(
                 // lookbehind
-                // eslint-disable-next-line regexp/no-dupe-characters-character-class
                 `${/((?:^|[^$\w\xA0-\uFFFF."'\])\s]|\b(?:return|yield))\s*)/.source
                 // Regex pattern:
                 // There are 2 regex patterns here. The RegExp set notation proposal added support for nested character
