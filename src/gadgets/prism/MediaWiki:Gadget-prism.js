@@ -339,7 +339,7 @@
              * @returns {T}
              * @template T
              */
-                clone: (o, visited) => {
+                clone: function deepClone(o, visited) {
                     visited ||= {};
 
                     let clone; let id;
@@ -659,7 +659,7 @@
                 },
 
                 // Traverse a language definition with Depth First Search
-                DFS: (o, callback, type, visited) => {
+                DFS: function DFS(o, callback, type, visited) {
                     visited ||= {};
 
                     const objId = _.util.objId;
@@ -2619,7 +2619,7 @@
          * @param {(languages: string[]) => void} [success]
          * @param {(language: string) => void} [error] This callback will be invoked on the first language to fail.
          */
-        const loadLanguages = (languages, success, error) => {
+        function loadLanguages(languages, success, error) {
             if (typeof languages === "string") {
                 languages = [languages];
             }
