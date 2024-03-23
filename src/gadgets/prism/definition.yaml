@@ -8,7 +8,7 @@ supportsUrlLoad: false
 
 targets: []
 
-skins: ['vector']
+skins: ["vector"]
 
 actions: []
 
@@ -19,6 +19,8 @@ package: false
 rights: []
 
 peers: []
+
+dependencies: []
 
 _sites:
   - zh
