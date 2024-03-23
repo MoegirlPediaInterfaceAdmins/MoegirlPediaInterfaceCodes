@@ -1,4 +1,3 @@
-/* eslint-disable no-use-before-define, camelcase */
 /**
  * @source https://github.com/PrismJS/prism
  * 更新后请同步更新上面链接到最新版本
