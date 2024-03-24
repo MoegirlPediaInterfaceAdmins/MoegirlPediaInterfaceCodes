@@ -303,3 +303,8 @@ span.inline-color {
 	height: 120%;
 	width: 120%;
 }
+
+pre.language-wiki, code.language-wiki {
+    white-space: pre-wrap;
+    overflow-wrap: break-word;
+}

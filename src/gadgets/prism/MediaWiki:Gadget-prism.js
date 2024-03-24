@@ -152,10 +152,11 @@
     const main = async ($content) => {
         if (contentModel === "wikitext") {
             $content.find("pre[class*=lang-], pre[class*=language-], code[class*=lang-], code[class*=language-]")
-                .each(function () {
-                    this.className = this.className.replace(regexAlias, (_, lang) => `lang-${alias[lang]}`)
-                        .replace(/\blinenums\b/u, "line-numbers");
-                });
+                .prop(
+                    'className',
+                    (__, className) => className.replace(regexAlias, (_, lang) => `lang-${alias[lang]}`)
+                        .replace(/\blinenums\b/u, "line-numbers"),
+                );
             $content.find("pre[lang], code.prettyprint[lang]").addClass(function () {
                 const lang = this.lang.toLowerCase();
                 return `${this.tagName === "PRE" ? "line-numbers " : ""}lang-${alias[lang] ?? lang}`;
