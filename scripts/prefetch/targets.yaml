@@ -1,15 +1,199 @@
 - type: npm
-  moduleName: json5
   gadget:
     name: libJSON5
     fileName: MediaWiki:Gadget-libJSON5.js
+  moduleName: json5
   distFilePath: dist/index.js
   version: "2"
 
 - type: npm
-  moduleName: localforage
   gadget:
     name: localforage
     fileName: MediaWiki:Gadget-localforage.js
+  moduleName: localforage
   distFilePath: dist/localforage.js
+  version: "1"
+
+- type: npm
+  gadget:
+    name: prism-clike
+    fileName: MediaWiki:Gadget-prism-clike.js
+  moduleName: prismjs
+  distFilePath: components/prism-clike.js
+  version: "1"
+
+- type: npm
+  gadget:
+    name: prism-core
+    fileName: MediaWiki:Gadget-prism-core.js
+  moduleName: prismjs
+  distFilePath: components/prism-core.js
+  version: "1"
+
+- type: npm
+  gadget:
+    name: prism-core
+    fileName: MediaWiki:Gadget-prism-coy.css
+  moduleName: prismjs
+  distFilePath: themes/prism-coy.css
+  version: "1"
+
+- type: npm
+  gadget:
+    name: prism-core
+    fileName: MediaWiki:Gadget-prism-line-numbers.js
+  moduleName: prismjs
+  distFilePath: plugins/line-numbers/prism-line-numbers.js
+  version: "1"
+
+- type: npm
+  gadget:
+    name: prism-core
+    fileName: MediaWiki:Gadget-line-numbers.css
+  moduleName: prismjs
+  distFilePath: plugins/line-numbers/prism-line-numbers.css
+  version: "1"
+
+- type: npm
+  gadget:
+    name: prism-core
+    fileName: MediaWiki:Gadget-prism-line-color.js
+  moduleName: prismjs
+  distFilePath: plugins/line-color/prism-line-color.js
+  version: "1"
+
+- type: npm
+  gadget:
+    name: prism-core
+    fileName: MediaWiki:Gadget-line-color.css
+  moduleName: prismjs
+  distFilePath: plugins/line-color/prism-line-color.css
+  version: "1"
+
+- type: npm
+  gadget:
+    name: prism-css
+    fileName: MediaWiki:Gadget-prism-css.js
+  moduleName: prismjs
+  distFilePath: components/prism-css.js
+  version: "1"
+
+- type: npm
+  gadget:
+    name: prism-css
+    fileName: MediaWiki:Gadget-prism-css-extras.js
+  moduleName: prismjs
+  distFilePath: components/prism-css-extras.js
+  version: "1"
+
+- type: npm
+  gadget:
+    name: prism-javascript
+    fileName: MediaWiki:Gadget-prism-javascript.js
+  moduleName: prismjs
+  distFilePath: components/prism-javascript.js
+  version: "1"
+
+- type: npm
+  gadget:
+    name: prism-javascript
+    fileName: MediaWiki:Gadget-prism-js-extras.js
+  moduleName: prismjs
+  distFilePath: components/prism-js-extras.js
+  version: "1"
+
+- type: npm
+  gadget:
+    name: prism-javascript
+    fileName: MediaWiki:Gadget-prism-javadoclike.js
+  moduleName: prismjs
+  distFilePath: components/prism-javadoclike.js
+  version: "1"
+
+- type: npm
+  gadget:
+    name: prism-javascript
+    fileName: MediaWiki:Gadget-prism-jsdoc.js
+  moduleName: prismjs
+  distFilePath: components/prism-jsdoc.js
+  version: "1"
+
+- type: npm
+  gadget:
+    name: prism-json
+    fileName: MediaWiki:Gadget-prism-json.js
+  moduleName: prismjs
+  distFilePath: components/prism-json.js
+  version: "1"
+
+- type: npm
+  gadget:
+    name: prism-json
+    fileName: MediaWiki:Gadget-prism-json5.js
+  moduleName: prismjs
+  distFilePath: components/prism-json5.js
+  version: "1"
+
+- type: npm
+  gadget:
+    name: prism-latex
+    fileName: MediaWiki:Gadget-prism-latex.js
+  moduleName: prismjs
+  distFilePath: components/prism-latex.js
+  version: "1"
+
+- type: npm
+  gadget:
+    name: prism-lua
+    fileName: MediaWiki:Gadget-prism-lua.js
+  moduleName: prismjs
+  distFilePath: components/prism-lua.js
+  version: "1"
+
+- type: npm
+  gadget:
+    name: prism-markup
+    fileName: MediaWiki:Gadget-prism-markup.js
+  moduleName: prismjs
+  distFilePath: components/prism-markup.js
+  version: "1"
+
+- type: npm
+  gadget:
+    name: prism-php
+    fileName: MediaWiki:Gadget-prism-php.js
+  moduleName: prismjs
+  distFilePath: components/prism-php.js
+  version: "1"
+
+- type: npm
+  gadget:
+    name: prism-php
+    fileName: MediaWiki:Gadget-prism-php-extras.js
+  moduleName: prismjs
+  distFilePath: components/prism-php-extras.js
+  version: "1"
+
+- type: npm
+  gadget:
+    name: prism-regex
+    fileName: MediaWiki:Gadget-prism-regex.js
+  moduleName: prismjs
+  distFilePath: components/prism-regex.js
+  version: "1"
+
+- type: npm
+  gadget:
+    name: prism-wiki
+    fileName: MediaWiki:Gadget-prism-wiki.js
+  moduleName: prismjs
+  distFilePath: components/prism-wiki.js
+  version: "1"
+
+- type: npm
+  gadget:
+    name: prism-yaml
+    fileName: MediaWiki:Gadget-prism-yaml.js
+  moduleName: prismjs
+  distFilePath: components/prism-yaml.js
   version: "1"

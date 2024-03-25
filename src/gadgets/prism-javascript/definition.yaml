@@ -1,0 +1,41 @@
+ResourceLoader: true
+
+hidden: true
+
+default: false
+
+supportsUrlLoad: false
+
+targets: []
+
+skins:
+  - "vector"
+
+actions: []
+
+type: general
+
+package: false
+
+rights:
+  - hidden
+
+peers: []
+
+dependencies:
+  - ext.gadget.prism-core
+  - ext.gadget.prism-clike
+  - ext.gadget.prism-regex
+  - ext.gadget.prism-markup
+
+_sites:
+  - zh
+  - commons
+
+_section: system
+
+_files:
+  - MediaWiki:Gadget-prism-javascript.js
+  - MediaWiki:Gadget-prism-js-extras.js
+  - MediaWiki:Gadget-prism-javadoclike.js
+  - MediaWiki:Gadget-prism-jsdoc.js

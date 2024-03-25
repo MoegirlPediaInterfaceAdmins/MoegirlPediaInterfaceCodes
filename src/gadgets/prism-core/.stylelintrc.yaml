@@ -1,0 +1,4 @@
+ignoreFiles:
+  - MediaWiki:Gadget-prism-coy.css
+  - MediaWiki:Gadget-line-numbers.css
+  - MediaWiki:Gadget-line-color.css
