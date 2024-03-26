@@ -53,7 +53,7 @@
         "postcss-selector-not": "^7.0.2",
         "semver": "^7.6.0",
         "simple-git": "^3.23.0",
-        "stylelint": "^16.3.0",
+        "stylelint": "^16.3.1",
         "stylelint-config-standard": "^36.0.0",
         "types-mediawiki": "^1.6.0",
         "typescript": "^5.4.3",
