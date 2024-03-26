@@ -130,51 +130,7 @@ $(() => (async () => {
                 rvprop: "content",
             })).query.pages[0].revisions[0].content);
 
-            let blockLogEvents;
-            let blockLogEventsResult = [];
-            const firstEdit = (await api.get({
-                action: "query",
-                format: "json",
-                assertuser: username,
-                prop: "revisions",
-                pageids: pageid,
-                rvprop: "timestamp",
-                rvlimit: 1,
-                rvdir: "newer",
-            })).query.pages[pageid].revisions[0].timestamp;
-            const lestart = moment.utc();
-            const leend = moment.min(moment(firstEdit), lestart.clone().subtract(60, "days"));
-            do {
-                blockLogEvents = await api.get({
-                    action: "query",
-                    format: "json",
-                    assertuser: username,
-                    list: "logevents",
-                    leprop: "title|type|user|timestamp",
-                    letype: "block",
-                    lestart: lestart.format("YYYY-MM-DDTHH:mm:ss.SSS[Z]"),
-                    leend: leend.format("YYYY-MM-DDTHH:mm:ss.SSS[Z]"),
-                    lelimit: "max",
-                    lecontinue: blockLogEvents?.continue?.lecontinue ?? "|",
-                });
-                blockLogEventsResult = blockLogEventsResult.concat(blockLogEvents.query.logevents);
-            } while (blockLogEvents?.continue?.lecontinue);
-            const blockedByAbuseFilter = new Set();
-            const blockedByOthers = new Set();
-            blockLogEventsResult.reverse().forEach((e) => {
-                const blockedUser = e.title.replace(/^User:/, "");
-                if (e.action === "block" || e.action === "reblock") {
-                    if (e.user === "滥用过滤器") {
-                        blockedByAbuseFilter.add(blockedUser);
-                    } else {
-                        blockedByOthers.add(blockedUser);
-                    }
-                } else if (e.action === "unblock" && blockedByAbuseFilter.has(blockedUser)) {
-                    blockedByAbuseFilter.delete(blockedUser);
-                }
-            });
-
-            const ignoreList = Array.from(new Set([...bots, ...MGUsers.bureaucrat, ...MGUsers.sysop, ...MGUsers.patroller, ...MGUsers.staff, ...blockedByAbuseFilter, ...blockedByOthers]));
+            const ignoreList = Array.from(new Set([...bots, ...MGUsers.bureaucrat, ...MGUsers.sysop, ...MGUsers.patroller, ...MGUsers.staff]));
             const filterResult = (result) => result.query.pages[pageid].contributors.map((c) => c.name).filter((c) => !ignoreList.includes(c));
             console.log("[ACUserPing] Got ignored user list.", ignoreList);
 
@@ -205,6 +161,7 @@ $(() => (async () => {
                     usprop: "implicitgroups|blockinfo|registration",
                 })).query.users.filter((u) => u.implicitgroups.includes("autoconfirmed") && !u.blockedby && moment().diff(moment(u.registration), "days") > 33).map((u) => u.name);
                 console.log(`[ACUserPing] Chunk ${i + 1}: Got preliminary result.`, prelimRes);
+
                 const lastEdit = (await Promise.all(prelimRes.map(async (u) => {
                     await sleep();
                     return {
@@ -220,8 +177,46 @@ $(() => (async () => {
                         })).query.usercontribs[0],
                     };
                 }))).filter(({ lastEdit }) => lastEdit).map(({ u }) => u);
-                console.log(`[ACUserPing] Chunk ${i + 1}: Got refined result.`, lastEdit);
-                return [...await acc, ...lastEdit];
+
+                const blockIn60days = async (u) => {
+                    const blockResult = await api.get({
+                        action: "query",
+                        assertuser: username,
+                        list: "logevents",
+                        leprop: "timestamp|details|type",
+                        letype: "block",
+                        letitle: `U:${u}`,
+                        lelimit: "max",
+                    });
+                    if (!blockResult.query.logevents) {
+                        return false;
+                    }
+                    if (blockResult.query.logevents[0].params.duration === "indefinite") {
+                        return true;
+                    }
+                    let unblocked = false;
+                    for (const e of blockResult.query.logevents) {
+                        if (unblocked && e.action === "block") {
+                            unblocked = false;
+                        } else if (e.action === "unblock") {
+                            unblocked = true;
+                        } else if (moment(e.expiry).isAfter(moment.utc().subtract(60, "days"))) {
+                            return true;
+                        } else {
+                            return false;
+                        }
+                    }
+                };
+                const nonBlocked = (await Promise.all(lastEdit.map(async (u) => {
+                    await sleep();
+                    return {
+                        u,
+                        blockIn60days: await blockIn60days(u),
+                    };
+                }))).filter(({ blockIn60days }) => !blockIn60days).map(({ u }) => u);
+
+                console.log(`[ACUserPing] Chunk ${i + 1}: Got refined result.`, nonBlocked);
+                return [...await acc, ...nonBlocked];
             }, []);
 
             this.addStep(wgULS("正在合并结果...", "正在合併結果..."));
