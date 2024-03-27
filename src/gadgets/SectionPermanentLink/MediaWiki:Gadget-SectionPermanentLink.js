@@ -1,7 +1,7 @@
 "use strict";
 $(() => {
     if (mw.config.get("wgNamespaceNumber") % 2 === 1 && mw.config.get("wgPageName") !== "萌娘百科_talk:讨论版") {
-        const inHistory = !document.getElementsByClassName("mw-editsection")[0];
+        const inHistory = !document.getElementsByClassName("mw-editsection")[0] || $(".mw-editsection").css("display") === "none";
         const buttunText = wgULS("固定链接", "固定連結");
         $("#mw-content-text .mw-parser-output h2").each((_, ele) => {
             const $ele = $(ele);
@@ -21,7 +21,7 @@ $(() => {
                     }
                 }
             } else {
-                const permanentLinkButton = $('<span class="mw-editsection"></span>');
+                const permanentLinkButton = $('<span class="mw-editsection" style="display:inline!important"></span>');
                 permanentLinkButton.append(
                     '<span class="mw-editsection-bracket">[</span>',
                     $permanentLink,
