@@ -21,7 +21,7 @@ $(() => {
                     }
                 }
             } else {
-                const permanentLinkButton = $('<span class="mw-editsection" style="display:inline-flex!important"></span>');
+                const permanentLinkButton = $('<span class="mw-editsection" style="display:inline!important"></span>');
                 permanentLinkButton.append(
                     '<span class="mw-editsection-bracket">[</span>',
                     $permanentLink,
