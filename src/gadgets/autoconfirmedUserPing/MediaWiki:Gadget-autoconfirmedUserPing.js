@@ -230,8 +230,7 @@ $(() => (async () => {
                 await navigator.clipboard.writeText(ping);
             } catch (_) {
                 const textarea = $(`<textarea>${ping}</textarea>`).appendTo("body");
-                const textareaDom = textarea[0]/* as HTMLTextAreaElement */; // For TypeScript only
-                textareaDom.trigger("select");
+                textarea.trigger("select");
                 document.execCommand("copy");
                 textarea.remove();
             }
