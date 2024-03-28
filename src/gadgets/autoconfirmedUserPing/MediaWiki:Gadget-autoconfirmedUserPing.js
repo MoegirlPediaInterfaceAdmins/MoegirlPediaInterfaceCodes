@@ -122,7 +122,6 @@ $(() => (async () => {
 
             const MGUsers = JSON.parse((await api.get({
                 action: "query",
-                format: "json",
                 assertuser: username,
                 prop: "revisions",
                 titles: "模块:UserGroup/data",
