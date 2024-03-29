@@ -29,6 +29,8 @@
     - temp-svgFix
     - legacyMainpage
     - zeroFill
+    - prism
+    - prism-language-php
 
 - name: skin
   gadgets:
@@ -127,3 +129,20 @@
     - libip
     - libJSON5
     - libCachedCode
+    - prism-core
+    - prism-language-clike
+    - prism-language-css
+    - prism-language-javascript
+    - prism-language-json
+    - prism-language-latex
+    - prism-language-lua
+    - prism-language-markup
+    - prism-language-regex
+    - prism-language-typescript
+    - prism-language-wiki
+    - prism-language-yaml
+    - prism-plugin-javadoclike
+    - prism-plugin-jsdoc
+    - prism-plugin-match-braces
+    - prism-plugin-phpdoc
+    - prism-plugin-previewers
