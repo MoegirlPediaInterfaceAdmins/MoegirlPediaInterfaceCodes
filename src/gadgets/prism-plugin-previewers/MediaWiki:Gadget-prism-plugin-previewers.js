@@ -6,6 +6,7 @@
  *     moduleName: "prismjs"
  *     distFilePath: "plugins/previewers/prism-previewers.js"
  *     version: "1"
+ *     jsdelivrUrl: "https://cdn.jsdelivr.net/npm/prismjs@1/plugins/previewers/prism-previewers.js"
  */
 (function () {
 
