@@ -6,6 +6,7 @@
  *     moduleName: "json5"
  *     distFilePath: "dist/index.js"
  *     version: "2"
+ *     jsdelivrUrl: "https://cdn.jsdelivr.net/npm/json5@2/dist/index.js"
  */
 (function (global, factory) {
 	typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
