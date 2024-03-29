@@ -6,6 +6,7 @@
  *     moduleName: "prismjs"
  *     distFilePath: "plugins/match-braces/prism-match-braces.js"
  *     version: "1"
+ *     jsdelivrUrl: "https://cdn.jsdelivr.net/npm/prismjs@1/plugins/match-braces/prism-match-braces.js"
  */
 (function () {
 
