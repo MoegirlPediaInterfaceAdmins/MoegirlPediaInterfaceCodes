@@ -49,7 +49,7 @@
 - type: npm
   gadget:
     name: prism-core
-    fileName: MediaWiki:Gadget-line-numbers.css
+    fileName: MediaWiki:Gadget-prism-line-numbers.css
   moduleName: prismjs
   distFilePath: plugins/line-numbers/prism-line-numbers.css
   version: "1"
@@ -57,17 +57,17 @@
 - type: npm
   gadget:
     name: prism-core
-    fileName: MediaWiki:Gadget-prism-line-color.js
+    fileName: MediaWiki:Gadget-prism-inline-color.js
   moduleName: prismjs
-  distFilePath: plugins/line-color/prism-line-color.js
+  distFilePath: plugins/inline-color/prism-inline-color.js
   version: "1"
 
 - type: npm
   gadget:
     name: prism-core
-    fileName: MediaWiki:Gadget-line-color.css
+    fileName: MediaWiki:Gadget-prism-inline-color.css
   moduleName: prismjs
-  distFilePath: plugins/line-color/prism-line-color.css
+  distFilePath: plugins/inline-color/prism-inline-color.css
   version: "1"
 
 - type: npm

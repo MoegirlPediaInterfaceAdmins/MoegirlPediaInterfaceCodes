@@ -46,6 +46,9 @@ for (const prefetchTarget of prefetchTargets) {
             return await response.text();
         }
     })();
+    if (data.startsWith("Couldn't find the requested file")) {
+        throw new Error(`[${name}] Couldn't find the requested file.`);
+    }
     console.info(`[${name}]`, "Successfully fetched.");
     const code = [
         "/**",
