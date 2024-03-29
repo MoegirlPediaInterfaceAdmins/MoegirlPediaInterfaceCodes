@@ -6,6 +6,7 @@
  *     moduleName: "prismjs"
  *     distFilePath: "components/prism-wiki.js"
  *     version: "1"
+ *     jsdelivrUrl: "https://cdn.jsdelivr.net/npm/prismjs@1/components/prism-wiki.js"
  */
 Prism.languages.wiki = Prism.languages.extend('markup', {
 	'block-comment': {
