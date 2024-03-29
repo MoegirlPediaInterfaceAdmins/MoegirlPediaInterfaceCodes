@@ -6,6 +6,7 @@
  *     moduleName: "prismjs"
  *     distFilePath: "plugins/line-numbers/prism-line-numbers.js"
  *     version: "1"
+ *     jsdelivrUrl: "https://cdn.jsdelivr.net/npm/prismjs@1/plugins/line-numbers/prism-line-numbers.js"
  */
 (function () {
 
