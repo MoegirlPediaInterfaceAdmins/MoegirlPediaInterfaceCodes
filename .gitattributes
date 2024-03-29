@@ -20,9 +20,9 @@ src/gadgets/prism-language-clike/MediaWiki:Gadget-prism-language-clike.js lingui
 src/gadgets/prism-core/MediaWiki:Gadget-prism-core.js linguist-generated=true
 src/gadgets/prism-core/MediaWiki:Gadget-prism-coy.css linguist-generated=true
 src/gadgets/prism-core/MediaWiki:Gadget-prism-line-numbers.js linguist-generated=true
-src/gadgets/prism-core/MediaWiki:Gadget-line-numbers.css linguist-generated=true
-src/gadgets/prism-core/MediaWiki:Gadget-prism-line-color.js linguist-generated=true
-src/gadgets/prism-core/MediaWiki:Gadget-line-color.css linguist-generated=true
+src/gadgets/prism-core/MediaWiki:Gadget-prism-line-numbers.css linguist-generated=true
+src/gadgets/prism-core/MediaWiki:Gadget-prism-inline-color.js linguist-generated=true
+src/gadgets/prism-core/MediaWiki:Gadget-prism-inline-color.css linguist-generated=true
 src/gadgets/prism-language-css/MediaWiki:Gadget-prism-language-css.js linguist-generated=true
 src/gadgets/prism-language-css/MediaWiki:Gadget-prism-language-css-extras.js linguist-generated=true
 src/gadgets/prism-language-javascript/MediaWiki:Gadget-prism-language-javascript.js linguist-generated=true
