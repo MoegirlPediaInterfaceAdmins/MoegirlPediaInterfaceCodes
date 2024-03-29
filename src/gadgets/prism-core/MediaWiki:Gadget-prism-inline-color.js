@@ -6,6 +6,7 @@
  *     moduleName: "prismjs"
  *     distFilePath: "plugins/inline-color/prism-inline-color.js"
  *     version: "1"
+ *     jsdelivrUrl: "https://cdn.jsdelivr.net/npm/prismjs@1/plugins/inline-color/prism-inline-color.js"
  */
 (function () {
 
