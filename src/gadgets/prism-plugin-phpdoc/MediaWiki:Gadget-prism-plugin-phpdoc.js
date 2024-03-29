@@ -6,6 +6,7 @@
  *     moduleName: "prismjs"
  *     distFilePath: "components/prism-phpdoc.js"
  *     version: "1"
+ *     jsdelivrUrl: "https://cdn.jsdelivr.net/npm/prismjs@1/components/prism-phpdoc.js"
  */
 (function (Prism) {
 
