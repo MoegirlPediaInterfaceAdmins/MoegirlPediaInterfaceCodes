@@ -14,7 +14,16 @@ const labels = ["ci:prefetch"];
 
 const prefetchTargetsPath = "scripts/prefetch/targets.yaml";
 /**
- * @type {({ type: "npm", moduleName: string, gadget: { name: string, fileName: string }, distFilePath: string, version?: string, appendCode?: string, ignoreSemverDiff?: semver.ReleaseType[] } | { type: "custom", gadget: { name: string, fileName: string }, url: string })[]}
+ * @typedef { { gadget: { name: string, fileName: string }, appendCode?: string, removeCode?: string[] } } prefetchTargetBase
+ */
+/**
+ * @typedef { prefetchTargetBase & { type: "npm", moduleName: string, distFilePath: string, version?: string, ignoreSemverDiff?: semver.ReleaseType[] } } prefetchTargetFromNPM
+ */
+/**
+ * @typedef { prefetchTargetBase & { type: "custom", url: string } } prefetchTargetFromCustom
+ */
+/**
+ * @type {(prefetchTargetFromNPM | prefetchTargetFromCustom)[]}
  */
 const prefetchTargets = await yamlModule.readFile(prefetchTargetsPath);
 startGroup("prefetchTargets:");
@@ -23,7 +32,7 @@ endGroup();
 const fileList = [];
 for (const prefetchTarget of prefetchTargets) {
     console.info("target:", prefetchTarget);
-    const { type, moduleName, gadget: { name, fileName }, distFilePath, version, appendCode, ignoreSemverDiff, url } = prefetchTarget;
+    const { type, moduleName, gadget: { name, fileName }, distFilePath, version, appendCode, removeCode = [], ignoreSemverDiff, url } = prefetchTarget;
     const file = path.join("src/gadgets", name, fileName);
     fileList.push(file);
     console.info(`[${name}]`, "Start to fetch...");
@@ -33,6 +42,7 @@ for (const prefetchTarget of prefetchTargets) {
             const filePath = path.posix.join("npm", packageName, distFilePath);
             const url = new URL(filePath, "https://cdn.jsdelivr.net/");
             console.info(`[${name}]`, `url: ${url}`);
+            prefetchTarget.jsdelivrUrl = url;
             const response = await fetch(url, {
                 method: "GET",
             });
@@ -58,7 +68,7 @@ for (const prefetchTarget of prefetchTargets) {
     for (const [k, v] of Object.entries(prefetchTarget)) {
         code.push(` *     ${k}: ${JSON.stringify(v, null, 1).replace(/\n */g, " ")}`);
     }
-    code.push(" */", data.replace(/(?<=\n)\/\/\/ *<reference [^\n]+\n?/ig, ""));
+    code.push(" */", removeCode.reduce((p, c) => p.replaceAll(c, ""), data.replace(/(?<=\n)\/\/\/ *<reference [^\n]+\n?/ig, "")));
     if (typeof appendCode === "string") {
         code.push(appendCode);
     }

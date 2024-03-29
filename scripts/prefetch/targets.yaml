@@ -93,6 +93,8 @@
   moduleName: prismjs
   distFilePath: components/prism-javascript.js
   version: "1"
+  removeCode:
+    - // eslint-disable-next-line regexp/no-dupe-characters-character-class
 
 - type: npm
   gadget:
