@@ -6,6 +6,7 @@
  *     moduleName: "prismjs"
  *     distFilePath: "themes/prism-coy.css"
  *     version: "1"
+ *     jsdelivrUrl: "https://cdn.jsdelivr.net/npm/prismjs@1/themes/prism-coy.css"
  */
 /**
  * prism.js Coy theme for JavaScript, CoffeeScript, CSS and HTML
