@@ -6,6 +6,7 @@
  *     moduleName: "prismjs"
  *     distFilePath: "components/prism-php-extras.js"
  *     version: "1"
+ *     jsdelivrUrl: "https://cdn.jsdelivr.net/npm/prismjs@1/components/prism-php-extras.js"
  */
 Prism.languages.insertBefore('php', 'variable', {
 	'this': {
