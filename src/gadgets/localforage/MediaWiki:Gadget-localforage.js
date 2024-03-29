@@ -6,6 +6,7 @@
  *     moduleName: "localforage"
  *     distFilePath: "dist/localforage.js"
  *     version: "1"
+ *     jsdelivrUrl: "https://cdn.jsdelivr.net/npm/localforage@1/dist/localforage.js"
  */
 /*!
     localForage -- Offline Storage, Improved
