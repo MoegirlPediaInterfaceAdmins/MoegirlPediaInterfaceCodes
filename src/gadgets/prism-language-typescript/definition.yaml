@@ -32,4 +32,5 @@ _sites:
 
 _section: system
 
-_files: []
+_files:
+  - MediaWiki:Gadget-prism-language-typescript.js
