@@ -6,6 +6,7 @@
  *     moduleName: "prismjs"
  *     distFilePath: "plugins/match-braces/prism-match-braces.css"
  *     version: "1"
+ *     jsdelivrUrl: "https://cdn.jsdelivr.net/npm/prismjs@1/plugins/match-braces/prism-match-braces.css"
  */
 .token.punctuation.brace-hover,
 .token.punctuation.brace-selected {
