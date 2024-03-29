@@ -36,4 +36,4 @@ _section: system
 
 _files:
   - MediaWiki:Gadget-prism-language-javascript.js
-  - MediaWiki:Gadget-prism-js-extras.js
+  - MediaWiki:Gadget-prism-language-javascript-extras.js
