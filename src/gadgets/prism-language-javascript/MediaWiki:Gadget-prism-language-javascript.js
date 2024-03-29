@@ -6,6 +6,8 @@
  *     moduleName: "prismjs"
  *     distFilePath: "components/prism-javascript.js"
  *     version: "1"
+ *     removeCode: [ "// eslint-disable-next-line regexp/no-dupe-characters-character-class" ]
+ *     jsdelivrUrl: "https://cdn.jsdelivr.net/npm/prismjs@1/components/prism-javascript.js"
  */
 Prism.languages.javascript = Prism.languages.extend('clike', {
 	'class-name': [
@@ -64,7 +66,7 @@ Prism.languages.insertBefore('javascript', 'keyword', {
 	'regex': {
 		pattern: RegExp(
 			// lookbehind
-			// eslint-disable-next-line regexp/no-dupe-characters-character-class
+			
 			/((?:^|[^$\w\xA0-\uFFFF."'\])\s]|\b(?:return|yield))\s*)/.source +
 			// Regex pattern:
 			// There are 2 regex patterns here. The RegExp set notation proposal added support for nested character
