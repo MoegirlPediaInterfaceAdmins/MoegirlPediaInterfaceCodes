@@ -6,6 +6,7 @@
  *     moduleName: "prismjs"
  *     distFilePath: "components/prism-latex.js"
  *     version: "1"
+ *     jsdelivrUrl: "https://cdn.jsdelivr.net/npm/prismjs@1/components/prism-latex.js"
  */
 (function (Prism) {
 	var funcPattern = /\\(?:[^a-z()[\]]|[a-z*]+)/i;
