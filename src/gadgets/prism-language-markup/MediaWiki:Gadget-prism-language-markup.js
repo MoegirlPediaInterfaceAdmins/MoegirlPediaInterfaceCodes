@@ -6,6 +6,7 @@
  *     moduleName: "prismjs"
  *     distFilePath: "components/prism-markup.js"
  *     version: "1"
+ *     jsdelivrUrl: "https://cdn.jsdelivr.net/npm/prismjs@1/components/prism-markup.js"
  */
 Prism.languages.markup = {
 	'comment': {
