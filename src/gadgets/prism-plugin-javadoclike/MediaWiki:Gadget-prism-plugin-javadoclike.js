@@ -6,6 +6,7 @@
  *     moduleName: "prismjs"
  *     distFilePath: "components/prism-javadoclike.js"
  *     version: "1"
+ *     jsdelivrUrl: "https://cdn.jsdelivr.net/npm/prismjs@1/components/prism-javadoclike.js"
  */
 (function (Prism) {
 
