@@ -24,12 +24,16 @@ peers: []
 
 dependencies:
   - ext.gadget.prism-core
+  - ext.gadget.prism-language-clike
+  - ext.gadget.prism-language-regex
+  - ext.gadget.prism-language-markup
 
 _sites:
   - zh
   - commons
 
-_section: browsing
+_section: system
 
 _files:
-  - MediaWiki:Gadget-prism.js
+  - MediaWiki:Gadget-prism-language-javascript.js
+  - MediaWiki:Gadget-prism-js-extras.js

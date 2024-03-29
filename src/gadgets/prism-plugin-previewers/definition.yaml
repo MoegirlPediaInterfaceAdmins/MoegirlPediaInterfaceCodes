@@ -29,7 +29,8 @@ _sites:
   - zh
   - commons
 
-_section: browsing
+_section: system
 
 _files:
-  - MediaWiki:Gadget-prism.js
+  - MediaWiki:Gadget-prism-plugin-previewers.js
+  - MediaWiki:Gadget-prism-plugin-previewers.css

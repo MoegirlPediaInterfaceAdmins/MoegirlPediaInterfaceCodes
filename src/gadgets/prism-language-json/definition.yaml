@@ -29,7 +29,8 @@ _sites:
   - zh
   - commons
 
-_section: browsing
+_section: system
 
 _files:
-  - MediaWiki:Gadget-prism.js
+  - MediaWiki:Gadget-prism-language-json.js
+  - MediaWiki:Gadget-prism-language-json5.js

@@ -9,7 +9,7 @@ supportsUrlLoad: false
 targets: []
 
 skins:
-  - "vector"
+  - vector
 
 actions: []
 
@@ -33,7 +33,9 @@ _section: system
 _files:
   - MediaWiki:Gadget-prism-core.js
   - MediaWiki:Gadget-prism-coy.css
+
   - MediaWiki:Gadget-prism-line-numbers.js
   - MediaWiki:Gadget-line-numbers.css
+
   - MediaWiki:Gadget-prism-line-color.js
   - MediaWiki:Gadget-line-color.css

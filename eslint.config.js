@@ -85,6 +85,7 @@ const config = [
                 ace: false,
                 libCachedCode: false,
                 CodeMirror: false,
+                Prism: false,
             },
         },
     },

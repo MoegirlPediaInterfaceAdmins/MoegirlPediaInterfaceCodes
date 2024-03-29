@@ -32,4 +32,5 @@ _sites:
 _section: browsing
 
 _files:
-  - MediaWiki:Gadget-prism.js
+  - MediaWiki:Gadget-prism-language-php.js
+  - MediaWiki:Gadget-prism-language-php-extras.js

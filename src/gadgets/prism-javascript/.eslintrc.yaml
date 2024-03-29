@@ -1,5 +1,0 @@
-ignorePatterns:
-  - MediaWiki:Gadget-prism-javascript.js
-  - MediaWiki:Gadget-prism-js-extras.js
-  - MediaWiki:Gadget-prism-javadoclike.js
-  - MediaWiki:Gadget-prism-jsdoc.js
