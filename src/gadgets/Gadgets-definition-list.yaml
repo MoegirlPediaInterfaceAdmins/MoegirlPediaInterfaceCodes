@@ -30,7 +30,6 @@
     - legacyMainpage
     - zeroFill
     - prism
-    - prism-language-php
 
 - name: skin
   gadgets:
@@ -146,3 +145,4 @@
     - prism-plugin-match-braces
     - prism-plugin-phpdoc
     - prism-plugin-previewers
+    - prism-language-php
