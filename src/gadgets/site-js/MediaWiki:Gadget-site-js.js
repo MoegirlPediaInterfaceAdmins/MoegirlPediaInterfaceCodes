@@ -368,8 +368,36 @@
         }
         return result;
     };
+    const createElement = Document.prototype.createElement.bind(document);
+    const getAttribute = Element.prototype.getAttribute;
+    const setAttribute = Element.prototype.setAttribute;
+    const cloneNode = Node.prototype.cloneNode;
+    const appendChild = Node.prototype.appendChild.bind(document.body);
+    const contains = Node.prototype.contains.bind(document.body);
     const watermark = (txt, size) => {
-        $("<div>").attr("style", `position: fixed !important; z-index: 99999 !important; inset: 0px !important; background-image: url("data:image/svg+xml;base64,${btoa(`<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}"><foreignObject width="${size}" height="${size}"><html xmlns="http://www.w3.org/1999/xhtml" style="width: ${size}px; height: ${size}px;"><head></head><body style="width: ${size}px; height: ${size}px; margin: 0px;"><div style="width: 100% !important; height: 100% !important; opacity: .17 !important; font-size: 24px !important; position: relative !important; color: black !important;"><div style="transform: rotate(-15deg) translateX(-50%) translateY(-50%) !important; word-break: break-all !important; top: 36% !important; left: 50% !important; position: absolute !important; width: 100% !important; text-align: center !important;">${unescapeString(encodeURIComponent(txt))}</div></div></body></html></foreignObject></svg>`)}") !important; background-repeat: repeat !important; pointer-events: none !important; display: block !important; visibility: visible !important; width: unset !important; height: unset !important; opacity: unset !important; background-color: unset !important;`).appendTo("body");
+        const styleString = `position: fixed !important; z-index: 99999 !important; inset: 0px !important; background-image: url("data:image/svg+xml;base64,${btoa(`<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}"><foreignObject width="${size}" height="${size}"><html xmlns="http://www.w3.org/1999/xhtml" style="width: ${size}px; height: ${size}px;"><head></head><body style="width: ${size}px; height: ${size}px; margin: 0px;"><div style="width: 100% !important; height: 100% !important; opacity: .17 !important; font-size: 24px !important; position: relative !important; color: black !important;"><div style="transform: rotate(-15deg) translateX(-50%) translateY(-50%) !important; word-break: break-all !important; top: 36% !important; left: 50% !important; position: absolute !important; width: 100% !important; text-align: center !important;">${unescapeString(encodeURIComponent(txt))}</div></div></body></html></foreignObject></svg>`)}") !important; background-repeat: repeat !important; pointer-events: none !important; display: block !important; visibility: visible !important; width: unset !important; height: unset !important; opacity: unset !important; background-color: unset !important;`;
+        const template = createElement("div");
+        setAttribute.bind(template)("style", styleString);
+        /**
+         * @type { typeof template }
+         */
+        let ele = appendChild(cloneNode.bind(template)(true));
+        setInterval(() => {
+            const reasons = [];
+            if (!contains(ele)) {
+                reasons.push("not in body");
+            }
+            if (getAttribute.bind(ele)("style") !== styleString) {
+                reasons.push("styleString not match");
+            }
+            if (reasons.length > 0) {
+                console.info("[watermark] Recreate watermark:", reasons);
+                try {
+                    ele.remove();
+                } catch { }
+                ele = appendChild(cloneNode.bind(template)(true));
+            }
+        }, 1000);
     };
     /* 获取特定名字空间前缀正则表达式 */
     const getNamespacePrefixRegex = (namespaceNumber) => RegExp(`^(?:${Object.entries(mw.config.get("wgNamespaceIds")).filter((config) => config[1] === namespaceNumber).map((config) => config[0].toLowerCase()).join("|")}):`, "i");
