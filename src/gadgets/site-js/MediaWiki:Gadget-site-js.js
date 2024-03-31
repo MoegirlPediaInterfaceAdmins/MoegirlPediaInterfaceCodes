@@ -399,7 +399,6 @@
             }
         }, 1000);
     };
-    watermark("历史版本，非最新内容<br/>不代表萌娘百科立场", 300);
     /* 获取特定名字空间前缀正则表达式 */
     const getNamespacePrefixRegex = (namespaceNumber) => RegExp(`^(?:${Object.entries(mw.config.get("wgNamespaceIds")).filter((config) => config[1] === namespaceNumber).map((config) => config[0].toLowerCase()).join("|")}):`, "i");
     // 列表侧边距
