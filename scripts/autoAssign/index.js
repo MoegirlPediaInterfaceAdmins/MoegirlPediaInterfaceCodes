@@ -1,6 +1,7 @@
 import console from "../modules/console.js";
 console.info("Initialization done.");
 import yamlModule from "../modules/yamlModule.js";
+import jsonModule from "../modules/jsonModule.js";
 import { isInGithubActions, octokit } from "../modules/octokit.js";
 import { startGroup, endGroup } from "@actions/core";
 import readWorkflowEvent from "../modules/workflowEvent.js";
@@ -26,12 +27,24 @@ endGroup();
 const { addReviewers, reviewers, addAssignees, assignees } = config;
 if (addReviewers) {
     if (Array.isArray(reviewers) && reviewers.length > 0) {
-        console.info("[addReviewers]", "config.addReviewers is true, requesting reviews from these users:", reviewers);
-        await octokit.rest.pulls.requestReviewers({
-            pull_number: number,
-            reviewers,
-        });
-        console.info("[addReviewers]", "Done.");
+        try {
+            const event = await jsonModule.readFile(process.env.GITHUB_EVENT_PATH);
+            const login = event.pull_request.user.login;
+            if (reviewers.includes(login)) {
+                console.info("[addReviewers]", "The author is in the reviewers list, remove it.");
+                reviewers.splice(reviewers.indexOf(login), 1);
+            }
+        } catch (e) { }
+        if (reviewers.length > 0) {
+            console.info("[addReviewers]", "config.addReviewers is true, requesting reviews from these users:", reviewers);
+            await octokit.rest.pulls.requestReviewers({
+                pull_number: number,
+                reviewers,
+            });
+            console.info("[addReviewers]", "Done.");
+        } else {
+            console.info("[addReviewers]", "config.addReviewers is true, but no reviewer found after removing the author, skip.");
+        }
     } else {
         console.info("[addReviewers]", "config.addReviewers is true, but no reviewer found, skip.");
     }
