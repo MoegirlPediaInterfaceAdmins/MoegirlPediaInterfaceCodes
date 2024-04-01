@@ -170,6 +170,14 @@
 
 - type: npm
   gadget:
+    name: prism-language-typescript
+    fileName: MediaWiki:Gadget-prism-language-typescript.js
+  moduleName: prismjs
+  distFilePath: components/prism-typescript.js
+  version: "1"
+
+- type: npm
+  gadget:
     name: prism-language-yaml
     fileName: MediaWiki:Gadget-prism-language-yaml.js
   moduleName: prismjs
