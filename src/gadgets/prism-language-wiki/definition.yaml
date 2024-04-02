@@ -22,9 +22,7 @@ rights:
 
 peers: []
 
-dependencies:
-  - ext.gadget.prism-core
-  - ext.gadget.prism-language-markup
+dependencies: []
 
 _sites:
   - zh
