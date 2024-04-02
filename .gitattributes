@@ -35,7 +35,7 @@ src/gadgets/prism-language-markup/MediaWiki:Gadget-prism-language-markup.js ling
 src/gadgets/prism-language-php/MediaWiki:Gadget-prism-language-php.js linguist-generated=true
 src/gadgets/prism-language-php/MediaWiki:Gadget-prism-language-php-extras.js linguist-generated=true
 src/gadgets/prism-language-regex/MediaWiki:Gadget-prism-language-regex.js linguist-generated=true
-src/gadgets/prism-language-wiki/MediaWiki:Gadget-prism-language-wiki.js linguist-generated=true
+src/gadgets/prism-language-typescript/MediaWiki:Gadget-prism-language-typescript.js linguist-generated=true
 src/gadgets/prism-language-yaml/MediaWiki:Gadget-prism-language-yaml.js linguist-generated=true
 src/gadgets/prism-plugin-javadoclike/MediaWiki:Gadget-prism-plugin-javadoclike.js linguist-generated=true
 src/gadgets/prism-plugin-jsdoc/MediaWiki:Gadget-prism-plugin-jsdoc.js linguist-generated=true
