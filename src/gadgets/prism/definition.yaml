@@ -17,8 +17,7 @@ type: general
 
 package: false
 
-rights:
-  - techedit
+rights: []
 
 peers: []
 
