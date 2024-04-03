@@ -6,12 +6,14 @@
     "additionalProperties": false,
     "definitions": {
         "fabricatedUserRights": {
+            "$comment": "虚拟权限，hidden 用于隐藏小工具，disabled 用于禁用小工具",
             "enum": [
                 "hidden",
                 "disabled"
             ]
         },
         "userRights": {
+            "$comment": "自动从萌娘百科获取的权限列表",
             "enum": [
                 "abusefilter-hidden-log",
                 "abusefilter-hide-log",

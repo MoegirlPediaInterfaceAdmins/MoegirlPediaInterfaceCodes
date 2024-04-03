@@ -1,0 +1,35 @@
+ResourceLoader: true
+
+hidden: true
+
+default: false
+
+supportsUrlLoad: false
+
+targets: []
+
+skins:
+  - vector
+
+actions: []
+
+type: general
+
+package: false
+
+rights:
+  - hidden
+
+peers: []
+
+dependencies:
+  - ext.gadget.prism-core
+
+_sites:
+  - zh
+  - commons
+
+_section: system
+
+_files:
+  - MediaWiki:Gadget-prism-language-markup.js
