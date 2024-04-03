@@ -1,6 +1,6 @@
 ResourceLoader: true
 
-hidden: true
+hidden: false
 
 default: false
 
