@@ -1,15 +1,241 @@
 - type: npm
-  moduleName: json5
   gadget:
     name: libJSON5
     fileName: MediaWiki:Gadget-libJSON5.js
+  moduleName: json5
   distFilePath: dist/index.js
   version: "2"
 
 - type: npm
-  moduleName: localforage
   gadget:
     name: localforage
     fileName: MediaWiki:Gadget-localforage.js
+  moduleName: localforage
   distFilePath: dist/localforage.js
+  version: "1"
+
+- type: npm
+  gadget:
+    name: prism-language-clike
+    fileName: MediaWiki:Gadget-prism-language-clike.js
+  moduleName: prismjs
+  distFilePath: components/prism-clike.js
+  version: "1"
+
+- type: npm
+  gadget:
+    name: prism-core
+    fileName: MediaWiki:Gadget-prism-core.js
+  moduleName: prismjs
+  distFilePath: components/prism-core.js
+  version: "1"
+
+- type: npm
+  gadget:
+    name: prism-core
+    fileName: MediaWiki:Gadget-prism-coy.css
+  moduleName: prismjs
+  distFilePath: themes/prism-coy.css
+  version: "1"
+
+- type: npm
+  gadget:
+    name: prism-core
+    fileName: MediaWiki:Gadget-prism-line-numbers.js
+  moduleName: prismjs
+  distFilePath: plugins/line-numbers/prism-line-numbers.js
+  version: "1"
+
+- type: npm
+  gadget:
+    name: prism-core
+    fileName: MediaWiki:Gadget-prism-line-numbers.css
+  moduleName: prismjs
+  distFilePath: plugins/line-numbers/prism-line-numbers.css
+  version: "1"
+
+- type: npm
+  gadget:
+    name: prism-core
+    fileName: MediaWiki:Gadget-prism-inline-color.js
+  moduleName: prismjs
+  distFilePath: plugins/inline-color/prism-inline-color.js
+  version: "1"
+
+- type: npm
+  gadget:
+    name: prism-core
+    fileName: MediaWiki:Gadget-prism-inline-color.css
+  moduleName: prismjs
+  distFilePath: plugins/inline-color/prism-inline-color.css
+  version: "1"
+
+- type: npm
+  gadget:
+    name: prism-language-css
+    fileName: MediaWiki:Gadget-prism-language-css.js
+  moduleName: prismjs
+  distFilePath: components/prism-css.js
+  version: "1"
+
+- type: npm
+  gadget:
+    name: prism-language-css
+    fileName: MediaWiki:Gadget-prism-language-css-extras.js
+  moduleName: prismjs
+  distFilePath: components/prism-css-extras.js
+  version: "1"
+
+- type: npm
+  gadget:
+    name: prism-language-javascript
+    fileName: MediaWiki:Gadget-prism-language-javascript.js
+  moduleName: prismjs
+  distFilePath: components/prism-javascript.js
+  version: "1"
+  removeCode:
+    - // eslint-disable-next-line regexp/no-dupe-characters-character-class
+
+- type: npm
+  gadget:
+    name: prism-language-javascript
+    fileName: MediaWiki:Gadget-prism-language-javascript-extras.js
+  moduleName: prismjs
+  distFilePath: components/prism-js-extras.js
+  version: "1"
+
+- type: npm
+  gadget:
+    name: prism-language-json
+    fileName: MediaWiki:Gadget-prism-language-json.js
+  moduleName: prismjs
+  distFilePath: components/prism-json.js
+  version: "1"
+
+- type: npm
+  gadget:
+    name: prism-language-json
+    fileName: MediaWiki:Gadget-prism-language-json5.js
+  moduleName: prismjs
+  distFilePath: components/prism-json5.js
+  version: "1"
+
+- type: npm
+  gadget:
+    name: prism-language-latex
+    fileName: MediaWiki:Gadget-prism-language-latex.js
+  moduleName: prismjs
+  distFilePath: components/prism-latex.js
+  version: "1"
+
+- type: npm
+  gadget:
+    name: prism-language-lua
+    fileName: MediaWiki:Gadget-prism-language-lua.js
+  moduleName: prismjs
+  distFilePath: components/prism-lua.js
+  version: "1"
+
+- type: npm
+  gadget:
+    name: prism-language-markup
+    fileName: MediaWiki:Gadget-prism-language-markup.js
+  moduleName: prismjs
+  distFilePath: components/prism-markup.js
+  version: "1"
+
+- type: npm
+  gadget:
+    name: prism-language-php
+    fileName: MediaWiki:Gadget-prism-language-php.js
+  moduleName: prismjs
+  distFilePath: components/prism-php.js
+  version: "1"
+
+- type: npm
+  gadget:
+    name: prism-language-php
+    fileName: MediaWiki:Gadget-prism-language-php-extras.js
+  moduleName: prismjs
+  distFilePath: components/prism-php-extras.js
+  version: "1"
+
+- type: npm
+  gadget:
+    name: prism-language-regex
+    fileName: MediaWiki:Gadget-prism-language-regex.js
+  moduleName: prismjs
+  distFilePath: components/prism-regex.js
+  version: "1"
+
+- type: npm
+  gadget:
+    name: prism-language-typescript
+    fileName: MediaWiki:Gadget-prism-language-typescript.js
+  moduleName: prismjs
+  distFilePath: components/prism-typescript.js
+  version: "1"
+
+- type: npm
+  gadget:
+    name: prism-language-yaml
+    fileName: MediaWiki:Gadget-prism-language-yaml.js
+  moduleName: prismjs
+  distFilePath: components/prism-yaml.js
+  version: "1"
+
+- type: npm
+  gadget:
+    name: prism-plugin-javadoclike
+    fileName: MediaWiki:Gadget-prism-plugin-javadoclike.js
+  moduleName: prismjs
+  distFilePath: components/prism-javadoclike.js
+  version: "1"
+
+- type: npm
+  gadget:
+    name: prism-plugin-jsdoc
+    fileName: MediaWiki:Gadget-prism-plugin-jsdoc.js
+  moduleName: prismjs
+  distFilePath: components/prism-jsdoc.js
+  version: "1"
+
+- type: npm
+  gadget:
+    name: prism-plugin-match-braces
+    fileName: MediaWiki:Gadget-prism-plugin-match-braces.js
+  moduleName: prismjs
+  distFilePath: plugins/match-braces/prism-match-braces.js
+  version: "1"
+
+- type: npm
+  gadget:
+    name: prism-plugin-match-braces
+    fileName: MediaWiki:Gadget-prism-plugin-match-braces.css
+  moduleName: prismjs
+  distFilePath: plugins/match-braces/prism-match-braces.css
+  version: "1"
+
+- type: npm
+  gadget:
+    name: prism-plugin-phpdoc
+    fileName: MediaWiki:Gadget-prism-plugin-phpdoc.js
+  moduleName: prismjs
+  distFilePath: components/prism-phpdoc.js
+  version: "1"
+
+- type: npm
+  gadget:
+    name: prism-plugin-previewers
+    fileName: MediaWiki:Gadget-prism-plugin-previewers.js
+  moduleName: prismjs
+  distFilePath: plugins/previewers/prism-previewers.js
+  version: "1"
+
+- type: npm
+  gadget:
+    name: prism-plugin-previewers
+    fileName: MediaWiki:Gadget-prism-plugin-previewers.css
+  moduleName: prismjs
+  distFilePath: plugins/previewers/prism-previewers.css
   version: "1"
