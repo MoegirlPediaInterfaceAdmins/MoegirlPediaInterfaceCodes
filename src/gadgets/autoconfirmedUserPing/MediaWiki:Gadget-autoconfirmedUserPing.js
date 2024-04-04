@@ -2,7 +2,7 @@
 "use strict";
 $(() => (async () => {
     if (!mw.config.get("wgPageName").startsWith("萌娘百科_talk:提案/讨论中提案/")) {
-        return;
+        // return;
     }
     // await mw.loader.using(["mediawiki.api", "oojs-ui-core", "moment"]);
 
@@ -112,22 +112,19 @@ $(() => (async () => {
             this.updateSize();
 
             this.addStep(wgULS("正在获取忽略用户名单...", "正在獲取忽略使用者名單...", null, null, "正在獲取忽略用戶名單 ..."));
-            const bots = (await api.get({
-                action: "query",
-                assertuser: username,
-                list: "allusers",
-                augroup: "bot",
-                aulimit: "max",
-            })).query.allusers.map((u) => u.name);
-
-            const MGUsers = JSON.parse((await api.get({
+            const ignoreResult = await api.get({
                 action: "query",
                 assertuser: username,
                 prop: "revisions",
+                list: "allusers",
                 titles: "模块:UserGroup/data",
                 formatversion: 2,
                 rvprop: "content",
-            })).query.pages[0].revisions[0].content);
+                augroup: "bot",
+                aulimit: "max",
+            });
+            const bots = ignoreResult.query.allusers.map((u) => u.name);
+            const MGUsers = JSON.parse(ignoreResult.query.pages[0].revisions[0].content);
 
             const ignoreList = Array.from(new Set([...bots, ...MGUsers.bureaucrat, ...MGUsers.sysop, ...MGUsers.patroller, ...MGUsers.staff]));
             const filterResult = (result) => result.query.pages[pageid].contributors.map((c) => c.name).filter((c) => !ignoreList.includes(c));
@@ -161,61 +158,55 @@ $(() => (async () => {
                 })).query.users.filter((u) => u.implicitgroups.includes("autoconfirmed") && !u.blockedby && moment().diff(moment(u.registration), "days") > 33).map((u) => u.name);
                 console.log(`[ACUserPing] Chunk ${i + 1}: Got preliminary result.`, prelimRes);
 
-                const lastEdit = (await Promise.all(prelimRes.map(async (u) => {
+                const lastCheck = await Promise.all(prelimRes.map(async (u) => {
                     await sleep();
-                    return {
-                        u,
-                        lastEdit: (await api.get({
-                            action: "query",
-                            assertuser: username,
-                            list: "usercontribs",
-                            ucuser: u,
-                            ucnamespace: "0|10|14|12|4",
-                            uclimit: 1,
-                            ucend: moment().subtract(30, "days").unix(),
-                        })).query.usercontribs[0],
-                    };
-                }))).filter(({ lastEdit }) => lastEdit).map(({ u }) => u);
-
-                const blockIn60days = async (u) => {
-                    const blockResult = await api.get({
+                    const queryResult = await api.get({
                         action: "query",
                         assertuser: username,
-                        list: "logevents",
-                        leprop: "timestamp|details|type",
+                        list: "usercontribs|logevents",
+                        uclimit: 1,
+                        ucend: moment().subtract(30, "days").unix(),
+                        ucuser: u,
+                        ucprop: "",
+                        leprop: "type|timestamp|details",
                         letype: "block",
                         letitle: `U:${u}`,
                         lelimit: "max",
                     });
-                    if (!blockResult.query.logevents) {
-                        return false;
-                    }
-                    if (blockResult.query.logevents[0].params.duration === "indefinite") {
-                        return true;
-                    }
-                    let unblocked = false;
-                    for (const e of blockResult.query.logevents) {
-                        if (unblocked && e.action === "block") {
-                            unblocked = false;
-                        } else if (e.action === "unblock") {
-                            unblocked = true;
-                        } else if (moment(e.expiry).isAfter(moment.utc().subtract(60, "days"))) {
-                            return true;
-                        } else {
+
+                    const editIn30days = !!queryResult.query.usercontribs[0];
+
+                    const blockIn60days = ((logevents) => {
+                        if (!logevents) {
                             return false;
                         }
-                    }
-                };
-                const nonBlocked = (await Promise.all(lastEdit.map(async (u) => {
-                    await sleep();
+                        if (logevents[0].params.duration === "indefinite") {
+                            return true;
+                        }
+                        let unblocked = false;
+                        for (const e of logevents) {
+                            if (unblocked && e.action === "block") {
+                                unblocked = false;
+                            } else if (e.action === "unblock") {
+                                unblocked = true;
+                            } else if (moment(e.params.expiry).isAfter(moment.utc().subtract(60, "days"))) {
+                                return true;
+                            } else {
+                                return false;
+                            }
+                        }
+                        return false;
+                    })(queryResult.query.logevents);
+
                     return {
                         u,
-                        blockIn60days: await blockIn60days(u),
+                        editIn30days,
+                        blockIn60days,
                     };
-                }))).filter(({ blockIn60days }) => !blockIn60days).map(({ u }) => u);
-
-                console.log(`[ACUserPing] Chunk ${i + 1}: Got refined result.`, nonBlocked);
-                return [...await acc, ...nonBlocked];
+                }));
+                const refinedResult = lastCheck.filter(({ editIn30days, blockIn60days }) => editIn30days && !blockIn60days).map(({ u }) => u);
+                console.log(`[ACUserPing] Chunk ${i + 1}: Got refined result.`, refinedResult);
+                return [...await acc, ...refinedResult];
             }, []);
 
             this.addStep(wgULS("正在合并结果...", "正在合併結果..."));
