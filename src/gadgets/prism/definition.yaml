@@ -33,3 +33,4 @@ _section: browsing
 
 _files:
   - MediaWiki:Gadget-prism.js
+  - MediaWiki:Gadget-prism.css
