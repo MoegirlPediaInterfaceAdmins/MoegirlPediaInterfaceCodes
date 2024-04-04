@@ -13,7 +13,7 @@ skins:
 
 actions: []
 
-type: general
+type: styles
 
 package: false
 
@@ -31,4 +31,4 @@ _sites:
 _section: system
 
 _files:
-  - MediaWiki:Gadget-prism-language-wiki.js
+  - MediaWiki:Gadget-prism-language-wiki.css

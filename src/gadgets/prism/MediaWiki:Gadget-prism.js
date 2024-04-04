@@ -124,12 +124,12 @@ $(() => {
                 }
             }
             await mw.loader.using([
-                ...[...langSet].filter((lang) => lang !== "wiki").map((lang) => `ext.gadget.prism-language-${lang}`),
+                ...[...langSet].map((lang) => `ext.gadget.prism-language-${lang}`),
                 ...[...pluginsSet].map((plugin) => `ext.gadget.prism-plugin-${plugin}`),
             ]);
             if (langSet.has("wiki") && !Prism.languages.wiki) {
                 const workerJS = (config) => {
-                    self.importScripts("https://zh.moegirl.org.cn/MediaWiki:Gadget-prism-language-wiki.js?action=raw&ctype=text/javascript");
+                    self.importScripts(`${location.origin}/MediaWiki:Gadget-prism-language-wiki.js?action=raw&ctype=text/javascript`);
                     self.Parser.config = JSON.parse(config);
                     const entities = { "&": "&amp;", "<": "&lt;", ">": "&gt;" },
                         keyword = "keyword",
@@ -260,8 +260,7 @@ $(() => {
                     };
                 };
                 const config = JSON.stringify(
-                    // await (await fetch("/MediaWiki:Gadget-prism-language-wiki.json?action=raw&ctype=application/json")).json(),
-                    await (await fetch("//testingcf.jsdelivr.net/npm/wikiparser-node@browser/config/moegirl.json")).json(),
+                    await (await fetch("/MediaWiki:Gadget-prism-language-wiki.json?action=raw&ctype=application/json")).json(),
                 );
                 const filename = URL.createObjectURL(
                     new Blob([`(${String(workerJS)})('${config}')`], { type: "text/javascript" }),
