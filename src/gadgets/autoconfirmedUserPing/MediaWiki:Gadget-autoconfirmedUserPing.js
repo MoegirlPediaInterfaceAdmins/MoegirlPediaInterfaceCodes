@@ -139,7 +139,7 @@ $(() => (async () => {
                     assertuser: username,
                     prop: "contributors",
                     pageids: pageid,
-                    pcexcludegroup: "bot|bureaucrat|sysop|patroller|staff",
+                    pcexcludegroup: "bot|bureaucrat|sysop|staff",
                     pclimit: "max",
                     pccontinue: contributorsResult?.continue?.pccontinue ?? "|",
                 });
