@@ -192,6 +192,7 @@
             const sup = document.createElement("sup");
             sup.classList.add("detailedBlockInfo");
             sup.title = blockInfo.info;
+            sup.textContent = "[封+]";
             ele.after(sup);
         }
     };
