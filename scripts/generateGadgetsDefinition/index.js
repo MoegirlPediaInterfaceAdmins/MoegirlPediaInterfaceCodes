@@ -16,7 +16,7 @@ startGroup("gadgetsDefinitionList:");
 console.info(gadgetsDefinitionList);
 endGroup();
 const gadgetDirents = await fs.promises.readdir(gadgetBaseRoot, { withFileTypes: true });
-const gadgetDirs = await Promise.all(gadgetDirents.filter((dirent) => dirent.isDirectory()).map(async ({ name: gadget }) => ({ gadget, files: (await fs.promises.readdir(path.join(gadgetBaseRoot, gadget))).filter((file) => [".js", ".css"].includes(path.extname(path.join(gadgetBaseRoot, gadget, file)))) })));
+const gadgetDirs = await Promise.all(gadgetDirents.filter((dirent) => dirent.isDirectory()).map(async ({ name: gadget }) => ({ gadget, files: (await fs.promises.readdir(path.join(gadgetBaseRoot, gadget))).filter((file) => [".js", ".css", ".json"].includes(path.extname(path.join(gadgetBaseRoot, gadget, file)))) })));
 const gadgets = gadgetDirs.map(({ gadget }) => gadget);
 const gadgetFiles = gadgetDirs.flatMap(({ files: _files }) => _files);
 const duplicatedGadgetFiles = gadgetFiles.filter((file, index) => gadgetFiles.lastIndexOf(file) !== index);
