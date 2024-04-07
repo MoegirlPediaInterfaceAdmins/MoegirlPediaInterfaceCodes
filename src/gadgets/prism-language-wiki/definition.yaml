@@ -33,3 +33,4 @@ _section: system
 _files:
   - MediaWiki:Gadget-prism-language-wiki.css
   - MediaWiki:Gadget-prism-language-wiki.js
+  - MediaWiki:Gadget-prism-language-wiki.json
