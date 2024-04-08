@@ -112,43 +112,39 @@ $(() => (async () => {
             this.updateSize();
 
             this.addStep(wgULS("正在获取忽略用户名单...", "正在獲取忽略使用者名單...", null, null, "正在獲取忽略用戶名單 ..."));
-            const bots = (await api.get({
+            const ignoreResult = await api.get({
                 action: "query",
                 assertuser: username,
+                prop: "revisions",
                 list: "allusers",
+                titles: "模块:UserGroup/data",
+                formatversion: 2,
+                rvprop: "content",
                 augroup: "bot",
                 aulimit: "max",
-            })).query.allusers.map((u) => u.name);
-            const MGUsers = JSON.parse((await api.get({
-                action: "parse",
-                assertuser: username,
-                page: "Module:UserGroup/data",
-                prop: "wikitext",
-            })).parse.wikitext["*"]);
+            });
+            const bots = ignoreResult.query.allusers.map((u) => u.name);
+            const MGUsers = JSON.parse(ignoreResult.query.pages[0].revisions[0].content);
+
             const ignoreList = Array.from(new Set([...bots, ...MGUsers.bureaucrat, ...MGUsers.sysop, ...MGUsers.patroller, ...MGUsers.staff]));
             const filterResult = (result) => result.query.pages[pageid].contributors.map((c) => c.name).filter((c) => !ignoreList.includes(c));
             console.log("[ACUserPing] Got ignored user list.", ignoreList);
 
             this.addStep(wgULS("正在获取发言用户名单...", "正在獲取發言使用者名稱單..."));
-            let contributorsResult = await api.get({
-                action: "query",
-                assertuser: username,
-                prop: "contributors",
-                pageids: pageid,
-                pclimit: "max",
-            });
-            let nonMGUsers = filterResult(contributorsResult);
-            while (contributorsResult.continue) {
+            let contributorsResult;
+            let nonMGUsers = [];
+            do {
                 contributorsResult = await api.get({
                     action: "query",
                     assertuser: username,
                     prop: "contributors",
                     pageids: pageid,
+                    pcexcludegroup: "bot|bureaucrat|sysop|staff",
                     pclimit: "max",
-                    pccontinue: contributorsResult.continue.pccontinue,
+                    pccontinue: contributorsResult?.continue?.pccontinue ?? "|",
                 });
                 nonMGUsers = nonMGUsers.concat(filterResult(contributorsResult));
-            }
+            } while (contributorsResult?.continue?.pccontinue);
             console.log("[ACUserPing] Got filtered list of users.", nonMGUsers);
 
             const validAC = await chunkify(nonMGUsers, hasHighLimit && 500 || undefined).reduce(async (acc, chunk, i) => {
@@ -161,23 +157,56 @@ $(() => (async () => {
                     usprop: "implicitgroups|blockinfo|registration",
                 })).query.users.filter((u) => u.implicitgroups.includes("autoconfirmed") && !u.blockedby && moment().diff(moment(u.registration), "days") > 33).map((u) => u.name);
                 console.log(`[ACUserPing] Chunk ${i + 1}: Got preliminary result.`, prelimRes);
-                const lastEdit = (await Promise.all(prelimRes.map(async (u) => {
+
+                const lastCheck = await Promise.all(prelimRes.map(async (u) => {
                     await sleep();
+                    const queryResult = await api.get({
+                        action: "query",
+                        assertuser: username,
+                        list: "usercontribs|logevents",
+                        uclimit: 1,
+                        ucend: moment().subtract(30, "days").unix(),
+                        ucuser: u,
+                        ucprop: "",
+                        leprop: "type|timestamp|details",
+                        letype: "block",
+                        letitle: `U:${u}`,
+                        lelimit: "max",
+                    });
+
+                    const editIn30days = !!queryResult.query.usercontribs[0];
+
+                    const blockIn60days = ((logevents) => {
+                        if (!logevents) {
+                            return false;
+                        }
+                        if (logevents[0].params.duration === "indefinite") {
+                            return true;
+                        }
+                        let unblocked = false;
+                        for (const e of logevents) {
+                            if (unblocked && e.action === "block") {
+                                unblocked = false;
+                            } else if (e.action === "unblock") {
+                                unblocked = true;
+                            } else if (moment(e.params.expiry).isAfter(moment.utc().subtract(60, "days"))) {
+                                return true;
+                            } else {
+                                return false;
+                            }
+                        }
+                        return false;
+                    })(queryResult.query.logevents);
+
                     return {
                         u,
-                        lastEdit: (await api.get({
-                            action: "query",
-                            assertuser: username,
-                            list: "usercontribs",
-                            ucuser: u,
-                            ucnamespace: "0|10|14|12|4",
-                            uclimit: 1,
-                            ucend: moment().subtract(30, "days").unix(),
-                        })).query.usercontribs[0],
+                        editIn30days,
+                        blockIn60days,
                     };
-                }))).filter(({ lastEdit }) => lastEdit).map(({ u }) => u);
-                console.log(`[ACUserPing] Chunk ${i + 1}: Got refined result.`, lastEdit);
-                return [...await acc, ...lastEdit];
+                }));
+                const refinedResult = lastCheck.filter(({ editIn30days, blockIn60days }) => editIn30days && !blockIn60days).map(({ u }) => u);
+                console.log(`[ACUserPing] Chunk ${i + 1}: Got refined result.`, refinedResult);
+                return [...await acc, ...refinedResult];
             }, []);
 
             this.addStep(wgULS("正在合并结果...", "正在合併結果..."));
