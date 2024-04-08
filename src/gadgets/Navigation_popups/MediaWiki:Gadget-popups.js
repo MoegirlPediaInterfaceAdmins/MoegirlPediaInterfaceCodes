@@ -1,4 +1,4 @@
-/* eslint-disable prefer-arrow-functions/prefer-arrow-functions, no-use-before-define, camelcase */
+/* eslint-disable no-unused-vars, prefer-arrow-functions/prefer-arrow-functions, no-use-before-define, camelcase */
 /**
  * @source https://en.wikipedia.org/wiki/_?oldid=1151460389
  * 更新后请同步更新上面链接到最新版本

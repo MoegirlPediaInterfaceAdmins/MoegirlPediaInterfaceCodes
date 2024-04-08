@@ -1,4 +1,4 @@
-/* eslint-disable prefer-arrow-functions/prefer-arrow-functions, require-atomic-updates, no-use-before-define, camelcase */
+/* eslint-disable no-unused-vars, prefer-arrow-functions/prefer-arrow-functions, require-atomic-updates, no-use-before-define, camelcase */
 /**
  * @source https://commons.wikimedia.org/wiki/_?oldid=818790002
  * 更新后请同步更新上面链接到最新版本
@@ -2730,7 +2730,6 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
         }
         return catTitle;
     }
-    // eslint-disable-next-line no-unused-vars
     function isOnPage(span) {
         const catTitle = getTitle(span);
         const result = {

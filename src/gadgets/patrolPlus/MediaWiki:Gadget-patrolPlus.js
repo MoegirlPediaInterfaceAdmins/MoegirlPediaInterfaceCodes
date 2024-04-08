@@ -9,31 +9,11 @@ $(() => {
     let running = false;
     const list = [];
 
-    const handlePatroll = async (title, _revid) => await api.postWithToken("patrol", {
+    const handlePatroll = async (_title, _revid) => await api.postWithToken("patrol", {
         action: "patrol",
         assertuser: mw.config.get("wgUserName"),
         format: "json",
         revid: _revid,
-        /* 在L57中更改了获取revid的方式，这段理论上应该不用了
-        revid: await (async () => {
-            if (typeof _revid !== "number") {
-                const data = await api.post({
-                    action: "query",
-                    assertuser: mw.config.get("wgUserName"),
-                    prop: "revisions",
-                    rvprop: "ids",
-                    rvlimit: 1,
-                    rvdir: "newer",
-                    titles: title,
-                });
-                if (Reflect.has(data, "error")) {
-                    throw data.error;
-                }
-                return Object.entries(data.query.pages)[0][1].revisions[0].revid;
-            }
-            return _revid;
-        })(),
-        */
     });
     const sleep = (t) => new Promise((res) => setTimeout(res, t));
     $("abbr.unpatrolled").each((_, ele) => {

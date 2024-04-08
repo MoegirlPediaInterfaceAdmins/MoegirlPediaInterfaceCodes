@@ -106,7 +106,7 @@
                 if (value.startsWith(`${type}|`)) {
                     try {
                         return decode(value.replace(`${type}|`, ""));
-                    } catch (e) {
+                    } catch (_e) {
                         console.error(`LocalObjectStorage can's transform value of key "${key}" to type "${type}" and skip...`);
                     }
                 }

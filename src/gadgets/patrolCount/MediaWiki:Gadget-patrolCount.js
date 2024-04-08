@@ -55,7 +55,7 @@ $(() => {
             if (plus) {
                 strCount += "+";
             }
-            let title = page.title;
+            let { title } = page;
             if (!page.confidence) {
                 title += '" class="patrollListNotConfident';
             }
@@ -86,7 +86,7 @@ $(() => {
                 }
             }
         };
-        const length = pages.length;
+        const { length } = pages;
         if (length > countMax && !showAll) {
             addItem(0, countMax);
             let $showAll = $("#patrollListShowAll");
@@ -309,7 +309,7 @@ $(() => {
     const checkMissing = function (pages, plus) {
         const missingQuery = [];
         for (let idx = 0; idx < pages.length; ++idx) {
-            const title = pages[idx].title;
+            const { title } = pages[idx];
             if (typeof title === "undefined") {
                 continue;
             }
@@ -372,6 +372,7 @@ $(() => {
                 const uri = `${apiPrefix}?format=xml&action=patrol`;
                 $patrollinks.text("Marking as patrolled...");
                 $patrollinks = $patrollinks.parent();
+                // eslint-disable-next-line no-unused-vars
                 $.post(uri, data, (data, status) => {
                     // window.data = [data, status, request]; // DEBUG
                     if (status === "success") {

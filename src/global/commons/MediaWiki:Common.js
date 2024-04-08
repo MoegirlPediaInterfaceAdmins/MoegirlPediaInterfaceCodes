@@ -108,7 +108,7 @@
                 if (href) {
                     $(this).after(`<sub>[<a target="_blank" title="主站上的用户 ${href.replace(/user(_talk)?:/i, "")}" href="${mw.config.get("wgServer").replace("commons.moegirl", "zh.moegirl")}${mw.config.get("wgScriptPath")}/${href}">主</a>]</sub>`);
                 }
-            } catch (e) {
+            } catch (_e) {
                 return;
             }
         });
