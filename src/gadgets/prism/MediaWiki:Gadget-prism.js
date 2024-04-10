@@ -1,6 +1,6 @@
 "use strict";
 $(() => {
-    window.Prism = { manual: true };
+    Prism.manual = true;
     const acceptsLangs = {
         // css
         css: "css",
