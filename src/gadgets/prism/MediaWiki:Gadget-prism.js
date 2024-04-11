@@ -276,7 +276,7 @@ $(() => {
                 }
                 const parent = ele.parentElement;
                 if (parent.tagName === "PRE") {
-                    parent.classList.add("line-numbers");
+                    parent.classList.add("line-numbers", "prism-prettyprint-container");
                 }
                 ele.classList.add("match-braces", "rainbow-braces");
                 Prism.highlightElement(ele, lang === "wiki");
