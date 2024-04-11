@@ -87,8 +87,9 @@ $(() => {
                 if (Reflect.has(appendPluginsList, lang)) {
                     pluginsSet.add(appendPluginsList[lang]);
                 }
-                $content.find(".mw-code").addClass("linkable-line-numbers").wrapInner("<code>").children("code").addClass(`prism-prettyprint language-${lang}`).attr({
+                $content.find(".mw-code").addClass("linkable-line-numbers").attr({
                     id: "code",
+                }).wrapInner("<code>").children("code").addClass(`prism-prettyprint language-${lang}`).attr({
                     "data-lang": lang,
                 });
                 const hashWatcher = () => {
