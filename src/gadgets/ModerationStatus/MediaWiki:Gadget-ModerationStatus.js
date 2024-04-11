@@ -18,7 +18,7 @@
     };
     modIcons[4] = modIcons[0];
 
-    /** 最近更改行，暂时设置最大100避免请求过多导致WAF */
+    /** 最近更改行，暂时设置最大150避免请求过多导致WAF */
     const $changelistLines = $(".mw-changeslist-line[data-mw-revid]").slice(0, 150);
 
     /**
@@ -66,7 +66,7 @@
         if (ele.tagName === "TABLE") {
             $(ele).find(".mw-changeslist-line-inner").prepend(modIcons[status]);
         } else {
-            $(ele).find(".mw-enhanced-rc-time").before($(modIcons[status]));
+            $(ele).find(".mw-enhanced-rc-time").before(modIcons[status]);
         }
     });
 })();
