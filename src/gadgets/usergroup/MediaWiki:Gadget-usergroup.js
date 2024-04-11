@@ -122,7 +122,7 @@
     const fixZero = (n, l = 2) => `${n}`.padStart(l, "0");
     const toLocalTimeZoneString = (date = new Date()) => `${date.getFullYear()}/${fixZero(date.getMonth() + 1)}/${fixZero(date.getDate())} ${fixZero(date.getHours())}:${fixZero(date.getMinutes())}:${fixZero(date.getSeconds())}.${fixZero(date.getMilliseconds(), 3)}`;
     try {
-        cache = await localObjectStorage.getItem("cache");
+        cache = localObjectStorage.getItem("cache");
         if (!cache
             || typeof cache.timestamp !== "number" || cache.timestamp < new Date().getTime() - 30 * 60 * 1000
             || !cache.groups) {
@@ -171,15 +171,15 @@
             groups: result,
         };
     }
-    await localObjectStorage.setItem("cache", cache);
-    const blockCache = await localObjectStorage.getItem("blockCache", {});
+    localObjectStorage.setItem("cache", cache);
+    const blockCache = localObjectStorage.getItem("blockCache", {});
     const now = Date.now();
     for (const [username, { timestamp, isBlocked }] of Object.entries(blockCache)) {
         if (typeof username !== "string" || typeof timestamp !== "number" || typeof isBlocked !== "boolean" || now - timestamp > 30 * 60 * 1000) {
             Reflect.deleteProperty(blockCache, username);
         }
     }
-    await localObjectStorage.setItem("blockCache", blockCache);
+    localObjectStorage.setItem("blockCache", blockCache);
     /**
      * @type { <E extends Element = HTMLElement>(selectors: string) => E[] }
      */
@@ -310,7 +310,7 @@
                     markBlocked(ele, blockInfo);
                 }
             }
-            await localObjectStorage.setItem("blockCache", blockCache);
+            localObjectStorage.setItem("blockCache", blockCache);
         }
         for (const group of groupsKey) {
             for (const node of querySelectorAll(`.markrights-${group}`)) {
