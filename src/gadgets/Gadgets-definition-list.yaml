@@ -30,6 +30,7 @@
     - legacyMainpage
     - zeroFill
     - prism
+    - ModerationStatus
 
 - name: skin
   gadgets:
