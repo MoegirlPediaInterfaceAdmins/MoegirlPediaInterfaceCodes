@@ -263,7 +263,7 @@ $(() => {
                     await (await fetch("/MediaWiki:Gadget-prism-language-wiki.json?action=raw&ctype=application/json")).json(),
                 );
                 const filename = URL.createObjectURL(
-                    new Blob([`(${String(workerJS)})('${config}')`], { type: "text/javascript" }),
+                    new Blob([`(${String(workerJS)})(\`${config}\`)`], { type: "text/javascript" }),
                 );
                 Object.assign(Prism, { filename });
                 Prism.languages.wiki = {};
