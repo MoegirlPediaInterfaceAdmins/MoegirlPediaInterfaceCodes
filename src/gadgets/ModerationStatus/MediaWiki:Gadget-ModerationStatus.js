@@ -7,6 +7,7 @@
     }
 
     const api = new mw.Api();
+    const isUnlimited = mw.config.get("wgUserGroups").some((right) => ["bot", "flood", "sysop"].includes(right));
 
     /** 审核结果图标HTML */
     const modIcons = {
@@ -19,7 +20,7 @@
     modIcons[4] = modIcons[0];
 
     /** 最近更改行，暂时设置最大150避免请求过多导致WAF */
-    const $changelistLines = $(".mw-changeslist-line[data-mw-revid]").slice(0, 150);
+    const $changelistLines = $(".mw-changeslist-line[data-mw-revid]").slice(0, isUnlimited ? 500 : 150);
 
     /**
      * 按照修订版本列表读取审核状态
@@ -47,9 +48,10 @@
      * @returns {number[][]}
      */
     const sliceRevids = (revids) => {
+        const maxCount = isUnlimited ? 500 : 50;
         const result = [];
-        for (let i = 0; i < revids.length; i += 50) {
-            result.push(revids.slice(i, i + 50));
+        for (let i = 0; i < revids.length; i += maxCount) {
+            result.push(revids.slice(i, i + maxCount));
         }
         return result;
     };
@@ -70,6 +72,11 @@
         } else {
             $(ele).prepend(modIcons[status]);
         }
+    });
+
+    $(".mw-collapsible.mw-changeslist-line:has(.mod-icon)").each((_, ele) => {
+        console.log($(ele).find(".mw-changeslist-line-inner"));
+        $(ele).find(".mw-changeslist-line-inner").prepend($(ele).find(".mod-icon").eq(0).clone());
     });
 })();
 // </pre>
