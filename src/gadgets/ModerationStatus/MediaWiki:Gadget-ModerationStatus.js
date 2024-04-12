@@ -65,8 +65,10 @@
         }
         if (ele.tagName === "TABLE") {
             $(ele).find(".mw-changeslist-line-inner").prepend(modIcons[status]);
-        } else {
+        } else if (ele.tagName === "TR") {
             $(ele).find(".mw-enhanced-rc-time").before(modIcons[status]);
+        } else {
+            $(ele).prepend(modIcons[status]);
         }
     });
 })();
