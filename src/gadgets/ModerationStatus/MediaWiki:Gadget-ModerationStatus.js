@@ -75,7 +75,6 @@
     });
 
     $(".mw-collapsible.mw-changeslist-line:has(.mod-icon)").each((_, ele) => {
-        console.log($(ele).find(".mw-changeslist-line-inner"));
         $(ele).find(".mw-changeslist-line-inner").prepend($(ele).find(".mod-icon").eq(0).clone());
     });
 })();
