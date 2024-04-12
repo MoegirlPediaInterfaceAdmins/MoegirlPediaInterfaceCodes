@@ -7,7 +7,7 @@
     }
 
     const api = new mw.Api();
-    const isUnlimited = mw.config.get("wgUserGroups").some((right) => ["bot", "flood", "sysop"].includes(right));
+    const isUnlimited = mw.config.get("wgUserGroups").some((right) => ["bot", "flood", "sysop", "staff"].includes(right));
 
     /** 审核结果图标HTML */
     const modIcons = {
@@ -44,8 +44,8 @@
 
     /**
      * 将revid拆分为50个一组的二维数组
-     * @param {number[]} revids
-     * @returns {number[][]}
+     * @param {any[]} revids
+     * @returns {any[][]}
      */
     const sliceRevids = (revids) => {
         const maxCount = isUnlimited ? 500 : 50;
