@@ -221,18 +221,34 @@
             response && window.open(hrefURL.href);
         });
     };
+
     /* noteTAIcon */
     const noteTAIcon = () => {
-        const noteTAbutton = $('<button tabindex="0" type="button"/>')
-            .append('<span style="padding:1px 3px;">汉漢</span>');
-        const noteTAicon = $("<span/>").attr({
-            id: "p-noteTA-moeskin",
-            role: "navigation",
-            "class": "noteTA-button",
-            title: "本页使用了标题或全文手工转换",
-        }).append(noteTAbutton);
-        $("#p-languages-group").append(noteTAicon);
+        const noteTAicon = document.getElementById("p-variants").cloneNode({ deep: true });
+        noteTAicon.id = "p-noteTA-moeskin";
+        const button = noteTAicon.getElementsByTagName("button")[0];
+        button.classList.remove("dropdown-trigger");
+        const baseWave = button.getElementsByClassName("n-base-wave")[0];
+        const wave = () => {
+            baseWave.style.animation = "none";
+            baseWave.offsetTop;
+            baseWave.style.animation = null;
+            baseWave.classList.add("n-base-wave--active");
+        };
+        button.onclick = wave;
+        button.onkeydown = (e) => {
+            if (e.key === "Enter") {
+                wave();
+            }
+        };
+        baseWave.onanimationend = () => {
+            baseWave.classList.remove("n-base-wave--active");
+        };
+        noteTAicon.title = wgULS("本页使用了标题或全文手工转换", "本頁使用了標題或全文手工轉換");
+        noteTAicon.getElementsByClassName("n-button__content")[0].textContent = wgULS("汉漢", "漢汉");
+        document.getElementById("p-languages-group").appendChild(noteTAicon);
     };
+
     /* 等待 document 加载完毕 */
     await $.ready;
     /* fixWikiLove */
@@ -246,7 +262,7 @@
         externalLinkConfirm();
     }
     /* noteTAIcon */
-    if ($(".noteTA")[0]) {
+    if (document.getElementsByClassName("noteTA").length) {
         noteTAIcon();
     }
 })();

@@ -218,14 +218,3 @@ aside#moe-global-siderail #moe-custom-sidenav-block h2 {
 .n-input__input-el::-webkit-search-cancel-button{
     display: none;
 }
-
-/* noteTA button, written by User:机智的小鱼君 */
-.noteTA-button > button {
-    position: relative;
-    border: 1px solid #ccc;
-    padding: 0.2em 0.6em;
-    transition: all 0.24s ease;
-    cursor: pointer;
-    font-size: 12px;
-    border-radius: 100vw;
-}
