@@ -36,6 +36,3 @@ _files:
 
   - MediaWiki:Gadget-prism-line-numbers.js
   - MediaWiki:Gadget-prism-line-numbers.css
-
-  - MediaWiki:Gadget-prism-inline-color.js
-  - MediaWiki:Gadget-prism-inline-color.css
