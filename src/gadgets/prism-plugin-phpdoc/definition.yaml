@@ -25,6 +25,7 @@ peers: []
 dependencies:
   - ext.gadget.prism-core
   - ext.gadget.prism-plugin-javadoclike
+  - ext.gadget.prism-language-php
 
 _sites:
   - zh

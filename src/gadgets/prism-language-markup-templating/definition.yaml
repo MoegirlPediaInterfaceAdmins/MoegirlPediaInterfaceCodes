@@ -24,7 +24,7 @@ peers: []
 
 dependencies:
   - ext.gadget.prism-core
-  - ext.gadget.prism-language-clike
+  - ext.gadget.prism-language-markup
 
 _sites:
   - zh
@@ -33,5 +33,4 @@ _sites:
 _section: system
 
 _files:
-  - MediaWiki:Gadget-prism-language-javascript.js
-  - MediaWiki:Gadget-prism-language-javascript-extras.js
+  - MediaWiki:Gadget-prism-language-markup-templating.js
