@@ -71,6 +71,19 @@ $(() => {
     };
     // 仅用于判断是否合法语言，无需去重
     const acceptsLangNames = Object.values(acceptsLangs);
+    let hash = /^#L\d+$/u.test(location.hash);
+    Prism.hooks.add("complete", ({ element }) => {
+        if (element) {
+            const { dataset: { start = 1 } } = element.parentElement;
+            $(element).children(".line-numbers-rows").children().each((i, ele) => {
+                ele.id = `L${i + Number(start)}`;
+                if (hash && location.hash === `#${ele.id}`) {
+                    hash = false;
+                    ele.scrollIntoView();
+                }
+            });
+        }
+    });
     mw.hook("wikipage.content").add(
         /**
          * @param { JQuery<HTMLElement> } $content
@@ -87,18 +100,9 @@ $(() => {
                 if (Reflect.has(appendPluginsList, lang)) {
                     pluginsSet.add(appendPluginsList[lang]);
                 }
-                $content.find(".mw-code").addClass("linkable-line-numbers").attr({
-                    id: "code",
-                }).wrapInner("<code>").children("code").addClass(`prism-prettyprint language-${lang}`).attr({
+                $content.find(".mw-code").addClass("line-numbers").wrapInner("<code>").children("code").addClass(`prism-prettyprint language-${lang}`).attr({
                     "data-lang": lang,
                 });
-                const hashWatcher = () => {
-                    if (/^#L[0-9]\d*$/.test(location.hash)) {
-                        location.hash = location.hash.replace(/^#L/, "#code.");
-                    }
-                };
-                window.addEventListener("hashchange", hashWatcher);
-                hashWatcher();
             }
             if (wgPageContentModel === "wikitext") {
                 for (const ele of $content.find("pre, code")) {
@@ -112,7 +116,10 @@ $(() => {
                     if (Reflect.has(appendPluginsList, lang)) {
                         pluginsSet.add(appendPluginsList[lang]);
                     }
-                    ele.classList.remove("linenums");
+                    if (ele.classList.contains("linenums")) {
+                        ele.classList.remove("linenums");
+                        ele.classList.add("line-numbers", "prism-prettyprint-container");
+                    }
                     ele.removeAttribute("lang");
                     for (const cls of classListWithLang) {
                         ele.classList.remove(cls);
