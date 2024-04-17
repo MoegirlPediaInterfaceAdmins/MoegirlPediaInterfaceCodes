@@ -1,6 +1,5 @@
 "use strict";
 $(() => {
-    Prism.manual = true;
     const acceptsLangs = {
         // css
         css: "css",
