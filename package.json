@@ -22,7 +22,7 @@
         "@annangela/eslint-plugin-prefer-reflect": "^2.2.2",
         "@csstools/postcss-is-pseudo-class": "^4.0.6",
         "@csstools/postcss-media-minmax": "^1.1.4",
-        "@octokit/auth-action": "^5.1.0",
+        "@octokit/auth-action": "^5.1.1",
         "@octokit/auth-app": "^6.1.1",
         "@octokit/auth-unauthenticated": "^6.1.0",
         "@octokit/plugin-retry": "^7.1.0",
