@@ -130,13 +130,13 @@
     - libJSON5
     - libCachedCode
     - prism-core
-    - prism-language-clike
     - prism-language-css
     - prism-language-javascript
     - prism-language-json
     - prism-language-latex
     - prism-language-lua
     - prism-language-markup
+    - prism-language-php
     - prism-language-regex
     - prism-language-typescript
     - prism-language-wiki
@@ -146,4 +146,3 @@
     - prism-plugin-match-braces
     - prism-plugin-phpdoc
     - prism-plugin-previewers
-    - prism-language-php
