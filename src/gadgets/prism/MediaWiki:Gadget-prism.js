@@ -75,13 +75,17 @@ $(() => {
     Prism.hooks.add("complete", ({ element }) => {
         if (element) {
             const { dataset: { start = 1 } } = element.parentElement;
-            $(element).children(".line-numbers-rows").children().each((i, ele) => {
-                ele.id = `L${i + Number(start)}`;
-                if (hash && location.hash === `#${ele.id}`) {
-                    hash = false;
-                    ele.scrollIntoView();
-                }
-            });
+            $(element).children(".line-numbers-rows").children()
+                .each((i, ele) => {
+                    ele.id = `L${i + Number(start)}`;
+                    if (hash && location.hash === `#${ele.id}`) {
+                        hash = false;
+                        ele.scrollIntoView();
+                    }
+                })
+                .on("click", ({ target: { id } }) => {
+                    history.replaceState(null, "", `#${id}`);
+                });
         }
     });
     mw.hook("wikipage.content").add(
