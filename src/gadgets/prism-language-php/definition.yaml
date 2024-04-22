@@ -32,5 +32,6 @@ _sites:
 _section: system
 
 _files:
+  - MediaWiki:Gadget-prism-language-markup-templating.js
   - MediaWiki:Gadget-prism-language-php.js
   - MediaWiki:Gadget-prism-language-php-extras.js

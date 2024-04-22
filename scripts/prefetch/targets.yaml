@@ -16,7 +16,7 @@
 
 - type: npm
   gadget:
-    name: prism-language-clike
+    name: prism-language-javascript
     fileName: MediaWiki:Gadget-prism-language-clike.js
   moduleName: prismjs
   distFilePath: components/prism-clike.js
@@ -52,22 +52,6 @@
     fileName: MediaWiki:Gadget-prism-line-numbers.css
   moduleName: prismjs
   distFilePath: plugins/line-numbers/prism-line-numbers.css
-  version: "1"
-
-- type: npm
-  gadget:
-    name: prism-core
-    fileName: MediaWiki:Gadget-prism-inline-color.js
-  moduleName: prismjs
-  distFilePath: plugins/inline-color/prism-inline-color.js
-  version: "1"
-
-- type: npm
-  gadget:
-    name: prism-core
-    fileName: MediaWiki:Gadget-prism-inline-color.css
-  moduleName: prismjs
-  distFilePath: plugins/inline-color/prism-inline-color.css
   version: "1"
 
 - type: npm
@@ -142,6 +126,14 @@
     fileName: MediaWiki:Gadget-prism-language-markup.js
   moduleName: prismjs
   distFilePath: components/prism-markup.js
+  version: "1"
+
+- type: npm
+  gadget:
+    name: prism-language-php
+    fileName: MediaWiki:Gadget-prism-language-markup-templating.js
+  moduleName: prismjs
+  distFilePath: components/prism-markup-templating.js
   version: "1"
 
 - type: npm

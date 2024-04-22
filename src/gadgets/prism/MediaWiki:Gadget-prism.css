@@ -1,3 +1,11 @@
 pre.prism-prettyprint-container {
     white-space: pre-wrap !important;
 }
+
+.line-numbers span.line-numbers-rows {
+    pointer-events: all;
+}
+
+.line-numbers-rows > span:hover {
+    background-color: rgb(128 128 128 / 20%);
+}
