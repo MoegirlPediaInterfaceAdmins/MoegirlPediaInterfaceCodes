@@ -99,7 +99,6 @@
         "Gadget/patrolPlus",
         "Gadget/prism",
         "Gadget/prism-core",
-        "Gadget/prism-language-clike",
         "Gadget/prism-language-css",
         "Gadget/prism-language-javascript",
         "Gadget/prism-language-json",
