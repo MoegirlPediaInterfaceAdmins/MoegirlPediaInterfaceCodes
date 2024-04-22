@@ -5,6 +5,7 @@
     const wiki = {};
     Prism.languages.wiki = wiki;
 
+    await libCachedCode.injectCachedCode("/MediaWiki:Gadget-wikiparser-node.js?action=raw&ctype=text/javascript", "script");
     Parser.config = await (await fetch("/MediaWiki:Gadget-prism-language-wiki.json?action=raw&ctype=application/json")).json();
     const keyword = "keyword",
         url = "url",

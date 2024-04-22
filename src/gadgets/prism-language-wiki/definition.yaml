@@ -22,7 +22,8 @@ rights:
 
 peers: []
 
-dependencies: []
+dependencies:
+  - ext.gadget.libCachedCode
 
 _sites:
   - zh
@@ -31,6 +32,5 @@ _sites:
 _section: system
 
 _files:
-  - MediaWiki:Gadget-wikiparser-node.js
   - MediaWiki:Gadget-prism-language-wiki.js
   - MediaWiki:Gadget-prism-language-wiki.json
