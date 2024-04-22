@@ -70,7 +70,7 @@ $(() => {
     };
     // 仅用于判断是否合法语言，无需去重
     const acceptsLangNames = Object.values(acceptsLangs);
-    let hash = /^#L\d+$/u.test(location.hash);
+    let hash = /^#L\d+$/.test(location.hash);
     Prism.hooks.add("complete", ({ element }) => {
         if (element) {
             const { dataset: { start = 1 } } = element.parentElement;
