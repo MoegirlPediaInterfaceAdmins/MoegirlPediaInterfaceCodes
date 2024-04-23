@@ -9,3 +9,7 @@ pre.prism-prettyprint-container {
 .line-numbers-rows > span:hover {
     background-color: rgb(128 128 128 / 20%);
 }
+
+pre[class*="language-"] {
+    display: flow-root;
+}

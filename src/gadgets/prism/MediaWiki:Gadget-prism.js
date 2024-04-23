@@ -1,3 +1,4 @@
+/* global Parser */
 "use strict";
 $(() => {
     const acceptsLangs = {
@@ -133,6 +134,10 @@ $(() => {
                     $ele[0].dataset.lang = lang;
                     $ele.addClass(`prism-prettyprint language-${lang}`);
                 }
+            }
+            if (langSet.has("wiki") && !Reflect.has(window, "Parser")) {
+                await libCachedCode.injectCachedCode("/MediaWiki:Gadget-wikiparser-node.js?action=raw&ctype=text/javascript", "script");
+                Parser.config = await (await fetch("/MediaWiki:Gadget-prism-language-wiki.json?action=raw&ctype=application/json")).json();
             }
             await mw.loader.using([
                 ...[...langSet].map((lang) => `ext.gadget.prism-language-${lang}`),
