@@ -15,7 +15,7 @@
         "ci": "export RANDOM_UUID=$(uuidgen) && rm -rdf node_modules && node scripts/ci/before.js && npm ci && node scripts/ci/after.js"
     },
     "dependencies": {
-        "@actions/artifact": "^2.1.6",
+        "@actions/artifact": "^2.1.7",
         "@actions/core": "^1.10.1",
         "@annangela/eslint-config": "^5.1.1",
         "@annangela/eslint-formatter-gha": "^1.1.4",
@@ -47,7 +47,7 @@
         "localforage": "^1.10.0",
         "postcss": "^8.4.38",
         "postcss-cli": "^11.0.0",
-        "postcss-discard-comments": "^6.0.2",
+        "postcss-discard-comments": "^7.0.0",
         "postcss-font-variant": "^5.0.0",
         "postcss-logical": "^7.0.1",
         "postcss-selector-matches": "^4.0.0",
