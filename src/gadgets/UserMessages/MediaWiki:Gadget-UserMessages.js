@@ -565,7 +565,6 @@
                     action: "parse",
                     assertuser: mw.config.get("wgUserName"),
                     uselang: mw.config.get("wgUserLanguage"),
-                    redirects: true,
                     prop: "text",
                     pst: true,
                     title: umsg.umUserTalkPrefix + $("#umUser").val(),
@@ -630,7 +629,6 @@
             page.title = umsg.pageName;
             page.text = umsg.talkTag;
             page.editType = "appendtext";
-            page.redirect = true;
             if (window.AjaxDeleteWatchFile) {
                 page.watchlist = "watch";
             }
@@ -647,9 +645,6 @@
                 watchlist: page.watchlist || "preferences",
                 title: page.title,
             };
-            if (page.redirect) {
-                edit.redirect = "";
-            }
             edit[page.editType] = page.text;
             edit.token = umsg.editToken;
             umsg.doAPICall(edit, callback);
