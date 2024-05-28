@@ -83,3 +83,7 @@ body[class*="page-萌娘百科_talk_讨论版_"] .userlink .userlink-menu {
 .page-Category_即将删除的页面 #ca-delete {
     display: none;
 }
+
+#pagehistory li[data-mw-rev-approved="false"] input[type="radio"] {
+    visibility: unset;
+}
