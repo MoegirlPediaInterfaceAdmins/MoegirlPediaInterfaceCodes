@@ -84,6 +84,6 @@ body[class*="page-萌娘百科_talk_讨论版_"] .userlink .userlink-menu {
     display: none;
 }
 
-#pagehistory li[data-mw-rev-approved="false"] input[type="radio"] {
+#pagehistory [data-mw-rev-approved="false"] input[type="radio"] {
     visibility: unset;
 }
