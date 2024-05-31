@@ -208,20 +208,27 @@ $(() => {
                 const page = isModule ? `Module:Sandbox/${user}/${mw.config.get("wgTitle")}` : `User:${user}/${pagename}`;
 
                 // 移动页面
-                const moveRes = await api.postWithToken("csrf", {
-                    action: "move",
-                    assertuser: username,
-                    from: pagename,
-                    to: page,
-                    movetalk: moveTalk,
-                    movesubpages: true,
-                    reason: `${reason} //noredirect`,
-                    noredirect: true,
-                    watchlist: watchAfter,
-                    tags: "Automation tool",
-                });
-                if (moveRes.error) {
-                    throw moveRes.error.code;
+                try {
+                    const moveRes = await api.postWithToken("csrf", {
+                        action: "move",
+                        assertuser: username,
+                        from: pagename,
+                        to: page,
+                        movetalk: moveTalk,
+                        movesubpages: true,
+                        reason: `${reason} //noredirect`,
+                        noredirect: true,
+                        watchlist: watchAfter,
+                        tags: "Automation tool",
+                    });
+                    if (Reflect.has(moveRes, "error")) {
+                        throw moveRes;
+                    }
+                } catch (e) {
+                    if (typeof e.error?.code === "string" && e.error.code !== "moderation-move-queued") {
+                        throw e.error.code;
+                    }
+                    throw e;
                 }
 
                 if (!noNotice) {
