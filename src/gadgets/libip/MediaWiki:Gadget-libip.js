@@ -9,7 +9,6 @@
     t = function(module, exports) {
         !function(Buffer) {
             !function() {
-                "use strict";
                 exports.Buffer = Buffer, exports.INSPECT_MAX_BYTES = 50;
                 var K_MAX_LENGTH = 2147483647;
                 function createBuffer(length) {
@@ -664,7 +663,7 @@
             return {};
         }
     }, _$ip_5 = {};
-    const ip = _$ip_5, Buffer = _$buffer_3({})["Buffer"], ipv4Regex = (ip.toBuffer = function(ip, buff, offset) {
+    let ip = _$ip_5, Buffer = _$buffer_3({})["Buffer"], ipv4Regex = (ip.toBuffer = function(ip, buff, offset) {
         offset = ~~offset;
         let result;
         if (this.isV4Format(ip)) result = buff || Buffer.alloc(offset + 4), ip.split(/\./g).map(byte => {
@@ -734,7 +733,7 @@
         cidrString = ip.fromPrefixLen(parseInt(cidrString[1], 10));
         return ip.mask(addr, cidrString);
     }, ip.subnet = function(addr, mask) {
-        const networkAddress = ip.toLong(ip.mask(addr, mask));
+        let networkAddress = ip.toLong(ip.mask(addr, mask));
         var maskBuffer = ip.toBuffer(mask);
         let maskLength = 0;
         for (let i = 0; i < maskBuffer.length; i++) if (255 === maskBuffer[i]) maskLength += 8; else {
@@ -801,7 +800,7 @@
         if ("ipv4" !== (family = _normalizeFamily(family)) && "ipv6" !== family) throw new Error("family must be ipv4 or ipv6");
         return "ipv4" === family ? "127.0.0.1" : "fe80::1";
     }, ip.address = function(name, family) {
-        const interfaces = _$browser_6.networkInterfaces();
+        let interfaces = _$browser_6.networkInterfaces();
         var res;
         return family = _normalizeFamily(family), name && "private" !== name && "public" !== name ? 0 === (res = interfaces[name].filter(details => {
             return _normalizeFamily(details.family) === family;
@@ -847,7 +846,6 @@
     };
     !function(global) {
         !function() {
-            "use strict";
             var obj = (obj = _$ip_5) && obj.__esModule ? obj : {
                 default: obj
             };
