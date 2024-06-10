@@ -14,8 +14,8 @@
  * @author Tim  Shedor
  */
 
-code[class*="language-"],
-pre[class*="language-"] {
+#mw-content-text code[class*="language-"],
+#mw-content-text pre[class*="language-"] {
 	color: black;
 	background: none;
 	font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
@@ -38,14 +38,14 @@ pre[class*="language-"] {
 }
 
 /* Code blocks */
-pre[class*="language-"] {
+#mw-content-text pre[class*="language-"] {
 	position: relative;
 	margin: .5em 0;
 	overflow: visible;
 	padding: 1px;
 }
 
-pre[class*="language-"] > code {
+#mw-content-text pre[class*="language-"] > code {
 	position: relative;
 	z-index: 1;
 	border-left: 10px solid #358ccb;
@@ -57,7 +57,7 @@ pre[class*="language-"] > code {
 	background-attachment: local;
 }
 
-code[class*="language-"] {
+#mw-content-text code[class*="language-"] {
 	max-height: inherit;
 	height: inherit;
 	padding: 0 1em;
@@ -66,8 +66,8 @@ code[class*="language-"] {
 }
 
 /* Margin bottom to accommodate shadow */
-:not(pre) > code[class*="language-"],
-pre[class*="language-"] {
+#mw-content-text :not(pre) > code[class*="language-"],
+#mw-content-text pre[class*="language-"] {
 	background-color: #fdfdfd;
 	-webkit-box-sizing: border-box;
 	-moz-box-sizing: border-box;
@@ -76,7 +76,7 @@ pre[class*="language-"] {
 }
 
 /* Inline code */
-:not(pre) > code[class*="language-"] {
+#mw-content-text :not(pre) > code[class*="language-"] {
 	position: relative;
 	padding: .2em;
 	border-radius: 0.3em;
@@ -202,29 +202,14 @@ pre[class*="language-"]:after {
 }
 
 /* Plugin styles: Line Numbers */
-pre[class*="language-"].line-numbers.line-numbers {
+#mw-content-text pre[class*="language-"].line-numbers.line-numbers {
 	padding-left: 0;
 }
 
-pre[class*="language-"].line-numbers.line-numbers code {
+#mw-content-text pre[class*="language-"].line-numbers.line-numbers code {
 	padding-left: 3.8em;
 }
 
 pre[class*="language-"].line-numbers.line-numbers .line-numbers-rows {
 	left: 0;
 }
-
-/* Plugin styles: Line Highlight */
-pre[class*="language-"][data-line] {
-	padding-top: 0;
-	padding-bottom: 0;
-	padding-left: 0;
-}
-pre[data-line] code {
-	position: relative;
-	padding-left: 4em;
-}
-pre .line-highlight {
-	margin-top: 0;
-}
-

@@ -41,14 +41,6 @@
 - type: npm
   gadget:
     name: prism-core
-    fileName: MediaWiki:Gadget-prism-coy.css
-  moduleName: prismjs
-  distFilePath: themes/prism-coy.css
-  version: "1"
-
-- type: npm
-  gadget:
-    name: prism-core
     fileName: MediaWiki:Gadget-prism-line-numbers.js
   moduleName: prismjs
   distFilePath: plugins/line-numbers/prism-line-numbers.js
