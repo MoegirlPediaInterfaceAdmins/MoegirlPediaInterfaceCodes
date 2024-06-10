@@ -32,7 +32,8 @@ endGroup();
 const fileList = [];
 for (const prefetchTarget of prefetchTargets) {
     console.info("target:", prefetchTarget);
-    const { type, moduleName, gadget: { name, fileName }, distFilePath, version, appendCode, removeCode = [], ignoreSemverDiff, url } = prefetchTarget;
+    const { type, moduleName, gadget: { name, fileName }, distFilePath, appendCode, removeCode = [], ignoreSemverDiff, url } = prefetchTarget;
+    let { version } = prefetchTarget;
     const file = path.join("src/gadgets", name, fileName);
     fileList.push(file);
     console.info(`[${name}]`, "Start to fetch...");
