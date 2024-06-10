@@ -97,6 +97,9 @@ for (const prefetchTarget of prefetchTargets) {
     console.info(`[${name}]`, "wrote the code file and eslintrc successfully.");
     if (type === "npm") {
         const packageInfo = await fetchNPMPackageInfo(moduleName);
+        if (Object.hasOwn(packageInfo["dist-tags"], version)) {
+            version = packageInfo["dist-tags"][version];
+        }
         const distVersions = Object.keys(packageInfo.versions);
         console.info(`[${name}]`, "distVersions:", distVersions);
         const targetVersion = semver.maxSatisfying(distVersions, version || "*");
