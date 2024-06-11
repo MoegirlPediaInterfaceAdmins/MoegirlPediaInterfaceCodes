@@ -16,6 +16,14 @@
 
 - type: npm
   gadget:
+    name: prism-language-wiki
+    fileName: MediaWiki:Gadget-wikiparser-node.js
+  moduleName: wikiparser-node
+  distFilePath: bundle/bundle.min.js
+  version: "browser"
+
+- type: npm
+  gadget:
     name: prism-language-javascript
     fileName: MediaWiki:Gadget-prism-language-clike.js
   moduleName: prismjs
@@ -28,14 +36,6 @@
     fileName: MediaWiki:Gadget-prism-core.js
   moduleName: prismjs
   distFilePath: components/prism-core.js
-  version: "1"
-
-- type: npm
-  gadget:
-    name: prism-core
-    fileName: MediaWiki:Gadget-prism-coy.css
-  moduleName: prismjs
-  distFilePath: themes/prism-coy.css
   version: "1"
 
 - type: npm

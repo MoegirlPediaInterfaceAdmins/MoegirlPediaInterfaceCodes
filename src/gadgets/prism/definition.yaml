@@ -8,8 +8,7 @@ supportsUrlLoad: false
 
 targets: []
 
-skins:
-  - vector
+skins: []
 
 actions: []
 
@@ -17,8 +16,7 @@ type: general
 
 package: false
 
-rights:
-  - techedit
+rights: []
 
 peers: []
 
