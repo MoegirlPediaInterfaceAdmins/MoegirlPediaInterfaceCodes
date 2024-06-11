@@ -16,9 +16,9 @@ src/gadgets/libip/MediaWiki:Gadget-libip.js linguist-generated=true
 # From prefetch
 src/gadgets/libJSON5/MediaWiki:Gadget-libJSON5.js linguist-generated=true
 src/gadgets/localforage/MediaWiki:Gadget-localforage.js linguist-generated=true
+src/gadgets/prism-language-wiki/MediaWiki:Gadget-wikiparser-node.js linguist-generated=true
 src/gadgets/prism-language-javascript/MediaWiki:Gadget-prism-language-clike.js linguist-generated=true
 src/gadgets/prism-core/MediaWiki:Gadget-prism-core.js linguist-generated=true
-src/gadgets/prism-core/MediaWiki:Gadget-prism-coy.css linguist-generated=true
 src/gadgets/prism-core/MediaWiki:Gadget-prism-line-numbers.js linguist-generated=true
 src/gadgets/prism-core/MediaWiki:Gadget-prism-line-numbers.css linguist-generated=true
 src/gadgets/prism-language-css/MediaWiki:Gadget-prism-language-css.js linguist-generated=true
