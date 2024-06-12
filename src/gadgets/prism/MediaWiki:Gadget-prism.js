@@ -108,32 +108,30 @@ $(() => {
                     "data-lang": lang,
                 });
             }
-            if (wgPageContentModel === "wikitext") {
-                for (const ele of $content.find("pre, code")) {
-                    let $ele = $(ele);
-                    const classListWithLang = [...ele.classList].filter((cls) => /^lang(?:uage)?-[\w-]+$/i.test(cls));
-                    const lang = acceptsLangs[ele.getAttribute("lang")] || acceptsLangs[classListWithLang[0]?.replace(/^lang(?:uage)?-/, "")];
-                    if (!lang) {
-                        continue;
-                    }
-                    langSet.add(lang);
-                    if (Reflect.has(appendPluginsList, lang)) {
-                        pluginsSet.add(appendPluginsList[lang]);
-                    }
-                    if (ele.classList.contains("linenums")) {
-                        ele.classList.remove("linenums");
-                        ele.classList.add("line-numbers", "prism-prettyprint-container");
-                    }
-                    ele.removeAttribute("lang");
-                    for (const cls of classListWithLang) {
-                        ele.classList.remove(cls);
-                    }
-                    if (ele.tagName === "PRE") {
-                        $ele = $ele.wrapInner("<code>").children("code");
-                    }
-                    $ele[0].dataset.lang = lang;
-                    $ele.addClass(`prism-prettyprint language-${lang}`);
+            for (const ele of $content.find("pre, code").not(".mw-code, .prism-prettyprint")) {
+                let $ele = $(ele);
+                const classListWithLang = [...ele.classList].filter((cls) => /^lang(?:uage)?-[\w-]+$/i.test(cls));
+                const lang = acceptsLangs[ele.getAttribute("lang")] || acceptsLangs[classListWithLang[0]?.replace(/^lang(?:uage)?-/, "")];
+                if (!lang) {
+                    continue;
                 }
+                langSet.add(lang);
+                if (Reflect.has(appendPluginsList, lang)) {
+                    pluginsSet.add(appendPluginsList[lang]);
+                }
+                if (ele.classList.contains("linenums")) {
+                    ele.classList.remove("linenums");
+                    ele.classList.add("line-numbers", "prism-prettyprint-container");
+                }
+                ele.removeAttribute("lang");
+                for (const cls of classListWithLang) {
+                    ele.classList.remove(cls);
+                }
+                if (ele.tagName === "PRE") {
+                    $ele = $ele.wrapInner("<code>").children("code");
+                }
+                $ele[0].dataset.lang = lang;
+                $ele.addClass(`prism-prettyprint language-${lang}`);
             }
             if (langSet.has("wiki") && !Reflect.has(window, "Parser")) {
                 await libCachedCode.injectCachedCode("/MediaWiki:Gadget-wikiparser-node.js?action=raw&ctype=text/javascript", "script");
