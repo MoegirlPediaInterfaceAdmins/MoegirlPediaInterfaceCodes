@@ -134,7 +134,7 @@ $(() => {
                 $ele.addClass(`prism-prettyprint language-${lang}`);
             }
             if (langSet.has("wiki") && !Reflect.has(window, "Parser")) {
-                await libCachedCode.injectCachedCode("/MediaWiki:Gadget-wikiparser-node.js?action=raw&ctype=text/javascript", "script");
+                await libCachedCode.injectCachedCode("//testingcf.jsdelivr.net/npm/wikiparser-node@browser", "script");
                 Parser.config = await (await fetch("/MediaWiki:Gadget-prism-language-wiki.json?action=raw&ctype=application/json")).json();
             }
             await mw.loader.using([
