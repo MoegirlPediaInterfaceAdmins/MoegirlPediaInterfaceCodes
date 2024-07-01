@@ -126,7 +126,7 @@ $(() => (async () => {
         fieldset.find("#toChartQueryContributions").on("click", async (e) => {
             $(e.target).remove();
             fieldset.append("<div id=\"contributionChart\" style=\"width: 100%; height: 400px;\">加载中……</div>");
-            await libCachedCode.injectCachedCode("https://npm.elemecdn.com/echarts@5.5.0/dist/echarts.min.js", "script");
+            await libCachedCode.injectCachedCode("https://npm.elemecdn.com/echarts@5.5.1/dist/echarts.min.js", "script");
             const chart = echarts.init(document.getElementById("contributionChart"));
             chart.setOption({
                 tooltip: {
