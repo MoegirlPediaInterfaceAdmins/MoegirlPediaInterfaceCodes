@@ -744,7 +744,7 @@ body.page-Mainpage.rootpage-Mainpage #siteNotice {
 }
 
 /* 斜体字右边距加大看以防止文字挤在一起 */
-#mw-content-text i {
+#mw-content-text i:not([role="img"]) {
     margin-right: 3px;
 }
 
