@@ -163,7 +163,7 @@
                 }
                 function bidirectionalIndexOf(buffer, val, byteOffset, encoding, dir) {
                     if (0 === buffer.length) return -1;
-                    if ("string" == typeof byteOffset ? (encoding = byteOffset, byteOffset = 0) : 2147483647 < byteOffset ? byteOffset = 2147483647 : byteOffset < -2147483648 && (byteOffset = -2147483648), (byteOffset = (byteOffset = numberIsNaN(byteOffset = +byteOffset) ? dir ? 0 : buffer.length - 1 : byteOffset) < 0 ? buffer.length + byteOffset : byteOffset) >= buffer.length) {
+                    if ("string" == typeof byteOffset ? (encoding = byteOffset, byteOffset = 0) : 2147483647 < byteOffset ? byteOffset = 2147483647 : byteOffset < -2147483648 && (byteOffset = -2147483648), numberIsNaN(byteOffset = +byteOffset) && (byteOffset = dir ? 0 : buffer.length - 1), buffer.length <= (byteOffset = byteOffset < 0 ? buffer.length + byteOffset : byteOffset)) {
                         if (dir) return -1;
                         byteOffset = buffer.length - 1;
                     } else if (byteOffset < 0) {
@@ -220,11 +220,11 @@
                             break;
 
                           case 3:
-                            secondByte = buf[i + 1], thirdByte = buf[i + 2], 128 == (192 & secondByte) && 128 == (192 & thirdByte) && 2047 < (tempCodePoint = (15 & firstByte) << 12 | (63 & secondByte) << 6 | 63 & thirdByte) && (tempCodePoint < 55296 || 57343 < tempCodePoint) && (codePoint = tempCodePoint);
+                            thirdByte = buf[i + 2], 128 == (192 & (secondByte = buf[i + 1])) && 128 == (192 & thirdByte) && 2047 < (tempCodePoint = (15 & firstByte) << 12 | (63 & secondByte) << 6 | 63 & thirdByte) && (tempCodePoint < 55296 || 57343 < tempCodePoint) && (codePoint = tempCodePoint);
                             break;
 
                           case 4:
-                            secondByte = buf[i + 1], thirdByte = buf[i + 2], fourthByte = buf[i + 3], 128 == (192 & secondByte) && 128 == (192 & thirdByte) && 128 == (192 & fourthByte) && 65535 < (tempCodePoint = (15 & firstByte) << 18 | (63 & secondByte) << 12 | (63 & thirdByte) << 6 | 63 & fourthByte) && tempCodePoint < 1114112 && (codePoint = tempCodePoint);
+                            thirdByte = buf[i + 2], fourthByte = buf[i + 3], 128 == (192 & (secondByte = buf[i + 1])) && 128 == (192 & thirdByte) && 128 == (192 & fourthByte) && 65535 < (tempCodePoint = (15 & firstByte) << 18 | (63 & secondByte) << 12 | (63 & thirdByte) << 6 | 63 & fourthByte) && tempCodePoint < 1114112 && (codePoint = tempCodePoint);
                         }
                         null === codePoint ? (codePoint = 65533, bytesPerSequence = 1) : 65535 < codePoint && (res.push((codePoint -= 65536) >>> 10 & 1023 | 55296), codePoint = 56320 | 1023 & codePoint), res.push(codePoint), i += bytesPerSequence;
                     }
@@ -630,7 +630,7 @@
             }(tmp));
             return output.join("");
         }(uint8, i, len2 < i + 16383 ? len2 : i + 16383));
-        1 == extraBytes ? (tmp = uint8[len - 1], parts.push(lookup[tmp >> 2] + lookup[tmp << 4 & 63] + "==")) : 2 == extraBytes && (tmp = (uint8[len - 2] << 8) + uint8[len - 1], parts.push(lookup[tmp >> 10] + lookup[tmp >> 4 & 63] + lookup[tmp << 2 & 63] + "="));
+        1 == extraBytes ? parts.push(lookup[(tmp = uint8[len - 1]) >> 2] + lookup[tmp << 4 & 63] + "==") : 2 == extraBytes && parts.push(lookup[(tmp = (uint8[len - 2] << 8) + uint8[len - 1]) >> 10] + lookup[tmp >> 4 & 63] + lookup[tmp << 2 & 63] + "=");
         return parts.join("");
     };
     for (var lookup = [], revLookup = [], Arr = "undefined" != typeof Uint8Array ? Uint8Array : Array, code = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/", i = 0, len = code.length; i < len; ++i) lookup[i] = code[i], revLookup[code.charCodeAt(i)] = i;
@@ -663,7 +663,7 @@
             return {};
         }
     }, _$ip_5 = {};
-    let ip = _$ip_5, Buffer = _$buffer_3({})["Buffer"], ipv4Regex = (ip.toBuffer = function(ip, buff, offset) {
+    let ip = _$ip_5, Buffer = _$buffer_3({}).Buffer, ipv4Regex = (ip.toBuffer = function(ip, buff, offset) {
         offset = ~~offset;
         let result;
         if (this.isV4Format(ip)) result = buff || Buffer.alloc(offset + 4), ip.split(/\./g).map(byte => {
