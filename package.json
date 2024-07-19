@@ -30,7 +30,7 @@
         "@types/echarts": "^4.9.22",
         "@types/jquery": "^3.5.30",
         "@types/moment": "^2.13.0",
-        "@types/oojs-ui": "^0.49.0",
+        "@types/oojs-ui": "^0.49.1",
         "@types/prismjs": "^1.26.4",
         "autoprefixer": "^10.4.19",
         "browser-pack-flat": "^3.5.0",
