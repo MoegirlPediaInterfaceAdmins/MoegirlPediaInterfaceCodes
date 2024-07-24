@@ -45,7 +45,7 @@
         "hash-wasm": "^4.11.0",
         "ip": "^2.0.1",
         "localforage": "^1.10.0",
-        "postcss": "^8.4.39",
+        "postcss": "^8.4.40",
         "postcss-cli": "^11.0.0",
         "postcss-discard-comments": "^7.0.1",
         "postcss-font-variant": "^5.0.0",
@@ -61,6 +61,6 @@
         "uglify-js": "^3.19.0",
         "unassertify": "^3.0.1",
         "v8r": "^3.1.0",
-        "yaml": "^2.4.5"
+        "yaml": "^2.5.0"
     }
 }
