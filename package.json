@@ -55,6 +55,7 @@
         "semver": "^7.6.3",
         "simple-git": "^3.25.0",
         "stylelint": "^16.8.0",
+        "stylelint-actions-formatters": "^16.3.1",
         "stylelint-config-standard": "^36.0.1",
         "types-mediawiki": "^1.8.0",
         "typescript": "^5.4.5",
