@@ -22,32 +22,25 @@
                     return allocUnsafe(arg);
                 }
                 function from(value, encodingOrOffset, length) {
-                    if ("string" == typeof value) return function(string, encoding) {
-                        "string" == typeof encoding && "" !== encoding || (encoding = "utf8");
-                        if (!Buffer.isEncoding(encoding)) throw new TypeError("Unknown encoding: " + encoding);
-                        var length = 0 | byteLength(string, encoding), buf = createBuffer(length), string = buf.write(string, encoding);
-                        string !== length && (buf = buf.slice(0, string));
-                        return buf;
-                    }(value, encodingOrOffset);
+                    if ("string" == typeof value) return ((string, encoding) => {
+                        var length, buf;
+                        if (Buffer.isEncoding(encoding = "string" == typeof encoding && "" !== encoding ? encoding : "utf8")) return length = 0 | byteLength(string, encoding), buf = createBuffer(length), buf = (string = buf.write(string, encoding)) !== length ? buf.slice(0, string) : buf;
+                        throw new TypeError("Unknown encoding: " + encoding);
+                    })(value, encodingOrOffset);
                     if (ArrayBuffer.isView(value)) return fromArrayLike(value);
                     if (null == value) throw TypeError("The first argument must be one of type string, Buffer, ArrayBuffer, Array, or Array-like Object. Received type " + typeof value);
-                    if (isInstance(value, ArrayBuffer) || value && isInstance(value.buffer, ArrayBuffer)) return function(array, byteOffset, length) {
+                    if (isInstance(value, ArrayBuffer) || value && isInstance(value.buffer, ArrayBuffer)) return ((array, byteOffset, length) => {
                         if (byteOffset < 0 || array.byteLength < byteOffset) throw new RangeError('"offset" is outside of buffer bounds');
                         if (array.byteLength < byteOffset + (length || 0)) throw new RangeError('"length" is outside of buffer bounds');
-                        array = void 0 === byteOffset && void 0 === length ? new Uint8Array(array) : void 0 === length ? new Uint8Array(array, byteOffset) : new Uint8Array(array, byteOffset, length);
-                        return array.__proto__ = Buffer.prototype, array;
-                    }(value, encodingOrOffset, length);
+                        return (array = void 0 === byteOffset && void 0 === length ? new Uint8Array(array) : void 0 === length ? new Uint8Array(array, byteOffset) : new Uint8Array(array, byteOffset, length)).__proto__ = Buffer.prototype, array;
+                    })(value, encodingOrOffset, length);
                     if ("number" == typeof value) throw new TypeError('The "value" argument must not be of type number. Received type number');
                     var valueOf = value.valueOf && value.valueOf();
                     if (null != valueOf && valueOf !== value) return Buffer.from(valueOf, encodingOrOffset, length);
-                    valueOf = function(obj) {
-                        {
-                            var len, buf;
-                            if (Buffer.isBuffer(obj)) return len = 0 | checked(obj.length), 0 !== (buf = createBuffer(len)).length && obj.copy(buf, 0, 0, len), buf;
-                        }
-                        if (void 0 !== obj.length) return "number" != typeof obj.length || numberIsNaN(obj.length) ? createBuffer(0) : fromArrayLike(obj);
-                        if ("Buffer" === obj.type && Array.isArray(obj.data)) return fromArrayLike(obj.data);
-                    }(value);
+                    valueOf = (obj => {
+                        var len, buf;
+                        return Buffer.isBuffer(obj) ? (len = 0 | checked(obj.length), 0 !== (buf = createBuffer(len)).length && obj.copy(buf, 0, 0, len), buf) : void 0 !== obj.length ? "number" != typeof obj.length || numberIsNaN(obj.length) ? createBuffer(0) : fromArrayLike(obj) : "Buffer" === obj.type && Array.isArray(obj.data) ? fromArrayLike(obj.data) : void 0;
+                    })(value);
                     if (valueOf) return valueOf;
                     if ("undefined" != typeof Symbol && null != Symbol.toPrimitive && "function" == typeof value[Symbol.toPrimitive]) return Buffer.from(value[Symbol.toPrimitive]("string"), encodingOrOffset, length);
                     throw new TypeError("The first argument must be one of type string, Buffer, ArrayBuffer, Array, or Array-like Object. Received type " + typeof value);
@@ -107,50 +100,45 @@
                     if ((end >>>= 0) <= (start >>>= 0)) return "";
                     for (encoding = encoding || "utf8"; ;) switch (encoding) {
                       case "hex":
-                        return function(buf, start, end) {
+                        return ((buf, start, end) => {
                             var len = buf.length;
-                            (!start || start < 0) && (start = 0);
                             (!end || end < 0 || len < end) && (end = len);
-                            for (var out = "", i = start; i < end; ++i) out += function(n) {
-                                return n < 16 ? "0" + n.toString(16) : n.toString(16);
-                            }(buf[i]);
+                            for (var out = "", i = start = !start || start < 0 ? 0 : start; i < end; ++i) out += (n => n < 16 ? "0" + n.toString(16) : n.toString(16))(buf[i]);
                             return out;
-                        }(this, start, end);
+                        })(this, start, end);
 
                       case "utf8":
                       case "utf-8":
                         return utf8Slice(this, start, end);
 
                       case "ascii":
-                        return function(buf, start, end) {
+                        return ((buf, start, end) => {
                             var ret = "";
                             end = Math.min(buf.length, end);
                             for (var i = start; i < end; ++i) ret += String.fromCharCode(127 & buf[i]);
                             return ret;
-                        }(this, start, end);
+                        })(this, start, end);
 
                       case "latin1":
                       case "binary":
-                        return function(buf, start, end) {
+                        return ((buf, start, end) => {
                             var ret = "";
                             end = Math.min(buf.length, end);
                             for (var i = start; i < end; ++i) ret += String.fromCharCode(buf[i]);
                             return ret;
-                        }(this, start, end);
+                        })(this, start, end);
 
                       case "base64":
-                        return function(buf, start, end) {
-                            return 0 === start && end === buf.length ? _$base64Js_2.fromByteArray(buf) : _$base64Js_2.fromByteArray(buf.slice(start, end));
-                        }(this, start, end);
+                        return ((buf, start, end) => 0 === start && end === buf.length ? _$base64Js_2.fromByteArray(buf) : _$base64Js_2.fromByteArray(buf.slice(start, end)))(this, start, end);
 
                       case "ucs2":
                       case "ucs-2":
                       case "utf16le":
                       case "utf-16le":
-                        return function(buf, start, end) {
+                        return ((buf, start, end) => {
                             for (var bytes = buf.slice(start, end), res = "", i = 0; i < bytes.length; i += 2) res += String.fromCharCode(bytes[i] + 256 * bytes[i + 1]);
                             return res;
-                        }(this, start, end);
+                        })(this, start, end);
 
                       default:
                         if (loweredCase) throw new TypeError("Unknown encoding: " + encoding);
@@ -163,7 +151,7 @@
                 }
                 function bidirectionalIndexOf(buffer, val, byteOffset, encoding, dir) {
                     if (0 === buffer.length) return -1;
-                    if ("string" == typeof byteOffset ? (encoding = byteOffset, byteOffset = 0) : 2147483647 < byteOffset ? byteOffset = 2147483647 : byteOffset < -2147483648 && (byteOffset = -2147483648), numberIsNaN(byteOffset = +byteOffset) && (byteOffset = dir ? 0 : buffer.length - 1), buffer.length <= (byteOffset = byteOffset < 0 ? buffer.length + byteOffset : byteOffset)) {
+                    if ("string" == typeof byteOffset ? (encoding = byteOffset, byteOffset = 0) : 2147483647 < byteOffset ? byteOffset = 2147483647 : byteOffset < -2147483648 && (byteOffset = -2147483648), (byteOffset = numberIsNaN(byteOffset = +byteOffset) ? dir ? 0 : buffer.length - 1 : byteOffset) < 0 && (byteOffset = buffer.length + byteOffset), buffer.length <= byteOffset) {
                         if (dir) return -1;
                         byteOffset = buffer.length - 1;
                     } else if (byteOffset < 0) {
@@ -195,16 +183,16 @@
                     return -1;
                 }
                 function asciiWrite(buf, string, offset, length) {
-                    return blitBuffer(function(str) {
+                    return blitBuffer((str => {
                         for (var byteArray = [], i = 0; i < str.length; ++i) byteArray.push(255 & str.charCodeAt(i));
                         return byteArray;
-                    }(string), buf, offset, length);
+                    })(string), buf, offset, length);
                 }
                 function ucs2Write(buf, string, offset, length) {
-                    return blitBuffer(function(str, units) {
+                    return blitBuffer(((str, units) => {
                         for (var c, hi, byteArray = [], i = 0; i < str.length && !((units -= 2) < 0); ++i) c = str.charCodeAt(i), hi = c >> 8, byteArray.push(c % 256), byteArray.push(hi);
                         return byteArray;
-                    }(string, buf.length - offset), buf, offset, length);
+                    })(string, buf.length - offset), buf, offset, length);
                 }
                 function utf8Slice(buf, start, end) {
                     end = Math.min(buf.length, end);
@@ -220,23 +208,22 @@
                             break;
 
                           case 3:
-                            thirdByte = buf[i + 2], 128 == (192 & (secondByte = buf[i + 1])) && 128 == (192 & thirdByte) && 2047 < (tempCodePoint = (15 & firstByte) << 12 | (63 & secondByte) << 6 | 63 & thirdByte) && (tempCodePoint < 55296 || 57343 < tempCodePoint) && (codePoint = tempCodePoint);
+                            secondByte = buf[i + 1], thirdByte = buf[i + 2], 128 == (192 & secondByte) && 128 == (192 & thirdByte) && 2047 < (tempCodePoint = (15 & firstByte) << 12 | (63 & secondByte) << 6 | 63 & thirdByte) && (tempCodePoint < 55296 || 57343 < tempCodePoint) && (codePoint = tempCodePoint);
                             break;
 
                           case 4:
-                            thirdByte = buf[i + 2], fourthByte = buf[i + 3], 128 == (192 & (secondByte = buf[i + 1])) && 128 == (192 & thirdByte) && 128 == (192 & fourthByte) && 65535 < (tempCodePoint = (15 & firstByte) << 18 | (63 & secondByte) << 12 | (63 & thirdByte) << 6 | 63 & fourthByte) && tempCodePoint < 1114112 && (codePoint = tempCodePoint);
+                            secondByte = buf[i + 1], thirdByte = buf[i + 2], fourthByte = buf[i + 3], 128 == (192 & secondByte) && 128 == (192 & thirdByte) && 128 == (192 & fourthByte) && 65535 < (tempCodePoint = (15 & firstByte) << 18 | (63 & secondByte) << 12 | (63 & thirdByte) << 6 | 63 & fourthByte) && tempCodePoint < 1114112 && (codePoint = tempCodePoint);
                         }
                         null === codePoint ? (codePoint = 65533, bytesPerSequence = 1) : 65535 < codePoint && (res.push((codePoint -= 65536) >>> 10 & 1023 | 55296), codePoint = 56320 | 1023 & codePoint), res.push(codePoint), i += bytesPerSequence;
                     }
-                    return function(codePoints) {
+                    return (codePoints => {
                         var len = codePoints.length;
                         if (len <= MAX_ARGUMENTS_LENGTH) return String.fromCharCode.apply(String, codePoints);
-                        var res = "", i = 0;
-                        for (;i < len; ) res += String.fromCharCode.apply(String, codePoints.slice(i, i += MAX_ARGUMENTS_LENGTH));
+                        for (var res = "", i = 0; i < len; ) res += String.fromCharCode.apply(String, codePoints.slice(i, i += MAX_ARGUMENTS_LENGTH));
                         return res;
-                    }(res);
+                    })(res);
                 }
-                (Buffer.TYPED_ARRAY_SUPPORT = function() {
+                (Buffer.TYPED_ARRAY_SUPPORT = (() => {
                     try {
                         var arr = new Uint8Array(1);
                         return arr.__proto__ = {
@@ -248,7 +235,7 @@
                     } catch (e) {
                         return !1;
                     }
-                }()) || "undefined" == typeof console || "function" != typeof console.error || console.error("This browser lacks typed array (Uint8Array) support which is required by `buffer` v5.x. Use `buffer` v4.x if you require old browser support."), Object.defineProperty(Buffer.prototype, "parent", {
+                })()) || "undefined" == typeof console || "function" != typeof console.error || console.error("This browser lacks typed array (Uint8Array) support which is required by `buffer` v5.x. Use `buffer` v4.x if you require old browser support."), Object.defineProperty(Buffer.prototype, "parent", {
                     enumerable: !0,
                     get: function() {
                         if (Buffer.isBuffer(this)) return this.buffer;
@@ -264,7 +251,7 @@
                     enumerable: !1,
                     writable: !1
                 }), Buffer.poolSize = 8192, Buffer.from = from, Buffer.prototype.__proto__ = Uint8Array.prototype, Buffer.__proto__ = Uint8Array, Buffer.alloc = function(size, fill, encoding) {
-                    return assertSize(size), !(size <= 0) && void 0 !== fill ? "string" == typeof encoding ? createBuffer(size).fill(fill, encoding) : createBuffer(size).fill(fill) : createBuffer(size);
+                    return ((size, fill, encoding) => (assertSize(size), !(size <= 0) && void 0 !== fill ? "string" == typeof encoding ? createBuffer(size).fill(fill, encoding) : createBuffer(size).fill(fill) : createBuffer(size)))(size, fill, encoding);
                 }, Buffer.allocUnsafe = allocUnsafe, Buffer.allocUnsafeSlow = allocUnsafe, Buffer.isBuffer = function(b) {
                     return null != b && !0 === b._isBuffer && b !== Buffer.prototype;
                 }, Buffer.compare = function(a, b) {
@@ -355,7 +342,7 @@
                     encoding = encoding || "utf8";
                     for (var loweredCase = !1; ;) switch (encoding) {
                       case "hex":
-                        return function(buf, string, offset, length) {
+                        return ((buf, string, offset, length) => {
                             offset = Number(offset) || 0;
                             var remaining = buf.length - offset;
                             (!length || remaining < (length = Number(length))) && (length = remaining), (remaining = string.length) / 2 < length && (length = remaining / 2);
@@ -365,13 +352,11 @@
                                 buf[offset + i] = parsed;
                             }
                             return i;
-                        }(this, string, offset, length);
+                        })(this, string, offset, length);
 
                       case "utf8":
                       case "utf-8":
-                        return function(buf, string, offset, length) {
-                            return blitBuffer(utf8ToBytes(string, buf.length - offset), buf, offset, length);
-                        }(this, string, offset, length);
+                        return ((buf, string, offset, length) => blitBuffer(utf8ToBytes(string, buf.length - offset), buf, offset, length))(this, string, offset, length);
 
                       case "ascii":
                         return asciiWrite(this, string, offset, length);
@@ -381,9 +366,7 @@
                         return asciiWrite(this, string, offset, length);
 
                       case "base64":
-                        return function(buf, string, offset, length) {
-                            return blitBuffer(base64ToBytes(string), buf, offset, length);
-                        }(this, string, offset, length);
+                        return ((buf, string, offset, length) => blitBuffer(base64ToBytes(string), buf, offset, length))(this, string, offset, length);
 
                       case "ucs2":
                       case "ucs-2":
@@ -588,11 +571,11 @@
                     return bytes;
                 }
                 function base64ToBytes(str) {
-                    return _$base64Js_2.toByteArray(function(str) {
+                    return _$base64Js_2.toByteArray((str => {
                         if ((str = (str = str.split("=")[0]).trim().replace(INVALID_BASE64_RE, "")).length < 2) return "";
                         for (;str.length % 4 != 0; ) str += "=";
                         return str;
-                    }(str));
+                    })(str));
                 }
                 function blitBuffer(src, dst, offset, length) {
                     for (var i = 0; i < length && !(i + offset >= dst.length || i >= src.length); ++i) dst[i + offset] = src[i];
@@ -614,9 +597,7 @@
         }, e.exports), e.exports;
     }, _$base64Js_2 = {
         toByteArray: function(b64) {
-            var tmp, i, lens = getLens(b64), validLen = lens[0], lens = lens[1], arr = new Arr(function(validLen, placeHoldersLen) {
-                return 3 * (validLen + placeHoldersLen) / 4 - placeHoldersLen;
-            }(validLen, lens)), curByte = 0, len = 0 < lens ? validLen - 4 : validLen;
+            var tmp, i, lens = getLens(b64), validLen = lens[0], lens = lens[1], arr = new Arr(((validLen, placeHoldersLen) => 3 * (validLen + placeHoldersLen) / 4 - placeHoldersLen)(validLen, lens)), curByte = 0, len = 0 < lens ? validLen - 4 : validLen;
             for (i = 0; i < len; i += 4) tmp = revLookup[b64.charCodeAt(i)] << 18 | revLookup[b64.charCodeAt(i + 1)] << 12 | revLookup[b64.charCodeAt(i + 2)] << 6 | revLookup[b64.charCodeAt(i + 3)], arr[curByte++] = tmp >> 16 & 255, arr[curByte++] = tmp >> 8 & 255, arr[curByte++] = 255 & tmp;
             2 === lens && (tmp = revLookup[b64.charCodeAt(i)] << 2 | revLookup[b64.charCodeAt(i + 1)] >> 4, arr[curByte++] = 255 & tmp);
             1 === lens && (tmp = revLookup[b64.charCodeAt(i)] << 10 | revLookup[b64.charCodeAt(i + 1)] << 4 | revLookup[b64.charCodeAt(i + 2)] >> 2, arr[curByte++] = tmp >> 8 & 255, arr[curByte++] = 255 & tmp);
@@ -624,13 +605,11 @@
         }
     };
     _$base64Js_2.fromByteArray = function(uint8) {
-        for (var tmp, len = uint8.length, extraBytes = len % 3, parts = [], i = 0, len2 = len - extraBytes; i < len2; i += 16383) parts.push(function(uint8, start, end) {
-            for (var tmp, output = [], i = start; i < end; i += 3) tmp = (uint8[i] << 16 & 16711680) + (uint8[i + 1] << 8 & 65280) + (255 & uint8[i + 2]), output.push(function(num) {
-                return lookup[num >> 18 & 63] + lookup[num >> 12 & 63] + lookup[num >> 6 & 63] + lookup[63 & num];
-            }(tmp));
+        for (var tmp, len = uint8.length, extraBytes = len % 3, parts = [], i = 0, len2 = len - extraBytes; i < len2; i += 16383) parts.push(((uint8, start, end) => {
+            for (var tmp, output = [], i = start; i < end; i += 3) tmp = (uint8[i] << 16 & 16711680) + (uint8[i + 1] << 8 & 65280) + (255 & uint8[i + 2]), output.push((num => lookup[num >> 18 & 63] + lookup[num >> 12 & 63] + lookup[num >> 6 & 63] + lookup[63 & num])(tmp));
             return output.join("");
-        }(uint8, i, len2 < i + 16383 ? len2 : i + 16383));
-        1 == extraBytes ? parts.push(lookup[(tmp = uint8[len - 1]) >> 2] + lookup[tmp << 4 & 63] + "==") : 2 == extraBytes && parts.push(lookup[(tmp = (uint8[len - 2] << 8) + uint8[len - 1]) >> 10] + lookup[tmp >> 4 & 63] + lookup[tmp << 2 & 63] + "=");
+        })(uint8, i, len2 < i + 16383 ? len2 : i + 16383));
+        1 == extraBytes ? (tmp = uint8[len - 1], parts.push(lookup[tmp >> 2] + lookup[tmp << 4 & 63] + "==")) : 2 == extraBytes && (tmp = (uint8[len - 2] << 8) + uint8[len - 1], parts.push(lookup[tmp >> 10] + lookup[tmp >> 4 & 63] + lookup[tmp << 2 & 63] + "="));
         return parts.join("");
     };
     for (var lookup = [], revLookup = [], Arr = "undefined" != typeof Uint8Array ? Uint8Array : Array, code = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/", i = 0, len = code.length; i < len; ++i) lookup[i] = code[i], revLookup[code.charCodeAt(i)] = i;
@@ -802,10 +781,8 @@
     }, ip.address = function(name, family) {
         let interfaces = _$browser_6.networkInterfaces();
         var res;
-        return family = _normalizeFamily(family), name && "private" !== name && "public" !== name ? 0 === (res = interfaces[name].filter(details => {
-            return _normalizeFamily(details.family) === family;
-        })).length ? void 0 : res[0].address : (res = Object.keys(interfaces).map(nic => {
-            nic = interfaces[nic].filter(details => (details.family = _normalizeFamily(details.family), details.family !== family || ip.isLoopback(details.address) ? !1 : !name || ("public" === name ? ip.isPrivate(details.address) : ip.isPublic(details.address))));
+        return family = _normalizeFamily(family), name && "private" !== name && "public" !== name ? 0 === (res = interfaces[name].filter(details => _normalizeFamily(details.family) === family)).length ? void 0 : res[0].address : (res = Object.keys(interfaces).map(nic => {
+            nic = interfaces[nic].filter(details => (details.family = _normalizeFamily(details.family), details.family === family && !ip.isLoopback(details.address) && (!name || ("public" === name ? ip.isPrivate(details.address) : ip.isPublic(details.address)))));
             return nic.length ? nic[0].address : void 0;
         }).filter(Boolean)).length ? res[0] : ip.loopback(family);
     }, ip.toLong = function(ip) {
