@@ -6,13 +6,6 @@ body.skin-moeskin #moe-global-background {
     --background-url: url("https://storage.moegirl.org.cn/console-plus/uploads/2024/02/18/d331b764a34f5739b5bf395fff15c858.jpeg");
 }
 
-/* 在常规屏幕设备上使文章区域略微透明，以便展示背景图片 */
-@media (width > 768px) {
-    body.skin-moeskin #moe-main-container {
-        --theme-card-background-color: rgb(255 255 255 / 94%);
-    }
-}
-
 /* 修复全局顶部活动展示区的图片缝隙 */
 body.skin-moeskin #moe-main-container > #moe-topbanner-container > #moe-topbanner {
     padding: 0;
