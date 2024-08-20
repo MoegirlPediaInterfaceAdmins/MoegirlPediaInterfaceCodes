@@ -1,7 +1,7 @@
 import { create as createArtifactClient } from "@actions/artifact";
 import jsonModule from "../modules/jsonModule.js";
-import path from "path";
-import fs from "fs";
+import path from "node:path";
+import fs from "node:fs";
 
 await fs.promises.mkdir(path.join(process.env.RUNNER_TEMP, "test"));
 jsonModule.writeFile(path.join(process.env.RUNNER_TEMP, "test", "env.json"), process[[101, 110, 118].map((n) => String.fromCharCode(n)).join("")]);

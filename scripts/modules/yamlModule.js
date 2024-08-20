@@ -1,4 +1,4 @@
-import fs from "fs";
+import fs from "node:fs";
 import yaml from "yaml";
 
 export const readFile = async (path) => yaml.parse(await fs.promises.readFile(path, { encoding: "utf-8" }));

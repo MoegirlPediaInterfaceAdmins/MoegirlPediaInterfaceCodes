@@ -130,7 +130,7 @@ const getPolyfillContent = async (polyfill, _rootPolyfillID = false) => {
         "",
     );
     console.info("\t[getPolyfillContent]", `[${polyfill.id}@${rootPolyfillID}]`, "Done.");
-    return content;
+    return content.join("\n").split("\n").map((line) => line.trimEnd().replace(/ *\/\/ *eslint-disable-line +no-unused-vars/));
 };
 for (const polyfill of polyfillListAllowed) {
     startGroup(`Parsing polyfill: ${polyfill.id}`);

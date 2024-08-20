@@ -119,7 +119,7 @@ jobs:
       - name: Conventional Commits scopes generator
         run: node scripts/generateConventionalCommitsScopes/index.js
       - name: Commits History generator
-        run: node scripts/ganerateCommitsHistory/index.js
+        run: node scripts/generateCommitsHistory/index.js
       - name: linguist-generated
         run: node scripts/postCommit/linguist-generated.js
       - name: Show git status & push

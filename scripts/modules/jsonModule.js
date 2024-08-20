@@ -1,4 +1,4 @@
-import fs from "fs";
+import fs from "node:fs";
 
 /**
  * @param { fs.PathLike | fs.promises.FileHandle } path

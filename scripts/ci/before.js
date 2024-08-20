@@ -3,8 +3,8 @@ console.info("Initialization done.");
 import jsonModule from "../modules/jsonModule.js";
 import testLatency from "../modules/testLatency.js";
 import mkdtmp from "../modules/mkdtmp.js";
-import fs from "fs";
-import path from "path";
+import fs from "node:fs";
+import path from "node:path";
 
 const packageLockFile = "package-lock.json";
 

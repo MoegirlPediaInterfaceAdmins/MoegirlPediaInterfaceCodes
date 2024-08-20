@@ -6,6 +6,7 @@
  *     moduleName: "json5"
  *     distFilePath: "dist/index.js"
  *     version: "2"
+ *     removeCode: [ "// eslint-disable-next-line no-new-func", "// eslint-disable-line no-undef", "// eslint-disable-line no-unused-vars" ]
  *     jsdelivrUrl: "https://cdn.jsdelivr.net/npm/json5@2/dist/index.js"
  */
 (function (global, factory) {
@@ -22,14 +23,14 @@
 	// https://github.com/zloirock/core-js/issues/86#issuecomment-115759028
 	var global = module.exports = typeof window != 'undefined' && window.Math == Math
 	  ? window : typeof self != 'undefined' && self.Math == Math ? self
-	  // eslint-disable-next-line no-new-func
+	  
 	  : Function('return this')();
-	if (typeof __g == 'number') { __g = global; } // eslint-disable-line no-undef
+	if (typeof __g == 'number') { __g = global; } 
 	});
 
 	var _core = createCommonjsModule(function (module) {
 	var core = module.exports = { version: '2.6.5' };
-	if (typeof __e == 'number') { __e = core; } // eslint-disable-line no-undef
+	if (typeof __e == 'number') { __e = core; } 
 	});
 	var _core_1 = _core.version;
 
@@ -291,7 +292,7 @@
 	  // 21.1.2.2 String.fromCodePoint(...codePoints)
 	  fromCodePoint: function fromCodePoint(x) {
 	    var arguments$1 = arguments;
-	 // eslint-disable-line no-unused-vars
+	 
 	    var res = [];
 	    var aLen = arguments.length;
 	    var i = 0;

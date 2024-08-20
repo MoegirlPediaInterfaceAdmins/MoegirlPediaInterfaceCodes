@@ -6,6 +6,7 @@
  *     moduleName: "prismjs"
  *     distFilePath: "components/prism-core.js"
  *     version: "1"
+ *     removeCode: [ "// eslint-disable-next-line no-redeclare" ]
  *     jsdelivrUrl: "https://cdn.jsdelivr.net/npm/prismjs@1/components/prism-core.js"
  */
 /// <reference lib="WebWorker"/>
@@ -1022,7 +1023,7 @@ var Prism = (function (_self) {
 						}
 					}
 
-					// eslint-disable-next-line no-redeclare
+					
 					var from = match.index;
 					var matchStr = match[0];
 					var before = str.slice(0, from);

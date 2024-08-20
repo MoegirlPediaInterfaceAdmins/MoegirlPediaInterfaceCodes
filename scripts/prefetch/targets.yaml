@@ -5,6 +5,10 @@
   moduleName: json5
   distFilePath: dist/index.js
   version: "2"
+  removeCode:
+   - // eslint-disable-next-line no-new-func
+   - // eslint-disable-line no-undef
+   - // eslint-disable-line no-unused-vars
 
 - type: npm
   gadget:
@@ -29,6 +33,8 @@
   moduleName: prismjs
   distFilePath: components/prism-core.js
   version: "1"
+  removeCode:
+    - // eslint-disable-next-line no-redeclare
 
 - type: npm
   gadget:

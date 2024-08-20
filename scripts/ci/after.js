@@ -3,8 +3,8 @@ originalConsole.info("=".repeat(120));
 console.info("Initialization done.");
 import git from "../modules/git.js";
 import mkdtmp from "../modules/mkdtmp.js";
-import fs from "fs";
-import path from "path";
+import fs from "node:fs";
+import path from "node:path";
 
 const packageLockFile = "package-lock.json";
 

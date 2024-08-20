@@ -4,7 +4,7 @@ import { configs } from "@annangela/eslint-config";
 import readDir from "./scripts/modules/readDir.js";
 
 /**
- * @type { import("eslint").Linter.FlatConfigFileSpec[] }
+ * @type { import("eslint").Linter.Config["ignores"] }
  */
 const ignores = [
     "**/dist/**",
@@ -25,7 +25,7 @@ for (const srcESlintrcFile of srcESlintrcFiles) {
 }
 
 /**
- * @typedef { Pick<import("eslint").Linter.FlatConfig, "files" | "ignores"> } FileSpec
+ * @typedef { Pick<import("eslint").Linter.Config, "files" | "ignores"> } FileSpec
  */
 /**
  * @type { { browser: FileSpec, node: FileSpec } }
@@ -53,7 +53,7 @@ const fileSpec = {
 };
 
 /**
- * @type { import("eslint").Linter.FlatConfig[] }
+ * @type { import("eslint").Linter.Config[] }
  */
 const config = [
     // base
@@ -118,6 +118,10 @@ const config = [
             "security/detect-child-process": "off",
             "n/no-extraneous-import": "off",
             "n/no-process-exit": "off",
+
+            // @TODO: 临时修复
+            "n/no-unsupported-features/es-builtins": ["error", { version: "^18.17 || ^20.1" }],
+            "n/no-unsupported-features/es-syntax": ["error", { version: "^18.17 || ^20.1", ignores: ["modules"] }],
 
             // github api use underscores naming
             camelcase: [

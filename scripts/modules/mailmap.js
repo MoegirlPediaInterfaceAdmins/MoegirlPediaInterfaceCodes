@@ -1,5 +1,5 @@
 import console from "./console.js";
-import fs from "fs";
+import fs from "node:fs";
 import { startGroup, endGroup } from "@actions/core";
 const rawMailMap = await fs.promises.readFile(".mailmap", { encoding: "utf-8" });
 startGroup("Raw .mailmap:");

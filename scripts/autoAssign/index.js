@@ -34,7 +34,7 @@ if (addReviewers) {
                 console.info("[addReviewers]", "The author is in the reviewers list, remove it.");
                 reviewers.splice(reviewers.indexOf(login), 1);
             }
-        } catch (e) { }
+        } catch { }
         if (reviewers.length > 0) {
             console.info("[addReviewers]", "config.addReviewers is true, requesting reviews from these users:", reviewers);
             await octokit.rest.pulls.requestReviewers({
