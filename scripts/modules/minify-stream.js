@@ -1,6 +1,6 @@
 import duplexify from "duplexify";
 import concatStream from "concat-stream";
-import { Readable } from "stream";
+import { Readable } from "node:stream";
 import uglify from "uglify-js";
 
 class ReadableFromString extends Readable {

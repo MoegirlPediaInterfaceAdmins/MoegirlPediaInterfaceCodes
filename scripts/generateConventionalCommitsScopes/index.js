@@ -1,7 +1,7 @@
 import console from "../modules/console.js";
 console.info("Initialization done.");
-import fs from "fs";
-import path from "path";
+import fs from "node:fs";
+import path from "node:path";
 import createCommit from "../modules/createCommit.js";
 import jsonModule from "../modules/jsonModule.js";
 import { sortWithLowerFirstCharacter } from "../modules/sortWithLowerFirstCharacter.js";

@@ -209,7 +209,7 @@ $(() => {
             $body.css("overflow", "auto");
             if (loadReason === false) {
                 loadReason = true;
-                const { parse: { text: { ["*"]: html } } } = await new mw.Api().post({
+                const { parse: { text: { "*": html } } } = await new mw.Api().post({
                     action: "parse",
                     assertuser: mw.config.get("wgUserName"),
                     page: mw.config.get("wgNamespaceNumber") === mw.config.get("wgNamespaceIds").file ? "MediaWiki:Filedelete-reason-dropdown" : "MediaWiki:Deletereason-dropdown",

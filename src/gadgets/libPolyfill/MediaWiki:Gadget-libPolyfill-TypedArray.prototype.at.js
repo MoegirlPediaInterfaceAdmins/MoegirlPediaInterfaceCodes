@@ -98,7 +98,7 @@ return Object.defineProperty(e,"test",{value:42}),!0}catch(t){return!1}}())) {
 
 // _ESAbstract.CreateMethodProperty
 // 7.3.5. CreateMethodProperty ( O, P, V )
-function CreateMethodProperty(O, P, V) { // eslint-disable-line no-unused-vars
+function CreateMethodProperty(O, P, V) {  
 	// 1. Assert: Type(O) is Object.
 	// 2. Assert: IsPropertyKey(P) is true.
 	// 3. Let newDesc be the PropertyDescriptor{[[Value]]: V, [[Writable]]: true, [[Enumerable]]: false, [[Configurable]]: true}.
@@ -122,7 +122,7 @@ function CreateMethodProperty(O, P, V) { // eslint-disable-line no-unused-vars
 
 // _ESAbstract.ToNumber
 // 7.1.3. ToNumber ( argument )
-function ToNumber(argument) { // eslint-disable-line no-unused-vars
+function ToNumber(argument) {  
 	return Number(argument);
 }
 
@@ -131,7 +131,7 @@ function ToNumber(argument) { // eslint-disable-line no-unused-vars
 // _ESAbstract.ToIntegerOrInfinity
 /* global ToNumber */
 // 7.1.5. ToIntegerOrInfinity ( argument )
-function ToIntegerOrInfinity(argument) { // eslint-disable-line no-unused-vars
+function ToIntegerOrInfinity(argument) {  
 	// 1. Let number be ? ToNumber(argument).
 	var number = ToNumber(argument);
 	// 2. If number is NaN, +0𝔽, or -0𝔽, return 0.
@@ -162,7 +162,7 @@ function ToIntegerOrInfinity(argument) { // eslint-disable-line no-unused-vars
 // _ESAbstract.Call
 /* global IsCallable */
 // 7.3.12. Call ( F, V [ , argumentsList ] )
-function Call(F, V /* [, argumentsList] */) { // eslint-disable-line no-unused-vars
+function Call(F, V /* [, argumentsList] */) {  
 	// 1. If argumentsList is not present, set argumentsList to a new empty List.
 	var argumentsList = arguments.length > 2 ? arguments[2] : [];
 	// 2. If IsCallable(F) is false, throw a TypeError exception.
@@ -201,7 +201,7 @@ function Call(F, V /* [, argumentsList] */) { // eslint-disable-line no-unused-v
 | Object        | Return argument.                                                                                                                   |
 |----------------------------------------------------------------------------------------------------------------------------------------------------|
 */
-function ToObject(argument) { // eslint-disable-line no-unused-vars
+function ToObject(argument) {  
 	if (argument === null || argument === undefined) {
 		throw TypeError();
 	}
@@ -213,7 +213,7 @@ function ToObject(argument) { // eslint-disable-line no-unused-vars
 // _ESAbstract.GetV
 /* global ToObject */
 // 7.3.2 GetV (V, P)
-function GetV(v, p) { // eslint-disable-line no-unused-vars
+function GetV(v, p) {  
 	// 1. Assert: IsPropertyKey(P) is true.
 	// 2. Let O be ? ToObject(V).
 	var o = ToObject(v);
@@ -228,7 +228,7 @@ function GetV(v, p) { // eslint-disable-line no-unused-vars
 
 // _ESAbstract.IsCallable
 // 7.2.3. IsCallable ( argument )
-function IsCallable(argument) { // eslint-disable-line no-unused-vars
+function IsCallable(argument) {  
 	// 1. If Type(argument) is not Object, return false.
 	// 2. If argument has a [[Call]] internal method, return true.
 	// 3. Return false.
@@ -242,7 +242,7 @@ function IsCallable(argument) { // eslint-disable-line no-unused-vars
 // _ESAbstract.GetMethod
 /* global GetV, IsCallable */
 // 7.3.9. GetMethod ( V, P )
-function GetMethod(V, P) { // eslint-disable-line no-unused-vars
+function GetMethod(V, P) {  
 	// 1. Assert: IsPropertyKey(P) is true.
 	// 2. Let func be ? GetV(V, P).
 	var func = GetV(V, P);
@@ -268,7 +268,7 @@ function GetMethod(V, P) { // eslint-disable-line no-unused-vars
 
 // _ESAbstract.Get
 // 7.3.1. Get ( O, P )
-function Get(O, P) { // eslint-disable-line no-unused-vars
+function Get(O, P) {  
 	// 1. Assert: Type(O) is Object.
 	// 2. Assert: IsPropertyKey(P) is true.
 	// 3. Return ? O.[[Get]](P, O).
@@ -282,7 +282,7 @@ function Get(O, P) { // eslint-disable-line no-unused-vars
 
 // _ESAbstract.Type
 // "Type(x)" is used as shorthand for "the type of x"...
-function Type(x) { // eslint-disable-line no-unused-vars
+function Type(x) {  
 	switch (typeof x) {
 		case 'undefined':
 			return 'undefined';
@@ -309,7 +309,7 @@ function Type(x) { // eslint-disable-line no-unused-vars
 // _ESAbstract.OrdinaryToPrimitive
 /* global Get, IsCallable, Call, Type */
 // 7.1.1.1. OrdinaryToPrimitive ( O, hint )
-function OrdinaryToPrimitive(O, hint) { // eslint-disable-line no-unused-vars
+function OrdinaryToPrimitive(O, hint) {  
 	// 1. Assert: Type(O) is Object.
 	// 2. Assert: Type(hint) is String and its value is either "string" or "number".
 	// 3. If hint is "string", then
@@ -345,7 +345,7 @@ function OrdinaryToPrimitive(O, hint) { // eslint-disable-line no-unused-vars
 // _ESAbstract.ToPrimitive
 /* global Type, GetMethod, Call, OrdinaryToPrimitive */
 // 7.1.1. ToPrimitive ( input [ , PreferredType ] )
-function ToPrimitive(input /* [, PreferredType] */) { // eslint-disable-line no-unused-vars
+function ToPrimitive(input /* [, PreferredType] */) {  
 	var PreferredType = arguments.length > 1 ? arguments[1] : undefined;
 	// 1. Assert: input is an ECMAScript language value.
 	// 2. If Type(input) is Object, then
@@ -413,13 +413,13 @@ function ToPrimitive(input /* [, PreferredType] */) { // eslint-disable-line no-
 |               | Return ? ToString(primValue).                          |
 |---------------|--------------------------------------------------------|
 */
-function ToString(argument) { // eslint-disable-line no-unused-vars
+function ToString(argument) {  
 	switch(Type(argument)) {
 		case 'symbol':
 			throw new TypeError('Cannot convert a Symbol value to a string');
 		case 'object':
 			var primValue = ToPrimitive(argument, String);
-			return ToString(primValue); // eslint-disable-line no-unused-vars
+			return ToString(primValue);  
 		default:
 			return String(argument);
 	}

@@ -1,4 +1,4 @@
-import crypto from "crypto";
+import crypto from "node:crypto";
 /**
  * @param { crypto.BinaryLike } key
  * @param { crypto.BinaryLike } raw

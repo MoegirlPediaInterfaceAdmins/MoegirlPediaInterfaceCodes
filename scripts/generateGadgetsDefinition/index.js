@@ -1,7 +1,7 @@
 import console from "../modules/console.js";
 console.info("Initialization done.");
-import fs from "fs";
-import path from "path";
+import fs from "node:fs";
+import path from "node:path";
 import { startGroup, endGroup } from "@actions/core";
 import createCommit from "../modules/createCommit.js";
 import yamlModule from "../modules/yamlModule.js";

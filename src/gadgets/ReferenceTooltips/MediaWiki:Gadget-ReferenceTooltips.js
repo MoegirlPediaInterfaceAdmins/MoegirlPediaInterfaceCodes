@@ -1,4 +1,4 @@
-/* eslint-disable no-use-before-define, promise/prefer-await-to-then, promise/catch-or-return */
+/* eslint-disable no-use-before-define, promise/catch-or-return */
 /**
  * @source https://en.wikipedia.org/wiki/_?oldid=1006234032
  * 更新后请同步更新上面链接到最新版本

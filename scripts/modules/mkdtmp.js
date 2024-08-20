@@ -1,8 +1,8 @@
 import console from "../modules/console.js";
-import { randomUUID } from "crypto";
-import fs from "fs";
-import { tmpdir } from "os";
-import { join } from "path";
+import { randomUUID } from "node:crypto";
+import fs from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 
 /**
  * @param { { local?: boolean, random?: boolean, subDir?: string } } [options]
