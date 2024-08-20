@@ -6,12 +6,12 @@ src/**/*.yaml linguist-generated=false
 src/*.yaml linguist-generated=false
 src/gadgets/libPolyfill/MediaWiki:Gadget-libPolyfill.*.js linguist-generated=true
 
-# From generateCommitsHistory
-src/global/zh/MediaWiki:GHIAHistory.json linguist-generated=true
-
 # From browserify
 src/gadgets/libHashwasm/MediaWiki:Gadget-libHashwasm.js linguist-generated=true
 src/gadgets/libip/MediaWiki:Gadget-libip.js linguist-generated=true
+
+# From generateCommitsHistory
+src/global/zh/MediaWiki:GHIAHistory.json linguist-generated=true
 
 # From prefetch
 src/gadgets/libJSON5/MediaWiki:Gadget-libJSON5.js linguist-generated=true
