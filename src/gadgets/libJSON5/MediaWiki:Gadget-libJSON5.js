@@ -6,7 +6,7 @@
  *     moduleName: "json5"
  *     distFilePath: "dist/index.js"
  *     version: "2"
- *     removeCode: [ "// eslint-disable-next-line no-new-func", "// eslint-disable-line no-undef" ]
+ *     removeCode: [ "// eslint-disable-next-line no-new-func", "// eslint-disable-line no-undef", "// eslint-disable-line no-unused-vars" ]
  *     jsdelivrUrl: "https://cdn.jsdelivr.net/npm/json5@2/dist/index.js"
  */
 (function (global, factory) {
@@ -292,7 +292,7 @@
 	  // 21.1.2.2 String.fromCodePoint(...codePoints)
 	  fromCodePoint: function fromCodePoint(x) {
 	    var arguments$1 = arguments;
-	  
+	 
 	    var res = [];
 	    var aLen = arguments.length;
 	    var i = 0;
