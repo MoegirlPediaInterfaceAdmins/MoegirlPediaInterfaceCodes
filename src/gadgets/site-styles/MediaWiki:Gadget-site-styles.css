@@ -365,6 +365,7 @@ s.just-kidding-text {
     margin: 0 auto;
     width: 80%;
     box-sizing: border-box;
+    border-radius: 0.5rem;
 }
 
 .infoBoxTitle {
@@ -391,12 +392,18 @@ s.just-kidding-text {
     border: 1px solid #DDD;
     border-left-width: 0;
     background: #FBFBFB;
+    border-radius: 0 0.5rem 0.5rem 0;
 }
 
 .infoBoxBelow {
     margin: 0 auto;
     padding: 0;
     text-align: center;
+}
+
+[color-mode="dark"] .infoBoxContent {
+    border-color: #505050;
+    background: #232323;
 }
 
 /* wikitable green */
