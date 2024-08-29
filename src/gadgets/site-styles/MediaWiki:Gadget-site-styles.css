@@ -8,7 +8,7 @@
 /* Tabs */
 .tab .TabLabelText {
     padding: 1px;
-    background: #FFF;
+    background: #fff;
     cursor: pointer;
     flex: none;
 }
@@ -35,7 +35,7 @@
     padding: 20px 30px;
     position: relative;
     z-index: 1;
-    border: 1px solid #AAA;
+    border: 1px solid #aaa;
 }
 
 .tab .TabContentText {
@@ -54,8 +54,8 @@
 
 .tab .tabLabelTop .TabLabelText.selected {
     border-top: 3px solid green;
-    border-left: 1px solid #AAA;
-    border-right: 1px solid #AAA;
+    border-left: 1px solid #aaa;
+    border-right: 1px solid #aaa;
 }
 
 .tab .tabLabelTop.reverse .TabLabelText {
@@ -67,8 +67,8 @@
 
 .tab .tabLabelTop.reverse .TabLabelText.selected {
     border-bottom: 3px solid green;
-    border-left: 1px solid #AAA;
-    border-right: 1px solid #AAA;
+    border-left: 1px solid #aaa;
+    border-right: 1px solid #aaa;
     border-top: 1px solid transparent;
 }
 
@@ -80,8 +80,8 @@
 
 .tab .tabLabelBottom .TabLabelText.selected {
     border-bottom: 3px solid green;
-    border-left: 1px solid #AAA;
-    border-right: 1px solid #AAA;
+    border-left: 1px solid #aaa;
+    border-right: 1px solid #aaa;
 }
 
 .tab .tabLabelBottom.reverse .TabLabelText {
@@ -93,8 +93,8 @@
 
 .tab .tabLabelBottom.reverse .TabLabelText.selected {
     border-top: 3px solid green;
-    border-left: 1px solid #AAA;
-    border-right: 1px solid #AAA;
+    border-left: 1px solid #aaa;
+    border-right: 1px solid #aaa;
     border-bottom: 1px solid transparent;
 }
 
@@ -106,8 +106,8 @@
 
 .tab .tabLabelLeft .TabLabelText.selected {
     border-left: 3px solid green;
-    border-top: 1px solid #AAA;
-    border-bottom: 1px solid #AAA;
+    border-top: 1px solid #aaa;
+    border-bottom: 1px solid #aaa;
 }
 
 .tab .tabLabelLeft.reverse .TabLabelText {
@@ -119,8 +119,8 @@
 
 .tab .tabLabelLeft.reverse .TabLabelText.selected {
     border-right: 3px solid green;
-    border-top: 1px solid #AAA;
-    border-bottom: 1px solid #AAA;
+    border-top: 1px solid #aaa;
+    border-bottom: 1px solid #aaa;
     border-left: 1px solid transparent;
 }
 
@@ -132,8 +132,8 @@
 
 .tab .tabLabelRight .TabLabelText.selected {
     border-right: 3px solid green;
-    border-top: 1px solid #AAA;
-    border-bottom: 1px solid #AAA;
+    border-top: 1px solid #aaa;
+    border-bottom: 1px solid #aaa;
 }
 
 .tab .tabLabelRight.reverse .TabLabelText {
@@ -145,8 +145,8 @@
 
 .tab .tabLabelRight.reverse .TabLabelText.selected {
     border-left: 3px solid green;
-    border-top: 1px solid #AAA;
-    border-bottom: 1px solid #AAA;
+    border-top: 1px solid #aaa;
+    border-bottom: 1px solid #aaa;
     border-right: 1px solid transparent;
 }
 
@@ -216,11 +216,11 @@
 }
 
 .Tabs .Tab {
-    border-bottom: 1px solid #AAA;
+    border-bottom: 1px solid #aaa;
 }
 
 .Tabs .Tab:first-child {
-    border-top: 1px solid #AAA;
+    border-top: 1px solid #aaa;
 }
 
 .Tabs .Tab .TabLabelText {
@@ -237,21 +237,21 @@
 }
 
 /* 注解 */
-.annotation>span {
+.annotation > span {
     cursor: pointer;
 }
- 
+
 .annotation .oo-ui-popupWidget {
     z-index: 1000001;
     white-space: normal;
     color: #000;
     font-weight: normal;
 }
- 
+
 .annotation .oo-ui-popupWidget-popup {
     width: fit-content !important;
 }
- 
+
 .annotation .oo-ui-popupWidget-body {
     width: fit-content;
     min-width: 5.5em;
@@ -260,8 +260,8 @@
 }
 
 /* 列表的上边距导致[[T:columns-list]]首列少一行 */
-.columns-list>ul:first-child,
-.columns-list>ol:first-child {
+.columns-list > ul:first-child,
+.columns-list > ol:first-child {
     margin-top: 0;
 }
 
@@ -336,22 +336,22 @@ a:hover span.heimu {
 
 span.heimu:hover a:visited,
 a:visited:hover span.heimu {
-    color: #C5CAE9;
+    color: #c5cae9;
 }
 
 span.heimu:hover a.new,
 a.new:hover span.heimu {
-    color: #FCC;
+    color: #fcc;
 }
 
 span.heimu a.new:hover:visited,
 a.new:hover:visited span.heimu {
-    color: #EF9A9A;
+    color: #ef9a9a;
 }
 
 span.heimu:hover a.extiw:visited,
 a.extiw:visited:hover span.heimu {
-    color: #D1C4E9;
+    color: #d1c4e9;
 }
 
 /* 胡话模板配合CSS */
@@ -389,9 +389,9 @@ s.just-kidding-text {
 }
 
 .infoBoxContent {
-    border: 1px solid #DDD;
+    border: 1px solid #ddd;
     border-left-width: 0;
-    background: #FBFBFB;
+    background: #fbfbfb;
     border-radius: 0 0.5rem 0.5rem 0;
 }
 
@@ -408,15 +408,15 @@ s.just-kidding-text {
 
 /* wikitable green */
 table.wikitable-green {
-    background: #C9F6E1;
+    background: #c9f6e1;
 }
 
 .wikitable-green th {
-    background: #13EC93;
+    background: #13ec93;
 }
 
 .wikitable-green td {
-    background: #F3F3F3;
+    background: #f3f3f3;
 }
 
 /* 隐藏只供维护人员查看的内容 */
@@ -520,9 +520,9 @@ body.page-Mainpage.rootpage-Mainpage #siteNotice {
 .mainpage-title {
     font-family: "PingFang SC", sans-serif;
     font-size: 1.618em;
-    color: #228B22;
+    color: #228b22;
     margin: 0;
-    background: #DEEDE0;
+    background: #deede0;
     font-weight: 400;
 
     /* 400 = normal */
@@ -747,7 +747,7 @@ body.page-Mainpage.rootpage-Mainpage #siteNotice {
 
 /* 被点过的外部链接不变色。采取和默认皮肤相同写法，以便override */
 .mw-body a.external:visited {
-    color: #36B;
+    color: #36b;
 }
 
 /* 斜体字右边距加大看以防止文字挤在一起 */
@@ -810,7 +810,7 @@ div.metadata-panel-is-closed .mw-mmv-image-links li.mw-mmv-license-li {
 }
 
 .mw-mmv-warning-visible .mw-mmv-download-dialog .mw-mmv-dialog-down-arrow {
-    background-color: #FFF;
+    background-color: #fff;
 }
 
 .mw-mmv-warning-visible .mw-mmv-dialog-warning,
@@ -821,7 +821,7 @@ div.metadata-panel-is-closed .mw-mmv-image-links li.mw-mmv-license-li {
 /* 通用圆角框 */
 .common-box {
     padding: 0.2em 0.4em;
-    border: 1px solid #DDD;
+    border: 1px solid #ddd;
     -moz-border-radius: 10px;
     -webkit-border-radius: 10px;
     -khtml-border-radius: 10px;
@@ -843,7 +843,7 @@ div.metadata-panel-is-closed .mw-mmv-image-links li.mw-mmv-license-li {
 #breadcrumb {
     background-image: url("//img.moegirl.org.cn/breadcrumb/bc_bg.png");
     color: red;
-    border: solid 1px #CACACA;
+    border: solid 1px #cacaca;
     border-radius: 10px;
     overflow: hidden;
 }
@@ -861,7 +861,7 @@ div.metadata-panel-is-closed .mw-mmv-image-links li.mw-mmv-license-li {
 }
 
 #breadcrumb a:hover {
-    color: #35ACC5;
+    color: #35acc5;
 }
 
 /* 信息模板的css */
@@ -870,7 +870,7 @@ div.metadata-panel-is-closed .mw-mmv-image-links li.mw-mmv-license-li {
     width: 280px;
     font-size: 90%;
     margin: 1em 0 1em 1em;
-    background: #F9F9F9;
+    background: #f9f9f9;
     border: 1px #999 solid;
     border-collapse: collapse;
     word-break: break-all;
@@ -901,7 +901,7 @@ pre {
 
 /* 页面底部导航框（2011年8月16日引自中文维基）(所谓大家族模板) */
 table.navbox {
-    border: 1px solid #AAA;
+    border: 1px solid #aaa;
     clear: both;
     margin: auto;
     padding: 1px;
@@ -928,31 +928,31 @@ table.navbox th {
 
 .navbox,
 .navbox-subgroup {
-    background: none repeat scroll 0 0 #FDFDFD;
+    background: none repeat scroll 0 0 var(--theme-card-background-color, #fdfdfd);
 }
 
 .navbox-list {
-    border-color: #FDFDFD;
+    border-color: #fdfdfd;
 }
 
 .navbox-title,
 table.navbox th {
-    background: none repeat scroll 0 0 #A5E4A5;
+    background: none repeat scroll 0 0 #a5e4a5;
 }
 
 .navbox-abovebelow,
 .navbox-group,
 .navbox-subgroup .navbox-title {
-    background: none repeat scroll 0 0 #C0ECC0;
+    background: none repeat scroll 0 0 #c0ecc0;
 }
 
 .navbox-subgroup .navbox-group,
 .navbox-subgroup .navbox-abovebelow {
-    background: none repeat scroll 0 0 #E6F6E6;
+    background: none repeat scroll 0 0 #e6f6e6;
 }
 
 .navbox-even {
-    background: none repeat scroll 0 0 #F5FCF5;
+    background: none repeat scroll 0 0 #f5fcf5;
 }
 
 .navbox-odd {
@@ -980,7 +980,7 @@ body.ns-2 div#catlinks {
 /* 编辑请求 */
 .editRequest {
     text-align: center;
-    border: 1px solid #DDD;
+    border: 1px solid #ddd;
     border-radius: 3px;
     margin: 1em 2.5em;
     padding: 1em;
@@ -989,9 +989,9 @@ body.ns-2 div#catlinks {
 
 .editRequest .newComment {
     white-space: nowrap;
-    background: #347BFF;
-    color: #FFF;
-    border: 1px solid #347BFF;
+    background: #347bff;
+    color: #fff;
+    border: 1px solid #347bff;
     text-shadow: 0 1px rgb(0 0 0 / 10%);
     font-family: inherit;
     font-size: 1em;
@@ -1392,7 +1392,7 @@ body:not(.ns--1):not(.ns--2) .navbox .mw-collapsible:not(.mw-collapsed) > tbody 
     line-height: 1.3;
     padding: 0;
     font-weight: 700;
-    border-bottom: 1px solid #0074F9;
+    border-bottom: 1px solid #0074f9;
     color: #000;
     background: none;
     overflow: hidden;
@@ -1406,4 +1406,27 @@ body:not(.ns--1):not(.ns--2) .navbox .mw-collapsible:not(.mw-collapsed) > tbody 
 /* 浮动滚动条 */
 body.overlay-scrollbars #bodyContent {
     padding-right: 24px;
+}
+
+/* TODO: 暗色模式 暂时直接反转颜色 */
+[color-mode="dark"] :is(.infobox, .moe-infobox, .navbox) {
+    /* FIXME: 100% 反色太黑了，所以使用90%，但是这会造成图片的颜色轻微失真 */
+    filter: invert(0.9) hue-rotate(198deg);
+    color: #222;
+}
+
+[color-mode="dark"] :is(.infobox, .moe-infobox, .navbox) a {
+    --color: #155d33;
+}
+
+[color-mode="dark"] :is(.infobox, .moe-infobox, .navbox) figure,
+[color-mode="dark"] :is(.infobox, .moe-infobox, .navbox) img,
+[color-mode="dark"] :is(.infobox, .moe-infobox, .navbox) iframe,
+[color-mode="dark"] :is(.infobox, .moe-infobox, .navbox) div[style*="image"] {
+    filter: invert(1) hue-rotate(180deg);
+    opacity: 1;
+}
+
+[color-mode="dark"] input[type="text"] {
+    color: var(--theme-text-color);
 }
