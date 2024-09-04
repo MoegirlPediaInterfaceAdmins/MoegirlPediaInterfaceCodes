@@ -647,9 +647,11 @@
                             const settingsDialog = new SettingsDialog();
                             windowManager.addWindows([settingsDialog]);
                             const settingsWindow = windowManager.openWindow(settingsDialog);
+                            // eslint-disable-next-line promise/prefer-await-to-then
                             settingsWindow.opened.then(() => {
                                 settingsDialogOpening = false;
                             });
+                            // eslint-disable-next-line promise/prefer-await-to-then
                             settingsWindow.closed.then(() => {
                                 windowManager.clearWindows();
                             });

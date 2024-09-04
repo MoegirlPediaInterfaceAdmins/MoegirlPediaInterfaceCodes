@@ -305,12 +305,13 @@ span[lang="ja" i] :is(i, [style*="italic" i]) {
 .heimu,
 .heimu rt {
     --heimu-color: #252525;
-    --heimu-text-color: #ffffff;
+    --heimu-text-color: #fff;
     --heimu-link-color: #add8e6;
     --heimu-visited-link-color: #c5cae9;
     --heimu-new-link-color: #fcc;
     --heimu-new-visited-link-color: #ef9a9a;
     --heimu-extiw-visited-link-color: #d1c4e9;
+
     background-color: var(--heimu-color);
 }
 
@@ -1060,7 +1061,7 @@ body.ns-2 div#catlinks {
 }
 
 /* 适用于屏幕像素宽度大于400px的设备 */
-@media (width >= 400px) {
+@media (width >=400px) {
     /* .container {
         width: 85%;
         padding: 0;
@@ -1068,7 +1069,8 @@ body.ns-2 div#catlinks {
 }
 
 /* 适用于屏幕像素宽度大于800px的设备 */
-@media (width >= 800px) {
+@media (width >=800px) {
+
     /* .container {
         width: 80%;
     } */
@@ -1450,8 +1452,9 @@ body.overlay-scrollbars #bodyContent {
 }
 
 [color-mode="dark"] :is(.navbox):not(.dark-theme-invert-disabled) {
-    color: rgb(44, 62, 80);
-    --theme-link-color: rgb(51, 102, 187);
+    --theme-link-color: rgb(51 102 187);
+
+    color: rgb(44 62 80);
     position: relative;
 }
 
@@ -1463,7 +1466,7 @@ body.overlay-scrollbars #bodyContent {
     height: 100%;
     left: 0;
     top: 0;
-    background-color: rgba(0, 0, 0, 0.25);
+    background-color: rgb(0 0 0 / 25%);
     user-select: none;
     pointer-events: none;
 }
