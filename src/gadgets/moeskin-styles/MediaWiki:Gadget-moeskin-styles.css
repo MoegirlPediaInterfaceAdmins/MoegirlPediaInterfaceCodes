@@ -226,10 +226,7 @@ aside#moe-global-siderail #moe-custom-sidenav-block h2 {
 /* mbox圆角 */
 .infoBox {
     border-radius: 0.5rem;
-}
-
-.infoBox + .infoBox {
-    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
 }
 
 .infoBoxContent {
@@ -266,7 +263,7 @@ table.navbox {
     box-shadow: 0 0 0 1px #aaa;
 }
 
-table.navbox + table.navbox {
+.skin-moeskin table.navbox + .skin-moeskin table.navbox {
     margin-top: 0.5rem;
 }
 
