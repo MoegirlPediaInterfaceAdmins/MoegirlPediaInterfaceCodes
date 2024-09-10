@@ -69,7 +69,6 @@ aside#moe-global-siderail #moe-custom-sidenav-block h2 {
 
 /* 移动设备优化 */
 @media (width <=576px) {
-
     /* 清除浮动 */
     body.skin-moeskin .mw-parser-output > * {
         float: unset !important;
@@ -89,16 +88,16 @@ aside#moe-global-siderail #moe-custom-sidenav-block h2 {
 /* 优化[[T:Navbox]]在窄屏设备的体验 */
 @media (width <=768px) {
     html > body.skin-moeskin .navbox {
-        border: 1px solid #AAA;
+        border: 1px solid #aaa;
         clear: both;
         padding: 1px;
         text-align: center;
         width: 100%;
-        background: #FDFDFD;
+        background: #fdfdfd;
     }
 
     html > body.skin-moeskin .navbox-subgroup {
-        background: #FDFDFD;
+        background: #fdfdfd;
     }
 
     html > body.skin-moeskin .navbox-group {
@@ -112,7 +111,7 @@ aside#moe-global-siderail #moe-custom-sidenav-block h2 {
 
     html > body.skin-moeskin .navbox-subgroup .navbox-group,
     html > body.skin-moeskin .navbox-abovebelow {
-        background: #E6F6E6;
+        background: #e6f6e6;
     }
 
     html > body.skin-moeskin .navbox .TabLabel {
@@ -129,7 +128,7 @@ aside#moe-global-siderail #moe-custom-sidenav-block h2 {
 
     html > body.skin-moeskin .navbox-group + * {
         border-left: 0 !important;
-        border-top: 2px solid #FDFDFD;
+        border-top: 2px solid #fdfdfd;
     }
 
     html > body.skin-moeskin .navbox-group + .navbox-list > .navbox-subgroup {
@@ -208,7 +207,7 @@ aside#moe-global-siderail #moe-custom-sidenav-block h2 {
 }
 
 /* chrome等浏览器搜索框两个叉 */
-.n-input__input-el::-webkit-search-cancel-button{
+.n-input__input-el::-webkit-search-cancel-button {
     display: none;
 }
 
@@ -221,5 +220,57 @@ aside#moe-global-siderail #moe-custom-sidenav-block h2 {
     cursor: pointer;
     font-size: 12px;
     border-radius: 100vw;
-    background-color:#0000;
+    background-color: #0000;
+}
+
+/* mbox圆角 */
+.infoBox {
+    border-radius: 0.5rem;
+}
+
+.infoBox + .infoBox {
+    margin-top: 0.5rem;
+}
+
+.infoBoxContent {
+    border-radius: 0 0.5rem 0.5rem 0;
+}
+
+/* 信息框圆角 */
+table:is(.moe-infobox, .infoboxSpecial),
+.infotemplatebox {
+    border-radius: 0.5rem;
+    overflow: hidden;
+}
+
+table:is(.moe-infobox, .infotemplatebox, .infoboxSpecial) tbody > tr:first-of-type > td:first-of-type {
+    border-start-start-radius: 0.5rem;
+}
+
+table:is(.moe-infobox, .infotemplatebox, .infoboxSpecial) tbody > tr:first-of-type > td:last-of-type {
+    border-start-end-radius: 0.5rem;
+}
+
+table:is(.moe-infobox, .infotemplatebox, .infoboxSpecial) tbody > tr:last-of-type > td:first-of-type {
+    border-end-start-radius: 0.5rem;
+}
+
+table:is(.moe-infobox, .infotemplatebox, .infoboxSpecial) tbody > tr:last-of-type > td:last-of-type {
+    border-end-end-radius: 0.5rem;
+}
+
+/* 大家族圆角 */
+table.navbox {
+    border-radius: 0.75rem;
+    overflow: hidden;
+    box-shadow: 0 0 0 1px #aaa;
+}
+
+table.navbox + table.navbox {
+    margin-top: 0.5rem;
+}
+
+table.navbox > tbody > tr > td > table {
+    border-radius: 0.5rem;
+    overflow: hidden;
 }
