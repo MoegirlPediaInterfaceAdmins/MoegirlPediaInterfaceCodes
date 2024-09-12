@@ -214,7 +214,8 @@ aside#moe-global-siderail #moe-custom-sidenav-block h2 {
 /* noteTA button, written by User:机智的小鱼君 */
 .noteTA-button > button {
     position: relative;
-    border: 1px solid #ccc;
+    border: 1px solid var(--theme-text-color);
+    color: var(--theme-text-color);
     padding: 0.2em 0.6em;
     transition: all 0.24s ease;
     cursor: pointer;
@@ -224,7 +225,7 @@ aside#moe-global-siderail #moe-custom-sidenav-block h2 {
 }
 
 /* mbox圆角 */
-.infoBox {
+.skin-moeskin .infoBox {
     border-radius: 0.5rem;
     margin-bottom: 0.5rem;
 }
@@ -234,40 +235,40 @@ aside#moe-global-siderail #moe-custom-sidenav-block h2 {
 }
 
 /* 信息框圆角 */
-table:is(.moe-infobox, .infoboxSpecial),
+table:is(.moe-infobox, .infobox, .infoboxSpecial),
 .infotemplatebox {
     border-radius: 0.5rem;
     overflow: hidden;
 }
 
-table:is(.moe-infobox, .infotemplatebox, .infoboxSpecial) tbody > tr:first-of-type > td:first-of-type {
+table:is(.moe-infobox, .infobox, .infotemplatebox, .infoboxSpecial) tbody > tr:first-of-type > td:first-of-type {
     border-start-start-radius: 0.5rem;
 }
 
-table:is(.moe-infobox, .infotemplatebox, .infoboxSpecial) tbody > tr:first-of-type > td:last-of-type {
+table:is(.moe-infobox, .infobox, .infotemplatebox, .infoboxSpecial) tbody > tr:first-of-type > td:last-of-type {
     border-start-end-radius: 0.5rem;
 }
 
-table:is(.moe-infobox, .infotemplatebox, .infoboxSpecial) tbody > tr:last-of-type > td:first-of-type {
+table:is(.moe-infobox, .infobox, .infotemplatebox, .infoboxSpecial) tbody > tr:last-of-type > td:first-of-type {
     border-end-start-radius: 0.5rem;
 }
 
-table:is(.moe-infobox, .infotemplatebox, .infoboxSpecial) tbody > tr:last-of-type > td:last-of-type {
+table:is(.moe-infobox, .infobox, .infotemplatebox, .infoboxSpecial) tbody > tr:last-of-type > td:last-of-type {
     border-end-end-radius: 0.5rem;
 }
 
 /* 大家族圆角 */
 table.navbox {
-    border-radius: 0.75rem;
+    border-radius: 0.5rem;
     overflow: hidden;
     box-shadow: 0 0 0 1px #aaa;
 }
 
-.skin-moeskin table.navbox + .skin-moeskin table.navbox {
-    margin-top: 0.5rem;
+table.navbox > tbody > tr > td > table {
+    border-radius: 0.375rem;
+    overflow: hidden;
 }
 
-table.navbox > tbody > tr > td > table {
-    border-radius: 0.5rem;
-    overflow: hidden;
+.skin-moeskin table.navbox + table.navbox {
+    margin-top: 0.5rem;
 }
