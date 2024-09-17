@@ -145,6 +145,30 @@ $.wikiLoveOptions.types.mgpSpecial = {
             title: "空中花园萌百资料库勋章",
             image: "空中花园萌百资料库勋章.png",
         },
+        azurlane: {
+            fields: ["message"],
+            option: "碧蓝航线优秀指挥官星章",
+            descr: "碧蓝航线优秀指挥官星章用于表彰在碧蓝航线专题中有卓越贡献的编辑者。——作者：User:本森级7号舰拉菲",
+            header: "给您一个星章！",
+            title: "碧蓝航线优秀指挥官星章",
+            image: "碧蓝航线优秀指挥官星章.png",
+        },
+        moesuper: {
+            fields: ["message"],
+            option: "萌之超萌星章",
+            descr: "萌之超萌星章用于表彰对于萌与萌属性相关条目有显著贡献的编辑者。——作者:User:Tix",
+            header: "给您一个星章！",
+            title: "萌之超萌星章",
+            image: "萌之超萌星章.png",
+        },
+        bandori: {
+            fields: ["message"],
+            option: "Random Star星章",
+            descr: "Random Star星章用于表彰在BanG Dream!相关条目有显著贡献的编辑者。",
+            header: "给您一把Random Star！",
+            title: "Random Star星章",
+            image: "Random Star星章.png",
+        },
     },
 };
 // </nowiki>
