@@ -57,9 +57,12 @@
 
 本仓库包含下列脚本：
 
-- `npm run test` 方便检测代码错误；
-- `npm run format` 可修正可被自动修正的错误；
-- `npm run ci` 可通过临时修改镜像源的方式加快 `npm ci` 速度。
+- `npm run test` 方便检测代码错误
+- `npm run format` 可修正可被自动修正的错误
+- `npm run ci` 可通过临时修改镜像源的方式加快 `npm ci` 速度
+- `npm run build` 手动编译全部（CSS+JS）代码
+  - `npm run build:css` 手动编译所有 CSS 代码
+  - `npm run build:js` 手动编译所有 JS 代码
 
 ## 自动化流程
 

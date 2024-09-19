@@ -12,7 +12,10 @@
     "scripts": {
         "test": "eslint src && stylelint src/**/*.css && v8r && node scripts/emailmapChecker/index.js",
         "format": "eslint src --fix && stylelint src/**/*.css --fix",
-        "ci": "export RANDOM_UUID=$(uuidgen) && rm -rdf node_modules && node scripts/ci/before.js && npm ci && node scripts/ci/after.js"
+        "ci": "export RANDOM_UUID=$(uuidgen) && rm -rdf node_modules && node scripts/ci/before.js && npm ci && node scripts/ci/after.js",
+        "build": "run-p build:js build:css",
+        "build:css": "postcss src/**/*.css --base src/ -d dist/",
+        "build:js": "tsc --project tsconfig.production.json"
     },
     "dependencies": {
         "@actions/artifact": "^2.1.9",
@@ -63,5 +66,8 @@
         "unassertify": "^3.0.1",
         "v8r": "^4.1.0",
         "yaml": "^2.5.1"
+    },
+    "devDependencies": {
+        "npm-run-all2": "^6.2.3"
     }
 }
