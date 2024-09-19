@@ -319,6 +319,7 @@ span[lang="ja" i] :is(i, [style*="italic" i]) {
 .heimu a,
 a .heimu,
 a.new .heimu,
+span.heimu a:visited,
 span.heimu a.new,
 span.heimu a.external,
 span.heimu a.external:visited,
