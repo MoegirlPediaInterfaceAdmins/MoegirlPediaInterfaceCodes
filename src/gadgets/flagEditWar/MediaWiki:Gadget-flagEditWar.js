@@ -81,7 +81,7 @@ $(() => {
                     action: "edit",
                     assertuser: username,
                     title: pagename,
-                    section: 0,
+                    // section: 0,
                     prependtext: template,
                     minor: true,
                     summary: `添加${summary}`,
