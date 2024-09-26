@@ -66,9 +66,4 @@
     // 滚动公告
     startScroll();
     autoScroll();
-    // T:分类项目拼音索引中访问链接从zh跳转到mobile或mzh
-    $(".external.text").each((_, ele) => {
-        const $ele = $(ele);
-        $ele.attr("href", $ele.attr("href").replace(/(mobile|mzh)\.moegirl\.org\.cn/, "zh.moegirl.org.cn"));
-    });
 })();
