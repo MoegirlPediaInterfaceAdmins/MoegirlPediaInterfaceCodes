@@ -177,7 +177,7 @@ $(() => (async () => {
                     const editIn30days = !!queryResult.query.usercontribs[0];
 
                     const blockIn60days = ((logevents) => {
-                        if (!logevents) {
+                        if (!logevents?.[0]) {
                             return false;
                         }
                         if (logevents[0].params.duration === "indefinite") {
