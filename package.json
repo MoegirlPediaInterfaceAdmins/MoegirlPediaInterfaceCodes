@@ -18,7 +18,7 @@
         "build:js": "tsc --project tsconfig.production.json"
     },
     "dependencies": {
-        "@actions/artifact": "^2.1.10",
+        "@actions/artifact": "^2.1.11",
         "@actions/core": "^1.11.1",
         "@annangela/eslint-config": "^6.0.0",
         "@annangela/eslint-formatter-gha": "^2.0.0",
