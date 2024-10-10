@@ -2,8 +2,8 @@
 
 /* 全局背景图片 */
 body.skin-moeskin #moe-global-background {
-    --theme-background-color: rgb(185 214 244);
-    --background-url: url("https://storage.moegirl.org.cn/console-plus/uploads/2024/02/18/d331b764a34f5739b5bf395fff15c858.jpeg");
+    /* --theme-background-color: rgb(185 214 244); */
+    --background-url: url("https://storage.moegirl.org.cn/console-plus/uploads/2024/10/10/bcc8bbfa2ce1438ded8ee209222109ee.jpeg");
 }
 
 /* 修复全局顶部活动展示区的图片缝隙 */
