@@ -57,15 +57,15 @@
         "postcss-selector-not": "^8.0.0",
         "semver": "^7.6.3",
         "simple-git": "^3.27.0",
-        "stylelint": "^16.9.0",
+        "stylelint": "^16.10.0",
         "stylelint-actions-formatters": "^16.3.1",
         "stylelint-config-standard": "^36.0.1",
-        "types-mediawiki": "^1.8.0",
+        "types-mediawiki": "^1.8.1",
         "typescript": "^5.4.5",
         "uglify-js": "^3.19.3",
         "unassertify": "^3.0.1",
         "v8r": "^4.1.0",
-        "yaml": "^2.5.1"
+        "yaml": "^2.6.0"
     },
     "devDependencies": {
         "npm-run-all2": "^6.2.3"
