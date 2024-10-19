@@ -179,6 +179,7 @@ $(() => (async () => {
                         assertuser: username,
                         list: "usercontribs|logevents",
                         uclimit: 1,
+                        ucstart: moment(pageCreationTime).unix(),
                         ucend: moment(pageCreationTime).subtract(30, "days").unix(),
                         ucuser: u,
                         ucprop: "",
