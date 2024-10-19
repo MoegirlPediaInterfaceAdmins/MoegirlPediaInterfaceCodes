@@ -125,24 +125,24 @@ $(() => (async () => {
             const pageCreationTime = pageCreationTimeResult.query.pages[0].revisions[0].timestamp;
             console.log("[ACUserPing] Got page creation time.", pageCreationTime);
 
-            // this.addStep(wgULS("正在获取忽略用户名单……", "正在獲取忽略使用者名單……"));
-            // const ignoreResult = await api.get({
-            //     action: "query",
-            //     assertuser: username,
-            //     prop: "revisions",
-            //     list: "allusers",
-            //     titles: "模块:UserGroup/data",
-            //     formatversion: 2,
-            //     rvprop: "content",
-            //     augroup: "bot",
-            //     aulimit: "max",
-            // });
-            // const bots = ignoreResult.query.allusers.map((u) => u.name);
-            // const MGUsers = JSON.parse(ignoreResult.query.pages[0].revisions[0].content);
+            this.addStep(wgULS("正在获取忽略用户名单……", "正在獲取忽略使用者名單……"));
+            const ignoreResult = await api.get({
+                action: "query",
+                assertuser: username,
+                prop: "revisions",
+                list: "allusers",
+                titles: "模块:UserGroup/data",
+                formatversion: 2,
+                rvprop: "content",
+                augroup: "bot",
+                aulimit: "max",
+            });
+            const bots = ignoreResult.query.allusers.map((u) => u.name);
+            const MGUsers = JSON.parse(ignoreResult.query.pages[0].revisions[0].content);
 
-            // const ignoreList = Array.from(new Set([...bots, ...MGUsers.bureaucrat, ...MGUsers.sysop, ...MGUsers.patroller, ...MGUsers.staff]));
-            // const filterResult = (result) => result.query.pages[pageid].contributors.map((c) => c.name).filter((c) => !ignoreList.includes(c));
-            // console.log("[ACUserPing] Got ignored user list.", ignoreList);
+            const ignoreList = Array.from(new Set([...bots, ...MGUsers.bureaucrat, ...MGUsers.sysop, ...MGUsers.patroller, ...MGUsers.staff]));
+            const filterResult = (result) => result.query.pages[pageid].contributors.map((c) => c.name).filter((c) => !ignoreList.includes(c));
+            console.log("[ACUserPing] Got ignored user list.", ignoreList);
 
             this.addStep(wgULS("正在获取发言用户名单……", "正在獲取發言使用者名稱單……"));
             let contributorsResult;
@@ -153,16 +153,16 @@ $(() => (async () => {
                     assertuser: username,
                     prop: "contributors",
                     pageids: pageid,
-                    pcexcludegroup: "bot|bureaucrat|sysop|patroller|staff",
+                    pcexcludegroup: "bot|bureaucrat|sysop|staff",
                     pclimit: "max",
                     pccontinue: contributorsResult?.continue?.pccontinue ?? "|",
                 });
-                nonMGUsers = nonMGUsers.concat(contributorsResult.query.pages[pageid].contributors.map((c) => c.name));
+                nonMGUsers = nonMGUsers.concat(filterResult(contributorsResult));
             } while (contributorsResult?.continue?.pccontinue);
             console.log("[ACUserPing] Got filtered list of users.", nonMGUsers);
 
             const validAC = await chunkify(nonMGUsers, hasHighLimit && 500 || undefined).reduce(async (acc, chunk, i) => {
-                this.addStep(wgULS(`正在核对用户条件……（第${i + 1}批）`, `正在核對使用者條件……（第${i + 1}批）`));
+                this.addStep(wgULS(`正在复核用户条件……（第${i + 1}批）`, `正在複核使用者條件……（第${i + 1}批）`));
                 const prelimRes = (await api.get({
                     action: "query",
                     assertuser: username,
