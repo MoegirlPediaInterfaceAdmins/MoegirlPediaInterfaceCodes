@@ -111,7 +111,21 @@ $(() => (async () => {
                 this.stepList]);
             this.updateSize();
 
-            this.addStep(wgULS("正在获取忽略用户名单...", "正在獲取忽略使用者名單...", null, null, "正在獲取忽略用戶名單 ..."));
+            this.addStep(wgULS("正在获取提案发起时间……", "正在獲取提案發起時間……"));
+            const pageCreationTimeResult = await api.get({
+                action: "query",
+                formatversion: 2,
+                assertuser: username,
+                prop: "revisions",
+                pageids: pageid,
+                rvprop: "timestamp",
+                rvlimit: 1,
+                rvdir: "newer",
+            });
+            const pageCreationTime = pageCreationTimeResult.query.pages[0].revisions[0].timestamp;
+            console.log("[ACUserPing] Got page creation time.", pageCreationTime);
+
+            this.addStep(wgULS("正在获取忽略用户名单……", "正在獲取忽略使用者名單……"));
             const ignoreResult = await api.get({
                 action: "query",
                 assertuser: username,
@@ -130,7 +144,7 @@ $(() => (async () => {
             const filterResult = (result) => result.query.pages[pageid].contributors.map((c) => c.name).filter((c) => !ignoreList.includes(c));
             console.log("[ACUserPing] Got ignored user list.", ignoreList);
 
-            this.addStep(wgULS("正在获取发言用户名单...", "正在獲取發言使用者名稱單..."));
+            this.addStep(wgULS("正在获取发言用户名单……", "正在獲取發言使用者名稱單……"));
             let contributorsResult;
             let nonMGUsers = [];
             do {
@@ -148,14 +162,14 @@ $(() => (async () => {
             console.log("[ACUserPing] Got filtered list of users.", nonMGUsers);
 
             const validAC = await chunkify(nonMGUsers, hasHighLimit && 500 || undefined).reduce(async (acc, chunk, i) => {
-                this.addStep(wgULS(`正在复核用户条件...（第${i + 1}批）`, `正在複核使用者條件...（第${i + 1}批）`));
+                this.addStep(wgULS(`正在复核用户条件……（第${i + 1}批）`, `正在複核使用者條件……（第${i + 1}批）`));
                 const prelimRes = (await api.get({
                     action: "query",
                     assertuser: username,
                     list: "users",
                     ususers: chunk.join("|"),
                     usprop: "implicitgroups|blockinfo|registration",
-                })).query.users.filter((u) => u.implicitgroups.includes("autoconfirmed") && !u.blockedby && moment().diff(moment(u.registration), "days") > 33).map((u) => u.name);
+                })).query.users.filter((u) => u.implicitgroups.includes("autoconfirmed") && !u.blockedby && moment(pageCreationTime).diff(moment(u.registration), "days") > 33).map((u) => u.name);
                 console.log(`[ACUserPing] Chunk ${i + 1}: Got preliminary result.`, prelimRes);
 
                 const lastCheck = await Promise.all(prelimRes.map(async (u) => {
@@ -165,9 +179,11 @@ $(() => (async () => {
                         assertuser: username,
                         list: "usercontribs|logevents",
                         uclimit: 1,
-                        ucend: moment().subtract(30, "days").unix(),
+                        ucstart: moment(pageCreationTime).unix(),
+                        ucend: moment(pageCreationTime).subtract(30, "days").unix(),
                         ucuser: u,
                         ucprop: "",
+                        ucnamespace: "0|10|14|12|4",
                         leprop: "type|timestamp|details",
                         letype: "block",
                         letitle: `U:${u}`,
@@ -189,7 +205,7 @@ $(() => (async () => {
                                 unblocked = false;
                             } else if (e.action === "unblock") {
                                 unblocked = true;
-                            } else if (moment(e.params.expiry).isAfter(moment.utc().subtract(60, "days"))) {
+                            } else if (moment(e.params.expiry).isAfter(moment(pageCreationTime).subtract(60, "days"))) {
                                 return true;
                             } else {
                                 return false;
@@ -209,7 +225,7 @@ $(() => (async () => {
                 return [...await acc, ...refinedResult];
             }, []);
 
-            this.addStep(wgULS("正在合并结果...", "正在合併結果..."));
+            this.addStep(wgULS("正在合并结果……", "正在合併結果……"));
             const plain = validAC.join("\n"), ping = chunkify(validAC).map((c) => `{{ping|${c.join("|")}}}`).join("\n");
             console.log("[ACUserPing] Success!", plain, ping);
 
