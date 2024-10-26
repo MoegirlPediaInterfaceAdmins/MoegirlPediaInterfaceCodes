@@ -22,6 +22,7 @@ peers: []
 
 dependencies:
   - ext.gadget.prism-core
+  - ext.gadget.libCachedCode
 
 _sites:
   - zh
