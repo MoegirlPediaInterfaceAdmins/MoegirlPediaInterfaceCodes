@@ -8,8 +8,7 @@ supportsUrlLoad: false
 
 targets: []
 
-skins:
-  - vector
+skins: []
 
 actions: []
 
@@ -24,6 +23,7 @@ peers: []
 
 dependencies:
   - ext.gadget.prism-core
+  - ext.gadget.prism-language-clike
 
 _sites:
   - zh
@@ -32,6 +32,5 @@ _sites:
 _section: system
 
 _files:
-  - MediaWiki:Gadget-prism-language-clike.js
   - MediaWiki:Gadget-prism-language-javascript.js
   - MediaWiki:Gadget-prism-language-javascript-extras.js

@@ -8,8 +8,7 @@ supportsUrlLoad: false
 
 targets: []
 
-skins:
-  - vector
+skins: []
 
 actions: []
 

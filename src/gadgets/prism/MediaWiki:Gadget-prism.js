@@ -2,9 +2,35 @@
 "use strict";
 $(() => {
     const acceptsLangs = {
+        // bash
+        bash: "bash",
+        sh: "bash",
+        shell: "bash",
+        bsh: "bash",
+
+        // c
+        c: "c",
+
+        // coffeescript
+        coffeescript: "coffeescript",
+        coffee: "coffeescript",
+
+        // cpp
+        cpp: "cpp",
+        cc: "cpp",
+        cxx: "cpp",
+
+        // c#
+        csharp: "csharp",
+        cs: "csharp",
+        dotnet: "csharp",
+
         // css
         css: "css",
         "sanitized-css": "css",
+
+        // java
+        java: "java",
 
         // javascript
         javascript: "javascript",
@@ -28,6 +54,9 @@ $(() => {
         markup: "markup",
         htm: "markup",
         html: "markup",
+        mxml: "markup",
+        xhtml: "markup",
+        xsl: "markup",
         mathml: "markup",
         svg: "markup",
         xml: "markup",
@@ -35,11 +64,24 @@ $(() => {
         atom: "markup",
         rss: "markup",
 
+        // perl
+        perl: "perl",
+        pl: "perl",
+        pm: "perl",
+
         // php
         php: "php",
 
+        // python
+        python: "python",
+        py: "python",
+
         // regex
         regex: "regex",
+
+        // ruby
+        ruby: "ruby",
+        rb: "ruby",
 
         // typescript
         typescript: "typescript",
