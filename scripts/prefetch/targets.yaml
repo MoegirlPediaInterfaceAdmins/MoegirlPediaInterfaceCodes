@@ -20,14 +20,6 @@
 
 - type: npm
   gadget:
-    name: prism-language-javascript
-    fileName: MediaWiki:Gadget-prism-language-clike.js
-  moduleName: prismjs
-  distFilePath: components/prism-clike.js
-  version: "1"
-
-- type: npm
-  gadget:
     name: prism-core
     fileName: MediaWiki:Gadget-prism-core.js
   moduleName: prismjs
@@ -54,6 +46,54 @@
 
 - type: npm
   gadget:
+    name: prism-language-bash
+    fileName: MediaWiki:Gadget-prism-language-bash.js
+  moduleName: prismjs
+  distFilePath: components/prism-bash.js
+  version: "1"
+
+- type: npm
+  gadget:
+    name: prism-language-c
+    fileName: MediaWiki:Gadget-prism-language-c.js
+  moduleName: prismjs
+  distFilePath: components/prism-c.js
+  version: "1"
+
+- type: npm
+  gadget:
+    name: prism-language-clike
+    fileName: MediaWiki:Gadget-prism-language-clike.js
+  moduleName: prismjs
+  distFilePath: components/prism-clike.js
+  version: "1"
+
+- type: npm
+  gadget:
+    name: prism-language-coffeescript
+    fileName: MediaWiki:Gadget-prism-language-coffeescript.js
+  moduleName: prismjs
+  distFilePath: components/prism-coffeescript.js
+  version: "1"
+
+- type: npm
+  gadget:
+    name: prism-language-cpp
+    fileName: MediaWiki:Gadget-prism-language-cpp.js
+  moduleName: prismjs
+  distFilePath: components/prism-cpp.js
+  version: "1"
+
+- type: npm
+  gadget:
+    name: prism-language-csharp
+    fileName: MediaWiki:Gadget-prism-language-csharp.js
+  moduleName: prismjs
+  distFilePath: components/prism-csharp.js
+  version: "1"
+
+- type: npm
+  gadget:
     name: prism-language-css
     fileName: MediaWiki:Gadget-prism-language-css.js
   moduleName: prismjs
@@ -66,6 +106,14 @@
     fileName: MediaWiki:Gadget-prism-language-css-extras.js
   moduleName: prismjs
   distFilePath: components/prism-css-extras.js
+  version: "1"
+
+- type: npm
+  gadget:
+    name: prism-language-java
+    fileName: MediaWiki:Gadget-prism-language-java.js
+  moduleName: prismjs
+  distFilePath: components/prism-java.js
   version: "1"
 
 - type: npm
@@ -128,6 +176,16 @@
 
 - type: npm
   gadget:
+    name: prism-language-perl
+    fileName: MediaWiki:Gadget-prism-language-perl.js
+  moduleName: prismjs
+  distFilePath: components/prism-perl.js
+  version: "1"
+  removeCode:
+    - // eslint-disable-next-line regexp/strict
+
+- type: npm
+  gadget:
     name: prism-language-php
     fileName: MediaWiki:Gadget-prism-language-markup-templating.js
   moduleName: prismjs
@@ -152,10 +210,26 @@
 
 - type: npm
   gadget:
+    name: prism-language-python
+    fileName: MediaWiki:Gadget-prism-language-python.js
+  moduleName: prismjs
+  distFilePath: components/prism-python.js
+  version: "1"
+
+- type: npm
+  gadget:
     name: prism-language-regex
     fileName: MediaWiki:Gadget-prism-language-regex.js
   moduleName: prismjs
   distFilePath: components/prism-regex.js
+  version: "1"
+
+- type: npm
+  gadget:
+    name: prism-language-ruby
+    fileName: MediaWiki:Gadget-prism-language-ruby.js
+  moduleName: prismjs
+  distFilePath: components/prism-ruby.js
   version: "1"
 
 - type: npm

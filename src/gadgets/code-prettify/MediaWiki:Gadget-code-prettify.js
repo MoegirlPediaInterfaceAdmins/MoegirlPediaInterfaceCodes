@@ -9,6 +9,9 @@
 // <pre>
 "use strict";
 $(() => {
+    if (mw.user.options.get("gadget-prism")) {
+        return;
+    }
     if (mw.config.get("wgPageName").match(/\.js$/)) {
         $(".mw-code").addClass("prettyprint lang-js");
     }

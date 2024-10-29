@@ -23,6 +23,7 @@ peers: []
 
 dependencies:
   - ext.gadget.prism-core
+  - ext.gadget.prism-language-c
 
 _sites:
   - zh
@@ -31,4 +32,4 @@ _sites:
 _section: system
 
 _files:
-  - MediaWiki:Gadget-prism-language-yaml.js
+  - MediaWiki:Gadget-prism-language-cpp.js

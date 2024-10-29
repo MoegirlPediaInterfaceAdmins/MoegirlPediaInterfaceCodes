@@ -1,4 +1,3 @@
 ignorePatterns:
-  - MediaWiki:Gadget-prism-language-clike.js
   - MediaWiki:Gadget-prism-language-javascript.js
   - MediaWiki:Gadget-prism-language-javascript-extras.js
