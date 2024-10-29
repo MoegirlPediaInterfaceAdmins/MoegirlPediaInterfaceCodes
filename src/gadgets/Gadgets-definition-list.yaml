@@ -146,3 +146,13 @@
     - prism-plugin-match-braces
     - prism-plugin-phpdoc
     - prism-plugin-previewers
+    - prism-language-bash
+    - prism-language-c
+    - prism-language-clike
+    - prism-language-coffeescript
+    - prism-language-cpp
+    - prism-language-csharp
+    - prism-language-java
+    - prism-language-perl
+    - prism-language-python
+    - prism-language-ruby
