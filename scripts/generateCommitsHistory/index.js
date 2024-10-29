@@ -103,7 +103,7 @@ for (const { hash, _date, authorName, _authorEmail, _signatureKey, committerName
         debugConsole.log("\tNothing in src/ has been changed, skip.");
         continue;
     }
-    const isFromGithubWebInterface = signatureKey === .signatureKey && committerName === githubWebInterfaceFlowSignature.committerName && committerEmail === githubWebInterfaceFlowSignature.committerEmail;
+    const isFromGithubWebInterface = signatureKey === githubWebInterfaceFlowSignature.signatureKey && committerName === githubWebInterfaceFlowSignature.committerName && committerEmail === githubWebInterfaceFlowSignature.committerEmail;
     debugConsole.log("\tisFromGithubWebInterface:", isFromGithubWebInterface);
     const name = isFromGithubWebInterface ? authorName : committerName;
     const email = (isFromGithubWebInterface ? authorEmail : committerEmail).toLowerCase();
