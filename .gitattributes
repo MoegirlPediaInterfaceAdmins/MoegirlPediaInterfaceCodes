@@ -23,6 +23,8 @@ src/gadgets/prism-language-bash/MediaWiki:Gadget-prism-language-bash.js linguist
 src/gadgets/prism-language-c/MediaWiki:Gadget-prism-language-c.js linguist-generated=true
 src/gadgets/prism-language-clike/MediaWiki:Gadget-prism-language-clike.js linguist-generated=true
 src/gadgets/prism-language-coffeescript/MediaWiki:Gadget-prism-language-coffeescript.js linguist-generated=true
+src/gadgets/prism-language-cpp/MediaWiki:Gadget-prism-language-cpp.js linguist-generated=true
+src/gadgets/prism-language-csharp/MediaWiki:Gadget-prism-language-csharp.js linguist-generated=true
 src/gadgets/prism-language-css/MediaWiki:Gadget-prism-language-css.js linguist-generated=true
 src/gadgets/prism-language-css/MediaWiki:Gadget-prism-language-css-extras.js linguist-generated=true
 src/gadgets/prism-language-java/MediaWiki:Gadget-prism-language-java.js linguist-generated=true
