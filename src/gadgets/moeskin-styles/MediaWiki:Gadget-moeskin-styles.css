@@ -134,10 +134,6 @@ aside#moe-global-siderail #moe-custom-sidenav-block h2 {
     html > body.skin-moeskin .navbox-group + .navbox-list > .navbox-subgroup {
         border-left: 0.75em solid transparent;
     }
-
-    html > body.skin-moeskin .navbox td[rowspan] {
-        display: none;
-    }
 }
 
 :is(.image-box, .image-clip, .fit-image) img.lazyload[data-lazy-state="pending"] {
