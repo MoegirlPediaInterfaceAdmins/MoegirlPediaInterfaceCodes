@@ -7,7 +7,7 @@ $(() => {
     commonsUrl.path = "/extensions/Avatar/avatar.php";
     */
     const img = $("<img>").attr({
-        src: `https://img.moegirl.org.cn/common/avatars/${mw.config.get("wgUserId")}/origin.png?_`,
+        src: `https://img.moegirl.org.cn/common/avatars/${mw.config.get("wgUserId")}/128.png?_`,
         title: "上传头像",
     });
     const link = $("<a>").attr("href", "https://commons.moegirl.org.cn/Special:UploadAvatar").append(img);
