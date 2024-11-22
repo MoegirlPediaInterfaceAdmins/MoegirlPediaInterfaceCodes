@@ -1,17 +1,18 @@
 "use strict";
 // <pre>
 $(() => {
+    /*
     const commonsUrl = new mw.Uri("https://commons.moegirl.org.cn/");
     commonsUrl.query.user = mw.config.get("wgPageName").replace(/^user:/i, "");
     commonsUrl.path = "/extensions/Avatar/avatar.php";
-    const imgUrl = commonsUrl.clone();
-    imgUrl.query.user = mw.config.get("wgUserName");
+    */
     const img = $("<img>").attr({
-        src: imgUrl,
+        src: `https://img.moegirl.org.cn/common/avatars/${mw.config.get("wgUserId")}/origin.png?_`,
         title: "上传头像",
     });
     const link = $("<a>").attr("href", "https://commons.moegirl.org.cn/Special:UploadAvatar").append(img);
     $("#pt-userpage").before($('<li id="pt-avatar"></li>').append(link));
+    /*
     if (mw.config.get("wgNamespaceNumber") === 2 && !mw.config.get("wgPageName").includes("/")) {
         const hrefUrl = commonsUrl.clone();
         hrefUrl.path = "/Special:Viewavatar";
@@ -27,5 +28,6 @@ $(() => {
             height: "1.2em",
         })));
     }
+    */
 });
 // </pre>
