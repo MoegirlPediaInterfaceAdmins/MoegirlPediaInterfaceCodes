@@ -4,9 +4,8 @@
 
 "use strict";
 // <pre>
-$(() => {
+(() => {
     const DEFAULT_AVATAR = "https://img.moegirl.org.cn/moehime.jpg";
-    const userLinks = document.querySelectorAll(".mw-userlink[data-user-avatar]");
     /**
      * @param {HTMLElement} el
      */
@@ -51,6 +50,14 @@ $(() => {
         return avatarLink;
     };
 
-    userLinks.forEach(attachAvatarToUserLink);
-});
+    mw.hook("wikipage.content").add(
+        /**
+         * @param {JQuery<HTMLElement>} $content
+         */
+        ($content) => {
+            $content.find(".mw-userlink[data-user-avatar]").each((_, el) => {
+                attachAvatarToUserLink(el);
+            });
+        });
+})();
 // </pre>
