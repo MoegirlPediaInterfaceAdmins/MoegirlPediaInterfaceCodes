@@ -1,17 +1,37 @@
 "use strict";
 // <pre>
 $(() => {
-    /*
-    const commonsUrl = new mw.Uri("https://commons.moegirl.org.cn/");
-    commonsUrl.query.user = mw.config.get("wgPageName").replace(/^user:/i, "");
-    commonsUrl.path = "/extensions/Avatar/avatar.php";
-    */
-    const img = $("<img>").attr({
-        src: `https://img.moegirl.org.cn/common/avatars/${mw.config.get("wgUserId")}/128.png?_`,
+    const UploadAvatar = (_, children) => $("<a>", {
+        href: "https://commons.moegirl.org.cn/Special:UploadAvatar",
         title: "上传头像",
-    });
-    const link = $("<a>").attr("href", "https://commons.moegirl.org.cn/Special:UploadAvatar").append(img);
-    $("#pt-userpage").before($('<li id="pt-avatar"></li>').append(link));
+        target: "_blank",
+    }).append(children);
+    const ViewAvatar = ({ userName }, children) => {
+        const url = new URL("https://commons.moegirl.org.cn/Special:Viewavatar");
+        userName && url.searchParams.set("user", userName);
+        return $("<a>", {
+            href: url.href,
+            title: "查看头像",
+            target: "_blank",
+        }).append(children);
+    };
+
+    // Current user avatar
+    const currentUserAvatar = mw.config.get("ext.avatar.current_user.thumb_url");
+    if (currentUserAvatar) {
+        const $img = $("<img>", { src: currentUserAvatar });
+        const $avatarLink = UploadAvatar({}, $img);
+        const $ptAvatar = $("<li>", { id: "pt-avatar" }).append($avatarLink);
+        $("#pt-userpage").before($ptAvatar);
+    }
+
+    // Page user avatar
+    const pageUserAvatar = mw.config.get("ext.avatar.page_user.thumb_url");
+    if (pageUserAvatar && !mw.config.get("wgPageName").includes("/")) {
+        const $img = $("<img>", { src: pageUserAvatar }).attr({ id: "user-rootpage-avatar" }).css({ width: "1.2em", height: "1.2em" });
+        const $avatarLink = ViewAvatar({ userName: mw.config.get("wgTitle") }, $img);
+        $("#firstHeading").prepend($avatarLink);
+    }
     /*
     if (mw.config.get("wgNamespaceNumber") === 2 && !mw.config.get("wgPageName").includes("/")) {
         const hrefUrl = commonsUrl.clone();
