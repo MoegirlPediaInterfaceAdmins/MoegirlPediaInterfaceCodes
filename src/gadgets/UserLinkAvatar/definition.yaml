@@ -2,7 +2,7 @@ ResourceLoader: true
 
 hidden: false
 
-default: false
+default: true
 
 supportsUrlLoad: false
 
