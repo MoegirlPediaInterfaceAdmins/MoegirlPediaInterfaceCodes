@@ -19,7 +19,7 @@ $(() => {
         if (checkIfAvatarLoaded(target)) {
             return;
         }
-        const userName = decodeURI(target.getAttribute("href").split(":").pop());
+        const userName = target.textContent.trim();
         const avatar = target.dataset.userAvatar;
 
         const avatarLink = document.createElement("a");
