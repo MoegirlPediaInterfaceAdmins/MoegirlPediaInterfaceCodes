@@ -36,6 +36,7 @@
             }
         });
 
+        avatarLink.classList.add("userlink-avatar");
         avatarLink.href = `https://commons.moegirl.org.cn/Special:ViewAvatar?user=${userName}`;
         avatarLink.target = "_blank";
         avatarLink.title = "查看头像";
