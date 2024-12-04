@@ -22,23 +22,25 @@
     }
     const btnSettings = new OO.ui.ButtonWidget({
         classes: ["tool"], icon: "settings", framed: false, title: "代码高亮设置",
-    }).on("click", async () => {
+    }).on("click", () => {
         $("#cm-settings").trigger("click");
     });
     const btnHighlight = new OO.ui.ButtonWidget({
         classes: ["tool"], icon: "highlight", framed: false, title: "代码高亮开关",
-    }).on("click", async () => {
-        if (cm) {
-            cm.toggle();
-            $(".group-codeeditor-main").toggle();
-            btnSettings.$element.toggle();
-        } else {
-            await init();
-            btnHighlight.$element.after(btnSettings.$element);
-        }
-        btnHighlight.$element.toggleClass("tool-active");
-        state = !state;
-        localObjectStorage.setItem("wikieditor-codemirror", state);
+    }).on("click", () => {
+        (async () => {
+            if (cm) {
+                cm.toggle();
+                $(".group-codeeditor-main").toggle();
+                btnSettings.$element.toggle();
+            } else {
+                await init();
+                btnHighlight.$element.after(btnSettings.$element);
+            }
+            btnHighlight.$element.toggleClass("tool-active");
+            state = !state;
+            localObjectStorage.setItem("wikieditor-codemirror", state);
+        })();
     });
     $textarea.on("wikiEditor-toolbar-doneInitialSections", () => {
         btnHighlight.$element.appendTo("#wikiEditor-section-main > .group-insert");
