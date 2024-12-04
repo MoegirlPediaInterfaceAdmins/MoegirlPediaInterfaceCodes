@@ -12,13 +12,7 @@
     const isAdvanced = ["loading", "loaded", "executing", "ready"].includes(mw.loader.getState("ext.wikiEditor"));
     const init = async () => {
         if (!window.CodeMirror6) {
-            await new Promise((resolve) => {
-                const script = document.createElement("script");
-                script.addEventListener("load", resolve);
-                script.type = "module";
-                script.src = "https://testingcf.jsdelivr.net/npm/@bhsd/codemirror-mediawiki@latest/dist/mw.min.js";
-                document.head.append(script);
-            });
+            await libCachedCode.injectCachedCode("https://testingcf.jsdelivr.net/npm/@bhsd/codemirror-mediawiki@latest/dist/wiki.min.js", "js");
         }
         cm = await window.CodeMirror6.fromTextArea($textarea[0]);
         $(".group-codeeditor-main").hide();
@@ -33,12 +27,19 @@
         if (cm) {
             cm.toggle();
             $(".group-codeeditor-main").toggle();
+            btn2.$element.toggle();
         } else {
             await init();
+            btn.$element.after(btn2.$element);
         }
         btn.$element.toggleClass("tool-active");
         state = !state;
         localObjectStorage.setItem("wikieditor-codemirror", state);
+    });
+    const btn2 = new OO.ui.ButtonWidget({
+        classes: ["tool"], icon: "settings", framed: false, title: "代码高亮设置",
+    }).on("click", async () => {
+        $("#cm-settings").trigger("click");
     });
     $textarea.on("wikiEditor-toolbar-doneInitialSections", () => {
         btn.$element.appendTo("#wikiEditor-section-main > .group-insert");
@@ -51,8 +52,9 @@
         state = false;
     }
     if (state) {
-        await mw.loader.using("ext.wikiEditor");
+        await mw.loader.using(["ext.wikiEditor", "oojs-ui.styles.icons-interactions"]);
         await init();
         btn.$element.addClass("tool-active");
+        btn.$element.after(btn2.$element);
     }
 })();
