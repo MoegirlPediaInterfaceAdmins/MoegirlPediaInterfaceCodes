@@ -1,5 +1,4 @@
 "use strict";
-// 本页面大部分内容均直接或间接修改自[[MW:Extension:CodeMirror]]
 (async () => {
     if (!["edit", "submit"].includes(mw.config.get("wgAction"))) {
         return;
@@ -21,32 +20,32 @@
         init();
         return;
     }
-    const btn = new OO.ui.ButtonWidget({
+    const btnSettings = new OO.ui.ButtonWidget({
+        classes: ["tool"], icon: "settings", framed: false, title: "代码高亮设置",
+    }).on("click", async () => {
+        $("#cm-settings").trigger("click");
+    });
+    const btnHighlight = new OO.ui.ButtonWidget({
         classes: ["tool"], icon: "highlight", framed: false, title: "代码高亮开关",
     }).on("click", async () => {
         if (cm) {
             cm.toggle();
             $(".group-codeeditor-main").toggle();
-            btn2.$element.toggle();
+            btnSettings.$element.toggle();
         } else {
             await init();
-            btn.$element.after(btn2.$element);
+            btnHighlight.$element.after(btnSettings.$element);
         }
-        btn.$element.toggleClass("tool-active");
+        btnHighlight.$element.toggleClass("tool-active");
         state = !state;
         localObjectStorage.setItem("wikieditor-codemirror", state);
     });
-    const btn2 = new OO.ui.ButtonWidget({
-        classes: ["tool"], icon: "settings", framed: false, title: "代码高亮设置",
-    }).on("click", async () => {
-        $("#cm-settings").trigger("click");
-    });
     $textarea.on("wikiEditor-toolbar-doneInitialSections", () => {
-        btn.$element.appendTo("#wikiEditor-section-main > .group-insert");
+        btnHighlight.$element.appendTo("#wikiEditor-section-main > .group-insert");
     });
     const group = $("#wikiEditor-section-main > .group-insert")[0];
-    if (group && !group.contains(btn.$element[0])) {
-        btn.$element.appendTo(group);
+    if (group && !group.contains(btnHighlight.$element[0])) {
+        btnHighlight.$element.appendTo(group);
     }
     if (mw.config.get("wgPageContentModel") !== "wikitext" && mw.user.options.get("usecodeeditor")) {
         state = false;
@@ -54,7 +53,7 @@
     if (state) {
         await mw.loader.using(["ext.wikiEditor", "oojs-ui.styles.icons-interactions"]);
         await init();
-        btn.$element.addClass("tool-active");
-        btn.$element.after(btn2.$element);
+        btnHighlight.$element.addClass("tool-active");
+        btnHighlight.$element.after(btnSettings.$element);
     }
 })();
