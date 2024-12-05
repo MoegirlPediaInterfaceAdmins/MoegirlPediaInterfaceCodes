@@ -1,7 +1,7 @@
 /* base styles */
 pre.shiki {
     position: relative;
-    font-family: "JetBrainsMono Nerd Font", "JetBrains Mono NF", "JetBrains Mono", "Fira Code", "Consolas", "Monaco", "Andale Mono", "Ubuntu Mono", monospace;
+    font-family: "JetBrainsMono Nerd Font", "JetBrains Mono NF", "JetBrains Mono", "Fira Code", Consolas, Monaco, "Andale Mono", "Ubuntu Mono", monospace;
     font-size: 1rem;
     padding: 1em;
     border-radius: 0.5em;
@@ -27,6 +27,7 @@ pre.shiki.line-number .shiki-code {
     counter-reset: step;
     counter-increment: step calc(var(--start, 1) - 1);
 }
+
 pre.shiki.line-number .shiki-code .line::before {
     content: counter(step);
     counter-increment: step;
@@ -34,5 +35,5 @@ pre.shiki.line-number .shiki-code .line::before {
     margin-right: 1em;
     display: inline-block;
     text-align: right;
-    color: rgba(115, 138, 148, 0.4);
+    color: rgb(115 138 148 / 40%);
 }
