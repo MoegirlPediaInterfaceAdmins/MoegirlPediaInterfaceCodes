@@ -1,0 +1,38 @@
+/* base styles */
+pre.shiki {
+    position: relative;
+    font-family: "JetBrainsMono Nerd Font", "JetBrains Mono NF", "JetBrains Mono", "Fira Code", "Consolas", "Monaco", "Andale Mono", "Ubuntu Mono", monospace;
+    font-size: 1rem;
+    padding: 1em;
+    border-radius: 0.5em;
+    white-space: pre;
+    overflow-x: auto;
+}
+
+/* lang badge */
+pre.shiki > .shiki-lang-badge {
+    position: absolute;
+    right: 0.5em;
+    top: 0.5em;
+    font-size: 10px;
+    border-radius: 99vw;
+    background: #000;
+    padding: 0.2em 0.5em;
+    user-select: none;
+    pointer-events: none;
+}
+
+/* line number */
+pre.shiki.line-number .shiki-code {
+    counter-reset: step;
+    counter-increment: step calc(var(--start, 1) - 1);
+}
+pre.shiki.line-number .shiki-code .line::before {
+    content: counter(step);
+    counter-increment: step;
+    width: 2em;
+    margin-right: 1em;
+    display: inline-block;
+    text-align: right;
+    color: rgba(115, 138, 148, 0.4);
+}
