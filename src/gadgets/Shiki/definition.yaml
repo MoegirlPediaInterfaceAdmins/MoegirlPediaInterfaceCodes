@@ -1,0 +1,33 @@
+ResourceLoader: true
+
+hidden: false
+
+default: false
+
+supportsUrlLoad: false
+
+targets: []
+
+skins: []
+
+actions: []
+
+type: general
+
+package: false
+
+rights: []
+
+peers: []
+
+dependencies:
+
+_sites:
+  - zh
+  - commons
+
+_section: browsing
+
+_files:
+  - MediaWiki:Gadget-Shiki.js
+  - MediaWiki:Gadget-Shiki.css
