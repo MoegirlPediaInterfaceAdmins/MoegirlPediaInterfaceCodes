@@ -1,5 +1,4 @@
 "use strict";
-// 本页面大部分内容均直接或间接修改自[[MW:Extension:CodeMirror]]
 (async () => {
     if (!["edit", "submit"].includes(mw.config.get("wgAction"))) {
         return;
@@ -12,13 +11,7 @@
     const isAdvanced = ["loading", "loaded", "executing", "ready"].includes(mw.loader.getState("ext.wikiEditor"));
     const init = async () => {
         if (!window.CodeMirror6) {
-            await new Promise((resolve) => {
-                const script = document.createElement("script");
-                script.addEventListener("load", resolve);
-                script.type = "module";
-                script.src = "https://testingcf.jsdelivr.net/npm/@bhsd/codemirror-mediawiki@latest/dist/mw.min.js";
-                document.head.append(script);
-            });
+            await libCachedCode.injectCachedCode("https://testingcf.jsdelivr.net/npm/@bhsd/codemirror-mediawiki@latest/dist/wiki.min.js", "js");
         }
         cm = await window.CodeMirror6.fromTextArea($textarea[0]);
         $(".group-codeeditor-main").hide();
@@ -27,32 +20,42 @@
         init();
         return;
     }
-    const btn = new OO.ui.ButtonWidget({
+    const btnSettings = new OO.ui.ButtonWidget({
+        classes: ["tool"], icon: "settings", framed: false, title: "代码高亮设置",
+    }).on("click", () => {
+        $("#cm-settings").trigger("click");
+    });
+    const btnHighlight = new OO.ui.ButtonWidget({
         classes: ["tool"], icon: "highlight", framed: false, title: "代码高亮开关",
-    }).on("click", async () => {
-        if (cm) {
-            cm.toggle();
-            $(".group-codeeditor-main").toggle();
-        } else {
-            await init();
-        }
-        btn.$element.toggleClass("tool-active");
-        state = !state;
-        localObjectStorage.setItem("wikieditor-codemirror", state);
+    }).on("click", () => {
+        (async () => {
+            if (cm) {
+                cm.toggle();
+                $(".group-codeeditor-main").toggle();
+                btnSettings.$element.toggle();
+            } else {
+                await init();
+                btnHighlight.$element.after(btnSettings.$element);
+            }
+            btnHighlight.$element.toggleClass("tool-active");
+            state = !state;
+            localObjectStorage.setItem("wikieditor-codemirror", state);
+        })();
     });
     $textarea.on("wikiEditor-toolbar-doneInitialSections", () => {
-        btn.$element.appendTo("#wikiEditor-section-main > .group-insert");
+        btnHighlight.$element.appendTo("#wikiEditor-section-main > .group-insert");
     });
     const group = $("#wikiEditor-section-main > .group-insert")[0];
-    if (group && !group.contains(btn.$element[0])) {
-        btn.$element.appendTo(group);
+    if (group && !group.contains(btnHighlight.$element[0])) {
+        btnHighlight.$element.appendTo(group);
     }
     if (mw.config.get("wgPageContentModel") !== "wikitext" && mw.user.options.get("usecodeeditor")) {
         state = false;
     }
     if (state) {
-        await mw.loader.using("ext.wikiEditor");
+        await mw.loader.using(["ext.wikiEditor", "oojs-ui.styles.icons-interactions"]);
         await init();
-        btn.$element.addClass("tool-active");
+        btnHighlight.$element.addClass("tool-active");
+        btnHighlight.$element.after(btnSettings.$element);
     }
 })();
