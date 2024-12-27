@@ -6,6 +6,8 @@
         return;
     }
 
+    /** 审核状态本地存储，用来记录审核状态为1/2的更改 */
+    const statusStorage = new LocalObjectStorage("moderationStatus");
     const api = new mw.Api();
     const isUnlimited = mw.config.get("wgUserGroups").some((right) => ["bot", "flood", "sysop", "staff"].includes(right));
 
@@ -22,7 +24,9 @@
         4: pendingIcon,
     };
 
-    if (mw.config.get("wgCanonicalSpecialPageName") !== "Contributions") {
+    const wgCanonicalSpecialPageName = mw.config.get("wgCanonicalSpecialPageName");
+
+    if (wgCanonicalSpecialPageName !== "Contributions") {
         /** 最近更改行，暂时设置最大150避免请求过多导致WAF */
         const $changelistLines = $(".mw-changeslist-line[data-mw-revid]").slice(0, isUnlimited ? 500 : 150);
 
@@ -30,7 +34,7 @@
          * 按照修订版本列表读取审核状态
          * - `0`为未审核的他人编辑，`1`为审核通过，`2`为未通过，`3`为不确定，`4`为跳过
          * @param {(string | number)[]} revids 修订版本列表
-         * @returns {{ revid: number, status: 0 | 1 | 2 | 3 | 4 }[]}
+         * @returns {{ revid: number | string, status: 0 | 1 | 2 | 3 | 4 }[]}
          */
         const queryModerationStatus = async (revids) => {
             const { query: { pages } } = await api.post({
@@ -60,9 +64,30 @@
             return result;
         };
 
-        const promises = sliceRevids($changelistLines.map((_, ele) => ele.dataset.mwRevid).get())
+        const statusCache = statusStorage.getItem(wgCanonicalSpecialPageName, []);
+
+        const revids = $changelistLines.map((_, ele) => ele.dataset.mwRevid).get();
+        console.log(revids);
+        // 过滤掉已经存储过的更改，再请求
+        const promises = sliceRevids(revids.filter((rid) => !statusCache.some(({ revid }) => +rid === +revid)))
             .map(queryModerationStatus);
-        const res = (await Promise.all(promises)).flat();
+        const res = (await Promise.all(promises))
+            .flat()
+            .concat(statusCache)
+            .reduce((acc, cur) => {
+                const exist = acc.find(({ revid }) => revid === cur.revid);
+                if (exist) {
+                    return acc;
+                }
+                return acc.concat([cur]);
+            }, []);
+        console.log(res);
+
+        // 过滤读取到的数据，将剩下状态为1、2的数据存入localStorage
+        statusStorage.setItem(
+            wgCanonicalSpecialPageName,
+            res.filter(({ revid, status }) => [1, 2].includes(status) && revids.includes(`${revid}`)),
+        );
 
         $changelistLines.each((_, ele) => {
             const status = res.find(({ revid }) => revid === +ele.dataset.mwRevid)?.status;

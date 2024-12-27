@@ -29,9 +29,9 @@ declare class LocalObjectStorage {
 
     get length(): number;
 
-    getItem(key: string, fallback?: any): any;
+    getItem<T = any>(key: string, fallback?: T): T;
 
-    setItem(key: string, value: any): void;
+    setItem<T = any>(key: string, value: T): void;
 
     removeItem(key: string): void;
 
