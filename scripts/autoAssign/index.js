@@ -10,7 +10,8 @@ if (!isInGithubActions) {
     console.info("Not in github actions, exit.");
     process.exit(0);
 }
-const { action, number } = await readWorkflowEvent();
+const event = await readWorkflowEvent();
+const { action, number } = event;
 if (action !== "opened") {
     console.info("The pull request is not opened, exit.");
     process.exit(0);
@@ -28,8 +29,7 @@ const { addReviewers, reviewers, addAssignees, assignees } = config;
 if (addReviewers) {
     if (Array.isArray(reviewers) && reviewers.length > 0) {
         try {
-            const event = await jsonModule.readFile(process.env.GITHUB_EVENT_PATH);
-            const login = event.pull_request.user.login;
+            const { pull_request: { user: { login } } } = event;
             if (reviewers.includes(login)) {
                 console.info("[addReviewers]", "The author is in the reviewers list, remove it.");
                 reviewers.splice(reviewers.indexOf(login), 1);
