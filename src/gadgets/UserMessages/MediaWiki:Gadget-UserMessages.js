@@ -855,6 +855,9 @@
         ["UserMessages/EditWar2", "EditWar", "提醒即将构成编辑战（1=页面名）", umsg.umFlagP2, "编辑战提醒"],
         ["UserMessages/EditWar3", "EditWar", "警告编辑战用户（1=页面名，2=选填原因）", umsg.umFlagP2 + umsg.umFlagP3, "编辑战警告"],
         ["UserMessages/FinalWarning", "FinalWarning", "忍耐是有限的（1/2=选填原因，推荐在额外信息填写）", umsg.umFlagP2 + umsg.umFlagP3, "警告：忍耐是有限的"],
+        ["UserMessages/NavSort", "NavSort", "大家族模板排序错误（1-页面名）", umsg.umFlagP2, "关于大家族模板的排序"],
+        ["UserMessages/ReplyNoIndentation", "ReplyNoIndentation", "回复他人发言未缩进（1=页面名，2=被回复人）", umsg.umFlagP2 + umsg.umFlagP3, "关于您在讨论区的发言"],
+        ["UserMessages/OverSpeedEdit", "OverSpeedEdit", "超速编辑", umsg.umFlagUM, "关于您近期的编辑"],
     ];
     const placeholderTemplate = ["", "请选择一个模板（本选项不可使用）", "给你的新留言~", 0];
     Object.defineProperties(umsg, {
