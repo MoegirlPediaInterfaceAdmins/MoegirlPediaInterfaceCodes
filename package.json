@@ -28,7 +28,7 @@
         "@octokit/auth-action": "^5.1.1",
         "@octokit/auth-app": "^7.1.3",
         "@octokit/auth-unauthenticated": "^6.1.0",
-        "@octokit/plugin-retry": "^7.1.2",
+        "@octokit/plugin-retry": "^7.1.3",
         "@octokit/rest": "^21.0.2",
         "@types/echarts": "^4.9.22",
         "@types/jquery": "^3.5.32",
