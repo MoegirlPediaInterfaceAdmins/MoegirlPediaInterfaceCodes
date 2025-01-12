@@ -216,7 +216,7 @@ $(() => {
                         to: page,
                         movetalk: moveTalk,
                         movesubpages: true,
-                        reason: `${reason} //noredirect`,
+                        reason,
                         noredirect: true,
                         watchlist: watchAfter,
                         tags: "Automation tool",
