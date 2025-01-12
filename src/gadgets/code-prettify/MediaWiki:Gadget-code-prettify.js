@@ -9,7 +9,7 @@
 // <pre>
 "use strict";
 $(() => {
-    if (mw.user.options.get("gadget-prism")) {
+    if (mw.user.options.get("gadget-prism") || mw.user.options.get("gadget-Shiki")) {
         return;
     }
     if (mw.config.get("wgPageName").match(/\.js$/)) {
