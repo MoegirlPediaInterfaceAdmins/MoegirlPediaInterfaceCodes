@@ -3,7 +3,7 @@
  * Options:
  *     module: "hash-wasm"
  *     entry: "hashwasm"
- *     gadget: { "name": "libHashwasm", "fileName": "MediaWiki:Gadget-libHashwasm.js" }
+ *     gadget: { "name": "libHashwasm", "fileName": "Gadget-libHashwasm.js" }
  *     exportValues: [ "createMD5", "createSHA1", "createSHA224", "createSHA256", "createSHA3", "createSHA384", "createSHA512", "createSM3", "md5", "sha1", "sha224", "sha256", "sha3", "sha384", "sha512", "sm3" ]
  */
 !function() {
