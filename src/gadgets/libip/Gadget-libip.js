@@ -3,7 +3,7 @@
  * Options:
  *     module: "ip"
  *     entry: "libip"
- *     gadget: { "name": "libip", "fileName": "MediaWiki:Gadget-libip.js" }
+ *     gadget: { "name": "libip", "fileName": "Gadget-libip.js" }
  */
 !function() {
     t = function(module, exports) {
