@@ -286,12 +286,12 @@
                 "type": "string",
                 "title": "File name",
                 "examples": [
-                    "MediaWiki:Gadget-abusefilter33test.js"
+                    "Gadget-abusefilter33test.js"
                 ]
             },
             "examples": [
                 [
-                    "MediaWiki:Gadget-abusefilter33test.js"
+                    "Gadget-abusefilter33test.js"
                 ]
             ]
         }
@@ -342,8 +342,8 @@
             ],
             "_section": "administration",
             "_files": [
-                "MediaWiki:Gadget-backlog.css",
-                "MediaWiki:Gadget-backlog.js"
+                "Gadget-backlog.css",
+                "Gadget-backlog.js"
             ]
         }
     ]

@@ -30,9 +30,9 @@ _sites:
 _section: system
 
 _files:
-  - MediaWiki:Gadget-prism-loader.js
-  - MediaWiki:Gadget-prism-core.js
-  - MediaWiki:Gadget-prism-coy.css
+  - Gadget-prism-loader.js
+  - Gadget-prism-core.js
+  - Gadget-prism-coy.css
 
-  - MediaWiki:Gadget-prism-line-numbers.js
-  - MediaWiki:Gadget-prism-line-numbers.css
+  - Gadget-prism-line-numbers.js
+  - Gadget-prism-line-numbers.css

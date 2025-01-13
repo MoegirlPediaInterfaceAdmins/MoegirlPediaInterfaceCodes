@@ -29,4 +29,4 @@ _sites:
 _section: system
 
 _files:
-  - MediaWiki:Gadget-libJSON5.js
+  - Gadget-libJSON5.js

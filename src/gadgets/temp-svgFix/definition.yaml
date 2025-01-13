@@ -16,7 +16,7 @@ type: general
 
 package: false
 
-rights: 
+rights:
   - disabled
 
 peers: []
@@ -31,4 +31,4 @@ _sites:
 _section: browsing
 
 _files:
-  - MediaWiki:Gadget-temp-svgFix.js
+  - Gadget-temp-svgFix.js

@@ -31,4 +31,4 @@ _sites:
 _section: system
 
 _files:
-  - MediaWiki:Gadget-prism-language-perl.js
+  - Gadget-prism-language-perl.js

@@ -35,4 +35,4 @@ _sites:
 _section: administration
 
 _files:
-  - MediaWiki:Gadget-flagBlocked.js
+  - Gadget-flagBlocked.js

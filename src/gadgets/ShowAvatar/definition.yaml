@@ -30,5 +30,5 @@ _sites:
 _section: user
 
 _files:
-  - MediaWiki:Gadget-ShowAvatar.css
-  - MediaWiki:Gadget-ShowAvatar.js
+  - Gadget-ShowAvatar.css
+  - Gadget-ShowAvatar.js

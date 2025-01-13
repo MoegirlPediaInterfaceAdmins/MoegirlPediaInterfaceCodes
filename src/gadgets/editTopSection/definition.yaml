@@ -30,5 +30,5 @@ _sites:
 _section: editing
 
 _files:
-  - MediaWiki:Gadget-editTopSection.css
-  - MediaWiki:Gadget-editTopSection.js
+  - Gadget-editTopSection.css
+  - Gadget-editTopSection.js

@@ -35,4 +35,4 @@ _sites:
 _section: maintenance
 
 _files:
-  - MediaWiki:Gadget-registerToDelete.js
+  - Gadget-registerToDelete.js

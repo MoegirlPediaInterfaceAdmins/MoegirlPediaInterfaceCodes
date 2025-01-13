@@ -17,7 +17,7 @@ type: general
 
 package: false
 
-rights: 
+rights:
   - autoconfirmed
 
 peers: []
@@ -32,5 +32,5 @@ _sites:
 _section: browsing
 
 _files:
-  - MediaWiki:Gadget-float-toc.css
-  - MediaWiki:Gadget-float-toc.js
+  - Gadget-float-toc.css
+  - Gadget-float-toc.js

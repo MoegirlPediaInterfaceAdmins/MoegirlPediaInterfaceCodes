@@ -30,4 +30,4 @@ _sites:
 _section: interface
 
 _files:
-  - MediaWiki:Gadget-allmessageFilter.js
+  - Gadget-allmessageFilter.js

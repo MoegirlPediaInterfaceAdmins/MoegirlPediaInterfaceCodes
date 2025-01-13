@@ -31,5 +31,5 @@ _sites:
 _section: system
 
 _files:
-  - MediaWiki:Gadget-prism-plugin-match-braces.js
-  - MediaWiki:Gadget-prism-plugin-match-braces.css
+  - Gadget-prism-plugin-match-braces.js
+  - Gadget-prism-plugin-match-braces.css

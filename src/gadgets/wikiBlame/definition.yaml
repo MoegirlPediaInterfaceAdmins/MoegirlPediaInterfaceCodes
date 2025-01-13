@@ -34,4 +34,4 @@ _sites:
 _section: maintenance
 
 _files:
-  - MediaWiki:Gadget-wikiBlame.js
+  - Gadget-wikiBlame.js

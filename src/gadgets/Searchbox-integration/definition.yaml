@@ -29,5 +29,5 @@ _sites:
 _section: skin
 
 _files:
-  - MediaWiki:Gadget-Searchbox-integration.css
-  - MediaWiki:Gadget-Searchbox-integration.js
+  - Gadget-Searchbox-integration.css
+  - Gadget-Searchbox-integration.js

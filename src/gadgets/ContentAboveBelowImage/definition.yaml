@@ -30,5 +30,5 @@ _sites:
 _section: maintenance
 
 _files:
-  - MediaWiki:Gadget-ContentAboveBelowImage.js
-  - MediaWiki:Gadget-ContentAboveBelowImage.css
+  - Gadget-ContentAboveBelowImage.js
+  - Gadget-ContentAboveBelowImage.css

@@ -33,5 +33,5 @@ _sites:
 _section: browsing
 
 _files:
-  - MediaWiki:Gadget-noteTA.css
-  - MediaWiki:Gadget-noteTA.js
+  - Gadget-noteTA.css
+  - Gadget-noteTA.js

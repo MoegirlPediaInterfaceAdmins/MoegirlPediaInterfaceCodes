@@ -4,7 +4,7 @@
   entry: hashwasm
   gadget:
     name: libHashwasm
-    fileName: MediaWiki:Gadget-libHashwasm.js
+    fileName: Gadget-libHashwasm.js
   exportValues:
     - createMD5
     - createSHA1
@@ -27,4 +27,4 @@
   entry: libip
   gadget:
     name: libip
-    fileName: MediaWiki:Gadget-libip.js
+    fileName: Gadget-libip.js

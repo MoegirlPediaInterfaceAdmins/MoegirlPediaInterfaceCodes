@@ -38,4 +38,4 @@ _sites:
 _section: skin
 
 _files:
-  - MediaWiki:Gadget-dark-mode-toggle.js
+  - Gadget-dark-mode-toggle.js

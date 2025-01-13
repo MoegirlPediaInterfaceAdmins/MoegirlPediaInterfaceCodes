@@ -35,5 +35,5 @@ _sites:
 _section: administration
 
 _files:
-  - MediaWiki:Gadget-deletion.css
-  - MediaWiki:Gadget-deletion.js
+  - Gadget-deletion.css
+  - Gadget-deletion.js

@@ -34,5 +34,5 @@ _sites:
 _section: maintenance
 
 _files:
-  - MediaWiki:Gadget-quickSave.css
-  - MediaWiki:Gadget-quickSave.js
+  - Gadget-quickSave.css
+  - Gadget-quickSave.js

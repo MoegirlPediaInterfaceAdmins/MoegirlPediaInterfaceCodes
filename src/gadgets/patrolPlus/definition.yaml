@@ -31,5 +31,5 @@ _sites:
 _section: maintenance
 
 _files:
-  - MediaWiki:Gadget-patrolPlus.js
-  - MediaWiki:Gadget-patrolPlus.css
+  - Gadget-patrolPlus.js
+  - Gadget-patrolPlus.css

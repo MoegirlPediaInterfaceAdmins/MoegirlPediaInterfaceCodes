@@ -30,5 +30,5 @@ _sites:
 _section: browsing
 
 _files:
-  - MediaWiki:Gadget-FlowThreadCheck.css
-  - MediaWiki:Gadget-FlowThreadCheck.js
+  - Gadget-FlowThreadCheck.css
+  - Gadget-FlowThreadCheck.js

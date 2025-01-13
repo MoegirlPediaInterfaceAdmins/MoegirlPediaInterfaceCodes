@@ -8,9 +8,9 @@ reportNeedlessDisables: true
 
 ignoreFiles:
   - dist/**/*.css
-  - src/gadgets/prism-core/MediaWiki:Gadget-prism-line-numbers.css
-  - src/gadgets/prism-plugin-match-braces/MediaWiki:Gadget-prism-plugin-match-braces.css
-  - src/gadgets/prism-plugin-previewers/MediaWiki:Gadget-prism-plugin-previewers.css
+  - src/gadgets/prism-core/Gadget-prism-line-numbers.css
+  - src/gadgets/prism-plugin-match-braces/Gadget-prism-plugin-match-braces.css
+  - src/gadgets/prism-plugin-previewers/Gadget-prism-plugin-previewers.css
 
 rules:
   selector-id-pattern: null

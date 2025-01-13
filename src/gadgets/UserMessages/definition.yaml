@@ -36,4 +36,4 @@ _sites:
 _section: maintenance
 
 _files:
-  - MediaWiki:Gadget-UserMessages.js
+  - Gadget-UserMessages.js
