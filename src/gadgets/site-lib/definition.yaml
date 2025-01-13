@@ -33,4 +33,4 @@ _sites:
 _section: system
 
 _files:
-  - MediaWiki:Gadget-site-lib.js
+  - Gadget-site-lib.js

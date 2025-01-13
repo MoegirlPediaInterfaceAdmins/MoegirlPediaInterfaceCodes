@@ -32,4 +32,4 @@ _sites:
 _section: system
 
 _files:
-  - MediaWiki:Gadget-prism-language-csharp.js
+  - Gadget-prism-language-csharp.js

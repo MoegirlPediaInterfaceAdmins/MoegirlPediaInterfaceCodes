@@ -35,4 +35,4 @@ _sites:
 _section: user
 
 _files:
-  - MediaWiki:Gadget-queryContributions.js
+  - Gadget-queryContributions.js

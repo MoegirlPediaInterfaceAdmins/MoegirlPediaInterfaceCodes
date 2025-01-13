@@ -33,4 +33,4 @@ _sites:
 _section: administration
 
 _files:
-  - MediaWiki:Gadget-blockEnhance.js
+  - Gadget-blockEnhance.js

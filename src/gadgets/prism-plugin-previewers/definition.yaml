@@ -31,5 +31,5 @@ _sites:
 _section: system
 
 _files:
-  - MediaWiki:Gadget-prism-plugin-previewers.js
-  - MediaWiki:Gadget-prism-plugin-previewers.css
+  - Gadget-prism-plugin-previewers.js
+  - Gadget-prism-plugin-previewers.css

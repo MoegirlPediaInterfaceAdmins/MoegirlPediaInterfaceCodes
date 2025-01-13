@@ -1,4 +1,4 @@
 ignorePatterns:
-  - MediaWiki:Gadget-prism-core.js
-  - MediaWiki:Gadget-prism-line-numbers.js
-  - MediaWiki:Gadget-prism-inline-color.js
+  - Gadget-prism-core.js
+  - Gadget-prism-line-numbers.js
+  - Gadget-prism-inline-color.js

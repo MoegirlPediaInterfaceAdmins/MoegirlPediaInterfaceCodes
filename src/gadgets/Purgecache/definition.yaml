@@ -31,5 +31,5 @@ _sites:
 _section: browsing
 
 _files:
-  - MediaWiki:Gadget-Purgecache.js
-  - MediaWiki:Gadget-Purgecache.css
+  - Gadget-Purgecache.js
+  - Gadget-Purgecache.css

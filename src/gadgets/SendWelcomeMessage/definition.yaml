@@ -31,5 +31,5 @@ _sites:
 _section: user
 
 _files:
-  - MediaWiki:Gadget-SendWelcomeMessage.js
-  - MediaWiki:Gadget-SendWelcomeMessage.css
+  - Gadget-SendWelcomeMessage.js
+  - Gadget-SendWelcomeMessage.css

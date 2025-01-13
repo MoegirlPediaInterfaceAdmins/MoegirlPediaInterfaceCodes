@@ -29,5 +29,5 @@ _sites:
 _section: browsing
 
 _files:
-  - MediaWiki:Gadget-SideBarPic.css
-  - MediaWiki:Gadget-SideBarPic.js
+  - Gadget-SideBarPic.css
+  - Gadget-SideBarPic.js

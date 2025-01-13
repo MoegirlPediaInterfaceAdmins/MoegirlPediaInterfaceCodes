@@ -33,5 +33,5 @@ _sites:
 _section: browsing
 
 _files:
-  - MediaWiki:Gadget-ReferenceTooltips.css
-  - MediaWiki:Gadget-ReferenceTooltips.js
+  - Gadget-ReferenceTooltips.css
+  - Gadget-ReferenceTooltips.js

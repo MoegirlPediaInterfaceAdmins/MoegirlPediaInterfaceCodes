@@ -31,5 +31,5 @@ _sites:
 _section: system
 
 _files:
-  - MediaWiki:Gadget-prism-language-json.js
-  - MediaWiki:Gadget-prism-language-json5.js
+  - Gadget-prism-language-json.js
+  - Gadget-prism-language-json5.js

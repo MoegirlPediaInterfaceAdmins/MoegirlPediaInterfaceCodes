@@ -31,5 +31,5 @@ _sites:
 _section: browsing
 
 _files:
-  - MediaWiki:Gadget-heimu-toggle.css
-  - MediaWiki:Gadget-heimu-toggle.js
+  - Gadget-heimu-toggle.css
+  - Gadget-heimu-toggle.js

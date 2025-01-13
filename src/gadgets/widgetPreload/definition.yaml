@@ -31,5 +31,5 @@ _sites:
 _section: maintenance
 
 _files:
-  - MediaWiki:Gadget-widgetPreload.css
-  - MediaWiki:Gadget-widgetPreload.js
+  - Gadget-widgetPreload.css
+  - Gadget-widgetPreload.js

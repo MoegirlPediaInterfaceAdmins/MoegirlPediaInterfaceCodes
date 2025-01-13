@@ -32,5 +32,5 @@ _sites:
 _section: editing
 
 _files:
-  - MediaWiki:Gadget-InPageEdit-v2.css
-  - MediaWiki:Gadget-InPageEdit-v2.js
+  - Gadget-InPageEdit-v2.css
+  - Gadget-InPageEdit-v2.js
