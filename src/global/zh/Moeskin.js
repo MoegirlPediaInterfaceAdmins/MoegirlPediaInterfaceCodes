@@ -209,11 +209,11 @@
             /** @type {HTMLAnchorElement} */
             const anchor = e.target;
             const hrefText = anchor.getAttribute("href");
-            if (!hrefText || hrefText.startsWith("#") || hrefText.startsWith("javascript:") || anchor.classList.contains("image")) {
+            if (!hrefText || hrefText.startsWith("#") || /^(?:data|vbscript|javascript):/.test(hrefText) || anchor.classList.contains("image")) {
                 return;
             }
             const hrefURL = new URL(anchor.href);
-            if (hrefURL.host.endsWith("moegirl.org.cn") || hrefURL.host.endsWith("moegirl.org")) {
+            if (/^(?:.+\.)moegirl\.org\.cn$/i.test(hrefURL.host)) {
                 return;
             }
             e.preventDefault();
