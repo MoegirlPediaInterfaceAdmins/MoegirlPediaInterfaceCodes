@@ -1,12 +1,12 @@
-import console from "../modules/console.js";
-console.info("Initialization done.");
+import { endGroup, startGroup } from "@actions/core";
 import fs from "node:fs";
 import path from "node:path";
-import { startGroup, endGroup } from "@actions/core";
 import semver from "semver";
+import console from "../modules/console.js";
+import createCommit from "../modules/createCommit.js";
 import jsonModule from "../modules/jsonModule.js";
 import yamlModule from "../modules/yamlModule.js";
-import createCommit from "../modules/createCommit.js";
+console.info("Initialization done.");
 
 const polyfillGadgetDefinitionPath = "src/gadgets/libPolyfill/definition.yaml";
 const polyfillGadgetDefinition = await yamlModule.readFile(polyfillGadgetDefinitionPath);
@@ -39,7 +39,7 @@ const customPolyfillLibraryPath = "./scripts/generatePolyfill/customPolyfill/lib
 
 console.info("Start to delete old polyfill files:");
 for (const file of polyfillGadgetFiles) {
-    if (file.startsWith("MediaWiki:Gadget-libPolyfill-")) {
+    if (file.startsWith("Gadget-libPolyfill-")) {
         continue;
     }
     console.info("\tDeleteting", file);
@@ -148,7 +148,7 @@ for (const polyfill of polyfillListAllowed) {
         ...await getPolyfillContent(polyfill),
         "})();",
     ];
-    const gadgetFilePath = path.join("src/gadgets/libPolyfill/", `MediaWiki:Gadget-libPolyfill-${polyfill.id}.js`);
+    const gadgetFilePath = path.join("src/gadgets/libPolyfill/", `Gadget-libPolyfill-${polyfill.id}.js`);
     console.info("Start to write polyfill file:", polyfill.id, "@", gadgetFilePath);
     await fs.promises.writeFile(gadgetFilePath, content.join("\n"));
     console.info("Done.");

@@ -31,5 +31,5 @@ _sites:
 _section: browsing
 
 _files:
-  - MediaWiki:Gadget-code-prettify.css
-  - MediaWiki:Gadget-code-prettify.js
+  - Gadget-code-prettify.css
+  - Gadget-code-prettify.js

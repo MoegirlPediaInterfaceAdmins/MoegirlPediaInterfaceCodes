@@ -31,5 +31,5 @@ _sites:
 _section: editing
 
 _files:
-  - MediaWiki:Gadget-Wikiplus.css
-  - MediaWiki:Gadget-Wikiplus.js
+  - Gadget-Wikiplus.css
+  - Gadget-Wikiplus.js

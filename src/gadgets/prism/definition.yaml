@@ -31,5 +31,5 @@ _sites:
 _section: browsing
 
 _files:
-  - MediaWiki:Gadget-prism.js
-  - MediaWiki:Gadget-prism.css
+  - Gadget-prism.js
+  - Gadget-prism.css

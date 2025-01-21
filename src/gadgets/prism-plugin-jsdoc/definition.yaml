@@ -34,4 +34,4 @@ _sites:
 _section: system
 
 _files:
-  - MediaWiki:Gadget-prism-plugin-jsdoc.js
+  - Gadget-prism-plugin-jsdoc.js

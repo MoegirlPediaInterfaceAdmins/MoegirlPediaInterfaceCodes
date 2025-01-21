@@ -32,4 +32,4 @@ _sites:
 _section: maintenance
 
 _files:
-  - MediaWiki:Gadget-autoconfirmedUserPing.js
+  - Gadget-autoconfirmedUserPing.js

@@ -34,4 +34,4 @@ _sites:
 _section: maintenance
 
 _files:
-  - MediaWiki:Gadget-rollback-summary.js
+  - Gadget-rollback-summary.js

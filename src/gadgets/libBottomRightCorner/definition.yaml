@@ -30,5 +30,5 @@ _sites:
 _section: system
 
 _files:
-  - MediaWiki:Gadget-libBottomRightCorner.css
-  - MediaWiki:Gadget-libBottomRightCorner.js
+  - Gadget-libBottomRightCorner.css
+  - Gadget-libBottomRightCorner.js

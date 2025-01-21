@@ -31,4 +31,4 @@ _sites:
 _section: system
 
 _files:
-  - MediaWiki:Gadget-LocalObjectStorage.js
+  - Gadget-LocalObjectStorage.js

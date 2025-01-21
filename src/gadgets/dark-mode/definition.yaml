@@ -30,4 +30,4 @@ _sites:
 _section: skin
 
 _files:
-  - MediaWiki:Gadget-dark-mode.css
+  - Gadget-dark-mode.css

@@ -33,4 +33,4 @@ _sites:
 _section: user
 
 _files:
-  - MediaWiki:Gadget-userpageDelete.js
+  - Gadget-userpageDelete.js

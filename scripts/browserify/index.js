@@ -1,15 +1,15 @@
-import console from "../modules/console.js";
-console.info("Initialization done.");
-import mkdtmp from "../modules/mkdtmp.js";
+import { endGroup, exportVariable, startGroup } from "@actions/core";
 import browserify from "browserify";
-import minifyStream from "../modules/minify-stream.js";
-import yamlModule from "../modules/yamlModule.js";
 import fs from "node:fs";
 import path from "node:path";
-import { startGroup, endGroup, exportVariable } from "@actions/core";
+import console from "../modules/console.js";
 import createCommit from "../modules/createCommit.js";
 import exec from "../modules/exec.js";
+import minifyStream from "../modules/minify-stream.js";
+import mkdtmp from "../modules/mkdtmp.js";
 import modulePath from "../modules/modulePath.js";
+import yamlModule from "../modules/yamlModule.js";
+console.info("Initialization done.");
 
 /**
  * @type {{ module: string; entry: string; gadget: { name: string, fileName: string }; exportValues?: string[], removePlugins?: string[], prependCode?: string }[]}

@@ -30,5 +30,5 @@ _sites:
 _section: interface
 
 _files:
-  - MediaWiki:Gadget-abusefilteredit.css
-  - MediaWiki:Gadget-abusefilteredit.js
+  - Gadget-abusefilteredit.css
+  - Gadget-abusefilteredit.js

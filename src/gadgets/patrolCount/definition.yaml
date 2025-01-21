@@ -31,4 +31,4 @@ _sites:
 _section: maintenance
 
 _files:
-  - MediaWiki:Gadget-patrolCount.js
+  - Gadget-patrolCount.js

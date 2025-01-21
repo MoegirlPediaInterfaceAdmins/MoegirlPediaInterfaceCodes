@@ -32,5 +32,5 @@ _sites:
 _section: administration
 
 _files:
-  - MediaWiki:Gadget-backlog.css
-  - MediaWiki:Gadget-backlog.js
+  - Gadget-backlog.css
+  - Gadget-backlog.js

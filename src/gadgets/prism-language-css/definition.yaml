@@ -31,5 +31,5 @@ _sites:
 _section: system
 
 _files:
-  - MediaWiki:Gadget-prism-language-css.js
-  - MediaWiki:Gadget-prism-language-css-extras.js
+  - Gadget-prism-language-css.js
+  - Gadget-prism-language-css-extras.js

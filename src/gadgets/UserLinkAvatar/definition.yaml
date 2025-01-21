@@ -31,5 +31,5 @@ _sites:
 _section: user
 
 _files:
-  - MediaWiki:Gadget-UserLinkAvatar.css
-  - MediaWiki:Gadget-UserLinkAvatar.js
+  - Gadget-UserLinkAvatar.css
+  - Gadget-UserLinkAvatar.js
