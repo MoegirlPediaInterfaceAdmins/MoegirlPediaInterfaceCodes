@@ -208,6 +208,7 @@ html {
     }
 }
 
+/* stylelint-disable-next-line at-rule-prelude-no-invalid -- for firefox */
 @-moz-document url-prefix() {
     body {
         background: #000;
