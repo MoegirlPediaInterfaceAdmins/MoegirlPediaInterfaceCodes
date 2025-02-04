@@ -55,7 +55,7 @@
         "postcss-logical": "^8.0.0",
         "postcss-selector-matches": "^4.0.0",
         "postcss-selector-not": "^8.0.1",
-        "semver": "^7.7.0",
+        "semver": "^7.7.1",
         "simple-git": "^3.27.0",
         "stylelint": "^16.14.1",
         "stylelint-actions-formatters": "^16.3.1",
