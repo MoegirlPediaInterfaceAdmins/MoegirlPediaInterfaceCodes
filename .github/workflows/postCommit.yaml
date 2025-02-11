@@ -77,7 +77,7 @@ jobs:
           check-latest: true
           cache: npm
       - name: Installing the dependencies
-        uses: AnnAngela/cached_node-modules@v2
+        uses: AnnAngela/cached_node-modules@v3
         with:
           command: npm run ci
       - name: If needs to skip, skip now
@@ -103,7 +103,7 @@ jobs:
           check-latest: true
           cache: npm
       - name: Installing the dependencies
-        uses: AnnAngela/cached_node-modules@v2
+        uses: AnnAngela/cached_node-modules@v3
         with:
           command: npm run ci
       - name: Git config
@@ -147,7 +147,7 @@ jobs:
           check-latest: true
           cache: npm
       - name: Installing the dependencies
-        uses: AnnAngela/cached_node-modules@v2
+        uses: AnnAngela/cached_node-modules@v3
         with:
           command: npm run ci
       - name: Reload the linter cache
@@ -186,7 +186,7 @@ jobs:
           check-latest: true
           cache: npm
       - name: Installing the dependencies
-        uses: AnnAngela/cached_node-modules@v2
+        uses: AnnAngela/cached_node-modules@v3
         with:
           command: npm run ci
       - name: Fire the webhook of AnnAngela's server

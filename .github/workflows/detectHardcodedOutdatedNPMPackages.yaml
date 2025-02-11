@@ -24,7 +24,7 @@ jobs:
           check-latest: true
           cache: npm
       - name: Installing the dependencies
-        uses: AnnAngela/cached_node-modules@v2
+        uses: AnnAngela/cached_node-modules@v3
         with:
           command: npm run ci
       - name: Detect hardcoded-outdated NPM packages
