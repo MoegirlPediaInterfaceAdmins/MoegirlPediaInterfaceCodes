@@ -970,7 +970,7 @@ $(() => {
         [PR_KEYWORD, /^(?:url|rgb|!important|@import|@page|@media|@charset|inherit)(?=[^\-\w]|$)/i, null],
         ["lang-css-kw", /^(-?(?:[_a-z]|(?:\\[0-9a-f]+ ?))(?:[_a-z0-9-]|\\(?:\\[0-9a-f]+ ?))*)\s*:/i],
         [PR_COMMENT, /^\/\*[^*]*\*+(?:[^/*][^*]*\*+)*\//],
-        [PR_COMMENT, /^(?:<!--|-->)/],
+        [PR_COMMENT, /^(?:<!--|--!?>)/],
         [PR_LITERAL, /^(?:\d+|\d*\.\d+)(?:%|[a-z]+)?/i],
         [PR_LITERAL, /^#(?:[0-9a-f]{3}){1,2}\b/i],
         [PR_PLAIN, /^-?(?:[_a-z]|(?:\\[\da-f]+ ?))(?:[_a-z\d-]|\\(?:\\[\da-f]+ ?))*/i],
