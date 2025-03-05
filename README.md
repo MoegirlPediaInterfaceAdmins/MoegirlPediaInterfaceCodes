@@ -104,16 +104,7 @@
 
 但首先，最重要的一点是：**务必阅读并遵守 [CODE OF CONDUCT.md](CODE_OF_CONDUCT.md)**，否则你的贡献有可能被拒绝。
 
-其次，由于需要确保（虽然永远也不可能出现的）将小工具迁移到 Gadget 名字空间的情况的兼容性，文件名对应了萌娘百科上对应页面的页面名，从而包含了 `:`，而这导致了本仓库无法在 Windows 上克隆。
-
-所以我们建议你通过以下方式提交贡献：
-
-- 使用 [Linux on Windows with WSL](https://learn.microsoft.com/zh-cn/windows/wsl/install)；
-- 使用 Linux 系统（可以是远程服务器、本地虚拟机、本地 Docker 容器等）；
-- 使用 macOS 系统；
-- 使用 [GitHub Codespaces](https://github.com/features/codespaces)（对个人用户有免费额度）。
-
-然后，我们建议你使用 [Visual Studio Code](https://code.visualstudio.com/)，本仓库专为 VSCode 配置。我们也建议你搭配以下 VSCode 扩展结合本仓库提供的配置以优化体验：
+我们建议你使用 [Visual Studio Code](https://code.visualstudio.com/)，本仓库专为 VSCode 配置。我们也建议你搭配以下 VSCode 扩展结合本仓库提供的配置以优化体验：
 
 - [Conventional Commits（约定式提交）](https://www.conventionalcommits.org/)：[Conventional Commits](https://marketplace.visualstudio.com/items?itemName=vivaxy.vscode-conventional-commits) 扩展；
 - [eslint](https://eslint.org/)：[ESLint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint) 扩展；
