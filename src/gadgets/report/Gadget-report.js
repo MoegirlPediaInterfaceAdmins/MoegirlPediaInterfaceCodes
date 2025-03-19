@@ -442,20 +442,34 @@ $(() => {
         windowManager.openWindow(reportDialog);
     };
 
+    const $extraReportArea = $("<div>", {
+        "class": "report-article-footer",
+        style: "text-align: center; margin-top: 1em;",
+    });
+    const $extraReportButton = $("<a>", {
+        "class": "report-article-button",
+        text: wgULS("违规举报 & 页面反馈", "違規舉報 & 頁面反饋"),
+        style: "display: inline-block; padding: 0.5em 1em; background-color: var(--theme-danger-color, #ff4848); color: var(--theme-accent-link-color, #fff); border-radius: 100vmax; cursor: pointer;",
+        click: initReport,
+    });
+    $extraReportArea.append($extraReportButton);
+
     switch (mw.config.get("skin")) {
         case "moeskin":
             mw.hook("moeskin.pagetools").add(({ addPageToolsButton }) => {
                 /** @type {JQuery<Element>} */
-                const $icon = $(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 34.88 29.9"><defs><style>.cls-1{fill:#ff4848;}.cls-2{fill:#fff;}</style></defs><g id="图层_2" data-name="图层 2"><g id="图层_1-2" data-name="图层 1"><path class="cls-1" d="M31.56,29.9H3.26a3.32,3.32,0,0,1-2.8-5L14.66,1.6a3.25,3.25,0,0,1,5.6,0l14.1,23.3A3.25,3.25,0,0,1,31.56,29.9Z"/><path class="cls-2" d="M19.25,9.76l-.42,9.6a1.42,1.42,0,0,1-2.78,0l-.42-9.6c0-2.11,3.62-2.11,3.62,0Z"/><path class="cls-2" d="M17.44,26.7a2,2,0,0,1,0-4.09h0a2,2,0,1,1,0,4.09Z"/></g></g></svg>`);
+                const $icon = $("<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 34.88 29.9\"><defs><style>.cls-1{fill:#ff4848;}.cls-2{fill:#fff;}</style></defs><g id=\"图层_2\" data-name=\"图层 2\"><g id=\"图层_1-2\" data-name=\"图层 1\"><path class=\"cls-1\" d=\"M31.56,29.9H3.26a3.32,3.32,0,0,1-2.8-5L14.66,1.6a3.25,3.25,0,0,1,5.6,0l14.1,23.3A3.25,3.25,0,0,1,31.56,29.9Z\"/><path class=\"cls-2\" d=\"M19.25,9.76l-.42,9.6a1.42,1.42,0,0,1-2.78,0l-.42-9.6c0-2.11,3.62-2.11,3.62,0Z\"/><path class=\"cls-2\" d=\"M17.44,26.7a2,2,0,0,1,0-4.09h0a2,2,0,1,1,0,4.09Z\"/></g></g></svg>");
                 const $btn = addPageToolsButton($icon, wgULS("页面举报&反馈", "頁面舉報&反饋"), "extra");
                 $btn.on("click", initReport);
             });
+            $("#moe-after-content").prepend($extraReportArea);
             break;
         case "vector":
         default:
             insertToBottomRightCorner(wgULS("页面举报&反馈", "頁面舉報&反饋")).css({
                 order: 0,
             }).on("click", initReport);
+            $("#bodyContent").append($extraReportArea);
             break;
     }
 });
