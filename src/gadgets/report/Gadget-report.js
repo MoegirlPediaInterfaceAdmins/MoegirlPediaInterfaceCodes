@@ -394,9 +394,7 @@ $(() => {
                 }
                 return;
             }
-            const body = new URLSearchParams();
-
-            Object.entries({
+            const body = new URLSearchParams({
                 ReportTitle: this.primaryType,
                 ReportSubTitle: this.secondaryType === "none" ? "" : this.secondaryType,
                 ReportURL: window.location.href,
@@ -405,8 +403,7 @@ $(() => {
                 ReportUserID: mw.config.get("wgUserId") || "visitor",
                 ReportComment: `用户反馈内容：${this.reason}\n-------------\n页面信息：\n* wgNamespaceNumber: ${this.wgNamespaceNumber}\n* wgPageName: ${this.wgPageName}\n* wgArticleId: ${this.wgArticleId}\n* wgCurRevisionId: ${this.wgCurRevisionId}\n* wgRevisionId: ${this.wgRevisionId}`,
                 ReportContact: this.email,
-            }).forEach(([k, v]) => body.append(k, v));
-
+            });
             try {
                 console.info("Report [upload]", await (await fetch("https://api.moegirl.org.cn/report", {
                     headers: {
