@@ -4,7 +4,7 @@
 
 'use strict';
 
-const 常量_山不在高 = 1200
+const 常量_山不在高 = 640
 const 常量_把用户放在我心里 = 'moegirl:april-fool-2025'
 
 class MoeCaptcha extends HTMLElement {
@@ -26,11 +26,17 @@ class MoeCaptcha extends HTMLElement {
         const style = document.createElement('style');
         style.textContent = `
 :host {
+    all: initial;
     display: flex;
     width: 100%;
     height: 100%;
     align-items: center;
     justify-content: center;
+    box-sizing: border-box;
+}
+
+:host * {
+    box-sizing: border-box;
 }
 
 .moe-captcha {
@@ -44,6 +50,7 @@ class MoeCaptcha extends HTMLElement {
     gap: 1em;
     align-items: center;
     padding: 0.5em;
+    cursor: pointer;
 }
 
 .loader {
@@ -145,7 +152,7 @@ function 皮一下($整个内容区域, 超过此高度 = 常量_山不在高) {
 
     // 限制高度，添加阴影
     $文章.css({
-        height: '500px',
+        height: `${超过此高度}px`,
         overflow: 'hidden',
     });
 
@@ -167,5 +174,8 @@ function 别烦我你耳朵龙吗() {
     sessionStorage.setItem(常量_把用户放在我心里, 'true');
 }
 
-
-mw.hook('wikipage.content').add(皮一下);
+const 现在 = new Date();
+const 现在是2025愚人节 = `${现在.getFullYear()}-${(现在.getMonth() + 1).toString().padStart(2, '0')}-${现在.getDate().toString().padStart(2, '0')}` === '2025-04-01';
+if (!用户是不是不太好惹() && 现在是2025愚人节) {
+    mw.hook('wikipage.content').add(皮一下);
+}
