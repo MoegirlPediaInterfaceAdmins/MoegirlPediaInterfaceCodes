@@ -14,14 +14,21 @@ class MoeCaptcha extends HTMLElement {
         // 创建 Shadow DOM
         const shadow = this.attachShadow({ mode: 'open' });
 
-        // 容器样式
+        // 合并元素
+        shadow.appendChild(this.createStyle());
+        shadow.appendChild(this.createContainer());
+    }
+
+    /**
+     * 创建样式
+     */
+    createStyle() {
         const style = document.createElement('style');
         style.textContent = `
 :host {
-    display: block;
+    display: flex;
     width: 100%;
     height: 100%;
-    display: flex;
     align-items: center;
     justify-content: center;
 }
@@ -69,8 +76,13 @@ class MoeCaptcha extends HTMLElement {
     100% { transform: rotate(360deg); }
 }
     `;
+        return style;
+    }
 
-        // 组件内容
+    /**
+     * 创建容器
+     */
+    createContainer() {
         const container = document.createElement('div');
         container.classList.add('moe-captcha');
         container.innerHTML = `
@@ -85,10 +97,7 @@ class MoeCaptcha extends HTMLElement {
     <img src="https://r2.epb.wiki/-/2025/03/31/5d97bb8c0b7563552b0c178a800c1b358e3a8ab9.png" alt="CAPTCHA">
 </div>
     `;
-
-        // 合并元素
-        shadow.appendChild(style);
-        shadow.appendChild(container);
+        return container;
     }
 }
 
@@ -133,7 +142,7 @@ function 皮一下($整个内容区域, 超过此高度 = 常量_山不在高) {
             height: '',
             overflow: '',
         });
-    }
+    };
 
     // 限制高度，添加阴影
     $文章.css({
