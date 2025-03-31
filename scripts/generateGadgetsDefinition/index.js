@@ -37,7 +37,7 @@ for (const { gadget, files } of gadgetDirs) {
         const unindexedFiles = files.filter((file) => !gadgetDefinition._files.includes(file));
         if (unexistFiles.length + unindexedFiles.length > 0) {
             console.info("Found unexist or unindexed files, update definition.yaml and commit:", { unexistFiles, unindexedFiles });
-            gadgetDefinition._files = [...gadgetDefinition._files.filter((file) => gadgetFiles.includes(file)), ...unindexedFiles];
+            gadgetDefinition._files = [...gadgetDefinition._files.filter((file) => gadgetFiles.includes(file)), ...unindexedFiles].filter((fileName) => !fileName.startsWith("_"));
             await yamlModule.writeFile(path.join(gadgetBaseRoot, gadget, "definition.yaml"), gadgetDefinition);
             await createCommit(`auto(Gadget-${gadget}): gadget definition updated by generateGadgetsDefinition`);
         }
