@@ -101,7 +101,7 @@ class MoeCaptcha extends HTMLElement {
     <div class="prompt">点我完成验证🐴才能继续</div>
 </div>
 <div class="moe-captcha-image">
-    <img src="https://r2.epb.wiki/-/2025/03/31/5d97bb8c0b7563552b0c178a800c1b358e3a8ab9.png" alt="CAPTCHA">
+    <img src="https://storage.moegirl.org.cn/stickers/moegirl-2/油库里.png" alt="CAPTCHA">
 </div>
     `;
         return container;
