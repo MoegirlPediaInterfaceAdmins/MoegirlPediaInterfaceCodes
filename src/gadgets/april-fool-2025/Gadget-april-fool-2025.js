@@ -125,7 +125,6 @@ function 皮一下($整个内容区域, 超过此高度 = 常量_山不在高) {
         marginTop: '-50px',
         padding: '1rem',
         paddingTop: '80px',
-        textAlign: 'center',
         zIndex: 9999,
     });
     const $验证码 = $('<moe-captcha></moe-captcha>');
@@ -168,8 +167,5 @@ function 别烦我你耳朵龙吗() {
     sessionStorage.setItem(常量_把用户放在我心里, 'true');
 }
 
-const 现在 = new Date();
-const 现在是2025愚人节 = `${现在.getFullYear()}-${(现在.getMonth() + 1).toString().padStart(2, '0')}-${现在.getDate().toString().padStart(2, '0')}` === '2025-04-01';
-if (!用户是不是不太好惹() && 现在是2025愚人节) {
-    mw.hook('wikipage.content').add(皮一下);
-}
+
+mw.hook('wikipage.content').add(皮一下);
