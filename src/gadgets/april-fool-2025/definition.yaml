@@ -1,0 +1,31 @@
+ResourceLoader: true
+
+hidden: true
+
+default: true # TODO: 节过完了记得删
+
+supportsUrlLoad: false
+
+targets: []
+
+skins: []
+
+actions: []
+
+type: general
+
+package: false
+
+rights: []
+
+peers: []
+
+dependencies: []
+
+_sites:
+  - zh
+
+_section: browsing
+
+_files:
+  - Gadget-april-fool-2025.js
