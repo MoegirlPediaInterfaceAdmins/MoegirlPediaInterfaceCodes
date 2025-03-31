@@ -2,7 +2,7 @@ ResourceLoader: true
 
 hidden: true
 
-default: true # TODO: 节过完了记得删
+default: true
 
 supportsUrlLoad: false
 
@@ -29,3 +29,4 @@ _section: browsing
 
 _files:
   - Gadget-april-fool-2025.js
+  - main.backup.js
