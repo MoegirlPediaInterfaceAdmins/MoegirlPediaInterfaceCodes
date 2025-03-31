@@ -65,7 +65,7 @@
         "uglify-js": "^3.19.3",
         "unassertify": "^3.0.1",
         "v8r": "^4.2.1",
-        "yaml": "^2.7.0"
+        "yaml": "^2.7.1"
     },
     "devDependencies": {
         "npm-run-all2": "^7.0.2"
