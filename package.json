@@ -26,7 +26,7 @@
         "@csstools/postcss-is-pseudo-class": "^5.0.1",
         "@csstools/postcss-media-minmax": "^2.0.7",
         "@octokit/auth-action": "^5.1.1",
-        "@octokit/auth-app": "^7.1.5",
+        "@octokit/auth-app": "^7.2.0",
         "@octokit/auth-unauthenticated": "^6.1.2",
         "@octokit/plugin-retry": "^7.2.0",
         "@octokit/rest": "^21.1.1",
