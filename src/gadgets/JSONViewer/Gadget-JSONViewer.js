@@ -20,7 +20,7 @@ $(() => (async () => {
     container.id = "bearbintools-jsonviewer";
     const root = createRoot(container);
 
-    const useDarkTheme = () => document.body.classLzist.contains("theme-dark");
+    const useDarkTheme = () => document.body.classList.contains("theme-dark");
 
     /** 封装可视化组件 */
     const JSONViewer = ({ json }) => {
