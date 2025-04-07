@@ -1,0 +1,25 @@
+#bearbintools-jsonviewer .json-view {
+    padding: 0.6em 1em;
+    word-break: break-all;
+    line-height: inherit;
+    font-size: inherit;
+}
+
+@media screen and (width >=768px) {
+    #bearbintools-jsonviewer .json-view .jv-indent {
+        padding-left: 2em;
+    }
+}
+
+#bearbintools-jsonviewer .json-view .jv-button {
+    font: inherit;
+}
+
+#bearbintools-jsonviewer .json-view .jv-size,
+#bearbintools-jsonviewer .json-view .jv-button {
+    user-select: none;
+}
+
+#bearbintools-jsonviewer.light-mode .json-view {
+    background-color: rgb(255 255 255 / 70%);
+}
