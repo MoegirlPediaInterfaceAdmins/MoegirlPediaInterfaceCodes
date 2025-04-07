@@ -12,6 +12,7 @@ $(() => {
     const wgArticleId = mw.config.get("wgArticleId");
     const wgCurRevisionId = mw.config.get("wgCurRevisionId") || -1;
     const wgRevisionId = mw.config.get("wgRevisionId") || -1;
+    const MOEPAD_JS_BRIDGE_KEY = "callFlutterUserFeedback";
     if (!wgIsArticle || wgArticleId === 0 || mw.config.get("wgAction") !== "view") {
         return;
     }
@@ -435,8 +436,13 @@ $(() => {
         if (wgCurRevisionId !== wgRevisionId && !await oouiDialog.confirm(`${wgULS("本页面<b>并非最新版本</b>，其内容可能已被修改，您可以点击", "本頁面<b>並非最新版本</b>，其內容可能已被修改，您可以點選")}<a href="/${wgPageName}">${wgULS("此链接查看最新版本</a>以免误反馈。<br>您确定您仍要反馈此版本吗？", "此連結檢視最新版本</a>以免誤反饋。<br>您確定您仍要反饋此版本嗎？")}`, oouiDialogConfig)) {
             return;
         }
-        $("#mw-notification-area").appendTo($body);
-        windowManager.openWindow(reportDialog);
+        const moepadFn = window[MOEPAD_JS_BRIDGE_KEY];
+        if (moepadFn && typeof moepadFn === "function") {
+            moepadFn();
+        } else {
+            $("#mw-notification-area").appendTo($body);
+            windowManager.openWindow(reportDialog);
+        }
     };
 
     const WarningIcon = (props = {}) => $("<svg  xmlns=\"http://www.w3.org/2000/svg\"  width=\"24\"  height=\"24\"  viewBox=\"0 0 24 24\"  fill=\"currentColor\"  class=\"icon icon-tabler icons-tabler-filled icon-tabler-alert-triangle\"><path stroke=\"none\" d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M12 1.67c.955 0 1.845 .467 2.39 1.247l.105 .16l8.114 13.548a2.914 2.914 0 0 1 -2.307 4.363l-.195 .008h-16.225a2.914 2.914 0 0 1 -2.582 -4.2l.099 -.185l8.11 -13.538a2.914 2.914 0 0 1 2.491 -1.403zm.01 13.33l-.127 .007a1 1 0 0 0 0 1.986l.117 .007l.127 -.007a1 1 0 0 0 0 -1.986l-.117 -.007zm-.01 -7a1 1 0 0 0 -.993 .883l-.007 .117v4l.007 .117a1 1 0 0 0 1.986 0l.007 -.117v-4l-.007 -.117a1 1 0 0 0 -.993 -.883z\" /></svg>", props);
