@@ -7,7 +7,7 @@
 
 body.heimu_toggle_on .heimu,
 body.heimu_toggle_on .heimu rt {
-    /* stylelint-disable-next-line custom-property-pattern -- Variable from MoeSkin */
+    /* stylelint-disable-next-line custom-property-pattern, color-function-alias-notation -- Variable from MoeSkin */
     color: rgba(var(--theme-text-color--rgb, 0, 0, 0), 0.8);
     background-color: rgb(37 37 37 / 13%);
 }
