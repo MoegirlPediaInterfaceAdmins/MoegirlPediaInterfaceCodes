@@ -37,10 +37,10 @@
     --n-ripple-duration: .6s;
     --n-opacity-disabled: 0.5;
     --n-wave-opacity: 0.6;
-    --n-color: rgba(24 160 88 / 16%);
-    --n-color-hover: rgba(24 160 88 / 22%);
-    --n-color-pressed: rgba(24 160 88 / 28%);
-    --n-color-focus: rgba(24 160 88 22%);
+    --n-color: rgb(24 160 88 / 16%);
+    --n-color-hover: rgb(24 160 88 / 22%);
+    --n-color-pressed: rgb(24 160 88 / 28%);
+    --n-color-focus: rgb(24 160 88 / 22%);
     --n-color-disabled: rgb(46 51 56 / 5%);
     --n-ripple-color: #0000;
     --n-text-color: var(--theme-text-color, rgb(51 54 57));
