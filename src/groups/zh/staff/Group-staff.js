@@ -11,4 +11,29 @@ $(() => {
     if (mw.config.get("wgCanonicalSpecialPageName") === "ReplaceText" && $("#doAnnounce")[0]) {
         $("#doAnnounce").prop("checked", false);
     }
+
+    // 顶部警告框
+    const $staffWarning = $(`
+<div
+  id="staff-warning"
+  class="infoBox"
+  style="border-left: 10px solid #c00; width: 100%; margin-bottom: 1rem"
+>
+  <div class="infoBoxContent" style="background: #fff2de; color: #f00">
+    <div class="infoBoxIcon" style="font-size: 40px">⚠️</div>
+    <div class="infoBoxText">
+      <div style="display: flex; align-items: center">
+        <b style="flex: 1; font-size: 1.5rem">
+          警告：当前登录的是萌娘百科 STAFF 账号！
+        </b>
+        <a>我知道了</a>
+      </div>
+    </div>
+  </div>
+</div>
+    `);
+    $("#mw-body").prepend($staffWarning);
+    $staffWarning.find("a").on("click", () => {
+        $staffWarning.hide(150);
+    });
 });
