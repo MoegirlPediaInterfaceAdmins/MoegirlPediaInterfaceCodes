@@ -248,4 +248,10 @@
     if ($(".noteTA")[0]) {
         noteTAIcon();
     }
+    /* 黑幕中的内部链接 */
+    $(".heimu a").on("click", function () {
+        if (!$(this).closest(".heimu").is(":active, :focus")) {
+            return false;
+        }
+    });
 })();
