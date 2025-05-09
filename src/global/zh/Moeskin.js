@@ -203,13 +203,12 @@
             return $wrapper;
         };
         document.getElementById("mw-content-text")?.addEventListener("click", async (e) => {
-            if (e.target.tagName !== "A") {
+            /** @type {HTMLAnchorElement | undefined} */
+            const anchor = e.target.closest("a.external");
+            if (!anchor) {
                 return;
             }
-            /** @type {HTMLAnchorElement} */
-            const anchor = e.target;
-            const hrefText = anchor.getAttribute("href");
-            if (!hrefText || hrefText.startsWith("#") || /^(?:data|vbscript|javascript):/.test(hrefText) || anchor.classList.contains("image")) {
+            if (anchor.classList.contains("image")) {
                 return;
             }
             const hrefURL = new URL(anchor.href);
