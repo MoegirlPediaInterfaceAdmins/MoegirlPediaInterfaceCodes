@@ -240,18 +240,18 @@
     fixImage();
     /* PageTools */
     applyPageTools();
-    /* linkConfirm */
     if (Reflect.has(document, "ontouchstart") && !location.host.startsWith("mobile")) {
+        /* linkConfirm */
         externalLinkConfirm();
+         /* 黑幕中的内部链接 */
+        $(".heimu a").on("click", function () {
+            if (!$(this).closest(".heimu").is(":active, :focus")) {
+                return false;
+            }
+        });
     }
     /* noteTAIcon */
     if ($(".noteTA")[0]) {
         noteTAIcon();
     }
-    /* 黑幕中的内部链接 */
-    $(".heimu a").on("click", function () {
-        if (!$(this).closest(".heimu").is(":active, :focus")) {
-            return false;
-        }
-    });
 })();
