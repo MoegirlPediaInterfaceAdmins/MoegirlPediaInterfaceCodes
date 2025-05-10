@@ -5,6 +5,8 @@
  * 版权协定：知识共享 署名-非商业性使用-相同方式共享 3.0
  */
 (async () => {
+    const IS_MOEPAD_APP = location.hostname === "mobile.moegirl.org.cn";
+
     /**
      * fixWikiLove
      * @FIXME WikiLove
@@ -26,7 +28,7 @@
      * fix a few image issues by extending mw.Title.newFromImg
      * examples including gallery-slideshow and MultiMediaViewer
      */
-    async function fixImage() {
+    const fixImage = async () => {
         await mw.loader.using("mediawiki.Title");
         mw.Title.newFromImg = (img) => {
             let matches, i, regex;
@@ -74,7 +76,7 @@
             await mw.loader.using("mmv.bootstrap.autostart");
             $.proxy(mw.mmv.bootstrap, "processThumbs")(mw.util.$content);
         }
-    }
+    };
 
     /* polyfill */
     /**
@@ -262,7 +264,8 @@
         }).append(noteTAbutton);
         $("#p-languages-group").append(noteTAicon);
     };
-    /* 等待 document 加载完毕 */
+
+    // -------- main --------
     await $.ready;
     /* fixWikiLove */
     fixWikiLove();
@@ -270,14 +273,13 @@
     fixImage();
     /* PageTools */
     applyPageTools();
-    if (Reflect.has(document, "ontouchstart") && !location.host.startsWith("mobile")) {
-        /* linkConfirm */
-        externalLinkConfirm();
-        /* heimuClick */
+    /** 针对触摸屏设备的额外优化 */
+    if (navigator.maxTouchPoints > 0) {
+        !IS_MOEPAD_APP && externalLinkConfirm(); // App 有自己的链接处理逻辑
         setupHeimuClickListener();
     }
     /* noteTAIcon */
-    if ($(".noteTA")[0]) {
+    if ($(".noteTA").length > 0) {
         noteTAIcon();
     }
 })();
