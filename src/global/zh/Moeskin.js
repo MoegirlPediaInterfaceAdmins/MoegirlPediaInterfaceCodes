@@ -244,8 +244,8 @@
         /* linkConfirm */
         externalLinkConfirm();
         /* 黑幕中的内部链接 */
-        $(".heimu a").on("click", function () {
-            if (!$(this).closest(".heimu").is(":active, :focus")) {
+        $(".heimu a").on("click", ({ target }) => {
+            if (!$(target).closest(".heimu").is(":active, :focus")) {
                 return false;
             }
         });
