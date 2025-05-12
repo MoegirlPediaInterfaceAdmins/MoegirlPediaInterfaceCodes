@@ -235,9 +235,8 @@
         document.querySelector("#mw-content-text")?.addEventListener("click", (e) => {
             /** @type {HTMLElement} */
             const target = e.target;
-            const currentHeimu = target.closest(".heimu");
-            const isClickedAnchor = !!target.closest("a");
-            if (currentHeimu && isClickedAnchor) {
+            const currentHeimu = target.closest(".heimu, .colormu, .heimu-like");
+            if (currentHeimu) {
                 // 这个元素是黑幕
                 // 但不是上次点击的黑幕，所以阻止默认行为
                 if (lastClickedHeimu !== currentHeimu) {
