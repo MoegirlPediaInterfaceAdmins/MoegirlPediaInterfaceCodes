@@ -5,6 +5,8 @@
  * 版权协定：知识共享 署名-非商业性使用-相同方式共享 3.0
  */
 (async () => {
+    const IS_MOEPAD_APP = location.hostname === "mobile.moegirl.org.cn";
+
     /**
      * fixWikiLove
      * @FIXME WikiLove
@@ -26,7 +28,7 @@
      * fix a few image issues by extending mw.Title.newFromImg
      * examples including gallery-slideshow and MultiMediaViewer
      */
-    async function fixImage() {
+    const fixImage = async () => {
         await mw.loader.using("mediawiki.Title");
         mw.Title.newFromImg = (img) => {
             let matches, i, regex;
@@ -74,7 +76,7 @@
             await mw.loader.using("mmv.bootstrap.autostart");
             $.proxy(mw.mmv.bootstrap, "processThumbs")(mw.util.$content);
         }
-    }
+    };
 
     /* polyfill */
     /**
@@ -203,8 +205,10 @@
             return $wrapper;
         };
         document.getElementById("mw-content-text")?.addEventListener("click", async (e) => {
-            /** @type {HTMLAnchorElement | undefined} */
-            const anchor = e.target.closest("a.external");
+            /** @type {HTMLElement} */
+            const target = e.target;
+            /** @type {HTMLAnchorElement | null} */
+            const anchor = target.closest("a.external");
             if (!anchor) {
                 return;
             }
@@ -220,6 +224,33 @@
             response && window.open(hrefURL.href);
         });
     };
+    /**
+     * 处理黑幕点击事件，防止误触
+     * 如果首次点击黑幕，不要触发内部的链接跳转等事件
+     * 再次点击同一个黑幕里的元素，才会触发事件
+     */
+    const setupHeimuClickListener = () => {
+        /** @type {HTMLElement|null} */
+        let lastClickedHeimu = null;
+        document.querySelector("#mw-content-text")?.addEventListener("click", (e) => {
+            /** @type {HTMLElement} */
+            const target = e.target;
+            const currentHeimu = target.closest(".heimu, .colormu, .heimu-like");
+            if (currentHeimu) {
+                // 这个元素是黑幕
+                // 但不是上次点击的黑幕，所以阻止默认行为
+                if (lastClickedHeimu !== currentHeimu) {
+                    e.preventDefault();
+                }
+                // 记录最后点击的黑幕
+                lastClickedHeimu = currentHeimu;
+            } else {
+                // 这个元素不是黑幕，重置状态
+                lastClickedHeimu = null;
+                return;
+            }
+        });
+    };
     /* noteTAIcon */
     const noteTAIcon = () => {
         const noteTAbutton = $('<button tabindex="0" type="button"/>')
@@ -232,7 +263,8 @@
         }).append(noteTAbutton);
         $("#p-languages-group").append(noteTAicon);
     };
-    /* 等待 document 加载完毕 */
+
+    // -------- main --------
     await $.ready;
     /* fixWikiLove */
     fixWikiLove();
@@ -240,18 +272,13 @@
     fixImage();
     /* PageTools */
     applyPageTools();
-    if (Reflect.has(document, "ontouchstart") && !location.host.startsWith("mobile")) {
-        /* linkConfirm */
-        externalLinkConfirm();
-        /* 黑幕中的内部链接 */
-        $(".heimu a").on("click", ({ target }) => {
-            if (!$(target).closest(".heimu").is(":active, :focus")) {
-                return false;
-            }
-        });
+    /** 针对触摸屏设备的额外优化 */
+    if (navigator.maxTouchPoints > 0) {
+        !IS_MOEPAD_APP && externalLinkConfirm(); // App 有自己的链接处理逻辑
+        setupHeimuClickListener();
     }
     /* noteTAIcon */
-    if ($(".noteTA")[0]) {
+    if ($(".noteTA").length > 0) {
         noteTAIcon();
     }
 })();
