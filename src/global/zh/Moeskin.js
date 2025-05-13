@@ -234,6 +234,10 @@
         let lastClickedHeimu = null;
         document.querySelector("#mw-content-text")?.addEventListener("click", (e) => {
             /** @type {HTMLElement} */
+            // 小工具“黑幕半隐”启用时正常跳转
+            if (document.body.closest(".heimu_toggle_on")) {
+                return;
+            }
             const target = e.target;
             const currentHeimu = target.closest(".heimu, .colormu, .heimu-like");
             if (currentHeimu) {
