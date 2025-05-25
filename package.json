@@ -29,7 +29,7 @@
         "@octokit/auth-app": "^8.0.1",
         "@octokit/auth-unauthenticated": "^7.0.1",
         "@octokit/plugin-retry": "^8.0.1",
-        "@octokit/rest": "^21.1.1",
+        "@octokit/rest": "^22.0.0",
         "@types/echarts": "^5.0.0",
         "@types/jquery": "^3.5.32",
         "@types/moment": "^2.13.0",
@@ -68,6 +68,6 @@
         "yaml": "^2.8.0"
     },
     "devDependencies": {
-        "npm-run-all2": "^8.0.3"
+        "npm-run-all2": "^8.0.4"
     }
 }
