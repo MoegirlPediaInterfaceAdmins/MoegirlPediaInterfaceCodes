@@ -1069,7 +1069,6 @@ body.ns-2 div#catlinks {
 
 /* 适用于屏幕像素宽度大于800px的设备 */
 @media (width >=800px) {
-
     /* .container {
         width: 80%;
     } */
@@ -1423,7 +1422,7 @@ body.overlay-scrollbars #bodyContent {
 }
 
 /* TODO: 暗色模式 暂时直接反转颜色 */
-[color-mode="dark"] :is(.dark-theme-invert, .infobox, .moe-infobox, .infotemplatebox, .infoboxSpecial, .ztdh, #powersearch, #topicpath):not(.dark-theme-invert-disabled) {
+[color-mode="dark"] :is(.dark-theme-invert, .infobox, .infobox2, .moe-infobox, .infotemplatebox, .infoboxSpecial, .ztdh, #powersearch, #topicpath):not(.dark-theme-invert-disabled) {
     /* FIXME: 100% 反色太黑了，所以使用90%，但是这会造成图片的颜色轻微失真 */
     filter: invert(0.9) hue-rotate(198deg);
     color: #222;
@@ -1468,4 +1467,11 @@ body.overlay-scrollbars #bodyContent {
     background-color: rgb(0 0 0 / 25%);
     user-select: none;
     pointer-events: none;
+}
+
+[color-mode="dark"] .mw-datatable,
+[color-mode="dark"] .mw-json,
+[color-mode="dark"] table.wikitable {
+    background-color: var(--theme-background-color);
+    color: var(--theme-text-color);
 }
