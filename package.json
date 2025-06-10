@@ -23,7 +23,7 @@
         "@annangela/eslint-config": "^7.0.0",
         "@annangela/eslint-formatter-gha": "^3.0.0",
         "@annangela/eslint-plugin-prefer-reflect": "^3.1.0",
-        "@csstools/postcss-is-pseudo-class": "^5.0.1",
+        "@csstools/postcss-is-pseudo-class": "^5.0.2",
         "@csstools/postcss-media-minmax": "^2.0.9",
         "@octokit/auth-action": "^6.0.1",
         "@octokit/auth-app": "^8.0.1",
