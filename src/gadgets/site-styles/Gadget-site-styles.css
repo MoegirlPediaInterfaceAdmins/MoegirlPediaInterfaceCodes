@@ -1421,28 +1421,14 @@ body.overlay-scrollbars #bodyContent {
     padding-right: 24px;
 }
 
-/* TODO: 暗色模式 暂时直接反转颜色 */
-[color-mode="dark"] :is(.dark-theme-invert, .infobox, .infobox2, .moe-infobox, .infotemplatebox, .infoboxSpecial, .ztdh, #powersearch, #topicpath):not(.dark-theme-invert-disabled) {
-    /* FIXME: 100% 反色太黑了，所以使用90%，但是这会造成图片的颜色轻微失真 */
-    filter: invert(0.9) hue-rotate(198deg);
+/* TODO: 暗色模式 暂时降低暗度处理 */
+[color-mode="dark"] :is(.infobox, .infobox2, .moe-infobox, .infotemplatebox, .infoboxSpecial, .ztdh, #powersearch, #topicpath) {
     color: #222;
+    filter: brightness(0.75);
 }
 
-.dark-theme-invert .dark-theme-invert {
-    filter: unset;
-}
-
-[color-mode="dark"] :is(.dark-theme-invert, .infobox, .infobox2, .moe-infobox, .infotemplatebox, .infoboxSpecial, .ztdh, #powersearch):not(.dark-theme-invert-disabled) a:not(.new) {
+[color-mode="dark"] :is(.infobox, .infobox2, .moe-infobox, .infotemplatebox, .infoboxSpecial, .ztdh, #powersearch) a:not(.new) {
     --color: #155d33;
-}
-
-[color-mode="dark"] :is(.dark-theme-invert, .infobox, .infobox2, .moe-infobox, .infotemplatebox, .infoboxSpecial, .ztdh, #powersearch):not(.dark-theme-invert-disabled) figure,
-[color-mode="dark"] :is(.dark-theme-invert, .infobox, .infobox2, .moe-infobox, .infotemplatebox, .infoboxSpecial, .ztdh, #powersearch):not(.dark-theme-invert-disabled) img,
-[color-mode="dark"] :is(.dark-theme-invert, .infobox, .infobox2, .moe-infobox, .infotemplatebox, .infoboxSpecial, .ztdh, #powersearch):not(.dark-theme-invert-disabled) iframe,
-[color-mode="dark"] :is(.dark-theme-invert, .infobox, .infobox2, .moe-infobox, .infotemplatebox, .infoboxSpecial, .ztdh, #powersearch):not(.dark-theme-invert-disabled) canvas,
-[color-mode="dark"] :is(.dark-theme-invert, .infobox, .infobox2, .moe-infobox, .infotemplatebox, .infoboxSpecial, .ztdh, #powersearch):not(.dark-theme-invert-disabled) div[style*="image"] {
-    filter: invert(1) hue-rotate(180deg);
-    opacity: 1;
 }
 
 [color-mode="dark"] input[type="text"] {
@@ -1451,22 +1437,8 @@ body.overlay-scrollbars #bodyContent {
 
 [color-mode="dark"] :is(.navbox):not(.dark-theme-invert-disabled) {
     --theme-link-color: rgb(51 102 187);
-
     color: rgb(44 62 80);
-    position: relative;
-}
-
-[color-mode="dark"] :is(.navbox):not(.dark-theme-invert-disabled)::after {
-    content: "";
-    position: absolute;
-    display: block;
-    width: 100%;
-    height: 100%;
-    left: 0;
-    top: 0;
-    background-color: rgb(0 0 0 / 25%);
-    user-select: none;
-    pointer-events: none;
+    filter: brightness(0.75);
 }
 
 [color-mode="dark"] .mw-datatable,
