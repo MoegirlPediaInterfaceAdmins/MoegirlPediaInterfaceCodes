@@ -1433,15 +1433,15 @@ body.overlay-scrollbars #bodyContent {
     filter: unset;
 }
 
-[color-mode="dark"] :is(.dark-theme-invert, .infobox, .moe-infobox, .infotemplatebox, .infoboxSpecial, .ztdh, #powersearch):not(.dark-theme-invert-disabled) a:not(.new) {
+[color-mode="dark"] :is(.dark-theme-invert, .infobox, .infobox2, .moe-infobox, .infotemplatebox, .infoboxSpecial, .ztdh, #powersearch):not(.dark-theme-invert-disabled) a:not(.new) {
     --color: #155d33;
 }
 
-[color-mode="dark"] :is(.dark-theme-invert, .infobox, .moe-infobox, .infotemplatebox, .infoboxSpecial, .ztdh, #powersearch):not(.dark-theme-invert-disabled) figure,
-[color-mode="dark"] :is(.dark-theme-invert, .infobox, .moe-infobox, .infotemplatebox, .infoboxSpecial, .ztdh, #powersearch):not(.dark-theme-invert-disabled) img,
-[color-mode="dark"] :is(.dark-theme-invert, .infobox, .moe-infobox, .infotemplatebox, .infoboxSpecial, .ztdh, #powersearch):not(.dark-theme-invert-disabled) iframe,
-[color-mode="dark"] :is(.dark-theme-invert, .infobox, .moe-infobox, .infotemplatebox, .infoboxSpecial, .ztdh, #powersearch):not(.dark-theme-invert-disabled) canvas,
-[color-mode="dark"] :is(.dark-theme-invert, .infobox, .moe-infobox, .infotemplatebox, .infoboxSpecial, .ztdh, #powersearch):not(.dark-theme-invert-disabled) div[style*="image"] {
+[color-mode="dark"] :is(.dark-theme-invert, .infobox, .infobox2, .moe-infobox, .infotemplatebox, .infoboxSpecial, .ztdh, #powersearch):not(.dark-theme-invert-disabled) figure,
+[color-mode="dark"] :is(.dark-theme-invert, .infobox, .infobox2, .moe-infobox, .infotemplatebox, .infoboxSpecial, .ztdh, #powersearch):not(.dark-theme-invert-disabled) img,
+[color-mode="dark"] :is(.dark-theme-invert, .infobox, .infobox2, .moe-infobox, .infotemplatebox, .infoboxSpecial, .ztdh, #powersearch):not(.dark-theme-invert-disabled) iframe,
+[color-mode="dark"] :is(.dark-theme-invert, .infobox, .infobox2, .moe-infobox, .infotemplatebox, .infoboxSpecial, .ztdh, #powersearch):not(.dark-theme-invert-disabled) canvas,
+[color-mode="dark"] :is(.dark-theme-invert, .infobox, .infobox2, .moe-infobox, .infotemplatebox, .infoboxSpecial, .ztdh, #powersearch):not(.dark-theme-invert-disabled) div[style*="image"] {
     filter: invert(1) hue-rotate(180deg);
     opacity: 1;
 }
