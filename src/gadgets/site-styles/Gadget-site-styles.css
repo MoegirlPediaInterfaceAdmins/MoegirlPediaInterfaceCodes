@@ -1437,6 +1437,7 @@ body.overlay-scrollbars #bodyContent {
 
 [color-mode="dark"] :is(.navbox):not(.dark-theme-invert-disabled) {
     --theme-link-color: rgb(51 102 187);
+
     color: rgb(44 62 80);
     filter: brightness(0.75);
 }
