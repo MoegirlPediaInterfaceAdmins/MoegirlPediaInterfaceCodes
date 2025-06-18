@@ -23,17 +23,9 @@
     const btnHighlight = new OO.ui.ButtonWidget({
         classes: ["tool"], icon: "highlight", framed: false, title: "代码高亮开关",
     }).on("click", () => {
-        (async () => {
-            if (cm) {
-                cm.toggle();
-                $(".group-codeeditor-main").toggle();
-            } else {
-                await init();
-            }
-            btnHighlight.$element.remove();
-            state = !state;
-            localObjectStorage.setItem("wikieditor-codemirror", state);
-        })();
+        init();
+        btnHighlight.$element.remove();
+        localObjectStorage.setItem("wikieditor-codemirror", true);
     });
     $textarea.on("wikiEditor-toolbar-doneInitialSections", () => {
         btnHighlight.$element.appendTo("#wikiEditor-section-main > .group-insert");
