@@ -6,7 +6,11 @@
     await $.ready;
 
     const localObjectStorage = new LocalObjectStorage("wikieditor-highlight");
-    let cm, state = localObjectStorage.getItem("wikieditor-codemirror", true);
+    let cm;
+    let state = localObjectStorage.getItem("wikieditor-codemirror", true);
+    if (mw.config.get("wgPageContentModel") !== "wikitext" && mw.user.options.get("usecodeeditor")) {
+        state = false;
+    }
     const $textarea = $("#wpTextbox1");
     const isAdvanced = ["loading", "loaded", "executing", "ready"].includes(mw.loader.getState("ext.wikiEditor"));
     const init = async () => {
@@ -14,9 +18,15 @@
             await libCachedCode.injectCachedCode("https://testingcf.jsdelivr.net/npm/@bhsd/codemirror-mediawiki@latest/dist/wiki.min.js", "js");
         }
         cm = await window.CodeMirror6.fromTextArea($textarea[0]);
-        $(".group-codeeditor-main").hide();
+        cm.$toolbar?.find(".group-codemirror6 > [rel=toggle]").on("click", () => {
+            state = !state;
+            localObjectStorage.setItem("wikieditor-codemirror", state);
+        });
     };
-    if (!isAdvanced) {
+    if (state || !isAdvanced) {
+        if (isAdvanced) {
+            await mw.loader.using("ext.wikiEditor");
+        }
         init();
         return;
     }
@@ -25,6 +35,7 @@
     }).on("click", () => {
         init();
         btnHighlight.$element.remove();
+        state = true;
         localObjectStorage.setItem("wikieditor-codemirror", true);
     });
     $textarea.on("wikiEditor-toolbar-doneInitialSections", () => {
@@ -33,13 +44,5 @@
     const group = $("#wikiEditor-section-main > .group-insert")[0];
     if (group && !group.contains(btnHighlight.$element[0])) {
         btnHighlight.$element.appendTo(group);
-    }
-    if (mw.config.get("wgPageContentModel") !== "wikitext" && mw.user.options.get("usecodeeditor")) {
-        state = false;
-    }
-    if (state) {
-        await mw.loader.using(["ext.wikiEditor", "oojs-ui.styles.icons-interactions"]);
-        await init();
-        btnHighlight.$element.remove();
     }
 })();
