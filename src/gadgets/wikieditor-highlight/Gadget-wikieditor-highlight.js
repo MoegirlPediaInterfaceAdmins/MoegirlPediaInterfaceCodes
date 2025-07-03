@@ -8,10 +8,10 @@
     const localObjectStorage = new LocalObjectStorage("wikieditor-highlight");
     let cm;
     let state = localObjectStorage.getItem("wikieditor-codemirror", true);
-    if (mw.config.get("wgPageContentModel") !== "wikitext" && mw.user.options.get("usecodeeditor")) {
+    const $textarea = $("#wpTextbox1");
+    if (mw.config.get("wgPageContentModel") !== "wikitext" && (mw.user.options.get("usecodeeditor") || $textarea.data('wikiEditorContext')?.codeEditorActive)) {
         state = false;
     }
-    const $textarea = $("#wpTextbox1");
     const isAdvanced = ["loading", "loaded", "executing", "ready"].includes(mw.loader.getState("ext.wikiEditor"));
     const init = async () => {
         if (!window.CodeMirror6) {
