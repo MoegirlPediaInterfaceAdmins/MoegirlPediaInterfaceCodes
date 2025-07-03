@@ -9,7 +9,7 @@
     let cm;
     let state = localObjectStorage.getItem("wikieditor-codemirror", true);
     const $textarea = $("#wpTextbox1");
-    if (mw.config.get("wgPageContentModel") !== "wikitext" && (mw.user.options.get("usecodeeditor") || $textarea.data('wikiEditorContext')?.codeEditorActive)) {
+    if (mw.config.get("wgPageContentModel") !== "wikitext" && (mw.user.options.get("usecodeeditor") || $textarea.data("wikiEditorContext")?.codeEditorActive)) {
         state = false;
     }
     const isAdvanced = ["loading", "loaded", "executing", "ready"].includes(mw.loader.getState("ext.wikiEditor"));
