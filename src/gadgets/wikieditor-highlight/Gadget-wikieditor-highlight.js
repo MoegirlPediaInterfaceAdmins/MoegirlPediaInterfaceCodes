@@ -6,41 +6,37 @@
     await $.ready;
 
     const localObjectStorage = new LocalObjectStorage("wikieditor-highlight");
-    let cm, state = localObjectStorage.getItem("wikieditor-codemirror", true);
+    let cm;
+    let state = localObjectStorage.getItem("wikieditor-codemirror", true);
     const $textarea = $("#wpTextbox1");
+    if (mw.config.get("wgPageContentModel") !== "wikitext" && (mw.user.options.get("usecodeeditor") || $textarea.data("wikiEditorContext")?.codeEditorActive)) {
+        state = false;
+    }
     const isAdvanced = ["loading", "loaded", "executing", "ready"].includes(mw.loader.getState("ext.wikiEditor"));
     const init = async () => {
         if (!window.CodeMirror6) {
             await libCachedCode.injectCachedCode("https://testingcf.jsdelivr.net/npm/@bhsd/codemirror-mediawiki@latest/dist/wiki.min.js", "js");
         }
         cm = await window.CodeMirror6.fromTextArea($textarea[0]);
-        $(".group-codeeditor-main").hide();
+        cm.$toolbar?.find(".group-codemirror6 > [rel=toggle]").on("click", () => {
+            state = !state;
+            localObjectStorage.setItem("wikieditor-codemirror", state);
+        });
     };
-    if (!isAdvanced) {
+    if (state || !isAdvanced) {
+        if (isAdvanced) {
+            await mw.loader.using("ext.wikiEditor");
+        }
         init();
         return;
     }
-    const btnSettings = new OO.ui.ButtonWidget({
-        classes: ["tool"], icon: "settings", framed: false, title: "代码高亮设置",
-    }).on("click", () => {
-        $("#cm-settings").trigger("click");
-    });
     const btnHighlight = new OO.ui.ButtonWidget({
         classes: ["tool"], icon: "highlight", framed: false, title: "代码高亮开关",
     }).on("click", () => {
-        (async () => {
-            if (cm) {
-                cm.toggle();
-                $(".group-codeeditor-main").toggle();
-                btnSettings.$element.toggle();
-            } else {
-                await init();
-                btnHighlight.$element.after(btnSettings.$element);
-            }
-            btnHighlight.$element.toggleClass("tool-active");
-            state = !state;
-            localObjectStorage.setItem("wikieditor-codemirror", state);
-        })();
+        init();
+        btnHighlight.$element.remove();
+        state = true;
+        localObjectStorage.setItem("wikieditor-codemirror", true);
     });
     $textarea.on("wikiEditor-toolbar-doneInitialSections", () => {
         btnHighlight.$element.appendTo("#wikiEditor-section-main > .group-insert");
@@ -48,14 +44,5 @@
     const group = $("#wikiEditor-section-main > .group-insert")[0];
     if (group && !group.contains(btnHighlight.$element[0])) {
         btnHighlight.$element.appendTo(group);
-    }
-    if (mw.config.get("wgPageContentModel") !== "wikitext" && mw.user.options.get("usecodeeditor")) {
-        state = false;
-    }
-    if (state) {
-        await mw.loader.using(["ext.wikiEditor", "oojs-ui.styles.icons-interactions"]);
-        await init();
-        btnHighlight.$element.addClass("tool-active");
-        btnHighlight.$element.after(btnSettings.$element);
     }
 })();
