@@ -29,7 +29,6 @@ dependencies:
   - oojs-ui-toolbars
   - oojs-ui-windows
   - oojs-ui.styles.indicators
-  - oojs-ui.styles.textures
   - oojs-ui.styles.icons-accessibility
   - oojs-ui.styles.icons-alerts
   - oojs-ui.styles.icons-content
