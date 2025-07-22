@@ -628,6 +628,19 @@
             }
         }
     }
+    // 标题反转义，来自维基百科
+    const firstHeading = $("#firstHeading").length ? $("#firstHeading") : $("#section_0");
+    const firstHeadingOld = firstHeading.html() || "";
+    let firstHeadingNew = firstHeadingOld;
+    firstHeadingNew = firstHeadingNew.replace(/\n/g, "&#10;"); // 恢复换行符
+    firstHeadingNew = firstHeadingNew.replace(/&lt;(\/?)(span|small|br)(.*?)&gt;/g, "<$1$2$3>"); // 恢复 <span> <small> <br> 标签
+    firstHeadingNew = firstHeadingNew.replace(/&lt;(\/?)(ruby|rb|rt)(.*?)&gt;/g, "<$1$2$3>"); // 恢复模板 ruby 的使用
+    firstHeadingNew = firstHeadingNew.replace(/&amp;/g, "&"); // 恢复 & 符号
+    // 如有需要恢复其他标签可在上方补充，但请注意可能的安全隐患
+    if (firstHeadingNew !== firstHeadingOld) {
+        firstHeading.html(firstHeadingNew);
+        $("title").text(`${firstHeading.text().replace(firstHeading.find(".mw-editsection").text(), "")} - 萌娘百科，${wgUVS("万物皆可萌的百科全书", "萬物皆可萌的百科全書")}`);
+    }
     $window.triggerHandler("resize");
     $window.on("load", () => {
         $window.triggerHandler("resize");

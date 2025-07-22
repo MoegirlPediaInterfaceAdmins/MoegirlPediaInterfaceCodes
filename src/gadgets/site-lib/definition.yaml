@@ -22,7 +22,6 @@ rights:
 peers: []
 
 dependencies:
-  - mediawiki.legacy.wikibits
   - mediawiki.util
   - ext.gadget.libCachedCode
 

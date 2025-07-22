@@ -25,9 +25,7 @@ peers: []
 dependencies:
   - ext.gadget.site-lib
   - ext.gadget.libUtil
-  - jquery.ui.dialog
-  - jquery.ui.autocomplete
-  - jquery.ui.resizable
+  - jquery.ui
   - mediawiki.util
 
 _sites:
