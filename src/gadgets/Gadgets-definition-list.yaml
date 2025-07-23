@@ -42,9 +42,6 @@
     - mwPanel
     - moeskin-topbar
     - sidebarHidden
-    - dark-mode-toggle
-    - dark-mode-toggle-pagestyles
-    - dark-mode
 
 - name: user
   gadgets:
@@ -69,7 +66,6 @@
     - wikieditor-highlight
     - HotCat
     - Wikiplus
-    - wikiplus-highlight
     - InPageEdit-v2
     - enable-nest-highlight
     - disable-nest-alert
