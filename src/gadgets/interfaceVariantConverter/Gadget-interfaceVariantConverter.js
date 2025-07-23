@@ -13,9 +13,6 @@
 $(() => (async () => {
     const pagename = mw.config.get("wgPageName");
     const username = mw.config.get("wgUserName");
-    if (mw.config.get("wgNamespaceNumber") !== 8 || pagename.includes(".js") || pagename.includes(".css")) {
-        return;
-    }
     // await mw.loader.using(["mediawiki.api", "oojs-ui"]);
 
     const pageid = mw.config.get("wgArticleId");
