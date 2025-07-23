@@ -103,7 +103,6 @@
                 "rollback",
                 "see-through-badwords",
                 "sendemail",
-                "skipcaptcha",
                 "spamblacklistlog",
                 "suppressionlog",
                 "suppressredirect",

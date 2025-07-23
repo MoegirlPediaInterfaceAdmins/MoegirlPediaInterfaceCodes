@@ -18,7 +18,6 @@ package: false
 
 rights:
   - edit
-  - skipcaptcha
 
 peers: []
 

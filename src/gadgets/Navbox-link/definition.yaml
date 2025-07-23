@@ -16,8 +16,7 @@ type: general
 
 package: false
 
-rights:
-  - skipcaptcha
+rights: []
 
 peers: []
 
