@@ -52,45 +52,14 @@
         "supportsUrlLoad": {
             "type": "boolean",
             "default": false,
-            "title": "【暂未实装】supportsUrlLoad 为 true 时用户可通过在页面地址中加入 \"withgadget\" 参数并指定该小工具 ID 的方式临时加载该小工具",
+            "title": "supportsUrlLoad 为 true 时用户可通过在页面地址中加入 \"withgadget\" 参数并指定该小工具 ID 的方式临时加载该小工具",
             "enum": [
-                false
+                false,
+                true
             ],
             "examples": [
-                false
-            ]
-        },
-        "targets": {
-            "type": "array",
-            "default": [],
-            "title": "targets 指定小工具运行的平台，\"desktop\" 指定桌面端，\"mobile\" 指定移动端，当前无需指定",
-            "uniqueItems": true,
-            "minItems": 0,
-            "maxItems": 2,
-            "items": {
-                "type": "string",
-                "title": "平台名称，\"desktop\" 指定桌面端，\"mobile\" 指定移动端",
-                "enum": [
-                    "desktop",
-                    "mobile"
-                ],
-                "examples": [
-                    "desktop",
-                    "mobile"
-                ]
-            },
-            "examples": [
-                [],
-                [
-                    "desktop"
-                ],
-                [
-                    "desktop",
-                    "mobile"
-                ],
-                [
-                    "mobile"
-                ]
+                false,
+                true
             ]
         },
         "skins": {
@@ -129,16 +98,59 @@
         "actions": {
             "type": "array",
             "default": [],
-            "title": "【暂未实装】actions 指定小工具在显示特定操作页面时加载，例如\"edit\" 指定在编辑、预览、查看编辑差异时加载",
+            "title": "actions 指定小工具在特定操作页面时加载，例如\"edit\" 指定在编辑、预览、查看编辑差异时加载",
             "uniqueItems": true,
-            "minItems": 0,
-            "maxItems": 0,
             "items": {
                 "type": "string",
-                "title": "【暂未实装】操作名称",
+                "title": "操作名称",
                 "examples": []
             },
-            "examples": []
+            "examples": [
+                "edit"
+            ]
+        },
+        "categories": {
+            "type": "array",
+            "default": [],
+            "title": "categories 指定小工具在特定分类下加载，例如\"积压工作\" 指定在积压工作分类下加载",
+            "uniqueItems": true,
+            "items": {
+                "type": "string",
+                "title": "分类名称",
+                "examples": []
+            },
+            "examples": [
+                "积压工作"
+            ]
+        },
+        "namespaces": {
+            "type": "array",
+            "default": [],
+            "title": "namespaces 指定小工具在特定命名空间下加载，例如\"2\" 指定在用户命名空间下加载",
+            "uniqueItems": true,
+            "items": {
+                "type": "string",
+                "title": "命名空间名称",
+                "examples": []
+            },
+            "examples": [
+                0,
+                2
+            ]
+        },
+        "contentModels": {
+            "type": "array",
+            "default": [],
+            "title": "contentModels 指定小工具在特定内容模型下加载，例如\"wikitext\" 指定在用户内容模型下加载",
+            "uniqueItems": true,
+            "items": {
+                "type": "string",
+                "title": "内容模型名称",
+                "examples": []
+            },
+            "examples": [
+                "wikitext"
+            ]
         },
         "type": {
             "type": "string",
@@ -156,12 +168,14 @@
         "package": {
             "type": "boolean",
             "default": false,
-            "title": "【暂未实装】package 指定小工具作为可被其他代码直接加载的包，此时仅能在小工具文件夹下保留一个 js 或 json 文件，其他代码可通过 \"require\" 函数加载该小工具，该小工具在该状态下被允许使用 json 文件",
-            "enum": [
-                false
+            "title": "package 指定小工具作为可被其他代码直接加载的包，此时仅能在小工具文件夹下保留一个 js 或 json 文件，其他代码可通过 \"require\" 函数加载该小工具，该小工具在该状态下被允许使用 json 文件",
+            "enum":[
+                false,
+                true
             ],
             "examples": [
-                false
+                false,
+                true
             ]
         },
         "rights": {
