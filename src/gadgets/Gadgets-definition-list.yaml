@@ -63,7 +63,6 @@
     - ForcePreviewUponUserRequest
     - editTopSection
     - DotsSyntaxHighlighter
-    - wikieditor-highlight
     - HotCat
     - Wikiplus
     - InPageEdit-v2
@@ -71,6 +70,7 @@
     - disable-nest-alert
     - uploader
     - temp-editcheck
+    - wikiplus-highlight
 
 - name: maintenance
   gadgets:
