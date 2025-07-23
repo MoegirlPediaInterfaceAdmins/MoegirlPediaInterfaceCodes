@@ -1,9 +1,6 @@
 "use strict";
 // <pre>
 $(async () => {
-    if (![0, 1, 2, 3, 4, 5, 9, 11, 12, 13, 15, 275, 711, 829, 2301, 2303].includes(mw.config.get("wgNamespaceNumber"))) {
-        return;
-    }
     if ($("#mw-content-text .mw-headline").length <= 3) {
         return;
     }
@@ -114,7 +111,7 @@ $(async () => {
         container.append($("#toc > ul").clone().removeAttr("class style"));
         return;
     }
-    const sections = apiResult.parse.sections;
+    const {sections} = apiResult.parse;
     let html = "",
         currentLevel = 0;
     const wgUserVariant = mw.config.get("wgUserVariant");

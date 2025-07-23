@@ -9,11 +9,28 @@ supportsUrlLoad: false
 skins:
   - vector
 
-actions: []
+actions:
+  - view
 
 categories: []
 
-namespaces: []
+namespaces:
+  - "0"
+  - "1"
+  - "2"
+  - "3" 
+  - "4"
+  - "5"
+  - "9"
+  - "11"
+  - "12"
+  - "13"
+  - "15"
+  - "275"
+  - "711"
+  - "829"
+  - "2301"
+  - "2303"
 
 contentModels: []
 
