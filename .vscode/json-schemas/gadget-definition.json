@@ -53,10 +53,6 @@
             "type": "boolean",
             "default": false,
             "title": "supportsUrlLoad 为 true 时用户可通过在页面地址中加入 \"withgadget\" 参数并指定该小工具 ID 的方式临时加载该小工具",
-            "enum": [
-                false,
-                true
-            ],
             "examples": [
                 false,
                 true
@@ -169,10 +165,6 @@
             "type": "boolean",
             "default": false,
             "title": "package 指定小工具作为可被其他代码直接加载的包，此时仅能在小工具文件夹下保留一个 js 或 json 文件，其他代码可通过 \"require\" 函数加载该小工具，该小工具在该状态下被允许使用 json 文件",
-            "enum":[
-                false,
-                true
-            ],
             "examples": [
                 false,
                 true
