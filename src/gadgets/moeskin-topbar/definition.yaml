@@ -6,8 +6,6 @@ default: false
 
 supportsUrlLoad: false
 
-targets: []
-
 skins:
   - moeskin
 

@@ -6,8 +6,6 @@ default: true
 
 supportsUrlLoad: false
 
-targets: []
-
 skins: []
 
 actions: []
