@@ -17,6 +17,7 @@ on:
       - .github/workflows/postCommit.yaml
       - .vscode/json-schemas/gadget-definition.json
       - .browserslistrc
+      - .swcrc
       - .*.yaml
       - package-lock.json
   merge_group:
