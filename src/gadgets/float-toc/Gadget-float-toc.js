@@ -111,7 +111,7 @@ $(async () => {
         container.append($("#toc > ul").clone().removeAttr("class style"));
         return;
     }
-    const {sections} = apiResult.parse;
+    const { sections } = apiResult.parse;
     let html = "",
         currentLevel = 0;
     const wgUserVariant = mw.config.get("wgUserVariant");
