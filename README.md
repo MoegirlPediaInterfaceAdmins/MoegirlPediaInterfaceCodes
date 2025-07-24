@@ -35,7 +35,7 @@
 - 自动化工具的配置文件：
   - [`.eslintrc.yaml`](.eslintrc.yaml) 配置 eslint，由于所有 Javascript 代码都需经过编译，故其 `parserOptions.ecmaVersion` 被指定为 `latest` 以便充分利用最新标准；
   - [`tsconfig.json`](tsconfig.json) 配置 ts，用于编辑器；
-  - [`.swcrc`](.swcrc) 配置 swc，用于生成编译后代码，相较于 tsc 有明显性能优势；
+  - [`tsconfig.production.json`](tsconfig.production.json) 配置 tsc，用于编译代码；
   - [`.stylelintrc.yaml`](.stylelintrc.yaml) 配置 stylelint；
   - [`.postcssrc.yaml`](.postcssrc.yaml) 配置 postcss；
   - [`.browserslistrc`](.browserslistrc) 配置 [autoprifixer](https://github.com/postcss/autoprefixer) 所使用的 [browserslist](https://github.com/browserslist/browserslist)，目前暂定锚定为 [`defaults`](https://github.com/browserslist/browserslist#full-list) 的基础上添加 `Chrome >= 70` 以适应萌百用户群体。
@@ -76,7 +76,7 @@
 
 机器人通过以下流程编译代码，然后提交到萌百：
 
-- 执行 `cd src && npx swc . -d ../dist --only **/*.js` 以编译 `*.js` 代码；
+- 执行 `npx tsc --project tsconfig.production.json` 以编译 `*.js` 代码；
 - 执行 `npx postcss src/**/*.css --base src/ -d dist/ --verbose` 以编译 `*.css` 代码；
 - 根据模板生成 `MediaWiki:Gadgets-definition` 页面。
 
@@ -88,8 +88,8 @@
 
   ~~解决办法：~~
 
-  1. ~~等萌百升级 MediaWiki 系统；或~~
-  2. ~~找一个支持编译为 ECMAScript 3 版本的编译工具。~~（已替换为 [swc](https://swc.rs/docs/migrating-from-tsc)）
+  1. ~~等萌百升级 MediaWiki 系统；或~~（萌百真升级 MediaWiki 了）
+  2. ~~找一个支持编译为 ECMAScript 3 版本的编译工具。~~
 
 ## 参与维护
 

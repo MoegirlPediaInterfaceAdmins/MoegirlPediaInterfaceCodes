@@ -10,11 +10,6 @@
             "ESNext",
             "DOM"
         ],
-        // From https://swc.rs/docs/migrating-from-tsc
-        "isolatedModules": true,
-        "verbatimModuleSyntax": true,
-        "esModuleInterop": true,
-        "useDefineForClassFields": false,
     },
     "include": [
         "src",

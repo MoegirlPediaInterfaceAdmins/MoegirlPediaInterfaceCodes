@@ -15,7 +15,7 @@
         "ci": "export RANDOM_UUID=$(uuidgen) && rm -rdf node_modules && node scripts/ci/before.js && npm ci && node scripts/ci/after.js",
         "build": "run-p build:js build:css",
         "build:css": "postcss src/**/*.css --base src/ -d dist/",
-        "build:js": "cd src && npx swc . -d ../dist --only **/*.js"
+        "build:js": "npx tsc --project tsconfig.production.json"
     },
     "dependencies": {
         "@actions/artifact": "^2.3.2",
@@ -67,8 +67,6 @@
         "yaml": "^2.7.1"
     },
     "devDependencies": {
-        "@swc/cli": "^0.7.8",
-        "@swc/core": "^1.13.2",
         "npm-run-all2": "^7.0.2",
         "typescript": "^5.7.3"
     }
