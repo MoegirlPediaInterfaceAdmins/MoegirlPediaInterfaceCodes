@@ -76,7 +76,7 @@
 
 机器人通过以下流程编译代码，然后提交到萌百：
 
-- 执行 `npx swc src/ -d dist --ignore **/*.ts` 以编译 `*.js` 代码；
+- 执行 `cd src && npx swc . -d ../dist --only **/*.js` 以编译 `*.js` 代码；
 - 执行 `npx postcss src/**/*.css --base src/ -d dist/ --verbose` 以编译 `*.css` 代码；
 - 根据模板生成 `MediaWiki:Gadgets-definition` 页面。
 
