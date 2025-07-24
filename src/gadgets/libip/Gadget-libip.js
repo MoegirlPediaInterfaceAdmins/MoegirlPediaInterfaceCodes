@@ -823,10 +823,10 @@
     };
     !function(global) {
         !function() {
-            var obj = (obj = _$ip_5) && obj.__esModule ? obj : {
-                default: obj
+            var e = (e = _$ip_5) && e.__esModule ? e : {
+                default: e
             };
-            global.libip = obj.default;
+            global.libip = e.default;
         }.call(this);
     }.call(this, "undefined" != typeof global ? global : "undefined" != typeof self ? self : "undefined" != typeof window ? window : {});
 }();
