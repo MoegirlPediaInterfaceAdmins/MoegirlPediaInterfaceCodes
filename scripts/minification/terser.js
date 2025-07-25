@@ -83,7 +83,7 @@ const options = {
         inline_script: true,
         keep_numbers: false,
         keep_quoted_props: false,
-        max_line_len: false,
+        max_line_len: 1024 * 10,
         preamble: null,
         quote_keys: false,
         quote_style: 0,
