@@ -61,7 +61,7 @@
          *
          * @context {Object} jQuery instance (jQuery DOM node list)
          * @this {JQuery<HTMLElement>}
-         * @return {Object} jQuery instance (jQuery DOM node list)
+         * @return {this} jQuery instance (jQuery DOM node list)
          */
         _jqInteraction() {
             return this.on({
