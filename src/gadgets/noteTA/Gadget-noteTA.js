@@ -40,6 +40,27 @@ mw.hook("wikipage.content").add(() => {
                 ),
             ).insertAfter("#p-variants");
         }
+
+        const parse = async (wikitext) => {
+            let retryCount = 0;
+            try {
+                const data = await api.post({
+                    action: "parse",
+                    title: "Template:CGroup/____SAND_BOX____",
+                    text: wikitext,
+                    prop: "text",
+                    variant: wgUserVariant,
+                });
+                return data.parse.text["*"];
+            } catch (e) {
+                if (retryCount++ < 3) {
+                    setTimeout(parse(wikitext), 1000);
+                } else {
+                    throw new Error(e);
+                }
+            }
+        };
+
         $this.on("click", async () => {
             if ($dialog === null) {
                 $dialog = $('<div class="noteTA-dialog" />');
@@ -50,7 +71,7 @@ mw.hook("wikipage.content").add(() => {
             } else {
                 $dialog.dialog("open");
             }
-            if ($dialog.find(".mw-ajax-loader, .noteTAViewer-error")) {
+            if ($dialog.find(".mw-ajax-loader, .noteTAViewer-error").length !== 0) {
                 let wikitext = "", collapse = true;
                 const $dom = $("#mw-content-text .mw-parser-output");
                 const actualTitle = mw.config.get("wgPageName").replace(/_/g, " ");
@@ -107,15 +128,8 @@ mw.hook("wikipage.content").add(() => {
                 wikitext += "{{noteTA/footer}}\n";
                 // API request
                 try {
-                    const results = await api.post({
-                        action: "parse",
-                        assertuser: wgUserName,
-                        title: "Template:CGroup/____SAND_BOX____",
-                        text: wikitext,
-                        prop: "text",
-                        variant: wgUserVariant,
-                    }, { retry: 3 });
-                    $dialog.html(results.parse.text["*"]);
+                    const result = await parse(wikitext);
+                    $dialog.html(result);
                     if (collapse) {
                         $dialog.find(".mw-collapsible").makeCollapsible();
                         $dialog.find(".mw-collapsible-toggle").on("click.mw-collapse", async (_, ele) => {
