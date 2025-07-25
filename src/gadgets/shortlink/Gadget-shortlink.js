@@ -98,7 +98,7 @@ $(() => {
     // 在短链栏添加复制项
     const addItem = (link) => {
         const $item = $(`<li id="sl-${link.id}"></li>`);
-        $item.append(`<a href="${wgServer}${wgScriptPath}/_?${link.href}">${link.text}</a>`);
+        $item.append(`<a href="${wgServer}${wgScriptPath}/?${link.href}">${link.text}</a>`);
         switch (skin) {
             case "moeskin":
             default:
