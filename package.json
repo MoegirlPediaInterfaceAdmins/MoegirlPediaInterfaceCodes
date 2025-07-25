@@ -15,7 +15,8 @@
         "ci": "export RANDOM_UUID=$(uuidgen) && rm -rdf node_modules && node scripts/ci/before.js && npm ci && node scripts/ci/after.js",
         "build": "run-p build:js build:css",
         "build:css": "postcss src/**/*.css --base src/ -d dist/",
-        "build:js": "npx tsc --project tsconfig.production.json"
+        "build:js": "rm -rf dist && npx tsc --project tsconfig.production.json",
+        "minicifation:js": "node scripts/minification/terser.js"
     },
     "dependencies": {
         "@actions/artifact": "^2.3.2",
@@ -55,11 +56,13 @@
         "postcss-logical": "^8.1.0",
         "postcss-selector-matches": "^4.0.0",
         "postcss-selector-not": "^8.0.1",
+        "pretty-bytes": "^7.0.0",
         "semver": "^7.7.1",
         "simple-git": "^3.27.0",
         "stylelint": "^16.17.0",
         "stylelint-actions-formatters": "^16.3.1",
         "stylelint-config-standard": "^37.0.0",
+        "terser": "^5.43.1",
         "types-mediawiki": "^1.10.1",
         "uglify-js": "^3.19.3",
         "unassertify": "^3.0.1",

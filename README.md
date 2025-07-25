@@ -32,6 +32,7 @@
   - [`scripts/postCommit/push.js`](scripts/postCommit/push.js) 用来推送由 Github Actions 做出的更改；
   - [`scripts/emailmapChecker/index.js`](scripts/emailmapChecker/index.js) 用来检查相关用户是否将其萌娘百科用户名和邮箱地址添加到 [`.mailmap`](.mailmap)，若当前环境为本地则检测 git 配置文件里的邮箱地址，若当前环境为 Github Actions 则检查相关 commits 的邮箱地址。
   - [`scripts/ci/before.js`](scripts/ci/before.js) 和 [`scripts/ci/after.js`](scripts/ci/after.js) 用来在 `npm run ci` 里自动替换 [`package-lock.json`](package-lock.json) 里的 `resolved` 对应的 registry 为你本地设置的 registry，有助于加快安装速度。
+  - [`scripts/minification/terser.js`](scripts/minification/terser.js) 用来使用 [Terser](https://) 对编译后的 JavaScript 代码进行压缩和优化，生成的文件会被放置在 `dist/` 文件夹下。
 - 自动化工具的配置文件：
   - [`.eslintrc.yaml`](.eslintrc.yaml) 配置 eslint，由于所有 Javascript 代码都需经过编译，故其 `parserOptions.ecmaVersion` 被指定为 `latest` 以便充分利用最新标准；
   - [`tsconfig.json`](tsconfig.json) 配置 ts，用于编辑器；
@@ -76,7 +77,7 @@
 
 机器人通过以下流程编译代码，然后提交到萌百：
 
-- 执行 `npx tsc --project tsconfig.production.json` 以编译 `*.js` 代码；
+- 执行 `rm -rf dist && npx tsc --project tsconfig.production.json && node scripts/minification/terser.js` 以编译 `*.js` 代码；
 - 执行 `npx postcss src/**/*.css --base src/ -d dist/ --verbose` 以编译 `*.css` 代码；
 - 根据模板生成 `MediaWiki:Gadgets-definition` 页面。
 

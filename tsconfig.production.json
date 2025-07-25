@@ -1,10 +1,10 @@
 {
     "extends": "./tsconfig.json",
     "compilerOptions": {
-        "outDir": "./dist/",
+        "outDir": "./dist/compiled",
         "baseUrl": "./",
         "rootDir": "./src/",
-        "target": "es2017",
+        "target": "es2020",
     },
     "exclude": [
         "scripts",
