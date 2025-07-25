@@ -5,8 +5,8 @@ import { minify } from "terser";
 import console from "../modules/console.js";
 console.info("Initialization done.");
 
-const compiledFolder = "dist/compiled";
-const minifiedFolder = "dist/minified";
+const compiledFolder = "dist/_compiled";
+const minifiedFolder = "dist/_minified";
 
 /**
  * @type { import("terser").MinifyOptions }

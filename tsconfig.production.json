@@ -1,7 +1,7 @@
 {
     "extends": "./tsconfig.json",
     "compilerOptions": {
-        "outDir": "./dist/compiled",
+        "outDir": "./dist/_compiled",
         "baseUrl": "./",
         "rootDir": "./src/",
         "target": "es2020",
