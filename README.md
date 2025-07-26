@@ -34,7 +34,7 @@
   - [`scripts/ci/before.js`](scripts/ci/before.js) 和 [`scripts/ci/after.js`](scripts/ci/after.js) 用来在 `npm run ci` 里自动替换 [`package-lock.json`](package-lock.json) 里的 `resolved` 对应的 registry 为你本地设置的 registry，有助于加快安装速度。
   - [`scripts/minification/terser.js`](scripts/minification/terser.js) 用来使用 [Terser](https://) 对编译后的 JavaScript 代码进行压缩和优化，生成的文件会被放置在 `dist/` 文件夹下。
 - 自动化工具的配置文件：
-  - [`.eslintrc.yaml`](.eslintrc.yaml) 配置 eslint，由于所有 Javascript 代码都需经过编译，故其 `parserOptions.ecmaVersion` 被指定为 `latest` 以便充分利用最新标准；
+  - [`eslint.config.js`](eslint.config.js) 配置 eslint，由于所有 Javascript 代码都需经过编译，故其 `parserOptions.ecmaVersion` 被指定为 `latest` 以便充分利用最新标准；
   - [`tsconfig.json`](tsconfig.json) 配置 ts，用于编辑器；
   - [`tsconfig.production.json`](tsconfig.production.json) 配置 tsc，用于编译代码；
   - [`.stylelintrc.yaml`](.stylelintrc.yaml) 配置 stylelint；
