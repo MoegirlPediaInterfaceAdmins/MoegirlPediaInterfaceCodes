@@ -127,8 +127,8 @@
             "title": "namespaces 指定小工具在特定命名空间下加载，例如\"2\" 指定在用户命名空间下加载",
             "uniqueItems": true,
             "items": {
-                "type": "string",
-                "title": "命名空间名称",
+                "type": "number",
+                "title": "命名空间编号",
                 "examples": []
             },
             "examples": [
