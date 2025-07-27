@@ -8,11 +8,13 @@ supportsUrlLoad: false
 
 skins: []
 
-actions: []
+actions:
+  - edit
 
 categories: []
 
-namespaces: []
+namespaces:
+  - "274"
 
 contentModels: []
 

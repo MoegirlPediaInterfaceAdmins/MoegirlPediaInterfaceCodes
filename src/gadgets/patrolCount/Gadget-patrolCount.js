@@ -7,9 +7,6 @@
 */
 "use strict";
 $(() => {
-    if (mw.config.get("wgAction") !== "view") {
-        return;
-    }
     // 在此修改监视的名字空间
     const namespaceWatched = [
         // 将你  想监视的名字空间前面去掉 //

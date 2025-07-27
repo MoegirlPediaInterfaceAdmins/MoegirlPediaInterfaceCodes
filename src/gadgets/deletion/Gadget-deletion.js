@@ -1,7 +1,7 @@
 // <pre>
 "use strict";
 $(() => (async () => {
-    if (mw.config.get("wgNamespaceNumber") !== 14 || !mw.config.get("wgIsArticle") || !mw.config.get("wgUserGroups").includes("sysop") || !$(".mw-category-generated > div")[0]) {
+    if (!mw.config.get("wgIsArticle") || !mw.config.get("wgUserGroups").includes("sysop") || !$(".mw-category-generated > div")[0]) {
         return;
     }
 

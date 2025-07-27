@@ -3,12 +3,11 @@
 // await mw.loader.using(["ext.gadget.site-lib", "oojs-ui", "mediawiki.api", "mediawiki.notification", "mediawiki.notify"]);
 $(() => {
     try {
-        const NS = [0, 10, 828];
         const pagens = mw.config.get("wgNamespaceNumber");
         const pageid = mw.config.get("wgArticleId");
         const username = mw.config.get("wgUserName");
         const isModule = pagens === 828;
-        if (pageid === 0 || $(".will2Be2Deleted")[0] || !mw.config.get("wgUserGroups").includes("patroller") && !mw.config.get("wgUserGroups").includes("sysop") || !NS.includes(pagens)) {
+        if (pageid === 0 || $(".will2Be2Deleted")[0] || !mw.config.get("wgUserGroups").includes("patroller") && !mw.config.get("wgUserGroups").includes("sysop")) {
             return;
         }
 

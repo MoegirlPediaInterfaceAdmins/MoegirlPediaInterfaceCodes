@@ -4,8 +4,8 @@
     /**
      * @type { HTMLInputElement | null }
      */
-    const wpReason = document.querySelector("#wpReason");
-    if (mw.config.get("wgAction") !== "delete" || !wpReason) {
+    const wpReason = document.getElementById("wpReason");
+    if (!wpReason) {
         return;
     }
     const api = new mw.Api();

@@ -8,7 +8,8 @@ supportsUrlLoad: false
 
 skins: []
 
-actions: []
+actions: 
+  - edit
 
 categories: []
 

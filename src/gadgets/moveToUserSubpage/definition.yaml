@@ -12,7 +12,10 @@ actions: []
 
 categories: []
 
-namespaces: []
+namespaces: 
+  - "0"
+  - "10"
+  - "828"
 
 contentModels: []
 

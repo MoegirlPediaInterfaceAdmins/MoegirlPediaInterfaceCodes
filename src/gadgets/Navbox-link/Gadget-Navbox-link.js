@@ -1,7 +1,7 @@
 // <pre>
 "use strict";
 $(() => {
-    if (mw.config.get("wgNamespaceNumber") !== 10 || $("#mw-content-text .navbox:not(.template-documentation .navbox)").length === 0) {
+    if ($("#mw-content-text .navbox:not(.template-documentation .navbox)").length === 0) {
         return;
     }
     const pageNonExist = wgULS("（页面不存在）", "（頁面不存在）");

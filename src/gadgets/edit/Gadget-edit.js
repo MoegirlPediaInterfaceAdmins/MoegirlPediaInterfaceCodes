@@ -1,9 +1,6 @@
 "use strict";
 // <pre>
 $(() => {
-    if (!["edit", "submit"].includes(mw.config.get("wgAction"))) {
-        return;
-    }
     const wgPageName = mw.config.get("wgPageName");
     const wgNamespaceNumber = mw.config.get("wgNamespaceNumber");
 

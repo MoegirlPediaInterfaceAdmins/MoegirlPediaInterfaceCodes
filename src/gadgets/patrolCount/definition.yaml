@@ -9,7 +9,8 @@ supportsUrlLoad: false
 skins:
   - vector
 
-actions: []
+actions:
+  - view
 
 categories: []
 
