@@ -26,7 +26,7 @@ $(() => {
             if (runningStatus) {
                 return;
             }
-            $statusNode.text(`${purgingText} 0/2`);
+            $statusNode.text(purgingText);
             $statusNode.prepend('<img src="https://img.moegirl.org.cn/common/d/d1/Windows_10_loading.gif" style="height: 1em; margin-top: -.25em;">');
             runningStatus = true;
             const api = new mw.Api(),
@@ -38,14 +38,8 @@ $(() => {
                 };
             try {
                 await api.post(opt);
-                $statusNode.text(`${purgingText} 1/2`);
-                $statusNode.prepend('<img src="https://img.moegirl.org.cn/common/d/d1/Windows_10_loading.gif" style="height: 1em; margin-top: -.25em;">');
-                await new Promise((res) => {
-                    setTimeout(res, 300);
-                });
-                await api.post(opt);
                 $statusNode.text(succesText);
-                setTimeout(location.reload.bind(location), 1000);
+                setTimeout(() => location.reload(location, true), 200);
             } catch {
                 $statusNode.text(failText);
                 // eslint-disable-next-line require-atomic-updates
