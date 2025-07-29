@@ -119,6 +119,8 @@ jobs:
         run: node scripts/generateGadgetsDefinition/index.js
       - name: Conventional Commits scopes generator
         run: node scripts/generateConventionalCommitsScopes/index.js
+      - name: User Rights Schema generator
+        run: node scripts/generateUserRightsSchema/index.js
       - name: Commits History generator
         run: node scripts/generateCommitsHistory/index.js
       - name: linguist-generated
