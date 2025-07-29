@@ -14,7 +14,7 @@ actions:
 categories: []
 
 namespaces: 
-  - "8"
+  - 8
 
 contentModels: 
   - wikitext

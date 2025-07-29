@@ -13,9 +13,9 @@ actions: []
 categories: []
 
 namespaces: 
-  - "0"
-  - "10"
-  - "828"
+  - 0
+  - 10
+  - 828
 
 contentModels: []
 
