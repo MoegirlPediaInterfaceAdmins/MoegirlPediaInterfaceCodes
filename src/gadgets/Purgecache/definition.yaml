@@ -20,8 +20,7 @@ type: general
 
 package: false
 
-rights:
-  - purge
+rights: []
 
 peers: []
 
