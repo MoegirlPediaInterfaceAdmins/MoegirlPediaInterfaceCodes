@@ -4,7 +4,7 @@
     /**
      * @type { HTMLInputElement | null }
      */
-    const wpReason = document.getElementById("wpReason");
+    const wpReason = document.getElementsByName("wpReason")?.[0];
     if (!wpReason) {
         return;
     }
