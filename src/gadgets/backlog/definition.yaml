@@ -21,7 +21,7 @@ type: general
 package: false
 
 rights:
-  - patrolleredit
+  - patrol
 
 peers: []
 

@@ -22,7 +22,7 @@ package: false
 
 rights:
   - edit
-  - patrolleredit
+  - patrol
 
 peers: []
 
