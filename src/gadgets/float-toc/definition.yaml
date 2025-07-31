@@ -7,7 +7,7 @@ default: true
 supportsUrlLoad: false
 
 skins:
-  - vector
+  - vector-2022
 
 actions:
   - view

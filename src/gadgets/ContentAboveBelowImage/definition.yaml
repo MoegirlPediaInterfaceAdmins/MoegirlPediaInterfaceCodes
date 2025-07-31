@@ -6,8 +6,7 @@ default: true
 
 supportsUrlLoad: false
 
-skins:
-  - vector
+skins: []
 
 actions: []
 
