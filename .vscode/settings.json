@@ -72,6 +72,7 @@
         "Gadget/LetYouDown",
         "Gadget/libBottomRightCorner",
         "Gadget/libCachedCode",
+        "Gadget/libDiscussionUtil",
         "Gadget/libHashwasm",
         "Gadget/libJQuery",
         "Gadget/libJSON5",
