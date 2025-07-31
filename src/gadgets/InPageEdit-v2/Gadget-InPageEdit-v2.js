@@ -7,7 +7,7 @@ mw.hook("InPageEdit").add((ctx) => {
         wgPageName = mw.config.get("wgRelevantPageName"),
         wgRevisionId = mw.config.get("wgRevisionId");
     switch (mw.config.get("skin")) {
-        case "vector": {
+        case "vector-2022": {
             $("#ca-edit").after(
                 $("<li>", {
                     id: "ca-quick-edit",

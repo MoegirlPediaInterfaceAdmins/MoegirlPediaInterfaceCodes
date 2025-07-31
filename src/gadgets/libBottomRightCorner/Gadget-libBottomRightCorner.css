@@ -9,7 +9,7 @@
     user-select: none;
 }
 
-body.overlay-scrollbars.skin-vector #bottomRightCorner {
+body.overlay-scrollbars.skin-vector-2022 #bottomRightCorner {
     /* 因为无法计算滚动条宽度，只能使用预设值 */
     right: 20px;
 }

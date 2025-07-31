@@ -248,7 +248,7 @@
         }
     };
     const topNoticeScroll = async () => {
-        const siteNotice = $("body.skin-vector > #content > #siteNotice, body.skin-moeskin > #app > #moe-full-container > #moe-main-container > main > #moe-global-sidenav #moe-sidenav-sitenotice");
+        const siteNotice = $("body.skin-vector-2022 > #content > #siteNotice, body.skin-moeskin > #app > #moe-full-container > #moe-main-container > main > #moe-global-sidenav #moe-sidenav-sitenotice");
         const noticeType = {
             pinnedAnnouncement: "置顶公告",
             newAnnouncement: "7日内新公告",

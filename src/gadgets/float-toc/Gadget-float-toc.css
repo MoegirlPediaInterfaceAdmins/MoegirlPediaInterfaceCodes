@@ -13,7 +13,7 @@
     align-content: flex-start;
 }
 
-body.overlay-scrollbars.skin-vector .tocfloat {
+body.overlay-scrollbars.skin-vector-2022 .tocfloat {
     /* 因为无法计算滚动条宽度，只能使用预设值 */
     transform: translateX(calc(100% - 20px));
 }
@@ -30,7 +30,7 @@ body.overlay-scrollbars.skin-vector .tocfloat {
     transform: none;
 }
 
-body.overlay-scrollbars.skin-vector .tocfloat:is(:hover, :active, :focus) {
+body.overlay-scrollbars.skin-vector-2022 .tocfloat:is(:hover, :active, :focus) {
     /* 因为无法计算滚动条宽度，只能使用预设值 */
     transform: translate(-20px);
 }
