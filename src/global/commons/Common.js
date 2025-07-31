@@ -154,11 +154,29 @@
     };
     // Summary预加载
     if (["edit", "submit"].includes(mw.config.get("wgAction"))) {
-        const wpSummary = $('[name="wpSummary"]');
-        // $(".mw-summary-preset-item a").closest('.oo-ui-fieldLayout-header').width($('#wpSummary').width());
-        $(".mw-summary-preset-item a").on("click", function () {
-            wpSummary.val(`${wpSummary.val()} ${$(this).text()}`.trim());
-            wpSummary.focus();
+        // 可视化和2017版wikitext编辑器
+        let isInitSummary = false;
+        mw.hook("ve.saveDialog.stateChanged").add(() => {
+            if (!isInitSummary) {
+                $("div.ve-ui-mwSaveDialog-summary span.mw-summary-preset-item > a")
+                    .removeAttr("target")
+                    .on("click", function (e) {
+                        e.preventDefault();
+                        const summaryBox = $("div.ve-ui-mwSaveDialog-summary > textarea");
+                        summaryBox.val(`${summaryBox.val()} ${$(this).text()}`.trim());
+                        summaryBox.on("focus");
+                    });
+                isInitSummary = true;
+            }
+        });
+        mw.hook("ve.activationComplete").add(() => {
+            isInitSummary = false;
+        });
+        // 2010版wikitext编辑器
+        $('[for="wpSummary"] .mw-summary-preset-item a').on("click", function () {
+            const summaryBox = $('[name="wpSummary"]');
+            summaryBox.val(`${summaryBox.val()} ${$(this).text()}`.trim());
+            summaryBox.on("focus");
             return false;
         });
     }
