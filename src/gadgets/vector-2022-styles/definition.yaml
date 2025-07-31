@@ -1,0 +1,36 @@
+ResourceLoader: true
+
+hidden: true
+
+default: true
+
+supportsUrlLoad: false
+
+skins:
+  - vector-2022
+
+actions: []
+
+categories: []
+
+namespaces: []
+
+contentModels: []
+
+type: styles
+
+package: false
+
+rights: []
+
+peers: []
+
+dependencies: []
+
+_sites:
+  - zh
+
+_section: system
+
+_files:
+  - Gadget-vector-2022-styles.css

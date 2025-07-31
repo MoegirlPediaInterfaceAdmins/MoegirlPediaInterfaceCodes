@@ -1,0 +1,12 @@
+/*
+ * 放置于这里的CSS将应用于vector-2022皮肤
+ * 请尊重萌娘百科版权，以下代码除非注明均是管理员手敲出来的！！！复制需要注明源自萌娘百科，并且附上URL地址 https://zh.moegirl.org.cn/MediaWiki:Gadget-vector-2022-styles.css
+ * 版权协定：知识共享 署名-非商业性使用-相同方式共享 3.0
+ * 复制之后请把图片换成自己网站上URL地址！
+ */
+
+/* 调整顶栏 logo，第一次压扁成这样的我 */
+.mw-logo-icon {
+    width: auto;
+    height: 50px;
+}
