@@ -1,0 +1,36 @@
+ResourceLoader: true
+
+hidden: true
+
+default: false
+
+supportsUrlLoad: false
+
+skins: []
+
+actions: []
+
+categories: []
+
+namespaces: []
+
+contentModels: []
+
+type: general
+
+package: false
+
+rights:
+  - hidden
+
+peers: []
+
+dependencies: []
+
+_sites:
+  - zh
+
+_section: system
+
+_files:
+  - Gadget-libDiscussionUtil.js

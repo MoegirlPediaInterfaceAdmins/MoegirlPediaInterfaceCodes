@@ -245,13 +245,7 @@ $(() => {
         size: "large",
     });
     windowManager.addWindows([marDialog]);
-    for (const ele of $("#mw-content-text > .mw-parser-output > h2, #mw-content-text > .mw-parser-output > .discussionContainer > h2")) {
-        const self = $(ele);
-        const content = self.nextUntil("h2").not("h2");
-        if (content.hasClass("saveNotice") || content.hasClass("MarkAsResolved")) {
-            continue;
-        }
-        const sectionTitle = self.find(".mw-headline").attr("id");
+    for (const { self, sectionTitle } of window.libDiscussionUtil.getDiscussionHeader(["saveNotice", "MarkAsResolved"])) {
         const button = $("<a>");
         button.attr("href", "javascript:void(0);").prop("draggable", false).addClass("AnnTools_MarkAsResolved").text(wgULS("标记状态", "標記狀態"));
         self.find(".mw-editsection-bracket").first()

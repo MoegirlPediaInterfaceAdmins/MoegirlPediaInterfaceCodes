@@ -325,13 +325,7 @@ $(() => {
     $body.append(windowManager.$element);
     const qsDialog = new QSWindow();
     windowManager.addWindows([qsDialog]);
-    for (const ele of $("#mw-content-text > .mw-parser-output > h2, #mw-content-text > .mw-parser-output > .discussionContainer > h2")) {
-        const self = $(ele);
-        const content = self.nextUntil("h2").not("h2");
-        if (content.hasClass("saveNotice")) {
-            continue;
-        }
-        const sectionTitle = self.find(".mw-headline").attr("id");
+    for (const { self, sectionTitle } of window.libDiscussionUtil.getDiscussionHeader(["saveNotice"])) {
         const button = $("<a>");
         button.attr("href", "javascript:void(0);").prop("draggable", false).addClass("AnnTools_QuickSave").text(wgULS("快速存档", "快速存檔"));
         self.find(".mw-editsection-bracket").first()
