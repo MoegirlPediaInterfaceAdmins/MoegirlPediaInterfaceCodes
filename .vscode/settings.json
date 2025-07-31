@@ -175,5 +175,6 @@
         "Group/suppress",
         "Group/sysop",
         "Group/user"
-    ]
+    ],
+    "conventionalCommits.storeScopesGlobally": false
 }
