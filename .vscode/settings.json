@@ -20,7 +20,7 @@
         "./.vscode/json-schemas/gadget-definition.json": "src/gadgets/*/definition.yaml"
     },
     "files.insertFinalNewline": true,
-    "eslint.experimental.useFlatConfig": true,
+    "eslint.useFlatConfig": true,
     "conventionalCommits.scopes": [
         "@type/libBottomRightCorner.d.ts",
         "@type/libCachedCode.d.ts",
