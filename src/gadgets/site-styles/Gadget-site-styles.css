@@ -849,7 +849,7 @@ div.metadata-panel-is-closed .mw-mmv-image-links li.mw-mmv-license-li {
 .mw-datatable.TablePager {
     width: 100%;
     table-layout: fixed;
-    word-wrap: break-word;
+    overflow-wrap: break-word;
 }
 
 /* 导航条（完全没有apple风格的apple风面包屑orz） 来源:http://www.jankoatwarpspeed.com/examples/breadcrumb/ */
@@ -909,7 +909,7 @@ div.metadata-panel-is-closed .mw-mmv-image-links li.mw-mmv-license-li {
 /* 解决pre不换行的问题 */
 pre {
     white-space: pre-wrap;
-    word-wrap: break-word;
+    overflow-wrap: break-word;
 }
 
 /* 页面底部导航框（2011年8月16日引自中文维基）(所谓大家族模板) */
@@ -1333,7 +1333,7 @@ body:not(.ns--1):not(.ns--2) .navbox .mw-collapsible:not(.mw-collapsed) > tbody 
 /* 分类页同开头的页面的列表不分段 */
 .mw-category-group {
     -webkit-column-break-inside: avoid;
-    page-break-inside: avoid;
+    break-inside: avoid;
     break-inside: avoid;
 }
 
@@ -1343,7 +1343,7 @@ body:not(.ns--1):not(.ns--2) .navbox .mw-collapsible:not(.mw-collapsed) > tbody 
 /* 只有两个列表时 */
 .mw-category-group:nth-child(2):nth-last-child(1) {
     -webkit-column-break-inside: auto;
-    page-break-inside: auto;
+    break-inside: auto;
     break-inside: auto;
 }
 
