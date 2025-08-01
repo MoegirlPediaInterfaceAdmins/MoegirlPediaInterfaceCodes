@@ -5,15 +5,16 @@ $(() => {
         const buttunText = wgULS("固定链接", "固定連結");
         $("#mw-content-text .mw-parser-output h2").each((_, ele) => {
             const $ele = $(ele);
+            const $editsection = $(ele).next(".mw-editsection");
             const $divider = $('<span class="mw-editsection-divider"> | </span>');
             const $permanentLink = $(`<a data-thread-id="${$ele.find(".mw-headline").attr("id")}" class="section-permanent-link">${buttunText}</a>`);
             if (!inHistory) {
-                $(ele)
+                $editsection
                     .find(".mw-editsection-bracket")
                     .first()
                     .after($divider)
                     .after($permanentLink);
-                const $marButton = $ele.find(".AnnTools_MarkAsResolved");
+                const $marButton = $editsection.find(".AnnTools_MarkAsResolved");
                 if ($marButton[0]) {
                     const $marDivider = $marButton.next(".mw-editsection-divider");
                     if ($marDivider.length > 0) {
