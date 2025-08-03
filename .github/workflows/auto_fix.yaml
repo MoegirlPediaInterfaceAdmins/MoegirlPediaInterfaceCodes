@@ -1,0 +1,38 @@
+name: auto_fix
+
+on:
+  workflow_dispatch:
+
+env:
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+permissions:
+  contents: write
+
+jobs:
+  auto_fix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        name: Checkout main repo
+        with:
+          fetch-depth: 0
+          show-progress: false
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+          check-latest: true
+          cache: npm
+      - name: Installing the dependencies
+        uses: AnnAngela/cached_node-modules@v3
+        with:
+          command: npm run ci
+      - name: Git config
+        run: node scripts/postCommit/prepareGit.js
+      - name: Expose GitHub Runtime
+        run: npm run format
+      - name: linguist-generated
+        run: node scripts/postCommit/linguist-generated.js
+      - name: Show git status & push
+        run: node scripts/postCommit/push.js
