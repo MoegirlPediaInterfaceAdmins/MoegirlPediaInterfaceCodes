@@ -1334,7 +1334,6 @@ body:not(.ns--1):not(.ns--2) .navbox .mw-collapsible:not(.mw-collapsed) > tbody 
 .mw-category-group {
     -webkit-column-break-inside: avoid;
     break-inside: avoid;
-    break-inside: avoid;
 }
 
 .mw-category-group:nth-child(1):nth-last-child(1),
@@ -1343,7 +1342,6 @@ body:not(.ns--1):not(.ns--2) .navbox .mw-collapsible:not(.mw-collapsed) > tbody 
 /* 只有两个列表时 */
 .mw-category-group:nth-child(2):nth-last-child(1) {
     -webkit-column-break-inside: auto;
-    break-inside: auto;
     break-inside: auto;
 }
 
