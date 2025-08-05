@@ -27,18 +27,18 @@ mw.hook("wikipage.content").add(() => {
             const noteTAIndicator = $("[id^=mw-indicator-noteTA-]").hide();
             const $noteTAIndicatorImg = noteTAIndicator.find("img");
             $this = $("<div/>", {
-                "class": "vector-menu vector-menu-tabs vectorTabs",
+                "class": "vector-menu vector-menu-tabs",
                 id: "noteTA-vector-menu-tabs",
                 style: "float: left",
             }).append(
-                $("<ul>").append(
-                    $("<li>", { "class": "selected" }).append(
-                        $("<span>").append(
+                $("<div>", { "class": "vector-menu-content" }).append(
+                    $("<ul>", { "class": "vector-menu-content-list" }).append(
+                        $("<li>", { "class": "selected" }).append(
                             $("<a>", { href: "javascript:;" }).append($noteTAIndicatorImg[0]),
                         ),
                     ),
                 ),
-            ).insertAfter("#p-variants");
+            ).insertAfter("#vector-variants-dropdown");
         }
 
         const parse = async (wikitext) => {
@@ -71,7 +71,7 @@ mw.hook("wikipage.content").add(() => {
             } else {
                 $dialog.dialog("open");
             }
-            if ($dialog.find(".mw-ajax-loader, .noteTAViewer-error").length !== 0) {
+            if ($dialog.find(".mw-ajax-loader, .noteTAViewer-error").length > 0) {
                 let wikitext = "", collapse = true;
                 const $dom = $("#mw-content-text .mw-parser-output");
                 const actualTitle = mw.config.get("wgPageName").replace(/_/g, " ");
