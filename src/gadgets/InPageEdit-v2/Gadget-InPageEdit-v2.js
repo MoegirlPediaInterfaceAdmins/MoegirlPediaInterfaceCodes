@@ -11,19 +11,17 @@ mw.hook("InPageEdit").add((ctx) => {
             $("#ca-edit").after(
                 $("<li>", {
                     id: "ca-quick-edit",
-                    "class": "collapsible",
+                    class: "vector-tab-noicon mw-list-item"
                 }).append(
-                    $("<span>").append(
-                        $("<a>", {
-                            href: "javascript:void(0)",
-                            text: typeof Wikiplus !== "undefined" ? `${_msg("quick-edit")}(IPE)` : _msg("quick-edit"),
-                        }).on("click", () => {
-                            InPageEdit.quickEdit({
-                                page: wgPageName,
-                                revision: wgRevisionId || undefined,
-                            });
-                        }),
-                    ),
+                    $("<a>", {
+                        href: "javascript:void(0)",
+                        text: typeof Wikiplus !== "undefined" ? `${_msg("quick-edit")}(IPE)` : _msg("quick-edit"),
+                    }).on("click", () => {
+                        InPageEdit.quickEdit({
+                            page: wgPageName,
+                            revision: wgRevisionId || undefined,
+                        });
+                    }),
                 ),
             );
             break;
