@@ -153,12 +153,11 @@
         }
     };
     // Summary预加载
-    if (["edit", "submit"].includes(mw.config.get("wgAction"))) {
-        // 可视化和2017版wikitext编辑器
+    function mwSaveDialogSummary() {
         let isInitSummary = false;
         mw.hook("ve.saveDialog.stateChanged").add(() => {
             if (!isInitSummary) {
-                $("div.ve-ui-mwSaveDialog-summary span.mw-summary-preset-item > a")
+                $("div.ve-ui-mwSaveDialog-summaryLabel span.mw-summary-preset-item > a")
                     .removeAttr("target")
                     .on("click", function (e) {
                         e.preventDefault();
@@ -171,13 +170,6 @@
         });
         mw.hook("ve.activationComplete").add(() => {
             isInitSummary = false;
-        });
-        // 2010版wikitext编辑器
-        $('[for="wpSummary"] .mw-summary-preset-item a').on("click", function () {
-            const summaryBox = $('[name="wpSummary"]');
-            summaryBox.val(`${summaryBox.val()} ${$(this).text()}`.trim());
-            summaryBox.on("focus");
-            return false;
         });
     }
     /* 函数执行体 */
@@ -197,6 +189,23 @@
     // 禁止移动被挂删的页面
     if (!allowedInGroup && $(".will2Be2Deleted")[0]) {
         $("#ca-move").remove();
+    }
+    // Summary预加载
+    if (["edit", "submit"].includes(mw.config.get("wgAction"))) {
+        // 2017版wikitext编辑器
+        mwSaveDialogSummary();
+        // 2010版wikitext编辑器
+        $('[for="wpSummary"] .mw-summary-preset-item a').on("click", function () {
+            const summaryBox = $('[name="wpSummary"]');
+            summaryBox.val(`${summaryBox.val()} ${$(this).text()}`.trim());
+            summaryBox.on("focus");
+            return false;
+        });
+    } else if (mw.config.get("wgAction") === "view") {
+        // 可视化编辑器
+        mw.hook("ve.activationComplete").add(() => {
+            mwSaveDialogSummary();
+        });
     }
     $window.on("load", () => {
         editSet();
