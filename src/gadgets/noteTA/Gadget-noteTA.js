@@ -33,7 +33,7 @@ mw.hook("wikipage.content").add(() => {
             }).append(
                 $("<div>", { "class": "vector-menu-content" }).append(
                     $("<ul>", { "class": "vector-menu-content-list" }).append(
-                        $("<li>", { "class": "selected" }).append(
+                        $("<li>", { "class": "mw-list-item vector-tab-noicon" }).append(
                             $("<a>", { href: "javascript:;" }).append($noteTAIndicatorImg[0]),
                         ),
                     ),
