@@ -11,7 +11,7 @@ mw.hook("InPageEdit").add((ctx) => {
             $("#ca-edit").after(
                 $("<li>", {
                     id: "ca-quick-edit",
-                    class: "vector-tab-noicon mw-list-item",
+                    "class": "vector-tab-noicon mw-list-item",
                 }).append(
                     $("<a>", {
                         href: "javascript:void(0)",
