@@ -13,7 +13,7 @@ jobs:
   auto_fix:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         name: Checkout main repo
         with:
           fetch-depth: 0
@@ -30,9 +30,6 @@ jobs:
           command: npm run ci
       - name: Git config
         run: node scripts/postCommit/prepareGit.js
-      - name: Expose GitHub Runtime
-        run: npm run format
-      - name: linguist-generated
-        run: node scripts/postCommit/linguist-generated.js
+      - run: npm run format
       - name: Show git status & push
         run: node scripts/postCommit/push.js

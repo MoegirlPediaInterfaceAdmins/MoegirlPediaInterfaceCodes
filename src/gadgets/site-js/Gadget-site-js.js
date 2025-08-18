@@ -628,6 +628,10 @@
             }
         }
     }
+    // 可视化编辑器需要的脚本
+    mw.hook("ve.activationComplete").add(() => {
+        mw.loader.load("ext.gadget.edit");
+    });
     $window.triggerHandler("resize");
     $window.on("load", () => {
         $window.triggerHandler("resize");
