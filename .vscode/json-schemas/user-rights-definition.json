@@ -110,6 +110,7 @@
                 "reupload",
                 "reupload-own",
                 "reupload-shared",
+                "revokeuser-admin",
                 "rollback",
                 "sboverride",
                 "see-through-badwords",
