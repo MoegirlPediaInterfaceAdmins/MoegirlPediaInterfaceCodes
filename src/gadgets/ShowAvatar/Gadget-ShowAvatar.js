@@ -22,7 +22,7 @@ $(() => {
         const $img = $("<img>", { src: currentUserAvatar });
         const $avatarLink = UploadAvatar({}, $img);
         const $ptAvatar = $("<li>", { id: "pt-avatar" }).append($avatarLink);
-        $("#pt-userpage").before($ptAvatar);
+        $("#pt-userpage-2").before($ptAvatar);
     }
 
     // Page user avatar
