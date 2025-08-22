@@ -7,7 +7,13 @@ $(() => {
         const pageid = mw.config.get("wgArticleId");
         const username = mw.config.get("wgUserName");
         const isModule = pagens === 828;
-        if (pageid === 0 || $(".will2Be2Deleted")[0] || !mw.config.get("wgUserGroups").includes("patroller") && !mw.config.get("wgUserGroups").includes("sysop")) {
+        if ( pageid === 0 
+            || $(".will2Be2Deleted")[0] 
+            || !mw.config.get("wgUserGroups").includes("patroller") && !mw.config.get("wgUserGroups").includes("sysop")
+            || mw.config.get("wgRestrictionMove")?.includes("sysop") && !mw.config.get("wgUserGroups")?.includes("sysop")
+            || mw.config.get("wgRestrictionMove")?.includes("techedit") && !mw.config.get("wgUserGroups")?.includes("techeditor")
+            || !mw.config.get("wgIsProbablyEditable")
+        ) {
             return;
         }
 
@@ -206,6 +212,24 @@ $(() => {
                 })).query.pages[pageid].revisions[0].user;
                 const page = isModule ? `Module:Sandbox/${user}/${mw.config.get("wgTitle")}` : `User:${user}/${pagename}`;
 
+                if (!noNotice) {
+                    // 留言
+                    const notifRes = await api.postWithToken("csrf", {
+                        action: "edit",
+                        assertuser: username,
+                        format: "json",
+                        title: `User talk:${user}`,
+                        section: "new",
+                        sectiontitle: notifTitle,
+                        text: `${convTemplate(notifContent, "2", page)}——~~~~`,
+                        watchlist: watchTalk,
+                        tags: "Automation tool",
+                    });
+                    if (notifRes?.value?.error) {
+                        throw notifRes.value.error.code;
+                    }
+                }
+
                 // 移动页面
                 try {
                     const moveRes = await api.postWithToken("csrf", {
@@ -230,24 +254,6 @@ $(() => {
                         }
                     } else {
                         throw e;
-                    }
-                }
-
-                if (!noNotice) {
-                    // 留言
-                    const notifRes = await api.postWithToken("csrf", {
-                        action: "edit",
-                        assertuser: username,
-                        format: "json",
-                        title: `User talk:${user}`,
-                        section: "new",
-                        sectiontitle: notifTitle,
-                        text: `${convTemplate(notifContent, "2", page)}——~~~~`,
-                        watchlist: watchTalk,
-                        tags: "Automation tool",
-                    });
-                    if (notifRes?.value?.error) {
-                        throw notifRes.value.error.code;
                     }
                 }
             }
