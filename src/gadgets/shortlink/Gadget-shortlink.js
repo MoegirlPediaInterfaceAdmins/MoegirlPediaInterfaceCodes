@@ -23,22 +23,6 @@ $(() => {
     if (wgArticleId <= 0) {
         return;
     }
-    // 初始化工具栏
-    $("body").css("height", "auto");
-    let $slCard;
-    switch (skin) {
-        case "moeskin":
-        default:
-            $slCard = $(`<div class="moe-card" id="p-sl"><div class="mw-parser-output"><h3 style="margin-top: 0px;">${wgULS("短链接", "短網址")}</h3></div></div>`);
-            $(".moe-siderail-sticky").append($slCard);
-            $("#p-sl h3").after('<div style="display:flex"><div style="width:0.25rem;border-radius:99em;background:rgba(0,0,0,0.102);margin-right:1rem"></div><ul id="p-sl-list" style="list-style:none"></ul></div>');
-            break;
-        case "vector":
-            $("#mw-panel").append(`<div class="portal" id="p-sl" aria-labelledby="p-sl-label" style="position:sticky;top:0;"><h3 lang="zh-CN" dir="ltr" id="p-sl-label">${wgULS("短链接", "短網址")}</h3></div>`);
-            $("#p-sl h3").after('<div class="body"><ul id="p-sl-list"></ul></div>');
-            break;
-    }
-    const $list = $("#p-sl-list");
 
     // 链接信息
     const links = [{
@@ -95,23 +79,6 @@ $(() => {
         });
     }
 
-    // 在短链栏添加复制项
-    const addItem = (link) => {
-        const $item = $(`<li id="sl-${link.id}"></li>`);
-        $item.append(`<a href="${wgServer}${wgScriptPath}/?${link.href}">${link.text}</a>`);
-        switch (skin) {
-            case "moeskin":
-            default:
-                $item.append(`<div>（<a data-copy-content="${link.wikitext}" data-type="wikitext"></a><wbr>丨<a data-copy-content="${wgServer}${wgScriptPath}/_?${link.href}" data-type="${wgULS("短链接", "短網址")}"></a>）</div>`);
-                break;
-            case "vector":
-                $item.append(`<div>（<a data-copy-content="${link.wikitext}" data-type="wikitext"></a>）</div>`);
-                $item.append(`<div>（<a data-copy-content="${wgServer}${wgScriptPath}/_?${link.href}" data-type="${wgULS("短链接", "短網址")}"></a>）</div>`);
-                break;
-        }
-        $list.append($item);
-    };
-
     // 标记复制状态
     const markStatus = (ele, status) => {
         ele.innerText = status
@@ -119,58 +86,91 @@ $(() => {
             : `${wgULS("复制", "複製")}${ele.dataset.type}`;
     };
 
-    // 初始化复制栏
-    for (const item of links) {
-        addItem(item);
-    }
-    $("#p-sl-list a[data-type]").each((_, ele) => {
-        markStatus(ele, false);
-    });
+    switch (skin) {
+        default:
+        case "moeskin": {
+            $("body").css("height", "auto");
+            const $slCard = $(`<div class="moe-card" id="p-sl"><div class="mw-parser-output"><h3 style="margin-top: 0px;">${wgULS("短链接", "短網址")}</h3></div></div>`);
+            $(".moe-siderail-sticky").append($slCard);
+            $("#p-sl h3").after('<div style="display:flex"><div style="width:0.25rem;border-radius:99em;background:rgba(0,0,0,0.102);margin-right:1rem"></div><ul id="p-sl-list" style="list-style:none"></ul></div>');
 
-    // 点击复制操作
-    $("#p-sl-list a[data-type]").on("click", async function () {
-        if (typeof navigator.clipboard?.writeText === "function") {
-            await navigator.clipboard.writeText(this.dataset.copyContent);
-        } else {
-            // 除了IE以外的浏览器基本都支持navigator.clipboard.writeText() - https://caniuse.com/mdn-api_clipboard_writetext
-            // 没有就改为添加一个不可见pre，加入内容后选中并复制。
-            const valueNode = $("<pre/>", {
-                css: {
-                    position: "absolute",
-                    left: "-99999px",
-                    "z-index": "-99999",
-                    opacity: 0,
-                },
-            }).appendTo("body");
-
-            // 保存当前用户所选中的内容以便在复制后恢复
-            const selection = window.getSelection();
-            const { rangeCount } = selection;
-            let range;
-            if (rangeCount > 0) {
-                range = selection.getRangeAt(0);
+            for (const shortlink of links) {
+                const $item = $(`<li id="sl-${shortlink.id}"></li>`);
+                $item.append(`<a href="${wgServer}${wgScriptPath}/?${shortlink.href}">${shortlink.text}</a>`);
+                $item.append(`<div>（<a data-copy-content="${shortlink.wikitext}" data-type="wikitext"></a><wbr>丨<a data-copy-content="${wgServer}${wgScriptPath}/_?${shortlink.href}" data-type="${wgULS("短链接", "短網址")}"></a>）</div>`);
+                $("#p-sl-list").append($item);
             }
-            valueNode.text(this.dataset.copyContent);
-            selection.selectAllChildren(valueNode[0]);
-            document.execCommand("copy");
-            // 延时恢复用户选中
-            window.setTimeout(() => {
-                selection.removeAllRanges();
-                if (rangeCount > 0) {
-                    selection.addRange(range);
+
+            $("#p-sl-list a[data-type]").each((_, ele) => {
+                markStatus(ele, false);
+            });
+
+            // 点击复制操作
+            $("#p-sl-list a[data-type]").on("click", async function () {
+                if (typeof navigator.clipboard?.writeText === "function") {
+                    await navigator.clipboard.writeText(this.dataset.copyContent);
+                } else {
+                    // 除了IE以外的浏览器基本都支持navigator.clipboard.writeText() - https://caniuse.com/mdn-api_clipboard_writetext
+                    // 没有就改为添加一个不可见pre，加入内容后选中并复制。
+                    const valueNode = $("<pre/>", {
+                        css: {
+                            position: "absolute",
+                            left: "-99999px",
+                            "z-index": "-99999",
+                            opacity: 0,
+                        },
+                    }).appendTo("body");
+
+                    // 保存当前用户所选中的内容以便在复制后恢复
+                    const selection = window.getSelection();
+                    const { rangeCount } = selection;
+                    let range;
+                    if (rangeCount > 0) {
+                        range = selection.getRangeAt(0);
+                    }
+                    valueNode.text(this.dataset.copyContent);
+                    selection.selectAllChildren(valueNode[0]);
+                    document.execCommand("copy");
+                    // 延时恢复用户选中
+                    window.setTimeout(() => {
+                        selection.removeAllRanges();
+                        if (rangeCount > 0) {
+                            selection.addRange(range);
+                        }
+                        valueNode.remove();
+                    }, 7);
                 }
-                valueNode.empty();
-            }, 7);
+                markStatus(this, true);
+                setTimeout(() => {
+                    markStatus(this, false);
+                }, 3000);
+            });
+            break;
         }
-        markStatus(this, true);
-        setTimeout(() => {
-            markStatus(this, false);
-        }, 3000);
-    });
-    if (skin === "vector") {
-        $(window).on("resize", () => {
-            $("#mw-panel").height($("body").height());
-        });
+
+        case "vector-2022": {
+            const portletLink = mw.util.addPortletLink("p-cactions", "#", wgULS("短链接", "短網址"), "ca-shortlink", wgULS("复制本页面的短链接", "複製本頁面的短網址"));
+            if (portletLink) {
+                portletLink.querySelector("a").addEventListener("click", (e) => {
+                    e.preventDefault();
+                    const $element = $("<div>");
+                    links.forEach((shortlink) => {
+                        $element.append(
+                            $("<div>")
+                                .css({ "font-weight": "bold", margin: "0.6em 0 0.2em" })
+                                .text(shortlink.title)
+                        );
+                        [shortlink.wikitext, `${wgServer}${wgScriptPath}/_?${shortlink.href}`].forEach((value) => {
+                            $element.append(
+                                new mw.widgets.CopyTextLayout({ align: "top", copyText: value }).$element
+                            );
+                        });
+                    });
+                    OO.ui.alert($element, { size: "medium" });
+                });
+            }
+            break;
+        }
     }
 });
 // </pre>
