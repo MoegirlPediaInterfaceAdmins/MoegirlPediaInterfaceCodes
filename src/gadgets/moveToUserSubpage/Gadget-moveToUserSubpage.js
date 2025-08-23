@@ -226,7 +226,7 @@ $(() => {
                         tags: "Automation tool",
                     });
                     if (notifRes?.value?.error) {
-                        throw notifRes.value.error.code;
+                        throw notifRes.value.error;
                     }
                 }
 
