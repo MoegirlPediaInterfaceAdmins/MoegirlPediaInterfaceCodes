@@ -41,5 +41,5 @@ body:not(.ns-0) #upload-div {
 .mw-datatable.TablePager {
     width: 100%;
     table-layout: fixed;
-    word-wrap: break-word;
+    overflow-wrap: break-word;
 }

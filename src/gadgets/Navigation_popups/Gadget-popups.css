@@ -26,7 +26,7 @@ del.popupDiff {
     padding-bottom: 5px;
     font-size: 11px;
     box-shadow: 0 3px 8px rgb(50 50 50 / 35%);
-    word-wrap: break-word;
+    overflow-wrap: break-word;
     line-height: normal;
 }
 

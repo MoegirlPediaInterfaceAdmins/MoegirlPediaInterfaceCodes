@@ -55,8 +55,8 @@ $(() => {
     };
 
     switch (mw.config.get("skin")) {
-        case "vector":
-            $("#p-personal ul").append($('<li id="pt-purge" />').append($purgeButton()));
+        case "vector-2022":
+            $("#p-cactions ul").append($('<li class="mw-list-item mw-list-item-js" id="pt-purge" />').append($purgeButton()));
             break;
         case "moeskin":
         default:

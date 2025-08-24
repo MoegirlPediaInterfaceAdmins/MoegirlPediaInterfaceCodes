@@ -1,21 +1,22 @@
-name: Detect hardcoded-outdated NPM packages
+name: auto_fix
 
 on:
   workflow_dispatch:
-  schedule:
-    - cron: 0 23 * * * # Every 07:00 CST
-
-concurrency: detectHardcodedOutdatedNPMPackages
 
 env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+permissions:
+  contents: write
+
 jobs:
-  generateConfiguration:
+  auto_fix:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
+        name: Checkout main repo
         with:
+          fetch-depth: 0
           show-progress: false
       - name: Use Node.js
         uses: actions/setup-node@v4
@@ -27,5 +28,8 @@ jobs:
         uses: AnnAngela/cached_node-modules@v3
         with:
           command: npm run ci
-      - name: Detect hardcoded-outdated NPM packages
-        run: node scripts/detectHardcodedOutdatedNPMPackages/index.js
+      - name: Git config
+        run: node scripts/postCommit/prepareGit.js
+      - run: npm run format
+      - name: Show git status & push
+        run: node scripts/postCommit/push.js

@@ -12,7 +12,7 @@ $(() => {
     let isInitSummary = false;
     mw.hook("ve.saveDialog.stateChanged").add(() => {
         if (!isInitSummary) {
-            $("div.ve-ui-mwSaveDialog-summary span.mw-summary-preset-item > a")
+            $("div.ve-ui-mwSaveDialog-summaryLabel span.mw-summary-preset-item > a")
                 .removeAttr("target")
                 .on("click", function (e) {
                     e.preventDefault();

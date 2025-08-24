@@ -32,7 +32,6 @@ dependencies:
   - mediawiki.user
   - user.options
   - mediawiki.jqueryMsg
-  - mediawiki.api.messages
   - ext.gadget.libPolyfill
 
 _sites:

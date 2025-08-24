@@ -10,3 +10,20 @@
     width: auto;
     height: 50px;
 }
+
+
+@media (width >= 768px) {
+  .mobileonly {
+    display: none !important;
+    position: absolute;
+    left: -999vw
+  }
+}
+
+@media (width <= 768px) {
+  .nomobile {
+    display: none !important;
+    position: absolute;
+    left: -999vw
+  }
+}
