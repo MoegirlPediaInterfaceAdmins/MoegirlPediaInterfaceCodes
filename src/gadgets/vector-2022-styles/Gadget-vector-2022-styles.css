@@ -27,3 +27,7 @@
     left: -999vw
   }
 }
+
+#p-personal li {
+    margin-top: 0.2em;
+}
