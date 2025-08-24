@@ -97,7 +97,7 @@ $(() => {
                 }).append($("<a></a>", {
                     text: "more...",
                     href: "#patrollListShowAll",
-                    title: "Show all unpatrolled articles",
+                    title: "显示所有未巡查页面",
                 }));
                 $list.after($showAll);
             } else {
@@ -448,7 +448,7 @@ $(() => {
         title: wgULS("最新页面", "最新頁面"),
         text: wgULS("最新页面", "最新頁面"),
     });
-    $("body #p-personal ul li#pt-watchlist").after($("<li></li>", {
+    $("#pt-watchlist-2").after($("<li></li>", {
         id: "pt-patroll",
     }).append(ptPatrollLink).append($("<span></span>", {
         id: "not-patrolled-count",
