@@ -158,11 +158,11 @@ $(() => {
                         $element.append(
                             $("<div>")
                                 .css({ "font-weight": "bold", margin: "0.6em 0 0.2em" })
-                                .text(shortlink.title)
+                                .text(shortlink.title),
                         );
                         [shortlink.wikitext, `${wgServer}${wgScriptPath}/_?${shortlink.href}`].forEach((value) => {
                             $element.append(
-                                new mw.widgets.CopyTextLayout({ align: "top", copyText: value }).$element
+                                new mw.widgets.CopyTextLayout({ align: "top", copyText: value }).$element,
                             );
                         });
                     });
