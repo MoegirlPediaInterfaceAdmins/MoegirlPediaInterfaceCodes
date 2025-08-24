@@ -95,7 +95,7 @@ $(() => {
                     "font-weight": "bold",
                     "margin-bottom": "10px",
                 }).append($("<a></a>", {
-                    text: "more...",
+                    text: "更多...",
                     href: "#patrollListShowAll",
                     title: "显示所有未巡查页面",
                 }));
