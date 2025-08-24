@@ -95,9 +95,9 @@ $(() => {
                     "font-weight": "bold",
                     "margin-bottom": "10px",
                 }).append($("<a></a>", {
-                    text: "更多...",
+                    text: "更多……",
                     href: "#patrollListShowAll",
-                    title: "显示所有未巡查页面",
+                    title: wgULS("显示所有未巡查页面", "顯示所有未巡查的頁面"),
                 }));
                 $list.after($showAll);
             } else {
@@ -354,7 +354,7 @@ $(() => {
         const addlink = (page) => {
             let $patrollinks = $("<a></a>", {
                 href: `index.php?title=${encodeURIComponent(page.title)}&rcid=${encodeURIComponent(page.rcid)}`,
-                text: "标记此页面为已巡查",
+                text: wgULS("标记此页面为已巡查", "標記此頁面為已巡查"),
             });
             const $divPatrolllink = $("<div></div>", {
                 "class": "patrollink",
