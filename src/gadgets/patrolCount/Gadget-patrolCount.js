@@ -95,9 +95,9 @@ $(() => {
                     "font-weight": "bold",
                     "margin-bottom": "10px",
                 }).append($("<a></a>", {
-                    text: "more...",
+                    text: "更多……",
                     href: "#patrollListShowAll",
-                    title: "Show all unpatrolled articles",
+                    title: wgULS("显示所有未巡查页面", "顯示所有未巡查的頁面"),
                 }));
                 $list.after($showAll);
             } else {
@@ -354,7 +354,7 @@ $(() => {
         const addlink = (page) => {
             let $patrollinks = $("<a></a>", {
                 href: `index.php?title=${encodeURIComponent(page.title)}&rcid=${encodeURIComponent(page.rcid)}`,
-                text: "标记此页面为已巡查",
+                text: wgULS("标记此页面为已巡查", "標記此頁面為已巡查"),
             });
             const $divPatrolllink = $("<div></div>", {
                 "class": "patrollink",
@@ -448,7 +448,7 @@ $(() => {
         title: wgULS("最新页面", "最新頁面"),
         text: wgULS("最新页面", "最新頁面"),
     });
-    $("body #p-personal ul li#pt-watchlist").after($("<li></li>", {
+    $("#pt-watchlist-2").after($("<li></li>", {
         id: "pt-patroll",
     }).append(ptPatrollLink).append($("<span></span>", {
         id: "not-patrolled-count",
