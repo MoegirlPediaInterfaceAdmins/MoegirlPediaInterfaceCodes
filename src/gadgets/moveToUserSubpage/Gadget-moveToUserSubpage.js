@@ -10,8 +10,8 @@ $(() => {
         if (pageid === 0
             || $(".will2Be2Deleted")[0]
             || !mw.config.get("wgUserGroups").includes("patroller") && !mw.config.get("wgUserGroups").includes("sysop")
-            || mw.config.get("wgRestrictionMove")?.includes("sysop") && !mw.config.get("wgUserRights").includes("editprotected")
-            || mw.config.get("wgRestrictionMove")?.includes("techedit") && !mw.config.get("wgUserRights").includes("techedit")
+            || mw.config.get("wgRestrictionMove")?.includes("sysop") && !mw.config.get("wgUserGroups").includes("sysop")
+            || mw.config.get("wgRestrictionMove")?.includes("techedit") && !mw.config.get("wgUserGroups").includes("techeditor")
             || !mw.config.get("wgIsProbablyEditable")
         ) {
             return;
