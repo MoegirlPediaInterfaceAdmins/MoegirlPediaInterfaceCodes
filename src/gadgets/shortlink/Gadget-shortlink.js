@@ -99,7 +99,7 @@ $(() => {
                 for (const shortlink of links) {
                     const $item = $(`<li id="sl-${shortlink.id}"></li>`);
                     $item.append(`<a href="${wgServer}${wgScriptPath}/?${shortlink.href}">${shortlink.text}</a>`);
-                    $item.append(`<div>（<a href="javascript:void(0)" data-copy-content="${shortlink.wikitext}" data-type="wikitext"></a><wbr>丨<a data-copy-content="${wgServer}${wgScriptPath}/_?${shortlink.href}" data-type="${wgULS("短链接", "短網址")}"></a>）</div>`);
+                    $item.append(`<div>（<a data-copy-content="${shortlink.wikitext}" data-type="wikitext"></a><wbr>丨<a data-copy-content="${wgServer}${wgScriptPath}/_?${shortlink.href}" data-type="${wgULS("短链接", "短網址")}"></a>）</div>`);
                     $("#p-sl-list").append($item);
                 }
 
@@ -160,11 +160,11 @@ $(() => {
                             $element.append(
                                 $("<div>")
                                     .css({ "font-weight": "bold", margin: "0.6em 0 0.2em" })
-                                    .text(shortlink.title)
+                                    .text(shortlink.title),
                             );
                             [shortlink.wikitext, `${wgServer}${wgScriptPath}/_?${shortlink.href}`].forEach((value) => {
                                 $element.append(
-                                    new mw.widgets.CopyTextLayout({ align: "top", copyText: value }).$element
+                                    new mw.widgets.CopyTextLayout({ align: "top", copyText: value }).$element,
                                 );
                             });
                         });
