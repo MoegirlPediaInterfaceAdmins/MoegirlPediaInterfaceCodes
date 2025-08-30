@@ -1,7 +1,7 @@
 "use strict";
 // <pre>
 $(() => {
-    (async () => {
+    async () => {
     const {
         wgArticleId = -1,
         wgCurRevisionId = -1,
@@ -174,6 +174,6 @@ $(() => {
                 break;
             }
         }
-    });
+    };
 });
 // </pre>
