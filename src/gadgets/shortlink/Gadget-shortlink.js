@@ -109,35 +109,7 @@ $(async () => {
 
             // 点击复制操作
             $("#p-sl-list a[data-type]").on("click", async function () {
-                if (typeof navigator.clipboard?.writeText === "function") {
-                    await navigator.clipboard.writeText(this.dataset.copyContent);
-                } else {
-                    const valueNode = $("<pre/>", {
-                        css: {
-                            position: "absolute",
-                            left: "-99999px",
-                            "z-index": "-99999",
-                            opacity: 0,
-                        },
-                    }).appendTo("body");
-
-                    const selection = window.getSelection();
-                    const { rangeCount } = selection;
-                    let range;
-                    if (rangeCount > 0) {
-                        range = selection.getRangeAt(0);
-                    }
-                    valueNode.text(this.dataset.copyContent);
-                    selection.selectAllChildren(valueNode[0]);
-                    document.execCommand("copy");
-                    window.setTimeout(() => {
-                        selection.removeAllRanges();
-                        if (rangeCount > 0) {
-                            selection.addRange(range);
-                        }
-                        valueNode.remove();
-                    }, 7);
-                }
+                await navigator.clipboard.writeText(this.dataset.copyContent);
                 markStatus(this, true);
                 setTimeout(() => {
                     markStatus(this, false);
