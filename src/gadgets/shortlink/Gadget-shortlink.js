@@ -1,6 +1,7 @@
 "use strict";
 // <pre>
 $(() => {
+    (async () => {
     const {
         wgArticleId = -1,
         wgCurRevisionId = -1,
@@ -24,8 +25,7 @@ $(() => {
         return;
     }
 
-    mw.loader.using(["mediawiki.widgets"]).then(() => {
-        
+    await mw.loader.using(["mediawiki.widgets"]);
         // 链接信息
         const links = [{
             id: "page",
