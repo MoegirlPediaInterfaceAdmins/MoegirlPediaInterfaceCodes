@@ -25,7 +25,7 @@ $(() => {
     }
 
     mw.loader.using(["mediawiki.widgets"]).then(() => {
-
+        
         // 链接信息
         const links = [{
             id: "page",
@@ -174,6 +174,6 @@ $(() => {
                 break;
             }
         }
-     });
+    });
 });
 // </pre>
