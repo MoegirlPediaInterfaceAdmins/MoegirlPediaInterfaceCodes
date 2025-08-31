@@ -15,7 +15,7 @@ $(() => {
         const isModule = wgNamespaceNumber === 828;
         const requiredGroups = {
             sysop: ["sysop"],
-            techeditor: ["techeditor", "sysop"],
+            techedit: ["techeditor", "sysop"],
         };
         if (wgArticleId === 0
             || $(".will2Be2Deleted")[0]
@@ -210,7 +210,7 @@ $(() => {
                 }
 
                 // 查询创建者用户名
-                const user = (await api.get({
+                const { query: { pages: { [wgArticleId]: { revisions: [{ user }] } } } } = await api.get({
                     action: "query",
                     assertuser: wgUserName,
                     prop: "revisions",
@@ -218,7 +218,7 @@ $(() => {
                     rvprop: "user",
                     rvlimit: 1,
                     rvdir: "newer",
-                })).query.pages[wgArticleId].revisions[0].user;
+                });
                 const page = isModule ? `Module:Sandbox/${user}/${wgTitle}` : `User:${user}/${wgPageName}`;
 
                 if (!noNotice) {
