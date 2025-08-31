@@ -24,8 +24,6 @@ $(async () => {
         return;
     }
 
-    await mw.loader.using(["mediawiki.widgets"]);
-
     // 链接信息
     const links = [{
         id: "page",
