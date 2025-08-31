@@ -1,6 +1,6 @@
 "use strict";
 // <pre>
-$(async () => {
+$(() => {
     const {
         wgArticleId = -1,
         wgCurRevisionId = -1,
