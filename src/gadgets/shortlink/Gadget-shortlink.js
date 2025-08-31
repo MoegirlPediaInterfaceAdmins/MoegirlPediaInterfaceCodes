@@ -117,7 +117,7 @@ $(() => {
         }
 
         case "vector-2022": {
-            const portletLink = mw.util.addPortletLink("p-cactions", "#", wgULS("短链接", "短網址"), "ca-shortlink", wgULS("复制本页面的短链接", "複製本頁面的短網址"));
+            const portletLink = mw.util.addPortletLink("p-cactions", "javascript:void(0)", wgULS("短链接", "短網址"), "ca-shortlink", wgULS("复制本页面的短链接", "複製本頁面的短網址"));
             if (portletLink) {
                 portletLink.querySelector("a").addEventListener("click", (e) => {
                     e.preventDefault();
