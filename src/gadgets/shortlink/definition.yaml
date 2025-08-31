@@ -27,6 +27,7 @@ peers: []
 
 dependencies:
   - ext.gadget.site-lib
+  - mediawiki.widgets
 
 _sites:
   - zh
