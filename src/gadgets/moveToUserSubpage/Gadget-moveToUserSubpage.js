@@ -25,7 +25,7 @@ $(() => {
             return;
         }
         for (const restriction of wgRestrictionMove) {
-            if (Array.isArray(requiredGroups[restriction]) && !requiredGroups[restriction].some((group) => wgUserGroups.includes(group))) {
+            if requiredGroups[restriction]?.every((group) => !wgUserGroups.includes(group))) {
                 return;
             }
         }
