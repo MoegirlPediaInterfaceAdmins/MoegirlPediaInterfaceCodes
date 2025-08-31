@@ -80,10 +80,13 @@ $(() => {
     }
 
     // 标记复制状态
-    const markStatus = (ele, status) => {
+    const TEXT_COPY = wgULS("复制", "複製");
+    const TEXT_COPY_SUCCESS = wgULS("成功", "成功");
+    const TEXT_COPY_FAILED = wgULS("失败", "失敗");
+    const markStatus = (ele, status, result) => {
         ele.innerText = status
-            ? `${ele.dataset.type}${wgULS("复制成功", "複製成功")}`
-            : `${wgULS("复制", "複製")}${ele.dataset.type}`;
+            ? `${ele.dataset.type}${TEXT_COPY}${result ? TEXT_COPY_SUCCESS : TEXT_COPY_FAILED}`
+            : `${TEXT_COPY}${ele.dataset.type}`;
     };
 
     switch (skin) {
