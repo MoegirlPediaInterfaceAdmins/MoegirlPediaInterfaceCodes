@@ -62,7 +62,7 @@
         "stylelint": "^16.23.1",
         "stylelint-actions-formatters": "^16.3.1",
         "stylelint-config-standard": "^39.0.0",
-        "terser": "^5.43.1",
+        "terser": "^5.44.0",
         "types-mediawiki": "^2.0.0",
         "uglify-js": "^3.19.3",
         "unassertify": "^3.0.1",
