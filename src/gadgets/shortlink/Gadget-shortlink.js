@@ -109,7 +109,7 @@ $(() => {
             });
 
             // 点击复制操作
-            $("#p-sl-list a[data-type]").on("click", async () => {
+            $("#p-sl-list a[data-type]").on("click", async function () {
                 try {
                     await navigator.clipboard.writeText(this.dataset.copyContent);
                     markStatus(this, true, true);
