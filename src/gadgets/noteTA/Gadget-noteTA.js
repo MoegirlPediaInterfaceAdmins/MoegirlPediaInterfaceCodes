@@ -25,7 +25,7 @@ mw.hook("wikipage.content").add(() => {
             $("#p-noteTA-moeskin > button").addClass("noteTAViewer-button");
         } else {
             const noteTAIndicator = $("[id^=mw-indicator-noteTA-]").hide();
-            const $noteTAIndicatorImg = noteTAIndicator.find("img").attr("height", 17.5);
+            const $noteTAIndicatorImg = noteTAIndicator.find("img").css("height", "17.5px");
             $this = $("<div/>", {
                 "class": "vector-menu vector-menu-tabs",
                 id: "noteTA-vector-menu-tabs",
