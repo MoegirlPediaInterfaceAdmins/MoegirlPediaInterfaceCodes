@@ -3420,7 +3420,7 @@ $(() => {
                 page = h[i].title;
                 curart = new Title(page);
             }
-            const minor = h[i].minor ? "<b>m </b>" : "";
+            const minor = h[i].minor ? "<b>小 </b>" : "";
             const editDate = new Date(h[i].timestamp);
             let thisDay = formattedDate(editDate);
             const thisTime = formattedTime(editDate);
