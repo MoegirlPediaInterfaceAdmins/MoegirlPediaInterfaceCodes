@@ -25,9 +25,9 @@
         addLink($(".mw-revdel-editreasons > a"), "删除");
     }
     // 替换文本默认不勾选「通过Special:最近更改和监视列表通知这些编辑」
-    if (mw.config.get("wgCanonicalSpecialPageName") === "ReplaceText" && $("#doAnnounce")[0]) {
-        $("#doAnnounce, #mw-search-ns0").prop("checked", false);
-        $("#mw-search-ns6").prop("checked", true);
+    if (mw.config.get("wgCanonicalSpecialPageName") === "ReplaceText" && $("#powersearch")[0]) {
+        $("#mw-search-ns0").prop("checked", false);
+        $('input[name="botEdit"], #mw-search-ns6').prop("checked", true);
     }
     // 批量删除默认选择运行者为「you」
     if (mw.config.get("wgCanonicalSpecialPageName") === "DeleteBatch" && $("#wpMode")[0]) {
