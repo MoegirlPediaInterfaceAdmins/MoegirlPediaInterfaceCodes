@@ -7,7 +7,7 @@
 (async () => {
     /* 函数定义体 */
     const { wgUserGroups, wgServer, wgServerName, wgScriptPath, wgPageName, wgAction, skin, wgNamespaceNumber, wgMainPageTitle } = mw.config.get();
-    /* 以下为允许添加版权声明的名字空间列表 */
+    /* 以下为允许添加版权声明的命名空间列表 */
     const copyRightsNameSpaces = [
         0, // （主）
         4, // 萌娘百科

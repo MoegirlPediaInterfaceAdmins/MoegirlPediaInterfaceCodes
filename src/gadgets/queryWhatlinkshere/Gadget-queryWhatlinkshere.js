@@ -121,7 +121,7 @@ $(() => (async () => {
         const global = { redirect: 0 };
         whatlinkshere.text(`共有${list.length}个页面含有到本页面的站内链接（不考虑嵌入），其中有${list.filter((item) => Reflect.has(item, "redirect")).length}个重定向页面。`);
         if (list.length > 0) {
-            whatlinkshere.append("按名字空间划分如下：");
+            whatlinkshere.append("按命名空间划分如下：");
         }
         const ul = $("<ul/>");
         list.forEach((item) => {
@@ -219,7 +219,7 @@ $(() => (async () => {
         const global = { redirect: 0 };
         whatembeddedin.text(`共有${list.all.length}个页面嵌入了本页面，其中有${list.redirects.length}个重定向页面。`);
         if (list.all.length > 0) {
-            whatembeddedin.append("按名字空间划分如下：");
+            whatembeddedin.append("按命名空间划分如下：");
         }
         const ul = $("<ul/>");
         list.all.forEach(({ ns }) => {

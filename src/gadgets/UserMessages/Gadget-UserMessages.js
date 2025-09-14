@@ -794,7 +794,7 @@
         i18n: {
             umFillInUser: "请填写需要留言的用户名：",
             umSelectTag: "请选择需要使用的模板，可填入文本来搜索模板：",
-            umFillInMedia: "请选择与本留言有关的文件（名字空间会自动处理）：",
+            umFillInMedia: "请选择与本留言有关的文件（命名空间会自动处理）：",
             umFillInAdditional: "所选模板需要额外参数，请在此填写。",
             umFillInRelUser: "请填写相关用户的用户名",
             umFillInSummary: "编辑摘要",

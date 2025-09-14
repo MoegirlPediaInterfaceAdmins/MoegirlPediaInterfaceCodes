@@ -23,7 +23,7 @@
     box-shadow: #666 0 2px 3px;
 }
 
-/* 在非主名字空间里隐藏编辑上传接口 */
+/* 在非主命名空间里隐藏编辑上传接口 */
 body:not(.ns-0) #upload-div {
     display: none;
 }

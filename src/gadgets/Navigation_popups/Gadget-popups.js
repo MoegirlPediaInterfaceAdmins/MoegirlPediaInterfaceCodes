@@ -218,7 +218,7 @@ $(() => {
         deletedContribs: wgULS("已删除的贡献", "已刪除的貢獻"),
         ContributionsHint: wgULS("%s 的用户贡献", "%s 的使用者貢獻", null, null, "%s 的用戶貢獻"),
         tree: wgULS("树", "樹"),
-        contribsTreeHint: wgULS("根据名字空间查看 %s 的贡献", "根據命名空間檢視 %s 的貢獻"),
+        contribsTreeHint: wgULS("根据命名空间查看 %s 的贡献", "根據命名空間檢視 %s 的貢獻"),
         log: wgULS("日志", "日誌"),
         "user log": wgULS("用户日志", "使用者日誌", null, null, "用戶日誌"),
         userLogHint: wgULS("显示 %s 的用户日志", "顯示 %s 的使用者日誌", null, null, "顯示 %s 的用戶日誌"),

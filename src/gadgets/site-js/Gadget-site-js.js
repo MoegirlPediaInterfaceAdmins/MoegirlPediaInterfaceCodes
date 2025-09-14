@@ -399,7 +399,7 @@
             }
         }, 1000);
     };
-    /* 获取特定名字空间前缀正则表达式 */
+    /* 获取特定命名空间前缀正则表达式 */
     const getNamespacePrefixRegex = (namespaceNumber) => RegExp(`^(?:${Object.entries(mw.config.get("wgNamespaceIds")).filter((config) => config[1] === namespaceNumber).map((config) => config[0].toLowerCase()).join("|")}):`, "i");
     // 列表侧边距
     const listMarginLeft = () => {

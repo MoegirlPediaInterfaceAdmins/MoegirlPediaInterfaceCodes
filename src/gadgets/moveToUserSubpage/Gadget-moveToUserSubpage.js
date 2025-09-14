@@ -75,7 +75,7 @@ $(() => {
                     value: "提醒：请不要创建低质量页面",
                 });
                 this.notifContentBox = new OO.ui.MultilineTextInputWidget({
-                    value: `您好，您最近创建的“${wgPageName}”页面由于质量不足，待审核通过后将被移动至${isModule ? "[[Module:Sandbox]]下您的[[$2|用户名页面子页面]]" : "您的[[$2|用户页子页面]]"}下。请您以后避免在页面尚未达到最低质量标准的情况下直接在主名字空间创建。您可以先于[[Special:MyPage/sandbox|您的沙盒]]创建，待完善后再[[Help:移动页面|移动]]回主名字空间。感谢您的配合，祝您编辑愉快！`,
+                    value: `您好，您最近创建的“${wgPageName}”页面由于质量不足，待审核通过后将被移动至${isModule ? "[[Module:Sandbox]]下您的[[$2|用户名页面子页面]]" : "您的[[$2|用户页子页面]]"}下。请您以后避免在页面尚未达到最低质量标准的情况下直接在主命名空间创建。您可以先于[[Special:MyPage/sandbox|您的沙盒]]创建，待完善后再[[Help:移动页面|移动]]回主命名空间。感谢您的配合，祝您编辑愉快！`,
                     autosize: true,
                 });
                 this.noNoticeBox = new OO.ui.CheckboxInputWidget();

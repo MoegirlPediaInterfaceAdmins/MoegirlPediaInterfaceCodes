@@ -106,18 +106,18 @@ $(() => (async () => {
             GHIAEditCount = Reflect.has(GHIAHistory, `U:${target}`) ? GHIAHistory[`U:${target}`].reduce((p, { changedFiles }) => p + changedFiles, 0) : 0;
             nslist[8].count += GHIAEditCount;
         }
-        const table = $(`<table class="wikitable sortable"><thead><tr><th>名字空间</th><th>编辑次数</th>${isPatrolViewable ? "<th>被巡查次数</th><th>被手动巡查次数</th>" : ""}<th>不同页面数量</th>><th>创建页面数量</th></tr></thead><tbody></tbody></table>`).find("tbody");
-        p.html(`该用户在本站未被删除的编辑共有 ${list.length} 次${isPatrolViewable ? `（其中有 ${globalInfo.patrolled} 次编辑被巡查，${globalInfo.patrolled - globalInfo.autopatrolled} 次编辑被手动巡查<sup style="color: blue;">[注：通过api编辑不会自动巡查]</sup>）` : ""}，共编辑 ${globalInfo.distinct.size} 个不同页面，创建了 ${globalInfo.new} 个页面。按名字空间划分如下：`);
+        const table = $(`<table class="wikitable sortable"><thead><tr><th>命名空间</th><th>编辑次数</th>${isPatrolViewable ? "<th>被巡查次数</th><th>被手动巡查次数</th>" : ""}<th>不同页面数量</th>><th>创建页面数量</th></tr></thead><tbody></tbody></table>`).find("tbody");
+        p.html(`该用户在本站未被删除的编辑共有 ${list.length} 次${isPatrolViewable ? `（其中有 ${globalInfo.patrolled} 次编辑被巡查，${globalInfo.patrolled - globalInfo.autopatrolled} 次编辑被手动巡查<sup style="color: blue;">[注：通过api编辑不会自动巡查]</sup>）` : ""}，共编辑 ${globalInfo.distinct.size} 个不同页面，创建了 ${globalInfo.new} 个页面。按命名空间划分如下：`);
 
         const chartData = [];
         Object.entries(nslist).filter(([, { count }]) => count > 0).sort(([a], [b]) => a - b).forEach(([nsnumber, { count, patrolled, autopatrolled, distinct, "new": newCount }]) => {
-            table.append(`<tr><td data-sort-value="${nsnumber}">${+nsnumber === 0 ? "（主名字空间）" : upperFirstCase(ns[+nsnumber])}</td><td>${count}</td>${isPatrolViewable ? `<td>${patrolled}</td><td>${patrolled - autopatrolled}</td>` : ""}<td>${distinct.size}</td><td>${newCount}</td></tr>`);
+            table.append(`<tr><td data-sort-value="${nsnumber}">${+nsnumber === 0 ? "（主命名空间）" : upperFirstCase(ns[+nsnumber])}</td><td>${count}</td>${isPatrolViewable ? `<td>${patrolled}</td><td>${patrolled - autopatrolled}</td>` : ""}<td>${distinct.size}</td><td>${newCount}</td></tr>`);
             chartData.push({ value: count, name: +nsnumber === 0 ? "（主）" : upperFirstCase(ns[+nsnumber]) });
         });
         table.closest("table").insertAfter(p).tablesorter();
         if (GHIAEditCount > 0) {
             const GHIAInfo = $("<p>");
-            GHIAInfo.text(`注：来自 GHIA 库的未被删除的编辑共有 ${GHIAEditCount} 笔，这些编辑均会被视为 MediaWiki 名字空间下的编辑，且不会被统计为“被巡查”“被手动巡查”“不同页面”和“创建页面”。在 GHIA 库里对已被删除文件的编辑无法统计。`);
+            GHIAInfo.text(`注：来自 GHIA 库的未被删除的编辑共有 ${GHIAEditCount} 笔，这些编辑均会被视为 MediaWiki 命名空间下的编辑，且不会被统计为“被巡查”“被手动巡查”“不同页面”和“创建页面”。在 GHIA 库里对已被删除文件的编辑无法统计。`);
             table.closest("table").after(GHIAInfo);
         }
 
