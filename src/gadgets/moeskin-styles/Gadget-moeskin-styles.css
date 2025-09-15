@@ -51,12 +51,6 @@ aside#moe-global-siderail #moe-custom-sidenav-block h2 {
     padding: 0;
 }
 
-/* @fix [[T:区域弹幕]] */
-.skin-moeskin #moe-article .local-danmaku-container {
-    width: calc(100% + 4rem) !important;
-    left: -2rem !important;
-}
-
 /* 修正侧边栏公告二级标题 */
 #moe-global-siderail #moe-siderail-sitenotice h2 {
     font-size: 1.2rem;
