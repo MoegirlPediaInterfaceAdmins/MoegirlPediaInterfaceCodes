@@ -31,3 +31,57 @@
 #p-personal li {
     margin-top: 0.2em;
 }
+
+/* 页脚 */
+#footer-info-copyright {
+    background: url("//img.moegirl.org.cn/weixin_mengbai.png") 0 15px no-repeat;
+    padding: 15px 0 30px;
+    font-family: sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+    min-height: 165px;
+}
+
+#footer-moegirl {
+    padding-left: 160px;
+    color: #2F2F2F;
+}
+
+#footer-moegirl h4 {
+    color: #243C4A;
+    font-family: AllerBold, "Helvetica Neue", Arial, Helvetica, Geneva, sans-serif;
+    margin-bottom: 8px;
+}
+
+#footer-moegirl ul {
+    float: left;
+    margin: 0 100px 20px 0;
+    line-height: 1.7;
+    width: 120px;
+    font-size: 12pt;
+}
+
+#footer-moegirl ul.lastlist {
+    margin-right: 0;
+}
+
+#footer-moegirl ul a {
+    color: #2F2F2F;
+}
+
+#footer-moegirl .copyright {
+    clear: left;
+    display: block;
+    line-height: 1.3;
+    color: #999;
+}
+
+/* 标题下划线增强 700 = bold */
+h1 {
+    font-weight: 700;
+    border-bottom: 2px solid #0074F9;
+}
+
+h2 {
+    font-weight: 700;
+    border-bottom: 1px solid #0074F9;
+}
+
