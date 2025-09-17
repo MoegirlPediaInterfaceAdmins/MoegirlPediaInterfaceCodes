@@ -74,10 +74,10 @@ aside#moe-global-siderail #moe-custom-sidenav-block h2 {
     body.skin-moeskin table.infobox2,
     body.skin-moeskin table.infoboxSpecial,
     body.skin-moeskin .infobox3 {
+        box-sizing: border-box;
         width: 100% !important;
         float: unset !important;
         margin: 1rem 0 !important;
-        padding: 0 !important;
         font-size: 1rem !important;
     }
 }
