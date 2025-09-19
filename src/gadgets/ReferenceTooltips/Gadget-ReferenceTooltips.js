@@ -6,7 +6,7 @@
 "use strict";
 // See [[mw:Reference Tooltips]]
 
-() => {
+(() => {
     // enwiki settings
     const REF_LINK_SELECTOR = window.rt_REF_LINK_SELECTOR || '.reference, a[href^="#CITEREF"]',
         COMMENTED_TEXT_CLASS = window.rt_COMMENTED_TEXT_CLASS || "rt-commentedText",
@@ -926,4 +926,4 @@
     }
 
     mw.hook("wikipage.content").add(rt);
-};
+});
