@@ -84,7 +84,7 @@
         if ( window.pg ) {
             return;
         }
-
+    
         var teSelector,
             settingsDialogOpening = false;
 
@@ -930,4 +930,4 @@
 
     mw.hook( 'wikipage.content' ).add( rt );
 
-}() );
+}) ;
