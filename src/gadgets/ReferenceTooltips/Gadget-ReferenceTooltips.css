@@ -32,6 +32,33 @@ html.skin-theme-clientpref-night .rt-tooltip {
 	overflow-x: auto;
 }
 
+.rt-tail {
+	/* Use 48%, not 50%, to make the tail start at a right place in Blink browsers in Windows on bigger system font sizes */
+	background: linear-gradient(to top right, var(--border-color-subtle, #c8ccd1) 48%, rgba(0, 0, 0, 0) 48%);
+
+	--tail-left: 19px;
+	--tail-side-width: 13px;
+}
+
+.rt-tail,
+.rt-tail:after {
+	position: absolute;
+
+	/* Make sure the tail is behind the scrollbar, e.g. [73] at
+	   https://en.wikipedia.org/w/index.php?title=Lemniscate_elliptic_functions&oldid=1231701944#cite_ref-73
+	   if .rt-tooltip has width of 25em */
+	z-index: -1;
+	
+	width: var(--tail-side-width);
+	height: var(--tail-side-width);
+}
+
+.rt-tail:after {
+	content: '';
+	background: var(--background-color-base, #fff);
+	bottom: 1px;
+	left: 1px;
+}
 .rt-content {
 	padding: 0.7em 0.9em;
 	overflow-wrap: break-word;
