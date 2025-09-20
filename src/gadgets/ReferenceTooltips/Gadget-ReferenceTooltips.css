@@ -6,6 +6,7 @@
 .rt-tooltip {
 	position: absolute;
 	max-width: 27em;
+    z-index: 100;
 	background: var(--background-color-base, #fff);
 	color: var(--color-base, #202122);
 	border: 1px solid var(--border-color-subtle, #c8ccd1);
