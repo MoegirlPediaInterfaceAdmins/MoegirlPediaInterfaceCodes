@@ -19,9 +19,9 @@
         ["bot", "#1e88e5"],
         ["flood", "#1e88e5"],
         ["ipblock-exempt", "#29b6f6"],
+        ["goodeditor", "#1aa179"],
         ["extendedconfirmed", "#57c2c3"],
         ["manually-confirmed", "#009688"],
-        ["goodeditor", "#1aa179"],
         ["special-contributor", "#595c5f"],
     ].reverse();
     // 以下为上方用户组需要显示的文字列表，每个用户组需至少指定`zh`一种语言变种用以fallback，
@@ -115,6 +115,30 @@
         nousertalk: wgULS("阻止用户在封禁期间编辑自己的讨论页", "阻止使用者在封鎖期間編輯自己的對話頁", null, null, "阻止用戶在封鎖期間編輯自己的討論頁"),
         hiddenname: wgULS("隐藏用户名", "隱藏使用者名稱", null, null, "隱藏用戶名"),
     });
+    const namespaceMap = {
+        0: "（主）",
+        1: wgULS("讨论", "討論"),
+        2: wgULS("用户", "使用者"),
+        3: wgULS("用户讨论", "使用者討論"),
+        4: "萌娘百科",
+        5: "萌娘百科讨论",
+        6: wgULS("文件", "檔案"),
+        7: wgULS("文件讨论", "檔案討論"),
+        8: wgULS("界面消息", "介面訊息"),
+        9: wgULS("界面消息讨论", "介面訊息討論"),
+        10: "模板",
+        11: "模板讨论",
+        12: wgULS("帮助", "說明"),
+        13: wgULS("帮助讨论", "說明討論"),
+        14: wgULS("分类", "分類"),
+        15: wgULS("分类讨论", "分類討論"),
+        274: "微件",
+        275: wgULS("微件讨论", "微件討論"),
+        710: "TimedText",
+        711: wgULS("TimedText讨论", "TimedText討論"),
+        828: wgULS("模组", "模組"),
+        829: wgULS("模组讨论", "模組討論"),
+    };
     const wgUserName = mw.config.get("wgUserName");
     let cache;
     const api = new mw.Api();
@@ -188,11 +212,11 @@
         ele.classList.add("markBlockInfo");
         ele.classList.remove("unknownBlockInfo");
         if (blockInfo.isBlocked) {
-            ele.style.textDecoration = "underline wavy";
+            ele.style.textDecoration = blockInfo.isPartial ? "underline dotted" : "underline wavy";
             const sup = document.createElement("sup");
             sup.classList.add("detailedBlockInfo");
             sup.title = blockInfo.info;
-            sup.textContent = "[封+]";
+            sup.textContent = blockInfo.isPartial ? "[限+]" : "[封+]";
             ele.after(sup);
         }
     };
@@ -258,7 +282,7 @@
                         list: "blocks",
                         bkusers: target,
                         bklimit: "max",
-                        bkprop: "id|user|by|timestamp|expiry|reason|flags",
+                        bkprop: "id|user|by|timestamp|expiry|reason|flags|restrictions",
                         bkcontinue,
                     });
                     if (_result.continue) {
@@ -268,12 +292,36 @@
                     }
                     _result.query.blocks.forEach((blockInfo) => {
                         blockedUserName.push(blockInfo.user);
+                        const isPartial = blockInfo.restrictions && Object.keys(blockInfo.restrictions).length > 0;
                         let info = `${blockInfo.id} - \n    被U:${blockInfo.by}${wgULS("封禁", "封鎖")}于${toLocalTimeZoneString(new Date(blockInfo.timestamp))}，`;
                         if (moment(blockInfo.expiry).isValid()) {
                             info += `${wgULS("持续", "持續")}至${toLocalTimeZoneString(new Date(blockInfo.expiry))}`;
                         } else {
                             info += wgULS("持续时间为无限期", "持續時間為不限期");
                         }
+                        
+                        if (isPartial) {
+                            info += `\n    ${wgULS("封禁类型", "封鎖類型")}：${wgULS("部分封禁", "部分封鎖")}`;
+                            if (blockInfo.restrictions) {
+                                const restrictions = [];
+                                if (blockInfo.restrictions.pages) {
+                                    blockInfo.restrictions.pages.forEach(pages => {
+                                        restrictions.push(`${wgULS("页面", "頁面")}：${pages.title}`);
+                                    });
+                                }
+                                if (blockInfo.restrictions.namespaces) {
+                                    blockInfo.restrictions.namespaces.forEach(ns => {
+                                        restrictions.push(`${wgULS("命名空间", "命名空間")}：${namespaceMap[ns]}`);
+                                    });
+                                }
+                                if (restrictions.length > 0) {
+                                    info += `\n    ${wgULS("限制范围", "限制範圍")}：${restrictions.join("；")}`;
+                                }
+                            }
+                        } else {
+                            info += `\n    ${wgULS("封禁类型", "封鎖類型")}：${wgULS("全站封禁", "全站封鎖")}`;
+                        }
+                        
                         info += `\n    ${wgULS("额外限制", "額外限制")}：`;
                         if (!Reflect.has(blockInfo, "allowusertalk")) {
                             blockInfo.nousertalk = true;
@@ -292,6 +340,7 @@
                         blockCache[blockInfo.user] = {
                             timestamp: now,
                             isBlocked: true,
+                            isPartial: isPartial,
                             info,
                         };
                     });
