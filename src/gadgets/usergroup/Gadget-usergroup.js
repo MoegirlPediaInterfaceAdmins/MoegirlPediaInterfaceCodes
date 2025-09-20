@@ -300,26 +300,23 @@
                             info += wgULS("持续时间为无限期", "持續時間為不限期");
                         }
                         
-                        if (isPartial) {
-                            info += `\n    ${wgULS("封禁类型", "封鎖類型")}：${wgULS("部分封禁", "部分封鎖")}`;
-                            if (blockInfo.restrictions) {
-                                const restrictions = [];
-                                if (blockInfo.restrictions.pages) {
-                                    blockInfo.restrictions.pages.forEach(pages => {
-                                        restrictions.push(`${wgULS("页面", "頁面")}：${pages.title}`);
-                                    });
-                                }
-                                if (blockInfo.restrictions.namespaces) {
-                                    blockInfo.restrictions.namespaces.forEach(ns => {
-                                        restrictions.push(`${wgULS("命名空间", "命名空間")}：${namespaceMap[ns]}`);
-                                    });
-                                }
-                                if (restrictions.length > 0) {
-                                    info += `\n    ${wgULS("限制范围", "限制範圍")}：${restrictions.join("；")}`;
-                                }
+                        info += `\n    ${wgULS("封禁类型", "封鎖類型")}：${isPartial ? wgULS("部分封禁", "部分封鎖") : wgULS("全站封禁", "全站封鎖")}`;
+
+                        if (blockInfo.restrictions) {
+                            const restrictions = [];
+                            if (blockInfo.restrictions.pages) {
+                                blockInfo.restrictions.pages.forEach(pages => {
+                                    restrictions.push(`${wgULS("页面", "頁面")}：${pages.title}`);
+                                });
                             }
-                        } else {
-                            info += `\n    ${wgULS("封禁类型", "封鎖類型")}：${wgULS("全站封禁", "全站封鎖")}`;
+                            if (blockInfo.restrictions.namespaces) {
+                                blockInfo.restrictions.namespaces.forEach(ns => {
+                                    restrictions.push(`${wgULS("命名空间", "命名空間")}：${namespaceMap[ns]}`);
+                                });
+                            }
+                            if (restrictions.length > 0) {
+                                info += `\n    ${wgULS("限制范围", "限制範圍")}：${restrictions.join("；")}`;
+                            }
                         }
                         
                         info += `\n    ${wgULS("额外限制", "額外限制")}：`;
