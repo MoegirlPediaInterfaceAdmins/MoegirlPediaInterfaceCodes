@@ -19,9 +19,9 @@
         ["bot", "#1e88e5"],
         ["flood", "#1e88e5"],
         ["ipblock-exempt", "#29b6f6"],
-        ["goodeditor", "#1aa179"],
         ["extendedconfirmed", "#57c2c3"],
         ["manually-confirmed", "#009688"],
+        ["goodeditor", "#1aa179"],
         ["special-contributor", "#595c5f"],
     ].reverse();
     // 以下为上方用户组需要显示的文字列表，每个用户组需至少指定`zh`一种语言变种用以fallback，
@@ -340,7 +340,7 @@
                         blockCache[blockInfo.user] = {
                             timestamp: now,
                             isBlocked: true,
-                            isPartial: isPartial,
+                            isPartial,
                             info,
                         };
                     });
