@@ -44,7 +44,7 @@
         $body[scrollbarWidth <= 0 ? "addClass" : "removeClass"]("overlay-scrollbars");
     }).trigger("resize");
     /* Tabs */
-    function tabs() {
+    const tabs = () => {
         const defaultStyle = {
             purple: {
                 labelColor: " ", // anti check
@@ -243,7 +243,7 @@
                 }
             });
         });
-    }
+    };
     /* T:注解 */
     $(".annotation").each((_, ele) => {
         const popup = new OO.ui.PopupWidget({

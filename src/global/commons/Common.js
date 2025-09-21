@@ -88,7 +88,7 @@
         }
     };
     // 主站用户页链接
-    function zhUserPage() {
+    const zhUserPage = () => {
         $("#mw-content-text a").each(function () {
             try {
                 const link = new mw.Uri(this.href);
@@ -112,7 +112,7 @@
                 return;
             }
         });
-    }
+    };
     // 授权协议检测
     const license = () => {
         if (mw.config.get("wgCanonicalSpecialPageName") === "Upload") {
@@ -153,7 +153,7 @@
         }
     };
     // Summary预加载
-    function mwSaveDialogSummary() {
+    const mwSaveDialogSummary = () => {
         let isInitSummary = false;
         mw.hook("ve.saveDialog.stateChanged").add(() => {
             if (!isInitSummary) {
@@ -171,7 +171,7 @@
         mw.hook("ve.activationComplete").add(() => {
             isInitSummary = false;
         });
-    }
+    };
     /* 函数执行体 */
     await $.ready;
     // 禁止编辑相关

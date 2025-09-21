@@ -1,7 +1,7 @@
 "use strict";
 // <pre>
-(function (isCompleted) {
-    function run() {
+((isCompleted) => {
+    const run = () => {
         if (mw.config.get("wgNamespaceNumber") !== -1 || mw.config.get("wgCanonicalSpecialPageName") !== "Allmessages") {
             return;
         }
@@ -72,7 +72,7 @@
                 list.append(row);
             });
         };
-        const init = function init() {
+        const init = () => {
             if (!$("#mw-allmessages-form")[0]) {
                 return;
             }
@@ -139,7 +139,7 @@
                 submit.trigger("click");
             }
         });
-    }
+    };
     if (isCompleted) {
         run();
     } else {
