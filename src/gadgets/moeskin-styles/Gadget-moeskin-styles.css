@@ -72,10 +72,13 @@ aside#moe-global-siderail #moe-custom-sidenav-block h2 {
     body.skin-moeskin .infotemplatebox,
     body.skin-moeskin table.infobox,
     body.skin-moeskin table.infobox2,
-    body.skin-moeskin table.infoboxSpecial {
+    body.skin-moeskin table.infoboxSpecial,
+    body.skin-moeskin .infobox3 {
+        box-sizing: border-box;
         width: 100% !important;
         float: unset !important;
         margin: 1rem 0 !important;
+        font-size: 1rem !important;
     }
 }
 
@@ -245,6 +248,20 @@ table:is(.moe-infobox, .infobox, .infotemplatebox, .infoboxSpecial) tbody > tr:l
 
 table:is(.moe-infobox, .infobox, .infotemplatebox, .infoboxSpecial) tbody > tr:last-of-type > td:last-of-type {
     border-end-end-radius: 0.5rem;
+}
+
+.infobox3 {
+    border-radius: 0.5rem;
+}
+
+.infobox3 > div:first-child {
+    border-start-start-radius: 0.25rem;
+    border-start-end-radius: 0.25rem;
+}
+
+.infobox3 > div:last-child {
+    border-end-start-radius: 0.25rem;
+    border-end-end-radius: 0.25rem;
 }
 
 /* 大家族圆角 */

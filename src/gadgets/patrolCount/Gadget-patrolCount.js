@@ -116,7 +116,7 @@ $(() => {
             addItem(0, pages.length);
         }
     };
-    const loadCvtooltip = function () {
+    const loadCvtooltip = () => {
         $("body").append($("<div></div>", {
             id: "patrollTooltip",
             style: "display: none;",
@@ -135,7 +135,7 @@ $(() => {
          *
          * 2010.11.17
          */
-        (function ($) {
+        (($) => {
             $.fn.cvtooltip = function (options) {
                 const self = $(this);
                 const defaults = {
@@ -303,7 +303,7 @@ $(() => {
         }
     };
     const missingPage = {};
-    const checkMissing = function (pages, plus) {
+    const checkMissing = (pages, plus) => {
         const missingQuery = [];
         for (let idx = 0; idx < pages.length; ++idx) {
             const { title } = pages[idx];
@@ -406,7 +406,7 @@ $(() => {
     const namespaceList = mw.config.get("wgNamespaceIds");
     const namespaceWatchList = namespaceWatched.map((i) => namespaceList[i === "(main)" ? "" : i]);
     let lastRequest = 0;
-    const updateUnpatrolled = function () {
+    const updateUnpatrolled = () => {
         const d = new Date();
         if (d - lastRequest < 10000) {
             return;
