@@ -3,7 +3,7 @@
  * 更新后请同步更新上面链接到最新版本
  */
 "use strict";
-(function ($, mw) {
+(($, mw) => {
     $.extend({
         createIcon: (iconClass) => $("<span>", {
             "class": `ui-icon ${iconClass} jquery-inline-icon`,
@@ -84,4 +84,4 @@
             });
         },
     });
-}(jQuery, mediaWiki));
+})(jQuery, mediaWiki);

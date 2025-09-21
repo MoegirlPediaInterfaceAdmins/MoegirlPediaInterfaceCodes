@@ -80,9 +80,7 @@
         get _keyPrefix() {
             return this.#keyPrefix;
         }
-        #getAllKeys() {
-            return Object.keys(localStorage).filter((key) => key.startsWith(this.#keyPrefix));
-        }
+        #getAllKeys = () => Object.keys(localStorage).filter((key) => key.startsWith(this.#keyPrefix));
         getAllKeys() {
             return this.#getAllKeys().map((n) => n.replace(this.#keyPrefix, ""));
         }
