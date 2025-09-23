@@ -44,5 +44,5 @@ mw.hook("InPageEdit").add((ctx) => {
             break;
         }
     }
-    $(".mw-history-compareselectedversions button").addClass('cdx-button');
+    $(".mw-history-compareselectedversions button").addClass("cdx-button");
 });
