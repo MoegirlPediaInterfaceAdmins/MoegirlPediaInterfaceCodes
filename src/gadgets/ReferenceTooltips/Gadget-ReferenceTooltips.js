@@ -50,8 +50,7 @@
     }));
 
     // "Global" variables
-    let SECONDS_IN_A_DAY = 60 * 60 * 24,
-        CLASSES = {
+    const CLASSES = {
             FADE_IN_DOWN: "rt-fade-in-down",
             FADE_IN_UP: "rt-fade-in-up",
             FADE_OUT_DOWN: "rt-fade-out-down",
@@ -65,18 +64,17 @@
         IS_MOBILE = /Mobi|Android/i.test(navigator.userAgent)
             || typeof window.orientation !== "undefined",
         CLIENT_NAME = $.client.profile().name,
-        settingsString, settings, enabled, delay, activatedByClick, tooltipsForComments, cursorWaitCss,
-        windowManager, $teleportTarget,
-        $body = $(document.body),
-        $window = $(window),
-        $overlay = $("<div>")
-            .addClass("rt-overlay")
-            .appendTo($body);
+        settingsString, settings, enabled, delay, activatedByClick, tooltipsForComments, cursorWaitCss;
 
+        const $body = $(document.body);
+        const $window = $(window);
+        const $overlay = $('<div>')
+        .addClass('rt-overlay')
+        .appendTo($body);
     // Can't use before https://phabricator.wikimedia.org/T369880 is resolved
     // mw.loader.using( 'mediawiki.page.ready' ).then( function ( require ) {
-    // 	$teleportTarget = $( require( 'mediawiki.page.ready' ).teleportTarget );
-    // 	$overlay.appendTo( $teleportTarget );
+    // $teleportTarget = $( require( 'mediawiki.page.ready' ).teleportTarget );
+    // $overlay.appendTo( $teleportTarget );
     // } );
 
     function rt($content) {
@@ -99,7 +97,7 @@
                     Number(activatedByClick)
                 }|${
                     Number(tooltipsForComments)}`,
-                { path: "/", expires: 90 * SECONDS_IN_A_DAY, prefix: "" },
+                { path: "/", expires: 90 * 60 * 60 * 24, prefix: "" },
             );
         };
 
@@ -143,8 +141,8 @@
         };
 
         function TooltippedElement($element) {
-            let events,
-                te = this;
+            let events;
+            const te = this;
 
             function onStartEvent(e) {
                 let showRefArgs;
@@ -584,7 +582,7 @@
                 });
             }
 
-            var tooltip = this;
+            const tooltip = this;
 
             // This variable can change: one tooltip can be called from a harvard-style reference link
             // that is put into different tooltips
@@ -926,4 +924,4 @@
     }
 
     mw.hook("wikipage.content").add(rt);
-});
+})();
