@@ -50,7 +50,7 @@
     }));
 
     // "Global" variables
-    const CLASSES = {
+    let CLASSES = {
             FADE_IN_DOWN: "rt-fade-in-down",
             FADE_IN_UP: "rt-fade-in-up",
             FADE_OUT_DOWN: "rt-fade-out-down",
