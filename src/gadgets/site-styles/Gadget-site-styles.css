@@ -1448,6 +1448,6 @@ body.overlay-scrollbars #bodyContent {
 }
 
 /* 隐藏不存在的用户创建日志 */
-.mw-htmlform-flatlist > .oo-ui-fieldLayout:nth-child(4) {
+body.mw-special-Log .mw-htmlform-flatlist > .oo-ui-fieldLayout:nth-child(4) {
     display: none;
 }
