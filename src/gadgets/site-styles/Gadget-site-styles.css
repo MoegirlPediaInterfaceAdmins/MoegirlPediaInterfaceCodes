@@ -1446,3 +1446,8 @@ body.overlay-scrollbars #bodyContent {
     background-color: var(--theme-background-color);
     color: var(--theme-text-color);
 }
+
+/* 隐藏不存在的用户创建日志 */
+body.mw-special-Log .mw-htmlform-flatlist > .oo-ui-fieldLayout:nth-child(4) {
+    display: none;
+}
