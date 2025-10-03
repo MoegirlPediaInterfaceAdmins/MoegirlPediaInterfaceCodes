@@ -408,7 +408,8 @@ s.just-kidding-text {
     background: #fbfbfb;
 }
 
-html.skin-theme-clientpref-night .infoBoxContent {
+html.skin-theme-clientpref-night .infoBoxContent,
+[color-mode="dark"] .infoBoxContent {
     border-color: #3e4452;
     background: #23272e;
 }
