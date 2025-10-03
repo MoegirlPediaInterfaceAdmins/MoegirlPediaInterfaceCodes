@@ -408,15 +408,15 @@ s.just-kidding-text {
     background: #fbfbfb;
 }
 
+html.skin-theme-clientpref-night .infoBoxContent {
+    border-color: #3e4452;
+    background: #23272e;
+}
+
 .infoBoxBelow {
     margin: 0 auto;
     padding: 0;
     text-align: center;
-}
-
-[color-mode="dark"] .infoBoxContent {
-    border-color: #3e4452;
-    background: #23272e;
 }
 
 /* wikitable green */
