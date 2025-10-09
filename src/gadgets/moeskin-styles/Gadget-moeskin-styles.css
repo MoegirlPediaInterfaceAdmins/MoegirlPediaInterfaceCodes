@@ -3,9 +3,7 @@
 /* 全局背景图片 */
 body.skin-moeskin #moe-global-background {
     /* --theme-background-color: rgb(185 214 244); */
-    /* --background-url: url("https://storage.moegirl.org.cn/console-plus/uploads/2025/08/05/0232251f91d325dd1eb60134c28ba999.png"); */
-    /* 国庆节特供，之后换回去 */
-    --background-url: url("https://storage.moegirl.org.cn/console-plus/uploads/2025/09/27/765d05c9da4d136a99f94871e9cbe491.png");
+    --background-url: url("https://storage.moegirl.org.cn/console-plus/uploads/2025/08/05/0232251f91d325dd1eb60134c28ba999.png");
 }
 
 /* 修复全局顶部活动展示区的图片缝隙 */
