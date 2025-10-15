@@ -72,7 +72,7 @@ jobs:
           fetch-depth: 0
           show-progress: false
       - name: Use Node.js
-        uses: actions/setup-node@v5
+        uses: actions/setup-node@v6
         with:
           node-version: lts/*
           check-latest: true
@@ -98,7 +98,7 @@ jobs:
           fetch-depth: 0
           show-progress: false
       - name: Use Node.js
-        uses: actions/setup-node@v5
+        uses: actions/setup-node@v6
         with:
           node-version: lts/*
           check-latest: true
@@ -144,7 +144,7 @@ jobs:
         with:
           show-progress: false
       - name: Use Node.js
-        uses: actions/setup-node@v5
+        uses: actions/setup-node@v6
         with:
           node-version: lts/*
           check-latest: true
@@ -183,7 +183,7 @@ jobs:
         with:
           show-progress: false
       - name: Use Node.js
-        uses: actions/setup-node@v5
+        uses: actions/setup-node@v6
         with:
           node-version: lts/*
           check-latest: true
