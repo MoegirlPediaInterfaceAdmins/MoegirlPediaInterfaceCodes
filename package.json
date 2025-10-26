@@ -19,7 +19,7 @@
         "minicifation:js": "node scripts/minification/terser.js"
     },
     "dependencies": {
-        "@actions/artifact": "^2.3.2",
+        "@actions/artifact": "^4.0.0",
         "@actions/core": "^1.11.1",
         "@annangela/eslint-config": "^7.0.0",
         "@annangela/eslint-formatter-gha": "^3.0.0",
