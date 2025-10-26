@@ -123,8 +123,7 @@ $(() => (async () => {
             GHIAInfo.text(`注：来自 GHIA 库的未被删除的编辑共有 ${GHIAEditCount} 笔，这些编辑均会被视为 MediaWiki 命名空间下的编辑，且不会被统计为“被巡查”“被手动巡查”“不同页面”和“创建页面”。在 GHIA 库里对已被删除文件的编辑无法统计。`);
             p.append(GHIAInfo);
         }
-        
-        p.append('<button id="toChartQueryContributions" class="cdx-button cdx-button--action-progressive">显示饼图</button>');
+        p.append("<button id=\"toChartQueryContributions\" class=\"cdx-button cdx-button--action-progressive\">显示饼图</button>");
         p.find("#toChartQueryContributions").on("click", async (e) => {
             $(e.target).remove();
             p.append('<div id="contributionChart" style="width:100%;height:400px;">加载中……</div>');
