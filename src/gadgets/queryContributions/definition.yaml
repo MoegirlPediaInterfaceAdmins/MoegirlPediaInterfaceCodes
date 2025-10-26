@@ -29,6 +29,7 @@ dependencies:
   - mediawiki.api
   - mediawiki.user
   - jquery.tablesorter
+  - codex-styles
   - ext.gadget.libPolyfill
   - ext.gadget.libCachedCode
 
