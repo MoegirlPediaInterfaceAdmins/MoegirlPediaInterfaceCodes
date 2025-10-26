@@ -29,7 +29,7 @@ dependencies:
   - mediawiki.api
   - mediawiki.user
   - jquery.tablesorter
-  - codex-styles
+  - '@wikimedia/codex'
   - ext.gadget.libPolyfill
   - ext.gadget.libCachedCode
 

@@ -26,7 +26,7 @@ peers: []
 
 dependencies:
   - mediawiki.api
-  - codex-styles
+  - '@wikimedia/codex'
 
 _sites:
   - zh

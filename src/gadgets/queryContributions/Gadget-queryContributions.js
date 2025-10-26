@@ -107,7 +107,7 @@ $(() => (async () => {
             nslist[8].count += GHIAEditCount;
         }
         const table = $(`<table class="wikitable sortable"><thead><tr><th>命名空间</th><th>编辑次数</th>${isPatrolViewable ? "<th>被巡查次数</th><th>被手动巡查次数</th>" : ""}<th>不同页面数量</th>><th>创建页面数量</th></tr></thead><tbody></tbody></table>`).find("tbody");
-        p.html(`该用户在本站未被删除的编辑共有 ${list.length} 次${isPatrolViewable ? `（其中有 ${globalInfo.patrolled} 次编辑被巡查，${globalInfo.patrolled - globalInfo.autopatrolled} 次编辑被手动巡查<sup style="color: blue;">[注：通过api编辑不会自动巡查]</sup>）` : ""}，共编辑 ${globalInfo.distinct.size} 个不同页面，创建了 ${globalInfo.new} 个页面。按命名空间划分如下：`);
+        p.html(`该用户在本站未被删除的编辑共有 ${list.length} 次${isPatrolViewable ? `（其中有 ${globalInfo.patrolled} 次编辑被巡查，${globalInfo.patrolled - globalInfo.autopatrolled} 次编辑被手动巡查（注：通过api编辑不会自动巡查））` : ""}，共编辑 ${globalInfo.distinct.size} 个不同页面，创建了 ${globalInfo.new} 个页面。按命名空间划分如下：`);
 
         const chartData = [];
         Object.entries(nslist).filter(([, { count }]) => count > 0).sort(([a], [b]) => a - b).forEach(([nsnumber, { count, patrolled, autopatrolled, distinct, "new": newCount }]) => {
