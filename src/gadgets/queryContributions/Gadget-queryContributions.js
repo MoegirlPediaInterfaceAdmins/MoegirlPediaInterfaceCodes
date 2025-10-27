@@ -43,7 +43,7 @@ $(() => (async () => {
         2302: "Gadget_definition",
         2303: "Gadget_definition_talk",
     };
-    const p = $('<span class="cdx-card" style="background-color:transparent"><span class="cdx-card__text"><span class="cdx-card__text__title">用户贡献分布</span><span class="cdx-card__text__description">是否需要加载用户贡献分布（对编辑数量较多的用户慎重使用！）</span><div><button id="confirmQueryContributions" class="cdx-button cdx-button--action-progressive">确认</button> <button id="cancelQueryContributions" class="cdx-button cdx-button--action-destructive">取消</button></div></span></span>').insertAfter("#mw-content-text > .mw-htmlform-ooui-wrapper");
+    const p = $('<div class="cdx-card" style="background-color:transparent;display:block"><span class="cdx-card__text"><span class="cdx-card__text__title">用户贡献分布</span><span class="cdx-card__text__description">是否需要加载用户贡献分布（对编辑数量较多的用户慎重使用！）</span><div><button id="confirmQueryContributions" class="cdx-button cdx-button--action-progressive">确认</button> <button id="cancelQueryContributions" class="cdx-button cdx-button--action-destructive">取消</button></div></span></div>').insertAfter("#mw-content-text > .mw-htmlform-ooui-wrapper");
     p.find("#confirmQueryContributions").on("click", async () => {
         p.text(`加载中${hasApiHighLimits ? "（由于您没有“在API查询中使用更高的上限”[apihighlimits]权限，本次加载将需要较长时间，请稍等）" : ""}……`);
         const list = await (async () => {
@@ -114,18 +114,19 @@ $(() => (async () => {
             table.append(`<tr><td data-sort-value="${nsnumber}">${+nsnumber === 0 ? "（主命名空间）" : upperFirstCase(ns[+nsnumber])}</td><td>${count}</td>${isPatrolViewable ? `<td>${patrolled}</td><td>${patrolled - autopatrolled}</td>` : ""}<td>${distinct.size}</td><td>${newCount}</td></tr>`);
             chartData.push({ value: count, name: +nsnumber === 0 ? "（主）" : upperFirstCase(ns[+nsnumber]) });
         });
-        table.closest("table").insertAfter(p).tablesorter();
+        p.append(table.closest("table"));
+        if (typeof table.closest("table").tablesorter === "function") {
+            table.closest("table").tablesorter();
+        }
         if (GHIAEditCount > 0) {
             const GHIAInfo = $("<p>");
             GHIAInfo.text(`注：来自 GHIA 库的未被删除的编辑共有 ${GHIAEditCount} 笔，这些编辑均会被视为 MediaWiki 命名空间下的编辑，且不会被统计为“被巡查”“被手动巡查”“不同页面”和“创建页面”。在 GHIA 库里对已被删除文件的编辑无法统计。`);
-            table.closest("table").after(GHIAInfo);
+            p.append(GHIAInfo);
         }
-
-        const fieldset = p.closest("fieldset");
-        fieldset.append('<button id="toChartQueryContributions">显示饼图</button>');
-        fieldset.find("#toChartQueryContributions").on("click", async (e) => {
+        p.append("<button id=\"toChartQueryContributions\" class=\"cdx-button cdx-button--action-progressive\">显示饼图</button>");
+        p.find("#toChartQueryContributions").on("click", async (e) => {
             $(e.target).remove();
-            fieldset.append("<div id=\"contributionChart\" style=\"width: 100%; height: 400px;\">加载中……</div>");
+            p.append('<div id="contributionChart" style="width:100%;height:400px;">加载中……</div>');
             await libCachedCode.injectCachedCode("https://testingcf.jsdelivr.net/npm/echarts@5.5.1/dist/echarts.min.js", "script");
             const chart = echarts.init(document.getElementById("contributionChart"));
             chart.setOption({
@@ -178,7 +179,7 @@ $(() => (async () => {
         });
     });
     p.find("#cancelQueryContributions").on("click", () => {
-        p.closest("fieldset").remove();
+        p.remove();
     });
 })());
 // </pre>
