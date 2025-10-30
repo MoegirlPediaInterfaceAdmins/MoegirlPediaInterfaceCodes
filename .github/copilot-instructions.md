@@ -4,11 +4,11 @@
 
 This repository contains interface codes for MoegirlPedia (萌娘百科), a Chinese MediaWiki site. The codebase manages gadgets (小工具), group-level scripts, and global site scripts that are automatically compiled and deployed to the MediaWiki installation.
 
-**Size:** ~135 gadgets, multiple global and group-level scripts
-**Languages:** TypeScript, JavaScript, CSS
-**Target Platform:** MediaWiki 1.43.3 (targeting ES2020 output)
-**Build Tools:** TypeScript, PostCSS, ESLint, Stylelint, npm
-**Node Version:** ^22.19
+- **Size:** ~135 gadgets, multiple global and group-level scripts
+- **Languages:** TypeScript, JavaScript, CSS
+- **Target Platform:** MediaWiki 1.43.3 (targeting ES2020 output)
+- **Build Tools:** TypeScript, PostCSS, ESLint, Stylelint, npm
+- **Node Version:** ^22.19
 
 ## Critical Build & Installation Instructions
 
