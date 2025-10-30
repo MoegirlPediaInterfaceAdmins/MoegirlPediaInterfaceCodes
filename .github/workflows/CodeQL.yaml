@@ -2,39 +2,47 @@ name: CodeQL
 
 on:
   push:
-    paths:
-      - "**.js"
-      - "!scripts/test/*.js"
-      - .github/workflows/CodeQL.yaml
+    branches:
+      - main
   pull_request:
-    paths:
-      - "**.js"
-      - "!scripts/test/*.js"
-      - .github/workflows/CodeQL.yaml
-  merge_group:
+    branches:
+      - main
   workflow_dispatch:
   schedule:
     - cron: 15 23 * * * # Every 07:15 CST
 
-permissions:
-  actions: read
-  checks: write
-  contents: write
-  pull-requests: write
-  security-events: write
-  statuses: write
-
 jobs:
   CodeQL:
-    runs-on: ubuntu-latest
+    name: Analyze ${{ matrix.language }}
+    runs-on: ${{ (matrix.language == 'swift' && 'macos-latest') || 'ubuntu-latest' }}
+    permissions:
+      security-events: write
+      packages: read
+      actions: read
+      contents: read
+      statuses: write
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+        - language: actions
+          build-mode: none
+        - language: javascript-typescript
+          build-mode: none
+
     steps:
-      - uses: actions/checkout@v5
-        with:
-          show-progress: false
-      - name: Initialize CodeQL
-        uses: github/codeql-action/init@v4
-        with:
-          languages: javascript
-          queries: +security-and-quality
-      - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@v4
+    - name: Checkout repository
+      uses: actions/checkout@v5
+
+    - name: Initialize CodeQL
+      uses: github/codeql-action/init@v4
+      with:
+        languages: ${{ matrix.language }}
+        build-mode: ${{ matrix.build-mode }}
+        queries: +security-and-quality
+
+    - name: Perform CodeQL Analysis
+      uses: github/codeql-action/analyze@v4
+      with:
+        category: "/language:${{matrix.language}}"
