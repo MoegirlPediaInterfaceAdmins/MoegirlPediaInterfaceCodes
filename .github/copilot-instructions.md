@@ -286,7 +286,7 @@ chore(deps): update npm dependencies
 
 ```bash
 # View all available scopes
-cat .vscode/settings.json | grep -A 200 '"conventionalCommits.scopes"'
+cat .vscode/settings.json | jq '.["conventionalCommits.scopes"]'
 ```
 
 **DO NOT** make up scope names. If you're unsure which scope to use:
