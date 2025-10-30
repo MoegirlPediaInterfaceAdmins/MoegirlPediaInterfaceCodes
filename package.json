@@ -16,7 +16,7 @@
         "build": "run-p build:js build:css",
         "build:css": "postcss src/**/*.css --base src/ -d dist/",
         "build:js": "rm -rf dist && npx tsc --project tsconfig.production.json",
-        "minicifation:js": "node scripts/minification/terser.js"
+        "minification:js": "node scripts/minification/terser.js"
     },
     "dependencies": {
         "@actions/artifact": "^4.0.0",
