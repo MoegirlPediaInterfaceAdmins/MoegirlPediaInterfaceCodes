@@ -244,6 +244,56 @@ MoegirlPedia uses MediaWiki 1.43.3, ignore any comments that said MoegirlPedia d
 - `npm run build`: 20-40 seconds
 **Solution:** Always set timeout >= 120 seconds for build commands
 
+## Commit Message Requirements
+
+**CRITICAL: ALL commits and pull requests MUST follow the [Conventional Commits](https://www.conventionalcommits.org/) specification.**
+
+### Format
+
+```
+<type>(<scope>): <description>
+
+[optional body]
+
+[optional footer(s)]
+```
+
+### Valid Scopes
+
+Scopes are defined in `.vscode/settings.json` under `conventionalCommits.scopes`. The list includes:
+
+- **Gadget scopes**: `Gadget/[gadget-name]` (e.g., `Gadget/Force_preview`, `Gadget/Wikiplus`)
+- **Global scopes**: `Global/Common`, `Global/Moeskin`, `Global/Vector-2022`, etc.
+- **Group scopes**: `Group/sysop`, `Group/patroller`, `Group/interface-admin`, etc.
+- **Type definition scopes**: `@type/[file-name]` (e.g., `@type/site-lib.d.ts`)
+
+**Examples:**
+```bash
+feat(Gadget/Force_preview): add preview confirmation dialog
+fix(Global/Moeskin): correct sidebar width calculation
+docs(README): update installation instructions
+chore(deps): update npm dependencies
+```
+
+### Requirements
+
+1. **Type**: Must be a valid type (feat, fix, docs, style, refactor, test, chore, etc.)
+2. **Scope**: Must be from the list in `.vscode/settings.json` - check the file for exact scope names
+3. **Description**: Clear, concise description of the change in lowercase
+4. **Breaking changes**: Use `BREAKING CHANGE:` in footer or `!` after type/scope
+
+### Finding the Correct Scope
+
+```bash
+# View all available scopes
+cat .vscode/settings.json | grep -A 200 '"conventionalCommits.scopes"'
+```
+
+**DO NOT** make up scope names. If you're unsure which scope to use:
+1. Check `.vscode/settings.json` for the exact list
+2. Match your changes to existing gadgets, globals, or groups
+3. Use the format exactly as specified (e.g., `Gadget/` prefix, not `gadget/`)
+
 ## Validation Checklist
 
 Before submitting changes:
@@ -255,16 +305,17 @@ Before submitting changes:
 5. **Verify output:** Check `dist/` contains expected files
 6. **Check git status:** Ensure no unintended files (dist/, node_modules/) are staged
 7. **Re-run tests:** `npm test` (final verification)
+8. **Verify commit messages:** Ensure all commits follow Conventional Commits with valid scopes from `.vscode/settings.json`
 
 ## Important Notes
 
-1. **ALWAYS use `npm run ci` for dependencies installing** - `npm ci` can be broken.
-2. **NEVER commit `dist/` or `node_modules/`** - they're gitignored
-3. **DO NOT modify files in `dist/`** - they're generated, edit source in `src/`
-4. **Trust these instructions** - only search/explore if information is incomplete or incorrect
-5. **File naming convention:** Gadget files must match MediaWiki page names (e.g., `Gadget-[name].js`)
-6. **definition.yaml is required** for every gadget in `src/gadgets/[name]/definition.yaml`
-7. **The repository uses Conventional Commits** - check `.vscode/settings.json` for allowed scopes
+1. **MANDATORY: Use Conventional Commits** - ALL commits and PRs MUST follow the Conventional Commits specification with scopes from `.vscode/settings.json` (see "Commit Message Requirements" section above)
+2. **ALWAYS use `npm run ci` for dependencies installing** - `npm ci` can be broken
+3. **NEVER commit `dist/` or `node_modules/`** - they're gitignored
+4. **DO NOT modify files in `dist/`** - they're generated, edit source in `src/`
+5. **Trust these instructions** - only search/explore if information is incomplete or incorrect
+6. **File naming convention:** Gadget files must match MediaWiki page names (e.g., `Gadget-[name].js`)
+7. **definition.yaml is required** for every gadget in `src/gadgets/[name]/definition.yaml`
 8. **PostCSS runs automatically** on CSS files - don't manually add vendor prefixes
 9. **TypeScript compiles to ES2020** - modern JavaScript features are allowed
 10. **Browser globals** (mw, OO, $, etc.) are pre-configured in eslint.config.js
