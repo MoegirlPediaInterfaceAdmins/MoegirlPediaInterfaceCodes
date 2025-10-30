@@ -1,0 +1,14 @@
+paths-ignore:
+  - src/gadgets/HotCat
+  - src/gadgets/prism-*
+  - src/gadgets/Navigation_popups
+  - src/gadgets/UserMessages
+  - src/gadgets/code-prettify
+  - src/gadgets/libHashwasm
+  - src/gadgets/libJSON5
+  - src/gadgets/libPolyfill
+  - src/gadgets/libUtil
+  - src/gadgets/libip
+  - src/gadgets/localforage
+  - src/gadgets/noteTA
+  - src/gadgets/patrolCount
