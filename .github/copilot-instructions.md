@@ -56,7 +56,7 @@ This repository contains interface codes for MoegirlPedia (萌娘百科), a Chin
 
 6. **Minification** (production):
    ```bash
-   npm run minicifation:js    # Note: typo in script name is intentional
+   npm run minification:js
    ```
    Uses Terser to minify compiled JavaScript
 
@@ -333,7 +333,7 @@ npm test                        # Final check
 # Individual operations
 npm run build:js                # TypeScript only
 npm run build:css               # CSS only
-npm run minicifation:js         # Minify (production)
+npm run minification:js         # Minify (production)
 ```
 
 ## Additional Context
