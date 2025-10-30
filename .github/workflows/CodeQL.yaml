@@ -3,10 +3,10 @@ name: CodeQL
 on:
   push:
     branches:
-      - main
+      - master
   pull_request:
     branches:
-      - main
+      - master
   workflow_dispatch:
   schedule:
     - cron: 15 23 * * * # Every 07:15 CST
