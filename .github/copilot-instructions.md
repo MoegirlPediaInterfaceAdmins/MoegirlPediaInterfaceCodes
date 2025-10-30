@@ -8,7 +8,7 @@ This repository contains interface codes for MoegirlPedia (萌娘百科), a Chin
 **Languages:** TypeScript, JavaScript, CSS
 **Target Platform:** MediaWiki 1.43.3 (targeting ES2020 output)
 **Build Tools:** TypeScript, PostCSS, ESLint, Stylelint, npm
-**Node Version:** ^18.17 || >=20.1 (currently tested with v20.19.5)
+**Node Version:** ^22.19
 
 ## Critical Build & Installation Instructions
 
