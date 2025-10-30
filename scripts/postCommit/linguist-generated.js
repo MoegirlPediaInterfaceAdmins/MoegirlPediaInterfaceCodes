@@ -38,7 +38,7 @@ for (const [index, stringValue] of Object.entries(process.env)) {
     newGitattributes.push(`# From ${key}`);
     for (const srcPath of value) {
         if (!scriptsExcludedFromCodeQL.includes(key)){
-            folders.add(path.dirname(srcPath));
+            foldersForCodeQL.add(path.dirname(srcPath));
         }
         newGitattributes.push(`${srcPath} linguist-generated=true`);
         if (path.extname(srcPath) === ".css") {
