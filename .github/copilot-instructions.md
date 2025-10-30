@@ -6,7 +6,7 @@ This repository contains interface codes for MoegirlPedia (萌娘百科), a Chin
 
 **Size:** ~135 gadgets, multiple global and group-level scripts
 **Languages:** TypeScript, JavaScript, CSS
-**Target Platform:** MediaWiki 1.31+ (targeting ES2020 output)
+**Target Platform:** MediaWiki 1.43.3 (targeting ES2020 output)
 **Build Tools:** TypeScript, PostCSS, ESLint, Stylelint, npm
 **Node Version:** ^18.17 || >=20.1 (currently tested with v20.19.5)
 
@@ -14,31 +14,13 @@ This repository contains interface codes for MoegirlPedia (萌娘百科), a Chin
 
 ### Installing Dependencies
 
-**IMPORTANT:** The repository may experience npm installation issues related to registry failures (especially with Tencent mirrors). If `npm ci` or `npm install` fails with "Exit handler never called!" error:
-
-1. **First attempt:** Use the custom ci script that handles registry switching:
-   ```bash
-   npm run ci
-   ```
-
-2. **If that fails:** Remove package-lock.json temporarily and use standard install:
-   ```bash
-   rm -rf node_modules
-   npm install --no-package-lock
-   ```
-
-3. **Recovery:** Always verify dependencies installed successfully:
-   ```bash
-   ls -la node_modules/ | head -20
-   ```
-
-**ALWAYS install dependencies before any build, lint, or test operations.**
+**IMPORTANT: DON'T USE `npm ci`, USE `npm run ci` INSTEAD**
 
 ### Build Commands (In Order of Usage)
 
 1. **Install dependencies** (REQUIRED FIRST):
    ```bash
-   npm install --no-package-lock
+   npm run ci
    ```
    Time: ~60 seconds
 
@@ -82,7 +64,7 @@ This repository contains interface codes for MoegirlPedia (萌娘百科), a Chin
 
 **ALWAYS follow this sequence:**
 
-1. Install dependencies: `npm install --no-package-lock`
+1. Install dependencies: `npm run ci`
 2. Make your code changes
 3. Run linters: `npm test`
 4. Fix issues: `npm run format` (or manual fixes)
@@ -229,8 +211,7 @@ Runs after postCommit if changes detected:
 **Cause:** Registry mirror (Tencent) failures or package lock conflicts
 **Solution:**
 ```bash
-rm -rf node_modules
-npm install --no-package-lock
+npm run ci
 ```
 
 ### 2. Build Artifacts in Git
@@ -243,9 +224,7 @@ git rm -r --cached dist/
 
 ### 3. MediaWiki Version Compatibility
 
-**Context:** MoegirlPedia uses MediaWiki 1.31.7, which has JSMinPlus bugs with ES3 reserved words
-**Status:** Now resolved (萌百真升级 MediaWiki 了) - using ES2020 target
-**Note:** Comments in code reference old ES3 workarounds (marked with @TODO 萌百尚未更新1.32)
+MoegirlPedia uses MediaWiki 1.43.3, ignore any comments that said MoegirlPedia didn't upgrade
 
 ### 4. ESLint Flat Config
 
@@ -260,7 +239,7 @@ git rm -r --cached dist/
 ### 6. Timeout on Long-Running Commands
 
 **Build/Test times:**
-- `npm install`: 60+ seconds
+- `npm run ci`: 60+ seconds
 - `npm test`: 30-60 seconds
 - `npm run build`: 20-40 seconds
 **Solution:** Always set timeout >= 120 seconds for build commands
@@ -269,7 +248,7 @@ git rm -r --cached dist/
 
 Before submitting changes:
 
-1. **Install dependencies:** `npm install --no-package-lock`
+1. **Install dependencies:** `npm run ci`
 2. **Lint check:** `npm test` (must pass with 0 errors/warnings)
 3. **Auto-fix:** `npm run format` (if linting fails)
 4. **Build:** `npm run build` (must complete without errors)
@@ -279,7 +258,7 @@ Before submitting changes:
 
 ## Important Notes
 
-1. **ALWAYS run `npm install --no-package-lock` before any development work** - dependency installation can be flaky
+1. **ALWAYS use `npm run ci` for dependencies installing** - `npm ci` can be broken.
 2. **NEVER commit `dist/` or `node_modules/`** - they're gitignored
 3. **DO NOT modify files in `dist/`** - they're generated, edit source in `src/`
 4. **Trust these instructions** - only search/explore if information is incomplete or incorrect
@@ -294,7 +273,7 @@ Before submitting changes:
 
 ```bash
 # Full development cycle
-npm install --no-package-lock  # Install deps
+npm run ci                      # Install deps
 npm test                        # Lint & validate
 npm run format                  # Auto-fix issues
 npm run build                   # Compile all
@@ -304,7 +283,6 @@ npm test                        # Final check
 npm run build:js                # TypeScript only
 npm run build:css               # CSS only
 npm run minicifation:js         # Minify (production)
-npm run ci                      # CI-optimized install (registry switching)
 ```
 
 ## Additional Context
