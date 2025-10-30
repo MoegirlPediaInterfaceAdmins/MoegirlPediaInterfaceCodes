@@ -1,6 +1,5 @@
 paths-ignore:
   - src/gadgets/HotCat
-  - src/gadgets/prism-*
   - src/gadgets/Navigation_popups
   - src/gadgets/UserMessages
   - src/gadgets/code-prettify
