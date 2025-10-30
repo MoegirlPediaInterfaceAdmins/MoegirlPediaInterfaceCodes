@@ -221,7 +221,7 @@
             }
             e.preventDefault();
             const response = await OO.ui.confirm(getConfirmMessage(hrefURL));
-            response && window.open(hrefURL.href, "_blank", "noopener,noreferrer");
+            response && window.open(hrefURL.href, "_blank", "noopener,noreferrer,nofollow");
         });
     };
     /**
