@@ -7,7 +7,7 @@
     "type": "module",
     "private": true,
     "engines": {
-        "node": "^22.19"
+        "node": "^24.11"
     },
     "scripts": {
         "test": "eslint src && stylelint src/**/*.css && v8r && node scripts/emailmapChecker/index.js",

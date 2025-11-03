@@ -8,7 +8,43 @@ This repository contains interface codes for MoegirlPedia (萌娘百科), a Chin
 - **Languages:** TypeScript, JavaScript, CSS
 - **Target Platform:** MediaWiki 1.43.3 (targeting ES2020 output)
 - **Build Tools:** TypeScript, PostCSS, ESLint, Stylelint, npm
-- **Node Version:** ^22.19
+- **Node Version:** ^24.11
+
+## Environment Setup
+
+### Node.js Version Requirement
+
+**CRITICAL: This project requires Node.js ^24.11 (latest LTS). Upon starting work, ALWAYS check and upgrade to the latest LTS version if needed.**
+
+**Check current Node.js version:**
+```bash
+node --version
+```
+
+**Upgrade to latest LTS version (REQUIRED on startup):**
+```bash
+# Set N_PREFIX to avoid permission issues
+export N_PREFIX=$HOME/.n
+export PATH=$N_PREFIX/bin:$PATH
+
+# Install and activate latest LTS version
+n lts
+
+# Refresh shell's node location cache
+hash -r
+
+# Verify installation
+node --version
+npm --version
+```
+
+**Why this is required:**
+- The repository requires Node.js ^24.11 (latest LTS) for TypeScript 5.7.3 and modern ECMAScript features
+- GitHub Actions runners may start with older Node.js versions (e.g., v20.x, v22.x) that don't meet this requirement
+- Using the latest LTS version ensures compatibility and access to the latest stable features and security updates
+- The `n` version manager is pre-installed and allows user-level installations without sudo
+
+**Note:** After upgrading Node.js, you MUST use the updated version for all subsequent commands. The commands above set environment variables that persist only for the current session.
 
 ## Critical Build & Installation Instructions
 
