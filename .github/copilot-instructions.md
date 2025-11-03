@@ -21,14 +21,14 @@ This repository contains interface codes for MoegirlPedia (萌娘百科), a Chin
 node --version
 ```
 
-**Upgrade to latest LTS (REQUIRED on startup):**
+**Upgrade to latest compatible LTS (REQUIRED on startup):**
 ```bash
 # Set N_PREFIX to avoid permission issues
 export N_PREFIX=$HOME/.n
 export PATH=$N_PREFIX/bin:$PATH
 
-# Install and activate latest LTS version
-n lts
+# Install and activate latest v22.x LTS version (satisfies ^22.19)
+n 22
 
 # Refresh shell's node location cache
 hash -r
