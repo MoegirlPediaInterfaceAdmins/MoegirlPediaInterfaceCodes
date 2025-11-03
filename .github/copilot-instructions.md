@@ -14,7 +14,7 @@ This repository contains interface codes for MoegirlPedia (萌娘百科), a Chin
 
 ### Node.js Version Requirement
 
-**CRITICAL: This project requires Node.js ^22.19 or later. Upon starting work, ALWAYS upgrade to the latest LTS version.**
+**CRITICAL: This project requires Node.js ^22.19. Upon starting work, ALWAYS check and upgrade to the latest compatible LTS version if needed.**
 
 **Check current Node.js version:**
 ```bash
@@ -40,8 +40,8 @@ npm --version
 
 **Why this is required:**
 - The repository requires Node.js ^22.19 for TypeScript 5.7.3 and modern ECMAScript features
-- GitHub Actions runners may start with older Node.js versions (e.g., v20.x)
-- Using the latest LTS ensures compatibility and access to the latest features
+- GitHub Actions runners may start with older Node.js versions (e.g., v20.x) that don't meet this requirement
+- Using the latest LTS version that satisfies ^22.19 ensures compatibility and access to the latest features within the compatible range
 - The `n` version manager is pre-installed and allows user-level installations
 
 **Note:** After upgrading Node.js, you MUST use the updated version for all subsequent commands. The commands above set environment variables that persist only for the current session.
