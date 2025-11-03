@@ -14,14 +14,14 @@ This repository contains interface codes for MoegirlPedia (萌娘百科), a Chin
 
 ### Node.js Version Requirement
 
-**CRITICAL: This project requires Node.js ^22.19. Upon starting work, ALWAYS check and upgrade to the latest compatible LTS version if needed.**
+**CRITICAL: This project requires Node.js ^22.19. Upon starting work, ALWAYS check and upgrade to the latest compatible version if needed.**
 
 **Check current Node.js version:**
 ```bash
 node --version
 ```
 
-**Upgrade to latest compatible LTS (REQUIRED on startup):**
+**Upgrade to latest compatible version (REQUIRED on startup):**
 ```bash
 # Set N_PREFIX to avoid permission issues
 export N_PREFIX=$HOME/.n
