@@ -56,7 +56,7 @@ mw.hook("wikipage.content").add(() => {
                     await new Promise((resolve) => setTimeout(resolve, 1000));
                     return parse(wikitext, retryCount + 1);
                 }
-                throw new Error(e);
+                throw e;
             }
         };
 
