@@ -27,7 +27,7 @@ node --version
 export N_PREFIX=$HOME/.n
 export PATH=$N_PREFIX/bin:$PATH
 
-# Install and activate latest v22.x LTS version (satisfies ^22.19)
+# Install and activate latest v22.x version (satisfies ^22.19 requirement)
 n 22
 
 # Refresh shell's node location cache
@@ -39,10 +39,10 @@ npm --version
 ```
 
 **Why this is required:**
-- The repository requires Node.js ^22.19 for TypeScript 5.7.3 and modern ECMAScript features
+- The repository requires Node.js ^22.19 (semver: >=22.19.0 <23.0.0) for TypeScript 5.7.3 and modern ECMAScript features
 - GitHub Actions runners may start with older Node.js versions (e.g., v20.x) that don't meet this requirement
-- Using the latest LTS version that satisfies ^22.19 ensures compatibility and access to the latest features within the compatible range
-- The `n` version manager is pre-installed and allows user-level installations
+- Using the latest v22.x version ensures compatibility with the ^22.19 requirement and provides the latest features within the compatible range
+- The `n` version manager is pre-installed and allows user-level installations without sudo
 
 **Note:** After upgrading Node.js, you MUST use the updated version for all subsequent commands. The commands above set environment variables that persist only for the current session.
 
