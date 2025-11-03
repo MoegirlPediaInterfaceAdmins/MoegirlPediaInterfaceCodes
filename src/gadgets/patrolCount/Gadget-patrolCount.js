@@ -305,7 +305,7 @@ $(() => {
     const missingPage = {};
     const checkMissing = (pages, plus) => {
         const missingQuery = [];
-        for (let idx = 0; idx < pages.length; ++idx) {
+        for (let idx = pages.length - 1; idx >= 0; idx--) {
             const { title } = pages[idx];
             if (typeof title === "undefined") {
                 continue;
@@ -314,7 +314,7 @@ $(() => {
             if (typeof isMissing === "undefined") {
                 missingQuery.push(title);
             } else if (isMissing) {
-                pages.splice(idx--, 1);
+                pages.splice(idx, 1);
             }
         }
         // 查询删除状态
@@ -331,9 +331,9 @@ $(() => {
                     const title = $this.attr("title");
                     missingPage[title] = isMissing;
                     if (isMissing) {
-                        for (let idx = 0; idx < pages.length; ++idx) {
+                        for (let idx = pages.length - 1; idx >= 0; idx--) {
                             if (pages[idx].title === title) {
-                                pages.splice(idx--, 1);
+                                pages.splice(idx, 1);
                                 break;
                             }
                         }
