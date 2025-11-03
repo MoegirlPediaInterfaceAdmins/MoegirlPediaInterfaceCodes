@@ -181,7 +181,7 @@ $(() => {
     }
     setTimeout(() => {
         formatTimestamp();
-        setInterval(formatTimestamp(), 60 * 1000);
+        setInterval(formatTimestamp, 60 * 1000);
     }, 60000 - Date.now() % 60000);
 });
 // </pre>
