@@ -314,7 +314,7 @@ $(() => {
             if (typeof isMissing === "undefined") {
                 missingQuery.push(title);
             } else if (isMissing) {
-                pages.splice(idx, 1);
+                pages.splice(idx--, 1);
             }
         }
         // 查询删除状态
@@ -333,7 +333,7 @@ $(() => {
                     if (isMissing) {
                         for (let idx = 0; idx < pages.length; ++idx) {
                             if (pages[idx].title === title) {
-                                pages.splice(idx, 1);
+                                pages.splice(idx--, 1);
                                 break;
                             }
                         }
