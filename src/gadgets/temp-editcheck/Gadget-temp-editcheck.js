@@ -76,9 +76,9 @@ $(() => {
             return;
         }
         IPESubmitting = 0;
-    }), {
+    }, {
         capture: true,
-    };
+    });
     const run = async () => {
         if (running || unloading) {
             return;
