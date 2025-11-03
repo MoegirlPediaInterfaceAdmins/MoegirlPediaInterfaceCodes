@@ -174,7 +174,7 @@ $(() => (async () => {
         console.info("abusefiltertest", e);
         $(".abusefiltertest").remove();
         pTable.empty();
-        if (filter === 33) {
+        if (+filter === 33) {
             pTable.append(`<tbody><tr><td style="text-align: ${typeof e === "string" ? "center" : "left"};">发生错误：${typeof e === "string" ? e : `${e} ${e.stack.split("\n")[1].trim()}`}</td></tr></tbody>`);
         }
     }
