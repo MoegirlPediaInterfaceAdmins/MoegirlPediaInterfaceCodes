@@ -26,9 +26,7 @@ rights:
 peers: []
 
 dependencies:
-  - mediawiki.api
   - mediawiki.notification
-  - ext.gadget.libCachedCode
 
 _sites:
   - zh
@@ -36,5 +34,4 @@ _sites:
 _section: editing
 
 _files:
-  - Gadget-InPageEdit-v2.css
-  - Gadget-InPageEdit-v2.js
+  - Gadget-inpageedit-next.js

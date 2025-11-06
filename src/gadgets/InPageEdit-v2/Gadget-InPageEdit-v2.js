@@ -1,5 +1,19 @@
 "use strict";
-mw.loader.load("https://testingcf.jsdelivr.net/npm/mediawiki-inpageedit@latest");
+
+window.RLQ ||= [];
+window.RLQ.push([
+    ["mediawiki.base", "mediawiki.notification"],
+    () => {
+        const isLoadedNext = mw.loader.getState("ext.gadget.inpageedit-next") === "ready" || window[Symbol.for("InPageEdit#autoload")] !== void 0;
+        if (isLoadedNext) {
+            mw.notify("无法同时安装 InPageEdit v2 和 InPageEdit NEXT，请卸载其中之一。", {
+                type: "warning",
+            });
+            return;
+        }
+        mw.loader.load("https://testingcf.jsdelivr.net/npm/mediawiki-inpageedit@latest");
+    },
+]);
 
 mw.hook("InPageEdit").add((ctx) => {
     const InPageEdit = ctx.InPageEdit,
