@@ -71,6 +71,7 @@
     - uploader
     - temp-editcheck
     - wikiplus-highlight
+    - inpageedit-next
 
 - name: maintenance
   gadgets:
