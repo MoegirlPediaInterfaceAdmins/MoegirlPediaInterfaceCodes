@@ -97,5 +97,17 @@ $(() => {
         return false;
     });
     new Image().src = "https://img.moegirl.org.cn/common/d/d1/Windows_10_loading.gif";
+    const observer = new MutationObserver((mutations) => {
+        mutations.forEach((mutation) => {
+            mutation.addedNodes.forEach((node) => {
+                if (node.nodeType !== 1) {
+                    return;
+                }
+                const $rollbackLinks = $(node).find(".mw-rollback-link a:not([data-href])").addBack(".mw-rollback-link a:not([data-href])");
+                $rollbackLinks.each(loop);
+            });
+        });
+    });
+    observer.observe(document.body, { childList: true, subtree: true });
 });
 // </pre>
