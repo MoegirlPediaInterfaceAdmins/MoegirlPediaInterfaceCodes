@@ -1,7 +1,6 @@
 import console from "../modules/console.js";
 console.info("Initialization done.");
 import yamlModule from "../modules/yamlModule.js";
-import jsonModule from "../modules/jsonModule.js";
 import { isInGithubActions, octokit } from "../modules/octokit.js";
 import { startGroup, endGroup } from "@actions/core";
 import readWorkflowEvent from "../modules/workflowEvent.js";
