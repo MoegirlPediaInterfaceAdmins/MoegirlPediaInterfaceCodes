@@ -17,7 +17,7 @@ $(() => (async () => {
 
     const pageid = mw.config.get("wgArticleId");
     const basepage = pagename.replace(/\/.*?$/, "");
-    const api = new mw.Api(), zhAPI = /m?zh\.moegirl\.org\.cn/.test(location.hostname) ? api : new mw.ForeignApi("https://mzh.moegirl.org.cn/api.php", { anonymous: true });
+    const api = new mw.Api(), zhAPI = /^m?zh\.moegirl\.org\.cn$/.test(location.hostname) ? api : new mw.ForeignApi("https://mzh.moegirl.org.cn/api.php", { anonymous: true });
 
     const lrAivc = $.extend({
         main: ["zh-cn", "zh-tw", "zh-hk"],
