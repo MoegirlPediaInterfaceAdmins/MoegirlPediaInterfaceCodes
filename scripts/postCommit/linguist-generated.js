@@ -94,7 +94,7 @@ endGroup();
 const finalCodeQLConfig = {
     ...oldCodeQLConfig,
     "paths-ignore": codeQLConfigPathsIgnore,
-}
+};
 startGroup("final codeql-config.yaml:");
 console.info(finalCodeQLConfig);
 endGroup();
