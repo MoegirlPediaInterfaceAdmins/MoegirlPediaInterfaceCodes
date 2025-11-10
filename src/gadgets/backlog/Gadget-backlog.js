@@ -155,7 +155,7 @@ $(() => (async () => {
                         const expiryMoment = moment(expiry);
                         endTime = `<span title="${expiry}">${expiryMoment.format("YYYY[年]M[月]D[日 (]dd[)<br>]HH[:]mm[:]ss").replace(nowYear, "")}${now.diff(expiryMoment) > 0 ? "（已过期）" : ""}</span>`;
                     }
-                    let duration = loghidden ? loghiddenMsg : "";
+                    let duration;
                     if (_duration && !moment(_duration).isValid()) {
                         duration = "持续时间为";
                         if (/in(?:de)?finite|infinity|never/i.test(_duration)) {
