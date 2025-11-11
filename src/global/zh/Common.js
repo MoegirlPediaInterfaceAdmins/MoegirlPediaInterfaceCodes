@@ -102,8 +102,7 @@
     // 复制修改内容
     const copyRights = async () => {
         await mw.loader.using("mediawiki.util");
-        const div
-            = $("<div>", {
+        const div = $("<div>", {
                 css: {
                     position: "absolute",
                     left: "-99999px",

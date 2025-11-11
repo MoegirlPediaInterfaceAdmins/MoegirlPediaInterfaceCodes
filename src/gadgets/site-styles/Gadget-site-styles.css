@@ -408,15 +408,16 @@ s.just-kidding-text {
     background: #fbfbfb;
 }
 
+html.skin-theme-clientpref-night .infoBoxContent,
+[color-mode="dark"] .infoBoxContent {
+    border-color: #3e4452;
+    background: #23272e;
+}
+
 .infoBoxBelow {
     margin: 0 auto;
     padding: 0;
     text-align: center;
-}
-
-[color-mode="dark"] .infoBoxContent {
-    border-color: #3e4452;
-    background: #23272e;
 }
 
 /* wikitable green */
@@ -1445,4 +1446,9 @@ body.overlay-scrollbars #bodyContent {
 [color-mode="dark"] table.wikitable {
     background-color: var(--theme-background-color);
     color: var(--theme-text-color);
+}
+
+/* 隐藏不存在的用户创建日志 */
+body.mw-special-Log .mw-htmlform-flatlist > .oo-ui-fieldLayout:nth-child(4) {
+    display: none;
 }

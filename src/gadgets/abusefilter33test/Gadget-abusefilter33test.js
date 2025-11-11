@@ -11,8 +11,8 @@ $(() => (async () => {
     const timestampVar = getLogVar("timestamp");
     const userName = getLogVar("user_name");
     const articlePrefixedtext = getLogVar("article_prefixedtext");
-    const filter = [...document.querySelectorAll('a[href*="/Special:%E6%BB%A5%E7%94%A8%E8%BF%87%E6%BB%A4%E5%99%A8/"]')].filter(({ href }) => /%E6%BB%A5%E7%94%A8%E8%BF%87%E6%BB%A4%E5%99%A8\/[1-9]\d*$/.test(href))?.[0]?.href?.match?.(/[1-9]\d*$/)?.[0];
-    if (timestampVar.length === 0 || userName.length === 0 || articlePrefixedtext.length === 0 || typeof filter !== "string") {
+    const filter = +[...document.querySelectorAll('a[href*="/Special:%E6%BB%A5%E7%94%A8%E8%BF%87%E6%BB%A4%E5%99%A8/"]')].filter(({ href }) => /%E6%BB%A5%E7%94%A8%E8%BF%87%E6%BB%A4%E5%99%A8\/[1-9]\d*$/.test(href))?.[0]?.href?.match?.(/[1-9]\d*$/)?.[0];
+    if (timestampVar.length === 0 || userName.length === 0 || articlePrefixedtext.length === 0 || !filter) {
         return;
     }
     const symbolEnter = (str) => typeof str === "string" ? str.replace(/\n/g, "↵") : str;
@@ -29,7 +29,7 @@ $(() => (async () => {
             afluser: userName,
             afltitle: articlePrefixedtext,
             aflprop: "details",
-            aflfilter: +filter,
+            aflfilter: filter,
         })).query.abuselog;
         if (__details.length === 0) {
             throw "无法找到对应用户名和页面标题的滥用过滤器日志";
@@ -45,8 +45,8 @@ $(() => (async () => {
             action: "query",
             assertuser: mw.config.get("wgUserName"),
             list: "abusefilters",
-            abfstartid: +filter,
-            abfendid: +filter,
+            abfstartid: filter,
+            abfendid: filter,
             abfprop: "pattern",
         })).query.abusefilters[0].pattern.replace(/\r/g, "");
         const _stringRules = Array.from(_rules.match(/\/\* string rule start \*\/[\s\S]+?(?=\/\* string rule end \*\/)/g) || []).map((r) => r.replace(/\/\* regex rule start \*\//g, "").split("\n")).flat().map((r) => r.replace(/^ *"?/, "").replace(/"?,? *$/, "")).filter((r) => r !== "");

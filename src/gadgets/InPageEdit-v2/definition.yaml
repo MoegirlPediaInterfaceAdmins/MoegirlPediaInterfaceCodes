@@ -27,6 +27,7 @@ peers: []
 
 dependencies:
   - mediawiki.api
+  - mediawiki.notification
   - ext.gadget.libCachedCode
 
 _sites:

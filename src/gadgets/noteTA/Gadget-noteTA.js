@@ -41,8 +41,7 @@ mw.hook("wikipage.content").add(() => {
             ).insertAfter("#vector-variants-dropdown");
         }
 
-        const parse = async (wikitext) => {
-            let retryCount = 0;
+        const parse = async (wikitext, retryCount = 0) => {
             try {
                 const data = await api.post({
                     action: "parse",
@@ -53,11 +52,11 @@ mw.hook("wikipage.content").add(() => {
                 });
                 return data.parse.text["*"];
             } catch (e) {
-                if (retryCount++ < 3) {
-                    setTimeout(parse(wikitext), 1000);
-                } else {
-                    throw new Error(e);
+                if (retryCount < 3) {
+                    await new Promise((resolve) => setTimeout(resolve, 1000));
+                    return parse(wikitext, retryCount + 1);
                 }
+                throw e;
             }
         };
 
@@ -72,7 +71,7 @@ mw.hook("wikipage.content").add(() => {
                 $dialog.dialog("open");
             }
             if ($dialog.find(".mw-ajax-loader, .noteTAViewer-error").length > 0) {
-                let wikitext = "", collapse = true;
+                let wikitext = "", collapse = false;
                 const $dom = $("#mw-content-text .mw-parser-output");
                 const actualTitle = mw.config.get("wgPageName").replace(/_/g, " ");
                 // title

@@ -20,18 +20,18 @@ type: general
 
 package: false
 
-rights: []
+rights:
+  - edit
 
 peers: []
 
 dependencies:
-  - mediawiki.api
-  - codex-styles
+  - mediawiki.notification
 
 _sites:
   - zh
 
-_section: browsing
+_section: editing
 
 _files:
-  - Gadget-queryWhatlinkshere.js
+  - Gadget-inpageedit-next.js

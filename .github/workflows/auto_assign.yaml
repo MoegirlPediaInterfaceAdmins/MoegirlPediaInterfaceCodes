@@ -1,4 +1,7 @@
 name: "Auto Assign"
+permissions:
+  contents: read
+  pull-requests: write
 on:
   pull_request_target:
     types:
@@ -11,6 +14,7 @@ env:
   CLIENT_ID: ${{ secrets.CLIENT_ID }}
   CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
   INSTALLATION_ID: ${{ secrets.INSTALLATION_ID }}
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 jobs:
   add-reviews:
@@ -20,7 +24,7 @@ jobs:
         with:
           show-progress: false
       - name: Use Node.js
-        uses: actions/setup-node@v5
+        uses: actions/setup-node@v6
         with:
           node-version: lts/*
           check-latest: true
