@@ -50,27 +50,34 @@
     }));
 
     // "Global" variables
-    let CLASSES = {
-            FADE_IN_DOWN: "rt-fade-in-down",
-            FADE_IN_UP: "rt-fade-in-up",
-            FADE_OUT_DOWN: "rt-fade-out-down",
-            FADE_OUT_UP: "rt-fade-out-up",
-        },
-        IS_TOUCHSCREEN = "ontouchstart" in document.documentElement,
-        // Quite a rough check for mobile browsers, a mix of what is advised at
-        // https://stackoverflow.com/a/24600597 (sends to
-        // https://developer.mozilla.org/en-US/docs/Browser_detection_using_the_user_agent)
-        // and https://stackoverflow.com/a/14301832
-        IS_MOBILE = /Mobi|Android/i.test(navigator.userAgent)
-            || typeof window.orientation !== "undefined",
-        CLIENT_NAME = $.client.profile().name,
-        settingsString, settings, enabled, delay, activatedByClick, tooltipsForComments, cursorWaitCss;
-
-        const $body = $(document.body);
-        const $window = $(window);
-        const $overlay = $('<div>')
-        .addClass('rt-overlay')
+    const CLASSES = {
+        FADE_IN_DOWN: "rt-fade-in-down",
+        FADE_IN_UP: "rt-fade-in-up",
+        FADE_OUT_DOWN: "rt-fade-out-down",
+        FADE_OUT_UP: "rt-fade-out-up",
+    };
+    let ontouchstart = 0;
+    if (Reflect.has(document.documentElement, ontouchstart)) {
+        ontouchstart = 1;
+    }
+    // Quite a rough check for mobile browsers, a mix of what is advised at
+    // https://stackoverflow.com/a/24600597 (sends to
+    // https://developer.mozilla.org/en-US/docs/Browser_detection_using_the_user_agent)
+    // and https://stackoverflow.com/a/14301832
+    const IS_MOBILE = /Mobi|Android/i.test(navigator.userAgent)
+        || typeof window.orientation !== "undefined";
+    const CLIENT_NAME = $.client.profile().name;
+    let enabled = undefined;
+    let delay;
+    let activatedByClick;
+    let tooltipsForComments;
+    let cursorWaitCss = 1;
+    const $body = $(document.body);
+    const $window = $(window);
+    const $overlay = $("<div>")
+        .addClass("rt-overlay")
         .appendTo($body);
+    let windowManager;
     // Can't use before https://phabricator.wikimedia.org/T369880 is resolved
     // mw.loader.using( 'mediawiki.page.ready' ).then( function ( require ) {
     // $teleportTarget = $( require( 'mediawiki.page.ready' ).teleportTarget );
@@ -897,9 +904,9 @@
         });
     }
 
-    settingsString = mw.cookie.get("RTsettings", "");
+    const settingsString = mw.cookie.get("RTsettings", "");
     if (settingsString) {
-        settings = settingsString.split("|");
+        const settings = settingsString.split("|");
         enabled = Boolean(Number(settings[0]));
         delay = Number(settings[1]);
         activatedByClick = Boolean(Number(settings[2]));
