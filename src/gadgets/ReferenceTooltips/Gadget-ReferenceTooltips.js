@@ -56,10 +56,7 @@
         FADE_OUT_DOWN: "rt-fade-out-down",
         FADE_OUT_UP: "rt-fade-out-up",
     };
-    let ontouchstart = 0;
-    if (Reflect.has(document.documentElement, ontouchstart)) {
-        ontouchstart = 1;
-    }
+    const IS_TOUCHSCREEN = Reflect.has(document.documentElement, "ontouchstart");
     // Quite a rough check for mobile browsers, a mix of what is advised at
     // https://stackoverflow.com/a/24600597 (sends to
     // https://developer.mozilla.org/en-US/docs/Browser_detection_using_the_user_agent)
