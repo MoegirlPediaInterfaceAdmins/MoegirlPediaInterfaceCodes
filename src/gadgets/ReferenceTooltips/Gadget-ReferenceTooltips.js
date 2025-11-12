@@ -68,7 +68,7 @@
     let delay;
     let activatedByClick;
     let tooltipsForComments;
-    let cursorWaitCss = 1;
+    let cursorWaitCss;
     const $body = $(document.body);
     const $window = $(window);
     const $overlay = $("<div>")
