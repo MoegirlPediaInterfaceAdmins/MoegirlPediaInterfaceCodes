@@ -69,6 +69,7 @@ $(() => (async () => {
         const blockLogResult = await autoRetryAsyncFunction(async () => await api.post({
             action: "query",
             assertuser: wgUserName,
+            origin: location.origin,
             format: "json",
             list: "logevents",
             leprop: "ids|title|type|user|timestamp|details|parsedcomment|tags",
@@ -212,6 +213,7 @@ $(() => (async () => {
         const abuseLogResult = await autoRetryAsyncFunction(async () => await api.post({
             action: "query",
             assertuser: wgUserName,
+            origin: location.origin,
             format: "json",
             list: "abuselog",
             afllimit: "500",
@@ -343,6 +345,7 @@ $(() => (async () => {
                 const f = async () => await api2.get({
                     action: "query",
                     assertuser: wgUserName,
+                    origin: location.origin,
                     format: "json",
                     list: "categorymembers",
                     cmtitle,
