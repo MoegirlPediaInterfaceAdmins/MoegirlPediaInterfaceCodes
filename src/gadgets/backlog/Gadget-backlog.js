@@ -338,7 +338,7 @@ $(() => (async () => {
             cmtitle: "Category:即将删除的页面",
         }].map(async ({ domain, cmtitle }) => {
             try {
-                const api2 = domain === "zh.moegirl.org.cn" ? api : new mw.ForeignApi(`https://${domain}/api.php`, { anonymous: true });
+                const api2 = domain === "zh.moegirl.org.cn" ? api : new mw.ForeignApi(`https://${domain}/api.php`);
                 let count = 0;
                 const eol = Symbol();
                 let cmcontinue = undefined;
