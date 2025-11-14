@@ -46,7 +46,7 @@ $(() => {
     const api = new mw.Api();
     $(document.body).on("click", async (event) => {
         const target = event.target;
-        if (!$(target).is(".mw-rollback-link a")) {
+        if (!$(target).is(".mw-rollback-link a") || $(target).closest(".jquery-confirmable-button-no")[0]) {
             return true;
         }
         const self = $(target);
@@ -114,7 +114,7 @@ $(() => {
                 });
             });
         });
-        observer.observe(changesList, { childList: true, subtree: true });
+        observer.observe(changesList, { childList: true });
     }
 });
 // </pre>
