@@ -8,7 +8,7 @@
  *     version: "1"
  *     jsdelivrUrl: "https://cdn.jsdelivr.net/npm/prismjs@1/components/prism-phpdoc.js"
  */
-((Prism) => {
+(function (Prism) {
 
 	var typeExpression = /(?:\b[a-zA-Z]\w*|[|\\[\]])+/.source;
 
@@ -35,3 +35,4 @@
 	Prism.languages.javadoclike.addSupport('php', Prism.languages.phpdoc);
 
 }(Prism));
+
