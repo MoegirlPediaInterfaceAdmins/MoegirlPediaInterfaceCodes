@@ -8,7 +8,7 @@
  *     version: "1"
  *     jsdelivrUrl: "https://cdn.jsdelivr.net/npm/prismjs@1/components/prism-js-extras.js"
  */
-((Prism) => {
+(function (Prism) {
 
 	Prism.languages.insertBefore('javascript', 'function-variable', {
 		'method-variable': {
@@ -143,3 +143,4 @@
 	}
 
 }(Prism));
+
