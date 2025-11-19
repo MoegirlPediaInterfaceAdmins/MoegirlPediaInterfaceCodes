@@ -1,9 +1,0 @@
-{
-  "name": "gadget-inpageedit-next",
-  "version": "1.0.0",
-  "scripts": {},
-  "devDependencies": {
-    "@inpageedit/core": "^0.14.3",
-    "types-mediawiki": "^2.0.0"
-  }
-}

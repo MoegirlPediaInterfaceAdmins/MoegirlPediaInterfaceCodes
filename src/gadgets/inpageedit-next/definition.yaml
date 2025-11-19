@@ -26,6 +26,7 @@ rights:
 peers: []
 
 dependencies:
+  - mediawiki.base
   - mediawiki.notification
 
 _sites:
