@@ -14,7 +14,7 @@
  * Adds the following new token classes:
  *     constant, builtin, variable, symbol, regex
  */
-((Prism) => {
+(function (Prism) {
 	Prism.languages.ruby = Prism.languages.extend('clike', {
 		'comment': {
 			pattern: /#.*|^=begin\s[\s\S]*?^=end/m,
@@ -197,3 +197,4 @@
 
 	Prism.languages.rb = Prism.languages.ruby;
 }(Prism));
+
