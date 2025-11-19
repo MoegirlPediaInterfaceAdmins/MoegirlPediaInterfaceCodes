@@ -1452,3 +1452,7 @@ body.overlay-scrollbars #bodyContent {
 body.mw-special-Log .mw-htmlform-flatlist > .oo-ui-fieldLayout:nth-child(4) {
     display: none;
 }
+
+.mw-content-container .mw-editsection .mw-editsection-divider {
+    display: revert;
+}

@@ -43,3 +43,7 @@ body:not(.ns-0) #upload-div {
     table-layout: fixed;
     overflow-wrap: break-word;
 }
+
+.mw-content-container .mw-editsection .mw-editsection-divider {
+    display: revert;
+}
