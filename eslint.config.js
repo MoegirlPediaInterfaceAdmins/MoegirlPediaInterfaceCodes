@@ -19,7 +19,7 @@ for (const srcESlintrcFile of srcESlintrcFiles) {
     const srcESlintrc = await yamlModule.readFile(srcESlintrcFile);
     if (Array.isArray(srcESlintrc.ignorePatterns)) {
         for (const ignorePattern of srcESlintrc.ignorePatterns) {
-            ignores.push(path.join(dir, ignorePattern));
+            ignores.push(path.posix.join(dir.replace(/\\/g, "/"), ignorePattern));
         }
     }
 }
