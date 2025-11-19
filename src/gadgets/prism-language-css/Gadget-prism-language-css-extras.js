@@ -8,7 +8,7 @@
  *     version: "1"
  *     jsdelivrUrl: "https://cdn.jsdelivr.net/npm/prismjs@1/components/prism-css-extras.js"
  */
-((Prism) => {
+(function (Prism) {
 
 	var string = /("|')(?:\\(?:\r\n|[\s\S])|(?!\1)[^\\\r\n])*\1/;
 	var selectorInside;
@@ -128,3 +128,4 @@
 	});
 
 }(Prism));
+
