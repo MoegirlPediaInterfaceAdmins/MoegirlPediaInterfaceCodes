@@ -8,7 +8,7 @@
  *     version: "1"
  *     jsdelivrUrl: "https://cdn.jsdelivr.net/npm/prismjs@1/components/prism-json5.js"
  */
-((Prism) => {
+(function (Prism) {
 
 	var string = /("|')(?:\\(?:\r\n?|\n|.)|(?!\1)[^\\\r\n])*\1/;
 
@@ -31,3 +31,4 @@
 	});
 
 }(Prism));
+
