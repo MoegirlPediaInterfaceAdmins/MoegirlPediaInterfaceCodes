@@ -5,9 +5,9 @@
  *     entry: "libip"
  *     gadget: { "name": "libip", "fileName": "Gadget-libip.js" }
  */
-!(function () {
-    t = function (module, exports) {
-        !(function(Buffer) {
+!function() {
+    t = function(module, exports) {
+        !function(Buffer) {
             !function() {
                 exports.Buffer = Buffer, exports.INSPECT_MAX_BYTES = 50;
                 var K_MAX_LENGTH = 2147483647;
@@ -588,21 +588,23 @@
                     return obj != obj;
                 }
             }.call(this);
-        }.call(this, _$buffer_3({}).Buffer));
+        }.call(this, _$buffer_3({}).Buffer);
     };
-    var t, e, _$buffer_3 = (r) => e || t(e = {
+    var t, e, _$buffer_3 = function(r) {
+        return e || t(e = {
             exports: {},
             parent: r
-        }, e.exports), e.exports, _$base64Js_2 = {
-            toByteArray: function (b64) {
-                var tmp, i, lens = getLens(b64), validLen = lens[0], lens = lens[1], arr = new Arr(((validLen, placeHoldersLen) => 3 * (validLen + placeHoldersLen) / 4 - placeHoldersLen)(validLen, lens)), curByte = 0, len = 0 < lens ? validLen - 4 : validLen;
-                for (i = 0; i < len; i += 4) {tmp = revLookup[b64.charCodeAt(i)] << 18 | revLookup[b64.charCodeAt(i + 1)] << 12 | revLookup[b64.charCodeAt(i + 2)] << 6 | revLookup[b64.charCodeAt(i + 3)], arr[curByte++] = tmp >> 16 & 255, arr[curByte++] = tmp >> 8 & 255, arr[curByte++] = 255 & tmp;}
-                2 === lens && (tmp = revLookup[b64.charCodeAt(i)] << 2 | revLookup[b64.charCodeAt(i + 1)] >> 4, arr[curByte++] = 255 & tmp);
-                1 === lens && (tmp = revLookup[b64.charCodeAt(i)] << 10 | revLookup[b64.charCodeAt(i + 1)] << 4 | revLookup[b64.charCodeAt(i + 2)] >> 2, arr[curByte++] = tmp >> 8 & 255, arr[curByte++] = 255 & tmp);
-                return arr;
-            }
-        };
-    _$base64Js_2.fromByteArray = (uint8) => {
+        }, e.exports), e.exports;
+    }, _$base64Js_2 = {
+        toByteArray: function(b64) {
+            var tmp, i, lens = getLens(b64), validLen = lens[0], lens = lens[1], arr = new Arr(((validLen, placeHoldersLen) => 3 * (validLen + placeHoldersLen) / 4 - placeHoldersLen)(validLen, lens)), curByte = 0, len = 0 < lens ? validLen - 4 : validLen;
+            for (i = 0; i < len; i += 4) tmp = revLookup[b64.charCodeAt(i)] << 18 | revLookup[b64.charCodeAt(i + 1)] << 12 | revLookup[b64.charCodeAt(i + 2)] << 6 | revLookup[b64.charCodeAt(i + 3)], arr[curByte++] = tmp >> 16 & 255, arr[curByte++] = tmp >> 8 & 255, arr[curByte++] = 255 & tmp;
+            2 === lens && (tmp = revLookup[b64.charCodeAt(i)] << 2 | revLookup[b64.charCodeAt(i + 1)] >> 4, arr[curByte++] = 255 & tmp);
+            1 === lens && (tmp = revLookup[b64.charCodeAt(i)] << 10 | revLookup[b64.charCodeAt(i + 1)] << 4 | revLookup[b64.charCodeAt(i + 2)] >> 2, arr[curByte++] = tmp >> 8 & 255, arr[curByte++] = 255 & tmp);
+            return arr;
+        }
+    };
+    _$base64Js_2.fromByteArray = function(uint8) {
         for (var tmp, len = uint8.length, extraBytes = len % 3, parts = [], i = 0, len2 = len - extraBytes; i < len2; i += 16383) parts.push(((uint8, start, end) => {
             for (var tmp, output = [], i = start; i < end; i += 3) tmp = (uint8[i] << 16 & 16711680) + (uint8[i + 1] << 8 & 65280) + (255 & uint8[i + 2]), output.push((num => lookup[num >> 18 & 63] + lookup[num >> 12 & 63] + lookup[num >> 6 & 63] + lookup[63 & num])(tmp));
             return output.join("");
@@ -610,37 +612,37 @@
         1 == extraBytes ? (tmp = uint8[len - 1], parts.push(lookup[tmp >> 2] + lookup[tmp << 4 & 63] + "==")) : 2 == extraBytes && (tmp = (uint8[len - 2] << 8) + uint8[len - 1], parts.push(lookup[tmp >> 10] + lookup[tmp >> 4 & 63] + lookup[tmp << 2 & 63] + "="));
         return parts.join("");
     };
-    for (var lookup = [], revLookup = [], Arr = "undefined" !== typeof Uint8Array ? Uint8Array : Array, code = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/", i = 0, len = code.length; i < len; ++i) {lookup[i] = code[i], revLookup[code.charCodeAt(i)] = i;}
-    const getLens = (b64) => {
+    for (var lookup = [], revLookup = [], Arr = "undefined" != typeof Uint8Array ? Uint8Array : Array, code = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/", i = 0, len = code.length; i < len; ++i) lookup[i] = code[i], revLookup[code.charCodeAt(i)] = i;
+    function getLens(b64) {
         var len = b64.length;
         if (0 < len % 4) throw new Error("Invalid string. Length must be a multiple of 4");
         b64 = b64.indexOf("="), len = (b64 = -1 === b64 ? len : b64) === len ? 0 : 4 - b64 % 4;
         return [ b64, len ];
-    };
+    }
     revLookup["-".charCodeAt(0)] = 62, revLookup["_".charCodeAt(0)] = 63;
     var _$ieee754_4 = {
-            read: function (buffer, offset, isLE, mLen, nBytes) {
-                var e, m, eLen = 8 * nBytes - mLen - 1, eMax = (1 << eLen) - 1, eBias = eMax >> 1, nBits = -7, i = isLE ? nBytes - 1 : 0, d = isLE ? -1 : 1, nBytes = buffer[offset + i];
-                for (i += d, e = nBytes & (1 << -nBits) - 1, nBytes >>= -nBits, nBits += eLen; 0 < nBits; e = 256 * e + buffer[offset + i], i += d, nBits -= 8){;}
-                for (m = e & (1 << -nBits) - 1, e >>= -nBits, nBits += mLen; 0 < nBits; m = 256 * m + buffer[offset + i], i += d, nBits -= 8){;}
-                if (0 === e) {e = 1 - eBias;} else {
-                    if (e === eMax) {return m ? NaN : 1 / 0 * (nBytes ? -1 : 1);}
-                    m += 2**mLen, e -= eBias;
-                }
-                return (nBytes ? -1 : 1) * m * 2**(e - mLen);
-            },
-            write: function (buffer, value, offset, isLE, mLen, nBytes) {
-                var e, m, eLen = 8 * nBytes - mLen - 1, eMax = (1 << eLen) - 1, eBias = eMax >> 1, rt = 23 === mLen ? 2**-24 - 2**-77 : 0, i = isLE ? 0 : nBytes - 1, d = isLE ? 1 : -1, nBytes = value < 0 || 0 === value && 1 / value < 0 ? 1 : 0;
-                for (value = Math.abs(value), isNaN(value) || value === 1 / 0 ? (m = isNaN(value) ? 1 : 0, e = eMax) : (e = Math.floor(Math.log(value) / Math.LN2), value * (isLE = 2**-e) < 1 && (e--, isLE *= 2), 2 <= (value += 1 <= e + eBias ? rt / isLE : rt * 2**(1 - eBias)) * isLE && (e++, isLE /= 2), eMax <= e + eBias ? (m = 0, e = eMax) : 1 <= e + eBias ? (m = (value * isLE - 1) * 2**mLen, e += eBias) : (m = value * 2**(eBias - 1) * 2**mLen, e = 0)); 8 <= mLen; buffer[offset + i] = 255 & m, i += d, m /= 256, mLen -= 8){;}
-                for (e = e << mLen | m, eLen += mLen; 0 < eLen; buffer[offset + i] = 255 & e, i += d, e /= 256, eLen -= 8){;}
-                buffer[offset + i - d] |= 128 * nBytes;
+        read: function(buffer, offset, isLE, mLen, nBytes) {
+            var e, m, eLen = 8 * nBytes - mLen - 1, eMax = (1 << eLen) - 1, eBias = eMax >> 1, nBits = -7, i = isLE ? nBytes - 1 : 0, d = isLE ? -1 : 1, nBytes = buffer[offset + i];
+            for (i += d, e = nBytes & (1 << -nBits) - 1, nBytes >>= -nBits, nBits += eLen; 0 < nBits; e = 256 * e + buffer[offset + i], i += d, nBits -= 8);
+            for (m = e & (1 << -nBits) - 1, e >>= -nBits, nBits += mLen; 0 < nBits; m = 256 * m + buffer[offset + i], i += d, nBits -= 8);
+            if (0 === e) e = 1 - eBias; else {
+                if (e === eMax) return m ? NaN : 1 / 0 * (nBytes ? -1 : 1);
+                m += Math.pow(2, mLen), e -= eBias;
             }
-        }, _$browser_6 = {
-            networkInterfaces: function () {
-                return {};
-            }
-        }, _$ip_5 = {};
-    const ip = _$ip_5, Buffer = _$buffer_3({}).Buffer, ipv4Regex = (ip.toBuffer = function(ip, buff, offset) {
+            return (nBytes ? -1 : 1) * m * Math.pow(2, e - mLen);
+        },
+        write: function(buffer, value, offset, isLE, mLen, nBytes) {
+            var e, m, eLen = 8 * nBytes - mLen - 1, eMax = (1 << eLen) - 1, eBias = eMax >> 1, rt = 23 === mLen ? Math.pow(2, -24) - Math.pow(2, -77) : 0, i = isLE ? 0 : nBytes - 1, d = isLE ? 1 : -1, nBytes = value < 0 || 0 === value && 1 / value < 0 ? 1 : 0;
+            for (value = Math.abs(value), isNaN(value) || value === 1 / 0 ? (m = isNaN(value) ? 1 : 0, e = eMax) : (e = Math.floor(Math.log(value) / Math.LN2), value * (isLE = Math.pow(2, -e)) < 1 && (e--, isLE *= 2), 2 <= (value += 1 <= e + eBias ? rt / isLE : rt * Math.pow(2, 1 - eBias)) * isLE && (e++, isLE /= 2), eMax <= e + eBias ? (m = 0, e = eMax) : 1 <= e + eBias ? (m = (value * isLE - 1) * Math.pow(2, mLen), e += eBias) : (m = value * Math.pow(2, eBias - 1) * Math.pow(2, mLen), e = 0)); 8 <= mLen; buffer[offset + i] = 255 & m, i += d, m /= 256, mLen -= 8);
+            for (e = e << mLen | m, eLen += mLen; 0 < eLen; buffer[offset + i] = 255 & e, i += d, e /= 256, eLen -= 8);
+            buffer[offset + i - d] |= 128 * nBytes;
+        }
+    }, _$browser_6 = {
+        networkInterfaces: function() {
+            return {};
+        }
+    }, _$ip_5 = {};
+    let ip = _$ip_5, Buffer = _$buffer_3({}).Buffer, ipv4Regex = (ip.toBuffer = function(ip, buff, offset) {
         offset = ~~offset;
         let result;
         if (this.isV4Format(ip)) result = buff || Buffer.alloc(offset + 4), ip.split(/\./g).map(byte => {
@@ -677,8 +679,14 @@
         }
         return result;
     }, /^(\d{1,3}\.){3,3}\d{1,3}$/), ipv6Regex = /^(::)?(((\d{1,3}\.){3}(\d{1,3}){1})?([0-9a-f]){0,4}:{0,2}){1,8}(::)?$/i;
-    const _normalizeFamily = (family) => 4 === family ? "ipv4" : 6 === family ? "ipv6" : family ? family.toLowerCase() : "ipv4";
-    ip.isV4Format = (ip) => ipv4Regex.test(ip), ip.isV6Format = (ip) => ipv6Regex.test(ip), ip.fromPrefixLen = (prefixlen, family) => {
+    function _normalizeFamily(family) {
+        return 4 === family ? "ipv4" : 6 === family ? "ipv6" : family ? family.toLowerCase() : "ipv4";
+    }
+    ip.isV4Format = function(ip) {
+        return ipv4Regex.test(ip);
+    }, ip.isV6Format = function(ip) {
+        return ipv6Regex.test(ip);
+    }, ip.fromPrefixLen = function(prefixlen, family) {
         let len = 4;
         "ipv6" === (family = 32 < prefixlen ? "ipv6" : _normalizeFamily(family)) && (len = 16);
         var buff = Buffer.alloc(len);
@@ -687,7 +695,7 @@
             prefixlen -= bits, buff[i] = 255 & ~(255 >> bits);
         }
         return ip.toString(buff);
-    }, ip.mask = (addr, mask) => {
+    }, ip.mask = function(addr, mask) {
         addr = ip.toBuffer(addr), mask = ip.toBuffer(mask);
         var result = Buffer.alloc(Math.max(addr.length, mask.length));
         let i;
@@ -698,12 +706,12 @@
         }
         for (;i < result.length; i++) result[i] = 0;
         return ip.toString(result);
-    }, ip.cidr = (cidrString) => {
+    }, ip.cidr = function(cidrString) {
         var cidrString = cidrString.split("/"), addr = cidrString[0];
         if (2 !== cidrString.length) throw new Error("invalid CIDR subnet: " + addr);
         cidrString = ip.fromPrefixLen(parseInt(cidrString[1], 10));
         return ip.mask(addr, cidrString);
-    }, ip.subnet = (addr, mask) => {
+    }, ip.subnet = function(addr, mask) {
         let networkAddress = ip.toLong(ip.mask(addr, mask));
         var maskBuffer = ip.toBuffer(mask);
         let maskLength = 0;
@@ -725,16 +733,16 @@
                 return networkAddress === ip.toLong(ip.mask(other, mask));
             }
         };
-    }, ip.cidrSubnet = (cidrString) => {
+    }, ip.cidrSubnet = function(cidrString) {
         var cidrString = cidrString.split("/"), addr = cidrString[0];
         if (2 !== cidrString.length) throw new Error("invalid CIDR subnet: " + addr);
         cidrString = ip.fromPrefixLen(parseInt(cidrString[1], 10));
         return ip.subnet(addr, cidrString);
-    }, ip.not = (addr) => {
+    }, ip.not = function(addr) {
         var buff = ip.toBuffer(addr);
         for (let i = 0; i < buff.length; i++) buff[i] = 255 ^ buff[i];
         return ip.toString(buff);
-    }, ip.or = (a, b) => {
+    }, ip.or = function(a, b) {
         if (a = ip.toBuffer(a), b = ip.toBuffer(b), a.length === b.length) {
             for (let i = 0; i < a.length; ++i) a[i] |= b[i];
             return ip.toString(a);
@@ -744,7 +752,7 @@
         var offset = buff.length - other.length;
         for (let i = offset; i < buff.length; ++i) buff[i] |= other[i - offset];
         return ip.toString(buff);
-    }, ip.isEqual = (a, b) => {
+    }, ip.isEqual = function(a, b) {
         if (a = ip.toBuffer(a), b = ip.toBuffer(b), a.length === b.length) {
             for (let i = 0; i < a.length; i++) if (a[i] !== b[i]) return !1;
         } else {
@@ -755,7 +763,7 @@
             for (let i = 0; i < 4; i++) if (a[i] !== b[i + 12]) return !1;
         }
         return !0;
-    }, ip.isPrivate = (addr) => {
+    }, ip.isPrivate = function(addr) {
         if (ip.isLoopback(addr)) return !0;
         if (!ip.isV6Format(addr)) {
             var ipl = ip.normalizeToLong(addr);
@@ -763,22 +771,28 @@
             addr = ip.fromLong(ipl);
         }
         return /^(::f{4}:)?10\.([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})$/i.test(addr) || /^(::f{4}:)?192\.168\.([0-9]{1,3})\.([0-9]{1,3})$/i.test(addr) || /^(::f{4}:)?172\.(1[6-9]|2\d|30|31)\.([0-9]{1,3})\.([0-9]{1,3})$/i.test(addr) || /^(::f{4}:)?169\.254\.([0-9]{1,3})\.([0-9]{1,3})$/i.test(addr) || /^f[cd][0-9a-f]{2}:/i.test(addr) || /^fe80:/i.test(addr) || /^::1$/.test(addr) || /^::$/.test(addr);
-    }, ip.isPublic = (addr) => !ip.isPrivate(addr), ip.isLoopback = (addr) => /\./.test(addr) || /:/.test(addr) || (addr = ip.fromLong(Number(addr))), /^(::f{4}:)?127\.([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})/.test(addr) || /^0177\./.test(addr) || /^0x7f\./i.test(addr) || /^fe80::1$/i.test(addr) || /^::1$/.test(addr) || /^::$/.test(addr), ip.loopback = (family) => {
+    }, ip.isPublic = function(addr) {
+        return !ip.isPrivate(addr);
+    }, ip.isLoopback = function(addr) {
+        return /\./.test(addr) || /:/.test(addr) || (addr = ip.fromLong(Number(addr))), /^(::f{4}:)?127\.([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3})/.test(addr) || /^0177\./.test(addr) || /^0x7f\./i.test(addr) || /^fe80::1$/i.test(addr) || /^::1$/.test(addr) || /^::$/.test(addr);
+    }, ip.loopback = function(family) {
         if ("ipv4" !== (family = _normalizeFamily(family)) && "ipv6" !== family) throw new Error("family must be ipv4 or ipv6");
         return "ipv4" === family ? "127.0.0.1" : "fe80::1";
-    }, ip.address = (name, family) => {
+    }, ip.address = function(name, family) {
         let interfaces = _$browser_6.networkInterfaces();
         var res;
         return family = _normalizeFamily(family), name && "private" !== name && "public" !== name ? 0 === (res = interfaces[name].filter(details => _normalizeFamily(details.family) === family)).length ? void 0 : res[0].address : (res = Object.keys(interfaces).map(nic => {
             nic = interfaces[nic].filter(details => (details.family = _normalizeFamily(details.family), details.family === family && !ip.isLoopback(details.address) && (!name || ("public" === name ? ip.isPrivate(details.address) : ip.isPublic(details.address)))));
             return nic.length ? nic[0].address : void 0;
         }).filter(Boolean)).length ? res[0] : ip.loopback(family);
-    }, ip.toLong = (ip) => {
+    }, ip.toLong = function(ip) {
         let ipl = 0;
         return ip.split(".").forEach(octet => {
             ipl = (ipl <<= 8) + parseInt(octet);
         }), ipl >>> 0;
-    }, ip.fromLong = (ipl) => `${ipl >>> 24}.${ipl >> 16 & 255}.${ipl >> 8 & 255}.` + (255 & ipl), ip.normalizeToLong = (addr) => {
+    }, ip.fromLong = function(ipl) {
+        return `${ipl >>> 24}.${ipl >> 16 & 255}.${ipl >> 8 & 255}.` + (255 & ipl);
+    }, ip.normalizeToLong = function(addr) {
         var parts = addr.split(".").map(part => part.startsWith("0x") || part.startsWith("0X") ? parseInt(part, 16) : part.startsWith("0") && "0" !== part && /^[0-7]+$/.test(part) ? parseInt(part, 8) : /^[1-9]\d*$/.test(part) || "0" === part ? parseInt(part, 10) : NaN);
         if (parts.some(isNaN)) return -1;
         let val = 0;
@@ -807,12 +821,12 @@
         }
         return val >>> 0;
     };
-    !(function(global) {
+    !function(global) {
         !function() {
             var e = (e = _$ip_5) && e.__esModule ? e : {
                 default: e
             };
             global.libip = e.default;
         }.call(this);
-    }.call(this, "undefined" != typeof global ? global : "undefined" != typeof self ? self : "undefined" != typeof window ? window : {}));
-}());
+    }.call(this, "undefined" != typeof global ? global : "undefined" != typeof self ? self : "undefined" != typeof window ? window : {});
+}();
