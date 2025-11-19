@@ -8,7 +8,7 @@
  *     version: "1"
  *     jsdelivrUrl: "https://cdn.jsdelivr.net/npm/prismjs@1/components/prism-regex.js"
  */
-((Prism) => {
+(function (Prism) {
 
 	var specialEscape = {
 		pattern: /\\[\\(){}[\]^$+*?|.]/,
@@ -112,3 +112,4 @@
 	};
 
 }(Prism));
+
