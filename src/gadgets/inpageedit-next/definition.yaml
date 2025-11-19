@@ -37,5 +37,3 @@ _section: editing
 _files:
   - Gadget-inpageedit-next.js
   - jsconfig.json
-  - package-lock.json
-  - package.json
