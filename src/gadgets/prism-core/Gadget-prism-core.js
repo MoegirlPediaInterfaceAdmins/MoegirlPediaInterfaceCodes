@@ -11,13 +11,12 @@
  */
 /// <reference lib="WebWorker"/>
 
-var _self = (typeof window !== 'undefined')
-	? window   // if in browser
-	: (
-		(typeof WorkerGlobalScope !== 'undefined' && self instanceof WorkerGlobalScope)
-			? self // if in worker
-			: {}   // if in node js
-	);
+var _self = typeof window !== "undefined"
+    ? window // if in browser
+    : typeof WorkerGlobalScope !== "undefined" && self instanceof WorkerGlobalScope
+        ? self // if in worker
+        : {} // if in node js
+	;
 
 /**
  * Prism: Lightweight, robust, elegant syntax highlighting
@@ -27,18 +26,16 @@ var _self = (typeof window !== 'undefined')
  * @namespace
  * @public
  */
-var Prism = (function (_self) {
+var Prism = ((_self) => {
+    // Private helper vars
+    const lang = /(?:^|\s)lang(?:uage)?-([\w-]+)(?=\s|$)/i;
+    let uniqueId = 0;
 
-	// Private helper vars
-	var lang = /(?:^|\s)lang(?:uage)?-([\w-]+)(?=\s|$)/i;
-	var uniqueId = 0;
+    // The grammar object for plaintext
+    const plainTextGrammar = {};
 
-	// The grammar object for plaintext
-	var plainTextGrammar = {};
-
-
-	var _ = {
-		/**
+    var _ = {
+        /**
 		 * By default, Prism will attempt to highlight all code elements (by calling {@link Prism.highlightAll}) on the
 		 * current page after the page finished loading. This might be a problem if e.g. you wanted to asynchronously load
 		 * additional languages or plugins yourself.
@@ -59,8 +56,8 @@ var Prism = (function (_self) {
 		 * @memberof Prism
 		 * @public
 		 */
-		manual: _self.Prism && _self.Prism.manual,
-		/**
+        manual: _self.Prism && _self.Prism.manual,
+        /**
 		 * By default, if Prism is in a web worker, it assumes that it is in a worker it created itself, so it uses
 		 * `addEventListener` to communicate with its parent instance. However, if you're using Prism manually in your
 		 * own worker, you don't want it to do this.
@@ -81,9 +78,9 @@ var Prism = (function (_self) {
 		 * @memberof Prism
 		 * @public
 		 */
-		disableWorkerMessageHandler: _self.Prism && _self.Prism.disableWorkerMessageHandler,
+        disableWorkerMessageHandler: _self.Prism && _self.Prism.disableWorkerMessageHandler,
 
-		/**
+        /**
 		 * A namespace for utility methods.
 		 *
 		 * All function in this namespace that are not explicitly marked as _public_ are for __internal use only__ and may
@@ -92,18 +89,17 @@ var Prism = (function (_self) {
 		 * @namespace
 		 * @memberof Prism
 		 */
-		util: {
-			encode: function encode(tokens) {
-				if (tokens instanceof Token) {
-					return new Token(tokens.type, encode(tokens.content), tokens.alias);
-				} else if (Array.isArray(tokens)) {
-					return tokens.map(encode);
-				} else {
-					return tokens.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/\u00a0/g, ' ');
-				}
-			},
+        util: {
+            encode: (tokens) => {
+                if (tokens instanceof Token) {
+                    return new Token(tokens.type, encode(tokens.content), tokens.alias);
+                } else if (Array.isArray(tokens)) {
+                    return tokens.map(encode);
+                }
+                return tokens.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/\u00a0/g, " ");
+            },
 
-			/**
+            /**
 			 * Returns the name of the type of the given value.
 			 *
 			 * @param {any} o
@@ -119,24 +115,22 @@ var Prism = (function (_self) {
 			 * type(String)    === 'Function'
 			 * type(/abc+/)    === 'RegExp'
 			 */
-			type: function (o) {
-				return Object.prototype.toString.call(o).slice(8, -1);
-			},
+            type: (o) => Object.prototype.toString.call(o).slice(8, -1),
 
-			/**
+            /**
 			 * Returns a unique number for the given object. Later calls will still return the same number.
 			 *
 			 * @param {Object} obj
 			 * @returns {number}
 			 */
-			objId: function (obj) {
-				if (!obj['__id']) {
-					Object.defineProperty(obj, '__id', { value: ++uniqueId });
-				}
-				return obj['__id'];
-			},
+            objId: (obj) => {
+                if (!obj.__id) {
+                    Object.defineProperty(obj, "__id", { value: ++uniqueId });
+                }
+                return obj.__id;
+            },
 
-			/**
+            /**
 			 * Creates a deep clone of the given object.
 			 *
 			 * The main intended use of this function is to clone language definitions.
@@ -146,47 +140,47 @@ var Prism = (function (_self) {
 			 * @returns {T}
 			 * @template T
 			 */
-			clone: function deepClone(o, visited) {
-				visited = visited || {};
+            clone: (o, visited) => {
+                visited ||= {};
 
-				var clone; var id;
-				switch (_.util.type(o)) {
-					case 'Object':
-						id = _.util.objId(o);
-						if (visited[id]) {
-							return visited[id];
-						}
-						clone = /** @type {Record<string, any>} */ ({});
-						visited[id] = clone;
+                let clone; let id;
+                switch (_.util.type(o)) {
+                    case "Object":
+                        id = _.util.objId(o);
+                        if (visited[id]) {
+                            return visited[id];
+                        }
+                        clone = /** @type {Record<string, any>} */ {};
+                        visited[id] = clone;
 
-						for (var key in o) {
-							if (o.hasOwnProperty(key)) {
-								clone[key] = deepClone(o[key], visited);
-							}
-						}
+                        for (const key in o) {
+                            if (o.hasOwnProperty(key)) {
+                                clone[key] = deepClone(o[key], visited);
+                            }
+                        }
 
-						return /** @type {any} */ (clone);
+                        return /** @type {any} */ clone;
 
-					case 'Array':
-						id = _.util.objId(o);
-						if (visited[id]) {
-							return visited[id];
-						}
-						clone = [];
-						visited[id] = clone;
+                    case "Array":
+                        id = _.util.objId(o);
+                        if (visited[id]) {
+                            return visited[id];
+                        }
+                        clone = [];
+                        visited[id] = clone;
 
-						(/** @type {Array} */(/** @type {any} */(o))).forEach(function (v, i) {
-							clone[i] = deepClone(v, visited);
-						});
+                        /** @type {Array} *//** @type {any} */o.forEach((v, i) => {
+                            clone[i] = deepClone(v, visited);
+                        });
 
-						return /** @type {any} */ (clone);
+                        return /** @type {any} */ clone;
 
-					default:
-						return o;
-				}
-			},
+                    default:
+                        return o;
+                }
+            },
 
-			/**
+            /**
 			 * Returns the Prism language of the given element set by a `language-xxxx` or `lang-xxxx` class.
 			 *
 			 * If no language is set for the element or the element is `null` or `undefined`, `none` will be returned.
@@ -194,77 +188,77 @@ var Prism = (function (_self) {
 			 * @param {Element} element
 			 * @returns {string}
 			 */
-			getLanguage: function (element) {
-				while (element) {
-					var m = lang.exec(element.className);
-					if (m) {
-						return m[1].toLowerCase();
-					}
-					element = element.parentElement;
-				}
-				return 'none';
-			},
+            getLanguage: (element) => {
+                while (element) {
+                    const m = lang.exec(element.className);
+                    if (m) {
+                        return m[1].toLowerCase();
+                    }
+                    element = element.parentElement;
+                }
+                return "none";
+            },
 
-			/**
+            /**
 			 * Sets the Prism `language-xxxx` class of the given element.
 			 *
 			 * @param {Element} element
 			 * @param {string} language
 			 * @returns {void}
 			 */
-			setLanguage: function (element, language) {
-				// remove all `language-xxxx` classes
-				// (this might leave behind a leading space)
-				element.className = element.className.replace(RegExp(lang, 'gi'), '');
+            setLanguage: (element, language) => {
+                // remove all `language-xxxx` classes
+                // (this might leave behind a leading space)
+                element.className = element.className.replace(RegExp(lang, "gi"), "");
 
-				// add the new `language-xxxx` class
-				// (using `classList` will automatically clean up spaces for us)
-				element.classList.add('language-' + language);
-			},
+                // add the new `language-xxxx` class
+                // (using `classList` will automatically clean up spaces for us)
+                element.classList.add(`language-${language}`);
+            },
 
-			/**
+            /**
 			 * Returns the script element that is currently executing.
 			 *
 			 * This does __not__ work for line script element.
 			 *
 			 * @returns {HTMLScriptElement | null}
 			 */
-			currentScript: function () {
-				if (typeof document === 'undefined') {
-					return null;
-				}
-				if (document.currentScript && document.currentScript.tagName === 'SCRIPT' && 1 < 2 /* hack to trip TS' flow analysis */) {
-					return /** @type {any} */ (document.currentScript);
-				}
+            currentScript: () => {
+                if (typeof document === "undefined") {
+                    return null;
+                }
+                if (document.currentScript && document.currentScript.tagName === "SCRIPT" && 1 < 2 /* hack to trip TS' flow analysis */) {
+                    return /** @type {any} */ document.currentScript;
+                }
 
-				// IE11 workaround
-				// we'll get the src of the current script by parsing IE11's error stack trace
-				// this will not work for inline scripts
+                // IE11 workaround
+                // we'll get the src of the current script by parsing IE11's error stack trace
+                // this will not work for inline scripts
 
-				try {
-					throw new Error();
-				} catch (err) {
-					// Get file src url from stack. Specifically works with the format of stack traces in IE.
-					// A stack will look like this:
-					//
-					// Error
-					//    at _.util.currentScript (http://localhost/components/prism-core.js:119:5)
-					//    at Global code (http://localhost/components/prism-core.js:606:1)
+                try {
+                    throw new Error();
+                } catch (err) {
+                    // Get file src url from stack. Specifically works with the format of stack traces in IE.
+                    // A stack will look like this:
+                    //
+                    // Error
+                    //    at _.util.currentScript (http://localhost/components/prism-core.js:119:5)
+                    //    at Global code (http://localhost/components/prism-core.js:606:1)
 
-					var src = (/at [^(\r\n]*\((.*):[^:]+:[^:]+\)$/i.exec(err.stack) || [])[1];
-					if (src) {
-						var scripts = document.getElementsByTagName('script');
-						for (var i in scripts) {
-							if (scripts[i].src == src) {
-								return scripts[i];
-							}
-						}
-					}
-					return null;
-				}
-			},
+                    const src = (/at [^(\r\n]*\((.*):[^:]+:[^:]+\)$/i.exec(err.stack) || [])[1];
+                    if (src) {
+                        const scripts = document.getElementsByTagName("script");
+                        for (const i in scripts) {
+                            if (scripts[i].src == src) {
+                                return scripts[i];
+                            }
+                        }
+                    }
+                    return null;
+                }
+            },
 
-			/**
+            /**
 			 * Returns whether a given class is active for `element`.
 			 *
 			 * The class can be activated if `element` or one of its ancestors has the given class and it can be deactivated
@@ -283,40 +277,40 @@ var Prism = (function (_self) {
 			 * @param {boolean} [defaultActivation=false]
 			 * @returns {boolean}
 			 */
-			isActive: function (element, className, defaultActivation) {
-				var no = 'no-' + className;
+            isActive: (element, className, defaultActivation) => {
+                const no = `no-${className}`;
 
-				while (element) {
-					var classList = element.classList;
-					if (classList.contains(className)) {
-						return true;
-					}
-					if (classList.contains(no)) {
-						return false;
-					}
-					element = element.parentElement;
-				}
-				return !!defaultActivation;
-			}
-		},
+                while (element) {
+                    const classList = element.classList;
+                    if (classList.contains(className)) {
+                        return true;
+                    }
+                    if (classList.contains(no)) {
+                        return false;
+                    }
+                    element = element.parentElement;
+                }
+                return !!defaultActivation;
+            },
+        },
 
-		/**
+        /**
 		 * This namespace contains all currently loaded languages and the some helper functions to create and modify languages.
 		 *
 		 * @namespace
 		 * @memberof Prism
 		 * @public
 		 */
-		languages: {
-			/**
+        languages: {
+            /**
 			 * The grammar for plain, unformatted text.
 			 */
-			plain: plainTextGrammar,
-			plaintext: plainTextGrammar,
-			text: plainTextGrammar,
-			txt: plainTextGrammar,
+            plain: plainTextGrammar,
+            plaintext: plainTextGrammar,
+            text: plainTextGrammar,
+            txt: plainTextGrammar,
 
-			/**
+            /**
 			 * Creates a deep copy of the language with the given id and appends the given tokens.
 			 *
 			 * If a token in `redef` also appears in the copied language, then the existing token in the copied language
@@ -344,17 +338,17 @@ var Prism = (function (_self) {
 			 *     'color': /\b(?:red|green|blue)\b/
 			 * });
 			 */
-			extend: function (id, redef) {
-				var lang = _.util.clone(_.languages[id]);
+            extend: (id, redef) => {
+                const lang = _.util.clone(_.languages[id]);
 
-				for (var key in redef) {
-					lang[key] = redef[key];
-				}
+                for (const key in redef) {
+                    lang[key] = redef[key];
+                }
 
-				return lang;
-			},
+                return lang;
+            },
 
-			/**
+            /**
 			 * Inserts tokens _before_ another token in a language definition or any other grammar.
 			 *
 			 * ## Usage
@@ -429,71 +423,70 @@ var Prism = (function (_self) {
 			 * @returns {Grammar} The new grammar object.
 			 * @public
 			 */
-			insertBefore: function (inside, before, insert, root) {
-				root = root || /** @type {any} */ (_.languages);
-				var grammar = root[inside];
-				/** @type {Grammar} */
-				var ret = {};
+            insertBefore: function (inside, before, insert, root) {
+                root = root || /** @type {any} */ _.languages;
+                const grammar = root[inside];
+                /** @type {Grammar} */
+                const ret = {};
 
-				for (var token in grammar) {
-					if (grammar.hasOwnProperty(token)) {
+                for (const token in grammar) {
+                    if (grammar.hasOwnProperty(token)) {
+                        if (token == before) {
+                            for (const newToken in insert) {
+                                if (insert.hasOwnProperty(newToken)) {
+                                    ret[newToken] = insert[newToken];
+                                }
+                            }
+                        }
 
-						if (token == before) {
-							for (var newToken in insert) {
-								if (insert.hasOwnProperty(newToken)) {
-									ret[newToken] = insert[newToken];
-								}
-							}
-						}
+                        // Do not insert token which also occur in insert. See #1525
+                        if (!insert.hasOwnProperty(token)) {
+                            ret[token] = grammar[token];
+                        }
+                    }
+                }
 
-						// Do not insert token which also occur in insert. See #1525
-						if (!insert.hasOwnProperty(token)) {
-							ret[token] = grammar[token];
-						}
-					}
-				}
+                const old = root[inside];
+                root[inside] = ret;
 
-				var old = root[inside];
-				root[inside] = ret;
+                // Update references in other language definitions
+                _.languages.DFS(_.languages, function (key, value) {
+                    if (value === old && key != inside) {
+                        this[key] = ret;
+                    }
+                });
 
-				// Update references in other language definitions
-				_.languages.DFS(_.languages, function (key, value) {
-					if (value === old && key != inside) {
-						this[key] = ret;
-					}
-				});
+                return ret;
+            },
 
-				return ret;
-			},
+            // Traverse a language definition with Depth First Search
+            DFS: (o, callback, type, visited) => {
+                visited ||= {};
 
-			// Traverse a language definition with Depth First Search
-			DFS: function DFS(o, callback, type, visited) {
-				visited = visited || {};
+                const objId = _.util.objId;
 
-				var objId = _.util.objId;
+                for (const i in o) {
+                    if (o.hasOwnProperty(i)) {
+                        callback.call(o, i, o[i], type || i);
 
-				for (var i in o) {
-					if (o.hasOwnProperty(i)) {
-						callback.call(o, i, o[i], type || i);
+                        const property = o[i];
+                        const propertyType = _.util.type(property);
 
-						var property = o[i];
-						var propertyType = _.util.type(property);
+                        if (propertyType === "Object" && !visited[objId(property)]) {
+                            visited[objId(property)] = true;
+                            DFS(property, callback, null, visited);
+                        } else if (propertyType === "Array" && !visited[objId(property)]) {
+                            visited[objId(property)] = true;
+                            DFS(property, callback, i, visited);
+                        }
+                    }
+                }
+            },
+        },
 
-						if (propertyType === 'Object' && !visited[objId(property)]) {
-							visited[objId(property)] = true;
-							DFS(property, callback, null, visited);
-						} else if (propertyType === 'Array' && !visited[objId(property)]) {
-							visited[objId(property)] = true;
-							DFS(property, callback, i, visited);
-						}
-					}
-				}
-			}
-		},
+        plugins: {},
 
-		plugins: {},
-
-		/**
+        /**
 		 * This is the most high-level function in Prism’s API.
 		 * It fetches all the elements that have a `.language-xxxx` class and then calls {@link Prism.highlightElement} on
 		 * each one of them.
@@ -505,11 +498,11 @@ var Prism = (function (_self) {
 		 * @memberof Prism
 		 * @public
 		 */
-		highlightAll: function (async, callback) {
-			_.highlightAllUnder(document, async, callback);
-		},
+        highlightAll: (async, callback) => {
+            _.highlightAllUnder(document, async, callback);
+        },
 
-		/**
+        /**
 		 * Fetches all the descendants of `container` that have a `.language-xxxx` class and then calls
 		 * {@link Prism.highlightElement} on each one of them.
 		 *
@@ -524,25 +517,25 @@ var Prism = (function (_self) {
 		 * @memberof Prism
 		 * @public
 		 */
-		highlightAllUnder: function (container, async, callback) {
-			var env = {
-				callback: callback,
-				container: container,
-				selector: 'code[class*="language-"], [class*="language-"] code, code[class*="lang-"], [class*="lang-"] code'
-			};
+        highlightAllUnder: (container, async, callback) => {
+            const env = {
+                callback: callback,
+                container: container,
+                selector: 'code[class*="language-"], [class*="language-"] code, code[class*="lang-"], [class*="lang-"] code',
+            };
 
-			_.hooks.run('before-highlightall', env);
+            _.hooks.run("before-highlightall", env);
 
-			env.elements = Array.prototype.slice.apply(env.container.querySelectorAll(env.selector));
+            env.elements = Array.prototype.slice.apply(env.container.querySelectorAll(env.selector));
 
-			_.hooks.run('before-all-elements-highlight', env);
+            _.hooks.run("before-all-elements-highlight", env);
 
-			for (var i = 0, element; (element = env.elements[i++]);) {
-				_.highlightElement(element, async === true, env.callback);
-			}
-		},
+            for (var i = 0, element; element = env.elements[i++];) {
+                _.highlightElement(element, async === true, env.callback);
+            }
+        },
 
-		/**
+        /**
 		 * Highlights the code inside a single element.
 		 *
 		 * The following hooks will be run:
@@ -570,80 +563,80 @@ var Prism = (function (_self) {
 		 * @memberof Prism
 		 * @public
 		 */
-		highlightElement: function (element, async, callback) {
-			// Find language
-			var language = _.util.getLanguage(element);
-			var grammar = _.languages[language];
+        highlightElement: (element, async, callback) => {
+            // Find language
+            const language = _.util.getLanguage(element);
+            const grammar = _.languages[language];
 
-			// Set language on the element, if not present
-			_.util.setLanguage(element, language);
+            // Set language on the element, if not present
+            _.util.setLanguage(element, language);
 
-			// Set language on the parent, for styling
-			var parent = element.parentElement;
-			if (parent && parent.nodeName.toLowerCase() === 'pre') {
-				_.util.setLanguage(parent, language);
-			}
+            // Set language on the parent, for styling
+            let parent = element.parentElement;
+            if (parent && parent.nodeName.toLowerCase() === "pre") {
+                _.util.setLanguage(parent, language);
+            }
 
-			var code = element.textContent;
+            const code = element.textContent;
 
-			var env = {
-				element: element,
-				language: language,
-				grammar: grammar,
-				code: code
-			};
+            const env = {
+                element: element,
+                language: language,
+                grammar: grammar,
+                code: code,
+            };
 
-			function insertHighlightedCode(highlightedCode) {
-				env.highlightedCode = highlightedCode;
+            const insertHighlightedCode = (highlightedCode) => {
+                env.highlightedCode = highlightedCode;
 
-				_.hooks.run('before-insert', env);
+                _.hooks.run("before-insert", env);
 
-				env.element.innerHTML = env.highlightedCode;
+                env.element.innerHTML = env.highlightedCode;
 
-				_.hooks.run('after-highlight', env);
-				_.hooks.run('complete', env);
-				callback && callback.call(env.element);
-			}
+                _.hooks.run("after-highlight", env);
+                _.hooks.run("complete", env);
+                callback && callback.call(env.element);
+            };
 
-			_.hooks.run('before-sanity-check', env);
+            _.hooks.run("before-sanity-check", env);
 
-			// plugins may change/add the parent/element
-			parent = env.element.parentElement;
-			if (parent && parent.nodeName.toLowerCase() === 'pre' && !parent.hasAttribute('tabindex')) {
-				parent.setAttribute('tabindex', '0');
-			}
+            // plugins may change/add the parent/element
+            parent = env.element.parentElement;
+            if (parent && parent.nodeName.toLowerCase() === "pre" && !parent.hasAttribute("tabindex")) {
+                parent.setAttribute("tabindex", "0");
+            }
 
-			if (!env.code) {
-				_.hooks.run('complete', env);
-				callback && callback.call(env.element);
-				return;
-			}
+            if (!env.code) {
+                _.hooks.run("complete", env);
+                callback && callback.call(env.element);
+                return;
+            }
 
-			_.hooks.run('before-highlight', env);
+            _.hooks.run("before-highlight", env);
 
-			if (!env.grammar) {
-				insertHighlightedCode(_.util.encode(env.code));
-				return;
-			}
+            if (!env.grammar) {
+                insertHighlightedCode(_.util.encode(env.code));
+                return;
+            }
 
-			if (async && _self.Worker) {
-				var worker = new Worker(_.filename);
+            if (async && _self.Worker) {
+                const worker = new Worker(_.filename);
 
-				worker.onmessage = function (evt) {
-					insertHighlightedCode(evt.data);
-				};
+                worker.onmessage = (evt) => {
+                    insertHighlightedCode(evt.data);
+                };
 
-				worker.postMessage(JSON.stringify({
-					language: env.language,
-					code: env.code,
-					immediateClose: true
-				}));
-			} else {
-				insertHighlightedCode(_.highlight(env.code, env.grammar, env.language));
-			}
-		},
+                worker.postMessage(JSON.stringify({
+                    language: env.language,
+                    code: env.code,
+                    immediateClose: true,
+                }));
+            } else {
+                insertHighlightedCode(_.highlight(env.code, env.grammar, env.language));
+            }
+        },
 
-		/**
+        /**
 		 * Low-level function, only use if you know what you’re doing. It accepts a string of text as input
 		 * and the language definitions to use, and returns a string with the HTML produced.
 		 *
@@ -663,22 +656,22 @@ var Prism = (function (_self) {
 		 * @example
 		 * Prism.highlight('var foo = true;', Prism.languages.javascript, 'javascript');
 		 */
-		highlight: function (text, grammar, language) {
-			var env = {
-				code: text,
-				grammar: grammar,
-				language: language
-			};
-			_.hooks.run('before-tokenize', env);
-			if (!env.grammar) {
-				throw new Error('The language "' + env.language + '" has no grammar.');
-			}
-			env.tokens = _.tokenize(env.code, env.grammar);
-			_.hooks.run('after-tokenize', env);
-			return Token.stringify(_.util.encode(env.tokens), env.language);
-		},
+        highlight: (text, grammar, language) => {
+            const env = {
+                code: text,
+                grammar: grammar,
+                language: language,
+            };
+            _.hooks.run("before-tokenize", env);
+            if (!env.grammar) {
+                throw new Error(`The language "${env.language}" has no grammar.`);
+            }
+            env.tokens = _.tokenize(env.code, env.grammar);
+            _.hooks.run("after-tokenize", env);
+            return Token.stringify(_.util.encode(env.tokens), env.language);
+        },
 
-		/**
+        /**
 		 * This is the heart of Prism, and the most low-level function you can use. It accepts a string of text as input
 		 * and the language definitions to use, and returns an array with the tokenized code.
 		 *
@@ -702,33 +695,33 @@ var Prism = (function (_self) {
 		 *     }
 		 * });
 		 */
-		tokenize: function (text, grammar) {
-			var rest = grammar.rest;
-			if (rest) {
-				for (var token in rest) {
-					grammar[token] = rest[token];
-				}
+        tokenize: (text, grammar) => {
+            const rest = grammar.rest;
+            if (rest) {
+                for (const token in rest) {
+                    grammar[token] = rest[token];
+                }
 
-				delete grammar.rest;
-			}
+                delete grammar.rest;
+            }
 
-			var tokenList = new LinkedList();
-			addAfter(tokenList, tokenList.head, text);
+            const tokenList = new LinkedList();
+            addAfter(tokenList, tokenList.head, text);
 
-			matchGrammar(text, tokenList, grammar, tokenList.head, 0);
+            matchGrammar(text, tokenList, grammar, tokenList.head, 0);
 
-			return toArray(tokenList);
-		},
+            return toArray(tokenList);
+        },
 
-		/**
+        /**
 		 * @namespace
 		 * @memberof Prism
 		 * @public
 		 */
-		hooks: {
-			all: {},
+        hooks: {
+            all: {},
 
-			/**
+            /**
 			 * Adds the given callback to the list of callbacks for the given hook.
 			 *
 			 * The callback will be invoked when the hook it is registered for is run.
@@ -740,15 +733,15 @@ var Prism = (function (_self) {
 			 * @param {HookCallback} callback The callback function which is given environment variables.
 			 * @public
 			 */
-			add: function (name, callback) {
-				var hooks = _.hooks.all;
+            add: (name, callback) => {
+                const hooks = _.hooks.all;
 
-				hooks[name] = hooks[name] || [];
+                hooks[name] = hooks[name] || [];
 
-				hooks[name].push(callback);
-			},
+                hooks[name].push(callback);
+            },
 
-			/**
+            /**
 			 * Runs a hook invoking all registered callbacks with the given environment variables.
 			 *
 			 * Callbacks will be invoked synchronously and in the order in which they were registered.
@@ -757,30 +750,29 @@ var Prism = (function (_self) {
 			 * @param {Object<string, any>} env The environment variables of the hook passed to all callbacks registered.
 			 * @public
 			 */
-			run: function (name, env) {
-				var callbacks = _.hooks.all[name];
+            run: (name, env) => {
+                const callbacks = _.hooks.all[name];
 
-				if (!callbacks || !callbacks.length) {
-					return;
-				}
+                if (!callbacks || !callbacks.length) {
+                    return;
+                }
 
-				for (var i = 0, callback; (callback = callbacks[i++]);) {
-					callback(env);
-				}
-			}
-		},
+                for (var i = 0, callback; callback = callbacks[i++];) {
+                    callback(env);
+                }
+            },
+        },
 
-		Token: Token
-	};
-	_self.Prism = _;
+        Token: Token,
+    };
+    _self.Prism = _;
 
+    // Typescript note:
+    // The following can be used to import the Token type in JSDoc:
+    //
+    //   @typedef {InstanceType<import("./prism-core")["Token"]>} Token
 
-	// Typescript note:
-	// The following can be used to import the Token type in JSDoc:
-	//
-	//   @typedef {InstanceType<import("./prism-core")["Token"]>} Token
-
-	/**
+    /**
 	 * Creates a new token.
 	 *
 	 * @param {string} type See {@link Token#type type}
@@ -791,8 +783,8 @@ var Prism = (function (_self) {
 	 * @global
 	 * @public
 	 */
-	function Token(type, content, alias, matchedStr) {
-		/**
+    function Token(type, content, alias, matchedStr) {
+        /**
 		 * The type of the token.
 		 *
 		 * This is usually the key of a pattern in a {@link Grammar}.
@@ -801,8 +793,8 @@ var Prism = (function (_self) {
 		 * @see GrammarToken
 		 * @public
 		 */
-		this.type = type;
-		/**
+        this.type = type;
+        /**
 		 * The strings or tokens contained by this token.
 		 *
 		 * This will be a token stream if the pattern matched also defined an `inside` grammar.
@@ -810,20 +802,20 @@ var Prism = (function (_self) {
 		 * @type {string | TokenStream}
 		 * @public
 		 */
-		this.content = content;
-		/**
+        this.content = content;
+        /**
 		 * The alias(es) of the token.
 		 *
 		 * @type {string|string[]}
 		 * @see GrammarToken
 		 * @public
 		 */
-		this.alias = alias;
-		// Copy of the full string this token was created from
-		this.length = (matchedStr || '').length | 0;
-	}
+        this.alias = alias;
+        // Copy of the full string this token was created from
+        this.length = (matchedStr || "").length | 0;
+    }
 
-	/**
+    /**
 	 * A token stream is an array of strings and {@link Token Token} objects.
 	 *
 	 * Token streams have to fulfill a few properties that are assumed by most functions (mostly internal ones) that process
@@ -839,7 +831,7 @@ var Prism = (function (_self) {
 	 * @public
 	 */
 
-	/**
+    /**
 	 * Converts the given token or token stream to an HTML representation.
 	 *
 	 * The following hooks will be run:
@@ -851,66 +843,66 @@ var Prism = (function (_self) {
 	 * @memberof Token
 	 * @static
 	 */
-	Token.stringify = function stringify(o, language) {
-		if (typeof o == 'string') {
-			return o;
-		}
-		if (Array.isArray(o)) {
-			var s = '';
-			o.forEach(function (e) {
-				s += stringify(e, language);
-			});
-			return s;
-		}
+    Token.stringify = (o, language) => {
+        if (typeof o === "string") {
+            return o;
+        }
+        if (Array.isArray(o)) {
+            let s = "";
+            o.forEach((e) => {
+                s += stringify(e, language);
+            });
+            return s;
+        }
 
-		var env = {
-			type: o.type,
-			content: stringify(o.content, language),
-			tag: 'span',
-			classes: ['token', o.type],
-			attributes: {},
-			language: language
-		};
+        const env = {
+            type: o.type,
+            content: stringify(o.content, language),
+            tag: "span",
+            classes: ["token", o.type],
+            attributes: {},
+            language: language,
+        };
 
-		var aliases = o.alias;
-		if (aliases) {
-			if (Array.isArray(aliases)) {
-				Array.prototype.push.apply(env.classes, aliases);
-			} else {
-				env.classes.push(aliases);
-			}
-		}
+        const aliases = o.alias;
+        if (aliases) {
+            if (Array.isArray(aliases)) {
+                Array.prototype.push.apply(env.classes, aliases);
+            } else {
+                env.classes.push(aliases);
+            }
+        }
 
-		_.hooks.run('wrap', env);
+        _.hooks.run("wrap", env);
 
-		var attributes = '';
-		for (var name in env.attributes) {
-			attributes += ' ' + name + '="' + (env.attributes[name] || '').replace(/"/g, '&quot;') + '"';
-		}
+        let attributes = "";
+        for (const name in env.attributes) {
+            attributes += ` ${name}="${(env.attributes[name] || "").replace(/"/g, "&quot;")}"`;
+        }
 
-		return '<' + env.tag + ' class="' + env.classes.join(' ') + '"' + attributes + '>' + env.content + '</' + env.tag + '>';
-	};
+        return `<${env.tag} class="${env.classes.join(" ")}"${attributes}>${env.content}</${env.tag}>`;
+    };
 
-	/**
+    /**
 	 * @param {RegExp} pattern
 	 * @param {number} pos
 	 * @param {string} text
 	 * @param {boolean} lookbehind
 	 * @returns {RegExpExecArray | null}
 	 */
-	function matchPattern(pattern, pos, text, lookbehind) {
-		pattern.lastIndex = pos;
-		var match = pattern.exec(text);
-		if (match && lookbehind && match[1]) {
-			// change the match to remove the text matched by the Prism lookbehind group
-			var lookbehindLength = match[1].length;
-			match.index += lookbehindLength;
-			match[0] = match[0].slice(lookbehindLength);
-		}
-		return match;
-	}
+    const matchPattern = (pattern, pos, text, lookbehind) => {
+        pattern.lastIndex = pos;
+        const match = pattern.exec(text);
+        if (match && lookbehind && match[1]) {
+            // change the match to remove the text matched by the Prism lookbehind group
+            const lookbehindLength = match[1].length;
+            match.index += lookbehindLength;
+            match[0] = match[0].slice(lookbehindLength);
+        }
+        return match;
+    };
 
-	/**
+    /**
 	 * @param {string} text
 	 * @param {LinkedList<string | Token>} tokenList
 	 * @param {any} grammar
@@ -924,154 +916,152 @@ var Prism = (function (_self) {
 	 * @property {string} cause
 	 * @property {number} reach
 	 */
-	function matchGrammar(text, tokenList, grammar, startNode, startPos, rematch) {
-		for (var token in grammar) {
-			if (!grammar.hasOwnProperty(token) || !grammar[token]) {
-				continue;
-			}
+    const matchGrammar = (text, tokenList, grammar, startNode, startPos, rematch) => {
+        for (const token in grammar) {
+            if (!grammar.hasOwnProperty(token) || !grammar[token]) {
+                continue;
+            }
 
-			var patterns = grammar[token];
-			patterns = Array.isArray(patterns) ? patterns : [patterns];
+            let patterns = grammar[token];
+            patterns = Array.isArray(patterns) ? patterns : [patterns];
 
-			for (var j = 0; j < patterns.length; ++j) {
-				if (rematch && rematch.cause == token + ',' + j) {
-					return;
-				}
+            for (let j = 0; j < patterns.length; ++j) {
+                if (rematch && rematch.cause == `${token},${j}`) {
+                    return;
+                }
 
-				var patternObj = patterns[j];
-				var inside = patternObj.inside;
-				var lookbehind = !!patternObj.lookbehind;
-				var greedy = !!patternObj.greedy;
-				var alias = patternObj.alias;
+                const patternObj = patterns[j];
+                const inside = patternObj.inside;
+                const lookbehind = !!patternObj.lookbehind;
+                const greedy = !!patternObj.greedy;
+                const alias = patternObj.alias;
 
-				if (greedy && !patternObj.pattern.global) {
-					// Without the global flag, lastIndex won't work
-					var flags = patternObj.pattern.toString().match(/[imsuy]*$/)[0];
-					patternObj.pattern = RegExp(patternObj.pattern.source, flags + 'g');
-				}
+                if (greedy && !patternObj.pattern.global) {
+                    // Without the global flag, lastIndex won't work
+                    const flags = patternObj.pattern.toString().match(/[imsuy]*$/)[0];
+                    patternObj.pattern = RegExp(patternObj.pattern.source, `${flags}g`);
+                }
 
-				/** @type {RegExp} */
-				var pattern = patternObj.pattern || patternObj;
+                /** @type {RegExp} */
+                const pattern = patternObj.pattern || patternObj;
 
-				for ( // iterate the token list and keep track of the current token/string position
-					var currentNode = startNode.next, pos = startPos;
-					currentNode !== tokenList.tail;
-					pos += currentNode.value.length, currentNode = currentNode.next
-				) {
+                for ( // iterate the token list and keep track of the current token/string position
+                    let currentNode = startNode.next, pos = startPos;
+                    currentNode !== tokenList.tail;
+                    pos += currentNode.value.length, currentNode = currentNode.next
+                ) {
+                    if (rematch && pos >= rematch.reach) {
+                        break;
+                    }
 
-					if (rematch && pos >= rematch.reach) {
-						break;
-					}
+                    let str = currentNode.value;
 
-					var str = currentNode.value;
+                    if (tokenList.length > text.length) {
+                        // Something went terribly wrong, ABORT, ABORT!
+                        return;
+                    }
 
-					if (tokenList.length > text.length) {
-						// Something went terribly wrong, ABORT, ABORT!
-						return;
-					}
+                    if (str instanceof Token) {
+                        continue;
+                    }
 
-					if (str instanceof Token) {
-						continue;
-					}
+                    let removeCount = 1; // this is the to parameter of removeBetween
+                    var match;
 
-					var removeCount = 1; // this is the to parameter of removeBetween
-					var match;
+                    if (greedy) {
+                        match = matchPattern(pattern, pos, text, lookbehind);
+                        if (!match || match.index >= text.length) {
+                            break;
+                        }
 
-					if (greedy) {
-						match = matchPattern(pattern, pos, text, lookbehind);
-						if (!match || match.index >= text.length) {
-							break;
-						}
+                        var from = match.index;
+                        const to = match.index + match[0].length;
+                        let p = pos;
 
-						var from = match.index;
-						var to = match.index + match[0].length;
-						var p = pos;
+                        // find the node that contains the match
+                        p += currentNode.value.length;
+                        while (from >= p) {
+                            currentNode = currentNode.next;
+                            p += currentNode.value.length;
+                        }
+                        // adjust pos (and p)
+                        p -= currentNode.value.length;
+                        pos = p;
 
-						// find the node that contains the match
-						p += currentNode.value.length;
-						while (from >= p) {
-							currentNode = currentNode.next;
-							p += currentNode.value.length;
-						}
-						// adjust pos (and p)
-						p -= currentNode.value.length;
-						pos = p;
+                        // the current node is a Token, then the match starts inside another Token, which is invalid
+                        if (currentNode.value instanceof Token) {
+                            continue;
+                        }
 
-						// the current node is a Token, then the match starts inside another Token, which is invalid
-						if (currentNode.value instanceof Token) {
-							continue;
-						}
+                        // find the last node which is affected by this match
+                        for (
+                            let k = currentNode;
+                            k !== tokenList.tail && (p < to || typeof k.value === "string");
+                            k = k.next
+                        ) {
+                            removeCount++;
+                            p += k.value.length;
+                        }
+                        removeCount--;
 
-						// find the last node which is affected by this match
-						for (
-							var k = currentNode;
-							k !== tokenList.tail && (p < to || typeof k.value === 'string');
-							k = k.next
-						) {
-							removeCount++;
-							p += k.value.length;
-						}
-						removeCount--;
+                        // replace with the new match
+                        str = text.slice(pos, p);
+                        match.index -= pos;
+                    } else {
+                        match = matchPattern(pattern, 0, str, lookbehind);
+                        if (!match) {
+                            continue;
+                        }
+                    }
 
-						// replace with the new match
-						str = text.slice(pos, p);
-						match.index -= pos;
-					} else {
-						match = matchPattern(pattern, 0, str, lookbehind);
-						if (!match) {
-							continue;
-						}
-					}
+                    var from = match.index;
+                    const matchStr = match[0];
+                    const before = str.slice(0, from);
+                    const after = str.slice(from + matchStr.length);
 
-					
-					var from = match.index;
-					var matchStr = match[0];
-					var before = str.slice(0, from);
-					var after = str.slice(from + matchStr.length);
+                    const reach = pos + str.length;
+                    if (rematch && reach > rematch.reach) {
+                        rematch.reach = reach;
+                    }
 
-					var reach = pos + str.length;
-					if (rematch && reach > rematch.reach) {
-						rematch.reach = reach;
-					}
+                    let removeFrom = currentNode.prev;
 
-					var removeFrom = currentNode.prev;
+                    if (before) {
+                        removeFrom = addAfter(tokenList, removeFrom, before);
+                        pos += before.length;
+                    }
 
-					if (before) {
-						removeFrom = addAfter(tokenList, removeFrom, before);
-						pos += before.length;
-					}
+                    removeRange(tokenList, removeFrom, removeCount);
 
-					removeRange(tokenList, removeFrom, removeCount);
+                    const wrapped = new Token(token, inside ? _.tokenize(matchStr, inside) : matchStr, alias, matchStr);
+                    currentNode = addAfter(tokenList, removeFrom, wrapped);
 
-					var wrapped = new Token(token, inside ? _.tokenize(matchStr, inside) : matchStr, alias, matchStr);
-					currentNode = addAfter(tokenList, removeFrom, wrapped);
+                    if (after) {
+                        addAfter(tokenList, currentNode, after);
+                    }
 
-					if (after) {
-						addAfter(tokenList, currentNode, after);
-					}
+                    if (removeCount > 1) {
+                        // at least one Token object was removed, so we have to do some rematching
+                        // this can only happen if the current pattern is greedy
 
-					if (removeCount > 1) {
-						// at least one Token object was removed, so we have to do some rematching
-						// this can only happen if the current pattern is greedy
+                        /** @type {RematchOptions} */
+                        const nestedRematch = {
+                            cause: `${token},${j}`,
+                            reach: reach,
+                        };
+                        matchGrammar(text, tokenList, grammar, currentNode.prev, pos, nestedRematch);
 
-						/** @type {RematchOptions} */
-						var nestedRematch = {
-							cause: token + ',' + j,
-							reach: reach
-						};
-						matchGrammar(text, tokenList, grammar, currentNode.prev, pos, nestedRematch);
+                        // the reach might have been extended because of the rematching
+                        if (rematch && nestedRematch.reach > rematch.reach) {
+                            rematch.reach = nestedRematch.reach;
+                        }
+                    }
+                }
+            }
+        }
+    };
 
-						// the reach might have been extended because of the rematching
-						if (rematch && nestedRematch.reach > rematch.reach) {
-							rematch.reach = nestedRematch.reach;
-						}
-					}
-				}
-			}
-		}
-	}
-
-	/**
+    /**
 	 * @typedef LinkedListNode
 	 * @property {T} value
 	 * @property {LinkedListNode<T> | null} prev The previous node.
@@ -1080,25 +1070,25 @@ var Prism = (function (_self) {
 	 * @private
 	 */
 
-	/**
+    /**
 	 * @template T
 	 * @private
 	 */
-	function LinkedList() {
-		/** @type {LinkedListNode<T>} */
-		var head = { value: null, prev: null, next: null };
-		/** @type {LinkedListNode<T>} */
-		var tail = { value: null, prev: head, next: null };
-		head.next = tail;
+    function LinkedList() {
+        /** @type {LinkedListNode<T>} */
+        const head = { value: null, prev: null, next: null };
+        /** @type {LinkedListNode<T>} */
+        const tail = { value: null, prev: head, next: null };
+        head.next = tail;
 
-		/** @type {LinkedListNode<T>} */
-		this.head = head;
-		/** @type {LinkedListNode<T>} */
-		this.tail = tail;
-		this.length = 0;
-	}
+        /** @type {LinkedListNode<T>} */
+        this.head = head;
+        /** @type {LinkedListNode<T>} */
+        this.tail = tail;
+        this.length = 0;
+    }
 
-	/**
+    /**
 	 * Adds a new node with the given value to the list.
 	 *
 	 * @param {LinkedList<T>} list
@@ -1107,18 +1097,18 @@ var Prism = (function (_self) {
 	 * @returns {LinkedListNode<T>} The added node.
 	 * @template T
 	 */
-	function addAfter(list, node, value) {
-		// assumes that node != list.tail && values.length >= 0
-		var next = node.next;
+    const addAfter = (list, node, value) => {
+        // assumes that node != list.tail && values.length >= 0
+        const next = node.next;
 
-		var newNode = { value: value, prev: node, next: next };
-		node.next = newNode;
-		next.prev = newNode;
-		list.length++;
+        const newNode = { value: value, prev: node, next: next };
+        node.next = newNode;
+        next.prev = newNode;
+        list.length++;
 
-		return newNode;
-	}
-	/**
+        return newNode;
+    };
+    /**
 	 * Removes `count` nodes after the given node. The given node will not be removed.
 	 *
 	 * @param {LinkedList<T>} list
@@ -1126,102 +1116,100 @@ var Prism = (function (_self) {
 	 * @param {number} count
 	 * @template T
 	 */
-	function removeRange(list, node, count) {
-		var next = node.next;
-		for (var i = 0; i < count && next !== list.tail; i++) {
-			next = next.next;
-		}
-		node.next = next;
-		next.prev = node;
-		list.length -= i;
-	}
-	/**
+    const removeRange = (list, node, count) => {
+        let next = node.next;
+        for (var i = 0; i < count && next !== list.tail; i++) {
+            next = next.next;
+        }
+        node.next = next;
+        next.prev = node;
+        list.length -= i;
+    };
+    /**
 	 * @param {LinkedList<T>} list
 	 * @returns {T[]}
 	 * @template T
 	 */
-	function toArray(list) {
-		var array = [];
-		var node = list.head.next;
-		while (node !== list.tail) {
-			array.push(node.value);
-			node = node.next;
-		}
-		return array;
-	}
+    const toArray = (list) => {
+        const array = [];
+        let node = list.head.next;
+        while (node !== list.tail) {
+            array.push(node.value);
+            node = node.next;
+        }
+        return array;
+    };
 
+    if (!_self.document) {
+        if (!_self.addEventListener) {
+            // in Node.js
+            return _;
+        }
 
-	if (!_self.document) {
-		if (!_self.addEventListener) {
-			// in Node.js
-			return _;
-		}
+        if (!_.disableWorkerMessageHandler) {
+            // In worker
+            _self.addEventListener("message", (evt) => {
+                const message = JSON.parse(evt.data);
+                const lang = message.language;
+                const code = message.code;
+                const immediateClose = message.immediateClose;
 
-		if (!_.disableWorkerMessageHandler) {
-			// In worker
-			_self.addEventListener('message', function (evt) {
-				var message = JSON.parse(evt.data);
-				var lang = message.language;
-				var code = message.code;
-				var immediateClose = message.immediateClose;
+                _self.postMessage(_.highlight(code, _.languages[lang], lang));
+                if (immediateClose) {
+                    _self.close();
+                }
+            }, false);
+        }
 
-				_self.postMessage(_.highlight(code, _.languages[lang], lang));
-				if (immediateClose) {
-					_self.close();
-				}
-			}, false);
-		}
+        return _;
+    }
 
-		return _;
-	}
+    // Get current script and highlight
+    const script = _.util.currentScript();
 
-	// Get current script and highlight
-	var script = _.util.currentScript();
+    if (script) {
+        _.filename = script.src;
 
-	if (script) {
-		_.filename = script.src;
+        if (script.hasAttribute("data-manual")) {
+            _.manual = true;
+        }
+    }
 
-		if (script.hasAttribute('data-manual')) {
-			_.manual = true;
-		}
-	}
+    const highlightAutomaticallyCallback = () => {
+        if (!_.manual) {
+            _.highlightAll();
+        }
+    };
 
-	function highlightAutomaticallyCallback() {
-		if (!_.manual) {
-			_.highlightAll();
-		}
-	}
+    if (!_.manual) {
+        // If the document state is "loading", then we'll use DOMContentLoaded.
+        // If the document state is "interactive" and the prism.js script is deferred, then we'll also use the
+        // DOMContentLoaded event because there might be some plugins or languages which have also been deferred and they
+        // might take longer one animation frame to execute which can create a race condition where only some plugins have
+        // been loaded when Prism.highlightAll() is executed, depending on how fast resources are loaded.
+        // See https://github.com/PrismJS/prism/issues/2102
+        const readyState = document.readyState;
+        if (readyState === "loading" || readyState === "interactive" && script && script.defer) {
+            document.addEventListener("DOMContentLoaded", highlightAutomaticallyCallback);
+        } else {
+            if (window.requestAnimationFrame) {
+                window.requestAnimationFrame(highlightAutomaticallyCallback);
+            } else {
+                window.setTimeout(highlightAutomaticallyCallback, 16);
+            }
+        }
+    }
 
-	if (!_.manual) {
-		// If the document state is "loading", then we'll use DOMContentLoaded.
-		// If the document state is "interactive" and the prism.js script is deferred, then we'll also use the
-		// DOMContentLoaded event because there might be some plugins or languages which have also been deferred and they
-		// might take longer one animation frame to execute which can create a race condition where only some plugins have
-		// been loaded when Prism.highlightAll() is executed, depending on how fast resources are loaded.
-		// See https://github.com/PrismJS/prism/issues/2102
-		var readyState = document.readyState;
-		if (readyState === 'loading' || readyState === 'interactive' && script && script.defer) {
-			document.addEventListener('DOMContentLoaded', highlightAutomaticallyCallback);
-		} else {
-			if (window.requestAnimationFrame) {
-				window.requestAnimationFrame(highlightAutomaticallyCallback);
-			} else {
-				window.setTimeout(highlightAutomaticallyCallback, 16);
-			}
-		}
-	}
-
-	return _;
-
+    return _;
 }(_self));
 
-if (typeof module !== 'undefined' && module.exports) {
-	module.exports = Prism;
+if (typeof module !== "undefined" && module.exports) {
+    module.exports = Prism;
 }
 
 // hack for components to work correctly in node.js
-if (typeof global !== 'undefined') {
-	global.Prism = Prism;
+if (typeof global !== "undefined") {
+    global.Prism = Prism;
 }
 
 // some additional documentation/types
@@ -1272,4 +1260,3 @@ if (typeof global !== 'undefined') {
  * @global
  * @public
  */
-

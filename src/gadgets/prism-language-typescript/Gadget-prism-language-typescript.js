@@ -8,7 +8,7 @@
  *     version: "1"
  *     jsdelivrUrl: "https://cdn.jsdelivr.net/npm/prismjs@1/components/prism-typescript.js"
  */
-(function (Prism) {
+((Prism) => {
 
 	Prism.languages.typescript = Prism.languages.extend('javascript', {
 		'class-name': {
@@ -68,4 +68,3 @@
 	Prism.languages.ts = Prism.languages.typescript;
 
 }(Prism));
-

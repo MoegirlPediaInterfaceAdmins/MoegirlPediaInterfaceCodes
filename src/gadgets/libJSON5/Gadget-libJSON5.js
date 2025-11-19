@@ -9,11 +9,11 @@
  *     removeCode: [ "// eslint-disable-next-line no-new-func", "// eslint-disable-line no-undef", "// eslint-disable-line no-unused-vars" ]
  *     jsdelivrUrl: "https://cdn.jsdelivr.net/npm/json5@2/dist/index.js"
  */
-(function (global, factory) {
+((global, factory) => {
 	typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
 	typeof define === 'function' && define.amd ? define(factory) :
 	(global.JSON5 = factory());
-}(this, (function () { 'use strict';
+}(this, function () { 'use strict';
 
 	function createCommonjsModule(fn, module) {
 		return module = { exports: {} }, fn(module, module.exports), module.exports;
@@ -1745,5 +1745,4 @@
 
 	return es5;
 
-})));
-
+}));

@@ -8,7 +8,7 @@
  *     version: "1"
  *     jsdelivrUrl: "https://cdn.jsdelivr.net/npm/prismjs@1/components/prism-css.js"
  */
-(function (Prism) {
+((Prism) => {
 
 	var string = /(?:"(?:\\(?:\r\n|[\s\S])|[^"\\\r\n])*"|'(?:\\(?:\r\n|[\s\S])|[^'\\\r\n])*')/;
 
@@ -72,4 +72,3 @@
 	}
 
 }(Prism));
-

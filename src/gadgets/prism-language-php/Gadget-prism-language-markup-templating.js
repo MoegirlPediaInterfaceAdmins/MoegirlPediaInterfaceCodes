@@ -8,7 +8,7 @@
  *     version: "1"
  *     jsdelivrUrl: "https://cdn.jsdelivr.net/npm/prismjs@1/components/prism-markup-templating.js"
  */
-(function (Prism) {
+((Prism) => {
 
 	/**
 	 * Returns the placeholder for the given language id and index.
@@ -132,4 +132,3 @@
 	});
 
 }(Prism));
-

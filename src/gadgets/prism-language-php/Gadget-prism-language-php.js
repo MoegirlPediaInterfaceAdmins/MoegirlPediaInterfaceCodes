@@ -15,7 +15,7 @@
  *
  * Supports PHP 5.3 - 8.0
  */
-(function (Prism) {
+((Prism) => {
 	var comment = /\/\*[\s\S]*?\*\/|\/\/.*|#(?!\[).*/;
 	var constant = [
 		{
@@ -350,4 +350,3 @@
 	});
 
 }(Prism));
-

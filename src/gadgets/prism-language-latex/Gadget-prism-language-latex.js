@@ -8,7 +8,7 @@
  *     version: "1"
  *     jsdelivrUrl: "https://cdn.jsdelivr.net/npm/prismjs@1/components/prism-latex.js"
  */
-(function (Prism) {
+((Prism) => {
 	var funcPattern = /\\(?:[^a-z()[\]]|[a-z*]+)/i;
 	var insideEqu = {
 		'equation-command': {
@@ -72,4 +72,3 @@
 	Prism.languages.tex = Prism.languages.latex;
 	Prism.languages.context = Prism.languages.latex;
 }(Prism));
-

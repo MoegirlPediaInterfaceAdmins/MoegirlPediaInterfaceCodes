@@ -8,7 +8,7 @@
  *     version: "1"
  *     jsdelivrUrl: "https://cdn.jsdelivr.net/npm/prismjs@1/components/prism-yaml.js"
  */
-(function (Prism) {
+((Prism) => {
 
 	// https://yaml.org/spec/1.2/spec.html#c-ns-anchor-property
 	// https://yaml.org/spec/1.2/spec.html#c-ns-alias-node
@@ -91,4 +91,3 @@
 	Prism.languages.yml = Prism.languages.yaml;
 
 }(Prism));
-

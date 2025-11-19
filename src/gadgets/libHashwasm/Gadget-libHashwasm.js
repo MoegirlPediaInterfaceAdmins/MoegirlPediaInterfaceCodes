@@ -6,10 +6,10 @@
  *     gadget: { "name": "libHashwasm", "fileName": "Gadget-libHashwasm.js" }
  *     exportValues: [ "createMD5", "createSHA1", "createSHA224", "createSHA256", "createSHA3", "createSHA384", "createSHA512", "createSM3", "md5", "sha1", "sha224", "sha256", "sha3", "sha384", "sha512", "sm3" ]
  */
-!function() {
-    var _$indexEsm_2 = {};
-    (function(global) {
-        !function() {
+!(function () {
+    const _$indexEsm_2 = {};
+    (function (global) {
+        !() => {
             Object.defineProperty(_$indexEsm_2, "__esModule", {
                 value: !0
             }), _$indexEsm_2.createMD5 = function() {
@@ -446,8 +446,8 @@
             };
             let mutex = new Mutex(), wasmCache = null;
         }.call(this);
-    }).call(this, "undefined" != typeof global ? global : "undefined" != typeof self ? self : "undefined" != typeof window ? window : {});
-    !function(global) {
+    }).call(this, "undefined" !== typeof global ? global : "undefined" !== typeof self ? self : "undefined" !== typeof window ? window : {});
+    !(function(global) {
         !function() {
             global.hashwasm = {
                 createMD5: _$indexEsm_2.createMD5,
@@ -468,5 +468,5 @@
                 sm3: _$indexEsm_2.sm3
             };
         }.call(this);
-    }.call(this, "undefined" != typeof global ? global : "undefined" != typeof self ? self : "undefined" != typeof window ? window : {});
-}();
+    }.call(this, "undefined" != typeof global ? global : "undefined" != typeof self ? self : "undefined" != typeof window ? window : {}));
+}());

@@ -8,7 +8,7 @@
  *     version: "1"
  *     jsdelivrUrl: "https://cdn.jsdelivr.net/npm/prismjs@1/components/prism-coffeescript.js"
  */
-(function (Prism) {
+((Prism) => {
 
 	// Ignore comments starting with { to privilege string interpolation highlighting
 	var comment = /#(?!\{).+/;
@@ -104,4 +104,3 @@
 
 	Prism.languages.coffee = Prism.languages.coffeescript;
 }(Prism));
-

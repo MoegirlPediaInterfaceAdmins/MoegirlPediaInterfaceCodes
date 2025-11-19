@@ -9,7 +9,7 @@
  *     removeCode: [ "// eslint-disable-next-line regexp/strict" ]
  *     jsdelivrUrl: "https://cdn.jsdelivr.net/npm/prismjs@1/components/prism-perl.js"
  */
-(function (Prism) {
+((Prism) => {
 
 	var brackets = /(?:\((?:[^()\\]|\\[\s\S])*\)|\{(?:[^{}\\]|\\[\s\S])*\}|\[(?:[^[\]\\]|\\[\s\S])*\]|<(?:[^<>\\]|\\[\s\S])*>)/.source;
 
@@ -165,4 +165,3 @@
 	};
 
 }(Prism));
-

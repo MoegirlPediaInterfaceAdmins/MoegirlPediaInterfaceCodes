@@ -8,7 +8,7 @@
  *     version: "1"
  *     jsdelivrUrl: "https://cdn.jsdelivr.net/npm/prismjs@1/components/prism-csharp.js"
  */
-(function (Prism) {
+((Prism) => {
 
 	/**
 	 * Replaces all placeholders "<<n>>" of given pattern with the n-th replacement (zero based).
@@ -374,4 +374,3 @@
 	Prism.languages.dotnet = Prism.languages.cs = Prism.languages.csharp;
 
 }(Prism));
-
