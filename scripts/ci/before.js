@@ -1,10 +1,10 @@
-import console, { originalConsole } from "../modules/console.js";
-console.info("Initialization done.");
-import jsonModule from "../modules/jsonModule.js";
-import testLatency from "../modules/testLatency.js";
-import mkdtmp from "../modules/mkdtmp.js";
 import fs from "node:fs";
 import path from "node:path";
+import console, { originalConsole } from "../modules/console.js";
+import jsonModule from "../modules/jsonModule.js";
+import mkdtmp from "../modules/mkdtmp.js";
+import testLatency from "../modules/testLatency.js";
+console.info("Initialization done.");
 
 const packageLockFile = "package-lock.json";
 
