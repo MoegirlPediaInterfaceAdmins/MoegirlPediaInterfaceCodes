@@ -8,7 +8,7 @@
  *     version: "1"
  *     jsdelivrUrl: "https://cdn.jsdelivr.net/npm/prismjs@1/components/prism-javadoclike.js"
  */
-((Prism) => {
+(function (Prism) {
 
 	var javaDocLike = Prism.languages.javadoclike = {
 		'parameter': {
@@ -95,3 +95,4 @@
 	javaDocLike.addSupport(['java', 'javascript', 'php'], javaDocLike);
 
 }(Prism));
+
