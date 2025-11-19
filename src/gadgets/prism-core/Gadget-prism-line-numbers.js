@@ -8,7 +8,7 @@
  *     version: "1"
  *     jsdelivrUrl: "https://cdn.jsdelivr.net/npm/prismjs@1/plugins/line-numbers/prism-line-numbers.js"
  */
-(() => {
+(function () {
 
 	if (typeof Prism === 'undefined' || typeof document === 'undefined') {
 		return;
@@ -260,3 +260,4 @@
 	});
 
 }());
+
