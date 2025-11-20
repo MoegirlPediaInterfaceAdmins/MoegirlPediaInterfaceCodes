@@ -67,7 +67,7 @@ jobs:
   skipCI:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
           show-progress: false
@@ -92,7 +92,7 @@ jobs:
       - skipCI
     if: always() && needs.skipCI.result == 'success' && needs.skipCI.outputs.skip != 'true'
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         name: Checkout main repo
         with:
           fetch-depth: 0
@@ -140,7 +140,7 @@ jobs:
     env:
       commits: ${{ needs.postCommit.outputs.commits }}
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           show-progress: false
       - name: Use Node.js
@@ -179,7 +179,7 @@ jobs:
       - linter_test
     if: always() && needs.skipCI.outputs.skip != 'true' && github.ref == 'refs/heads/master'
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           show-progress: false
       - name: Use Node.js
