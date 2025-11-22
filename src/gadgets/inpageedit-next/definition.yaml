@@ -36,4 +36,5 @@ _section: editing
 
 _files:
   - Gadget-inpageedit-next.js
+  - Gadget-inpageedit-next.css
   - jsconfig.json
