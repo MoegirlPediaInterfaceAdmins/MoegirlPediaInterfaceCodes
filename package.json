@@ -59,7 +59,7 @@
         "pretty-bytes": "^7.1.0",
         "semver": "^7.7.3",
         "simple-git": "^3.30.0",
-        "stylelint": "^16.25.0",
+        "stylelint": "^16.26.0",
         "stylelint-actions-formatters": "^16.3.1",
         "stylelint-config-standard": "^39.0.1",
         "terser": "^5.44.1",
