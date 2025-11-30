@@ -59,7 +59,7 @@
         "pretty-bytes": "^7.1.0",
         "semver": "^7.7.3",
         "simple-git": "^3.30.0",
-        "stylelint": "^16.26.0",
+        "stylelint": "^16.26.1",
         "stylelint-actions-formatters": "^16.3.1",
         "stylelint-config-standard": "^39.0.1",
         "terser": "^5.44.1",
@@ -67,10 +67,10 @@
         "uglify-js": "^3.19.3",
         "unassertify": "^3.0.1",
         "v8r": "^5.1.0",
-        "yaml": "^2.8.1"
+        "yaml": "^2.8.2"
     },
     "devDependencies": {
-        "@inpageedit/core": "^0.14.4",
+        "@inpageedit/core": "^0.14.5",
         "npm-run-all2": "^8.0.4",
         "typescript": "^5.7.3"
     }
