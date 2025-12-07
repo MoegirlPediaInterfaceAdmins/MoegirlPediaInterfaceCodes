@@ -2,10 +2,6 @@
  * 萌娘百科 InPageEdit-NEXT 本地样式修复
  */
 
-.noprint.plainlinks.hlist.navbar.nomobile {
-    width: 140px !important;
-}
-
 /* [[Special:Interwiki]] */
 .mw-interwikitable-modify .ipe-quick-edit {
     display: none;

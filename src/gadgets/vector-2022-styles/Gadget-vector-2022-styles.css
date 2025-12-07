@@ -85,3 +85,7 @@ h2 {
     border-bottom: 1px solid #0074F9;
 }
 
+/* [[Template:Navbar]]意外换行 */
+.noprint.plainlinks.hlist.navbar.nomobile {
+    white-space: nowrap;
+}
