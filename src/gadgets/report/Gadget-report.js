@@ -468,7 +468,7 @@ $(() => {
             });
             $("#moe-after-content").prepend($extraReportArea);
             break;
-        case "vector":
+        case "vector-2022":
         default:
             insertToBottomRightCorner(wgULS("页面举报&反馈", "頁面舉報&反饋")).css({
                 order: 0,
