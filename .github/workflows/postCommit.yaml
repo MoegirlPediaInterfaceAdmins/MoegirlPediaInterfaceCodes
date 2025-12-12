@@ -154,7 +154,7 @@ jobs:
         with:
           command: npm run ci
       - name: Reload the linter cache
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: .cache
           key: cache@${{ github.ref }}
