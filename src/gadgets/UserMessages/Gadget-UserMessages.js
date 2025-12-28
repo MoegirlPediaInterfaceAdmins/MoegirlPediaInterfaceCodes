@@ -633,7 +633,7 @@
                 page.watchlist = "watch";
             }
             umsg.umExecuting = true;
-            $("#umInstantPreviewContainer").empty().html('<p class="center"><img src="https://img.moegirl.org.cn/common/d/d1/Windows_10_loading.gif"/></p>');
+            $("#umInstantPreviewContainer").empty().html('<p class="center"><img src="https://storage.moegirl.org.cn/moegirl/commons/d/d1/Windows_10_loading.gif"/></p>');
             umsg.savePage(page, umsg.talkSummary, "umNotifyUserExecuteCB");
         },
         savePage: (page, summary, callback) => {
@@ -805,14 +805,14 @@
         umInstPrevContainer: $("<div>", {
             id: "umInstantPreviewContainer", style: "background-color:#EFD;height:380px;overflow:scroll;vertical-align:middle;",
         }),
-        umInitImgUserExists: '<img id="%ID%" src="https://img.moegirl.org.cn/common/thumb/4/42/P_no.svg/20px-P_no.svg.png" alt="?"/>',
-        umImgUserUndefined: "https://img.moegirl.org.cn/common/thumb/4/42/P_no.svg/20px-P_no.svg.png",
-        umImgUserNotExists: "https://img.moegirl.org.cn/common/thumb/4/42/P_no.svg/20px-P_no.svg.png",
-        umImgUserExists: "https://img.moegirl.org.cn/common/thumb/b/be/P_yes.svg/20px-P_yes.svg.png",
-        umImgUserIsIP: "https://img.moegirl.org.cn/common/thumb/7/7e/OOjs_UI_icon_userAnonymous.svg/20px-OOjs_UI_icon_userAnonymous.svg.png",
-        umImgErr: "https://img.moegirl.org.cn/common/7/7f/Dialog-error.svg",
-        umImgWarn: "https://img.moegirl.org.cn/common/b/bc/Commons-emblem-issue.svg",
-        umImgInfo: "https://img.moegirl.org.cn/common/2/28/Commons-emblem-notice.svg",
+        umInitImgUserExists: '<img id="%ID%" src="https://storage.moegirl.org.cn/moegirl/commons/4/42/P_no.svg!/fw/20" alt="?"/>',
+        umImgUserUndefined: "https://storage.moegirl.org.cn/moegirl/commons/4/42/P_no.svg!/fw/20",
+        umImgUserNotExists: "https://storage.moegirl.org.cn/moegirl/commons/4/42/P_no.svg!/fw/20",
+        umImgUserExists: "https://storage.moegirl.org.cn/moegirl/commons/b/be/P_yes.svg!/fw/20",
+        umImgUserIsIP: "https://storage.moegirl.org.cn/moegirl/commons/7/7e/OOjs_UI_icon_userAnonymous.svg!/fw/20",
+        umImgErr: "https://storage.moegirl.org.cn/moegirl/commons/7/7f/Dialog-error.svg",
+        umImgWarn: "https://storage.moegirl.org.cn/moegirl/commons/b/bc/Commons-emblem-issue.svg",
+        umImgInfo: "https://storage.moegirl.org.cn/moegirl/commons/2/28/Commons-emblem-notice.svg",
         umFlagMQ: 0b00000001, // Media Query
         umFlagUQ: 0b00000010, // Username Query
         umFlagRq: 0b00000100, // Required - must filled in

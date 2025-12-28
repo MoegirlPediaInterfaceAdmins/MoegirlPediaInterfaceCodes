@@ -8,7 +8,7 @@ $(() => {
     const localObjectStorage = new LocalObjectStorage("AnnTools-SidebarHidden");
     let hidden = localObjectStorage.getItem("hidden");
     const generateImageObject = (svg) => URL.createObjectURL(new Blob([svg], { type: "image/svg+xml" }));
-    const logoPic = "https://img.moegirl.org.cn/common/3/33/MoegirlPedia-Title.svg";
+    const logoPic = "https://storage.moegirl.org.cn/moegirl/commons/3/33/MoegirlPedia-Title.svg";
     const arrowRightSvg = generateImageObject("<svg version=\"1\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 48 48\" enable-background=\"new 0 0 48 48\"><polygon fill=\"#2196F3\" points=\"17.1,5 14,8.1 29.9,24 14,39.9 17.1,43 36,24\"/></svg>");
     const arrowLeftSvg = generateImageObject("<svg version=\"1\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 48 48\" enable-background=\"new 0 0 48 48\"><polygon fill=\"#2196F3\" points=\"30.9,43 34,39.9 18.1,24 34,8.1 30.9,5 12,24\"/></svg>");
     const $body = $(document.body);

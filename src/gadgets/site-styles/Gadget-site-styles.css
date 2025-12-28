@@ -855,7 +855,7 @@ div.metadata-panel-is-closed .mw-mmv-image-links li.mw-mmv-license-li {
 
 /* 导航条（完全没有apple风格的apple风面包屑orz） 来源:http://www.jankoatwarpspeed.com/examples/breadcrumb/ */
 #breadcrumb {
-    background-image: url("//img.moegirl.org.cn/breadcrumb/bc_bg.png");
+    background-image: url("//storage.moegirl.org.cn/moegirl/breadcrumb/bc_bg.png");
     color: red;
     border: solid 1px #cacaca;
     border-radius: 10px;
@@ -869,7 +869,7 @@ div.metadata-panel-is-closed .mw-mmv-image-links li.mw-mmv-license-li {
 
 #breadcrumb a {
     display: block;
-    background: url("//img.moegirl.org.cn/breadcrumb/bc_separator.png") no-repeat right;
+    background: url("//storage.moegirl.org.cn/moegirl/breadcrumb/bc_separator.png") no-repeat right;
     padding-right: 15px;
     color: #454545;
 }

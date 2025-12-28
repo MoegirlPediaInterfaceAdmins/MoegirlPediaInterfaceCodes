@@ -5,7 +5,7 @@
 "use strict";
 // <pre>
 (() => {
-    const DEFAULT_AVATAR = "https://img.moegirl.org.cn/moehime.jpg";
+    const DEFAULT_AVATAR = "https://storage.moegirl.org.cn/moegirl/moehime.jpg";
     /**
      * @param {HTMLElement} el
      */
