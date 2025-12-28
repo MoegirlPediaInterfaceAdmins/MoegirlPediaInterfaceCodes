@@ -230,7 +230,7 @@ $(() => (async () => {
             // eslint-disable-next-line require-atomic-updates
             globalDeletionLock = true;
 
-            const $spinner = $('<img src="https://img.moegirl.org.cn/common/d/d1/Windows_10_loading.gif" style="height: 1em; margin-top: -.25em;">'), $status = $("<span>");
+            const $spinner = $('<img src="https://storage.moegirl.org.cn/moegirl/commons/d/d1/Windows_10_loading.gif" style="height: 1em; margin-top: -.25em;">'), $status = $("<span>");
 
             $root.find(".batdel-result").remove();
             $root.find(".batdel-select").prop("disabled", true);

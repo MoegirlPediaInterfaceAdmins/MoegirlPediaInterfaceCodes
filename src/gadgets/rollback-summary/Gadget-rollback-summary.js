@@ -67,7 +67,7 @@ $(() => {
         });
         if (rollbackSummary !== null) {
             const uri = new mw.Uri(self.data("href"));
-            self.replaceWith(`<span id="rbing"><img src="https://img.moegirl.org.cn/common/d/d1/Windows_10_loading.gif" style="height: 1em; margin-top: -.25em;">${wgULS("正在回退中", "正在還原")}……</span>`);
+            self.replaceWith(`<span id="rbing"><img src="https://storage.moegirl.org.cn/moegirl/commons/d/d1/Windows_10_loading.gif" style="height: 1em; margin-top: -.25em;">${wgULS("正在回退中", "正在還原")}……</span>`);
             const rbing = $("#rbing");
             $(".mw-rollback-link a").not(rbing).css({
                 color: "#aaa",
@@ -100,7 +100,7 @@ $(() => {
         }
         return false;
     });
-    new Image().src = "https://img.moegirl.org.cn/common/d/d1/Windows_10_loading.gif";
+    new Image().src = "https://storage.moegirl.org.cn/moegirl/commons/d/d1/Windows_10_loading.gif";
     const changesList = document.querySelector(".mw-changeslist");
     if (changesList) {
         const observer = new MutationObserver((mutations) => {
