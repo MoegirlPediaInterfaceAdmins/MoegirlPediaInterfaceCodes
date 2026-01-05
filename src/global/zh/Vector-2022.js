@@ -8,7 +8,7 @@
     /* 函数定义体 */
     /* 滚动公告 */
     const startScroll = () => {
-        $("body > #content > #siteNotice .scrollDiv:not(.scrolling), #moe-sitenotice-container > .moe-sitenotice .scrollDiv:not(.scrolling)").addClass("scrolling").each((_, ele) => {
+        $(".vector-sitenotice-container > #siteNotice .scrollDiv:not(.scrolling), #moe-sitenotice-container > .moe-sitenotice .scrollDiv:not(.scrolling)").addClass("scrolling").each((_, ele) => {
             const self = $(ele);
             self.children().each((_, child) => {
                 if (child.innerHTML.trim() === "") {
@@ -29,7 +29,7 @@
     const autoScroll = () => {
         setInterval(() => {
             if (!document.hidden) {
-                $("body > #content > #siteNotice .scrollDiv.scrolling, #moe-sitenotice-container > .moe-sitenotice .scrollDiv.scrolling").each((_, ele) => {
+                $(".vector-sitenotice-container > #siteNotice .scrollDiv.scrolling, #moe-sitenotice-container > .moe-sitenotice .scrollDiv.scrolling").each((_, ele) => {
                     const self = $(ele);
                     if (self.css("font-weight") === "700") {
                         return;
