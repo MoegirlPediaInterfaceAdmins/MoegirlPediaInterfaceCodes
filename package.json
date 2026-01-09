@@ -19,8 +19,8 @@
         "minification:js": "node scripts/minification/terser.js"
     },
     "dependencies": {
-        "@actions/artifact": "^5.0.1",
-        "@actions/core": "^2.0.1",
+        "@actions/artifact": "^5.0.2",
+        "@actions/core": "^2.0.2",
         "@annangela/eslint-config": "^8.1.1",
         "@annangela/eslint-formatter-gha": "^4.0.0",
         "@annangela/eslint-plugin-prefer-reflect": "^4.0.0",
