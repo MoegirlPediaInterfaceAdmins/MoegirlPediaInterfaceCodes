@@ -5,7 +5,7 @@
 
     await $.ready;
 
-    const sidebarSelector = mw.config.get("skin") === "moeskin" ? "html > body > #app #moe-full-container > #moe-main-container > main" : "html > body > #mw-navigation";
+    const sidebarSelector = mw.config.get("skin") === "moeskin" ? "html > body > #app #moe-full-container > #moe-main-container > main" : "html > body";
 
     let $sidebar = $(sidebarSelector);
     while ($sidebar.length === 0) {
@@ -64,6 +64,9 @@
         const $this = $(ele);
         if (!$this.find("img")[0]) {
             return;
+        }
+        if (mw.config.get("skin") === "vector-2022") {
+            $this.css("position", "absolute");
         }
         console.info("Widget:SideBarPic append-check\n", $sidebar);
         $this.appendTo($sidebar);
