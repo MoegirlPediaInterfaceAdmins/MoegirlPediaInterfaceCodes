@@ -163,7 +163,7 @@ jobs:
       - name: Run eslint
         run: npx eslint --cache --cache-strategy content --cache-location ".cache/" --exit-on-fatal-error --format @annangela/eslint-formatter-gha --max-warnings 0 ./src
       - name: Run stylelint
-        run: npx stylelint --cache --cache-strategy content --cache-location ".cache/" --custom-formatter=stylelint-actions-formatters --max-warnings 0 "src/**/*.css"
+        run: npx stylelint --cache --cache-strategy content --cache-location ".cache/" --custom-formatter=@csstools/stylelint-formatter-github --max-warnings 0 "src/**/*.css"
       - name: Run v8r
         run: npx v8r
       - name: Run postcss test
