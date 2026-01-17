@@ -1,9 +1,17 @@
+import jsoncParser from "jsonc-parser";
 import fs from "node:fs";
 
 /**
  * @param { fs.PathLike | fs.promises.FileHandle } path
+ * @param { "json" | "jsonc" } [type="json"]
  */
-export const readFile = async (path) => JSON.parse(await fs.promises.readFile(path, { encoding: "utf-8" }));
+export const readFile = async (path, type = "json") => {
+    const content = await fs.promises.readFile(path, { encoding: "utf-8" });
+    if (type === "jsonc") {
+        return jsoncParser.parse(content);
+    }
+    return JSON.parse(content);
+};
 /**
  * @param { fs.PathLike | fs.promises.FileHandle } path
  * @param { any } value

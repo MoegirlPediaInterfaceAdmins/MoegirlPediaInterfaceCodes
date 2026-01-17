@@ -1,12 +1,12 @@
-import console from "../modules/console.js";
-console.info("Initialization done.");
 import fs from "node:fs";
 import path from "node:path";
+import console from "../modules/console.js";
 import createCommit from "../modules/createCommit.js";
 import jsonModule from "../modules/jsonModule.js";
 import { sortWithLowerFirstCharacter } from "../modules/sortWithLowerFirstCharacter.js";
+console.info("Initialization done.");
 
-const settings = await jsonModule.readFile(".vscode/settings.json");
+const settings = await jsonModule.readFile(".vscode/settings.json", "jsonc");
 const totalScopes = [];
 const dirents = await fs.promises.readdir("src", {
     withFileTypes: true,
