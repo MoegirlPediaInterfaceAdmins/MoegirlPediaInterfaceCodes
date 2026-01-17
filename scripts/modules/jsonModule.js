@@ -1,4 +1,3 @@
-import jsoncParser from "jsonc-parser";
 import fs from "node:fs";
 
 /**
@@ -8,7 +7,7 @@ import fs from "node:fs";
 export const readFile = async (path, type = "json") => {
     const content = await fs.promises.readFile(path, { encoding: "utf-8" });
     if (type === "jsonc") {
-        return jsoncParser.parse(content);
+        return (await import("jsonc-parser")).parse(content);
     }
     return JSON.parse(content);
 };
