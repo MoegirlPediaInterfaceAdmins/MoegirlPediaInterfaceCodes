@@ -16,6 +16,7 @@ on:
       - src/gadgets/Gadgets-definition-list.yaml
       - .github/workflows/postCommit.yaml
       - .vscode/json-schemas/gadget-definition.json
+      - .vscode/json-schemas/gadget-definition-per-site.json
       - .browserslistrc
       - .swcrc
       - .*.yaml
@@ -36,6 +37,7 @@ on:
       - src/gadgets/Gadgets-definition-list.yaml
       - .github/workflows/postCommit.yaml
       - .vscode/json-schemas/gadget-definition.json
+      - .vscode/json-schemas/gadget-definition-per-site.json
       - .browserslistrc
       - .*.yaml
       - package-lock.json

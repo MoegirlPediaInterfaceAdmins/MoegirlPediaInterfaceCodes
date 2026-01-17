@@ -11,13 +11,20 @@
         },
         {
             "fileMatch": [
+                "src/gadgets/*/definition.{zh,commons}.json"
+            ],
+            "url": "./.vscode/json-schemas/gadget-definition-per-site.json"
+        },
+        {
+            "fileMatch": [
                 ".github/renovate.json"
             ],
             "url": "https://docs.renovatebot.com/renovate-schema.json"
         }
     ],
     "yaml.schemas": {
-        "./.vscode/json-schemas/gadget-definition.json": "src/gadgets/*/definition.yaml"
+        "./.vscode/json-schemas/gadget-definition.json": "src/gadgets/*/definition.yaml",
+        "./.vscode/json-schemas/gadget-definition-per-site.json": "src/gadgets/*/definition.{zh,commons}.yaml",
     },
     "files.insertFinalNewline": true,
     "eslint.useFlatConfig": true,
