@@ -7,7 +7,10 @@ $(() => {
             const $ele = $(ele);
             const $editsection = $(ele).next(".mw-editsection");
             const $divider = $('<span class="mw-editsection-divider"> | </span>');
-            const $permanentLink = $(`<a data-thread-id="${$ele.attr("id")}" class="section-permanent-link">${buttonText}</a>`);
+            const $permanentLink = $("<a>")
+                .attr("data-thread-id", mw.util.escapeIdForLink($ele.attr("id")))
+                .addClass("section-permanent-link")
+                .text(buttonText);
             if (!inHistory) {
                 $editsection
                     .find(".mw-editsection-bracket")
