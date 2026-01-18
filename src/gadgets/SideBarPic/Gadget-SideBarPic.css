@@ -55,7 +55,9 @@ body.sideBarPic:not(.DeceasedPerson) #footer #footer-moegirl .copyright {
 }
 
 /* vector-2022 背景图片 */
-body.sideBarPic.skin-vector-2022.mediawiki .mw-page-container {
+body.sideBarPic.skin-vector-2022.mediawiki .mw-page-container,
+body.sideBarPic .vector-header-container .mw-header,
+body.sideBarPic .vector-dropdown .vector-dropdown-content {
     background-color: rgb(255 255 255 / 90%);
 }
 
