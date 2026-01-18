@@ -68,10 +68,10 @@ body.sideBarPic .vector-sticky-pinned-container::after {
     display: none;
 }
 
-.vector-header-container .mw-header {
+body.sideBarPic .vector-header-container .mw-header {
     background-color: rgb(255 255 255 / 90%);
 }
 
-.vector-dropdown .vector-dropdown-content {
+body.sideBarPic .vector-dropdown .vector-dropdown-content {
     background-color: rgb(255 255 255 / 90%);
 }
