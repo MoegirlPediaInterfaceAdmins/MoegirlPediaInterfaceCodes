@@ -197,7 +197,7 @@ $(() => {
                 })).parse.wikitext["*"];
                 const rawTitle = original.match(/^== *([^=\n]+) *==/m)?.[1] || this.anchor;
                 original = original.replace(/^==.*?==/, "").trim();
-                original = `{{movedfrom|${fromAnchor}}}\n\n${original}`;
+                original = `{{movedfrom|1=${fromAnchor}}}\n\n${original}`;
 
                 // Move to target
                 console.log("[QuickMoveThread] Moving thread to target page");
@@ -219,7 +219,7 @@ $(() => {
                     assertuser: USERNAME,
                     title: PAGENAME,
                     section: this.section,
-                    text: `== ${rawTitle} ==\n{{movedto|${toAnchor}}}`,
+                    text: `== ${rawTitle} ==\n{{movedto|1=${toAnchor}}}`,
                     summary: `/* ${this.anchor} */ 移动讨论串至[[${toAnchor}]] !nobot!`,
                     tags: "Automation tool",
                 });
