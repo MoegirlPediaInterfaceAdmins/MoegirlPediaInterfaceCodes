@@ -1,4 +1,4 @@
-/* 
+/*
  * 放置于这里的CSS将应用于所有皮肤
  * 请尊重萌娘百科版权，以下代码除非注明均是管理员手敲出来的！！！复制需要注明源自萌娘百科，并且附上URL地址http://commons.moegirl.org.cn/MediaWiki:Common.css
  * 版权协定：知识共享 署名-非商业性使用-相同方式共享 3.0
@@ -46,4 +46,9 @@ body:not(.ns-0) #upload-div {
 
 .mw-body-content .mw-editsection .mw-editsection-divider {
     display: revert;
+}
+
+/* 上传页预览图片过大 */
+#mw-upload-form .thumbimage {
+    max-width: 100%;
 }
