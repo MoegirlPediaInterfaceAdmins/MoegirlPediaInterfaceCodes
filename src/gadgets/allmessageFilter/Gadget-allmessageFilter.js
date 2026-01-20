@@ -95,7 +95,7 @@
                 load(am.slice(index, index + length));
             });
         };
-        $("#mw-allmessages-form").after(containter);
+        $(".mw-htmlform-ooui-wrapper").after(containter);
         containter.append("<legend>搜索</legend>");
         const table = $("<table/>");
         containter.append(table);
