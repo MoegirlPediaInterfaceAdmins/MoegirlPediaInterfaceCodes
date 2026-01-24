@@ -433,6 +433,11 @@ table.wikitable-green {
     background: #f3f3f3;
 }
 
+/* 隐藏只供登录用户查看的内容 */
+.user-show {
+    display: none !important;
+}
+
 /* 隐藏只供维护人员查看的内容 */
 .patroller-show,
 .checkuser-show,
