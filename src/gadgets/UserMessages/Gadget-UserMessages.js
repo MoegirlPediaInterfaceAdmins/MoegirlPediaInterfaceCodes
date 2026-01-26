@@ -60,6 +60,7 @@
             if ("function" === typeof o.CBValidChange && tmpUNE !== o.userNameExists) {
                 o.$outputField.attr("src", o.callingObject.umImgUserIsIP);
                 o.$outputField.attr("alt", "IP");
+                o.$outputField.attr("width", "20");
                 o.oldValue = o.callingObject.umCleanFileAndUser(o.$userInputField.val());
                 o.CBValidChange(o, o.callingObject);
             }
@@ -107,17 +108,20 @@
                 if (!result.query.allusers.length) {
                     this.$outputField.attr("src", this.callingObject.umImgUserNotExists);
                     this.$outputField.attr("alt", "!! invalid !!");
+                    this.$outputField.attr("width", "20");
                     this.userNameExists = false;
                 } else {
                     if (this.callingObject.umCleanFileAndUser(this.$userInputField.val()) === result.query.allusers[0].name) {
                         this.$outputField.attr("src", this.callingObject.umImgUserExists);
                         this.$outputField.attr("alt", "OK");
+                        this.$outputField.attr("width", "20");
                         this.userNameExists = true;
                     } else {
                         if (!this.pendingSetTimeouts) {
                             // Only overwrite if there is nothing pending
                             this.$outputField.attr("src", this.callingObject.umImgUserUndefined);
                             this.$outputField.attr("alt", "?");
+                            this.$outputField.attr("width", "20");
                             this.userNameExists = 2;
                         }
                     }
@@ -805,11 +809,11 @@
         umInstPrevContainer: $("<div>", {
             id: "umInstantPreviewContainer", style: "background-color:#EFD;height:380px;overflow:scroll;vertical-align:middle;",
         }),
-        umInitImgUserExists: '<img id="%ID%" src="https://storage.moegirl.org.cn/moegirl/commons/4/42/P_no.svg!/fw/20" alt="?"/>',
-        umImgUserUndefined: "https://storage.moegirl.org.cn/moegirl/commons/4/42/P_no.svg!/fw/20",
-        umImgUserNotExists: "https://storage.moegirl.org.cn/moegirl/commons/4/42/P_no.svg!/fw/20",
-        umImgUserExists: "https://storage.moegirl.org.cn/moegirl/commons/b/be/P_yes.svg!/fw/20",
-        umImgUserIsIP: "https://storage.moegirl.org.cn/moegirl/commons/7/7e/OOjs_UI_icon_userAnonymous.svg!/fw/20",
+        umInitImgUserExists: '<img id="%ID%" src="https://storage.moegirl.org.cn/moegirl/commons/4/42/P_no.svg" width="20" alt="?"/>',
+        umImgUserUndefined: "https://storage.moegirl.org.cn/moegirl/commons/4/42/P_no.svg",
+        umImgUserNotExists: "https://storage.moegirl.org.cn/moegirl/commons/4/42/P_no.svg",
+        umImgUserExists: "https://storage.moegirl.org.cn/moegirl/commons/b/be/P_yes.svg",
+        umImgUserIsIP: "https://storage.moegirl.org.cn/moegirl/commons/7/7e/OOjs_UI_icon_userAnonymous.svg",
         umImgErr: "https://storage.moegirl.org.cn/moegirl/commons/7/7f/Dialog-error.svg",
         umImgWarn: "https://storage.moegirl.org.cn/moegirl/commons/b/bc/Commons-emblem-issue.svg",
         umImgInfo: "https://storage.moegirl.org.cn/moegirl/commons/2/28/Commons-emblem-notice.svg",

@@ -91,8 +91,8 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
             return ns < 0 || ns === nsIds.template || ns === nsIds.module || ns === nsIds.mediawiki || ns === nsIds.file && !mw.config.get("wgArticleId") || ns === nsIds.creator || ns === nsIds.timedtext || ns === nsIds.institution || mw.config.get("wgPageContentModel") !== "wikitext";
         },
         uncat_regexp: /\{\{\s*[Uu]ncategorized\s*[^}]*\}\}\s*(<!--.*?-->\s*)?/g,
-        existsYes: "https://storage.moegirl.org.cn/moegirl/commons/b/be/P_yes.svg!/fw/20",
-        existsNo: "https://storage.moegirl.org.cn/moegirl/commons/4/42/P_no.svg!/fw/20",
+        existsYes: "https://storage.moegirl.org.cn/moegirl/commons/b/be/P_yes.svg",
+        existsNo: "https://storage.moegirl.org.cn/moegirl/commons/4/42/P_no.svg",
         template_categories: {},
         engine_names: {
             searchindex: "Search index",
@@ -790,6 +790,7 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
             }
             this.text = text;
             this.icon = make("img");
+            this.icon.width = "20";
             let list = null;
             if (!noSuggestions) {
                 list = make("select");
