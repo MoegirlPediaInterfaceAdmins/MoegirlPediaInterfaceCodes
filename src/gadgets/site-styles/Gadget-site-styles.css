@@ -364,8 +364,8 @@ a.extiw:visited:hover span.heimu {
 }
 
 /* 黑幕 暗色模式 */
-[color-mode="dark"] .heimu,
-[color-mode="dark"] .heimu rt {
+html.dark .heimu,
+html.dark .heimu rt {
     --heimu-color: #5e6272;
 }
 
@@ -409,7 +409,7 @@ s.just-kidding-text {
 }
 
 html.skin-theme-clientpref-night .infoBoxContent,
-[color-mode="dark"] .infoBoxContent {
+html.dark .infoBoxContent {
     border-color: #3e4452;
     background: #23272e;
 }
@@ -1426,29 +1426,29 @@ body.overlay-scrollbars #bodyContent {
 }
 
 /* TODO: 暗色模式 暂时降低暗度处理 */
-[color-mode="dark"] :is(.infobox, .infobox2, .moe-infobox, .infotemplatebox, .infoboxSpecial, .ztdh, #powersearch, #topicpath) {
+html.dark :is(.infobox, .infobox2, .moe-infobox, .infotemplatebox, .infoboxSpecial, .ztdh, #powersearch, #topicpath) {
     color: #222;
     filter: brightness(0.75);
 }
 
-[color-mode="dark"] :is(.infobox, .infobox2, .moe-infobox, .infotemplatebox, .infoboxSpecial, .ztdh, #powersearch) a:not(.new) {
+html.dark :is(.infobox, .infobox2, .moe-infobox, .infotemplatebox, .infoboxSpecial, .ztdh, #powersearch) a:not(.new) {
     --color: #155d33;
 }
 
-[color-mode="dark"] input[type="text"] {
+html.dark input[type="text"] {
     color: var(--theme-text-color);
 }
 
-[color-mode="dark"] :is(.navbox):not(.dark-theme-invert-disabled) {
+html.dark :is(.navbox):not(.dark-theme-invert-disabled) {
     --theme-link-color: rgb(51 102 187);
 
     color: rgb(44 62 80);
     filter: brightness(0.75);
 }
 
-[color-mode="dark"] .mw-datatable,
-[color-mode="dark"] .mw-json,
-[color-mode="dark"] table.wikitable {
+html.dark .mw-datatable,
+html.dark .mw-json,
+html.dark table.wikitable {
     background-color: var(--theme-background-color);
     color: var(--theme-text-color);
 }
