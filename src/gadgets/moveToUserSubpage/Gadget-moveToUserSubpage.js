@@ -257,11 +257,7 @@ $(() => {
                         throw moveRes;
                     }
                 } catch (e) {
-                    if (typeof e.error?.code === "string") {
-                        if (e.error.code !== "moderation-move-queued") {
-                            throw e.error;
-                        }
-                    } else {
+                    if (e !== "moderation-move-queued") {
                         throw e;
                     }
                 }
