@@ -43,6 +43,7 @@
 - 代码部分：
   - [`src/gadgets`](src/gadgets) 以文件夹形式保存小工具，每一个文件夹都是一个小工具，里面包含以下内容：
     - `definition.yaml` 保存小工具配置，包括依赖项、所需权限等，以 `_` 开头的键值对是其他配置，如小工具所在的章节等；
+    - `definition.{站点代号}.yaml` （可选）保存小工具的站点配置，包括依赖项、所需权限等，在处理对应站点的配置文件时，将会在以覆盖方式合并到上述配置后生成配置文件，如 [`src/gadgets/HotCat/definition.commons.yaml`](src/gadgets/HotCat/definition.commons.yaml)；
     - `.eslintrc.yaml` （可选）用以阻止 eslint 在某些文件上进行检查，常见于来自 npm 和指定页面的代码；
     - `*.js` 和 `*.css` 为小工具代码，文件名为萌娘百科上对应页面的页面名；
   - [`src/groups`](src/groups) 以文件夹形式保存用户组级别代码，每一个文件夹都对应一个子站点，每一个站点文件夹的子文件夹对应一个用户组，里面包含 `*.js` 和 `*.css` 等代码，文件名为萌娘百科上对应页面的页面名；
@@ -53,6 +54,7 @@
 本仓库支持同时管理多个子站点的代码：
 
 - [小工具部分](src/gadgets)：通过 `definition.yaml` 的 `_sites` 属性指定站点；
+  - 小工具的站点设置：通过文件名指定站点，参见上述架构详情的 `definition.{站点代号}.yaml` 部分；
 - [用户组代码](src/groups) 和 [全站代码](src/global)：通过文件夹名指定站点。
 
 ### 仓库 npm 脚本
