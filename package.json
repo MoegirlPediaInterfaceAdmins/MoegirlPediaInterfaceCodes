@@ -28,7 +28,7 @@
         "@csstools/postcss-media-minmax": "^3.0.0",
         "@csstools/stylelint-formatter-github": "^2.0.0",
         "@octokit/auth-action": "^6.0.2",
-        "@octokit/auth-app": "^8.1.2",
+        "@octokit/auth-app": "^8.2.0",
         "@octokit/auth-unauthenticated": "^7.0.3",
         "@octokit/plugin-retry": "^8.0.3",
         "@octokit/rest": "^22.0.1",
