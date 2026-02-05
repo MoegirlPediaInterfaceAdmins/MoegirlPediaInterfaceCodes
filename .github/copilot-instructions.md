@@ -135,6 +135,7 @@ npm --version
 │   ├── gadgets/            # MediaWiki gadgets (小工具)
 │   │   └── [gadget-name]/
 │   │       ├── definition.yaml      # Gadget configuration
+│   │       ├── definition.{site}.yaml # Optional: site-specific overrides
 │   │       ├── Gadget-*.js          # JavaScript files (page name format)
 │   │       ├── Gadget-*.css         # CSS files
 │   │       └── .eslintrc.yaml       # Optional: override linting for imported code
@@ -181,7 +182,10 @@ Each gadget is a folder in `src/gadgets/[gadget-name]/` containing:
   - `dependencies`: Array of dependencies
   - `rights`: Required user rights
   - Other MediaWiki gadget properties
-
+- **definition.{site}.yaml** (OPTIONAL): Site-specific configuration overrides
+  - Merged with base `definition.yaml` when processing the corresponding site
+  - Example: `definition.commons.yaml` for Commons-specific settings
+  - Properties in site-specific file override the base configuration
 - **Gadget-[name].js**: JavaScript code (file name matches MediaWiki page name)
 - **Gadget-[name].css**: CSS code (file name matches MediaWiki page name)
 - **.eslintrc.yaml** (OPTIONAL): Override linting for imported/generated code
