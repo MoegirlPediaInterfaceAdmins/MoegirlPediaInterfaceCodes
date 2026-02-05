@@ -55,7 +55,7 @@ const { all: rawHistory } = await git.log({
 console.info("Successfully fetched raw history, it has", rawHistory.length, "items.");
 await jsonModule.writeFile(rawHistoryPath, rawHistory);
 console.info("Successfully saved to", rawHistoryPath);
-console.info(await fs.promises.stat("/data/MoegirlPediaInterfaceCodes/scripts/generateCommitsHistory/index.js"));
+console.info(await fs.promises.stat(rawHistoryPath));
 if (isInGithubActions) {
     console.info("\tUpload it as a artifact...");
     await artifactClient.uploadArtifact("rawHistory.json", [rawHistoryPath], tempPath);
