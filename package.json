@@ -59,7 +59,7 @@
         "postcss-selector-matches": "^4.0.0",
         "postcss-selector-not": "^9.0.0",
         "pretty-bytes": "^7.1.0",
-        "semver": "^7.7.3",
+        "semver": "^7.7.4",
         "simple-git": "^3.30.0",
         "stylelint": "^17.1.1",
         "stylelint-config-standard": "^40.0.0",
