@@ -184,5 +184,6 @@
         "Group/sysop",
         "Group/user"
     ],
-    "conventionalCommits.storeScopesGlobally": false
+    "conventionalCommits.storeScopesGlobally": false,
+    "github.copilot.chat.organizationInstructions.enabled": false
 }
