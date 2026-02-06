@@ -12,7 +12,7 @@ const githubWebInterfaceFlowSignature = {
 import { endGroup, exportVariable, startGroup } from "@actions/core";
 import fs from "node:fs";
 import path from "node:path";
-import artifactClient from "../modules/artifact.js";
+import artifactClient from "@actions/artifact";
 import console from "../modules/console.js";
 import createCommit from "../modules/createCommit.js";
 import git from "../modules/git.js";
