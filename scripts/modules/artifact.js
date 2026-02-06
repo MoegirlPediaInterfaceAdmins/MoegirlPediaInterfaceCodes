@@ -1,3 +1,2 @@
-import artifact from "@actions/artifact";
-const ArtifactClient = artifact.default; // bug
-export default ArtifactClient;
+import artifactClient from "@actions/artifact";
+export default artifactClient;
