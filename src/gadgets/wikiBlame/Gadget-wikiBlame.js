@@ -391,55 +391,21 @@ $(() => {
         windowManager.openWindow(diffDialog);
     };
 
-    // 处理mouseup事件
-    $(mw.config.get("skin") === "moeskin" ? "#mw-body" : "#bodyContent").on("mouseup", (e) => {
-        let selection = getSelected();
-        if (selection) {
-            if ($(".wiki-blame-popup").length === 0) {
-                const button = new OO.ui.ButtonWidget({
-                    label: "拷打编辑",
-                    icon: "help",
-                    title: "blame",
-                });
-                button.on("click", () => {
-                    createDialog(selection);
-                });
-                const popup = new OO.ui.PopupWidget({
-                    $content: button.$element,
-                    padded: true,
-                    width: 130,
-                    height: 50,
-                    autoFlip: false,
-                });
-                popup.$element.addClass("wiki-blame-popup");
-                console.log(e.target);
-                $(e.target).append(popup.$element);
-                popup.toggle(true);
-                const marginTop = $("#bodyContent .oo-ui-popupWidget-body-padded").css("marginTop");
-                if (parseInt(marginTop) > 20) {
-                    $("#bodyContent .oo-ui-popupWidget-body-padded").css("margin", "5px");
-                }
-                $("#bodyContent .oo-ui-buttonElement-button").css({
-                    width: "107px",
-                    height: "32px",
-                    padding: "8px 12px 7px 37px",
-                });
-                $("#bodyContent .oo-ui-buttonElement-button .oo-ui-iconElement-icon").css({
-                    "font-size": "14px",
-                    color: "#222",
-                });
-                $("#bodyContent .oo-ui-buttonElement-button .oo-ui-labelElement-label").css({
-                    "font-size": "14px",
-                    color: "#222",
-                    "vertical-align": "inherit",
-                });
-            }
-        } else {
-            $(".wiki-blame-popup").remove();
-        }
-        selection = getSelected();
+    // 在侧边栏添加按钮
+    mw.util.addPortletLink(
+        "p-cactions",
+        "#",
+        "拷打编辑",
+        "t-wikiblame",
+        "查找选中文字的编辑来源",
+    );
+    $("#t-wikiblame").on("click", (e) => {
+        e.preventDefault();
+        const selection = getSelected();
         if (!selection) {
-            $(".wiki-blame-popup").remove();
+            mw.notify("请先选中文字");
+            return;
         }
+        createDialog();
     });
 });
