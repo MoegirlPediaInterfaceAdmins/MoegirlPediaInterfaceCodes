@@ -24,8 +24,7 @@ rights: []
 
 peers: []
 
-dependencies:
-  - mediawiki.Uri
+dependencies: []
 
 _sites:
   - zh

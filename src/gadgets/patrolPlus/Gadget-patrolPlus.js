@@ -24,14 +24,14 @@ $(() => {
         const container = $('<a href="#" class="patrolLink"></a>');
         self.after(container).appendTo(container).before("[").after("]");
         const link = container.closest("li,tr").find('a[href*="diff"]:not([href*="diff=0"])').first();
-        let uri, title, revid;
+        let url, title, revid;
         if (link[0]) {
-            uri = new mw.Uri(link.attr("href"));
-            title = uri.query.title;
-            revid = +uri.query.diff;
+            url = new URL(link.attr("href"), location.origin);
+            title = url.searchParams.get("title");
+            revid = +url.searchParams.get("diff");
         } else {
-            uri = new mw.Uri(container.closest("li, tr").find(".mw-changeslist-history").first().attr("href"));
-            title = uri.query.title;
+            url = new URL(container.closest("li, tr").find(".mw-changeslist-history").first().attr("href"), location.origin);
+            title = url.searchParams.get("title");
             // 对于创建新页面的编辑直接获取其第一个有data-mw-revid的祖先元素的此数据
             revid = Number(self.closest("[data-mw-revid]").attr("data-mw-revid"));
         }

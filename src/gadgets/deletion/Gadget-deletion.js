@@ -249,7 +249,7 @@ $(() => (async () => {
                         return;
                     }
                     self.css("margin-right", "1em");
-                    const url = new URL(new mw.Uri(self.prop("href")));
+                    const url = new URL(self.prop("href"), location.origin);
                     const target = decodeURIComponent(url.searchParams.has("title") ? url.searchParams.get("title") : url.pathname.replace(/^\//, "")).replace(/_/g, " ");
                     const page = pages.filter(({ title }) => title === target)[0];
                     try {

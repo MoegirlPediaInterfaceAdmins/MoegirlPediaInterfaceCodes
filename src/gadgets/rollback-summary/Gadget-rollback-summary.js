@@ -66,7 +66,7 @@ $(() => {
             required: false,
         });
         if (rollbackSummary !== null) {
-            const uri = new mw.Uri(self.data("href"));
+            const url = new URL(self.data("href"), location.origin);
             self.replaceWith(`<span id="rbing"><img src="https://storage.moegirl.org.cn/moegirl/commons/d/d1/Windows_10_loading.gif" style="height: 1em; margin-top: -.25em;">${wgULS("正在回退中", "正在還原")}……</span>`);
             const rbing = $("#rbing");
             $(".mw-rollback-link a").not(rbing).css({
@@ -75,15 +75,15 @@ $(() => {
             });
             mw.config.set("wgRollbacking", true);
             const summary = rollbackSummary ? `${rollbackSummary} //Rollback` : "//Rollback";
-            if (uri.query.from) {
+            if (url.searchParams.has("from")) {
                 try {
                     await api.post({
                         action: "rollback",
                         assertuser: mw.config.get("wgUserName"),
-                        title: uri.query.title,
-                        user: uri.query.from,
+                        title: url.searchParams.get("title"),
+                        user: url.searchParams.get("from"),
                         summary,
-                        token: uri.query.token,
+                        token: url.searchParams.get("token"),
                         format: "json",
                     });
                     rbing.css("color", "green").html(`成功！${wgULS("将在", "將在")}<span id="rbcount">3</span>秒${wgULS("内刷新", "內重新整理")}`);
@@ -94,8 +94,8 @@ $(() => {
                     exit();
                 }
             } else {
-                uri.query.summary = summary;
-                window.open(uri.toString(), "_self");
+                url.searchParams.set("summary", summary);
+                window.open(url, "_self");
             }
         }
         return false;

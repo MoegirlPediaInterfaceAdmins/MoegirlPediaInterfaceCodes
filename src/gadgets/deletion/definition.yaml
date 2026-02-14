@@ -31,7 +31,6 @@ dependencies:
   - ext.gadget.libOOUIDialog
   - mediawiki.util
   - mediawiki.api
-  - mediawiki.Uri
 
 _sites:
   - zh

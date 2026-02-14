@@ -236,7 +236,7 @@
                 continue;
             }
             ele.classList.add("markrights");
-            const url = new URL(new mw.Uri(ele.href));
+            const url = new URL(ele.href, location.origin);
             let username;
             const pathname = decodeURIComponent(url.pathname);
             const title = url.searchParams.get("title");

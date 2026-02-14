@@ -32,9 +32,9 @@
         let retryCount = 0;
         try {
             const lazyload = new Image();
-            const url = new mw.Uri(img.dataset.src || img.src);
-            if (url.host.endsWith(".moegirl.org")) {
-                url.host += ".cn";
+            const url = new URL(img.dataset.src || img.src, location.origin);
+            if (url.hostname.endsWith(".moegirl.org")) {
+                url.hostname += ".cn";
             }
             lazyload.addEventListener("load", () => {
                 img.src = url;
@@ -42,8 +42,8 @@
             });
             lazyload.addEventListener("error", () => {
                 if (retryCount++ < 3) {
-                    const url = new mw.Uri(lazyload.src);
-                    url.query._ = Math.random();
+                    const url = new URL(lazyload.src, location.origin);
+                    url.searchParams.set("_", Math.random());
                     lazyload.src = url;
                 } else {
                     console.info("Widget:SideBarPic img-load-failed\n", img.dataset.src);

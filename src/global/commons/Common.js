@@ -66,7 +66,7 @@
     };
     // 页顶返回主站
     const topGoback = () => {
-        if (`${new mw.Uri(document.referrer)}`.startsWith(`${`${mw.config.get("wgServer").replace("commons.moegirl", "zh.moegirl")}${mw.config.get("wgScriptPath")}`}/`)) {
+        if (`${new URL(document.referrer)}`.startsWith(`${`${mw.config.get("wgServer").replace("commons.moegirl", "zh.moegirl")}${mw.config.get("wgScriptPath")}`}/`)) {
             $("#back").removeAttr("style").on("click", () => {
                 if (history.length > 1) {
                     history.go(-1);
@@ -89,24 +89,24 @@
     };
     // 主站用户页链接
     const zhUserPage = () => {
-        $("#mw-content-text a").each(function () {
+        $("#mw-content-text a").each((_, ele) => {
             try {
-                const link = new mw.Uri(this.href);
-                if (link.toString().startsWith(`${mw.config.get("wgServer") + mw.config.get("wgScriptPath")}/`)) {
+                const link = new URL(ele.href, location.origin);
+                if (link.origin === `${mw.config.get("wgServer")}${mw.config.get("wgScriptPath")}/`) {
                     return;
                 }
-                if (/^\/api\.php/i.test(link.path)) {
+                if (/^\/api\.php/i.test(link.pathname)) {
                     return;
                 }
-                if (!link.query.title && /\.php$/i.test(link.path)) {
+                if (!link.searchParams.get("title") && /\.php$/i.test(link.pathname)) {
                     return;
                 }
-                if (link.query && (link.query.action || link.query.diff)) {
+                if (link.searchParams.get("action") || link.searchParams.get("diff")) {
                     return;
                 }
-                const href = ((link.query.title || decodeURI(link.path.substring(1))).match(/^user(?:[ _]talk)?:[^/]+/i) || [null])[0];
+                const href = ((link.searchParams.get("title") || decodeURI(link.pathname.substring(1))).match(/^user(?:[ _]talk)?:[^/]+/i) || [null])[0];
                 if (href) {
-                    $(this).after(`<sub>[<a target="_blank" title="主站上的用户 ${href.replace(/user(_talk)?:/i, "")}" href="${mw.config.get("wgServer").replace("commons.moegirl", "zh.moegirl")}${mw.config.get("wgScriptPath")}/${href}">主</a>]</sub>`);
+                    $(ele).after(`<sub>[<a target="_blank" title="主站上的用户 ${href.replace(/user(_talk)?:/i, "")}" href="${mw.config.get("wgServer").replace("commons.moegirl", "zh.moegirl")}${mw.config.get("wgScriptPath")}/${href}">主</a>]</sub>`);
                 }
             } catch (_e) {
                 return;

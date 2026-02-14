@@ -20,10 +20,10 @@
 
     /* 共享站相关 */
     if (["ViewAvatar", "Listfiles", "ListDuplicatedFiles", "Unusedimages", "Uncategorizedimages", "MediaStatistics", "TimedMediaHandler"].includes(mw.config.get("wgCanonicalSpecialPageName"))) {
-        const url = new mw.Uri();
-        url.host = url.host.replace(/^[^.]+/g, "commons");
-        url.path = mw.config.get("wgScript");
-        url.query.title = `${mw.config.get("wgCanonicalNamespace")}:${mw.config.get("wgCanonicalSpecialPageName")}`;
+        const url = new URL(location.href);
+        url.hostname = url.hostname.replace(/^[^.]+/g, "commons");
+        url.pathname = mw.config.get("wgScript");
+        url.searchParams.set("title", `${mw.config.get("wgCanonicalNamespace")}:${mw.config.get("wgCanonicalSpecialPageName")}`);
         location.replace(url);
     }
     /* 浮动滚动条 */
@@ -529,18 +529,14 @@
     } catch (e) {
         console.debug(e);
     }
-    // await Promise.all([
-    //     mw.loader.using(["mediawiki.Uri"]),
-    //     $.ready,
-    // ]);
     tabs();
     // 图片地址
     setInterval(() => {
         $(document.querySelectorAll('img[src*="//img.moegirl.org/"]:not(.org-changed), img[src*="//commons.moegirl.org/"]:not(.org-changed)')).each((_, ele) => {
             try {
-                const url = new mw.Uri(ele.src);
-                if (["img.moegirl.org", "commons.moegirl.org"].includes(url.host)) {
-                    url.host += ".cn";
+                const url = new URL(ele.src);
+                if (["img.moegirl.org", "commons.moegirl.org"].includes(url.hostname)) {
+                    url.hostname += ".cn";
                     ele.src = url;
                 }
                 ele.classList.add("org-changed");

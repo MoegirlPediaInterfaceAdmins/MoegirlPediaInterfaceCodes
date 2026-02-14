@@ -241,7 +241,7 @@ $(() => {
             if (!$ele.find(".mw-editsection")[0] || $ele.next(".movedToNotice, .movedFromNotice, .saveNotice")[0]) {
                 return;
             }
-            const section = +new mw.Uri($ele.find('.mw-editsection a[href*="action=edit"][href*="section="]').attr("href")).query.section;
+            const section = +new URL($ele.find('.mw-editsection a[href*="action=edit"][href*="section="]').attr("href"), location.origin).searchParams.get("section");
             const anchor = $(ele).attr("id");
             const button = $("<a>").attr("href", "#").prop("draggable", false).addClass("lr-qmt-link").text(wgULS("移动", "移動")).on("click", (e) => {
                 e.preventDefault();

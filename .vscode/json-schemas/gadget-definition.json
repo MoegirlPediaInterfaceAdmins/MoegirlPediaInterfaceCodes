@@ -216,21 +216,19 @@
         "dependencies": {
             "type": "array",
             "default": [],
-            "title": "dependencies 指定小工具的依赖项，如无需依赖项可保留空数组，但不能删去，其中引用api时用 \"mediawiki.api\"，引用uri时用 \"mediawiki.Uri\"",
+            "title": "dependencies 指定小工具的依赖项，如无需依赖项可保留空数组，但不能删去，其中引用api时用 \"mediawiki.api\"",
             "uniqueItems": true,
             "minItems": 0,
             "items": {
                 "type": "string",
                 "title": "A dependency",
                 "examples": [
-                    "mediawiki.api",
-                    "mediawiki.Uri"
+                    "mediawiki.api"
                 ]
             },
             "examples": [
                 [
-                    "mediawiki.api",
-                    "mediawiki.Uri"
+                    "mediawiki.api"
                 ]
             ]
         },
