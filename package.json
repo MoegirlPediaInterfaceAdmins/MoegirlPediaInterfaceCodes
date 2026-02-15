@@ -60,7 +60,7 @@
         "postcss-selector-not": "^9.0.0",
         "pretty-bytes": "^7.1.0",
         "semver": "^7.7.4",
-        "simple-git": "^3.30.0",
+        "simple-git": "^3.31.1",
         "stylelint": "^17.3.0",
         "stylelint-config-standard": "^40.0.0",
         "terser": "^5.46.0",
