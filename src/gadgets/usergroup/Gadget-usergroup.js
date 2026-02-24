@@ -368,11 +368,21 @@
             }
         }
     };
-    hook();
-    mw.hook("wikipage.content").add(hook);
-    mw.hook("anntools.usergroup").add(hook);
+    let hookPending = false;
+    const scheduleHook = () => {
+        if (!hookPending) {
+            hookPending = true;
+            requestAnimationFrame(() => {
+                hookPending = false;
+                hook();
+            });
+        }
+    };
+    scheduleHook();
+    mw.hook("wikipage.content").add(scheduleHook);
+    mw.hook("anntools.usergroup").add(scheduleHook);
     if (document.readyState !== "complete") {
-        $(window).on("load", hook);
+        $(window).on("load", scheduleHook);
     }
     const style = ["sup[class^=markrights-]+sup[class^=markrights-] { margin-left: 2px; }"];
     for (const [group, color] of groups) {
