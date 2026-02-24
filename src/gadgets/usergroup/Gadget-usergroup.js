@@ -372,9 +372,12 @@
     const scheduleHook = () => {
         if (!hookPending) {
             hookPending = true;
-            requestAnimationFrame(() => {
-                hookPending = false;
-                hook();
+            requestAnimationFrame(async () => {
+                try {
+                    await hook();
+                } finally {
+                    hookPending = false;
+                }
             });
         }
     };
