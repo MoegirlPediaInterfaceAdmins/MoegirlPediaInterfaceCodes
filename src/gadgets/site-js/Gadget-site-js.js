@@ -17,6 +17,13 @@
     const $body = $(body);
     const $window = $(window);
     const sleep = (ms = 1000) => new Promise((res) => setTimeout(res, ms));
+    const createElement = Document.prototype.createElement.bind(document);
+    const getAttribute = Element.prototype.getAttribute;
+    const setAttribute = Element.prototype.setAttribute;
+    const cloneNode = Node.prototype.cloneNode;
+    const appendChild = Node.prototype.appendChild.bind(document.body);
+    const contains = Node.prototype.contains.bind(document.body);
+    const getComputedStyle = window.getComputedStyle;
 
     /* 共享站相关 */
     if (["ViewAvatar", "Listfiles", "ListDuplicatedFiles", "Unusedimages", "Uncategorizedimages", "MediaStatistics", "TimedMediaHandler"].includes(mw.config.get("wgCanonicalSpecialPageName"))) {
@@ -368,34 +375,62 @@
         }
         return result;
     };
-    const createElement = Document.prototype.createElement.bind(document);
-    const getAttribute = Element.prototype.getAttribute;
-    const setAttribute = Element.prototype.setAttribute;
-    const cloneNode = Node.prototype.cloneNode;
-    const appendChild = Node.prototype.appendChild.bind(document.body);
-    const contains = Node.prototype.contains.bind(document.body);
     const watermark = (txt, size) => {
-        const styleString = `position: fixed !important; z-index: 99999 !important; inset: 0px !important; background-image: url("data:image/svg+xml;base64,${btoa(`<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}"><foreignObject width="${size}" height="${size}"><html xmlns="http://www.w3.org/1999/xhtml" style="width: ${size}px; height: ${size}px;"><head></head><body style="width: ${size}px; height: ${size}px; margin: 0px;"><div style="width: 100% !important; height: 100% !important; opacity: .17 !important; font-size: 24px !important; position: relative !important; color: black !important;"><div style="transform: rotate(-15deg) translateX(-50%) translateY(-50%) !important; word-break: break-all !important; top: 36% !important; left: 50% !important; position: absolute !important; width: 100% !important; text-align: center !important;">${unescapeString(encodeURIComponent(txt))}</div></div></body></html></foreignObject></svg>`)}") !important; background-repeat: repeat !important; pointer-events: none !important; display: block !important; visibility: visible !important; width: unset !important; height: unset !important; opacity: unset !important; background-color: unset !important;`;
+        const backgroundImageURL = `url("data:image/svg+xml;base64,${btoa(`<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}"><foreignObject width="${size}" height="${size}"><html xmlns="http://www.w3.org/1999/xhtml" style="width: ${size}px; height: ${size}px;"><head></head><body style="width: ${size}px; height: ${size}px; margin: 0px;"><div style="width: 100% !important; height: 100% !important; opacity: .17 !important; font-size: 24px !important; position: relative !important; color: black !important;"><div style="transform: rotate(-15deg) translateX(-50%) translateY(-50%) !important; word-break: break-all !important; top: 36% !important; left: 50% !important; position: absolute !important; width: 100% !important; text-align: center !important;">${unescapeString(encodeURIComponent(txt))}</div></div></body></html></foreignObject></svg>`)}")`;
+        const styleString = `position: fixed !important; z-index: 99999 !important; inset: 0px !important; background-image: ${backgroundImageURL} !important; background-repeat: repeat !important; pointer-events: none !important; display: block !important; visibility: visible !important; width: unset !important; height: unset !important; opacity: unset !important; background-color: unset !important;`;
         const template = createElement("div");
         setAttribute.bind(template)("style", styleString);
         /**
          * @type { typeof template }
          */
         let ele = appendChild(cloneNode.bind(template)(true));
+        let recreateCount = 0;
         setInterval(() => {
             const reasons = [];
             if (!contains(ele)) {
                 reasons.push("not in body");
             }
-            if (getAttribute.bind(ele)("style") !== styleString) {
-                reasons.push("styleString not match");
+            const nowStyleString = getAttribute.bind(ele)("style");
+            if (nowStyleString !== styleString) {
+                reasons.push(`styleString not match: ${nowStyleString}`);
+            }
+            const style = getComputedStyle(ele);
+            if (style.position !== "fixed") {
+                reasons.push(`position not fixed: ${style.position}`);
+            }
+            if (style.zIndex !== "99999") {
+                reasons.push(`z-index not 99999: ${style.zIndex}`);
+            }
+            if (style.inset !== "0px") {
+                reasons.push(`inset not 0px: ${style.inset}`);
+            }
+            if (style.backgroundImage !== backgroundImageURL) {
+                reasons.push(`background-image not match: ${style.backgroundImage}`);
+            }
+            if (style.backgroundRepeat !== "repeat") {
+                reasons.push(`background-repeat not repeat: ${style.backgroundRepeat}`);
+            }
+            if (style.pointerEvents !== "none") {
+                reasons.push(`pointer-events not none: ${style.pointerEvents}`);
+            }
+            if (style.display !== "block") {
+                reasons.push(`display not block: ${style.display}`);
+            }
+            if (style.visibility !== "visible") {
+                reasons.push(`visibility not visible: ${style.visibility}`);
             }
             if (reasons.length > 0) {
                 console.info("[watermark] Recreate watermark:", reasons);
                 try {
                     ele.remove();
-                } catch { }
-                ele = appendChild(cloneNode.bind(template)(true));
+                } finally {
+                    ele = appendChild(cloneNode.bind(template)(true));
+                    recreateCount++;
+                    if (recreateCount > 20) {
+                        recreateCount = 0;
+                        alert("检测到水印被修改或移除超过20次，可能存在恶意脚本干扰水印显示，请检查浏览器插件或电脑安全状况！");
+                    }
+                }
             }
         }, 1000);
     };
