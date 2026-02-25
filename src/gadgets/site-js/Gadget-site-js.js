@@ -25,6 +25,8 @@
     const contains = Node.prototype.contains.bind(document.body);
     const getComputedStyle = window.getComputedStyle;
 
+    const mgHostName = atob("Lm1vZWdpcmwub3JnLmNu");
+
     /* 共享站相关 */
     if (["ViewAvatar", "Listfiles", "ListDuplicatedFiles", "Unusedimages", "Uncategorizedimages", "MediaStatistics", "TimedMediaHandler"].includes(mw.config.get("wgCanonicalSpecialPageName"))) {
         const url = new URL(location.href);
@@ -334,14 +336,6 @@
             });
         }
     };
-    /* 域名跳转提示 */
-    const domainChangedAlert = () => {
-        $body.before('<div style="background: #3366CC; color: white; text-align: center; padding: .5rem; position: static;" id="domainChangedAlert"><p>萌娘百科已将域名替换为 <code>*.moegirl.org<b><u>.cn</u></b></code>，原有域名可能访问困难，请更换您的书签等的页面地址。</p></div>');
-        $body.css({
-            "background-position-y": $("#domainChangedAlert").outerHeight(),
-            position: "relative",
-        });
-    };
     /* 水印 */
     // https://github.com/zloirock/core-js/blob/v3.29.1/packages/core-js/modules/es.unescape.js
     const hex2 = /^[\da-f]{2}$/i;
@@ -535,7 +529,7 @@
         } catch {
             substHost = "";
         }
-        const currentHostFlag = !/\.moegirl\.org(?:\.cn)?$/i.test(location.host);
+        const currentHostFlag = !location.hostname.endsWith(mgHostName);
         if (top !== window || currentHostFlag) {
             /* let reverseProxyhostAlerted = [];
             if (localStorage.getItem("reverse proxy alerted") !== null) {
@@ -552,14 +546,12 @@
             /* const now = new Date().getTime();
             if (!Reflect.has(reverseProxyhostAlerted, detectedHost) || typeof reverseProxyhostAlerted[detectedHost] !== "number" || reverseProxyhostAlerted[detectedHost] < now - 24 * 60 * 60 * 1000) {
                 reverseProxyhostAlerted[detectedHost] = now; */
-            oouiDialog.alert(`<p>您当前是在${currentHostFlag ? "非萌百域名" : "嵌套窗口"}访问，请注意不要在此域名下输入您的用户名或密码，以策安全！</p><p>${detectedHost ? `${currentHostFlag ? "当前" : "顶层窗口"}域名为 <code>${detectedHost}</code>，` : ""}萌百域名是以 <code>.moegirl.org.cn</code> 结尾的。</p>`, {
+            oouiDialog.alert(`<p>您当前是在${currentHostFlag ? "非萌百域名" : "嵌套窗口"}访问，请注意不要在此域名下输入您的用户名或密码，以策安全！</p><p>${detectedHost ? `${currentHostFlag ? "当前" : "顶层窗口"}域名为 <code>${detectedHost}</code>，` : ""}萌百域名是以 <code>${mgHostName}</code> 结尾的。</p>`, {
                 title: "萌娘百科提醒您",
                 size: "medium",
             });
             /* }
             localStorage.setItem("reverse proxy alerted", JSON.stringify(reverseProxyhostAlerted)); */
-        } else if (!location.hostname.endsWith(".moegirl.org.cn")) {
-            $(domainChangedAlert);
         }
     } catch (e) {
         console.debug(e);
