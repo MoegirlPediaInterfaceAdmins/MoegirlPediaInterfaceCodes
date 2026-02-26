@@ -1,6 +1,6 @@
 // <nowiki>
 /* 这里的任何JavaScript将在全站加载
- * 请尊重萌娘百科版权，以下代码复制需要注明原自萌娘百科，并且附上URL地址 http://zh.moegirl.org.cn/MediaWiki:Gadget-site-js.js
+ * 请尊重萌娘百科版权，以下代码复制需要注明原自萌娘百科，并且附上URL地址 http://mzh.moegirl.org.cn/MediaWiki:Gadget-site-js.js
  * 版权协定：知识共享 署名-非商业性使用-相同方式共享 3.0
  */
 "use strict";
