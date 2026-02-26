@@ -10,11 +10,11 @@
         "node": "^24.11"
     },
     "scripts": {
-        "test": "eslint src && stylelint src/**/*.css && v8r && node scripts/emailmapChecker/index.js",
-        "format": "eslint src --fix && stylelint src/**/*.css --fix",
+        "test": "eslint src && stylelint 'src/**/*.css' && v8r && node scripts/emailmapChecker/index.js",
+        "format": "eslint src --fix && stylelint 'src/**/*.css' --fix",
         "ci": "export RANDOM_UUID=$(uuidgen) && rm -rdf node_modules && node scripts/ci/before.js && npm ci && node scripts/ci/after.js",
         "build": "run-p build:js build:css",
-        "build:css": "postcss src/**/*.css --base src/ -d dist/",
+        "build:css": "postcss 'src/**/*.css' --base src/ -d dist/ --verbose",
         "build:js": "rm -rf dist && npx tsc --project tsconfig.production.json && node scripts/build/index.js",
         "minification:js": "node scripts/minification/terser.js"
     },
