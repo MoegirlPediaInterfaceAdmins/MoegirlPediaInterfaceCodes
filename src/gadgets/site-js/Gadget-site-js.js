@@ -262,8 +262,15 @@
             });
     });
     /* 修正嵌套使用删除线、黑幕、彩色幕和胡话模板 */
-    const templateTags = ["s", "del"];
-    const templateClasses = [".heimu", ".colormu", ".just-kidding-text"];
+    const templateTags = [
+        "s",
+        "del",
+    ];
+    const templateClasses = [
+        ".heimu",
+        ".colormu",
+        ".just-kidding-text",
+    ];
     const templateStr = [...templateTags, ...templateClasses].join(", ");
     /**
      * @param {JQuery<HTMLDivElement>} $content
