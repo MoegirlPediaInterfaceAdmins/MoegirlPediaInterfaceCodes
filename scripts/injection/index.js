@@ -14,17 +14,16 @@ console.info("build config:", config);
 const { targets } = await yamlModule.readFile("scripts/injection/targets.yaml");
 console.info("build targets:", targets);
 
-const { latest: { hash } } = await git.log({
-    file: "src",
-    format: "%H",
-    maxCount: 1,
-});
-const seed = parseInt(hash.substring(0, 13), 16);
-console.info('git hash of "src":', hash, "seed:", seed);
-
 for (const target of targets) {
     const compiledPath = path.join("dist/_compiled", target);
     console.info(`Processing target ${target}...`);
+    const { latest: { hash } } = await git.log({
+        file: path.join("src", target),
+        format: "%H",
+        maxCount: 1,
+    });
+    const seed = parseInt(hash.substring(0, 13), 16);
+    console.info(`git hash of "${target}":`, hash, "seed:", seed);
     console.info("compiledPath:", compiledPath);
 
     const code = await fs.promises.readFile(compiledPath, { encoding: "utf-8" });
