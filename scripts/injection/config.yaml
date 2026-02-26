@@ -2,9 +2,7 @@ compact: false
 
 controlFlowFlattening: false
 
-deadCodeInjection: true
-
-deadCodeInjectionThreshold: 0.13
+deadCodeInjection: false
 
 debugProtection: false
 
@@ -19,7 +17,9 @@ identifierNamesGenerator: hexadecimal
 
 log: true
 
-numbersToExpressions: true
+numbersToExpressions: false
+
+simplify: false
 
 splitStrings: true
 
@@ -27,7 +27,7 @@ splitStringsChunkLength: 7
 
 stringArray: true
 
-stringArrayCallsTransform: true
+stringArrayCallsTransform: false
 
 stringArrayCallsTransformThreshold: 1
 
@@ -40,9 +40,9 @@ stringArrayRotate: true
 
 stringArrayShuffle: true
 
-stringArrayWrappersCount: 7
+stringArrayWrappersCount: 1
 
-stringArrayWrappersChainedCalls: true
+stringArrayWrappersChainedCalls: false
 
 stringArrayWrappersParametersMaxCount: 3
 
