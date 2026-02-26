@@ -11,6 +11,9 @@ const totalScopes = [];
 const dirents = await fs.promises.readdir("src", {
     withFileTypes: true,
 });
+const blacklists = [
+    "Injection",
+];
 console.info("dirents:", dirents);
 for (const dirent of dirents) {
     if (!dirent.isDirectory()) {
@@ -19,6 +22,9 @@ for (const dirent of dirents) {
     const type = dirent.name;
     const prefix = type[0].toUpperCase() + type.slice(1).replace(/s$/, "");
     console.info(`[${type}]`, "prefix:", prefix);
+    if (blacklists.includes(prefix)) {
+        continue;
+    }
     const listSet = new Set();
     if (["gadgets", "@types"].includes(type)) {
         for (const item of await fs.promises.readdir(path.join("src", type))) {
