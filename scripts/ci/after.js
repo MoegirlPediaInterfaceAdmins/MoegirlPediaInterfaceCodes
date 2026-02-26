@@ -1,9 +1,9 @@
 import fs from "node:fs";
 import path from "node:path";
-import console, { originalConsole } from "../modules/console.js";
+import console, { split } from "../modules/console.js";
 import git from "../modules/git.js";
 import mkdtmp from "../modules/mkdtmp.js";
-originalConsole.info("=".repeat(120));
+split();
 console.info("Initialization done.");
 
 const packageLockFile = "package-lock.json";

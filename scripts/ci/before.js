@@ -1,6 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
-import console, { originalConsole } from "../modules/console.js";
+import console, { split } from "../modules/console.js";
 import jsonModule from "../modules/jsonModule.js";
 import mkdtmp from "../modules/mkdtmp.js";
 import testLatency from "../modules/testLatency.js";
@@ -50,4 +50,4 @@ console.info("modifiedCount:", modifiedCount);
 console.info("Start to write back", packageLockFile);
 await jsonModule.writeFile(packageLockFile, packageLockFileContent);
 console.info("Done.");
-originalConsole.info("=".repeat(120));
+split();
