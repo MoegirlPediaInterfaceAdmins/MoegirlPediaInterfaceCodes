@@ -15,8 +15,9 @@
         "ci": "export RANDOM_UUID=$(uuidgen) && rm -rdf node_modules && node scripts/ci/before.js && npm ci && node scripts/ci/after.js",
         "build": "run-p build:js build:css",
         "build:css": "postcss 'src/**/*.css' --base src/ -d dist/ --verbose",
-        "build:js": "rm -rf dist && npx tsc --project tsconfig.production.json && node scripts/build/index.js",
-        "minification:js": "node scripts/minification/terser.js"
+        "prebuild:js": "rm -rf dist",
+        "build:js": "npx tsc --project tsconfig.production.json",
+        "postbuild:js": "node scripts/injection/index.js && node scripts/minification/terser.js"
     },
     "dependencies": {
         "@actions/artifact": "^6.1.0",

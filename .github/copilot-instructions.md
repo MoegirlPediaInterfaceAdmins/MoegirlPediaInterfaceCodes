@@ -86,15 +86,9 @@ npm --version
 
 5. **Build separately** (if needed):
    ```bash
-   npm run build:js    # TypeScript compilation only
+   npm run build:js    # JavaScript only
    npm run build:css   # PostCSS processing only
    ```
-
-6. **Minification** (production):
-   ```bash
-   npm run minification:js
-   ```
-   Uses Terser to minify compiled JavaScript
 
 ### Build Order for Making Changes
 
@@ -371,9 +365,8 @@ npm run build                   # Compile all
 npm test                        # Final check
 
 # Individual operations
-npm run build:js                # TypeScript only
+npm run build:js                # JavaScript only
 npm run build:css               # CSS only
-npm run minification:js         # Minify (production)
 ```
 
 ## Additional Context
