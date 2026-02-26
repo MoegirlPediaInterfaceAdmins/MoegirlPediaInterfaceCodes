@@ -1,5 +1,8 @@
 "use strict";
 (() => {
+    // 反嵌入：萌百服务端已返回 x-frame-options: DENY，不再需要反嵌入
+    // 反反代：已使用 javascript-obfuscator 的 domainLock 功能，且域名锁定在 .moegirl.org.cn 域名下，不再需要反反代
+    // 本脚本不再需要，保留在此仅供参考
     const mgHostName = ".moegirl.org.cn";
     /* 反嵌入反反代 */
     try {
