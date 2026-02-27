@@ -21,35 +21,35 @@ numbersToExpressions: false
 
 simplify: false
 
-splitStrings: true
+splitStrings: false
 
-splitStringsChunkLength: 7
+splitStringsChunkLength: 0
 
 stringArray: true
 
 stringArrayCallsTransform: false
 
-stringArrayCallsTransformThreshold: 1
+stringArrayCallsTransformThreshold: 0
 
 stringArrayEncoding:
   - base64
 
-stringArrayIndexShift: true
+stringArrayIndexShift: false
 
-stringArrayRotate: true
+stringArrayRotate: false
 
-stringArrayShuffle: true
-
-stringArrayWrappersCount: 1
-
-stringArrayWrappersChainedCalls: false
-
-stringArrayWrappersParametersMaxCount: 3
-
-stringArrayWrappersType: function
+stringArrayShuffle: false
 
 stringArrayThreshold: 1
 
+stringArrayWrappersCount: 0
+
+stringArrayWrappersChainedCalls: false
+
+stringArrayWrappersParametersMaxCount: 2
+
+stringArrayWrappersType: variable
+
 target: browser-no-eval
 
-transformObjectKeys: true
+transformObjectKeys: false
