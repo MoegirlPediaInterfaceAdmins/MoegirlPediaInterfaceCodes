@@ -21,7 +21,7 @@ $(() => {
             }
         }
     }
-    mw.loader.addStyleTag("#t-expandtemplates, #t-userlog, .ns-2 #t-pagelog, .ns-3 #t-pagelog, .ns--1 #t-pagelog {display:none;}.ns-10 #t-expandtemplates, .ns-2 #t-userlog, .ns-3 #t-userlog {display:list-item!important;}");
+    mw.loader.addStyleTag("#t-expandtemplates, #t-userlog, .ns-2 #t-pagelog, .ns-3 #t-pagelog, .ns--1 #t-pagelog, .ns--1 #t-prefixindex {display:none;}.ns-10 #t-expandtemplates, .ns-2 #t-userlog, .ns-3 #t-userlog {display:list-item!important;}");
     $("#t-log a").text(wgULS("用户日志", "使用者日誌", null, null, "用戶日誌"));
 });
 // </pre>
