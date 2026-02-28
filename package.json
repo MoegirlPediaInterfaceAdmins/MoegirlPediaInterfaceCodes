@@ -10,10 +10,15 @@
         "node": "^24.11"
     },
     "scripts": {
-        "test": "eslint src && stylelint 'src/**/*.css' && v8r && node scripts/emailmapChecker/index.js",
-        "format": "eslint src --fix && stylelint 'src/**/*.css' --fix",
+        "test": "run-p --aggregate-output -cl test:*",
+        "test:eslint": "eslint src --cache --cache-strategy content --cache-location .cache/ --color --exit-on-fatal-error --max-warnings 0",
+        "test:stylelint": "stylelint 'src/**/*.css' --cache --cache-strategy content --cache-location .cache/ --color --max-warnings 0",
+        "test:v8r": "{ npx v8r 2>&1 1>&3 | grep -vP \"(?:Searching for|Found) schema in \\.v8rrc\\.yaml \\.\\.\\.\" >&2; } 3>&1",
+        "format": "run-p --aggregate-output -cl format:*",
+        "format:eslint": "npm run test:eslint -- --fix",
+        "format:stylelint": "npm run test:stylelint -- --fix",
         "ci": "export RANDOM_UUID=$(uuidgen) && rm -rdf node_modules && node scripts/ci/before.js && npm ci && node scripts/ci/after.js",
-        "build": "run-p build:js build:css",
+        "build": "run-p -l build:*",
         "build:css": "postcss 'src/**/*.css' --base src/ -d dist/ --verbose",
         "prebuild:js": "rm -rf dist",
         "build:js": "npx tsc --project tsconfig.production.json",

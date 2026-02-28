@@ -161,11 +161,22 @@ jobs:
           path: .cache
           key: cache@${{ github.ref }}
       - name: Check environment
-        run: 'npx eslint --env-info && echo ---- && echo "stylelint: "$(npx stylelint --version) && echo ---- && echo "v8r: "$(npx v8r --version) && echo ---- && mkdir -vp .cache && echo ".cache:" && ls -lhA .cache'
+        run: |
+          npx eslint --env-info
+          echo ----
+          echo "stylelint: "
+          npx stylelint --version
+          echo ----
+          echo "v8r: "
+          npx v8r --version
+          echo ----
+          mkdir -vp .cache
+          echo ".cache:"
+          ls -lhA .cache
       - name: Run eslint
-        run: npx eslint --cache --cache-strategy content --cache-location ".cache/" --exit-on-fatal-error --format @annangela/eslint-formatter-gha --max-warnings 0 ./src
+        run: npm run test:eslint -- --format @annangela/eslint-formatter-gha
       - name: Run stylelint
-        run: npx stylelint --cache --cache-strategy content --cache-location ".cache/" --custom-formatter=@csstools/stylelint-formatter-github --max-warnings 0 "src/**/*.css"
+        run: npm run test:stylelint -- --custom-formatter=@csstools/stylelint-formatter-github
       - name: Run v8r
         run: npx v8r
       - name: Run postcss test
