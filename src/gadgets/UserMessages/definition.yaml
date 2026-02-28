@@ -29,6 +29,7 @@ peers: []
 dependencies:
   - ext.gadget.site-lib
   - ext.gadget.libUtil
+  - jquery.ui
   - mediawiki.util
 
 _sites:
