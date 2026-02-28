@@ -89,6 +89,7 @@ const config = [
                 libCachedCode: false,
                 CodeMirror: false,
                 Prism: false,
+                libRequestAnimationFrame: false,
             },
         },
     },
