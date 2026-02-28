@@ -5,32 +5,7 @@
     const allowedGroups = ["sysop", "patroller", "staff"];
     const allowedInGroup = mw.config.get("wgUserGroups").filter((group) => allowedGroups.includes(group)).length > 0;
 
-    const { body } = document;
-    const html = document.documentElement;
-    const $body = $(body);
     const $window = $(window);
-    /* 浮动滚动条 */
-    $window.on("resize", () => {
-        const { innerWidth } = window;
-        let scrollbarWidth;
-        switch ("scroll") {
-            case getComputedStyle(body).overflowY: {
-                scrollbarWidth = innerWidth - body.clientWidth;
-                break;
-            }
-            case getComputedStyle(html).overflowY: {
-                scrollbarWidth = innerWidth - html.clientWidth;
-                break;
-            }
-            default: {
-                const backup = body.style.overflowY;
-                body.style.overflowY = "scroll";
-                scrollbarWidth = innerWidth - body.clientWidth;
-                body.style.overflowY = backup;
-            }
-        }
-        $body[scrollbarWidth === 0 ? "addClass" : "removeClass"]("overlay-scrollbars");
-    }).trigger("resize");
     // 修复代码编辑器$.ucFirst引用错误
     jQuery.extend({
         ucFirst: (s) => `${`${s}`.charAt(0).toUpperCase()}${`${s}`.substring(1)}`,
