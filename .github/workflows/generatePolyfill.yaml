@@ -55,6 +55,7 @@ jobs:
         with:
           show-progress: false
           repository: JakeChampion/polyfill-service
+          ref: 1cadcb7e018d69903b96ae5908420f79c9785221
           path: polyfill-service
           sparse-checkout: |
             polyfill-libraries/${{ steps.polyfillConfig.outputs.TARGET_POLYFILL_VERSION }}/
