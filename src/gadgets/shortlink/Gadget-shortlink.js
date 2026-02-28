@@ -109,15 +109,16 @@ $(() => {
             });
 
             // 点击复制操作
-            $("#p-sl-list a[data-type]").on("click", async function () {
+            $("#p-sl-list a[data-type]").on("click", async (event) => {
+                const ele = event.currentTarget;
                 try {
-                    await navigator.clipboard.writeText(this.dataset.copyContent);
-                    markStatus(this, true, true);
+                    await navigator.clipboard.writeText(ele.dataset.copyContent);
+                    markStatus(ele, true, true);
                 } catch {
-                    markStatus(this, true, false);
+                    markStatus(ele, true, false);
                 } finally {
                     setTimeout(() => {
-                        markStatus(this, false);
+                        markStatus(ele, false);
                     }, 3000);
                 }
             });

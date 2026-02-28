@@ -79,16 +79,18 @@
             $("#mw-allmessages-form").remove();
             $(".TablePager_nav td").remove();
             $(".TablePager_nav tr").append('<td style="width: 50%;" class="TablePager_nav-prev"><div class="TablePager_nav-disabled">上一页</div></td><td style="width: 50%;" class="TablePager_nav-next"><div class="TablePager_nav-disabled">下一页</div></td>');
-            $(".TablePager_nav-prev div").on("click", function () {
-                if ($(this).hasClass("TablePager_nav-disabled")) {
+            $(".TablePager_nav-prev div").on("click", (event) => {
+                const $target = $(event.currentTarget);
+                if ($target.hasClass("TablePager_nav-disabled")) {
                     return false;
                 }
                 index -= length;
                 index = Math.max(index, 0);
                 load(am.slice(index, index + length));
             });
-            $(".TablePager_nav-next div").on("click", function () {
-                if ($(this).hasClass("TablePager_nav-disabled")) {
+            $(".TablePager_nav-next div").on("click", (event) => {
+                const $target = $(event.currentTarget);
+                if ($target.hasClass("TablePager_nav-disabled")) {
                     return false;
                 }
                 index += length;

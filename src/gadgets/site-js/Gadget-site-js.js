@@ -151,12 +151,12 @@
         const toLowerFirstCase = (str) => str.substring(0, 1).toLowerCase() + str.substring(1);
         const toUpperFirstCase = (str) => str.substring(0, 1).toUpperCase() + str.substring(1);
         mw.hook("wikipage.content").add((content) => {
-            content.find(".Tabs").each(function () {
-                const self = $(this);
+            content.find(".Tabs").each((_, ele) => {
+                const self = $(ele);
                 if (self.children(".TabLabel")[0]) {
                     return true;
                 }
-                const classList = Array.from(this.classList).filter((n) => Reflect.has(defaultStyle, n));
+                const classList = Array.from(ele.classList).filter((n) => Reflect.has(defaultStyle, n));
                 const data = $.extend({
                     labelPadding: "2px",
                     labelBorderColor: "#aaa",
@@ -166,7 +166,7 @@
                     textBorderColor: "#aaa",
                     textBackgroundColor: "white",
                     defaultTab: 1,
-                }, classList[0] ? defaultStyle[classList[0]] || {} : {}, this.dataset || {});
+                }, classList[0] ? defaultStyle[classList[0]] || {} : {}, ele.dataset || {});
                 const styleSheet = {
                     label: {},
                     text: {},
@@ -196,18 +196,18 @@
                 if (labelColorSideReverse) {
                     self.addClass("reverse");
                 }
-                self.children(".Tab").each(function () {
-                    if ($(this).children(".TabLabelText").text().replace(/\s/g, "").length || $(this).children(".TabLabelText").children().length) {
-                        $(this).children(".TabLabelText").appendTo(tabLabel);
-                        $(this).children(".TabContentText").appendTo(self.children(".TabContent"));
+                self.children(".Tab").each((_, ele) => {
+                    if ($(ele).children(".TabLabelText").text().replace(/\s/g, "").length || $(ele).children(".TabLabelText").children().length) {
+                        $(ele).children(".TabLabelText").appendTo(tabLabel);
+                        $(ele).children(".TabContentText").appendTo(self.children(".TabContent"));
                     }
-                    $(this).remove();
+                    $(ele).remove();
                 });
                 if (isNaN(defaultTab) || defaultTab <= 0 || defaultTab > tabLabel.children(".TabLabelText").length) {
                     defaultTab = 1;
                 }
-                tabLabel.children(".TabLabelText").on("click", function () {
-                    const label = $(this);
+                tabLabel.children(".TabLabelText").on("click", (event) => {
+                    const label = $(event.currentTarget);
                     label.addClass("selected").siblings().removeClass("selected").css({
                         "border-color": "transparent",
                         "background-color": "inherit",
@@ -250,21 +250,29 @@
         });
     };
     /* T:注解 */
-    $(".annotation").each((_, ele) => {
-        const popup = new OO.ui.PopupWidget({
-            $content: $(ele).children(".annotation-content"),
-            padded: true,
-            autoFlip: false,
-        });
-        $(ele)
-            .append(popup.$element)
-            .on("mouseover", () => {
-                popup.toggle(true);
-            })
-            .on("mouseout", () => {
-                popup.toggle(false);
+    $("body").on("mouseover", ".annotation", (event) => {
+        const $target = $(event.currentTarget);
+        let popup = $target.data("popup");
+
+        // 如果还没有创建 popup，则创建
+        if (!popup) {
+            popup = new OO.ui.PopupWidget({
+                $content: $target.children(".annotation-content"),
+                padded: true,
+                autoFlip: false,
             });
+            $target.append(popup.$element).data("popup", popup);
+        }
+
+        popup.toggle(true);
+    }).on("mouseout", ".annotation", (event) => {
+        const $target = $(event.currentTarget);
+        const popup = $target.data("popup");
+        if (popup) {
+            popup.toggle(false);
+        }
     });
+
     /* 修正嵌套使用删除线、黑幕、彩色幕和胡话模板 */
     const templateTags = [
         "s",
