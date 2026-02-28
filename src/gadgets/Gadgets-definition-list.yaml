@@ -157,3 +157,4 @@
     - prism-language-ruby
     - vector-2022-styles
     - libDiscussionUtil
+    - libRequestAnimationFrame
