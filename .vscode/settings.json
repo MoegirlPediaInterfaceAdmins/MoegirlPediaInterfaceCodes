@@ -31,6 +31,7 @@
     "conventionalCommits.scopes": [
         "@type/libBottomRightCorner.d.ts",
         "@type/libCachedCode.d.ts",
+        "@type/libRequestAnimationFrame.d.ts",
         "@type/LocalObjectStorage.d.ts",
         "@type/site-lib.d.ts",
         "Gadget/abusefilter33test",
@@ -86,6 +87,7 @@
         "Gadget/libJSON5",
         "Gadget/libOOUIDialog",
         "Gadget/libPolyfill",
+        "Gadget/libRequestAnimationFrame",
         "Gadget/libUtil",
         "Gadget/libip",
         "Gadget/LocalObjectStorage",
