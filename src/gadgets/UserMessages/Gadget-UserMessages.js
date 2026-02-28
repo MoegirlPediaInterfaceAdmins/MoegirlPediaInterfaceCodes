@@ -11,6 +11,8 @@
     if (window.AxUserMsg || !mw.config.get("wgUserGroups").includes("patroller") && !mw.config.get("wgUserGroups").includes("sysop")) {
         return;
     }
+    // alternative for jQuery UI `$.ui.autocomplete.escapeRegex`
+    const escapeRegex = (value) => value.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
     // alternative for jQuery UI autocomplete: jquery.suggestions
     // http://jqueryui.com/demos/autocomplete/ http://svn.wikimedia.org/viewvc/mediawiki/trunk/phase3/resources/jquery/jquery.suggestions.js?view=markup
     /* await mw.loader.using([
@@ -958,7 +960,7 @@
                     minLength: 0,
                     source: (request, response) => {
                         let i = 0;
-                        const matcher = new RegExp($.ui.autocomplete.escapeRegex(request.term), "i");
+                        const matcher = new RegExp(escapeRegex(request.term), "i");
                         response(select.children("option").map((_, ele) => {
                             if (i > (window.AxUserMsgMaxSelect || 20) && request.term) {
                                 return;
@@ -969,7 +971,7 @@
                                 return {
                                     label: text.replace(
                                         new RegExp(
-                                            `(?![^&;]+;)(?!<[^<>]*)(${$.ui.autocomplete.escapeRegex(request.term)
+                                            `(?![^&;]+;)(?!<[^<>]*)(${escapeRegex(request.term)
                                             })(?![^<>]*>)(?![^&;]+;)`, "gi",
                                         ), "<b>$1</b>"),
                                     value: text,
@@ -990,7 +992,7 @@
                             console.info("change", input, this, ui);
                         }, 16);
                         if (!ui.item) {
-                            const matcher = new RegExp(`^${$.ui.autocomplete.escapeRegex($(this).val())}$`, "i");
+                            const matcher = new RegExp(`^${escapeRegex($(this).val())}$`, "i");
                             valid = false;
                             select.children("option").each((_, ele) => {
                                 if ($(ele).text().match(matcher)) {
