@@ -28,6 +28,7 @@ peers: []
 dependencies:
   - ext.gadget.libBottomRightCorner
   - ext.gadget.site-lib
+  - ext.gadget.libRequestAnimationFrame
 
 _sites:
   - zh

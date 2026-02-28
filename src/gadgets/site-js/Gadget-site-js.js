@@ -18,6 +18,7 @@
     const $window = $(window);
     const sleep = (ms = 1000) => new Promise((res) => setTimeout(res, ms));
     const getComputedStyle = window.getComputedStyle;
+    const instanceRAF = new libRequestAnimationFrame.LibRequestAnimationFrame();
 
     /* 共享站相关 */
     if (["ViewAvatar", "Listfiles", "ListDuplicatedFiles", "Unusedimages", "Uncategorizedimages", "MediaStatistics", "TimedMediaHandler"].includes(mw.config.get("wgCanonicalSpecialPageName"))) {
@@ -29,7 +30,7 @@
     }
     /* 浮动滚动条 */
     const forbiddenScroll = ["hidden", "clip"];
-    $window.on("resize", () => {
+    const scrollbarCalc = () => {
         const innerWidth = window.innerWidth;
         let scrollbarWidth;
         if (!forbiddenScroll.includes(getComputedStyle(body).overflowY)) {
@@ -43,6 +44,9 @@
             body.style.overflowY = backup;
         }
         $body[scrollbarWidth <= 0 ? "addClass" : "removeClass"]("overlay-scrollbars");
+    };
+    $window.on("resize", () => {
+        instanceRAF.request(scrollbarCalc);
     }).trigger("resize");
     /* Tabs */
     const tabs = () => {
@@ -584,9 +588,12 @@
     $window.triggerHandler("hashchange.hashchange");
     // 列表侧边距
     setInterval(listMarginLeft, 200);
+    const mailAtAction = () => {
+        $(".mailSymbol").replaceWith('<span title="Template:Mail@">@</span>');
+    };
     ["copy", "keydown", "scroll", "mousemove"].forEach((type) => {
         document.addEventListener(type, () => {
-            $(".mailSymbol").replaceWith('<span title="Template:Mail@">@</span>');
+            instanceRAF.request(mailAtAction);
         }, {
             capture: true,
             passive: true,

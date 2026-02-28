@@ -39,6 +39,7 @@ $(() => {
         // "gadget_definition",
         // "gadget_definition_talk": false
     ];
+    const instanceRAF = new libRequestAnimationFrame.LibRequestAnimationFrame();
     const apiPrefix = `${mw.config.get("wgServer")}${mw.config.get("wgScriptPath")}/api.php`;
     const newPageMax = 50;
     const writeCountNum = (pages, plus) => {
@@ -293,12 +294,12 @@ $(() => {
                         showAllUnbind = [ctt.body, $ptPatroll];
                     }
                 }, 500);
-                $ptPatroll.on("mouseout", () => {
-                    if (timer) {
-                        clearTimeout(timer);
-                        timer = null;
-                    }
-                });
+            });
+            $ptPatroll.on("mouseout", () => {
+                if (timer) {
+                    clearTimeout(timer);
+                    timer = null;
+                }
             });
         }
     };
@@ -450,6 +451,8 @@ $(() => {
     $("#pt-watchlist-2").after($("<li></li>", {
         id: "pt-patroll",
     }).append(ptPatrollLink));
-    $("#pt-patroll").on("mouseover", updateUnpatrolled);
+    $("#pt-patroll").on("mouseover", () => {
+        instanceRAF.request(updateUnpatrolled);
+    });
 });
 // </pre>
