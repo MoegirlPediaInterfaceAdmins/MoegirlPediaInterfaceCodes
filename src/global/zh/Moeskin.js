@@ -205,7 +205,8 @@
             return $wrapper;
         };
         document.getElementById("mw-content-text")?.addEventListener("click", async (e) => {
-            if (e.pointerType === "mouse") {
+            const pointerType = e.pointerType;
+            if (pointerType !== "touch" && pointerType !== "pen") {
                 return;
             }
             /** @type {HTMLElement} */
@@ -236,7 +237,8 @@
         /** @type {HTMLElement|null} */
         let lastClickedHeimu = null;
         document.querySelector("#mw-content-text")?.addEventListener("click", (e) => {
-            if (e.pointerType === "mouse") {
+            const pointerType = e.pointerType;
+            if (pointerType !== "touch" && pointerType !== "pen") {
                 lastClickedHeimu = null;
                 return;
             }
