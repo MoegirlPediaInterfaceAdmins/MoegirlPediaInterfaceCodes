@@ -397,7 +397,7 @@ s.just-kidding-text {
 
 .infoBoxText {
     display: table-cell;
-    padding: 0.25em 0.5em 0.25em 1.3em;
+    padding: .25em .5em .25em 1.3em;
     width: 100%;
     vertical-align: middle;
 }
@@ -418,6 +418,14 @@ html.dark .infoBoxContent {
     margin: 0 auto;
     padding: 0;
     text-align: center;
+}
+
+.ve-ui-mwNoticesPopupTool-items .infoBox .infoBoxIcon {
+    display: none;
+}
+
+.ve-ui-mwNoticesPopupTool-items .infoBox .infoBoxText {
+    padding: .25em .5em .25em .75em;
 }
 
 /* wikitable green */
@@ -1075,6 +1083,7 @@ body.ns-2 div#catlinks {
 
 /* 适用于屏幕像素宽度大于800px的设备 */
 @media (width >=800px) {
+
     /* .container {
         width: 80%;
     } */
