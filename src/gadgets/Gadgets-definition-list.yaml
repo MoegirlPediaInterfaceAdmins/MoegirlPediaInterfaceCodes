@@ -33,6 +33,7 @@
     - ModerationStatus
     - april-fool-2025
     - JSONViewer
+    - pageInfo
 
 - name: skin
   gadgets:
