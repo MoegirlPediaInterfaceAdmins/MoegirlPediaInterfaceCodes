@@ -1,0 +1,38 @@
+ResourceLoader: true
+
+hidden: false
+
+default: true
+
+supportsUrlLoad: false
+
+skins: []
+
+actions: []
+
+categories: []
+
+namespaces: []
+
+contentModels: []
+
+type: general
+
+package: false
+
+rights: []
+
+peers: []
+
+dependencies:
+  - mediawiki.api
+  - ext.gadget.site-lib
+
+_sites:
+  - zh
+
+_section: browsing
+
+_files:
+  - Gadget-pageInfo.js
+  - Gadget-pageInfo.css
