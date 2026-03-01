@@ -38,6 +38,7 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
     }
     const userRights = await mw.user.getRights();
     const autopatrol = userRights.includes("autopatrol");
+    const skin = mw.config.get("skin");
     window.hotcat_no_autocommit = !autopatrol;
     window.hotcat_del_needs_diff = !autopatrol;
     const HC = window.HotCat = {
@@ -2584,7 +2585,7 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
     }
     function can_edit() {
         let container = null;
-        switch (mw.config.get("skin")) {
+        switch (skin) {
             case "cologneblue": {
                 container = document.getElementById("quickbar");
                 // falls through
@@ -2780,8 +2781,8 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
             window.clearTimeout(setupTimeout);
             setupTimeout = null;
         }
-        catLine ||= document.querySelector("#mw-normal-catlinks, .mw-catlinks-normal");
-        const hiddenCats = document.querySelector("#mw-hidden-catlinks, .mw-catlinks-hidden");
+        catLine ||= skin === "moeskin" ? document.getElementById("catlinks") : document.getElementById("mw-normal-catlinks");
+        const hiddenCats = document.getElementById("mw-hidden-catlinks");
         if (!catLine) {
             let footer = null;
             if (!hiddenCats) {
