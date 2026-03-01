@@ -209,7 +209,6 @@
             if (pointerType !== "touch" && pointerType !== "pen") {
                 return;
             }
-            await modulesReady;
             /** @type {HTMLElement} */
             const target = e.target;
             /** @type {HTMLAnchorElement | null} */
@@ -225,6 +224,7 @@
                 return;
             }
             e.preventDefault();
+            await modulesReady;
             const response = await OO.ui.confirm(getConfirmMessage(hrefURL));
             response && window.open(hrefURL.href, "_blank", "noopener,noreferrer,nofollow");
         });
