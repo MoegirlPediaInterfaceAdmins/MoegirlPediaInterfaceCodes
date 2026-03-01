@@ -2897,7 +2897,7 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
             setupTimeout = null;
         }
         catLine ||= skin === "moeskin" ? document.getElementById("catlinks") : document.getElementById("mw-normal-catlinks");
-        const hiddenCats = document.getElementById("mw-hidden-catlinks");
+        const hiddenCats = skin === "moeskin" ? document.querySelector(".mw-catlinks-hidden").parentElement : document.getElementById("mw-hidden-catlinks");
         if (!catLine) {
             let footer = null;
             if (!hiddenCats) {
