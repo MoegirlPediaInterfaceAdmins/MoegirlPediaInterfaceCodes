@@ -205,6 +205,9 @@
             return $wrapper;
         };
         document.getElementById("mw-content-text")?.addEventListener("click", async (e) => {
+            if (e.pointerType !== "touch") {
+                return;
+            }
             /** @type {HTMLElement} */
             const target = e.target;
             /** @type {HTMLAnchorElement | null} */
@@ -233,6 +236,10 @@
         /** @type {HTMLElement|null} */
         let lastClickedHeimu = null;
         document.querySelector("#mw-content-text")?.addEventListener("click", (e) => {
+            if (e.pointerType !== "touch") {
+                lastClickedHeimu = null;
+                return;
+            }
             /** @type {HTMLElement} */
             // 小工具“黑幕半隐”启用时正常跳转
             if (document.body.closest(".heimu_toggle_on")) {
@@ -276,11 +283,8 @@
     fixImage();
     /* PageTools */
     applyPageTools();
-    /** 针对触摸屏设备的额外优化 */
-    if (navigator.maxTouchPoints > 0) {
-        !IS_MOEPAD_APP && externalLinkConfirm(); // App 有自己的链接处理逻辑
-        setupHeimuClickListener();
-    }
+    !IS_MOEPAD_APP && externalLinkConfirm(); // App 有自己的链接处理逻辑
+    setupHeimuClickListener();
     /* noteTAIcon */
     if ($(".noteTA").length > 0) {
         noteTAIcon();
