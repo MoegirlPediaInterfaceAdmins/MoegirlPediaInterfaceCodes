@@ -194,8 +194,8 @@
     };
 
     /** 外部链接提示 */
-    const externalLinkConfirm = async () => {
-        await mw.loader.using(["ext.gadget.site-lib", "oojs-ui-windows", "oojs-ui-core"]);
+    const externalLinkConfirm = () => {
+        const modulesReady = mw.loader.using(["ext.gadget.site-lib", "oojs-ui-windows", "oojs-ui-core"]);
         /** @param {URL} url */
         const getConfirmMessage = (url) => {
             const $wrapper = $("<div>", { style: "text-align: center" });
@@ -209,6 +209,7 @@
             if (pointerType !== "touch" && pointerType !== "pen") {
                 return;
             }
+            await modulesReady;
             /** @type {HTMLElement} */
             const target = e.target;
             /** @type {HTMLAnchorElement | null} */
