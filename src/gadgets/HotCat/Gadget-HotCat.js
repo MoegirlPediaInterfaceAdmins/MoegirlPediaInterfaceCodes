@@ -2780,8 +2780,8 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
             window.clearTimeout(setupTimeout);
             setupTimeout = null;
         }
-        catLine ||= document.getElementById("mw-normal-catlinks");
-        const hiddenCats = document.getElementById("mw-hidden-catlinks");
+        catLine ||= document.querySelector("#mw-normal-catlinks, .mw-catlinks-normal");
+        const hiddenCats = document.querySelector("#mw-hidden-catlinks, .mw-catlinks-hidden");
         if (!catLine) {
             let footer = null;
             if (!hiddenCats) {
