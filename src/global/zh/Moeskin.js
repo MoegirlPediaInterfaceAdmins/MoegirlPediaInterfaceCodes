@@ -205,7 +205,7 @@
             return $wrapper;
         };
         document.getElementById("mw-content-text")?.addEventListener("click", async (e) => {
-            if (e.pointerType !== "touch") {
+            if (e.pointerType === "mouse") {
                 return;
             }
             /** @type {HTMLElement} */
@@ -236,7 +236,7 @@
         /** @type {HTMLElement|null} */
         let lastClickedHeimu = null;
         document.querySelector("#mw-content-text")?.addEventListener("click", (e) => {
-            if (e.pointerType !== "touch") {
+            if (e.pointerType === "mouse") {
                 lastClickedHeimu = null;
                 return;
             }
