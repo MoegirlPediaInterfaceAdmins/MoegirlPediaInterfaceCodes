@@ -1,18 +1,18 @@
-/* eslint-disable no-unused-vars, prefer-arrow-functions/prefer-arrow-functions, require-atomic-updates, no-use-before-define, camelcase */
+/* eslint-disable require-atomic-updates, no-use-before-define, camelcase */
 /**
- * @source https://commons.wikimedia.org/wiki/_?oldid=818790002
+ * @source https://commons.wikimedia.org/wiki/_?oldid=1093305835
  * 更新后请同步更新上面链接到最新版本
  */
 "use strict";
 /**
   * 全部内容引自 https://commons.wikimedia.org/wiki/MediaWiki:Gadget-HotCat.js
   * 合并了 User:Func 对繁体分类的修正，本页面 diff：https://zh.moegirl.org.cn/_?diff=5710070&oldid=5611586 ，User:Func 的修正参见 https://zh.moegirl.org.cn/_?diff=4533156&oldid=5710033
-  * 修改了alert为OOUI版本
+  * 修改了 alert 为OOUI版本
   * 修改了 jsonp 为原生请求 - https://github.com/MoegirlPediaInterfaceAdmins/MoegirlPediaInterfaceCodes/commit/134859937c596c818e4a33f9d174022dc79d7bb8
   **/
 // <nowiki>
 /**
-HotCat V2.43
+HotCat V2.46
 
 Documentation: https://commons.wikimedia.org/wiki/Help:Gadget-HotCat
 List of main authors: https://commons.wikimedia.org/wiki/Help:Gadget-HotCat/Version_history
@@ -30,12 +30,14 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
             if (name === "wgServer") {
                 return `https://${location.hostname}`;
             }
-            return mw.config.get(name);
+            return mw.config.values[name];
         },
     });
     if (window.HotCat && !window.HotCat.nodeName || conf.wgAction === "edit") {
         return;
     }
+    const expandedScriptPrefix = new URL(conf.wgScript, location.href).href;
+    const expandedArticlePrefix = new URL(conf.wgArticlePath.replace("$1", ""), location.href).href;
     const userRights = await mw.user.getRights();
     const autopatrol = userRights.includes("autopatrol");
     const skin = mw.config.get("skin");
@@ -86,12 +88,23 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
         },
         addmulti: "<span>+<sup>+</sup></span>",
         multi_tooltip: "Modify several categories",
+        isSupportedContentModel: () => HC.wikitextContentModels.includes(conf.wgPageContentModel) || HC.jsonContentModels.includes(conf.wgPageContentModel),
         disable: () => {
             const ns = mw.config.get("wgNamespaceNumber");
             const nsIds = mw.config.get("wgNamespaceIds");
-            return ns < 0 || ns === nsIds.template || ns === nsIds.module || ns === nsIds.mediawiki || ns === nsIds.file && !mw.config.get("wgArticleId") || ns === nsIds.creator || ns === nsIds.timedtext || ns === nsIds.institution || mw.config.get("wgPageContentModel") !== "wikitext";
+            return ns < 0
+                || ns === nsIds.template
+                || ns === nsIds.module
+                || ns === nsIds.mediawiki
+                || ns === nsIds.file && !mw.config.get("wgArticleId")
+                || ns === nsIds.creator
+                || ns === nsIds.timedtext
+                || ns === nsIds.institution
+                || ns === nsIds.user && /\.(js|css|json)$/.test(conf.wgTitle);
         },
         uncat_regexp: /\{\{\s*[Uu]ncategorized\s*[^}]*\}\}\s*(<!--.*?-->\s*)?/g,
+        wikitextContentModels: ["wikitext", "proofread-index", "proofread-page"],
+        jsonContentModels: ["Tabular.JsonConfig", "Map.JsonConfig", "Chart.JsonConfig"],
         existsYes: "https://storage.moegirl.org.cn/moegirl/commons/b/be/P_yes.svg",
         existsNo: "https://storage.moegirl.org.cn/moegirl/commons/4/42/P_no.svg",
         template_categories: {},
@@ -218,9 +231,9 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
     const wikiTextBlankOrBidi = "[\\t _\\xA0\\u1680\\u180E\\u2000-\\u200B\\u200E\\u200F\\u2028-\\u202F\\u205F\\u3000]*";
     const formattedNamespaces = conf.wgFormattedNamespaces;
     const namespaceIds = conf.wgNamespaceIds;
-    function autoLocalize(namespaceNumber, _fallback) {
+    const autoLocalize = (namespaceNumber, _fallback) => {
         let fallback = _fallback;
-        function createRegexpStr(name) {
+        const createRegexpStr = (name) => {
             if (!name || !name.length) {
                 return "";
             }
@@ -236,7 +249,7 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
                 }
             }
             return regex_name.replace(/([\\^$.?*+()])/g, "\\$1").replace(wikiTextBlankRE, wikiTextBlank);
-        }
+        };
         fallback = fallback.toLowerCase();
         const canonical = formattedNamespaces[`${namespaceNumber}`].toLowerCase();
         let regexp = createRegexpStr(canonical);
@@ -251,71 +264,59 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
             }
         }
         return regexp;
-    }
+    };
     HC.category_canonical = formattedNamespaces["14"];
     HC.category_regexp = autoLocalize(14, "category");
     if (formattedNamespaces["10"]) {
         HC.template_regexp = autoLocalize(10, "template");
     }
-    function make(arg, literal) {
+    const make = (arg, literal) => {
         if (!arg) {
             return null;
         }
         return literal ? document.createTextNode(arg) : document.createElement(arg);
-    }
-    function param(name, _uri) {
-        const uri = _uri || document.location.href;
+    };
+    const param = (name, _uri) => {
+        const uri = _uri || location.href;
         const re = new RegExp(`[&?]${name}=([^&#]*)`);
         const m = re.exec(uri);
         if (m && m.length > 1) {
             return decodeURIComponent(m[1]);
         }
         return null;
-    }
-    function title(href) {
+    };
+    const title = (href) => {
         if (!href) {
             return null;
         }
-        const script = `${conf.wgScript}?`;
-        if (href.indexOf(script) === 0 || href.indexOf(`${conf.wgServer}${script}`) === 0 || conf.wgServer.substring(0, 2) === "//" && href.indexOf(`${document.location.protocol}${conf.wgServer}${script}`) === 0) {
+        // href="/w/index.php?title=..."
+        if (href.indexOf(expandedScriptPrefix) === 0) {
             return param("title", href);
         }
-        let prefix = conf.wgArticlePath.replace("$1", "");
-        if (href.indexOf(prefix)) {
-            prefix = `${conf.wgServer}${prefix}`;
-        }
-        if (href.indexOf(prefix) && prefix.substring(0, 2) === "//") {
-            prefix = document.location.protocol + prefix;
-        }
-        if (href.indexOf(prefix) === 0) {
-            return decodeURIComponent(href.substring(prefix.length));
+        // href="/wiki/..."
+        if (href.indexOf(expandedArticlePrefix) === 0) {
+            return decodeURIComponent(href.slice(expandedArticlePrefix.length));
         }
 
         return null;
-    }
-    function hasClass(elem, name) {
-        return ` ${elem.className} `.indexOf(` ${name} `) >= 0;
-    }
-    function capitalize(str) {
+    };
+    const hasClass = (elem, name) => ` ${elem.className} `.indexOf(` ${name} `) >= 0;
+    const capitalize = (str) => {
         if (!str || !str.length) {
             return str;
         }
         return str.substr(0, 1).toUpperCase() + str.substr(1);
-    }
-    function wikiPagePath(pageName) {
-        return conf.wgArticlePath.replace("$1", encodeURIComponent(pageName).replace(/%3A/g, ":").replace(/%2F/g, "/"));
-    }
-    function escapeRE(str) {
-        return str.replace(/([\\^$.?*+()[\]])/g, "\\$1");
-    }
-    function substituteFactory(_options) {
+    };
+    const wikiPagePath = (pageName) => conf.wgArticlePath.replace("$1", encodeURIComponent(pageName).replace(/%3A/g, ":").replace(/%2F/g, "/"));
+    const escapeRE = (str) => str.replace(/([\\^$.?*+()[\]])/g, "\\$1");
+    const substituteFactory = (_options) => {
         const options = _options || {};
         const lead = options.indicator || "$";
         const indicator = escapeRE(lead);
         const lbrace = escapeRE(options.lbrace || "{");
         const rbrace = escapeRE(options.rbrace || "}");
         const re = new RegExp(`(?:${indicator}(${indicator}))|(?:${indicator}(\\d+))|(?:${indicator}(?:${lbrace}([^${lbrace}${rbrace}]+)${rbrace}))|(?:${indicator}(?!(?:[${indicator}${lbrace}]|\\d))(\\S+?)\\b)`, "g");
-        return function (str, map) {
+        return (str, map) => {
             if (!map) {
                 return str;
             }
@@ -328,24 +329,60 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
                 return typeof replacement === "string" ? replacement : replacement || match;
             });
         };
-    }
+    };
     const substitute = substituteFactory();
-    const replaceShortcuts = (function () {
+    const replaceShortcuts = (() => {
         const replaceHash = substituteFactory({
             indicator: "#",
             lbrace: "[",
             rbrace: "]",
         });
-        return function (str, map) {
+        return (str, map) => {
             const s = replaceHash(str, map);
             return HC.capitalizePageNames ? capitalize(s) : s;
         };
     })();
     const findCatsRE = new RegExp(`\\[\\[${wikiTextBlankOrBidi}(?:${HC.category_regexp})${wikiTextBlankOrBidi}:[^\\]]+\\]\\]`, "g");
-    function replaceByBlanks(match) {
-        return match.replace(/(\s|\S)/g, " ");
-    }
-    function find_category(wikitext, category, once) {
+    const replaceByBlanks = (match) => match.replace(/(\s|\S)/g, " ");
+    const find_category = (text, category, once) => {
+        if (HC.jsonContentModels.includes(conf.wgPageContentModel)) {
+            return find_category_json(text, category, once);
+        }
+        return find_category_wikitext(text, category, once);
+    };
+
+    const find_category_json = (jsontext, category, once) => {
+        let jsonData;
+        try {
+            jsonData = JSON.parse(jsontext);
+        } catch (err) {
+            console.error("Invalid JSON in find_category_json:", err);
+            return once ? null : [];
+        }
+        if (!Array.isArray(jsonData.mediawikiCategories)) {
+            return once ? null : [];
+        }
+        const matches = [];
+        const targetCategoryName = mw.Title.newFromText(`category:${category}`).getPrefixedText();
+
+        for (let i = 0; i < jsonData.mediawikiCategories.length; i++) {
+            const catObj = jsonData.mediawikiCategories[i];
+            const currentCategoryName = mw.Title.newFromText(`category:${catObj.name}`).getPrefixedText();
+            if (currentCategoryName === targetCategoryName) {
+                const match = [
+                    "",
+                    "",
+                    catObj.sort || "",
+                ];
+                if (once) {
+                    return { match };
+                }
+                matches.push({ match: match });
+            }
+        }
+        return once ? null : matches;
+    };
+    const find_category_wikitext = (wikitext, category, once) => {
         let cat_regex = null;
         if (HC.template_categories[category]) {
             cat_regex = new RegExp(`\\{\\{${wikiTextBlankOrBidi}(${HC.template_regexp}(?=${wikiTextBlankOrBidi}:))?${wikiTextBlankOrBidi}(?:${HC.template_categories[category]})${wikiTextBlankOrBidi}(\\|.*?)?\\}\\}`, "g");
@@ -367,12 +404,82 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
         }
         result.re = cat_regex;
         return result;
-    }
+    };
     let interlanguageRE = null;
-    function change_category(_wikitext, toRemove, toAdd, _key, is_hidden) {
+    const change_category = (text, toRemove, toAdd, key, is_hidden) => {
+        if (HC.jsonContentModels.includes(conf.wgPageContentModel)) {
+            return change_category_json(text, toRemove, toAdd, key, is_hidden);
+        }
+        return change_category_wikitext(text, toRemove, toAdd, key, is_hidden);
+    };
+
+    // eslint-disable-next-line no-unused-vars
+    const change_category_json = (jsontext, toRemove, toAdd, key, is_hidden) => {
+        try {
+            const jsonData = JSON.parse(jsontext);
+            if (!jsonData.mediawikiCategories) {
+                jsonData.mediawikiCategories = [];
+            }
+
+            const summary = [];
+
+            if (toRemove) {
+                const initialLength = jsonData.mediawikiCategories.length;
+                const normalizedToRemoveName = mw.Title.newFromText(`category:${toRemove}`).getPrefixedText();
+                jsonData.mediawikiCategories = jsonData.mediawikiCategories.filter((cat) => {
+                    const normalizedCatName = mw.Title.newFromText(`category:${cat.name}`).getPrefixedText();
+                    return normalizedCatName !== normalizedToRemoveName;
+                });
+
+                if (jsonData.mediawikiCategories.length < initialLength) {
+                    summary.push(HC.messages.cat_removed.replace(/\$1/g, toRemove));
+                }
+            }
+
+            if (toAdd) {
+                const normalizedToAddName = mw.Title.newFromText(`category:${toAdd}`).getPrefixedText();
+                const exists = jsonData.mediawikiCategories.some((cat) => {
+                    const normalizedCatName = mw.Title.newFromText(`category:${cat.name}`).getPrefixedText();
+                    return normalizedCatName === normalizedToAddName;
+                });
+
+                if (!exists) {
+                    jsonData.mediawikiCategories.push({
+                        name: toAdd,
+                        sort: key || "",
+                    });
+                    summary.push(HC.messages.cat_added.replace(/\$1/g, toAdd));
+                } else if (key) {
+                    for (let i = 0; i < jsonData.mediawikiCategories.length; i++) {
+                        const cat = jsonData.mediawikiCategories[i];
+                        const normalizedCatName = mw.Title.newFromText(`category:${cat.name}`).getPrefixedText();
+                        if (normalizedCatName === normalizedToAddName && (!cat.sort || cat.sort !== key)) {
+                            jsonData.mediawikiCategories[i].sort = key;
+                            summary.push(HC.messages.cat_keychange.replace(/\$1/g, toAdd).replace(/\$2/g, key));
+                            break;
+                        }
+                    }
+                }
+            }
+
+            return {
+                text: JSON.stringify(jsonData, null, 2),
+                summary: summary,
+                error: null,
+            };
+        } catch (e) {
+            return {
+                text: jsontext,
+                summary: [],
+                error: `Failed to modify JSON categories: ${e.message}`,
+            };
+        }
+    };
+
+    const change_category_wikitext = (_wikitext, toRemove, toAdd, _key, is_hidden) => {
         let key = _key;
         let wikitext = _wikitext;
-        function find_insertionpoint(wikitext) {
+        const find_insertionpoint = (wikitext) => {
             const copiedtext = wikitext.replace(/<!--(\s|\S)*?-->/g, replaceByBlanks).replace(/<nowiki>(\s|\S)*?<\/nowiki>/g, replaceByBlanks);
             let index = -1;
             findCatsRE.lastIndex = 0;
@@ -398,7 +505,7 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
                 idx: index,
                 onCat: index >= 0,
             };
-        }
+        };
         const summary = [],
             nameSpace = HC.category_canonical,
             keyChange = toRemove && toAdd && toRemove === toAdd && toAdd.length;
@@ -518,8 +625,8 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
             summary: summary,
             error: null,
         };
-    }
-    function evtKeys(e) {
+    };
+    const evtKeys = (e) => {
         let code = 0;
         if (e.ctrlKey) {
             if (e.ctrlKey || e.metaKey) {
@@ -530,8 +637,8 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
             }
         }
         return code;
-    }
-    function evtKill(e) {
+    };
+    const evtKill = (e) => {
         if (e.preventDefault) {
             e.preventDefault();
             e.stopPropagation();
@@ -539,7 +646,7 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
             e.cancelBubble = true;
         }
         return false;
-    }
+    };
     let catLine = null,
         onUpload = false,
         editors = [],
@@ -550,7 +657,9 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
         pageTime = null,
         pageWatched = false,
         watchCreate = false,
+        watchCreateExpiry = "",
         watchEdit = false,
+        watchDefaultExpiry = "",
         minorEdits = false,
         editToken = null,
         is_rtl = false,
@@ -720,7 +829,7 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
             text.type = "text";
             text.size = HC.editbox_width;
             if (!noSuggestions) {
-                text.onkeyup = function (evt) {
+                text.onkeyup = (evt) => {
                     const key = evt.keyCode || 0;
                     if (self.ime && self.lastKey === IME && !self.usesComposition && (key === TAB || key === RET || key === ESC || key === SPACE)) {
                         self.ime = false;
@@ -743,7 +852,7 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
                     }
                     return true;
                 };
-                text.onkeydown = function (evt) {
+                text.onkeydown = (evt) => {
                     const key = evt.keyCode || 0;
                     self.lastKey = key;
                     self.keyCount = 0;
@@ -760,7 +869,7 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
                     }
                     return key === ESC ? evtKill(evt) : true;
                 };
-                text.onkeypress = function (evt) {
+                text.onkeypress = (evt) => {
                     self.keyCount++;
                     return self.processKey(evt);
                 };
@@ -795,21 +904,21 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
             let list = null;
             if (!noSuggestions) {
                 list = make("select");
-                list.onclick = function () {
+                list.onclick = () => {
                     if (self.highlightSuggestion(0)) {
                         self.textchange(false, true);
                     }
                 };
-                list.ondblclick = function (e) {
+                list.ondblclick = (e) => {
                     if (self.highlightSuggestion(0)) {
                         self.accept(e);
                     }
                 };
-                list.onchange = function () {
+                list.onchange = () => {
                     self.highlightSuggestion(0);
                     self.text.focus();
                 };
-                list.onkeyup = function (evt) {
+                list.onkeyup = (evt) => {
                     if (evt.keyCode === ESC) {
                         self.resetKeySelection();
                         self.text.focus();
@@ -833,7 +942,7 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
                             engineSelector.appendChild(opt);
                         }
                     }
-                    engineSelector.onchange = function () {
+                    engineSelector.onchange = () => {
                         self.engine = self.engineSelector.options[self.engineSelector.selectedIndex].value;
                         self.text.focus();
                         self.textchange(true, true);
@@ -842,7 +951,7 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
                 }
             }
             this.list = list;
-            function button_label(id, defaultText) {
+            const button_label = (id, defaultText) => {
                 let label = null;
                 if (onUpload && window.UFUI !== undefined && window.UIElements !== undefined && window.UFUI.getLabel instanceof Function) {
                     try {
@@ -850,7 +959,7 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
                         while (label && label.nodeType !== 3) {
                             label = label.firstChild;
                         }
-                    } catch (ex) {
+                    } catch {
                         label = null;
                     }
                 }
@@ -858,7 +967,7 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
                     return defaultText;
                 }
                 return label.data;
-            }
+            };
             const OK = make("input");
             OK.type = "button";
             OK.value = button_label("wpOkUploadLbl", HC.messages.ok);
@@ -1253,7 +1362,7 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
                 this.text.setSelectionRange(cursorPos, cursorPos);
             }
         }
-        makeCall(url, callbackObj, engine, queryKey, cleanKey) {
+        makeCall = (url, callbackObj, engine, queryKey, cleanKey) => {
             let cb = callbackObj;
             const e = engine,
                 v = queryKey,
@@ -1307,7 +1416,7 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
                     }
                 },
             });
-        }
+        };
         textchange(_dont_autocomplete, force) {
             makeActive(this);
             this.sanitizeInput();
@@ -1373,7 +1482,7 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
         makeCalls(engines, cb, v, cleanKey) {
             for (let j = 0; j < engines.length; j++) {
                 const engine = suggestionEngines[engines[j]];
-                const url = `${conf.wgServer}${conf.wgScriptPath}${engine.uri.replace(/\$1/g, encodeURIComponent(cleanKey))}`;
+                const url = `${conf.wgScriptPath}${engine.uri.replace(/\$1/g, encodeURIComponent(cleanKey))}`;
                 this.makeCall(url, cb, engine, v, cleanKey);
             }
         }
@@ -1547,7 +1656,7 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
             if (nofItems < HC.listSize) {
                 maxListHeight = listh / nofItems * HC.listSize;
             }
-            function viewport(what) {
+            const viewport = (what) => {
                 if (is_webkit && !document.evaluate) {
                     return window[`inner${what}`];
                 }
@@ -1556,8 +1665,8 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
                     return document.body[s];
                 }
                 return (document.documentElement ? document.documentElement[s] : 0) || document.body[s] || 0;
-            }
-            function scroll_offset(what) {
+            };
+            const scroll_offset = (what) => {
                 const s = `scroll${what}`;
                 let result = (document.documentElement ? document.documentElement[s] : 0) || document.body[s] || 0;
                 if (is_rtl && what === "Left") {
@@ -1569,8 +1678,8 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
                     }
                 }
                 return result;
-            }
-            function position(_node) {
+            };
+            const position = (_node) => {
                 let node = _node;
                 if (node.getBoundingClientRect) {
                     const box = node.getBoundingClientRect();
@@ -1590,7 +1699,7 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
                     x: l,
                     y: t,
                 };
-            }
+            };
             const textPos = position(this.text),
                 nl = 0,
                 textBoxWidth = this.text.offsetWidth || this.text.clientWidth;
@@ -1733,7 +1842,7 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
                         to = textRng.text.length;
                         textRng.setEndPoint("EndToStart", rng);
                         from = textRng.text.length;
-                    } catch (notFocused) {
+                    } catch {
                         from = this.text.value.length;
                         to = from;
                     }
@@ -1836,14 +1945,14 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
             return false;
         }
     }
-    function setPage(json) {
+    const setPage = (json) => {
         let startTime = null;
         if (json && json.query) {
             if (json.query.pages) {
                 const page = json.query.pages[!conf.wgArticleId ? "-1" : `${conf.wgArticleId}`];
                 if (page) {
                     if (page.revisions && page.revisions.length) {
-                        pageText = page.revisions[0]["*"];
+                        pageText = page.revisions[0].slots.main["*"];
                         if (page.revisions[0].timestamp) {
                             pageTime = page.revisions[0].timestamp.replace(/\D/g, "");
                         }
@@ -1886,16 +1995,18 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
             serverTime = startTime;
             if (json.query.userinfo && json.query.userinfo.options) {
                 watchCreate = !HC.dont_add_to_watchlist && json.query.userinfo.options.watchcreations === "1";
+                watchCreateExpiry = json.query.userinfo.options[" watchcreations-expiry"] || "";
                 watchEdit = !HC.dont_add_to_watchlist && json.query.userinfo.options.watchdefault === "1";
+                watchDefaultExpiry = json.query.userinfo.options["watchdefault-expiry"] || "";
                 minorEdits = json.query.userinfo.options.minordefault === 1;
                 if (minorEdits) {
                     HC.single_minor = true;
                 }
             }
         }
-    }
+    };
     let saveInProgress = false;
-    async function initiateEdit(doEdit, failure) {
+    const initiateEdit = async (doEdit, failure) => {
         if (saveInProgress) {
             return;
         }
@@ -1905,22 +2016,22 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
             oldButtonState = commitButton.disabled;
             commitButton.disabled = true;
         }
-        function fail(...args) {
+        const fail = (...args) => {
             saveInProgress = false;
             if (commitButton) {
                 commitButton.disabled = oldButtonState;
             }
             failure(...args);
-        }
+        };
         try {
-            const json = await $.getJSON(`${conf.wgServer}${conf.wgScriptPath}/api.php?format=json&action=query&rawcontinue=&titles=${encodeURIComponent(conf.wgPageName)}&prop=info%7Crevisions%7Clanglinks&inprop=watched&rvprop=content%7Ctimestamp%7Cids%7Cuser&lllimit=500&rvlimit=2&rvdir=newer&rvstartid=${conf.wgCurRevisionId}&meta=siteinfo%7Cuserinfo%7Ctokens&type=csrf&uiprop=options`);
+            const json = await $.getJSON(`${conf.wgScriptPath}/api.php?format=json&action=query&rawcontinue=&titles=${encodeURIComponent(conf.wgPageName)}&prop=info%7Crevisions%7Clanglinks&inprop=watched&rvprop=content%7Ctimestamp%7Cids%7Cuser&lllimit=500&rvslots=main&rvlimit=2&rvdir=newer&rvstartid=${conf.wgCurRevisionId}&meta=siteinfo%7Cuserinfo%7Ctokens&type=csrf&uiprop=options`);
             setPage(json);
             doEdit(fail);
         } catch (req) {
             fail(`${req.status} ${req.statusText}`);
         }
-    }
-    function multiChangeMsg(count) {
+    };
+    const multiChangeMsg = (count) => {
         let msg = HC.messages.multi_change;
         if (typeof msg !== "string" && msg.length) {
             if (mw.language && mw.language.convertPlural) {
@@ -1930,17 +2041,15 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
             }
         }
         return substitute(msg, [null, `${count}`]);
-    }
-    function currentTimestamp() {
+    };
+    const currentTimestamp = () => {
         const now = new Date();
         let ts = `${now.getUTCFullYear()}`;
-        function two(s) {
-            return s.substr(s.length - 2);
-        }
+        const two = (s) => s.substr(s.length - 2);
         ts += two(`0${now.getUTCMonth() + 1}`) + two(`0${now.getUTCDate()}`) + two(`00${now.getUTCHours()}`) + two(`00${now.getUTCMinutes()}`) + two(`00${now.getUTCSeconds()}`);
         return ts;
-    }
-    function performChanges(failure, singleEditor) {
+    };
+    const performChanges = (failure, singleEditor) => {
         if (pageText === null) {
             failure(HC.messages.multi_error);
             return;
@@ -2011,6 +2120,13 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
         }
         commitForm.wpMinoredit.checked = minorEdits;
         commitForm.wpWatchthis.checked = !conf.wgArticleId && watchCreate || watchEdit || pageWatched;
+        if (commitForm.wpWatchthis.checked && !pageWatched) {
+            if (!conf.wgArticleId && watchCreate) {
+                commitForm.wpWatchlistExpiry.value = watchCreateExpiry;
+            } else {
+                commitForm.wpWatchlistExpiry.value = watchDefaultExpiry;
+            }
+        }
         if (conf.wgArticleId || !!singleEditor) {
             if (action && action.value === "wpSave") {
                 if (HC.changeTag) {
@@ -2078,8 +2194,8 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
             commitForm.oldid.value = `${pageTextRevId || conf.wgCurRevisionId}`;
         }
         commitForm.hcCommit.click();
-    }
-    function resolveOne(page, toResolve) {
+    };
+    const resolveOne = (page, toResolve) => {
         const cats = page.categories,
             lks = page.links,
             is_hidden = page.categoryinfo && typeof page.categoryinfo.hidden === "string",
@@ -2144,16 +2260,16 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
                 toResolve[i].text.value = titles[0] + (toResolve[i].currentKey !== null ? `|${toResolve[i].currentKey}` : "");
             }
         }
-    }
-    function resolveRedirects(toResolve, params) {
+    };
+    const resolveRedirects = (toResolve, params) => {
         if (!params || !params.query || !params.query.pages) {
             return;
         }
         for (const p in params.query.pages) {
             resolveOne(params.query.pages[p], toResolve);
         }
-    }
-    async function resolveMulti(toResolve, callback) {
+    };
+    const resolveMulti = async (toResolve, callback) => {
         let i;
         for (i = 0; i < toResolve.length; i++) {
             toResolve[i].dab = null;
@@ -2174,7 +2290,7 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
             }
         }
         try {
-            const json = await $.getJSON(`${conf.wgServer}${conf.wgScriptPath}/api.php?${args}`);
+            const json = await $.getJSON(`${conf.wgScriptPath}/api.php?${args}`);
             resolveRedirects(toResolve, json);
             callback(toResolve);
         } catch (req) {
@@ -2183,8 +2299,8 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
             }
             callback(toResolve);
         }
-    }
-    function makeActive(which) {
+    };
+    const makeActive = (which) => {
         if (which.is_active) {
             return;
         }
@@ -2226,16 +2342,16 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
                 }
             }
         }
-    }
-    function showDab(which) {
+    };
+    const showDab = (which) => {
         if (!which.is_active) {
             makeActive(which);
         } else {
             which.showSuggestions(which.dab, false, null, null);
             which.dab = null;
         }
-    }
-    function multiSubmit() {
+    };
+    const multiSubmit = () => {
         const toResolve = [];
         for (let i = 0; i < editors.length; i++) {
             if (editors[i].state === CategoryEditor.CHANGE_PENDING || editors[i].state === CategoryEditor.OPEN) {
@@ -2282,8 +2398,8 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
                 });
             }
         });
-    }
-    function setMultiInput() {
+    };
+    const setMultiInput = () => {
         if (commitButton || onUpload) {
             return;
         }
@@ -2296,8 +2412,8 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
         } else {
             catLine.appendChild(commitButton);
         }
-    }
-    function checkMultiInput() {
+    };
+    const checkMultiInput = () => {
         if (!commitButton) {
             return;
         }
@@ -2309,11 +2425,11 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
             }
         }
         commitButton.disabled = !hasChanges;
-    }
+    };
     const suggestionEngines = {
         opensearch: {
             uri: "/api.php?format=json&action=opensearch&namespace=14&limit=30&search=Category:$1",
-            handler: function (queryResult, queryKey) {
+            handler: (queryResult, queryKey) => {
                 if (queryResult && queryResult.length >= 2) {
                     const key = queryResult[0].substring(queryResult[0].indexOf(":") + 1);
                     const titles = queryResult[1];
@@ -2345,7 +2461,7 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
         },
         internalsearch: {
             uri: "/api.php?format=json&action=query&list=allpages&apnamespace=14&aplimit=30&apfrom=$1&apprefix=$1",
-            handler: function (queryResult) {
+            handler: (queryResult) => {
                 if (queryResult && queryResult.query && queryResult.query.allpages) {
                     const titles = queryResult.query.allpages;
                     for (let i = 0; i < titles.length; i++) {
@@ -2358,7 +2474,7 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
         },
         exists: {
             uri: "/api.php?format=json&action=query&prop=info&titles=Category:$1",
-            handler: function (queryResult, queryKey) {
+            handler: (queryResult, queryKey) => {
                 if (queryResult && queryResult.query && queryResult.query.pages && !queryResult.query.pages[-1]) {
                     for (const p in queryResult.query.pages) {
                         let title = queryResult.query.pages[p].title;
@@ -2376,7 +2492,7 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
         },
         subcategories: {
             uri: "/api.php?format=json&action=query&list=categorymembers&cmtype=subcat&cmlimit=max&cmtitle=Category:$1",
-            handler: function (queryResult) {
+            handler: (queryResult) => {
                 if (queryResult && queryResult.query && queryResult.query.categorymembers) {
                     const titles = queryResult.query.categorymembers;
                     for (let i = 0; i < titles.length; i++) {
@@ -2389,7 +2505,7 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
         },
         parentcategories: {
             uri: "/api.php?format=json&action=query&prop=categories&titles=Category:$1&cllimit=max",
-            handler: function (queryResult) {
+            handler: (queryResult) => {
                 if (queryResult && queryResult.query && queryResult.query.pages) {
                     for (const p in queryResult.query.pages) {
                         if (queryResult.query.pages[p].categories) {
@@ -2448,13 +2564,13 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
         },
     };
     const dummyElement = make(" ", true);
-    function forceRedraw() {
+    const forceRedraw = () => {
         if (dummyElement.parentNode) {
             document.body.removeChild(dummyElement);
         } else {
             document.body.appendChild(dummyElement);
         }
-    }
+    };
     const BS = 8,
         TAB = 9,
         RET = 13,
@@ -2466,7 +2582,7 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
         DOWN = 40,
         DEL = 46,
         IME = 229;
-    function initialize() {
+    const initialize = () => {
         const config = window.JSconfig !== undefined && window.JSconfig.keys ? window.JSconfig.keys : {};
         HC.dont_add_to_watchlist = window.hotcat_dont_add_to_watchlist !== undefined ? !!window.hotcat_dont_add_to_watchlist : config.HotCatDontAddToWatchlist !== undefined ? config.HotCatDontAddToWatchlist : HC.dont_add_to_watchlist;
         HC.no_autocommit = window.hotcat_no_autocommit !== undefined ? !!window.hotcat_no_autocommit : config.HotCatNoAutoCommit !== undefined ? config.HotCatNoAutoCommit : conf.wgNamespaceNumber % 2 ? true : HC.no_autocommit;
@@ -2489,7 +2605,7 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
             const eForm = document.editform,
                 catRegExp = new RegExp(`^\\[\\[(${HC.category_regexp}):`);
             let oldTxt;
-            const isMinorChange = function () {
+            const isMinorChange = () => {
                 let newTxt = eForm.wpTextbox1;
                 if (!newTxt) {
                     return;
@@ -2498,7 +2614,7 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
                 const oldLines = oldTxt.match(/^.*$/gm),
                     newLines = newTxt.match(/^.*$/gm);
                 let cArr;
-                const except = function (aArr, bArr) {
+                const except = (aArr, bArr) => {
                     const result = [];
                     let lArr, sArr;
                     if (aArr.length < bArr.length) {
@@ -2582,8 +2698,8 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
             }
             is_rtl = is_rtl === "rtl";
         }
-    }
-    function can_edit() {
+    };
+    const can_edit = () => {
         let container = null;
         switch (skin) {
             case "cologneblue": {
@@ -2606,7 +2722,7 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
             default:
                 return document.getElementById("ca-edit") !== null;
         }
-    }
+    };
     function closeForm() {
         for (let i = 0; i < editors.length; i++) {
             const edit = editors[i];
@@ -2631,7 +2747,7 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
             }
         }
     }
-    function setup_upload() {
+    const setup_upload = () => {
         onUpload = true;
         let ip = document.getElementById("mw-htmlform-description") || document.getElementById("wpDestFile");
         if (!ip) {
@@ -2661,7 +2777,7 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
         if (window.UFUI && window.UIElements && window.UFUI.getLabel instanceof Function) {
             try {
                 label = window.UFUI.getLabel("wpCategoriesUploadLbl");
-            } catch (ex) {
+            } catch {
                 label = null;
             }
         }
@@ -2680,49 +2796,47 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
             const newRow = ip.insertRow(-1);
             newRow.appendChild(labelCell);
             newRow.appendChild(lineCell);
-            form.onsubmit = (function (oldSubmit) {
-                return function (...args) {
-                    let do_submit = true;
-                    if (oldSubmit) {
-                        if (typeof oldSubmit === "string") {
-                            do_submit = eval(oldSubmit);
-                        } else if (oldSubmit instanceof Function) {
-                            do_submit = oldSubmit.bind(form)(...args);
-                        }
+            form.onsubmit = ((oldSubmit) => (...args) => {
+                let do_submit = true;
+                if (oldSubmit) {
+                    if (typeof oldSubmit === "string") {
+                        do_submit = eval(oldSubmit);
+                    } else if (oldSubmit instanceof Function) {
+                        do_submit = oldSubmit.bind(form)(...args);
                     }
-                    if (!do_submit) {
-                        return false;
+                }
+                if (!do_submit) {
+                    return false;
+                }
+                closeForm();
+                const eb = document.getElementById("wpUploadDescription") || document.getElementById("wpDesc");
+                let addedOne = false;
+                for (let i = 0; i < editors.length; i++) {
+                    const t = editors[i].currentCategory;
+                    if (!t) {
+                        continue;
                     }
-                    closeForm();
-                    const eb = document.getElementById("wpUploadDescription") || document.getElementById("wpDesc");
-                    let addedOne = false;
-                    for (let i = 0; i < editors.length; i++) {
-                        const t = editors[i].currentCategory;
-                        if (!t) {
-                            continue;
-                        }
-                        const key = editors[i].currentKey;
-                        const new_cat = `[[${HC.category_canonical}:${t}${key ? `|${key}` : ""}]]`;
-                        const cleanedText = eb.value.replace(/<!--(\s|\S)*?-->/g, "").replace(/<nowiki>(\s|\S)*?<\/nowiki>/g, "");
-                        if (!find_category(cleanedText, t, true)) {
-                            eb.value += `\n${new_cat}`;
-                            addedOne = true;
-                        }
+                    const key = editors[i].currentKey;
+                    const new_cat = `[[${HC.category_canonical}:${t}${key ? `|${key}` : ""}]]`;
+                    const cleanedText = eb.value.replace(/<!--(\s|\S)*?-->/g, "").replace(/<nowiki>(\s|\S)*?<\/nowiki>/g, "");
+                    if (!find_category(cleanedText, t, true)) {
+                        eb.value += `\n${new_cat}`;
+                        addedOne = true;
                     }
-                    if (addedOne) {
-                        eb.value = eb.value.replace(/\{\{subst:unc\}\}/g, "");
-                    }
-                    return true;
-                };
+                }
+                if (addedOne) {
+                    eb.value = eb.value.replace(/\{\{subst:unc\}\}/g, "");
+                }
+                return true;
             })(form.onsubmit);
         }
-    }
+    };
     let cleanedText = null;
-    function getTitle(span) {
+    const getTitle = (span) => {
         if (span.firstChild.nodeType !== Node.ELEMENT_NODE) {
             return null;
         }
-        let catTitle = title(span.firstChild.getAttribute("href"));
+        let catTitle = title(span.firstChild.href);
         if (!catTitle) {
             return null;
         }
@@ -2731,8 +2845,9 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
             return null;
         }
         return catTitle;
-    }
-    function isOnPage(span) {
+    };
+    // eslint-disable-next-line no-unused-vars
+    const isOnPage = (span) => {
         const catTitle = getTitle(span);
         const result = {
             title: catTitle,
@@ -2746,14 +2861,14 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
         }
         result.match = find_category(cleanedText, catTitle, true);
         return result;
-    }
+    };
     let initialized = false;
     let setupTimeout = null;
-    function findByClass(scope, tag, className) {
+    const findByClass = (scope, tag, className) => {
         const result = $(scope).find(`${tag}.${className}`);
         return result && result.length ? result[0] : null;
-    }
-    function list_categorys() {
+    };
+    const list_categorys = () => {
         if (pageText === null) {
             return [];
         }
@@ -2771,8 +2886,8 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
         }
         result.re = cat_regex;
         return result; // An array containing all matches, with positions, in result[ i ].match
-    }
-    function setup(additionalWork) {
+    };
+    const setup = (additionalWork) => {
         if (initialized) {
             return;
         }
@@ -2818,7 +2933,7 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
             catLine.dir = "rtl";
         }
         const chkCats = [], inpIndex = {};
-        function createEditors(_line, is_hidden, has_hidden) {
+        const createEditors = (_line, is_hidden, has_hidden) => {
             let line = _line;
             let i;
             let cats = line.getElementsByTagName("li");
@@ -2879,7 +2994,7 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
                 });
             }
             return copyCats.length ? copyCats[copyCats.length - 1] : null;
-        }
+        };
         const lastSpan = createEditors(catLine, false, !!hiddenCats);
         new CategoryEditor(newDOM ? catLine.getElementsByTagName("ul")[0] : catLine, null, null, lastSpan !== null, false);
         if (!onUpload) {
@@ -2900,7 +3015,7 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
             enableMulti.appendChild(multiSpan);
             multiSpan.innerHTML = `(<a>${HC.addmulti}</a>)`;
             const lk = multiSpan.getElementsByTagName("a")[0];
-            lk.onclick = function (evt) {
+            lk.onclick = (evt) => {
                 setMultiInput();
                 checkMultiInput();
                 return evtKill(evt);
@@ -2914,18 +3029,24 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
         }
         mw.hook("hotcat.ready").fire();
         $("body").trigger("hotcatSetupCompleted");
-    }
-    function createCommitForm() {
+    };
+    const createCommitForm = () => {
         if (commitForm) {
             return;
+        }
+        let format = "";
+        if (HC.jsonContentModels.includes(conf.wgPageContentModel)) {
+            format = "application/json";
+        } else {
+            format = "text/x-wiki";
         }
         const formContainer = make("div");
         formContainer.style.display = "none";
         document.body.appendChild(formContainer);
-        formContainer.innerHTML = `<form id="hotcatCommitForm" method="post" enctype="multipart/form-data" action="${conf.wgScript}?title=${encodeURIComponent(conf.wgPageName)}&action=submit"><input type="hidden" name="wpTextbox1"><input type="hidden" name="model" value="${conf.wgPageContentModel}"><input type="hidden" name="format" value="text/x-wiki"><input type="hidden" name="wpSummary" value=""><input type="checkbox" name="wpMinoredit" value="1"><input type="checkbox" name="wpWatchthis" value="1"><input type="hidden" name="wpAutoSummary" value="d41d8cd98f00b204e9800998ecf8427e"><input type="hidden" name="wpEdittime"><input type="hidden" name="wpStarttime"><input type="hidden" name="wpDiff" value="wpDiff"><input type="hidden" name="oldid" value="0"><input type="hidden" name="wpIgnoreBlankSummary" value="1"><input type="submit" name="hcCommit" value="hcCommit"><input type="hidden" name="wpEditToken"><input type="hidden" name="wpUltimateParam" value="1"><input type="hidden" name="wpChangeTags"><input type="hidden" value="ℳ𝒲♥𝓊𝓃𝒾𝒸ℴ𝒹ℯ" name="wpUnicodeCheck"></form>`;
+        formContainer.innerHTML = `<form id="hotcatCommitForm" method="post" enctype="multipart/form-data" action="${conf.wgScript}?title=${encodeURIComponent(conf.wgPageName)}&action=submit"><input type="hidden" name="wpTextbox1"><input type="hidden" name="model" value="${conf.wgPageContentModel}"><input type="hidden" name="format" value="${format}"><input type="hidden" name="wpSummary" value=""><input type="checkbox" name="wpMinoredit" value="1"><input type="checkbox" name="wpWatchthis" value="1"><input type="hidden" name="wpWatchlistExpiry" value=""><input type="hidden" name="wpAutoSummary" value="d41d8cd98f00b204e9800998ecf8427e"><input type="hidden" name="wpEdittime"><input type="hidden" name="wpStarttime"><input type="hidden" name="wpDiff" value="wpDiff"><input type="hidden" name="oldid" value="0"><input type="hidden" name="wpIgnoreBlankSummary" value="1"><input type="submit" name="hcCommit" value="hcCommit"><input type="hidden" name="wpEditToken"><input type="hidden" name="wpUltimateParam" value="1"><input type="hidden" name="wpChangeTags"><input type="hidden" value="ℳ𝒲♥𝓊𝓃𝒾𝒸ℴ𝒹ℯ" name="wpUnicodeCheck"></form>`;
         commitForm = document.getElementById("hotcatCommitForm");
-    }
-    function getPage() {
+    };
+    const getPage = () => {
         if (!conf.wgArticleId) {
             if (conf.wgNamespaceNumber === 2) {
                 return;
@@ -2934,7 +3055,7 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
             pageTime = null;
             setup(createCommitForm);
         } else {
-            const url = `${conf.wgServer}${conf.wgScriptPath}/api.php?format=json&callback=HotCat.start&action=query&rawcontinue=&titles=${encodeURIComponent(conf.wgPageName)}&prop=info%7Crevisions&rvprop=content%7Ctimestamp%7Cids&meta=siteinfo&rvlimit=1&rvstartid=${conf.wgCurRevisionId}`;
+            const url = `${conf.wgScriptPath}/api.php?format=json&callback=HotCat.start&action=query&rawcontinue=&titles=${encodeURIComponent(conf.wgPageName)}&prop=info%7Crevisions&rvprop=content%7Ctimestamp%7Cids&meta=siteinfo&rvslots=main&rvlimit=1&rvstartid=${conf.wgCurRevisionId}`;
             /* const s = make("script");
             s.src = url;
             HC.start = function (json) {
@@ -2950,8 +3071,8 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
                 setup(createCommitForm);
             }, 4e3);
         }
-    }
-    function setState(state) {
+    };
+    const setState = (state) => {
         const cats = state.split("\n");
         if (!cats.length) {
             return null;
@@ -2994,8 +3115,27 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
             }
         }
         return null;
-    }
-    function getState() {
+    };
+
+    const getState = () => {
+        if (HC.jsonContentModels.includes(conf.wgPageContentModel)) {
+            return getStateJson();
+        }
+        return getStateWikitext();
+    };
+
+    const getStateJson = () => {
+        try {
+            const jsonData = JSON.parse(pageText);
+            if (jsonData.mediawikiCategories) {
+                return jsonData.mediawikiCategories.map((cat) => cat.name + (cat.sort ? `|${cat.sort}` : "")).join("\n");
+            }
+        } catch (e) {
+            console.error("[getStateJson]Error parsing JSON:", e);
+        }
+        return null;
+    };
+    const getStateWikitext = () => {
         let result = null;
         for (let i = 0; i < editors.length; i++) {
             let text = editors[i].currentCategory;
@@ -3012,8 +3152,8 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
             }
         }
         return result;
-    }
-    function really_run() {
+    };
+    const really_run = () => {
         initialize();
         if (!HC.upload_disabled && conf.wgNamespaceNumber === -1 && conf.wgCanonicalSpecialPageName === "Upload" && conf.wgUserName) {
             setup_upload();
@@ -3026,26 +3166,28 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
             if (!conf.wgIsArticle || conf.wgAction !== "view" || param("diff") !== null || param("oldid") !== null || !can_edit() || HC.disable()) {
                 return;
             }
+            if (!HC.isSupportedContentModel()) {
+                const issueURL = new URL("https://github.com/MoegirlPediaInterfaceAdmins/MoegirlPediaInterfaceCodes/issues/new?template=BLANK_ISSUE");
+                issueURL.searchParams.set("title", "[HOTCAT] 未知的 contentModel");
+                issueURL.searchParams.set("body", `页面 <${new URL(`/${conf.wgPageName}`, location.href)}> 使用了未知的 contentModel \`${conf.wgPageContentModel}\`，导致 HotCat 无法正常工作。请调查这个问题。`);
+                console.warn(`[HOTCAT] 本页面 <${conf.wgPageName}> 使用了未知的 contentModel "${conf.wgPageContentModel}"。如果你看到此信息，请报告此问题至 ${issueURL.toString()}`);
+            }
             getPage();
         }
-    }
-    function run() {
+    };
+    const run = () => {
         if (HC.started) {
             return;
         }
         HC.started = true;
         loadTrigger.register(really_run);
-    }
-    window.hotcat_get_state = function () {
-        return getState();
     };
-    window.hotcat_set_state = function (state) {
-        return setState(state);
-    };
-    window.hotcat_close_form = function () {
+    window.hotcat_get_state = () => getState();
+    window.hotcat_set_state = (state) => setState(state);
+    window.hotcat_close_form = () => {
         closeForm();
     };
-    HC.runWhenReady = function (callback) {
+    HC.runWhenReady = (callback) => {
         mw.hook("hotcat.ready").add(callback);
     };
     mw.config.set("disableAJAXCategories", true);
