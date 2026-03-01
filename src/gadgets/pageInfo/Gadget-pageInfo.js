@@ -4,12 +4,13 @@
 
     await $.ready;
 
-    const $container = $("<div>", {
-        "class": "page-info-container",
-    });
+    let $container;
     switch (mw.config.get("skin")) {
         case "vector-2022": {
-            $container.appendTo("#firstHeading");
+            $container = $("<li>", {
+                "class": "page-info-container vector-tab-noicon mw-list-item",
+            });
+            $container.appendTo("#p-views .vector-menu-content-list");
             break;
         }
         case "moeskin": {
@@ -20,7 +21,10 @@
                 }
                 break;
             }
-            $container.prependTo($(document.querySelector("#pagetools-desktop-container") || document.querySelector("#pagetools-mobile-container")).find(".edit-button-group"));
+            $container = $("<div>", {
+                "class": "page-info-container",
+            });
+            $container.prependTo($(document.querySelector("#pagetools-desktop-container .edit-button-group") || document.querySelector("#pagetools-mobile-container .mobile-page-more-actions")));
             break;
         }
     }
@@ -52,7 +56,7 @@
         if (Array.isArray(wgRestrictionCreate) && wgRestrictionCreate.length > 0) {
             protectionInfo.push(`${mw.msg("create")}：${wgRestrictionCreate.map((level) => mw.msg(`protect-level-${level}`)).join("、")}`);
         }
-        const $protectionInfoContainer = $("<div>", {
+        const $protectionInfoContainer = $("<a>", {
             "class": "page-info-protection annotation",
         });
         $protectionInfoContainer.appendTo($container);

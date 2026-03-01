@@ -1,6 +1,7 @@
 .page-info-container {
     display: flex;
     font-size: 1rem;
+    gap: .5rem;
 }
 
 .page-info-protection {
@@ -13,20 +14,32 @@
     width: 20px;
 }
 
-.skin-vector-2022 #firstHeading {
-    display: flex;
-    justify-content: flex-start;
-    align-items: center;
+.vector-menu-content-list .page-info-container > * {
+    padding-left: .25rem !important;
+    padding-right: .25rem !important;
 }
 
-.skin-vector-2022 .page-info-container {
-    margin-left: auto;
-    margin-right: .5rem;
+.vector-menu-content-list .page-info-container {
+    padding-right: .5rem;
+    cursor: default;
 }
 
-.edit-button-group {
+.vector-menu-content-list .page-info-container,
+.vector-menu-content-list .page-info-container a {
+    cursor: default !important;
+}
+
+.vector-menu-content-list .page-info-container .annotation-content {
+    cursor: text !important;
+}
+
+#pagetools-desktop-container .edit-button-group,
+#pagetools-mobile-container .mobile-page-more-actions {
     display: flex;
-    justify-content: center;
     align-items: center;
     gap: .5rem;
+}
+
+#pagetools-desktop-container .edit-button-group {
+    justify-content: center;
 }
