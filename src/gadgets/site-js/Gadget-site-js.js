@@ -250,7 +250,7 @@
         });
     };
     /* T:注解 */
-    $("body").on("mouseover", ".annotation", (event) => {
+    $("body").on("mouseover mouseout", ".annotation", (event) => {
         const $target = $(event.currentTarget);
         let popup = $target.data("popup");
 
@@ -264,13 +264,7 @@
             $target.append(popup.$element).data("popup", popup);
         }
 
-        popup.toggle(true);
-    }).on("mouseout", ".annotation", (event) => {
-        const $target = $(event.currentTarget);
-        const popup = $target.data("popup");
-        if (popup) {
-            popup.toggle(false);
-        }
+        popup.toggle(event.type === "mouseover");
     });
 
     /* 修正嵌套使用删除线、黑幕、彩色幕和胡话模板 */
