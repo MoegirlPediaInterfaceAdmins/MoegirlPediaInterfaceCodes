@@ -279,3 +279,8 @@ table.navbox > tbody > tr > td > table {
 .skin-moeskin table.navbox + table.navbox {
     margin-top: 0.5rem;
 }
+
+/* @fix 2017源代码编辑器行高bug */
+.ve-ui-mwWikitextSurface .ve-ce-paragraphNode {
+    line-height: 1.5em !important;
+}
