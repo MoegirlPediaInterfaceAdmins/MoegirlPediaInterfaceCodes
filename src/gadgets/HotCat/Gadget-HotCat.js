@@ -2887,6 +2887,7 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
         result.re = cat_regex;
         return result; // An array containing all matches, with positions, in result[ i ].match
     };
+    const getCatLine = () => skin === "moeskin" ? document.getElementById("catlinks") : document.getElementById("mw-normal-catlinks");
     const setup = (additionalWork) => {
         if (initialized) {
             return;
@@ -2896,8 +2897,8 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
             window.clearTimeout(setupTimeout);
             setupTimeout = null;
         }
-        catLine ||= skin === "moeskin" ? document.getElementById("catlinks") : document.getElementById("mw-normal-catlinks");
-        const hiddenCats = skin === "moeskin" ? document.querySelector(".mw-catlinks-hidden").parentElement : document.getElementById("mw-hidden-catlinks");
+        catLine ||= getCatLine();
+        const hiddenCats = skin === "moeskin" ? document.querySelector(".mw-catlinks-hidden")?.parentElement : document.getElementById("mw-hidden-catlinks");
         if (!catLine) {
             let footer = null;
             if (!hiddenCats) {
@@ -2915,7 +2916,7 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
             label.appendChild(make(HC.categories, true));
             catLine.appendChild(label);
             catLine.appendChild(make(":", true));
-            let container = hiddenCats ? hiddenCats.parentNode : document.getElementById("catlinks");
+            let container = hiddenCats ? hiddenCats.parentNode : getCatLine();
             if (!container) {
                 container = make("div");
                 container.id = "catlinks";
