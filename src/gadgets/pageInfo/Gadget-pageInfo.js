@@ -11,8 +11,10 @@
 
     await $.ready;
 
+    const { wgRestrictionEdit, wgRestrictionMove, wgRestrictionCreate, wgPageName, wgUserName, wgScriptPath, skin } = mw.config.get(["wgRestrictionEdit", "wgRestrictionMove", "wgRestrictionCreate", "wgPageName", "wgUserName", "wgScriptPath", "skin"]);
+
     let $container;
-    switch (mw.config.get("skin")) {
+    switch (skin) {
         case "vector-2022": {
             $container = $("<li>", {
                 "class": "page-info-container vector-tab-noicon mw-list-item",
@@ -36,7 +38,6 @@
         }
     }
 
-    const { wgRestrictionEdit, wgRestrictionMove, wgRestrictionCreate, wgPageName } = mw.config.get(["wgRestrictionEdit", "wgRestrictionMove", "wgRestrictionCreate", "wgPageName"]);
     const { talkPage, basePageName } = wgGetPageNames();
     const protectLevels = new Set();
     if (Array.isArray(wgRestrictionEdit) && wgRestrictionEdit.length > 0) {
@@ -91,10 +92,10 @@
         $protectionInfoContainer.trigger("mouseout");
         const { query: { pages: [{ actions }] } } = await intestactionsPromise;
         const now = new Date();
-        const requestTitleSuffix = ` - ${mw.config.get("wgUserName")} - ${now.getFullYear()}.${prefixNumber(now.getMonth() + 1)}.${prefixNumber(now.getDate())}`;
+        const requestTitleSuffix = ` - ${wgUserName} - ${now.getFullYear()}.${prefixNumber(now.getMonth() + 1)}.${prefixNumber(now.getDate())}`;
         if (actions.edit === false && talkPage) {
             $("<a/>").attr("href", "javascript:void(0);").addClass("external").text("提出编辑请求").on("click", () => {
-                const editRequestURL = new URL(`${mw.config.get("wgServer")}${mw.config.get("wgScriptPath")}/index.php`);
+                const editRequestURL = new URL(`${wgScriptPath}/index.php`, location.origin);
                 editRequestURL.searchParams.set("action", "edit");
                 editRequestURL.searchParams.set("preload", `Template:编辑请求/${basePageName !== false && /^MediaWiki:Conversiontable\/zh-[a-z]+$/.test(wgPageName) ? basePageName : "comment"}`);
                 editRequestURL.searchParams.set("preloadtitle", `编辑请求${requestTitleSuffix}`);
@@ -105,7 +106,7 @@
         }
         if (actions.move === false) {
             $("<a/>").attr("href", "javascript:void(0);").addClass("external").text("提出移动请求").on("click", () => {
-                const moveRequestURL = new URL(`${mw.config.get("wgServer")}${mw.config.get("wgScriptPath")}/index.php`);
+                const moveRequestURL = new URL(`${wgScriptPath}/index.php`, location.origin);
                 moveRequestURL.searchParams.set("action", "edit");
                 moveRequestURL.searchParams.set("preload", "Template:移动请求");
                 moveRequestURL.searchParams.set("preloadtitle", `移动请求${requestTitleSuffix}`);
@@ -116,7 +117,7 @@
         }
         if (actions.create === false) {
             $("<a/>").attr("href", "javascript:void(0);").addClass("external").text("提出创建请求").on("click", () => {
-                const createRequestURL = new URL(`${mw.config.get("wgServer")}${mw.config.get("wgScriptPath")}/index.php`);
+                const createRequestURL = new URL(`${wgScriptPath}/index.php`, location.origin);
                 createRequestURL.searchParams.set("action", "edit");
                 createRequestURL.searchParams.set("preload", "Template:创建请求");
                 createRequestURL.searchParams.set("preloadtitle", `创建请求${requestTitleSuffix}`);
