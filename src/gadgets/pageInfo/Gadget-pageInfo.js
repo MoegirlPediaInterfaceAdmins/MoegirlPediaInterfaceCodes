@@ -93,7 +93,7 @@
         const now = new Date();
         const requestTitleSuffix = ` - ${mw.config.get("wgUserName")} - ${now.getFullYear()}.${prefixNumber(now.getMonth() + 1)}.${prefixNumber(now.getDate())}`;
         if (actions.edit === false && talkPage) {
-            $("<a/>").attr("href", "javascript:void(0);").text("提出编辑请求").on("click", () => {
+            $("<a/>").attr("href", "javascript:void(0);").addClass("external").text("提出编辑请求").on("click", () => {
                 const editRequestURL = new URL(`${mw.config.get("wgServer")}${mw.config.get("wgScriptPath")}/index.php`);
                 editRequestURL.searchParams.set("action", "edit");
                 editRequestURL.searchParams.set("preload", `Template:编辑请求/${basePageName !== false && /^MediaWiki:Conversiontable\/zh-[a-z]+$/.test(wgPageName) ? basePageName : "comment"}`);
@@ -104,7 +104,7 @@
             }).appendTo($("<li/>").appendTo($protectionInfoContainer.find("#edit-protection-request")));
         }
         if (actions.move === false) {
-            $("<a/>").attr("href", "javascript:void(0);").text("提出移动请求").on("click", () => {
+            $("<a/>").attr("href", "javascript:void(0);").addClass("external").text("提出移动请求").on("click", () => {
                 const moveRequestURL = new URL(`${mw.config.get("wgServer")}${mw.config.get("wgScriptPath")}/index.php`);
                 moveRequestURL.searchParams.set("action", "edit");
                 moveRequestURL.searchParams.set("preload", "Template:移动请求");
@@ -115,7 +115,7 @@
             }).appendTo($("<li/>").appendTo($protectionInfoContainer.find("#move-protection-request")));
         }
         if (actions.create === false) {
-            $("<a/>").attr("href", "javascript:void(0);").text("提出创建请求").on("click", () => {
+            $("<a/>").attr("href", "javascript:void(0);").addClass("external").text("提出创建请求").on("click", () => {
                 const createRequestURL = new URL(`${mw.config.get("wgServer")}${mw.config.get("wgScriptPath")}/index.php`);
                 createRequestURL.searchParams.set("action", "edit");
                 createRequestURL.searchParams.set("preload", "Template:创建请求");
