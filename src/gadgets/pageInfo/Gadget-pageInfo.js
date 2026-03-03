@@ -62,73 +62,65 @@
         const intestactionsPromise = api.post({
             action: "query",
             prop: "info",
-            titles: "Mainpage",
+            titles: wgPageName,
             formatversion: "2",
             intestactions: "edit|move|create",
             intestactionsdetail: "boolean",
         });
-        const protectionInfo = [];
-        if (Array.isArray(wgRestrictionEdit) && wgRestrictionEdit.length > 0) {
-            protectionInfo.push(`${mw.msg("edit")}：${wgRestrictionEdit.map((level) => mw.msg(`protect-level-${level}`)).join("、")}<ul id="edit-protection-request" style="display: none;"></ul>`); // 临时隐藏编辑请求按钮
-        }
-        if (Array.isArray(wgRestrictionMove) && wgRestrictionMove.length > 0) {
-            protectionInfo.push(`${mw.msg("move")}：${wgRestrictionMove.map((level) => mw.msg(`protect-level-${level}`)).join("、")}<ul id="move-protection-request"></ul>`);
-        }
-        if (Array.isArray(wgRestrictionCreate) && wgRestrictionCreate.length > 0) {
-            protectionInfo.push(`${mw.msg("create")}：${wgRestrictionCreate.map((level) => mw.msg(`protect-level-${level}`)).join("、")}<ul id="create-protection-request"></ul>`);
-        }
-        const $protectionInfoContainer = $("<a>", {
+        const $protectionInfoContainer = $("<div>", {
             "class": "page-info-protection annotation",
         });
         $protectionInfoContainer.appendTo($container);
-        const $protectionInfoImage = $("<img>", {
+        $("<img>", {
             src: "/resources/lib/ooui/themes/wikimediaui/images/icons/lock.svg",
-        });
-        $protectionInfoImage.appendTo($protectionInfoContainer);
-        const $protectionInfoText = $("<span>", {
+        }).appendTo($protectionInfoContainer);
+        const $protectionInfoContent = $("<div>", {
             "class": "annotation-content",
-            html: [
-                `<b>${wgULS("页面受到以下保护：", "頁面受到以下保護：")}</b>`,
-                ...protectionInfo,
-            ].join("<br>"),
         });
-        $protectionInfoText.appendTo($protectionInfoContainer);
+        $protectionInfoContent.append($("<b>").text(wgULS("页面受到以下保护：", "頁面受到以下保護：")));
+        const $editRequestList = $("<ul>");
+        const $moveRequestList = $("<ul>");
+        const $createRequestList = $("<ul>");
+        if (Array.isArray(wgRestrictionEdit) && wgRestrictionEdit.length > 0) {
+            $protectionInfoContent.append($("<br>"), document.createTextNode(`${mw.msg("edit")}：${wgRestrictionEdit.map((level) => mw.msg(`protect-level-${level}`)).join("、")}`), $editRequestList);
+        }
+        if (Array.isArray(wgRestrictionMove) && wgRestrictionMove.length > 0) {
+            $protectionInfoContent.append($("<br>"), document.createTextNode(`${mw.msg("move")}：${wgRestrictionMove.map((level) => mw.msg(`protect-level-${level}`)).join("、")}`), $moveRequestList);
+        }
+        if (Array.isArray(wgRestrictionCreate) && wgRestrictionCreate.length > 0) {
+            $protectionInfoContent.append($("<br>"), document.createTextNode(`${mw.msg("create")}：${wgRestrictionCreate.map((level) => mw.msg(`protect-level-${level}`)).join("、")}`), $createRequestList);
+        }
+        $protectionInfoContent.appendTo($protectionInfoContainer);
         $protectionInfoContainer.trigger("mouseout");
         const { query: { pages: [{ actions }] } } = await intestactionsPromise;
         const now = new Date();
         const requestTitleSuffix = ` - ${wgUserName} - ${now.getFullYear()}.${prefixNumber(now.getMonth() + 1)}.${prefixNumber(now.getDate())}`;
         if (actions.edit === false && talkPage) {
-            $("<a/>").attr("href", "javascript:void(0);").addClass("external").text("提出编辑请求").on("click", () => {
-                const editRequestURL = new URL(`${wgScriptPath}/index.php`, location.origin);
-                editRequestURL.searchParams.set("action", "edit");
-                editRequestURL.searchParams.set("preload", `Template:编辑请求/${basePageName !== false && /^MediaWiki:Conversiontable\/zh-[a-z]+$/.test(wgPageName) ? basePageName : "comment"}`);
-                editRequestURL.searchParams.set("preloadtitle", `编辑请求${requestTitleSuffix}`);
-                editRequestURL.searchParams.set("section", "new");
-                editRequestURL.searchParams.set("title", talkPage);
-                window.open(editRequestURL, "_blank");
-            }).appendTo($("<li/>").appendTo($protectionInfoContainer.find("#edit-protection-request")));
+            const editRequestURL = new URL(`${wgScriptPath}/index.php`, location.origin);
+            editRequestURL.searchParams.set("action", "edit");
+            editRequestURL.searchParams.set("preload", `Template:编辑请求/${basePageName !== false && /^MediaWiki:Conversiontable\/zh-[a-z]+$/.test(wgPageName) ? basePageName : "comment"}`);
+            editRequestURL.searchParams.set("preloadtitle", `编辑请求${requestTitleSuffix}`);
+            editRequestURL.searchParams.set("section", "new");
+            editRequestURL.searchParams.set("title", talkPage);
+            $("<li>").append($("<a>", { href: editRequestURL.href, target: "_blank", "class": "external", text: "提出编辑请求" })).appendTo($editRequestList);
         }
         if (actions.move === false) {
-            $("<a/>").attr("href", "javascript:void(0);").addClass("external").text("提出移动请求").on("click", () => {
-                const moveRequestURL = new URL(`${wgScriptPath}/index.php`, location.origin);
-                moveRequestURL.searchParams.set("action", "edit");
-                moveRequestURL.searchParams.set("preload", "Template:移动请求");
-                moveRequestURL.searchParams.set("preloadtitle", `移动请求${requestTitleSuffix}`);
-                moveRequestURL.searchParams.set("section", "new");
-                moveRequestURL.searchParams.set("title", "萌娘百科讨论:讨论版/操作申请");
-                window.open(moveRequestURL, "_blank");
-            }).appendTo($("<li/>").appendTo($protectionInfoContainer.find("#move-protection-request")));
+            const moveRequestURL = new URL(`${wgScriptPath}/index.php`, location.origin);
+            moveRequestURL.searchParams.set("action", "edit");
+            moveRequestURL.searchParams.set("preload", "Template:移动请求");
+            moveRequestURL.searchParams.set("preloadtitle", `移动请求${requestTitleSuffix}`);
+            moveRequestURL.searchParams.set("section", "new");
+            moveRequestURL.searchParams.set("title", "萌娘百科讨论:讨论版/操作申请");
+            $("<li>").append($("<a>", { href: moveRequestURL.href, target: "_blank", "class": "external", text: "提出移动请求" })).appendTo($moveRequestList);
         }
         if (actions.create === false) {
-            $("<a/>").attr("href", "javascript:void(0);").addClass("external").text("提出创建请求").on("click", () => {
-                const createRequestURL = new URL(`${wgScriptPath}/index.php`, location.origin);
-                createRequestURL.searchParams.set("action", "edit");
-                createRequestURL.searchParams.set("preload", "Template:创建请求");
-                createRequestURL.searchParams.set("preloadtitle", `创建请求${requestTitleSuffix}`);
-                createRequestURL.searchParams.set("section", "new");
-                createRequestURL.searchParams.set("title", "萌娘百科讨论:讨论版/操作申请");
-                window.open(createRequestURL, "_blank");
-            }).appendTo($("<li/>").appendTo($protectionInfoContainer.find("#create-protection-request")));
+            const createRequestURL = new URL(`${wgScriptPath}/index.php`, location.origin);
+            createRequestURL.searchParams.set("action", "edit");
+            createRequestURL.searchParams.set("preload", "Template:创建请求");
+            createRequestURL.searchParams.set("preloadtitle", `创建请求${requestTitleSuffix}`);
+            createRequestURL.searchParams.set("section", "new");
+            createRequestURL.searchParams.set("title", "萌娘百科讨论:讨论版/操作申请");
+            $("<li>").append($("<a>", { href: createRequestURL.href, target: "_blank", "class": "external", text: "提出创建请求" })).appendTo($createRequestList);
         }
     }
 })();

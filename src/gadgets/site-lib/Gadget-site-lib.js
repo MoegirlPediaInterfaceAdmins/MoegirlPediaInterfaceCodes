@@ -52,12 +52,12 @@ window.wgGetPageNames = () => {
     const wgNamespaceNumber = mw.config.get("wgNamespaceNumber");
     const ns = [];
     const talkNamespaceNumber = wgNamespaceNumber < 0 || wgNamespaceNumber % 2 === 1 ? NaN : wgNamespaceNumber + 1;
-    let talkns = -1;
+    let talkns = "";
     for (const [k, v] of Object.entries(mw.config.get("wgNamespaceIds"))) {
         if (v === wgNamespaceNumber) {
             ns.push(k);
         }
-        if (talkns === -1 && v === talkNamespaceNumber) {
+        if (!talkns && v === talkNamespaceNumber) {
             talkns = k;
         }
     }
@@ -67,13 +67,15 @@ window.wgGetPageNames = () => {
     let page = mw.config.get("wgPageName");
     const pageToLowerCase = page.toLowerCase();
     for (const n of ns) {
-        if (pageToLowerCase.startsWith(n)) {
-            page = page.replace(new RegExp(`^${n}:`, "i"), "");
+        const nsPrefix = `${n.toLowerCase()}:`;
+        if (pageToLowerCase.startsWith(nsPrefix)) {
+            const escapedNs = mw.util.escapeRegExp(n);
+            page = page.replace(new RegExp(`^${escapedNs}:`, "i"), "");
             break;
         }
     }
     result.basePageName = page;
-    if (talkns >= 0) {
+    if (talkns) {
         result.talkPage = `${talkns}:${page}`;
     }
     return result;
