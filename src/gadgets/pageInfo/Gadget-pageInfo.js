@@ -78,16 +78,17 @@
             "class": "annotation-content",
         });
         $protectionInfoContent.append($("<b>").text(wgULS("页面受到以下保护：", "頁面受到以下保護：")));
-        const $editRequestList = $("<ul>");
-        const $moveRequestList = $("<ul>");
-        const $createRequestList = $("<ul>");
+        let $editRequestList, $moveRequestList, $createRequestList;
         if (Array.isArray(wgRestrictionEdit) && wgRestrictionEdit.length > 0) {
+            $editRequestList = $("<ul>");
             $protectionInfoContent.append($("<br>"), document.createTextNode(`${mw.msg("edit")}：${wgRestrictionEdit.map((level) => mw.msg(`protect-level-${level}`)).join("、")}`), $editRequestList);
         }
         if (Array.isArray(wgRestrictionMove) && wgRestrictionMove.length > 0) {
+            $moveRequestList = $("<ul>");
             $protectionInfoContent.append($("<br>"), document.createTextNode(`${mw.msg("move")}：${wgRestrictionMove.map((level) => mw.msg(`protect-level-${level}`)).join("、")}`), $moveRequestList);
         }
         if (Array.isArray(wgRestrictionCreate) && wgRestrictionCreate.length > 0) {
+            $createRequestList = $("<ul>");
             $protectionInfoContent.append($("<br>"), document.createTextNode(`${mw.msg("create")}：${wgRestrictionCreate.map((level) => mw.msg(`protect-level-${level}`)).join("、")}`), $createRequestList);
         }
         $protectionInfoContent.appendTo($protectionInfoContainer);
@@ -95,7 +96,7 @@
         const { query: { pages: [{ actions }] } } = await intestactionsPromise;
         const now = new Date();
         const requestTitleSuffix = ` - ${wgUserName} - ${now.getFullYear()}.${prefixNumber(now.getMonth() + 1)}.${prefixNumber(now.getDate())}`;
-        if (actions.edit === false && talkPage) {
+        if (actions.edit === false && talkPage && $editRequestList) {
             const editRequestURL = new URL(`${wgScriptPath}/index.php`, location.origin);
             editRequestURL.searchParams.set("action", "edit");
             editRequestURL.searchParams.set("preload", `Template:编辑请求/${basePageName !== false && /^MediaWiki:Conversiontable\/zh-[a-z]+$/.test(wgPageName) ? basePageName : "comment"}`);
@@ -104,7 +105,7 @@
             editRequestURL.searchParams.set("title", talkPage);
             $("<li>").append($("<a>", { href: editRequestURL.href, target: "_blank", "class": "external", text: "提出编辑请求" })).appendTo($editRequestList);
         }
-        if (actions.move === false) {
+        if (actions.move === false && $moveRequestList) {
             const moveRequestURL = new URL(`${wgScriptPath}/index.php`, location.origin);
             moveRequestURL.searchParams.set("action", "edit");
             moveRequestURL.searchParams.set("preload", "Template:移动请求");
@@ -113,7 +114,7 @@
             moveRequestURL.searchParams.set("title", "萌娘百科讨论:讨论版/操作申请");
             $("<li>").append($("<a>", { href: moveRequestURL.href, target: "_blank", "class": "external", text: "提出移动请求" })).appendTo($moveRequestList);
         }
-        if (actions.create === false) {
+        if (actions.create === false && $createRequestList) {
             const createRequestURL = new URL(`${wgScriptPath}/index.php`, location.origin);
             createRequestURL.searchParams.set("action", "edit");
             createRequestURL.searchParams.set("preload", "Template:创建请求");
