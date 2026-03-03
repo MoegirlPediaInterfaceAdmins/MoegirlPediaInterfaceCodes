@@ -90,6 +90,7 @@ const config = [
                 CodeMirror: false,
                 Prism: false,
                 libRequestAnimationFrame: false,
+                wgGetPageNames: false,
             },
         },
     },
