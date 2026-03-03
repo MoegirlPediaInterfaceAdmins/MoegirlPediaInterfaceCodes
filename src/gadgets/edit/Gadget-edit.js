@@ -64,13 +64,13 @@ $(() => {
         const now = new Date();
         container.append("虽然您无权编辑本页面，但您可以点击右侧按钮在本页的讨论页提出编辑请求，让可以编辑的人代为编辑：");
         $("<span/>").addClass("newComment").text("提出编辑请求").on("click", () => {
-            const editRequestURL = new URL(`${mw.config.get("wgServer")}${mw.config.get("wgScriptPath")}/index.php`);
+            const editRequestURL = new URL(`${mw.config.get("wgScriptPath")}/index.php`, location.origin);
             editRequestURL.searchParams.set("action", "edit");
             editRequestURL.searchParams.set("preload", `Template:编辑请求/${basePageName !== false && /^MediaWiki:Conversiontable\/zh-[a-z]+$/.test(wgPageName) ? basePageName : "comment"}`);
             editRequestURL.searchParams.set("preloadtitle", `编辑请求 - ${mw.config.get("wgUserName")} - ${now.getFullYear()}.${prefixNumber(now.getMonth() + 1)}.${prefixNumber(now.getDate())}`);
             editRequestURL.searchParams.set("section", "new");
             editRequestURL.searchParams.set("title", talkPage);
-            window.open(editRequestURL, "_blank");
+            window.open(editRequestURL.href, "_blank");
         }).appendTo(container);
         $("#mw-content-text").children(".wikiEditor-ui:first, textarea[readonly]:first").before("<hr>").before(container);
     }
