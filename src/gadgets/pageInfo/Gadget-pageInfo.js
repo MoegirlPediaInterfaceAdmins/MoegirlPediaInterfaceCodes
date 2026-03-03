@@ -93,35 +93,46 @@
         }
         $protectionInfoContent.appendTo($protectionInfoContainer);
         $protectionInfoContainer.trigger("mouseout");
-        const { query: { pages: [{ actions }] } } = await intestactionsPromise;
-        const now = new Date();
-        const requestTitleSuffix = ` - ${wgUserName} - ${now.getFullYear()}.${prefixNumber(now.getMonth() + 1)}.${prefixNumber(now.getDate())}`;
-        if (actions.edit === false && talkPage && $editRequestList) {
-            const editRequestURL = new URL(`${wgScriptPath}/index.php`, location.origin);
-            editRequestURL.searchParams.set("action", "edit");
-            editRequestURL.searchParams.set("preload", `Template:编辑请求/${basePageName !== false && /^MediaWiki:Conversiontable\/zh-[a-z]+$/.test(wgPageName) ? basePageName : "comment"}`);
-            editRequestURL.searchParams.set("preloadtitle", `编辑请求${requestTitleSuffix}`);
-            editRequestURL.searchParams.set("section", "new");
-            editRequestURL.searchParams.set("title", talkPage);
-            $("<li>").append($("<a>", { href: editRequestURL.href, target: "_blank", "class": "external", text: "提出编辑请求" })).appendTo($editRequestList);
+        let actions = {};
+        try {
+            const pageActions = (await intestactionsPromise)?.query?.pages?.[0]?.actions;
+            if (pageActions && typeof pageActions === "object") {
+                actions = pageActions;
+            }
+        } catch (error) {
+            mw.log.warn("[Gadget-pageInfo] Failed to query intestactions", error);
+            actions = {};
         }
-        if (actions.move === false && $moveRequestList) {
-            const moveRequestURL = new URL(`${wgScriptPath}/index.php`, location.origin);
-            moveRequestURL.searchParams.set("action", "edit");
-            moveRequestURL.searchParams.set("preload", "Template:移动请求");
-            moveRequestURL.searchParams.set("preloadtitle", `移动请求${requestTitleSuffix}`);
-            moveRequestURL.searchParams.set("section", "new");
-            moveRequestURL.searchParams.set("title", "萌娘百科讨论:讨论版/操作申请");
-            $("<li>").append($("<a>", { href: moveRequestURL.href, target: "_blank", "class": "external", text: "提出移动请求" })).appendTo($moveRequestList);
-        }
-        if (actions.create === false && $createRequestList) {
-            const createRequestURL = new URL(`${wgScriptPath}/index.php`, location.origin);
-            createRequestURL.searchParams.set("action", "edit");
-            createRequestURL.searchParams.set("preload", "Template:创建请求");
-            createRequestURL.searchParams.set("preloadtitle", `创建请求${requestTitleSuffix}`);
-            createRequestURL.searchParams.set("section", "new");
-            createRequestURL.searchParams.set("title", "萌娘百科讨论:讨论版/操作申请");
-            $("<li>").append($("<a>", { href: createRequestURL.href, target: "_blank", "class": "external", text: "提出创建请求" })).appendTo($createRequestList);
+        if (wgUserName) {
+            const now = new Date();
+            const requestTitleSuffix = ` - ${wgUserName} - ${now.getFullYear()}.${prefixNumber(now.getMonth() + 1)}.${prefixNumber(now.getDate())}`;
+            if (actions.edit === false && talkPage && $editRequestList) {
+                const editRequestURL = new URL(`${wgScriptPath}/index.php`, location.origin);
+                editRequestURL.searchParams.set("action", "edit");
+                editRequestURL.searchParams.set("preload", `Template:编辑请求/${basePageName !== false && /^MediaWiki:Conversiontable\/zh-[a-z]+$/.test(wgPageName) ? basePageName : "comment"}`);
+                editRequestURL.searchParams.set("preloadtitle", `编辑请求${requestTitleSuffix}`);
+                editRequestURL.searchParams.set("section", "new");
+                editRequestURL.searchParams.set("title", talkPage);
+                $("<li>").append($("<a>", { href: editRequestURL.href, target: "_blank", "class": "external", text: "提出编辑请求" })).appendTo($editRequestList);
+            }
+            if (actions.move === false && $moveRequestList) {
+                const moveRequestURL = new URL(`${wgScriptPath}/index.php`, location.origin);
+                moveRequestURL.searchParams.set("action", "edit");
+                moveRequestURL.searchParams.set("preload", "Template:移动请求");
+                moveRequestURL.searchParams.set("preloadtitle", `移动请求${requestTitleSuffix}`);
+                moveRequestURL.searchParams.set("section", "new");
+                moveRequestURL.searchParams.set("title", "萌娘百科讨论:讨论版/操作申请");
+                $("<li>").append($("<a>", { href: moveRequestURL.href, target: "_blank", "class": "external", text: "提出移动请求" })).appendTo($moveRequestList);
+            }
+            if (actions.create === false && $createRequestList) {
+                const createRequestURL = new URL(`${wgScriptPath}/index.php`, location.origin);
+                createRequestURL.searchParams.set("action", "edit");
+                createRequestURL.searchParams.set("preload", "Template:创建请求");
+                createRequestURL.searchParams.set("preloadtitle", `创建请求${requestTitleSuffix}`);
+                createRequestURL.searchParams.set("section", "new");
+                createRequestURL.searchParams.set("title", "萌娘百科讨论:讨论版/操作申请");
+                $("<li>").append($("<a>", { href: createRequestURL.href, target: "_blank", "class": "external", text: "提出创建请求" })).appendTo($createRequestList);
+            }
         }
     }
 })();
