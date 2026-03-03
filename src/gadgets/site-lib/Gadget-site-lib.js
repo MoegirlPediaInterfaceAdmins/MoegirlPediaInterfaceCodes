@@ -61,7 +61,7 @@ window.wgGetPageNames = () => {
             talkns = k;
         }
     }
-    if (!ns[0]) {
+    if (ns.length === 0) {
         return result;
     }
     let page = mw.config.get("wgPageName");
