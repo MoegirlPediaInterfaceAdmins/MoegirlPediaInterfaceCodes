@@ -11,7 +11,11 @@
 
     await $.ready;
 
-    const { wgRestrictionEdit, wgRestrictionMove, wgRestrictionCreate, wgPageName, wgUserName, wgScriptPath, skin } = mw.config.get(["wgRestrictionEdit", "wgRestrictionMove", "wgRestrictionCreate", "wgPageName", "wgUserName", "wgScriptPath", "skin"]);
+    /**
+     * @type { string[] | null }
+     */
+    const wgRestrictionCreate = mw.config.get("wgRestrictionCreate");
+    const { wgRestrictionEdit, wgRestrictionMove, wgPageName, wgUserName, wgScriptPath, skin } = mw.config.get(["wgRestrictionEdit", "wgRestrictionMove", "wgPageName", "wgUserName", "wgScriptPath", "skin"]);
 
     let $container;
     switch (skin) {
