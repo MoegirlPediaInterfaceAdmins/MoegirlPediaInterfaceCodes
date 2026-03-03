@@ -99,7 +99,8 @@
             if (pageActions && typeof pageActions === "object") {
                 actions = pageActions;
             }
-        } catch {
+        } catch (error) {
+            mw.log.warn("[Gadget-pageInfo] Failed to query intestactions", error);
             actions = {};
         }
         if (wgUserName) {
