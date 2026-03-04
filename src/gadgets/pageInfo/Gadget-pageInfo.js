@@ -65,7 +65,7 @@
         });
         $protectionInfoImage.appendTo($protectionInfoContainer);
         const $protectionInfoText = $("<span>", {
-            "class": "annotation-content page-info-annotation-content",
+            "class": "annotation-content",
             html: [
                 `<b>${wgULS("页面受到以下保护：", "頁面受到以下保護：")}</b>`,
                 ...protectionInfo,
