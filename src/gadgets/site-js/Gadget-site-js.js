@@ -533,6 +533,8 @@
     await $.ready;
 
     tabs();
+    /* T:注解 */
+    $("body").triggerHandler("mouseout", ".annotation");
     // 图片地址
     setInterval(() => {
         $(document.querySelectorAll('img[src*="//img.moegirl.org/"]:not(.org-changed), img[src*="//commons.moegirl.org/"]:not(.org-changed)')).each((_, ele) => {
