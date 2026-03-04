@@ -57,7 +57,7 @@
             protectionInfo.push(`${mw.msg("create")}：${wgRestrictionCreate.map((level) => mw.msg(`protect-level-${level}`)).join("、")}`);
         }
         const $protectionInfoContainer = $("<a>", {
-            "class": "page-info-protection annotation",
+            "class": "page-info-protection page-info-annotation",
         });
         $protectionInfoContainer.appendTo($container);
         const $protectionInfoImage = $("<img>", {
@@ -65,7 +65,7 @@
         });
         $protectionInfoImage.appendTo($protectionInfoContainer);
         const $protectionInfoText = $("<span>", {
-            "class": "annotation-content",
+            "class": "page-info-annotation-content",
             html: [
                 `<b>${wgULS("页面受到以下保护：", "頁面受到以下保護：")}</b>`,
                 ...protectionInfo,
