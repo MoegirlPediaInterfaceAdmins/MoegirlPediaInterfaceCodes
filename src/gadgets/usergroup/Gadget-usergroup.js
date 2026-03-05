@@ -204,6 +204,16 @@
         }
     }
     localObjectStorage.setItem("blockCache", blockCache);
+    const usernameToGroups = new Map();
+    for (const group of groupsKey) {
+        for (const name of cache.groups[group]) {
+            if (!usernameToGroups.has(name)) {
+                usernameToGroups.set(name, []);
+            }
+            usernameToGroups.get(name).push(group);
+        }
+    }
+    const yieldToMain = () => new Promise((resolve) => setTimeout(resolve, 0));
     /**
      * @type { <E extends Element = HTMLElement>(selectors: string) => E[] }
      */
@@ -222,17 +232,13 @@
     };
     const hook = async () => {
         const unknownUsernames = new Set();
-        for (const ele of querySelectorAll("a.mw-userlink:not(.markrights), .userlink > a:not(.markrights)")) {
-            let parent = ele.parentElement;
-            let inNavbox = false;
-            while (parent) {
-                if (parent.classList.contains("navbox")) {
-                    inNavbox = true;
-                    break;
-                }
-                parent = parent.parentElement;
+        const elements = querySelectorAll("a.mw-userlink:not(.markrights), .userlink > a:not(.markrights)");
+        for (let _i = 0; _i < elements.length; _i++) {
+            if (_i > 0 && _i % 50 === 0) {
+                await yieldToMain();
             }
-            if (inNavbox) {
+            const ele = elements[_i];
+            if (ele.closest(".navbox")) {
                 continue;
             }
             ele.classList.add("markrights");
@@ -249,8 +255,9 @@
                 continue;
             }
             ele.dataset.username = username;
-            for (const group of groupsKey) {
-                if (cache.groups[group].includes(username)) {
+            const userGroups = usernameToGroups.get(username);
+            if (userGroups) {
+                for (const group of userGroups) {
                     const sup = document.createElement("sup");
                     sup.classList.add(`markrights-${group}`);
                     ele.after(sup);
@@ -273,7 +280,7 @@
             for (let i = 0, l = Math.ceil(targets.length / singleRequestLimit); i < l; i++) {
                 let bkcontinue = undefined;
                 const target = targets.slice(i * singleRequestLimit, (i + 1) * singleRequestLimit);
-                const blockedUserName = [];
+                const blockedUserName = new Set();
                 const now = Date.now();
                 while (bkcontinue !== eol) {
                     const _result = await api.post({
@@ -286,12 +293,12 @@
                         bkcontinue,
                     });
                     if (_result.continue) {
-                        bkcontinue = _result.continue.aufrom;
+                        bkcontinue = _result.continue.bkcontinue;
                     } else {
                         bkcontinue = eol;
                     }
                     _result.query.blocks.forEach((blockInfo) => {
-                        blockedUserName.push(blockInfo.user);
+                        blockedUserName.add(blockInfo.user);
                         const isPartial = blockInfo.restrictions && Object.keys(blockInfo.restrictions).length > 0;
                         let info = `${blockInfo.id} - \n    被U:${blockInfo.by}${wgULS("封禁", "封鎖")}于${toLocalTimeZoneString(new Date(blockInfo.timestamp))}，`;
                         if (moment(blockInfo.expiry).isValid()) {
@@ -339,7 +346,7 @@
                         };
                     });
                 }
-                for (const username of target.filter((username) => !blockedUserName.includes(username))) {
+                for (const username of target.filter((username) => !blockedUserName.has(username))) {
                     blockCache[username] = {
                         timestamp: now,
                         isBlocked: false,
@@ -355,24 +362,27 @@
             }
             localObjectStorage.setItem("blockCache", blockCache);
         }
-        for (const group of groupsKey) {
-            for (const node of querySelectorAll(`.markrights-${group}`)) {
-                let { nextElementSibling } = node;
-                while (nextElementSibling && [...nextElementSibling.classList].filter((className) => className.startsWith("markrights-")).length > 0) {
-                    const nextNextElementSibling = nextElementSibling.nextElementSibling;
-                    if (nextElementSibling.classList.contains(`.markrights-${group}`)) {
-                        nextElementSibling.remove();
-                    }
-                    nextElementSibling = nextNextElementSibling;
-                }
-            }
-        }
     };
-    hook();
-    mw.hook("wikipage.content").add(hook);
-    mw.hook("anntools.usergroup").add(hook);
+    let currentHook = Promise.resolve();
+    let hookPending = false;
+    const guardedHook = () => {
+        if (hookPending) {
+            return;
+        }
+        hookPending = true;
+        const prev = currentHook;
+        currentHook = (async () => {
+            await prev;
+            hookPending = true;
+            await hook();
+            hookPending = false;
+        })();
+    };
+    guardedHook();
+    mw.hook("wikipage.content").add(guardedHook);
+    mw.hook("anntools.usergroup").add(guardedHook);
     if (document.readyState !== "complete") {
-        $(window).on("load", hook);
+        $(window).on("load", guardedHook);
     }
     const style = ["sup[class^=markrights-]+sup[class^=markrights-] { margin-left: 2px; }"];
     for (const [group, color] of groups) {
