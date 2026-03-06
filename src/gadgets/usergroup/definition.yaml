@@ -31,6 +31,7 @@ dependencies:
   - ext.gadget.LocalObjectStorage
   - ext.gadget.site-lib
   - ext.gadget.libPolyfill
+  - ext.gadget.libLoadMessagesWithCache
 
 _sites:
   - zh

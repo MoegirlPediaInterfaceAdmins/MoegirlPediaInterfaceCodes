@@ -107,14 +107,18 @@
         },
     };
     const groupsKey = groups.map(([group]) => group);
-    const blocklogFlags = Object.entries({
-        anononly: wgULS("仅封禁匿名用户", "僅封鎖匿名使用者", null, null, "僅封鎖匿名用戶"),
-        nocreate: wgULS("阻止创建新账号", "防止建立新帳號"),
-        autoblock: wgULS("自动封禁该用户最后使用的IP地址，以及其随后试图用于编辑的所有IP地址", "自動封鎖最後使用的IP位址，以及在這之後嘗試登入的所有IP位址。"),
-        noemail: wgULS("阻止用户发送电子邮件", "阻止使用者發送電子郵件", null, null, "阻止用戶發送電子郵件"),
-        nousertalk: wgULS("阻止用户在封禁期间编辑自己的讨论页", "阻止使用者在封鎖期間編輯自己的對話頁", null, null, "阻止用戶在封鎖期間編輯自己的討論頁"),
-        hiddenname: wgULS("隐藏用户名", "隱藏使用者名稱", null, null, "隱藏用戶名"),
-    });
+    const blockLogFlags = [
+        ...[
+            "anononly",
+            "nocreate",
+            "noemail",
+            "nousertalk",
+            "hiddenname",
+        ].map((k) => [k, `block-log-flags-${k}`]),
+        ...[
+            "autoblock",
+        ].map((k) => [k, `apihelp-block-param-${k}`]),
+    ];
     const namespaceMap = {
         0: "（主）",
         1: wgULS("讨论", "討論"),
@@ -145,6 +149,7 @@
     const eol = Symbol();
     const fixZero = (n, l = 2) => `${n}`.padStart(l, "0");
     const toLocalTimeZoneString = (date = new Date()) => `${date.getFullYear()}/${fixZero(date.getMonth() + 1)}/${fixZero(date.getDate())} ${fixZero(date.getHours())}:${fixZero(date.getMinutes())}:${fixZero(date.getSeconds())}.${fixZero(date.getMilliseconds(), 3)}`;
+    let loadMessagesPromise = Promise.resolve(true);
     try {
         cache = localObjectStorage.getItem("cache");
         if (!cache
@@ -273,6 +278,8 @@
             }
         }
         if (unknownUsernames.size > 0) {
+            const messages = blockLogFlags.map(([_, msg]) => msg);
+            loadMessagesPromise = libLoadMessagesWithCache.loadMessagesIfMissing(messages);
             const hasApihighlimits = (await mw.user.getRights()).includes("apihighlimits");
             const singleRequestLimit = hasApihighlimits ? 500 : 50;
             const targets = [...unknownUsernames.values()];
@@ -296,7 +303,7 @@
                     } else {
                         bkcontinue = eol;
                     }
-                    _result.query.blocks.forEach((blockInfo) => {
+                    for (const blockInfo of _result.query.blocks) {
                         blockedUserName.add(blockInfo.user);
                         const isPartial = blockInfo.restrictions && Object.keys(blockInfo.restrictions).length > 0;
                         let info = `${blockInfo.id} - \n    被U:${blockInfo.by}${wgULS("封禁", "封鎖")}于${toLocalTimeZoneString(new Date(blockInfo.timestamp))}，`;
@@ -327,9 +334,10 @@
                             blockInfo.nousertalk = true;
                         }
                         const flags = [];
-                        for (const [flag, comment] of blocklogFlags) {
+                        await loadMessagesPromise;
+                        for (const [flag, commentKey] of blockLogFlags) {
                             if (Reflect.has(blockInfo, flag)) {
-                                flags.push(comment);
+                                flags.push(mw.msg(commentKey));
                             }
                         }
                         if (flags.length === 0) {
@@ -343,7 +351,7 @@
                             isPartial,
                             info,
                         };
-                    });
+                    };
                 }
                 for (const username of target.filter((username) => !blockedUserName.has(username))) {
                     blockCache[username] = {
