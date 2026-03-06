@@ -26,5 +26,33 @@
         "isTestable": false,
         "isPublic": true,
         "size": 2063
+    },
+    "scheduler": {
+        "aliases": [
+            "default"
+        ],
+        "spec": "https://wicg.github.io/scheduling-apis/#scheduler",
+        "docs": "https://developer.mozilla.org/en-US/docs/Web/API/Scheduler",
+        "notes": [
+            "In polyfill.io@3.111.0, there is no polyfill for this feature."
+        ],
+        "browsers": {
+            "android": "<129",
+            "chrome": "<129",
+            "edge": "<129",
+            "edge_mob": "<129",
+            "firefox": "<142",
+            "firefox_mob": "<142",
+            "ios_saf": "<999",
+            "op_mini": "<86",
+            "opera": "<115",
+            "safari": "<999",
+            "samsung_mob": "<28.0"
+        },
+        "baseDir": "scheduler",
+        "hasTests": false,
+        "isTestable": false,
+        "isPublic": true,
+        "size": 2063
     }
 }
