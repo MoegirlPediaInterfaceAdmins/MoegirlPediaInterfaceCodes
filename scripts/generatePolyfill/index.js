@@ -8,9 +8,10 @@ import jsonModule from "../modules/jsonModule.js";
 import yamlModule from "../modules/yamlModule.js";
 console.info("Initialization done.");
 
-const polyfillGadgetDefinitionPath = "src/gadgets/libPolyfill/definition.yaml";
+const polyfillGadgetPath = "src/gadgets/libPolyfill/";
+const polyfillGadgetDefinitionPath = path.join(polyfillGadgetPath, "definition.yaml");
 const polyfillGadgetDefinition = await yamlModule.readFile(polyfillGadgetDefinitionPath);
-const getPolyfillGadgetFiles = async () => (await fs.promises.readdir("src/gadgets/libPolyfill/")).filter((file) => path.extname(file) === ".js");
+const getPolyfillGadgetFiles = async () => (await fs.promises.readdir(polyfillGadgetPath)).filter((file) => path.extname(file) === ".js");
 
 /**
  * @type { { TARGET_CHROMIUM_VERSION: string | number, TARGET_ALIASES: string[] } }
@@ -43,7 +44,7 @@ for (const file of polyfillGadgetFiles) {
         continue;
     }
     console.info("\tDeleteting", file);
-    await fs.promises.rm(path.join("src/gadgets/libPolyfill/", file), {
+    await fs.promises.rm(path.join(polyfillGadgetPath, file), {
         force: true,
         recursive: true,
     });
@@ -148,7 +149,7 @@ for (const polyfill of polyfillListAllowed) {
         ...await getPolyfillContent(polyfill),
         "})();",
     ];
-    const gadgetFilePath = path.join("src/gadgets/libPolyfill/", `Gadget-libPolyfill-${polyfill.id}.js`);
+    const gadgetFilePath = path.join(polyfillGadgetPath, `Gadget-libPolyfill-${polyfill.id}.js`);
     console.info("Start to write polyfill file:", polyfill.id, "@", gadgetFilePath);
     await fs.promises.writeFile(gadgetFilePath, content.join("\n"));
     console.info("Done.");
