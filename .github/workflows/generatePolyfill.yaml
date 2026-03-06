@@ -7,6 +7,7 @@ on:
       - scripts/generatePolyfill/config.yaml
       - scripts/generatePolyfill/index.js
       - scripts/generatePolyfill/customPolyfill/**/*
+      - .browserslistrc
   merge_group:
   pull_request:
     paths:
@@ -14,6 +15,7 @@ on:
       - scripts/generatePolyfill/config.yaml
       - scripts/generatePolyfill/index.js
       - scripts/generatePolyfill/customPolyfill/**/*
+      - .browserslistrc
   workflow_dispatch:
   schedule:
     - cron: 0 23 * * 0 # Every 07:00 CST Mon
