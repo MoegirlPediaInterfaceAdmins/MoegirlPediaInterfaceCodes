@@ -4,7 +4,7 @@
  * Options:
  *     polyfillFeature: scheduler
  *     polyfillAliases: default
- *     browserslist: defaults, Chrome >= 132
+ *     browserslist: defaults, Chrome >= 132, not opera < 1307, not op_mob < 1307, not android < 1307, not edge < 1307, not op_mini < 1307
  *     polyfillBrowsers: android: <129, chrome: <129, edge: <129, edge_mob: <129, firefox: <142, firefox_mob: <142, ios_saf: <999, op_mini: <86, opera: <115, safari: <999, samsung_mob: <28.0
  */
 (() => {
