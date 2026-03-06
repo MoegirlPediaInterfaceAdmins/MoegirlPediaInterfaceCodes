@@ -57,6 +57,9 @@ const polyfillMainJSONArray = [
     ...Object.entries(await jsonModule.readFile(polyfillMainJSONPath)).map(([id, v]) => ({
         id,
         ...JSON.parse(v),
+    })).map(({ baseDir, ...v }) => ({
+        ...v,
+        baseDir: baseDir.replaceAll("/", "."), // Some polyfill entries use "baseDir" with "/" as separator, but the actual directory uses "." as separator. Replace it here for later use.
     })),
     ...Object.entries(await jsonModule.readFile(customPolyfillMainJSONPath)).map(([id, v]) => ({
         id,
