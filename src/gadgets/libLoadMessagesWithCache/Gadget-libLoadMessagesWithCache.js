@@ -1,6 +1,6 @@
 "use strict";
 (() => {
-    const localObjectStorage = new LocalObjectStorage("libLoadMessagesWithCache");
+    const localObjectStorage = new LocalObjectStorage(`libLoadMessagesWithCache:${mw.config.get("wgUserLanguage")}`);
     mw.messages.set(localObjectStorage.getItem("messagesCache", {}));
     const api = new mw.Api();
     window.libLoadMessagesWithCache = {
