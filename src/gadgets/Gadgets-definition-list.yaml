@@ -159,3 +159,4 @@
     - vector-2022-styles
     - libDiscussionUtil
     - libRequestAnimationFrame
+    - libLoadMessagesWithCache

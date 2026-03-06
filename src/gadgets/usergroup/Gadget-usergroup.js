@@ -107,14 +107,18 @@
         },
     };
     const groupsKey = groups.map(([group]) => group);
-    const blocklogFlags = Object.entries({
-        anononly: wgULS("仅封禁匿名用户", "僅封鎖匿名使用者", null, null, "僅封鎖匿名用戶"),
-        nocreate: wgULS("阻止创建新账号", "防止建立新帳號"),
-        autoblock: wgULS("自动封禁该用户最后使用的IP地址，以及其随后试图用于编辑的所有IP地址", "自動封鎖最後使用的IP位址，以及在這之後嘗試登入的所有IP位址。"),
-        noemail: wgULS("阻止用户发送电子邮件", "阻止使用者發送電子郵件", null, null, "阻止用戶發送電子郵件"),
-        nousertalk: wgULS("阻止用户在封禁期间编辑自己的讨论页", "阻止使用者在封鎖期間編輯自己的對話頁", null, null, "阻止用戶在封鎖期間編輯自己的討論頁"),
-        hiddenname: wgULS("隐藏用户名", "隱藏使用者名稱", null, null, "隱藏用戶名"),
-    });
+    const blockLogFlags = [
+        ...[
+            "anononly",
+            "nocreate",
+            "noemail",
+            "nousertalk",
+            "hiddenname",
+        ].map((k) => [k, `block-log-flags-${k}`]),
+        ...[
+            "autoblock",
+        ].map((k) => [k, `apihelp-block-param-${k}`]),
+    ];
     const namespaceMap = {
         0: "（主）",
         1: wgULS("讨论", "討論"),
@@ -145,6 +149,7 @@
     const eol = Symbol();
     const fixZero = (n, l = 2) => `${n}`.padStart(l, "0");
     const toLocalTimeZoneString = (date = new Date()) => `${date.getFullYear()}/${fixZero(date.getMonth() + 1)}/${fixZero(date.getDate())} ${fixZero(date.getHours())}:${fixZero(date.getMinutes())}:${fixZero(date.getSeconds())}.${fixZero(date.getMilliseconds(), 3)}`;
+    let loadMessagesPromise = Promise.resolve(true);
     try {
         cache = localObjectStorage.getItem("cache");
         if (!cache
@@ -204,6 +209,15 @@
         }
     }
     localObjectStorage.setItem("blockCache", blockCache);
+    const usernameToGroups = new Map();
+    for (const group of groupsKey) {
+        for (const name of cache.groups[group]) {
+            if (!usernameToGroups.has(name)) {
+                usernameToGroups.set(name, []);
+            }
+            usernameToGroups.get(name).push(group);
+        }
+    }
     /**
      * @type { <E extends Element = HTMLElement>(selectors: string) => E[] }
      */
@@ -222,17 +236,13 @@
     };
     const hook = async () => {
         const unknownUsernames = new Set();
-        for (const ele of querySelectorAll("a.mw-userlink:not(.markrights), .userlink > a:not(.markrights)")) {
-            let parent = ele.parentElement;
-            let inNavbox = false;
-            while (parent) {
-                if (parent.classList.contains("navbox")) {
-                    inNavbox = true;
-                    break;
-                }
-                parent = parent.parentElement;
+        const elements = querySelectorAll("a.mw-userlink:not(.markrights), .userlink > a:not(.markrights)");
+        for (let _i = 0; _i < elements.length; _i++) {
+            if (_i > 0 && _i % 50 === 0) {
+                await scheduler.yield();
             }
-            if (inNavbox) {
+            const ele = elements[_i];
+            if (ele.closest(".navbox")) {
                 continue;
             }
             ele.classList.add("markrights");
@@ -249,8 +259,9 @@
                 continue;
             }
             ele.dataset.username = username;
-            for (const group of groupsKey) {
-                if (cache.groups[group].includes(username)) {
+            const userGroups = usernameToGroups.get(username);
+            if (userGroups) {
+                for (const group of userGroups) {
                     const sup = document.createElement("sup");
                     sup.classList.add(`markrights-${group}`);
                     ele.after(sup);
@@ -267,13 +278,15 @@
             }
         }
         if (unknownUsernames.size > 0) {
+            const messages = blockLogFlags.map(([_, msg]) => msg);
+            loadMessagesPromise = libLoadMessagesWithCache.loadMessagesIfMissing(messages);
             const hasApihighlimits = (await mw.user.getRights()).includes("apihighlimits");
             const singleRequestLimit = hasApihighlimits ? 500 : 50;
             const targets = [...unknownUsernames.values()];
             for (let i = 0, l = Math.ceil(targets.length / singleRequestLimit); i < l; i++) {
                 let bkcontinue = undefined;
                 const target = targets.slice(i * singleRequestLimit, (i + 1) * singleRequestLimit);
-                const blockedUserName = [];
+                const blockedUserName = new Set();
                 const now = Date.now();
                 while (bkcontinue !== eol) {
                     const _result = await api.post({
@@ -286,12 +299,12 @@
                         bkcontinue,
                     });
                     if (_result.continue) {
-                        bkcontinue = _result.continue.aufrom;
+                        bkcontinue = _result.continue.bkcontinue;
                     } else {
                         bkcontinue = eol;
                     }
-                    _result.query.blocks.forEach((blockInfo) => {
-                        blockedUserName.push(blockInfo.user);
+                    for (const blockInfo of _result.query.blocks) {
+                        blockedUserName.add(blockInfo.user);
                         const isPartial = blockInfo.restrictions && Object.keys(blockInfo.restrictions).length > 0;
                         let info = `${blockInfo.id} - \n    被U:${blockInfo.by}${wgULS("封禁", "封鎖")}于${toLocalTimeZoneString(new Date(blockInfo.timestamp))}，`;
                         if (moment(blockInfo.expiry).isValid()) {
@@ -321,9 +334,10 @@
                             blockInfo.nousertalk = true;
                         }
                         const flags = [];
-                        for (const [flag, comment] of blocklogFlags) {
+                        await loadMessagesPromise;
+                        for (const [flag, commentKey] of blockLogFlags) {
                             if (Reflect.has(blockInfo, flag)) {
-                                flags.push(comment);
+                                flags.push(mw.msg(commentKey));
                             }
                         }
                         if (flags.length === 0) {
@@ -337,9 +351,9 @@
                             isPartial,
                             info,
                         };
-                    });
+                    };
                 }
-                for (const username of target.filter((username) => !blockedUserName.includes(username))) {
+                for (const username of target.filter((username) => !blockedUserName.has(username))) {
                     blockCache[username] = {
                         timestamp: now,
                         isBlocked: false,
@@ -355,24 +369,27 @@
             }
             localObjectStorage.setItem("blockCache", blockCache);
         }
-        for (const group of groupsKey) {
-            for (const node of querySelectorAll(`.markrights-${group}`)) {
-                let { nextElementSibling } = node;
-                while (nextElementSibling && [...nextElementSibling.classList].filter((className) => className.startsWith("markrights-")).length > 0) {
-                    const nextNextElementSibling = nextElementSibling.nextElementSibling;
-                    if (nextElementSibling.classList.contains(`.markrights-${group}`)) {
-                        nextElementSibling.remove();
-                    }
-                    nextElementSibling = nextNextElementSibling;
-                }
-            }
-        }
     };
-    hook();
-    mw.hook("wikipage.content").add(hook);
-    mw.hook("anntools.usergroup").add(hook);
+    let currentHook = Promise.resolve();
+    let hookPending = false;
+    const guardedHook = () => {
+        if (hookPending) {
+            return;
+        }
+        hookPending = true;
+        const prev = currentHook;
+        currentHook = (async () => {
+            await prev;
+            hookPending = true;
+            await hook();
+            hookPending = false;
+        })();
+    };
+    guardedHook();
+    mw.hook("wikipage.content").add(guardedHook);
+    mw.hook("anntools.usergroup").add(guardedHook);
     if (document.readyState !== "complete") {
-        $(window).on("load", hook);
+        $(window).on("load", guardedHook);
     }
     const style = ["sup[class^=markrights-]+sup[class^=markrights-] { margin-left: 2px; }"];
     for (const [group, color] of groups) {

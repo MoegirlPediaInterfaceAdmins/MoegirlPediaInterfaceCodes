@@ -91,6 +91,7 @@ const config = [
                 Prism: false,
                 libRequestAnimationFrame: false,
                 wgGetPageNames: false,
+                libLoadMessagesWithCache: false,
             },
         },
     },

@@ -1,6 +1,6 @@
 ResourceLoader: true
 
-hidden: false
+hidden: true
 
 default: false
 
@@ -20,24 +20,19 @@ type: general
 
 package: false
 
-rights: []
+rights:
+  - hidden
 
 peers: []
 
-dependencies:
-  - moment
-  - mediawiki.api
-  - mediawiki.user
+dependencies: 
   - ext.gadget.LocalObjectStorage
-  - ext.gadget.site-lib
-  - ext.gadget.libPolyfill
-  - ext.gadget.libLoadMessagesWithCache
 
 _sites:
   - zh
   - commons
 
-_section: user
+_section: system
 
 _files:
-  - Gadget-usergroup.js
+  - Gadget-libLoadMessagesWithCache.js

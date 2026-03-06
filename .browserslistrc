@@ -1,1 +1,8 @@
-defaults, Chrome >= 86
+defaults,
+Chrome >= 132, # QQ 浏览器 和 360 极速浏览器的 Chromium 内核版本 —— 2026/03/06
+# 以下是禁用不受支持的浏览器
+not opera < 1307,
+not op_mob < 1307,
+not android < 1307,
+not edge < 1307,
+not op_mini < 1307,
