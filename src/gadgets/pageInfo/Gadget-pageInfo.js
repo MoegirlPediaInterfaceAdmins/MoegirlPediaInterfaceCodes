@@ -58,6 +58,7 @@
     }
     if (protectLevels.size > 0) {
         await libLoadMessagesWithCache.loadMessagesIfMissing(Array.from(protectLevels));
+        const api = new mw.Api();
         const intestactionsPromise = api.post({
             action: "query",
             prop: "info",
