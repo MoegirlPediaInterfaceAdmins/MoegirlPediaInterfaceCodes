@@ -33,7 +33,62 @@ _sites:
 _section: system
 
 _files:
+  - Gadget-libPolyfill-AggregateError.js
   - Gadget-libPolyfill-Array.prototype.at.js
+  - Gadget-libPolyfill-Array.prototype.flat.js
+  - Gadget-libPolyfill-Array.prototype.flatMap.js
+  - Gadget-libPolyfill-Array.prototype.includes.js
+  - Gadget-libPolyfill-DocumentFragment.prototype.append.js
+  - Gadget-libPolyfill-DocumentFragment.prototype.prepend.js
+  - Gadget-libPolyfill-Element.prototype.after.js
+  - Gadget-libPolyfill-Element.prototype.remove.js
+  - Gadget-libPolyfill-Map.js
+  - Gadget-libPolyfill-Math.acosh.js
+  - Gadget-libPolyfill-Math.asinh.js
+  - Gadget-libPolyfill-Math.atanh.js
+  - Gadget-libPolyfill-Math.cbrt.js
+  - Gadget-libPolyfill-Math.clz32.js
+  - Gadget-libPolyfill-Math.cosh.js
+  - Gadget-libPolyfill-Math.expm1.js
+  - Gadget-libPolyfill-Math.fround.js
+  - Gadget-libPolyfill-Math.hypot.js
+  - Gadget-libPolyfill-Math.imul.js
+  - Gadget-libPolyfill-Math.log10.js
+  - Gadget-libPolyfill-Math.log1p.js
+  - Gadget-libPolyfill-Math.log2.js
+  - Gadget-libPolyfill-Math.sign.js
+  - Gadget-libPolyfill-Math.sinh.js
+  - Gadget-libPolyfill-Math.tanh.js
+  - Gadget-libPolyfill-Math.trunc.js
+  - Gadget-libPolyfill-Number.MAX_SAFE_INTEGER.js
+  - Gadget-libPolyfill-Number.MIN_SAFE_INTEGER.js
+  - Gadget-libPolyfill-Number.isInteger.js
+  - Gadget-libPolyfill-Object.assign.js
+  - Gadget-libPolyfill-Object.fromEntries.js
+  - Gadget-libPolyfill-Object.seal.js
+  - Gadget-libPolyfill-Object.setPrototypeOf.js
+  - Gadget-libPolyfill-Promise.any.js
+  - Gadget-libPolyfill-Promise.js
+  - Gadget-libPolyfill-RegExp.prototype.@@matchAll.js
+  - Gadget-libPolyfill-Set.js
   - Gadget-libPolyfill-String.prototype.at.js
+  - Gadget-libPolyfill-String.prototype.includes.js
+  - Gadget-libPolyfill-String.prototype.matchAll.js
+  - Gadget-libPolyfill-String.prototype.padEnd.js
+  - Gadget-libPolyfill-String.prototype.replaceAll.js
+  - Gadget-libPolyfill-String.prototype.trim.js
+  - Gadget-libPolyfill-String.prototype.trimEnd.js
+  - Gadget-libPolyfill-String.prototype.trimStart.js
+  - Gadget-libPolyfill-Symbol.hasInstance.js
+  - Gadget-libPolyfill-Symbol.isConcatSpreadable.js
+  - Gadget-libPolyfill-Symbol.matchAll.js
+  - Gadget-libPolyfill-Symbol.search.js
+  - Gadget-libPolyfill-Symbol.species.js
+  - Gadget-libPolyfill-Symbol.split.js
+  - Gadget-libPolyfill-Symbol.toPrimitive.js
+  - Gadget-libPolyfill-Symbol.toStringTag.js
+  - Gadget-libPolyfill-Symbol.unscopables.js
   - Gadget-libPolyfill-TypedArray.prototype.at.js
-  - Gadget-libPolyfill-crypto.randomUUID.js
+  - Gadget-libPolyfill-WeakMap.js
+  - Gadget-libPolyfill-WeakSet.js
+  - Gadget-libPolyfill-scheduler.js
