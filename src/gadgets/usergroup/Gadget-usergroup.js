@@ -213,7 +213,6 @@
             usernameToGroups.get(name).push(group);
         }
     }
-    const yieldToMain = () => new Promise((resolve) => setTimeout(resolve, 0));
     /**
      * @type { <E extends Element = HTMLElement>(selectors: string) => E[] }
      */
@@ -235,7 +234,7 @@
         const elements = querySelectorAll("a.mw-userlink:not(.markrights), .userlink > a:not(.markrights)");
         for (let _i = 0; _i < elements.length; _i++) {
             if (_i > 0 && _i % 50 === 0) {
-                await yieldToMain();
+                await scheduler.yield();
             }
             const ele = elements[_i];
             if (ele.closest(".navbox")) {
