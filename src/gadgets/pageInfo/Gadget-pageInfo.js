@@ -66,7 +66,7 @@
             intestactions: "edit|move|create",
             intestactionsdetail: "boolean",
         });
-        const $protectionInfoContainer = $("<div>", {
+        const $protectionInfoContainer = $("<a>", {
             "class": "page-info-protection annotation",
         });
         $protectionInfoContainer.appendTo($container);
