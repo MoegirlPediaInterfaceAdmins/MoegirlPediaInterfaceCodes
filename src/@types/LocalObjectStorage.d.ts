@@ -1,3 +1,5 @@
+import type { DurationInputArg2 } from "moment";
+
 interface Transformation {
     type: string;
 
@@ -6,6 +8,10 @@ interface Transformation {
     encode: (value: any) => string;
 
     decode: (value: string) => any;
+}
+
+interface LocalObjectStorageOptions {
+    expires?: [amount: number, unit: DurationInputArg2];
 }
 
 declare class LocalObjectStorage {
@@ -19,7 +25,9 @@ declare class LocalObjectStorage {
 
     #keyPrefix: string;
 
-    constructor(prefix?: string);
+    #expires?: LocalObjectStorageOptions["expires"];
+
+    constructor(prefix?: string, options?: LocalObjectStorageOptions);
 
     get _keyPrefix(): string;
 

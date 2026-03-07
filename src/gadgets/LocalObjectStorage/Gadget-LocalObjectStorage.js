@@ -51,11 +51,11 @@
                         return false;
                     }
                     if (["JSON"].includes(type)) {
-                        console.error(`LocalObjectStorage can't accept type name "${type}", skip...`);
+                        console.error(`LocalObjectStorage can't accept type name "${type}" from custom transformations, skip...`);
                         return false;
                     }
                     if ([...builtinTransformations, ...LocalObjectStorage.plugins.transformations.list].some(({ type: eType }) => eType === type)) {
-                        console.error(`LocalObjectStorage can't accept duplicated type name "${type}", skip...`);
+                        console.error(`LocalObjectStorage can't accept duplicated type name "${type}" from custom transformations, skip...`);
                         return false;
                     }
                     if (typeof match !== "function" || typeof decode !== "function" || typeof encode !== "function") {
@@ -68,7 +68,9 @@
             },
         };
         #keyPrefix;
-        constructor(prefix = "") {
+        #expires;
+        static #EXPIRES_PREFIX = "__EXPIRES__";
+        constructor(prefix = "", { expires } = {}) {
             if (prefix === "default") {
                 throw new Error(`LocalObjectStorage can't accept prefix "${prefix}".`);
             }
@@ -76,10 +78,22 @@
                 throw new Error(`LocalObjectStorage can't accept prefix "${prefix}" including "/".`);
             }
             this.#keyPrefix = `AnnTool-localObjectStorage/${prefix?.length > 0 ? `${prefix}/` : "default/"}`;
+            if (expires !== undefined) {
+                if (!Array.isArray(expires) || expires.length !== 2) {
+                    throw new Error("LocalObjectStorage can't accept invalid expires option.");
+                }
+                this.#expires = expires;
+            }
         }
         get _keyPrefix() {
             return this.#keyPrefix;
         }
+        #calcExpiresAtPrefix = (expires) => {
+            if (!this.#expires) {
+                return "";
+            }
+            return `${LocalObjectStorage.#EXPIRES_PREFIX}${moment().add(expires?.[0] ?? this.#expires[0], expires?.[1] ?? this.#expires[1]).valueOf()}|`;
+        };
         #getAllKeys = () => Object.keys(localStorage).filter((key) => key.startsWith(this.#keyPrefix));
         getAllKeys() {
             return this.#getAllKeys().map((n) => n.replace(this.#keyPrefix, ""));
@@ -88,9 +102,26 @@
             return this.#getAllKeys().length;
         }
         getItem(key, fallback) {
-            const value = localStorage.getItem(`${this.#keyPrefix}${key}`);
+            let value = localStorage.getItem(`${this.#keyPrefix}${key}`);
             if (value === null) {
-                return fallback || value;
+                return fallback ?? value;
+            }
+            if (value.startsWith(LocalObjectStorage.#EXPIRES_PREFIX)) {
+                const separatorIndex = value.indexOf("|");
+                if (separatorIndex !== -1) {
+                    try {
+                        const expiresAt = +value.slice(LocalObjectStorage.#EXPIRES_PREFIX.length, separatorIndex);
+                        if (Date.now() >= expiresAt) {
+                            this.removeItem(key);
+                            return fallback ?? null;
+                        }
+                        value = value.slice(separatorIndex + 1);
+                    } catch (e) {
+                        console.error(`LocalObjectStorage can't parse expires prefix of key "${key}", removing item...`, e);
+                        this.removeItem(key);
+                        return fallback ?? null;
+                    }
+                }
             }
             for (const { type, decode } of builtinTransformations.concat(LocalObjectStorage.plugins.transformations.list)) {
                 if (type.includes("|")) {
@@ -98,7 +129,7 @@
                     continue;
                 }
                 if (type === "JSON") {
-                    console.error(`LocalObjectStorage can't accept type name "${type}", skip...`);
+                    console.error(`LocalObjectStorage can't accept type name "${type}" from custom transformations, skip...`);
                     continue;
                 }
                 if (value.startsWith(`${type}|`)) {
@@ -116,7 +147,7 @@
                 return undefined;
             }
         }
-        setItem(key, value) {
+        setItem(key, value, { expires } = {}) {
             for (const { type, match, encode } of builtinTransformations.concat(LocalObjectStorage.plugins.transformations.list)) {
                 if (type.includes("|")) {
                     console.error(`LocalObjectStorage can't accept type name "${type}" including "|", skip...`);
@@ -128,7 +159,7 @@
                 }
                 if (match(value)) {
                     try {
-                        localStorage.setItem(`${this.#keyPrefix}${key}`, `${type}|${encode(value)}`);
+                        localStorage.setItem(`${this.#keyPrefix}${key}`, `${this.#calcExpiresAtPrefix(expires)}${type}|${encode(value)}`);
                         return;
                     } catch (e) {
                         console.error(`LocalObjectStorage can's transform value of key "${key}" from type "${type}" and skip...`, e);
@@ -136,7 +167,7 @@
                 }
             }
             try {
-                localStorage.setItem(`${this.#keyPrefix}${key}`, `JSON|${JSON.stringify(value)}`);
+                localStorage.setItem(`${this.#keyPrefix}${key}`, `${this.#calcExpiresAtPrefix(expires)}JSON|${JSON.stringify(value)}`);
                 return;
             } catch (e) {
                 console.error(`LocalObjectStorage can's transform value of key "${key}" from JSON and skip...`, e);
@@ -149,7 +180,6 @@
             this.#getAllKeys().forEach((key) => {
                 localStorage.removeItem(key);
             });
-            this.length = 0;
         }
         key(index) {
             return this.#getAllKeys()[index];
