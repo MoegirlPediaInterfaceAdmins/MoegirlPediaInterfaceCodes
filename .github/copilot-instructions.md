@@ -150,7 +150,7 @@ npm --version
 ├── eslint.config.js        # ESLint configuration (flat config format)
 ├── .stylelintrc.yaml       # Stylelint configuration
 ├── .postcssrc.yaml         # PostCSS plugins config
-├── .browserslistrc         # Browser targets: "defaults, Chrome >= 86"
+├── .browserslistrc         # Browser targets, read the content if you needed
 └── .v8rrc.yaml            # YAML schema validator config
 ```
 
@@ -160,7 +160,7 @@ npm --version
 - **eslint.config.js**: Flat config format, separates browser/node environments, includes custom globals (mw, OO, etc.)
 - **.postcssrc.yaml**: Configures autoprefixer, selector polyfills, logical properties, discard comments
 - **.stylelintrc.yaml**: Based on stylelint-config-standard, ignores vendor prefixes
-- **.browserslistrc**: Targets "defaults, Chrome >= 86" for autoprefixer
+- **.browserslistrc**: Browser targets, read the content if you needed
 - **.editorconfig**: 4-space indentation for JS, 2-space for YAML/MD
 - **.prettierrc.yaml**: 4-space tabs, double quotes, 200 char line width
 
