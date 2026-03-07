@@ -136,12 +136,12 @@
         13: wgULS("帮助讨论", "說明討論"),
         14: wgULS("分类", "分類"),
         15: wgULS("分类讨论", "分類討論"),
-        274: "微件",
-        275: wgULS("微件讨论", "微件討論"),
+        274: wgULS("小部件", "微件"),
+        275: wgULS("小部件讨论", "微件討論"),
         710: "TimedText",
         711: wgULS("TimedText讨论", "TimedText討論"),
-        828: wgULS("模组", "模組"),
-        829: wgULS("模组讨论", "模組討論"),
+        828: wgULS("模块", "模組"),
+        829: wgULS("模块讨论", "模組討論"),
     };
     const wgUserName = mw.config.get("wgUserName");
     let cache;
