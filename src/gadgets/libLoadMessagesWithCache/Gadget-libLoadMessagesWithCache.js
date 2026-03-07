@@ -1,6 +1,6 @@
 "use strict";
 (() => {
-    const localObjectStorage = new LocalObjectStorage("libLoadMessagesWithCache");
+    const localObjectStorage = new LocalObjectStorage("libLoadMessagesWithCache", { expires: [1, "days"] });
     const key = mw.config.get("wgUserLanguage");
     mw.messages.set(localObjectStorage.getItem(key, {}));
     const loadMessagesIfMissing = mw.Api.prototype.loadMessagesIfMissing;

@@ -15,58 +15,29 @@ $(async () => {
      * @property {string} number 章节前导序号
      * @property {string} toclevel 章节层级
      */
-    /**
-     * 验证缓存有效性
-     * @param {*} _cache
-     * @returns { { sections: section[], timestamp: number }[] }
-     */
-    const verifyCache = (_cache) => {
-        let cache = JSON.parse(JSON.stringify(_cache));
-        try {
-            if (!$.isPlainObject(cache)) {
-                cache = {};
-            }
-            const sameArticleId = {};
-            Object.keys(cache).forEach((i) => {
-                if (!/^\d+-\d+/.test(i) || !Array.isArray(cache[i])) {
-                    Reflect.deleteProperty(cache, i);
-                }
-                if (Array.isArray(cache[i])) { // 处理旧版本缓存
-                    cache[i] = {
-                        sections: cache[i],
-                        timestamp: -1,
-                    };
-                }
-                const articleIdAndCurRevisionId = i.match(/\d+/g);
-                (sameArticleId[articleIdAndCurRevisionId[0]] ||= []).push(articleIdAndCurRevisionId[1]);
-            });
-            Object.keys(sameArticleId).forEach((aid) => { // 移除同一页面的历史版本缓存
-                const c = sameArticleId[aid];
-                if (c.length < 2) {
-                    return;
-                }
-                c.sort((a, b) => +b - +a);
-                c.splice(0, 1);
-                c.forEach((cid) => {
-                    Reflect.deleteProperty(cache, `${aid}-${cid}`);
-                });
-            });
-            const expired = Date.now() - 30 * 24 * 60 * 60 * 1000;
-            cache = Object.fromEntries(
-                Object.entries(cache)
-                    .filter(({ timestamp }) => timestamp < expired) // 移除过期缓存
-                    .sort(({ timestamp: a }, { timestamp: b }) => b - a).slice(0, 50), // 只保留最新 50 个页面
-            );
-        } catch (e) {
-            console.info("AnnTools-float-toc", e);
-            cache = {};
-        }
-        return cache;
-    };
     const key = `${mw.config.get("wgArticleId")}-${mw.config.get("wgCurRevisionId")}`;
-    const localObjectStorage = new LocalObjectStorage("AnnTools-float-toc");
-    const cache = verifyCache(localObjectStorage.getItem("cache"));
-    localObjectStorage.setItem("cache", cache);
+    const localObjectStorage = new LocalObjectStorage("AnnTools-float-toc", { expires: [30, "days"] });
+    // 清理旧版缓存格式
+    localObjectStorage.removeItem("cache");
+    // 移除同一页面的历史版本缓存
+    const sameArticleId = {};
+    for (const k of localObjectStorage.getAllKeys()) {
+        if (!/^\d+-\d+$/.test(k)) {
+            localObjectStorage.removeItem(k);
+            continue;
+        }
+        const ids = k.match(/\d+/g);
+        (sameArticleId[ids[0]] ||= []).push(ids[1]);
+    }
+    for (const aid of Object.keys(sameArticleId)) {
+        const revisions = sameArticleId[aid];
+        if (revisions.length < 2) {
+            continue;
+        }
+        revisions.sort((a, b) => +b - +a);
+        revisions.slice(1).forEach((cid) => localObjectStorage.removeItem(`${aid}-${cid}`));
+    }
+    const cachedSections = localObjectStorage.getItem(key);
     let hasTurstTOC, apiResult;
     if (
         document.querySelector("#toc > ul > li")
@@ -82,10 +53,10 @@ $(async () => {
     } else if (mw.config.get("wgArticleId") <= 0 || mw.config.get("wgCurRevisionId") <= 0 || /action=(?!view)|(?:direction|diffonly)=/i.test(location.search) || mw.config.get("wgCurRevisionId") !== mw.config.get("wgRevisionId")) {
         // 当页面不存在、版本不存在、非阅读模式、不显示正文的差异页面、非当前版本时，不再请求 API
         return;
-    } else if (Reflect.has(cache, key)) { // 有缓存时，不再请求 API
+    } else if (cachedSections !== null) { // 有缓存时，不再请求 API
         apiResult = {
             parse: {
-                sections: cache[key],
+                sections: cachedSections,
             },
         };
     } else {
@@ -180,10 +151,6 @@ $(async () => {
         html += `<li class="toclevel-${toclevel} tocsection-${index}">${a.outerHTML}`;
     });
     container.append(`${html}</li></ul>`);
-    cache[key] = {
-        sections: apiResult.parse.sections,
-        timestamp: Date.now(),
-    };
-    localObjectStorage.setItem("cache", verifyCache(cache));
+    localObjectStorage.setItem(key, apiResult.parse.sections);
 });
 // </pre>
