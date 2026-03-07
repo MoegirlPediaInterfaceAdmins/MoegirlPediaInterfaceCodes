@@ -279,7 +279,7 @@
         }
         if (unknownUsernames.size > 0) {
             const messages = blockLogFlags.map(([_, msg]) => msg);
-            loadMessagesPromise = libLoadMessagesWithCache.loadMessagesIfMissing(messages);
+            loadMessagesPromise = api.loadMessagesIfMissing(messages);
             const hasApihighlimits = (await mw.user.getRights()).includes("apihighlimits");
             const singleRequestLimit = hasApihighlimits ? 500 : 50;
             const targets = [...unknownUsernames.values()];

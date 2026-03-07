@@ -31,7 +31,6 @@
     "conventionalCommits.scopes": [
         "@type/libBottomRightCorner.d.ts",
         "@type/libCachedCode.d.ts",
-        "@type/libLoadMessagesWithCache.d.ts",
         "@type/libRequestAnimationFrame.d.ts",
         "@type/LocalObjectStorage.d.ts",
         "@type/site-lib.d.ts",

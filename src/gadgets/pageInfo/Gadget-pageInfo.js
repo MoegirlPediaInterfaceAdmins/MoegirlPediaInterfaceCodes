@@ -44,7 +44,7 @@
         protectLevels.add("create");
     }
     if (protectLevels.size > 0) {
-        await libLoadMessagesWithCache.loadMessagesIfMissing(Array.from(protectLevels));
+        await new mw.Api().loadMessagesIfMissing(Array.from(protectLevels));
         const protectionInfo = [];
         if (Array.isArray(wgRestrictionEdit) && wgRestrictionEdit.length > 0) {
             protectionInfo.push(`${mw.msg("edit")}：${wgRestrictionEdit.map((level) => mw.msg(`protect-level-${level}`)).join("、")}`);
