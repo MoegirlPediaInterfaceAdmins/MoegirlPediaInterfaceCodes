@@ -3,7 +3,7 @@
 /* eslint-disable no-use-before-define */
 "use strict";
 $(() => {
-    const { wgIsArticle, wgArticleId, wgNamespaceNumber } = mw.config.get();
+    const { wgIsArticle, wgArticleId, wgNamespaceNumber } = mw.config.get(["wgIsArticle", "wgArticleId", "wgNamespaceNumber"]);
 
     if (!wgIsArticle || !wgArticleId || wgNamespaceNumber % 2 === 1) {
         return;
