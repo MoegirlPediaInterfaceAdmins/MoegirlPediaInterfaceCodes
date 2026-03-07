@@ -1,6 +1,6 @@
 "use strict";
 (() => {
-    const builtinTransformations = [
+    const builtinTransformers = [
         {
             type: "undefined",
             match: (t) => typeof t === "undefined",
@@ -38,12 +38,12 @@
             decode: (r) => new RegExp(r.slice(1, r.length - 1)),
         },
     ];
-    const externalTransformations = [];
+    const externalTransformers = [];
     class LocalObjectStorage {
         static plugins = {
-            transformations: {
+            transformers: {
                 get list() {
-                    return externalTransformations.map((transformation) => Object.assign(Object.create(null), transformation));
+                    return externalTransformers.map((transformer) => Object.assign(Object.create(null), transformer));
                 },
                 add: ({ type, match, decode, encode }) => {
                     if (type.includes("|")) {
@@ -51,18 +51,18 @@
                         return false;
                     }
                     if (["JSON"].includes(type)) {
-                        console.error(`LocalObjectStorage can't accept type name "${type}" from custom transformations, skip...`);
+                        console.error(`LocalObjectStorage can't accept type name "${type}" from custom transformers, skip...`);
                         return false;
                     }
-                    if ([...builtinTransformations, ...LocalObjectStorage.plugins.transformations.list].some(({ type: eType }) => eType === type)) {
-                        console.error(`LocalObjectStorage can't accept duplicated type name "${type}" from custom transformations, skip...`);
+                    if ([...builtinTransformers, ...LocalObjectStorage.plugins.transformers.list].some(({ type: eType }) => eType === type)) {
+                        console.error(`LocalObjectStorage can't accept duplicated type name "${type}" from custom transformers, skip...`);
                         return false;
                     }
                     if (typeof match !== "function" || typeof decode !== "function" || typeof encode !== "function") {
-                        console.error(`LocalObjectStorage can't accept broken transformation [ type: "${type}", match: ${typeof match}, decode: ${typeof decode}, encode: ${typeof encode} ], skip...`);
+                        console.error(`LocalObjectStorage can't accept broken transformer [ type: "${type}", match: ${typeof match}, decode: ${typeof decode}, encode: ${typeof encode} ], skip...`);
                         return false;
                     }
-                    externalTransformations.push({ type, match, decode, encode });
+                    externalTransformers.push({ type, match, decode, encode });
                     return true;
                 },
             },
@@ -123,13 +123,13 @@
                     }
                 }
             }
-            for (const { type, decode } of builtinTransformations.concat(LocalObjectStorage.plugins.transformations.list)) {
+            for (const { type, decode } of builtinTransformers.concat(LocalObjectStorage.plugins.transformers.list)) {
                 if (type.includes("|")) {
                     console.error(`LocalObjectStorage can't accept type name "${type}" including "|", skip...`);
                     continue;
                 }
                 if (type === "JSON") {
-                    console.error(`LocalObjectStorage can't accept type name "${type}" from custom transformations, skip...`);
+                    console.error(`LocalObjectStorage can't accept type name "${type}" from custom transformers, skip...`);
                     continue;
                 }
                 if (value.startsWith(`${type}|`)) {
@@ -148,7 +148,7 @@
             }
         }
         setItem(key, value, { expires } = {}) {
-            for (const { type, match, encode } of builtinTransformations.concat(LocalObjectStorage.plugins.transformations.list)) {
+            for (const { type, match, encode } of builtinTransformers.concat(LocalObjectStorage.plugins.transformers.list)) {
                 if (type.includes("|")) {
                     console.error(`LocalObjectStorage can't accept type name "${type}" including "|", skip...`);
                     continue;

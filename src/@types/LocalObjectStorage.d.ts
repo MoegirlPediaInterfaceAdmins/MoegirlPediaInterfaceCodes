@@ -1,6 +1,6 @@
 import type { DurationInputArg2 } from "moment";
 
-interface Transformation {
+interface Transformer {
     type: string;
 
     match: (arg: any) => boolean;
@@ -16,10 +16,10 @@ interface LocalObjectStorageOptions {
 
 declare class LocalObjectStorage {
     static plugins: {
-        transformations: {
-            get list(): Transformation[];
+        transformers: {
+            get list(): Transformer[];
 
-            add: (transformation: Transformation) => boolean;
+            add: (transformer: Transformer) => boolean;
         }
     }
 
