@@ -3,7 +3,9 @@
 /* eslint-disable no-use-before-define */
 "use strict";
 $(() => {
-    if (!mw.config.get("wgIsArticle") || !mw.config.get("wgArticleId")) {
+    const { wgIsArticle, wgArticleId, wgNamespaceNumber } = mw.config.get();
+
+    if (!wgIsArticle || !wgArticleId || wgNamespaceNumber % 2 === 1) {
         return;
     }
 
