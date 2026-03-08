@@ -1,5 +1,3 @@
-import type { DurationInputArg2 } from "moment";
-
 interface Transformer {
     type: string;
 
@@ -10,8 +8,14 @@ interface Transformer {
     decode: (value: string) => any;
 }
 
+type LocalObjectStorageExpires = [amount: number, unit: moment.unitOfTime.DurationConstructor];
+
 interface LocalObjectStorageOptions {
-    expires?: [amount: number, unit: DurationInputArg2];
+    expires?: LocalObjectStorageExpires;
+}
+
+interface LocalObjectStorageSetItemOptions {
+    expires?: LocalObjectStorageExpires;
 }
 
 declare class LocalObjectStorage {
@@ -41,7 +45,7 @@ declare class LocalObjectStorage {
 
     getItem<T = any>(key: string, fallback: T): T;
 
-    setItem<T = any>(key: string, value: T): void;
+    setItem<T = any>(key: string, value: T, options?: LocalObjectStorageSetItemOptions): void;
 
     removeItem(key: string): void;
 
