@@ -353,6 +353,7 @@ Before submitting changes:
 8. **PostCSS runs automatically** on CSS files - don't manually add vendor prefixes
 9. **TypeScript compiles to ES2020** - modern JavaScript features are allowed
 10. **Browser globals** (mw, OO, $, etc.) are pre-configured in eslint.config.js
+11. In JavaScript, prioritize shorthand type coercion operators (e.g., `+var` for numbers, `!!var` for booleans, `` `${var}` `` for strings) over explicit constructor functions (e.g., `Number(var)`, `Boolean(var)`, `String(var)`)
 
 ## Quick Reference
 
