@@ -32,6 +32,7 @@
         "@type/libBottomRightCorner.d.ts",
         "@type/libCachedCode.d.ts",
         "@type/libRequestAnimationFrame.d.ts",
+        "@type/libip.d.ts",
         "@type/LocalObjectStorage.d.ts",
         "@type/site-lib.d.ts",
         "Gadget/abusefilter33test",
