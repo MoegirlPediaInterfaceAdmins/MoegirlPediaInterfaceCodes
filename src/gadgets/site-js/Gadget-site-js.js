@@ -256,8 +256,12 @@
 
         // 如果还没有创建 popup，则创建
         if (!popup) {
+            const $content = $target.children(".annotation-content");
+            if ($content.length === 0) {
+                return;
+            }
             popup = new OO.ui.PopupWidget({
-                $content: $target.children(".annotation-content"),
+                $content: $content,
                 padded: true,
                 autoFlip: false,
             });
@@ -533,8 +537,6 @@
     await $.ready;
 
     tabs();
-    /* T:注解 */
-    $(".annotation").trigger("mouseout");
     // 图片地址
     setInterval(() => {
         $(document.querySelectorAll('img[src*="//img.moegirl.org/"]:not(.org-changed), img[src*="//commons.moegirl.org/"]:not(.org-changed)')).each((_, ele) => {

@@ -1470,3 +1470,8 @@ body.mw-special-Log .mw-htmlform-flatlist > .oo-ui-fieldLayout:nth-child(4) {
 .mw-body-content .mw-editsection .mw-editsection-divider {
     display: revert;
 }
+
+/* T:注解 */
+.annotation > .annotation-content {
+    display: none;
+}
