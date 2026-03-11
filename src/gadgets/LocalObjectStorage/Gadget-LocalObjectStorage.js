@@ -111,7 +111,14 @@
                 if (separatorIndex !== -1) {
                     try {
                         const expiresAt = +value.slice(LocalObjectStorage.#EXPIRES_PREFIX.length, separatorIndex);
+                        const maxExpiresAt = this.#expires ? moment().add(this.#expires[0], this.#expires[1]).valueOf() : Number.MAX_SAFE_INTEGER;
                         if (Date.now() >= expiresAt) {
+                            console.info(`LocalObjectStorage key "${key}" is expired, removing item...`);
+                            this.removeItem(key);
+                            return fallback ?? null;
+                        }
+                        if (expiresAt > maxExpiresAt) {
+                            console.warn(`LocalObjectStorage key "${key}" exceeds max expires, removing item...`);
                             this.removeItem(key);
                             return fallback ?? null;
                         }
@@ -122,6 +129,10 @@
                         return fallback ?? null;
                     }
                 }
+            } else if (this.#expires) {
+                console.warn(`LocalObjectStorage key "${key}" is missing expires prefix but the instance has expires option, removing item...`);
+                this.removeItem(key);
+                return fallback ?? null;
             }
             for (const { type, decode } of builtinTransformers.concat(LocalObjectStorage.plugins.transformers.list)) {
                 if (type.includes("|")) {
