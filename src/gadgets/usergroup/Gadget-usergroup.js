@@ -2,7 +2,7 @@
 "use strict";
 (async () => {
     await $.ready;
-    const localObjectStorage = new LocalObjectStorage("usergroup");
+    const localObjectStorage = new LocalObjectStorage("usergroup", { expires: [30, "minutes"] });
     // 以下为需要获取的用户组的列表，按从前往后顺序排序
     // 每个数组第二个元素为颜色，可用关键字、rgba等，参见 [[MediaWiki:Gadget-usergroup.js/color]]
     const groups = [
@@ -152,9 +152,7 @@
     let loadMessagesPromise = Promise.resolve(true);
     try {
         cache = localObjectStorage.getItem("cache");
-        if (!cache
-            || typeof cache.timestamp !== "number" || cache.timestamp < new Date().getTime() - 30 * 60 * 1000
-            || !cache.groups) {
+        if (!cache || !cache.groups) {
             throw new Error();
         } else {
             for (const i of groupsKey) {
@@ -196,11 +194,10 @@
             });
         }
         cache = {
-            timestamp: new Date().getTime(),
             groups: result,
         };
+        localObjectStorage.setItem("cache", cache);
     }
-    localObjectStorage.setItem("cache", cache);
     const blockCache = localObjectStorage.getItem("blockCache", {});
     const now = Date.now();
     for (const [username, { timestamp, isBlocked }] of Object.entries(blockCache)) {
@@ -279,7 +276,7 @@
         }
         if (unknownUsernames.size > 0) {
             const messages = blockLogFlags.map(([_, msg]) => msg);
-            loadMessagesPromise = libLoadMessagesWithCache.loadMessagesIfMissing(messages);
+            loadMessagesPromise = api.loadMessagesIfMissing(messages);
             const hasApihighlimits = (await mw.user.getRights()).includes("apihighlimits");
             const singleRequestLimit = hasApihighlimits ? 500 : 50;
             const targets = [...unknownUsernames.values()];

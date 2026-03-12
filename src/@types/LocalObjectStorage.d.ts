@@ -1,4 +1,4 @@
-interface Transformation {
+interface Transformer {
     type: string;
 
     match: (arg: any) => boolean;
@@ -8,18 +8,30 @@ interface Transformation {
     decode: (value: string) => any;
 }
 
+type LocalObjectStorageExpires = [amount: number, unit: moment.unitOfTime.DurationConstructor];
+
+interface LocalObjectStorageOptions {
+    expires?: LocalObjectStorageExpires;
+}
+
+interface LocalObjectStorageSetItemOptions {
+    expires?: LocalObjectStorageExpires;
+}
+
 declare class LocalObjectStorage {
     static plugins: {
-        transformations: {
-            get list(): Transformation[];
+        transformers: {
+            get list(): Transformer[];
 
-            add: (transformation: Transformation) => boolean;
+            add: (transformer: Transformer) => boolean;
         }
     }
 
     #keyPrefix: string;
 
-    constructor(prefix?: string);
+    #expires?: LocalObjectStorageOptions["expires"];
+
+    constructor(prefix?: string, options?: LocalObjectStorageOptions);
 
     get _keyPrefix(): string;
 
@@ -33,7 +45,7 @@ declare class LocalObjectStorage {
 
     getItem<T = any>(key: string, fallback: T): T;
 
-    setItem<T = any>(key: string, value: T): void;
+    setItem<T = any>(key: string, value: T, options?: LocalObjectStorageSetItemOptions): void;
 
     removeItem(key: string): void;
 

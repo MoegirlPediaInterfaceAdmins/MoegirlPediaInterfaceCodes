@@ -1,6 +1,6 @@
 "use strict";
 (() => {
-    const localObjectStorage = new LocalObjectStorage("AnnTools-libCachedCode");
+    const localObjectStorage = new LocalObjectStorage("AnnTools-libCachedCode", { expires: [30, "days"] });
     for (const i of Object.keys(localStorage)) { // 移除旧版本缓存
         if (i.startsWith("AnnTools-libCachedCode")) {
             localStorage.removeItem(i);
@@ -12,10 +12,10 @@
     };
     const getCachedCode = async (url) => {
         let { code } = localObjectStorage.getItem(`${url}`) || {}; // 读取缓存
-        if (!code) { // 如无则获取数据
+        if (typeof code !== "string") { // 如无则获取数据
             code = await (await fetch(url)).text();
         }
-        localObjectStorage.setItem(`AnnTools-libCachedCode:${url}`, { code, timestamp: Date.now() }); // 设置缓存
+        localObjectStorage.setItem(`AnnTools-libCachedCode:${url}`, { code }); // 设置缓存
         return code;
     };
     const getCachedCodeUrl = async (url) => codeToUrl(await getCachedCode(url));
@@ -37,13 +37,6 @@
         }
     };
     const batchInjectCachedCode = (urls, type) => Promise.all(urls.map((url) => injectCachedCode(url, type)));
-    // 移除过期缓存（30 天内无使用）
-    const expired = Date.now() - 30 * 24 * 60 * 60 * 1000;
-    for (const k of localObjectStorage.getAllKeys()) {
-        if (localObjectStorage.getItem(k).timestamp < expired) {
-            localObjectStorage.removeItem(k);
-        }
-    }
     window.libCachedCode = {
         getCachedCode,
         getCachedCodeUrl,

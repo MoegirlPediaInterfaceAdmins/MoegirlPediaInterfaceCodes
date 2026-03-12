@@ -92,6 +92,7 @@ const config = [
                 libRequestAnimationFrame: false,
                 wgGetPageNames: false,
                 libLoadMessagesWithCache: false,
+                libip: false,
             },
         },
     },

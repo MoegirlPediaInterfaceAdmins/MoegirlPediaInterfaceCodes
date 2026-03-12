@@ -7,7 +7,6 @@ $(() => {
         wgRevisionId = -1,
         wgDiffOldId = -1,
         wgDiffNewId = -1,
-        wgServer,
         wgScriptPath,
         skin,
     } = mw.config.get([
@@ -16,7 +15,6 @@ $(() => {
         "wgRevisionId",
         "wgDiffOldId",
         "wgDiffNewId",
-        "wgServer",
         "wgScriptPath",
         "skin",
     ]);
@@ -24,19 +22,33 @@ $(() => {
         return;
     }
 
+    const baseUrl = new URL(wgScriptPath ? `${wgScriptPath}/` : "/", location.origin);
+    const getCurrentHash = () => location.hash;
+    const getCurrentDecodedHash = () => {
+        const hash = getCurrentHash();
+        return hash ? decodeURIComponent(hash) : "";
+    };
+    const buildShortlinkUrl = (search) => {
+        const url = new URL(baseUrl);
+        url.search = search;
+        url.hash = getCurrentHash();
+        return url.href;
+    };
+    const buildCopyWikitext = (wikitext) => `[[${wikitext}${getCurrentDecodedHash()}]]`;
+
     // 链接信息
     const links = [{
         id: "page",
         href: `curid=${wgArticleId}`,
         title: wgULS("本页面的短链接（页面ID）", "本頁面的短網址（頁面ID）"),
         text: wgULS("本页短链", "本頁短網址"),
-        wikitext: `[[Special:重定向/page/${wgArticleId}]]`,
+        wikitext: `Special:重定向/page/${wgArticleId}`,
     }, {
         id: "newrev",
         href: `oldid=${wgCurRevisionId}`,
         title: wgULS("本页面最新版本的短链接（版本ID）", "本頁面最新修訂的短網址（版本ID）"),
         text: wgULS("最新版本", "最新修訂"),
-        wikitext: `[[Special:固定链接/${wgCurRevisionId}]]`,
+        wikitext: `Special:固定链接/${wgCurRevisionId}`,
     }];
     if (wgRevisionId > 0) {
         if (wgCurRevisionId !== wgRevisionId) {
@@ -45,19 +57,19 @@ $(() => {
                 href: `oldid=${wgRevisionId}`,
                 title: wgULS("本页面当前版本的短链接（版本ID）", "本頁面當前修訂的短網址（版本ID）"),
                 text: wgULS("当前版本", "當前修訂"),
-                wikitext: `[[Special:固定链接/${wgRevisionId}]]`,
+                wikitext: `Special:固定链接/${wgRevisionId}`,
             }, {
                 id: "currev",
                 href: `diff=${wgRevisionId}`,
                 title: wgULS("本页面当前版本与前一版本的差异的链接（版本ID）", "本頁面當前修訂與前一修訂的短網址（版本ID）"),
                 text: wgULS("当前版本差异", "當前修訂差異"),
-                wikitext: `[[Special:差异/${wgRevisionId}]]`,
+                wikitext: `Special:差异/${wgRevisionId}`,
             }, {
                 id: "curdiff",
                 href: `diff=${wgCurRevisionId}&oldid=${wgRevisionId}`,
                 title: wgULS("与本页面最新版本的差异的短链接（版本ID）", "與本頁面最新修訂差異的短網址（版本ID）"),
                 text: wgULS("与最新版本差异", "與最新修訂差異"),
-                wikitext: `[[Special:差异/${wgRevisionId}/${wgCurRevisionId}]]`,
+                wikitext: `Special:差异/${wgRevisionId}/${wgCurRevisionId}`,
             });
         } else if (wgDiffNewId !== wgCurRevisionId) {
             links.push({
@@ -65,7 +77,7 @@ $(() => {
                 href: `diff=${wgCurRevisionId}`,
                 title: wgULS("本页面最新版本与前一版本的差异的链接（版本ID）", "本頁面最新修訂與前一修訂差異的短網址（版本ID）"),
                 text: wgULS("最新版本差异", "與最新修訂差異"),
-                wikitext: `[[Special:差异/${wgCurRevisionId}]]`,
+                wikitext: `Special:差异/${wgCurRevisionId}`,
             });
         }
     }
@@ -75,75 +87,59 @@ $(() => {
             href: `diff=${wgDiffNewId}&oldid=${wgDiffOldId}`,
             title: wgULS("当前比较的差异的短链接（版本ID）", "當前比較的差異的短網址（版本ID）"),
             text: wgULS("当前比较的差异", "當前比較的差異"),
-            wikitext: `[[Special:差异/${wgDiffOldId}/${wgDiffNewId}]]`,
+            wikitext: `Special:差异/${wgDiffOldId}/${wgDiffNewId}`,
         });
     }
-
-    // 标记复制状态
-    const TEXT_COPY = wgULS("复制", "複製");
-    const TEXT_COPY_SUCCESS = wgULS("成功", "成功");
-    const TEXT_COPY_FAILED = wgULS("失败", "失敗");
-    const markStatus = (ele, status, result) => {
-        ele.innerText = status
-            ? `${ele.dataset.type}${TEXT_COPY}${result ? TEXT_COPY_SUCCESS : TEXT_COPY_FAILED}`
-            : `${TEXT_COPY}${ele.dataset.type}`;
+    const shortlinks = links.map((link) => ({
+        ...link,
+        get url() {
+            return buildShortlinkUrl(link.href);
+        },
+        get copyWikitext() {
+            return buildCopyWikitext(link.wikitext);
+        },
+    }));
+    const createCopyPanel = () => {
+        const $element = $("<div>");
+        for (const shortlink of shortlinks) {
+            $element.append(
+                $("<div>")
+                    .css({ "font-weight": "bold", margin: ".6em 0 .2em" })
+                    .text(shortlink.title),
+            );
+            [shortlink.copyWikitext, shortlink.url].forEach((value) => {
+                $element.append(
+                    new mw.widgets.CopyTextLayout({ align: "top", copyText: value }).$element,
+                );
+            });
+        }
+        return $element;
     };
+    const openShortlinkDialog = () => OO.ui.alert(createCopyPanel(), { size: "medium" });
 
     switch (skin) {
-        default:
         case "moeskin": {
-            $("body").css("height", "auto");
-            const $slCard = $(`<div class="moe-card" id="p-sl"><div class="mw-parser-output"><h3 style="margin-top: 0px;">${wgULS("短链接", "短網址")}</h3></div></div>`);
-            $(".moe-siderail-sticky").append($slCard);
-            $("#p-sl h3").after('<div style="display:flex"><div style="width:0.25rem;border-radius:99em;background:rgba(0,0,0,0.102);margin-right:1rem"></div><ul id="p-sl-list" style="list-style:none"></ul></div>');
-
-            for (const shortlink of links) {
-                const $item = $(`<li id="sl-${shortlink.id}"></li>`);
-                $item.append(`<a href="${wgServer}${wgScriptPath}/?${shortlink.href}">${shortlink.text}</a>`);
-                $item.append(`<div>（<a href="javascript:void(0)" data-copy-content="${shortlink.wikitext}" data-type="wikitext"></a><wbr>丨<a href="javascript:void(0)" data-copy-content="${wgServer}${wgScriptPath}/_?${shortlink.href}" data-type="${wgULS("短链接", "短網址")}"></a>）</div>`);
-                $("#p-sl-list").append($item);
-            }
-
-            $("#p-sl-list a[data-type]").each((_, ele) => {
-                markStatus(ele, false);
-            });
-
-            // 点击复制操作
-            $("#p-sl-list a[data-type]").on("click", async (event) => {
-                const ele = event.currentTarget;
-                try {
-                    await navigator.clipboard.writeText(ele.dataset.copyContent);
-                    markStatus(ele, true, true);
-                } catch {
-                    markStatus(ele, true, false);
-                } finally {
-                    setTimeout(() => {
-                        markStatus(ele, false);
-                    }, 3000);
-                }
+            mw.hook("moeskin.pagetools").add(({ addPageToolsButton }) => {
+                const $btn = addPageToolsButton("<span style=\"align-self:center;\">短</span>", wgULS("短链接", "短網址"), "extra");
+                $btn.attr({
+                    id: "ca-shortlink",
+                    href: "#",
+                });
+                $btn.on("click", (e) => {
+                    e.preventDefault();
+                    openShortlinkDialog();
+                });
             });
             break;
         }
 
+        default:
         case "vector-2022": {
-            const portletLink = mw.util.addPortletLink("p-cactions", "javascript:void(0)", wgULS("短链接", "短網址"), "ca-shortlink", wgULS("复制本页面的短链接", "複製本頁面的短網址"));
+            const portletLink = mw.util.addPortletLink("p-cactions", "#", wgULS("短链接", "短網址"), "ca-shortlink", wgULS("复制本页面的短链接", "複製本頁面的短網址"));
             if (portletLink) {
                 portletLink.querySelector("a").addEventListener("click", (e) => {
                     e.preventDefault();
-                    const $element = $("<div>");
-                    links.forEach((shortlink) => {
-                        $element.append(
-                            $("<div>")
-                                .css({ "font-weight": "bold", margin: "0.6em 0 0.2em" })
-                                .text(shortlink.title),
-                        );
-                        [shortlink.wikitext, `${wgServer}${wgScriptPath}/?${shortlink.href}`].forEach((value) => {
-                            $element.append(
-                                new mw.widgets.CopyTextLayout({ align: "top", copyText: value }).$element,
-                            );
-                        });
-                    });
-                    OO.ui.alert($element, { size: "medium" });
+                    openShortlinkDialog();
                 });
             }
             break;

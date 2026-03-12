@@ -65,47 +65,58 @@
         };
 
         const statusCache = statusStorage.getItem(wgCanonicalSpecialPageName, []);
+        /** @type {Map<number, number>} revid → status_code */
+        const cachedStatusMap = new Map(statusCache.map(({ revid, status }) => [+revid, status]));
 
         const revids = $changelistLines.map((_, ele) => ele.dataset.mwRevid).get();
-        console.log(revids);
         // 过滤掉已经存储过的更改，再请求
-        const promises = sliceRevids(revids.filter((rid) => !statusCache.some(({ revid }) => +rid === +revid)))
+        const promises = sliceRevids(revids.filter((rid) => !cachedStatusMap.has(+rid)))
             .map(queryModerationStatus);
-        const res = (await Promise.all(promises))
-            .flat()
-            .concat(statusCache)
-            .reduce((acc, cur) => {
-                const exist = acc.find(({ revid }) => revid === cur.revid);
-                if (exist) {
-                    return acc;
-                }
-                return acc.concat([cur]);
-            }, []);
-        console.log(res);
+        const freshResults = (await Promise.all(promises)).flat();
+
+        /** @type {Map<number, number>} revid → status_code，合并缓存与新结果 */
+        const statusMap = new Map(cachedStatusMap);
+        for (const { revid, status } of freshResults) {
+            if (!statusMap.has(+revid)) {
+                statusMap.set(+revid, status);
+            }
+        }
 
         // 过滤读取到的数据，将剩下状态为1、2的数据存入localStorage
+        const revidSet = new Set(revids.map(Number));
         statusStorage.setItem(
             wgCanonicalSpecialPageName,
-            res.filter(({ revid, status }) => [1, 2].includes(status) && revids.includes(`${revid}`)),
+            [...statusMap]
+                .filter(([revid, status]) => (status === 1 || status === 2) && revidSet.has(revid))
+                .map(([revid, status]) => ({ revid, status })),
         );
 
+        const collapsibleInners = [];
         $changelistLines.each((_, ele) => {
-            const status = res.find(({ revid }) => revid === +ele.dataset.mwRevid)?.status;
+            const status = statusMap.get(+ele.dataset.mwRevid);
             if (status === undefined) {
                 return;
             }
+            const iconHtml = modIcons[status];
             if (ele.tagName === "TABLE") {
-                $(ele).find(".mw-changeslist-line-inner").prepend(modIcons[status]);
+                $(ele).find(".mw-changeslist-line-inner").prepend(iconHtml);
             } else if (ele.tagName === "TR") {
-                $(ele).find(".mw-enhanced-rc-time").before(modIcons[status]);
+                $(ele).find(".mw-enhanced-rc-time").before(iconHtml);
             } else {
-                $(ele).prepend(modIcons[status]);
+                $(ele).prepend(iconHtml);
+            }
+            if (ele.classList.contains("mw-collapsible") && ele.classList.contains("mw-changeslist-line")) {
+                collapsibleInners.push(ele);
             }
         });
 
-        $(".mw-collapsible.mw-changeslist-line:has(.mod-icon)").each((_, ele) => {
-            $(ele).find(".mw-changeslist-line-inner").prepend($(ele).find(".mod-icon").eq(0).clone());
-        });
+        for (const ele of collapsibleInners) {
+            const $inner = $(ele).find(".mw-changeslist-line-inner");
+            const $icon = $(ele).find(".mod-icon").eq(0);
+            if ($inner.length && $icon.length) {
+                $inner.prepend($icon.clone());
+            }
+        }
     } else {
         /**
          * 用户可以更改自己的时区，从浏览器获得的时间不一定准确
@@ -136,12 +147,14 @@
             ucend,
             uclimit: $contributionsList.length,
         });
-        /** @type {{ revid: number, status: string | undefined }[]} */
-        const moderationStatus = usercontribs.map(({ revid, moderation }) => ({ revid, status: moderation?.status_code }));
+        /** @type {Map<number, number>} revid → status_code */
+        const moderationStatusMap = new Map(
+            usercontribs.map(({ revid, moderation }) => [revid, moderation?.status_code]),
+        );
         $contributionsList.each((_, ele) => {
-            const revdata = moderationStatus.find(({ revid }) => revid === +ele.dataset.mwRevid);
-            if (revdata) {
-                const status = revdata.status || 0;
+            const revid = +ele.dataset.mwRevid;
+            if (moderationStatusMap.has(revid)) {
+                const status = moderationStatusMap.get(revid) || 0;
                 $(ele).prepend(modIcons[status]);
             }
         });
