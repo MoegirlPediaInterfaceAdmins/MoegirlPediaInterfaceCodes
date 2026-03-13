@@ -5,8 +5,8 @@
  * 右上角 ＋/－ 按钮切换展开/折叠。
  */
 "use strict";
+mw.util.addCSS(".infoBoxText { padding-right: 20px }");
 mw.hook("wikipage.content").add(($out) => {
-    mw.util.addCSS(".infoBoxText { padding-right: 20px }");
     const COLLAPSED_ICON_SIZE = 20;
     const $mboxes = $out.find(".infoBox");
     $mboxes.each(function () {
@@ -57,10 +57,10 @@ mw.hook("wikipage.content").add(($out) => {
         );
         $summary.append($summaryInner);
         // ── ＋/－ toggle button ──
-        const $btn = $("<span>")
+        const $btn = $("<a>")
             .addClass("mbox-collapse-toggle")
+            .attr({ role: "button", tabindex: "0", "aria-expanded": "false", title: "展开/折叠" })
             .text("＋")
-            .attr("title", "展开/折叠")
             .css({
                 position: "absolute",
                 top: "6px",
@@ -85,8 +85,13 @@ mw.hook("wikipage.content").add(($out) => {
         // ── Initially collapsed ──
         $content.hide();
         let collapsed = true;
-        $btn.on("click", () => {
+        $btn.on("click keydown", (e) => {
+            if (e.type === "keydown" && e.key !== "Enter" && e.key !== " ") {
+                return;
+            }
+            e.preventDefault();
             collapsed = !collapsed;
+            $btn.attr("aria-expanded", String(!collapsed));
             if (collapsed) {
                 $content.hide();
                 $summary.show();
