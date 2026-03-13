@@ -98,6 +98,7 @@
         "Gadget/Logout-confirm",
         "Gadget/MarkAsResolved",
         "Gadget/MarkAsResolved-restricted",
+        "Gadget/mboxCollapse",
         "Gadget/ModerationStatus",
         "Gadget/moeskin-classic",
         "Gadget/moeskin-styles",
