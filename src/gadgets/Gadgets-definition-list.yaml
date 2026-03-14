@@ -23,6 +23,7 @@
     - noticeActivity
     - report
     - autocollapse
+    - mboxCollapse
     - SideBarPic
     - SpecialWikitext
     - hideAutopromoteLog
