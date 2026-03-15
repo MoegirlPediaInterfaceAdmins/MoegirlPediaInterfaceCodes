@@ -1,4 +1,4 @@
-/* eslint-disable no-use-before-define, promise/catch-or-return */
+/* eslint-disable no-use-before-define */
 /**
  * @source https://en.wikipedia.org/wiki/_?oldid=1234748547
  * 更新后请同步更新上面链接到最新版本
@@ -81,7 +81,7 @@
     // $overlay.appendTo( $teleportTarget );
     // } );
 
-    function rt($content) {
+    const rt = ($content) => {
         // Popups gadget
         if (window.pg) {
             return;
@@ -159,7 +159,7 @@
                     if (te.type !== "supRef") {
                         showRefArgs.push(e.pageX, e.pageY);
                     }
-                    te.showRef.apply(te, showRefArgs);
+                    te.showRef(...showRefArgs);
                 }
             }
 
@@ -374,15 +374,12 @@
         }
 
         function Tooltip(te) {
-            function openSettingsDialog() {
-                let settingsDialog, settingsWindow;
-
+            const openSettingsDialog = async () => {
                 if (cursorWaitCss) {
                     cursorWaitCss.disabled = true;
                 }
-
                 function SettingsDialog() {
-                    SettingsDialog.parent.call(this);
+                    Reflect.apply(SettingsDialog.parent, this, []);
                 }
                 OO.inheritClass(SettingsDialog, OO.ui.ProcessDialog);
 
@@ -407,10 +404,10 @@
                     },
                 ];
 
-                SettingsDialog.prototype.initialize = function () {
+                SettingsDialog.prototype.initialize = function (...args) {
                     const dialog = this;
 
-                    SettingsDialog.parent.prototype.initialize.apply(this, arguments);
+                    Reflect.apply(SettingsDialog.parent.prototype.initialize, this, args);
 
                     this.enableCheckbox = new OO.ui.CheckboxInputWidget({
                         selected: true,
@@ -514,7 +511,7 @@
                 };
 
                 SettingsDialog.prototype.getSetupProcess = function (data) {
-                    return SettingsDialog.parent.prototype.getSetupProcess.call(this, data)
+                    return Reflect.apply(SettingsDialog.parent.prototype.getSetupProcess, this, [data])
                         .next(function () {
                             this.stackLayout.setItem(this.panelSettings);
                             this.actions.setMode("main");
@@ -551,7 +548,7 @@
                     } else if (action === "deactivated") {
                         dialog.close();
                     }
-                    return SettingsDialog.parent.prototype.getActionProcess.call(this, action);
+                    return Reflect.apply(SettingsDialog.parent.prototype.getActionProcess, this, [action]);
                 };
 
                 SettingsDialog.prototype.getBodyHeight = function () {
@@ -575,16 +572,14 @@
                     $body.append(windowManager.$element);
                 }
 
-                settingsDialog = new SettingsDialog();
+                const settingsDialog = new SettingsDialog();
                 windowManager.addWindows([settingsDialog]);
-                settingsWindow = windowManager.openWindow(settingsDialog);
-                settingsWindow.opened.then(() => {
-                    settingsDialogOpening = false;
-                });
-                settingsWindow.closed.then(() => {
-                    windowManager.clearWindows();
-                });
-            }
+                const settingsWindow = windowManager.openWindow(settingsDialog);
+                await settingsWindow.opened;
+                settingsDialogOpening = false;
+                await settingsWindow.closed;
+                windowManager.clearWindows();
+            };
 
             const tooltip = this;
 
@@ -766,11 +761,11 @@
             };
 
             this.calculatePosition = function (ePageX, ePageY) {
-                let teElement, teOffsets, teOffset, targetTailOffsetX, tailLeft;
+                let teOffsets, teOffset, targetTailOffsetX, tailLeft;
 
                 this.$tail.css("left", "");
 
-                teElement = this.te.$element.get(0);
+                const teElement = this.te.$element.get(0);
                 if (ePageX !== undefined) {
                     targetTailOffsetX = ePageX;
                     teOffsets = teElement.getClientRects && teElement.getClientRects()
@@ -871,15 +866,14 @@
             // the execution stops when the function in question returns true for the first time,
             // and ToolTip.upToTopParent returns true as well.
             this.upToTopParent = function (func, parameters, stopAtTrue) {
-                let returnValue,
-                    currentTooltip = this;
+                let returnValue;
 
-                do {
-                    returnValue = func.apply(currentTooltip, parameters);
+                for (let currentTooltip = this; currentTooltip; currentTooltip = currentTooltip.parent) {
+                    returnValue = Reflect.apply(func, currentTooltip, parameters);
                     if (stopAtTrue && returnValue) {
                         break;
                     }
-                } while (currentTooltip = currentTooltip.parent);
+                }
 
                 if (stopAtTrue) {
                     return returnValue;
@@ -899,7 +893,7 @@
         $content.find(teSelector).each(function () {
             new TooltippedElement($(this));
         });
-    }
+    };
 
     const settingsString = mw.cookie.get("RTsettings", "");
     if (settingsString) {
