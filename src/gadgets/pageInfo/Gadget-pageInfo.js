@@ -118,7 +118,7 @@
             if (actions.move === false && $moveRequestList) {
                 const moveRequestURL = new URL(`${wgScriptPath}/index.php`, location.origin);
                 moveRequestURL.searchParams.set("action", "edit");
-                moveRequestURL.searchParams.set("preload", "Template:移动请求");
+                moveRequestURL.searchParams.set("preload", "Template:移动请求预载");
                 moveRequestURL.searchParams.set("preloadtitle", `移动请求${requestTitleSuffix}`);
                 moveRequestURL.searchParams.set("section", "new");
                 moveRequestURL.searchParams.set("title", "萌娘百科讨论:讨论版/操作申请");
@@ -127,7 +127,7 @@
             if (actions.create === false && $createRequestList) {
                 const createRequestURL = new URL(`${wgScriptPath}/index.php`, location.origin);
                 createRequestURL.searchParams.set("action", "edit");
-                createRequestURL.searchParams.set("preload", "Template:创建请求");
+                createRequestURL.searchParams.set("preload", "Template:创建请求预载");
                 createRequestURL.searchParams.set("preloadtitle", `创建请求${requestTitleSuffix}`);
                 createRequestURL.searchParams.set("section", "new");
                 createRequestURL.searchParams.set("title", "萌娘百科讨论:讨论版/操作申请");
