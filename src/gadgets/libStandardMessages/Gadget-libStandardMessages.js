@@ -32,7 +32,7 @@
         wglocalizednamespaces: {
             "-2": mw.msg("media"),
             "-1": mw.msg("special"),
-            0: mw.msg("blanknamespace"),
+            0: "",
             1: mw.msg("talk"),
             2: mw.msg("user"),
             3: mw.msg("user_talk"),
