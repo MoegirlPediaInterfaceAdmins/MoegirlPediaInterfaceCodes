@@ -1,18 +1,28 @@
 // <pre>
 "use strict";
 $(() => (async () => {
-    if (!mw.config.get("wgUserGroups").includes("sysop") && !mw.config.get("wgUserGroups").includes("staff")) {
+    const {
+        wgUserGroups,
+        wgCanonicalSpecialPageName,
+        wgUserName,
+        wgAbuseFilterVariables,
+    } = mw.config.get([
+        "wgUserGroups",
+        "wgCanonicalSpecialPageName",
+        "wgUserName",
+        "wgAbuseFilterVariables",
+    ]);
+    if (!wgUserGroups.includes("sysop") && !wgUserGroups.includes("staff")) {
         return;
     }
-    if (mw.config.get("wgCanonicalSpecialPageName") !== "AbuseLog") {
+    if (wgCanonicalSpecialPageName !== "AbuseLog") {
         return;
     }
-    const getLogVar = (varName) => $(`.mw-abuselog-details-${varName} .mw-abuselog-var-value .mw-abuselog-var-value`).text();
-    const timestampVar = getLogVar("timestamp");
-    const userName = getLogVar("user_name");
-    const articlePrefixedtext = getLogVar("article_prefixedtext");
+    const timestampVar = wgAbuseFilterVariables.timestamp;
+    const userName = wgAbuseFilterVariables.user_name;
+    const pagePrefixedtitle = wgAbuseFilterVariables.page_prefixedtitle;
     const filter = +[...document.querySelectorAll('a[href*="/Special:%E6%BB%A5%E7%94%A8%E8%BF%87%E6%BB%A4%E5%99%A8/"]')].filter(({ href }) => /%E6%BB%A5%E7%94%A8%E8%BF%87%E6%BB%A4%E5%99%A8\/[1-9]\d*$/.test(href))?.[0]?.href?.match?.(/[1-9]\d*$/)?.[0];
-    if (timestampVar.length === 0 || userName.length === 0 || articlePrefixedtext.length === 0 || !filter) {
+    if (timestampVar.length === 0 || userName.length === 0 || pagePrefixedtitle.length === 0 || !filter) {
         return;
     }
     const symbolEnter = (str) => typeof str === "string" ? str.replace(/\n/g, "↵") : str;
@@ -24,10 +34,10 @@ $(() => (async () => {
     try {
         const __details = (await api.post({
             action: "query",
-            assertuser: mw.config.get("wgUserName"),
+            assertuser: wgUserName,
             list: "abuselog",
             afluser: userName,
-            afltitle: articlePrefixedtext,
+            afltitle: pagePrefixedtitle,
             aflprop: "details",
             aflfilter: filter,
         })).query.abuselog;
@@ -43,7 +53,7 @@ $(() => (async () => {
         progress.text(2);
         const _rules = (await api.post({
             action: "query",
-            assertuser: mw.config.get("wgUserName"),
+            assertuser: wgUserName,
             list: "abusefilters",
             abfstartid: filter,
             abfendid: filter,
@@ -57,7 +67,10 @@ $(() => (async () => {
             throw "无法找到符合格式的规则";
         }
         for (const { details } of _details) {
-            const addedLines = details.added_lines || details.new_wikitext;
+            let addedLines = details.added_lines || details.new_wikitext;
+            if (Array.isArray(addedLines)) {
+                addedLines = addedLines.join("\n");
+            }
             const result = [];
             const table = $("<table/>").css("width", "100%").addClass("wikitable abusefiltertest").hide();
             pTable.after(table);
