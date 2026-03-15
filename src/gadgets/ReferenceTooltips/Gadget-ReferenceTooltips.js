@@ -82,8 +82,8 @@
     // } );
 
     const rt = ($content) => {
-        // Popups gadget
-        if (window.pg) {
+        // Popups gadget & Reference Previews
+        if (window.pg || mw.config.get("wgPopupsReferencePreviews")) {
             return;
         }
 
