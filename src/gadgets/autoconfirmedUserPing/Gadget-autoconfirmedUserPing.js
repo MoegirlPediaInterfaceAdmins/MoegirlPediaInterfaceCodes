@@ -155,7 +155,7 @@ $(() => (async () => {
                     pageids: pageid,
                     pcexcludegroup: "bot|bureaucrat|sysop|staff",
                     pclimit: "max",
-                    pccontinue: contributorsResult?.continue?.pccontinue ?? "|",
+                    pccontinue: contributorsResult?.continue?.pccontinue,
                 });
                 nonMGUsers = nonMGUsers.concat(filterResult(contributorsResult));
             } while (contributorsResult?.continue?.pccontinue);

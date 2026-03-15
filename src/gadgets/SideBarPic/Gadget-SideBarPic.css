@@ -46,14 +46,26 @@ body.sideBarPic-executed.show-logo:not(.DeceasedPerson) #mw-panel #p-logo {
 }
 
 body.sideBarPic-executed.show-logo:not(.DeceasedPerson) #mw-panel #p-logo .mw-wiki-logo {
-    background-image: url("https://img.moegirl.org.cn/logo/zhMoegirl15.2.png");
+    background-image: url("https://storage.moegirl.org.cn/moegirl/logo/zhMoegirl15.2.png");
     height: 160px;
-}
-
-body.sideBarPic:not(.DeceasedPerson) #footer {
-    background-color: rgb(255 255 255 / 70%);
 }
 
 body.sideBarPic:not(.DeceasedPerson) #footer #footer-moegirl .copyright {
     color: #2f2f2f;
+}
+
+/* vector-2022 背景图片 */
+body.sideBarPic.skin-vector-2022.mediawiki .mw-page-container,
+body.sideBarPic .vector-header-container .mw-header,
+body.sideBarPic .vector-dropdown .vector-dropdown-content {
+    background-color: rgb(255 255 255 / 90%);
+}
+
+body.sideBarPic .vector-pinned-container {
+    background-color: transparent;
+}
+
+
+body.sideBarPic .vector-sticky-pinned-container::after {
+    display: none;
 }

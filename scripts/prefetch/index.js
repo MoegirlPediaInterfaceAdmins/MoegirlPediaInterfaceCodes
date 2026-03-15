@@ -1,14 +1,14 @@
-import console from "../modules/console.js";
-console.info("Initialization done.");
-import createCommit from "../modules/createCommit.js";
-import yamlModule from "../modules/yamlModule.js";
+import { endGroup, exportVariable, startGroup } from "@actions/core";
 import fs from "node:fs";
 import path from "node:path";
-import { startGroup, endGroup, exportVariable } from "@actions/core";
-import { createIssue } from "../modules/octokit.js";
-import modulePath from "../modules/modulePath.js";
 import semver from "semver";
+import console from "../modules/console.js";
+import createCommit from "../modules/createCommit.js";
 import fetchNPMPackageInfo from "../modules/fetchNPMPackageInfo.js";
+import modulePath from "../modules/modulePath.js";
+import { createIssue } from "../modules/octokit.js";
+import yamlModule from "../modules/yamlModule.js";
+console.info("Initialization done.");
 
 const labels = ["ci:prefetch"];
 
@@ -47,6 +47,9 @@ for (const prefetchTarget of prefetchTargets) {
             const response = await fetch(url, {
                 method: "GET",
             });
+            if (!response.ok) {
+                throw new Error(`[${name}] Failed to fetch file from jsDelivr: ${response.status} ${response.statusText}`, { cause: await response.text() });
+            }
             return await response.text();
         }
         if (type === "custom") {
@@ -54,6 +57,9 @@ for (const prefetchTarget of prefetchTargets) {
             const response = await fetch(url, {
                 method: "GET",
             });
+            if (!response.ok) {
+                throw new Error(`[${name}] Failed to fetch file from custom URL: ${response.status} ${response.statusText}`, { cause: await response.text() });
+            }
             return await response.text();
         }
     })();

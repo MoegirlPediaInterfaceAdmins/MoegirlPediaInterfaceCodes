@@ -9,10 +9,10 @@
         const nodes = document.querySelector("#mw-content-text")?.querySelectorAll('a[href*="user:" i]') || [];
         for (const usernameNode of nodes) {
             try {
-                const uri = new mw.Uri(usernameNode.href);
-                let username = decodeURIComponent(uri.path).substring(1);
+                const url = new URL(usernameNode.href, location.origin);
+                let username = decodeURIComponent(url.pathname).substring(1);
                 if (!/user:/i.test(username)) {
-                    username = uri.query.title;
+                    username = url.searchParams.get("title");
                 }
                 if (!/user:/i.test(username)) {
                     continue;
@@ -81,10 +81,7 @@
         });
     };
 
-    await Promise.all([
-        $.ready,
-        mw.loader.using(["mediawiki.Uri"]),
-    ]);
+    await $.ready;
     const wgArticleId = mw.config.get("wgArticleId");
     const wgIsArticle = mw.config.get("wgIsArticle");
     // 一键复制用户名

@@ -1,7 +1,10 @@
-import path from "node:path";
-import yamlModule from "./scripts/modules/yamlModule.js";
 import { configs } from "@annangela/eslint-config";
+import path from "node:path";
+import jsonModule from "./scripts/modules/jsonModule.js";
 import readDir from "./scripts/modules/readDir.js";
+import yamlModule from "./scripts/modules/yamlModule.js";
+
+const packageJson = await jsonModule.readFile("./package.json");
 
 /**
  * @type { import("eslint").Linter.Config["ignores"] }
@@ -19,7 +22,7 @@ for (const srcESlintrcFile of srcESlintrcFiles) {
     const srcESlintrc = await yamlModule.readFile(srcESlintrcFile);
     if (Array.isArray(srcESlintrc.ignorePatterns)) {
         for (const ignorePattern of srcESlintrc.ignorePatterns) {
-            ignores.push(path.join(dir, ignorePattern));
+            ignores.push(path.posix.join(dir.replaceAll("\\", "/"), ignorePattern));
         }
     }
 }
@@ -86,6 +89,8 @@ const config = [
                 libCachedCode: false,
                 CodeMirror: false,
                 Prism: false,
+                libRequestAnimationFrame: false,
+                libip: false,
             },
         },
     },
@@ -119,9 +124,10 @@ const config = [
             "n/no-extraneous-import": "off",
             "n/no-process-exit": "off",
 
-            // @TODO: 临时修复
-            "n/no-unsupported-features/es-builtins": ["error", { version: "^18.17 || ^20.1" }],
-            "n/no-unsupported-features/es-syntax": ["error", { version: "^18.17 || ^20.1", ignores: ["modules"] }],
+            // Node version specified in package.json
+            "n/no-unsupported-features/es-builtins": ["error", { version: packageJson.engines.node }],
+            "n/no-unsupported-features/node-builtins": ["error", { version: packageJson.engines.node }],
+            "n/no-unsupported-features/es-syntax": ["error", { version: packageJson.engines.node }],
 
             // github api use underscores naming
             camelcase: [

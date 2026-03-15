@@ -1,0 +1,55 @@
+compact: false
+
+controlFlowFlattening: false
+
+deadCodeInjection: false
+
+debugProtection: false
+
+disableConsoleOutput: false
+
+domainLock:
+  - .moegirl.org.cn
+
+domainLockRedirectUrl: https://zh.moegirl.org.cn/Mainpage
+
+identifierNamesGenerator: hexadecimal
+
+log: true
+
+numbersToExpressions: false
+
+simplify: false
+
+splitStrings: false
+
+splitStringsChunkLength: 0
+
+stringArray: true
+
+stringArrayCallsTransform: false
+
+stringArrayCallsTransformThreshold: 0
+
+stringArrayEncoding:
+  - base64
+
+stringArrayIndexShift: false
+
+stringArrayRotate: false
+
+stringArrayShuffle: false
+
+stringArrayThreshold: 1
+
+stringArrayWrappersCount: 0
+
+stringArrayWrappersChainedCalls: false
+
+stringArrayWrappersParametersMaxCount: 2
+
+stringArrayWrappersType: variable
+
+target: browser-no-eval
+
+transformObjectKeys: false

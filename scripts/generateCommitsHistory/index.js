@@ -8,17 +8,11 @@ const githubWebInterfaceFlowSignature = {
     committerEmail: "noreply@github.com",
     signatureKey: "4AEE18F83AFDEB23",
 };
-/**
- * @param { string } file file path like "src/@types/libBottomRightCorner.d.ts"
- * @returns { boolean }
- */
-const pathValidator = (file) => file.startsWith("src/") && ![
-    "src/@types/",
-].some((blacklist) => file.startsWith(blacklist));
 
 import { endGroup, exportVariable, startGroup } from "@actions/core";
+import fs from "node:fs";
 import path from "node:path";
-import artifactClient from "../modules/artifact.js";
+import artifactClient from "@actions/artifact";
 import console from "../modules/console.js";
 import createCommit from "../modules/createCommit.js";
 import git from "../modules/git.js";
@@ -26,6 +20,14 @@ import jsonModule from "../modules/jsonModule.js";
 import mailmap from "../modules/mailmap.js";
 import mkdtmp from "../modules/mkdtmp.js";
 import { debugConsole, debugLoggingEnabled, isInGithubActions, isInMasterBranch } from "../modules/octokit.js";
+
+/**
+ * @param { string } file file path like "src/@types/libBottomRightCorner.d.ts"
+ * @returns { boolean }
+ */
+const pathValidator = (file) => file.startsWith("src/") && ![
+    "src/@types/",
+].some((blacklist) => file.startsWith(blacklist));
 
 exportVariable("linguist-generated-generateCommitsHistory", JSON.stringify(["src/global/zh/GHIAHistory.json"]));
 
@@ -50,8 +52,10 @@ const { all: rawHistory } = await git.log({
     },
     "--stat": "10000",
 });
-console.info("Successfully fetched raw history.");
+console.info("Successfully fetched raw history, it has", rawHistory.length, "items.");
 await jsonModule.writeFile(rawHistoryPath, rawHistory);
+console.info("Successfully saved to", rawHistoryPath);
+console.info(await fs.promises.stat(rawHistoryPath));
 if (isInGithubActions) {
     console.info("\tUpload it as a artifact...");
     await artifactClient.uploadArtifact("rawHistory.json", [rawHistoryPath], tempPath);

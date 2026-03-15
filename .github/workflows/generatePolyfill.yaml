@@ -6,12 +6,16 @@ on:
       - .github/workflows/generatePolyfill.yaml
       - scripts/generatePolyfill/config.yaml
       - scripts/generatePolyfill/index.js
+      - scripts/generatePolyfill/customPolyfill/**/*
+      - .browserslistrc
   merge_group:
   pull_request:
     paths:
-        - .github/workflows/generatePolyfill.yaml
-        - scripts/generatePolyfill/config.yaml
-        - scripts/generatePolyfill/index.js
+      - .github/workflows/generatePolyfill.yaml
+      - scripts/generatePolyfill/config.yaml
+      - scripts/generatePolyfill/index.js
+      - scripts/generatePolyfill/customPolyfill/**/*
+      - .browserslistrc
   workflow_dispatch:
   schedule:
     - cron: 0 23 * * 0 # Every 07:00 CST Mon
@@ -40,7 +44,7 @@ jobs:
   generatePolyfill:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         name: Checkout main repo
         with:
           fetch-depth: 0
@@ -50,11 +54,12 @@ jobs:
         run: |
           echo "TARGET_POLYFILL_VERSION=$(yq '.TARGET_POLYFILL_VERSION' scripts/generatePolyfill/config.yaml)" >> $GITHUB_OUTPUT
           cat $GITHUB_OUTPUT
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         name: Checkout polyfill.io
         with:
           show-progress: false
           repository: JakeChampion/polyfill-service
+          ref: 1cadcb7e018d69903b96ae5908420f79c9785221
           path: polyfill-service
           sparse-checkout: |
             polyfill-libraries/${{ steps.polyfillConfig.outputs.TARGET_POLYFILL_VERSION }}/

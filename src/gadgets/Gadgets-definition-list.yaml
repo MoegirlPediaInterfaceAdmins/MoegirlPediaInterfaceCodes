@@ -23,6 +23,7 @@
     - noticeActivity
     - report
     - autocollapse
+    - mboxCollapse
     - SideBarPic
     - SpecialWikitext
     - hideAutopromoteLog
@@ -33,6 +34,7 @@
     - ModerationStatus
     - april-fool-2025
     - JSONViewer
+    - pageInfo
 
 - name: skin
   gadgets:
@@ -157,3 +159,5 @@
     - prism-language-ruby
     - vector-2022-styles
     - libDiscussionUtil
+    - libRequestAnimationFrame
+    - libLoadMessagesWithCache

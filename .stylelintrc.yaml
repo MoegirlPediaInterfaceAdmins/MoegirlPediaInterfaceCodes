@@ -32,5 +32,6 @@ rules:
     - true
     - ignoreTypes:
         - ogvjs
+        - rb
   no-duplicate-selectors: null
   declaration-property-value-no-unknown: true

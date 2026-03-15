@@ -1,0 +1,45 @@
+.page-info-container {
+    display: flex;
+    font-size: 1rem;
+    gap: .5rem;
+}
+
+.page-info-protection {
+    text-align: left;
+}
+
+.page-info-protection,
+.page-info-protection img {
+    height: 20px;
+    width: 20px;
+}
+
+.vector-menu-content-list .page-info-container > * {
+    padding-left: .25rem !important;
+    padding-right: .25rem !important;
+}
+
+.vector-menu-content-list .page-info-container {
+    padding-right: .5rem;
+    cursor: default;
+}
+
+.vector-menu-content-list .page-info-container,
+.vector-menu-content-list .page-info-container a {
+    cursor: default !important;
+}
+
+.vector-menu-content-list .page-info-container .annotation-content {
+    cursor: text !important;
+}
+
+#pagetools-desktop-container .edit-button-group,
+#pagetools-mobile-container .mobile-page-more-actions {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+}
+
+#pagetools-desktop-container .edit-button-group {
+    justify-content: center;
+}

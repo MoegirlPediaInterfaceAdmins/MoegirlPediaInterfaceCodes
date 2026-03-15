@@ -40,8 +40,8 @@ $(() => {
     if (Reflect.has(acceptsLangs, wgPageContentModel)) {
         $(".mw-code").addClass(`prettyprint lang-${acceptsLangs[wgPageContentModel]}`);
     }
-    $("pre[lang]").each(function () {
-        const self = $(this);
+    $("pre[lang]").each((_, ele) => {
+        const self = $(ele);
         const lang = self.attr("lang").toLowerCase();
         if (Reflect.has(acceptsLangs, lang)) {
             self.addClass(`prettyprint lang-${acceptsLangs[lang]}`);

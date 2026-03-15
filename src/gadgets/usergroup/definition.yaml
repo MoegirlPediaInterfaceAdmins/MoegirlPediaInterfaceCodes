@@ -27,11 +27,11 @@ peers: []
 dependencies:
   - moment
   - mediawiki.api
-  - mediawiki.Uri
   - mediawiki.user
   - ext.gadget.LocalObjectStorage
   - ext.gadget.site-lib
   - ext.gadget.libPolyfill
+  - ext.gadget.libLoadMessagesWithCache
 
 _sites:
   - zh

@@ -13,7 +13,7 @@ jobs:
   auto_fix:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         name: Checkout main repo
         with:
           fetch-depth: 0

@@ -4,8 +4,8 @@
  * Options:
  *     polyfillFeature: Array.prototype.at
  *     polyfillAliases: es2022
- *     targetChromiumVersion: 86.0.0
- *     polyfillVersionRange: <92.0.0-0 (< 92)
+ *     browserslist: defaults, Chrome >= 132, not opera < 1307, not op_mob < 1307, not android < 1307, not edge < 1307, not op_mini < 1307
+ *     polyfillBrowsers: android: *, bb: *, chrome: < 92, edge: < 92, edge_mob: < 92, firefox: < 90, firefox_mob: < 90, ie: *, ie_mob: *, ios_chr: *, ios_saf: *, op_mini: *, op_mob: *, opera: < 78, safari: *, samsung_mob: < 16
  */
 (() => {
 

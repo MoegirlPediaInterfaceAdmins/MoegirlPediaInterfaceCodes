@@ -17,8 +17,12 @@ $(() => {
         }, 130);
     });
     const $document = $(document);
-    $(window).on("scroll", () => {
+    const instanceRAF = new libRequestAnimationFrame.LibRequestAnimationFrame();
+    const action = () => {
         btn.css("opacity", $document.scrollTop() > 0 ? ".6" : "0");
+    };
+    $(window).on("scroll", () => {
+        instanceRAF.request(action);
     }).trigger("scroll");
 });
 // </pre>

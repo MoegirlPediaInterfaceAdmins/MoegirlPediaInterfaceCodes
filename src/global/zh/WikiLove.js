@@ -72,7 +72,7 @@ $.wikiLoveOptions.types.barnstar.subtypes = {
 // 增加萌百特色星章
 $.wikiLoveOptions.types.mgpSpecial = {
     name: "萌百特色星章",
-    icon: "https://img.moegirl.org.cn/common/thumb/6/6f/Moegirlpedia-logo-trim.png/50px-Moegirlpedia-logo-trim.png",
+    icon: "https://storage.moegirl.org.cn/moegirl/commons/6/6f/Moegirlpedia-logo-trim.png!/fw/50",
     subtypes: {
         vup: {
             fields: ["message"],

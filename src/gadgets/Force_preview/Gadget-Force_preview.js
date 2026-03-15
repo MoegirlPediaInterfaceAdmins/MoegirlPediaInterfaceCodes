@@ -33,7 +33,7 @@ $(() => {
     if (!saveButton[0]) {
         return;
     }
-    const oldSaveBottonValue = saveButton.val();
+    const oldSaveButtonValue = saveButton.val();
     const tcb = $("#TencentCaptchaBtn");
     if (tcb.length > 0) {
         tcb.attr("disabled", "disabled").hide().after('<button type="button" class="mw-ui-button mw-ui-progressive mw-ui-primary" style="display: block;" disabled="disabled">请先预览</button>');
@@ -45,7 +45,7 @@ $(() => {
         if (previewArea[0] && previewArea.is(":not(:empty)")) {
             if (!isPreviewedLive) {
                 isPreviewedLive = true;
-                saveButton.removeAttr("disabled").val(oldSaveBottonValue).css("font-weight", "700").parent().addClass("oo-ui-widget-enabled oo-ui-flaggedElement-primary oo-ui-flaggedElement-progressive").removeClass("oo-ui-widget-disabled");
+                saveButton.removeAttr("disabled").val(oldSaveButtonValue).css("font-weight", "700").parent().addClass("oo-ui-widget-enabled oo-ui-flaggedElement-primary oo-ui-flaggedElement-progressive").removeClass("oo-ui-widget-disabled");
                 previewButton.closest(".oo-ui-buttonElement-framed").removeClass("oo-ui-flaggedElement-primary oo-ui-flaggedElement-progressive");
                 if (tcb.length > 0) {
                     tcb.removeAttr("disabled").show().next().remove();

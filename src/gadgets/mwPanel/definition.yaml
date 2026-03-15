@@ -35,3 +35,4 @@ _section: skin
 
 _files:
   - Gadget-mwPanel.js
+  - Gadget-mwPanel.css

@@ -230,7 +230,7 @@ $(() => (async () => {
             // eslint-disable-next-line require-atomic-updates
             globalDeletionLock = true;
 
-            const $spinner = $('<img src="https://img.moegirl.org.cn/common/d/d1/Windows_10_loading.gif" style="height: 1em; margin-top: -.25em;">'), $status = $("<span>");
+            const $spinner = $('<img src="https://storage.moegirl.org.cn/moegirl/commons/d/d1/Windows_10_loading.gif" style="height: 1em; margin-top: -.25em;">'), $status = $("<span>");
 
             $root.find(".batdel-result").remove();
             $root.find(".batdel-select").prop("disabled", true);
@@ -249,7 +249,7 @@ $(() => (async () => {
                         return;
                     }
                     self.css("margin-right", "1em");
-                    const url = new URL(new mw.Uri(self.prop("href")));
+                    const url = new URL(self.prop("href"), location.origin);
                     const target = decodeURIComponent(url.searchParams.has("title") ? url.searchParams.get("title") : url.pathname.replace(/^\//, "")).replace(/_/g, " ");
                     const page = pages.filter(({ title }) => title === target)[0];
                     try {

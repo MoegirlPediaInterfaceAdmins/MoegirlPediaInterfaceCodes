@@ -2,9 +2,9 @@
 // <pre>
 $(() => {
     $("#pt-logout > a[href*=logoutToken], .moe-user-dropdown-inner #logout").each((_, ele) => {
-        const uri = new mw.Uri(ele.href);
-        Reflect.deleteProperty(uri.query, "logoutToken");
-        ele.href = uri;
+        const url = new URL(ele.href, location.origin);
+        url.searchParams.delete("logoutToken");
+        ele.href = url;
     });
     if (mw.config.get("wgCanonicalSpecialPageName") === "Userlogout") {
         const context = $("#mw-content-text");

@@ -194,8 +194,8 @@
     };
 
     /** 外部链接提示 */
-    const externalLinkConfirm = async () => {
-        await mw.loader.using(["ext.gadget.site-lib", "oojs-ui-windows", "oojs-ui-core"]);
+    const externalLinkConfirm = () => {
+        const modulesReady = mw.loader.using(["ext.gadget.site-lib", "oojs-ui-windows", "oojs-ui-core"]);
         /** @param {URL} url */
         const getConfirmMessage = (url) => {
             const $wrapper = $("<div>", { style: "text-align: center" });
@@ -205,6 +205,10 @@
             return $wrapper;
         };
         document.getElementById("mw-content-text")?.addEventListener("click", async (e) => {
+            const pointerType = e.pointerType;
+            if (pointerType !== "touch" && pointerType !== "pen") {
+                return;
+            }
             /** @type {HTMLElement} */
             const target = e.target;
             /** @type {HTMLAnchorElement | null} */
@@ -220,6 +224,7 @@
                 return;
             }
             e.preventDefault();
+            await modulesReady;
             const response = await OO.ui.confirm(getConfirmMessage(hrefURL));
             response && window.open(hrefURL.href, "_blank", "noopener,noreferrer,nofollow");
         });
@@ -233,6 +238,11 @@
         /** @type {HTMLElement|null} */
         let lastClickedHeimu = null;
         document.querySelector("#mw-content-text")?.addEventListener("click", (e) => {
+            const pointerType = e.pointerType;
+            if (pointerType !== "touch" && pointerType !== "pen") {
+                lastClickedHeimu = null;
+                return;
+            }
             /** @type {HTMLElement} */
             // 小工具“黑幕半隐”启用时正常跳转
             if (document.body.closest(".heimu_toggle_on")) {
@@ -276,11 +286,8 @@
     fixImage();
     /* PageTools */
     applyPageTools();
-    /** 针对触摸屏设备的额外优化 */
-    if (navigator.maxTouchPoints > 0) {
-        !IS_MOEPAD_APP && externalLinkConfirm(); // App 有自己的链接处理逻辑
-        setupHeimuClickListener();
-    }
+    !IS_MOEPAD_APP && externalLinkConfirm(); // App 有自己的链接处理逻辑
+    setupHeimuClickListener();
     /* noteTAIcon */
     if ($(".noteTA").length > 0) {
         noteTAIcon();

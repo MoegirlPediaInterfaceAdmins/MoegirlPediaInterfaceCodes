@@ -39,6 +39,7 @@ $(() => {
         // "gadget_definition",
         // "gadget_definition_talk": false
     ];
+    const instanceRAF = new libRequestAnimationFrame.LibRequestAnimationFrame();
     const apiPrefix = `${mw.config.get("wgServer")}${mw.config.get("wgScriptPath")}/api.php`;
     const newPageMax = 50;
     const writeCountNum = (pages, plus) => {
@@ -266,8 +267,8 @@ $(() => {
                         prepareList(pages, 10);
                         ttListShow = true;
                         const ctt = $("#patrollTooltip").cvtooltip({
-                            left: $(window).width() - ($("#pt-patroll").offset().left + $("#pt-patroll").outerWidth()),
-                            top: $("#pt-patroll").offset().top + $("#pt-patroll").height() + 10,
+                            left: $(window).width() - ($("#pt-patroll").offset().left + $("#pt-patroll").outerWidth() + 40),
+                            top: $("#pt-patroll").offset().top + $("#pt-patroll").outerHeight() + 10,
                             callback: () => {
                                 ttListShow = false;
                                 showAll = false;
@@ -293,12 +294,12 @@ $(() => {
                         showAllUnbind = [ctt.body, $ptPatroll];
                     }
                 }, 500);
-                $ptPatroll.on("mouseout", () => {
-                    if (timer) {
-                        clearTimeout(timer);
-                        timer = null;
-                    }
-                });
+            });
+            $ptPatroll.on("mouseout", () => {
+                if (timer) {
+                    clearTimeout(timer);
+                    timer = null;
+                }
             });
         }
     };
@@ -446,13 +447,12 @@ $(() => {
     const ptPatrollLink = $("<a></a>", {
         href: "Special:最新页面?hidepatrolled=1",
         title: wgULS("最新页面", "最新頁面"),
-        text: wgULS("最新页面", "最新頁面"),
-    });
+    }).html(`<img src="/resources/lib/ooui/themes/wikimediaui/images/icons/article-rtl.svg" style="height:20px;margin:0 4px;" alt="${wgULS("最新页面", "最新頁面")}">`);
     $("#pt-watchlist-2").after($("<li></li>", {
         id: "pt-patroll",
-    }).append(ptPatrollLink).append($("<span></span>", {
-        id: "not-patrolled-count",
-    })));
-    $("#pt-patroll").on("mouseover", updateUnpatrolled);
+    }).append(ptPatrollLink));
+    $("#pt-patroll").on("mouseover", () => {
+        instanceRAF.request(updateUnpatrolled);
+    });
 });
 // </pre>

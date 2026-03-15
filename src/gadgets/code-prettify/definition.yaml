@@ -25,7 +25,6 @@ rights: []
 peers: []
 
 dependencies:
-  - mediawiki.Uri
   - user.options
 
 _sites:

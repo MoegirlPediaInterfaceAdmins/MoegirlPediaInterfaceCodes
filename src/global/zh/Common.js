@@ -78,10 +78,13 @@
             }
         }, 137);
     };
-    // 跨站重定向页顶链接
+    /**
+     * 跨站重定向页顶链接
+     * @param { URL } url
+     */
     const crossDomainLink = (url) => {
-        const link = url.query.title;
-        const domain = url.host;
+        const link = url.searchParams.get("title");
+        const domain = url.hostname;
         const crossDomain = $("<div/>");
         const anchor = $("<a/>");
         crossDomain.text("＜");
@@ -89,9 +92,13 @@
         crossDomain.append(anchor);
         $("#contentSub").prepend(crossDomain);
     };
+    /**
+     * 跨站重定向页顶链接
+     * @param { URL } url
+     */
     const crossDomainLinkMoeskin = (url) => {
-        const link = url.query.title;
-        const domain = url.host;
+        const link = url.searchParams.get("title");
+        const domain = url.hostname;
         const crossDomain = $("<div/>");
         const anchor = $("<a/>");
         crossDomain.html('<span class="moe-icon"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 256 512"><path d="M31.7 239l136-136c9.4-9.4 24.6-9.4 33.9 0l22.6 22.6c9.4 9.4 9.4 24.6 0 33.9L127.9 256l96.4 96.4c9.4 9.4 9.4 24.6 0 33.9L201.7 409c-9.4 9.4-24.6 9.4-33.9 0l-136-136c-9.5-9.4-9.5-24.6-.1-34z" fill="currentColor"></path></svg></span>');
@@ -103,14 +110,14 @@
     const copyRights = async () => {
         await mw.loader.using("mediawiki.util");
         const div = $("<div>", {
-                css: {
-                    position: "absolute",
-                    left: "-99999px",
-                    "z-index": "-99999",
-                },
-                html: `<pre></pre><br>\n阅读更多：${/%/.test(mw.util.wikiUrlencode(wgPageName)) ? `${wgPageName}（${wgServer}${wgScriptPath}/${encodeURIComponent(wgPageName)} ）` : `${wgServer}${wgScriptPath}/${wgPageName}`}<br>\n本文引自萌娘百科(${wgServer.replace(/^\/\//, "https://")} )，文字内容默认使用《知识共享 署名-非商业性使用-相同方式共享 3.0 中国大陆》协议。`,
-            }).appendTo("body"),
-            valueNode = div.find("pre");
+            css: {
+                position: "absolute",
+                left: "-99999px",
+                "z-index": "-99999",
+            },
+            html: `<pre></pre><br>\n阅读更多：${/%/.test(mw.util.wikiUrlencode(wgPageName)) ? `${wgPageName}（${wgServer}${wgScriptPath}/${encodeURIComponent(wgPageName)} ）` : `${wgServer}${wgScriptPath}/${wgPageName}`}<br>\n本文引自萌娘百科(${wgServer.replace(/^\/\//, "https://")} )，文字内容默认使用《知识共享 署名-非商业性使用-相同方式共享 3.0 中国大陆》协议。`,
+        }).appendTo("body");
+        const valueNode = div.find("pre");
         $("#mw-content-text").on("copy", () => {
             const selection = window.getSelection(),
                 value = selection.toString(),
@@ -315,30 +322,32 @@
         }
     };
     // 跨站重定向页顶链接
-    const crossDomainDetect = async () => {
-        await mw.loader.using(["mediawiki.Uri"]);
-        const { rdfrom } = new mw.Uri().query;
-        if (rdfrom) {
-            const rdfromUri = new mw.Uri(rdfrom);
-            if (!rdfromUri.host.includes([104, 109, 111, 101].map((n) => String.fromCharCode(n)).join(""))) {
-                const { query } = rdfromUri;
-                if (query.title && query.redirect === "no") {
-                    if (skin === "moeskin") {
-                        crossDomainLinkMoeskin(rdfromUri);
-                    } else {
-                        crossDomainLink(rdfromUri);
+    const crossDomainDetect = () => {
+        try {
+            const rdfrom = new URLSearchParams(location.search).get("rdfrom");
+            if (rdfrom) {
+                const rdfromUri = new URL(rdfrom);
+                if (!rdfromUri.hostname.includes([104, 109, 111, 101].map((n) => String.fromCharCode(n)).join(""))) {
+                    const { searchParams } = rdfromUri;
+                    if (searchParams.get("title") && searchParams.get("redirect") === "no") {
+                        if (skin === "moeskin") {
+                            crossDomainLinkMoeskin(rdfromUri);
+                        } else {
+                            crossDomainLink(rdfromUri);
+                        }
                     }
                 }
             }
+        } catch (e) {
+            console.error("Error in crossDomainDetect\n", e);
         }
     };
     // 修复用户页左侧栏头像链接
-    const leftPanelAvatarLink = async () => {
-        await mw.loader.using(["mediawiki.Uri"]);
+    const leftPanelAvatarLink = () => {
         $("#t-viewavatar > a").each((_, ele) => {
-            const uri = new mw.Uri(ele.href);
-            uri.host = uri.host.replace("zh.moegirl", "commons.moegirl");
-            ele.href = uri;
+            const url = new URL(ele.href, location.origin);
+            url.hostname = url.hostname.replace("zh.moegirl", "commons.moegirl");
+            ele.href = url.href;
         });
     };
     // 修正hash跳转错误

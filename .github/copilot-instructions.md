@@ -86,15 +86,9 @@ npm --version
 
 5. **Build separately** (if needed):
    ```bash
-   npm run build:js    # TypeScript compilation only
+   npm run build:js    # JavaScript only
    npm run build:css   # PostCSS processing only
    ```
-
-6. **Minification** (production):
-   ```bash
-   npm run minification:js
-   ```
-   Uses Terser to minify compiled JavaScript
 
 ### Build Order for Making Changes
 
@@ -135,6 +129,7 @@ npm --version
 │   ├── gadgets/            # MediaWiki gadgets (小工具)
 │   │   └── [gadget-name]/
 │   │       ├── definition.yaml      # Gadget configuration
+│   │       ├── definition.{site}.yaml # Optional: site-specific overrides
 │   │       ├── Gadget-*.js          # JavaScript files (page name format)
 │   │       ├── Gadget-*.css         # CSS files
 │   │       └── .eslintrc.yaml       # Optional: override linting for imported code
@@ -155,7 +150,7 @@ npm --version
 ├── eslint.config.js        # ESLint configuration (flat config format)
 ├── .stylelintrc.yaml       # Stylelint configuration
 ├── .postcssrc.yaml         # PostCSS plugins config
-├── .browserslistrc         # Browser targets: "defaults, Chrome >= 86"
+├── .browserslistrc         # Browser targets, read the content if you needed
 └── .v8rrc.yaml            # YAML schema validator config
 ```
 
@@ -165,7 +160,7 @@ npm --version
 - **eslint.config.js**: Flat config format, separates browser/node environments, includes custom globals (mw, OO, etc.)
 - **.postcssrc.yaml**: Configures autoprefixer, selector polyfills, logical properties, discard comments
 - **.stylelintrc.yaml**: Based on stylelint-config-standard, ignores vendor prefixes
-- **.browserslistrc**: Targets "defaults, Chrome >= 86" for autoprefixer
+- **.browserslistrc**: Browser targets, read the content if you needed
 - **.editorconfig**: 4-space indentation for JS, 2-space for YAML/MD
 - **.prettierrc.yaml**: 4-space tabs, double quotes, 200 char line width
 
@@ -181,7 +176,10 @@ Each gadget is a folder in `src/gadgets/[gadget-name]/` containing:
   - `dependencies`: Array of dependencies
   - `rights`: Required user rights
   - Other MediaWiki gadget properties
-
+- **definition.{site}.yaml** (OPTIONAL): Site-specific configuration overrides
+  - Merged with base `definition.yaml` when processing the corresponding site
+  - Example: `definition.commons.yaml` for Commons-specific settings
+  - Properties in site-specific file override the base configuration
 - **Gadget-[name].js**: JavaScript code (file name matches MediaWiki page name)
 - **Gadget-[name].css**: CSS code (file name matches MediaWiki page name)
 - **.eslintrc.yaml** (OPTIONAL): Override linting for imported/generated code
@@ -355,6 +353,7 @@ Before submitting changes:
 8. **PostCSS runs automatically** on CSS files - don't manually add vendor prefixes
 9. **TypeScript compiles to ES2020** - modern JavaScript features are allowed
 10. **Browser globals** (mw, OO, $, etc.) are pre-configured in eslint.config.js
+11. In JavaScript, prioritize shorthand type coercion operators (e.g., `+var` for numbers, `!!var` for booleans, `` `${var}` `` for strings) over explicit constructor functions (e.g., `Number(var)`, `Boolean(var)`, `String(var)`)
 
 ## Quick Reference
 
@@ -367,9 +366,8 @@ npm run build                   # Compile all
 npm test                        # Final check
 
 # Individual operations
-npm run build:js                # TypeScript only
+npm run build:js                # JavaScript only
 npm run build:css               # CSS only
-npm run minification:js         # Minify (production)
 ```
 
 ## Additional Context

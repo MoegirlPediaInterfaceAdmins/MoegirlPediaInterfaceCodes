@@ -1,14 +1,25 @@
+import { endGroup, error, startGroup } from "@actions/core";
 import console from "../modules/console.js";
-console.info("Initialization done.");
 import createCommit from "../modules/createCommit.js";
+import errorToString from "../modules/errorToString.js";
+import upstream from "../modules/getUpstream.js";
 import jsonModule from "../modules/jsonModule.js";
-import { startGroup, endGroup } from "@actions/core";
 import { sortWithLowerFirstCharacter } from "../modules/sortWithLowerFirstCharacter.js";
+console.info("Initialization done.");
+
+if (!upstream) {
+    console.info("HEAD does not point to a branch, exit.");
+    process.exit(0);
+}
 
 console.info("Start to download the user rights...");
 const response = await fetch("https://zh.moegirl.org.cn/api.php?action=query&meta=siteinfo&siprop=usergroups&format=json", {
     method: "GET",
-});
+}).catch((error) => ({ ok: false, isError: true, error }));
+if (!response.ok) {
+    error(`Failed to fetch user rights: ${response.isError ? errorToString(response.error) : `${response.status} ${response.statusText} ${await response.text()}`}`);
+    process.exit(0);
+}
 const data = await response.json();
 startGroup("User right api:");
 console.info(data);

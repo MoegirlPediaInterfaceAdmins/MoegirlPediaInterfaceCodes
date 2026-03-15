@@ -34,7 +34,7 @@
 
 /* 页脚 */
 #footer-info-copyright {
-    background: url("//img.moegirl.org.cn/weixin_mengbai.png") 0 15px no-repeat;
+    background: url("//storage.moegirl.org.cn/moegirl/weixin_mengbai.png") 0 15px no-repeat;
     padding: 15px 0 30px;
     font-family: sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
     min-height: 165px;
@@ -85,3 +85,7 @@ h2 {
     border-bottom: 1px solid #0074F9;
 }
 
+/* [[Template:Navbar]]意外换行 */
+.noprint.plainlinks.hlist.navbar.nomobile {
+    white-space: nowrap;
+}

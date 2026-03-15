@@ -10,3 +10,8 @@ customCatalog:
       fileMatch:
         - src/**/definition.yaml
       location: .vscode/json-schemas/gadget-definition.json
+    - name: gadget-definition-per-site
+      description: 小工具定义 - 站点设置
+      fileMatch:
+        - src/**/definition.{zh,commons}.yaml
+      location: .vscode/json-schemas/gadget-definition-per-site.json

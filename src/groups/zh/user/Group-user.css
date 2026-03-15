@@ -1,1 +1,8 @@
 /* 这里放置的CSS将只影响注册用户 */
+.user-show {
+    display: revert !important;
+}
+
+.anon-show {
+    display: none !important;
+}

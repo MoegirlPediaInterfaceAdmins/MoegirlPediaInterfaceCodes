@@ -17,18 +17,20 @@
     const $body = $(body);
     const $window = $(window);
     const sleep = (ms = 1000) => new Promise((res) => setTimeout(res, ms));
+    const getComputedStyle = window.getComputedStyle;
+    const instanceRAF = new libRequestAnimationFrame.LibRequestAnimationFrame();
 
     /* 共享站相关 */
     if (["ViewAvatar", "Listfiles", "ListDuplicatedFiles", "Unusedimages", "Uncategorizedimages", "MediaStatistics", "TimedMediaHandler"].includes(mw.config.get("wgCanonicalSpecialPageName"))) {
-        const url = new mw.Uri();
-        url.host = url.host.replace(/^[^.]+/g, "commons");
-        url.path = mw.config.get("wgScript");
-        url.query.title = `${mw.config.get("wgCanonicalNamespace")}:${mw.config.get("wgCanonicalSpecialPageName")}`;
+        const url = new URL(location.href);
+        url.hostname = url.hostname.replace(/^[^.]+/g, "commons");
+        url.pathname = mw.config.get("wgScript");
+        url.searchParams.set("title", `${mw.config.get("wgCanonicalNamespace")}:${mw.config.get("wgCanonicalSpecialPageName")}`);
         location.replace(url);
     }
     /* 浮动滚动条 */
     const forbiddenScroll = ["hidden", "clip"];
-    $window.on("resize", () => {
+    const scrollbarCalc = () => {
         const innerWidth = window.innerWidth;
         let scrollbarWidth;
         if (!forbiddenScroll.includes(getComputedStyle(body).overflowY)) {
@@ -42,6 +44,9 @@
             body.style.overflowY = backup;
         }
         $body[scrollbarWidth <= 0 ? "addClass" : "removeClass"]("overlay-scrollbars");
+    };
+    $window.on("resize", () => {
+        instanceRAF.request(scrollbarCalc);
     }).trigger("resize");
     /* Tabs */
     const tabs = () => {
@@ -146,12 +151,12 @@
         const toLowerFirstCase = (str) => str.substring(0, 1).toLowerCase() + str.substring(1);
         const toUpperFirstCase = (str) => str.substring(0, 1).toUpperCase() + str.substring(1);
         mw.hook("wikipage.content").add((content) => {
-            content.find(".Tabs").each(function () {
-                const self = $(this);
+            content.find(".Tabs").each((_, ele) => {
+                const self = $(ele);
                 if (self.children(".TabLabel")[0]) {
                     return true;
                 }
-                const classList = Array.from(this.classList).filter((n) => Reflect.has(defaultStyle, n));
+                const classList = Array.from(ele.classList).filter((n) => Reflect.has(defaultStyle, n));
                 const data = $.extend({
                     labelPadding: "2px",
                     labelBorderColor: "#aaa",
@@ -161,7 +166,7 @@
                     textBorderColor: "#aaa",
                     textBackgroundColor: "white",
                     defaultTab: 1,
-                }, classList[0] ? defaultStyle[classList[0]] || {} : {}, this.dataset || {});
+                }, classList[0] ? defaultStyle[classList[0]] || {} : {}, ele.dataset || {});
                 const styleSheet = {
                     label: {},
                     text: {},
@@ -191,18 +196,18 @@
                 if (labelColorSideReverse) {
                     self.addClass("reverse");
                 }
-                self.children(".Tab").each(function () {
-                    if ($(this).children(".TabLabelText").text().replace(/\s/g, "").length || $(this).children(".TabLabelText").children().length) {
-                        $(this).children(".TabLabelText").appendTo(tabLabel);
-                        $(this).children(".TabContentText").appendTo(self.children(".TabContent"));
+                self.children(".Tab").each((_, ele) => {
+                    if ($(ele).children(".TabLabelText").text().replace(/\s/g, "").length || $(ele).children(".TabLabelText").children().length) {
+                        $(ele).children(".TabLabelText").appendTo(tabLabel);
+                        $(ele).children(".TabContentText").appendTo(self.children(".TabContent"));
                     }
-                    $(this).remove();
+                    $(ele).remove();
                 });
                 if (isNaN(defaultTab) || defaultTab <= 0 || defaultTab > tabLabel.children(".TabLabelText").length) {
                     defaultTab = 1;
                 }
-                tabLabel.children(".TabLabelText").on("click", function () {
-                    const label = $(this);
+                tabLabel.children(".TabLabelText").on("click", (event) => {
+                    const label = $(event.currentTarget);
                     label.addClass("selected").siblings().removeClass("selected").css({
                         "border-color": "transparent",
                         "background-color": "inherit",
@@ -245,24 +250,37 @@
         });
     };
     /* T:注解 */
-    $(".annotation").each((_, ele) => {
-        const popup = new OO.ui.PopupWidget({
-            $content: $(ele).children(".annotation-content"),
-            padded: true,
-            autoFlip: false,
-        });
-        $(ele)
-            .append(popup.$element)
-            .on("mouseover", () => {
-                popup.toggle(true);
-            })
-            .on("mouseout", () => {
-                popup.toggle(false);
+    $("body").on("mouseover mouseout", ".annotation", (event) => {
+        const $target = $(event.currentTarget);
+        let popup = $target.data("popup");
+
+        // 如果还没有创建 popup，则创建
+        if (!popup) {
+            const $content = $target.children(".annotation-content");
+            if ($content.length === 0) {
+                return;
+            }
+            popup = new OO.ui.PopupWidget({
+                $content: $content,
+                padded: true,
+                autoFlip: false,
             });
+            $target.append(popup.$element).data("popup", popup);
+        }
+
+        popup.toggle(event.type === "mouseover");
     });
+
     /* 修正嵌套使用删除线、黑幕、彩色幕和胡话模板 */
-    const templateTags = ["s", "del"];
-    const templateClasses = [".heimu", ".colormu", ".just-kidding-text"];
+    const templateTags = [
+        "s",
+        "del",
+    ];
+    const templateClasses = [
+        ".heimu",
+        ".colormu",
+        ".just-kidding-text",
+    ];
     const templateStr = [...templateTags, ...templateClasses].join(", ");
     /**
      * @param {JQuery<HTMLDivElement>} $content
@@ -327,80 +345,6 @@
             });
         }
     };
-    /* 域名跳转提示 */
-    const domainChangedAlert = () => {
-        $body.before('<div style="background: #3366CC; color: white; text-align: center; padding: .5rem; position: static;" id="domainChangedAlert"><p>萌娘百科已将域名替换为 <code>*.moegirl.org<b><u>.cn</u></b></code>，原有域名可能访问困难，请更换您的书签等的页面地址。</p></div>');
-        $body.css({
-            "background-position-y": $("#domainChangedAlert").outerHeight(),
-            position: "relative",
-        });
-    };
-    /* 水印 */
-    // https://github.com/zloirock/core-js/blob/v3.29.1/packages/core-js/modules/es.unescape.js
-    const hex2 = /^[\da-f]{2}$/i;
-    const hex4 = /^[\da-f]{4}$/i;
-    const unescapeString = (string) => {
-        const str = `${string}`;
-        let result = "";
-        const length = str.length;
-        let index = 0;
-        let chr, part;
-        while (index < length) {
-            chr = str.charAt(index++);
-            if (chr === "%") {
-                if (str.charAt(index) === "u") {
-                    part = str.slice(index + 1, index + 5);
-                    if (hex4.exec(part)) {
-                        result += String.fromCharCode(parseInt(part, 16));
-                        index += 5;
-                        continue;
-                    }
-                } else {
-                    part = str.slice(index, index + 2);
-                    if (hex2.exec(part)) {
-                        result += String.fromCharCode(parseInt(part, 16));
-                        index += 2;
-                        continue;
-                    }
-                }
-            }
-            result += chr;
-        }
-        return result;
-    };
-    const createElement = Document.prototype.createElement.bind(document);
-    const getAttribute = Element.prototype.getAttribute;
-    const setAttribute = Element.prototype.setAttribute;
-    const cloneNode = Node.prototype.cloneNode;
-    const appendChild = Node.prototype.appendChild.bind(document.body);
-    const contains = Node.prototype.contains.bind(document.body);
-    const watermark = (txt, size) => {
-        const styleString = `position: fixed !important; z-index: 99999 !important; inset: 0px !important; background-image: url("data:image/svg+xml;base64,${btoa(`<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}"><foreignObject width="${size}" height="${size}"><html xmlns="http://www.w3.org/1999/xhtml" style="width: ${size}px; height: ${size}px;"><head></head><body style="width: ${size}px; height: ${size}px; margin: 0px;"><div style="width: 100% !important; height: 100% !important; opacity: .17 !important; font-size: 24px !important; position: relative !important; color: black !important;"><div style="transform: rotate(-15deg) translateX(-50%) translateY(-50%) !important; word-break: break-all !important; top: 36% !important; left: 50% !important; position: absolute !important; width: 100% !important; text-align: center !important;">${unescapeString(encodeURIComponent(txt))}</div></div></body></html></foreignObject></svg>`)}") !important; background-repeat: repeat !important; pointer-events: none !important; display: block !important; visibility: visible !important; width: unset !important; height: unset !important; opacity: unset !important; background-color: unset !important;`;
-        const template = createElement("div");
-        setAttribute.bind(template)("style", styleString);
-        /**
-         * @type { typeof template }
-         */
-        let ele = appendChild(cloneNode.bind(template)(true));
-        setInterval(() => {
-            const reasons = [];
-            if (!contains(ele)) {
-                reasons.push("not in body");
-            }
-            if (getAttribute.bind(ele)("style") !== styleString) {
-                reasons.push("styleString not match");
-            }
-            if (reasons.length > 0) {
-                console.info("[watermark] Recreate watermark:", reasons);
-                try {
-                    ele.remove();
-                } catch { }
-                ele = appendChild(cloneNode.bind(template)(true));
-            }
-        }, 1000);
-    };
-    /* 获取特定命名空间前缀正则表达式 */
-    const getNamespacePrefixRegex = (namespaceNumber) => RegExp(`^(?:${Object.entries(mw.config.get("wgNamespaceIds")).filter((config) => config[1] === namespaceNumber).map((config) => config[0].toLowerCase()).join("|")}):`, "i");
     // 列表侧边距
     const listMarginLeft = () => {
         $(".mw-parser-output ul:not(.margin-left-set), .mw-parser-output ol:not(.margin-left-set), #mw-content-text > pre.prettyprint ul:not(.margin-left-set), #mw-content-text > pre.prettyprint ol:not(.margin-left-set)").each((_, ele) => {
@@ -489,58 +433,117 @@
             div.style.alignItems = "flex-start";
         }
     };
+    /* 水印 */
+    const createElement = Document.prototype.createElement.bind(document);
+    const getAttribute = Element.prototype.getAttribute;
+    const setAttribute = Element.prototype.setAttribute;
+    const cloneNode = Node.prototype.cloneNode;
+    const appendChild = Node.prototype.appendChild.bind(document.body);
+    const contains = Node.prototype.contains.bind(document.body);
+    // https://github.com/zloirock/core-js/blob/v3.29.1/packages/core-js/modules/es.unescape.js
+    const hex2 = /^[\da-f]{2}$/i;
+    const hex4 = /^[\da-f]{4}$/i;
+    const unescapeString = (string) => {
+        const str = `${string}`;
+        let result = "";
+        const length = str.length;
+        let index = 0;
+        let chr, part;
+        while (index < length) {
+            chr = str.charAt(index++);
+            if (chr === "%") {
+                if (str.charAt(index) === "u") {
+                    part = str.slice(index + 1, index + 5);
+                    if (hex4.exec(part)) {
+                        result += String.fromCharCode(parseInt(part, 16));
+                        index += 5;
+                        continue;
+                    }
+                } else {
+                    part = str.slice(index, index + 2);
+                    if (hex2.exec(part)) {
+                        result += String.fromCharCode(parseInt(part, 16));
+                        index += 2;
+                        continue;
+                    }
+                }
+            }
+            result += chr;
+        }
+        return result;
+    };
+    const watermark = (txt, size) => {
+        const backgroundImageURL = `url("data:image/svg+xml;base64,${btoa(`<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}"><foreignObject width="${size}" height="${size}"><html xmlns="http://www.w3.org/1999/xhtml" style="width: ${size}px; height: ${size}px;"><head></head><body style="width: ${size}px; height: ${size}px; margin: 0px;"><div style="width: 100% !important; height: 100% !important; opacity: .17 !important; font-size: 24px !important; position: relative !important; color: black !important;"><div style="transform: rotate(-15deg) translateX(-50%) translateY(-50%) !important; word-break: break-all !important; top: 36% !important; left: 50% !important; position: absolute !important; width: 100% !important; text-align: center !important;">${unescapeString(encodeURIComponent(txt))}</div></div></body></html></foreignObject></svg>`)}")`;
+        const styleString = `position: fixed !important; z-index: 99999 !important; inset: 0px !important; background-image: ${backgroundImageURL} !important; background-repeat: repeat !important; pointer-events: none !important; display: block !important; visibility: visible !important; width: unset !important; height: unset !important; opacity: unset !important; background-color: unset !important;`;
+        const template = createElement("div");
+        setAttribute.bind(template)("style", styleString);
+        /**
+         * @type { typeof template }
+         */
+        let ele = appendChild(cloneNode.bind(template)(true));
+        let recreateCount = 0;
+        setInterval(() => {
+            const reasons = [];
+            if (!contains(ele)) {
+                reasons.push("not in body");
+            }
+            const nowStyleString = getAttribute.bind(ele)("style");
+            if (nowStyleString !== styleString) {
+                reasons.push(`styleString not match: ${nowStyleString}`);
+            }
+            const style = getComputedStyle(ele);
+            if (style.position !== "fixed") {
+                reasons.push(`position not fixed: ${style.position}`);
+            }
+            if (style.zIndex !== "99999") {
+                reasons.push(`z-index not 99999: ${style.zIndex}`);
+            }
+            if (style.inset !== "0px") {
+                reasons.push(`inset not 0px: ${style.inset}`);
+            }
+            if (style.backgroundImage !== backgroundImageURL) {
+                reasons.push(`background-image not match: ${style.backgroundImage}`);
+            }
+            if (style.backgroundRepeat !== "repeat") {
+                reasons.push(`background-repeat not repeat: ${style.backgroundRepeat}`);
+            }
+            if (style.pointerEvents !== "none") {
+                reasons.push(`pointer-events not none: ${style.pointerEvents}`);
+            }
+            if (style.display !== "block") {
+                reasons.push(`display not block: ${style.display}`);
+            }
+            if (style.visibility !== "visible") {
+                reasons.push(`visibility not visible: ${style.visibility}`);
+            }
+            if (reasons.length > 0) {
+                console.info("[watermark] Recreate watermark:", reasons);
+                try {
+                    ele.remove();
+                } finally {
+                    ele = appendChild(cloneNode.bind(template)(true));
+                    recreateCount++;
+                    if (recreateCount > 20) {
+                        recreateCount = 0;
+                        alert("检测到水印被修改或移除超过20次，可能存在恶意脚本干扰水印显示，请检查浏览器插件或电脑安全状况！");
+                    }
+                }
+            }
+        }, 1000);
+    };
+    /* 获取特定命名空间前缀正则表达式 */
+    const getNamespacePrefixRegex = (namespaceNumber) => RegExp(`^(?:${Object.entries(mw.config.get("wgNamespaceIds")).filter((config) => config[1] === namespaceNumber).map((config) => config[0].toLowerCase()).join("|")}):`, "i");
 
     await $.ready;
 
-    /* 反嵌入反反代 */
-    try {
-        let substHost;
-        try {
-            substHost = top.location.host;
-        } catch {
-            substHost = "";
-        }
-        const currentHostFlag = !/\.moegirl\.org(?:\.cn)?$/i.test(location.host);
-        if (top !== window || currentHostFlag) {
-            /* let reverseProxyhostAlerted = [];
-            if (localStorage.getItem("reverse proxy alerted") !== null) {
-                try {
-                    reverseProxyhostAlerted = JSON.parse(localStorage.getItem("reverse proxy alerted"));
-                    if (!$.isPlainObject(reverseProxyhostAlerted)) {
-                        reverseProxyhostAlerted = {};
-                    }
-                } catch (e) {
-                    reverseProxyhostAlerted = {};
-                }
-            } */
-            const detectedHost = currentHostFlag ? location.host : substHost;
-            /* const now = new Date().getTime();
-            if (!Reflect.has(reverseProxyhostAlerted, detectedHost) || typeof reverseProxyhostAlerted[detectedHost] !== "number" || reverseProxyhostAlerted[detectedHost] < now - 24 * 60 * 60 * 1000) {
-                reverseProxyhostAlerted[detectedHost] = now; */
-            oouiDialog.alert(`<p>您当前是在${currentHostFlag ? "非萌百域名" : "嵌套窗口"}访问，请注意不要在此域名下输入您的用户名或密码，以策安全！</p><p>${detectedHost ? `${currentHostFlag ? "当前" : "顶层窗口"}域名为 <code>${detectedHost}</code>，` : ""}萌百域名是以 <code>.moegirl.org.cn</code> 结尾的。</p>`, {
-                title: "萌娘百科提醒您",
-                size: "medium",
-            });
-            /* }
-            localStorage.setItem("reverse proxy alerted", JSON.stringify(reverseProxyhostAlerted)); */
-        } else if (!location.hostname.endsWith(".moegirl.org.cn")) {
-            $(domainChangedAlert);
-        }
-    } catch (e) {
-        console.debug(e);
-    }
-    // await Promise.all([
-    //     mw.loader.using(["mediawiki.Uri"]),
-    //     $.ready,
-    // ]);
     tabs();
     // 图片地址
     setInterval(() => {
         $(document.querySelectorAll('img[src*="//img.moegirl.org/"]:not(.org-changed), img[src*="//commons.moegirl.org/"]:not(.org-changed)')).each((_, ele) => {
             try {
-                const url = new mw.Uri(ele.src);
-                if (["img.moegirl.org", "commons.moegirl.org"].includes(url.host)) {
-                    url.host += ".cn";
+                const url = new URL(ele.src);
+                if (["img.moegirl.org", "commons.moegirl.org"].includes(url.hostname)) {
+                    url.hostname += ".cn";
                     ele.src = url;
                 }
                 ele.classList.add("org-changed");
@@ -591,9 +594,12 @@
     $window.triggerHandler("hashchange.hashchange");
     // 列表侧边距
     setInterval(listMarginLeft, 200);
+    const mailAtAction = () => {
+        $(".mailSymbol").replaceWith('<span title="Template:Mail@">@</span>');
+    };
     ["copy", "keydown", "scroll", "mousemove"].forEach((type) => {
         document.addEventListener(type, () => {
-            $(".mailSymbol").replaceWith('<span title="Template:Mail@">@</span>');
+            instanceRAF.request(mailAtAction);
         }, {
             capture: true,
             passive: true,
@@ -603,6 +609,14 @@
     if (mw.config.get("wgCanonicalSpecialPageName") === "GadgetUsage") {
         gadgetUsageRemoveDefaultGadgets();
     }
+    // 可视化编辑器需要的脚本
+    mw.hook("ve.activationComplete").add(() => {
+        mw.loader.load("ext.gadget.edit");
+    });
+    $window.triggerHandler("resize");
+    $window.on("load", () => {
+        $window.triggerHandler("resize");
+    });
     // 水印
     const wgCurRevisionId = mw.config.get("wgCurRevisionId") || -1;
     const wgRevisionId = mw.config.get("wgRevisionId") || -1;
@@ -628,12 +642,4 @@
             }
         }
     }
-    // 可视化编辑器需要的脚本
-    mw.hook("ve.activationComplete").add(() => {
-        mw.loader.load("ext.gadget.edit");
-    });
-    $window.triggerHandler("resize");
-    $window.on("load", () => {
-        $window.triggerHandler("resize");
-    });
 })();

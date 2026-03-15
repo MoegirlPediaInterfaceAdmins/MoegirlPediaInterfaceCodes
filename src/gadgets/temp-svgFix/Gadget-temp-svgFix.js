@@ -8,8 +8,8 @@ $(() => {
     for (const img of svgs) {
         try {
             const src = img.src || img.dataset.lazySrc;
-            const url = new mw.Uri(src);
-            if (url.host !== "img.moegirl.org.cn") {
+            const url = new URL(src);
+            if (url.hostname !== "img.moegirl.org.cn") {
                 continue;
             }
             img.src = src.replace("/thumb/", "/").replace(/\.svg\/[^/]+\.svg\.png$/, ".svg");

@@ -1,0 +1,14 @@
+#t-expandtemplates,
+#t-userlog,
+.ns-2 #t-pagelog,
+.ns-3 #t-pagelog,
+.ns--1 #t-pagelog,
+.ns--1 #t-prefixindex {
+    display: none;
+}
+
+.ns-10 #t-expandtemplates,
+.ns-2 #t-userlog,
+.ns-3 #t-userlog {
+    display: list-item !important;
+}

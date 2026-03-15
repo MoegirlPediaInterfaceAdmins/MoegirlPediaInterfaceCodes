@@ -197,7 +197,7 @@ $(() => {
                 })).parse.wikitext["*"];
                 const rawTitle = original.match(/^== *([^=\n]+) *==/m)?.[1] || this.anchor;
                 original = original.replace(/^==.*?==/, "").trim();
-                original = `{{movedfrom|${fromAnchor}}}\n\n${original}`;
+                original = `{{movedfrom|1=${fromAnchor}}}\n\n${original}`;
 
                 // Move to target
                 console.log("[QuickMoveThread] Moving thread to target page");
@@ -219,7 +219,7 @@ $(() => {
                     assertuser: USERNAME,
                     title: PAGENAME,
                     section: this.section,
-                    text: `== ${rawTitle} ==\n{{movedto|${toAnchor}}}`,
+                    text: `== ${rawTitle} ==\n{{movedto|1=${toAnchor}}}`,
                     summary: `/* ${this.anchor} */ 移动讨论串至[[${toAnchor}]] !nobot!`,
                     tags: "Automation tool",
                 });
@@ -241,7 +241,7 @@ $(() => {
             if (!$ele.find(".mw-editsection")[0] || $ele.next(".movedToNotice, .movedFromNotice, .saveNotice")[0]) {
                 return;
             }
-            const section = +new mw.Uri($ele.find('.mw-editsection a[href*="action=edit"][href*="section="]').attr("href")).query.section;
+            const section = +new URL($ele.find('.mw-editsection a[href*="action=edit"][href*="section="]').attr("href"), location.origin).searchParams.get("section");
             const anchor = $(ele).attr("id");
             const button = $("<a>").attr("href", "#").prop("draggable", false).addClass("lr-qmt-link").text(wgULS("移动", "移動")).on("click", (e) => {
                 e.preventDefault();
@@ -255,41 +255,33 @@ $(() => {
             }
         });
     } catch (e) {
-        /* eslint-disable no-var, prefer-arrow-functions/prefer-arrow-functions, prefer-arrow-callback, prefer-template */
-        var parseError = function (errLike, _space/* ? */) {
+        const parseError = (errLike, _space) => {
             let space = _space;
             if (_space === void 0) {
                 space = 4;
             }
-            return JSON.stringify(errLike, function (_, v) {
+            return JSON.stringify(errLike, (_, v) => {
                 if (v instanceof Error) {
-                    var stack = [];
+                    const stack = [];
                     if (v.stack) {
-                        Reflect.apply(stack.push, stack, v.stack.split("\n").map(function (n) {
-                            return n.trim();
-                        }).filter(function (n) {
-                            var _a;
+                        Reflect.apply(stack.push, stack, v.stack.split("\n").map((n) => n.trim()).filter((n) => {
+                            let _a;
                             return ((_a = n === null || n === void 0 ? void 0 : n.length) !== null && _a !== void 0 ? _a : -1) > 0;
                         }));
                     }
-                    var keys = Object.keys(v).filter(function (key) {
-                        return !Reflect.has(Error.prototype, key);
-                    });
+                    const keys = Object.keys(v).filter((key) => !Reflect.has(Error.prototype, key));
                     if (keys.length) {
-                        stack.push(JSON.stringify(Object.fromEntries(keys.map(function (key) {
-                            return [key, v[key]];
-                        })), null, space));
+                        stack.push(JSON.stringify(Object.fromEntries(keys.map((key) => [key, v[key]])), null, space));
                     }
                     return stack.join("\n").trim() || "";
                 }
                 return v;
             }, space).replace(/^"(.*)"$/, "$1");
         };
-        oouiDialog.alert("错误信息：<br>" + oouiDialog.sanitize(parseError(e)), {
+        oouiDialog.alert(`错误信息：<br>${oouiDialog.sanitize(parseError(e))}`, {
             title: "快速移动工具发生错误",
         });
         console.error("[QuickMoveThread] Setup error:", e);
-        /* eslint-enable */
     }
 });
 // </pre>

@@ -151,8 +151,8 @@
     const wgRevisionId = mw.config.get("wgRevisionId");
     const wgUserName = mw.config.get("wgUserName");
     const noticeHTML = {
-        loading: `<div class="mw-_addText-preview-loading"><div class="quotebox" style="margin: auto; width: 50%; padding: 6px; border: 1px solid #aaa; font-size: 88%; background-color: #F9F9F9;"><div class="mw-_addText-preview-loading-content" style="background-color: #F9F9F9; color: black; text-align: center; font-size: larger;"><img src="https://img.moegirl.org.cn/common/d/d1/Windows_10_loading.gif" decoding="async" data-file-width="64" data-file-height="64" style="width: 32px; height: 32px;"> ${wgULS("预览加载中...", "預覽載入中...")} </div></div></div>`,
-        fail: `<img src="https://img.moegirl.org.cn/common/5/5f/Ambox_warning_orange.svg" decoding="async" data-file-width="48" data-file-height="48" width="32" height="32">${wgULS("预览加载失败", "預覽載入失敗")}`,
+        loading: `<div class="mw-_addText-preview-loading"><div class="quotebox" style="margin: auto; width: 50%; padding: 6px; border: 1px solid #aaa; font-size: 88%; background-color: #F9F9F9;"><div class="mw-_addText-preview-loading-content" style="background-color: #F9F9F9; color: black; text-align: center; font-size: larger;"><img src="https://storage.moegirl.org.cn/moegirl/commons/d/d1/Windows_10_loading.gif" decoding="async" data-file-width="64" data-file-height="64" style="width: 32px; height: 32px;"> ${wgULS("预览加载中...", "預覽載入中...")} </div></div></div>`,
+        fail: `<img src="https://storage.moegirl.org.cn/moegirl/commons/5/5f/Ambox_warning_orange.svg" decoding="async" data-file-width="48" data-file-height="48" width="32" height="32">${wgULS("预览加载失败", "預覽載入失敗")}`,
     };
     const mwConfigIfMatchInLowerCase = (key, preferValues) => {
         const data = getCleanText(mw.config.get(key)).toLowerCase();

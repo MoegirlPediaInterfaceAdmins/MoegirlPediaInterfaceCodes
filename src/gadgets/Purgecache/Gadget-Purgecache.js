@@ -27,7 +27,7 @@ $(() => {
                 return;
             }
             $statusNode.text(purgingText);
-            $statusNode.prepend('<img src="https://img.moegirl.org.cn/common/d/d1/Windows_10_loading.gif" style="height: 1em; margin-top: -.25em;">');
+            $statusNode.prepend('<img src="https://storage.moegirl.org.cn/moegirl/commons/d/d1/Windows_10_loading.gif" style="height: 1em; margin-top: -.25em;">');
             runningStatus = true;
             const api = new mw.Api(),
                 opt = {

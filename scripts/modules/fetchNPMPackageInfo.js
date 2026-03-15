@@ -1,6 +1,6 @@
+import { endGroup, startGroup } from "@actions/core";
 import console from "../modules/console.js";
 import exec from "../modules/exec.js";
-import { startGroup, endGroup } from "@actions/core";
 
 const registryBaseUrl = (await exec("npm config get registry --global")).trim();
 console.info("npm config get registry --global:", registryBaseUrl);
@@ -17,6 +17,9 @@ const fetchNPMPackageInfo = async (pkg) => {
         const packageInfoResponse = await fetch(registryUrl, {
             method: "GET",
         });
+        if (!packageInfoResponse.ok) {
+            throw new Error(`[fetchNPMPackageVersion] [${pkg}] Failed to fetch package info: ${packageInfoResponse.status} ${packageInfoResponse.statusText}`, { cause: await packageInfoResponse.text() });
+        }
         packageInfo = await packageInfoResponse.json();
         console.info("[fetchNPMPackageVersion]", `[${pkg}]`, "Successfully get the package info, and wrote in cache.");
         cachedPackageInfo.set(pkg, packageInfo);

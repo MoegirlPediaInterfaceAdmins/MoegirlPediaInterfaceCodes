@@ -1,9 +1,9 @@
+import { endGroup, startGroup } from "@actions/core";
 import console from "../modules/console.js";
-import { startGroup, endGroup } from "@actions/core";
-import { isInMasterBranch, isInGithubActions, workflowLink } from "../modules/octokit.js";
-import readWorkflowEvent from "../modules/workflowEvent.js";
 import generateHMACSignature from "../modules/generateHMACSignature.js";
 import git from "../modules/git.js";
+import { isInGithubActions, isInMasterBranch, workflowLink } from "../modules/octokit.js";
+import readWorkflowEvent from "../modules/workflowEvent.js";
 if (!isInGithubActions) {
     console.info("Not running in github actions, exit.");
     process.exit(0);
@@ -59,14 +59,18 @@ const body = Buffer.from(JSON.stringify(data), "utf-8");
 for (let retryTime = 0; retryTime < 10; retryTime++) {
     console.info(`Attempt #${retryTime} running...`);
     try {
-        const result = await (await fetch("https://webhook.annangela.cn/custom?from=MoegirlPediaInterfaceCodes", {
+        const response = await fetch("https://webhook.annangela.cn/custom?from=MoegirlPediaInterfaceCodes", {
             headers: {
                 "Content-Type": "application/json",
                 "x-signature": generateHMACSignature(process.env.ANN_SERVER_SECRET_API_KEY, body),
             },
             method: "POST",
             body,
-        })).json();
+        });
+        if (!response.ok) {
+            throw new Error(`Failed to fire webhook: ${response.status} ${response.statusText}`, { cause: await response.text() });
+        }
+        const result = await response.json();
         console.info(`Attempt #${retryTime} success, result:`, result);
         console.info("Done.");
         process.exit(0);

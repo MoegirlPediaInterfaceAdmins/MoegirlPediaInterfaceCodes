@@ -1,14 +1,14 @@
-import console from "../modules/console.js";
-console.info("Initialization done.");
+import { endGroup, startGroup, warning } from "@actions/core";
 import fs from "node:fs";
 import path from "node:path";
-import { warning, startGroup, endGroup } from "@actions/core";
+import console from "../modules/console.js";
 import createCommit from "../modules/createCommit.js";
 import yamlModule from "../modules/yamlModule.js";
+console.info("Initialization done.");
 
 const foldersForCodeQL = new Set();
 const scriptsExcludedFromCodeQL = [
-    "generateCommitsHistory"
+    "generateCommitsHistory",
 ];
 
 const gitattributesPath = ".gitattributes";
@@ -37,7 +37,7 @@ for (const [index, stringValue] of Object.entries(process.env)) {
     console.info(`${key}:`, value);
     newGitattributes.push(`# From ${key}`);
     for (const srcPath of value) {
-        if (!scriptsExcludedFromCodeQL.includes(key)){
+        if (!scriptsExcludedFromCodeQL.includes(key)) {
             foldersForCodeQL.add(path.dirname(srcPath));
         }
         newGitattributes.push(`${srcPath} linguist-generated=true`);
@@ -84,7 +84,7 @@ startGroup("old `paths-ignore`:");
 console.info(codeQLConfigPathsIgnore);
 endGroup();
 for (const folder of foldersForCodeQL) {
-    if(!codeQLConfigPathsIgnore.includes(folder)) {
+    if (!codeQLConfigPathsIgnore.includes(folder)) {
         codeQLConfigPathsIgnore.push(folder);
     }
 }

@@ -19,8 +19,12 @@ $(() => {
     };
     const loop = (_, ele) => {
         const self = $(ele);
+        if (self.data("href")) {
+            return;
+        }
         self.data("href", self.attr("href")).removeAttr("href") // 取消拖动链接回退
-            .attr("title", `${ele.title}（启用自定义摘要）`).css("cursor", "pointer").append("<sup>+</sup>");
+            .attr("title", `${ele.title}（启用自定义摘要）`).css("cursor", "pointer").append("<sup>+</sup>")
+            .find("sup").on("click", (e) => e.stopPropagation());
         if ($(".ns-special")[0] && self.text().includes("10")) {
             self.parent().text(wgULS("[超过10次的编辑]", "[超過10次的編輯]")).attr("title", "超过10次的编辑请使用撤销功能，以便检查差异（自定义摘要小工具）");
         }
@@ -42,7 +46,7 @@ $(() => {
     const api = new mw.Api();
     $(document.body).on("click", async (event) => {
         const target = event.target;
-        if (!$(target).is(".mw-rollback-link a")) {
+        if (!$(target).is(".mw-rollback-link a") || $(target).closest(".jquery-confirmable-button-no")[0]) {
             return true;
         }
         const self = $(target);
@@ -62,8 +66,8 @@ $(() => {
             required: false,
         });
         if (rollbackSummary !== null) {
-            const uri = new mw.Uri(self.data("href"));
-            self.replaceWith(`<span id="rbing"><img src="https://img.moegirl.org.cn/common/d/d1/Windows_10_loading.gif" style="height: 1em; margin-top: -.25em;">${wgULS("正在回退中", "正在還原")}……</span>`);
+            const url = new URL(self.data("href"), location.origin);
+            self.replaceWith(`<span id="rbing"><img src="https://storage.moegirl.org.cn/moegirl/commons/d/d1/Windows_10_loading.gif" style="height: 1em; margin-top: -.25em;">${wgULS("正在回退中", "正在還原")}……</span>`);
             const rbing = $("#rbing");
             $(".mw-rollback-link a").not(rbing).css({
                 color: "#aaa",
@@ -71,15 +75,15 @@ $(() => {
             });
             mw.config.set("wgRollbacking", true);
             const summary = rollbackSummary ? `${rollbackSummary} //Rollback` : "//Rollback";
-            if (uri.query.from) {
+            if (url.searchParams.has("from")) {
                 try {
                     await api.post({
                         action: "rollback",
                         assertuser: mw.config.get("wgUserName"),
-                        title: uri.query.title,
-                        user: uri.query.from,
+                        title: url.searchParams.get("title"),
+                        user: url.searchParams.get("from"),
                         summary,
-                        token: uri.query.token,
+                        token: url.searchParams.get("token"),
                         format: "json",
                     });
                     rbing.css("color", "green").html(`成功！${wgULS("将在", "將在")}<span id="rbcount">3</span>秒${wgULS("内刷新", "內重新整理")}`);
@@ -90,12 +94,27 @@ $(() => {
                     exit();
                 }
             } else {
-                uri.query.summary = summary;
-                window.open(uri.toString(), "_self");
+                url.searchParams.set("summary", summary);
+                window.open(url, "_self");
             }
         }
         return false;
     });
-    new Image().src = "https://img.moegirl.org.cn/common/d/d1/Windows_10_loading.gif";
+    new Image().src = "https://storage.moegirl.org.cn/moegirl/commons/d/d1/Windows_10_loading.gif";
+    const changesList = document.querySelector(".mw-changeslist");
+    if (changesList) {
+        const observer = new MutationObserver((mutations) => {
+            mutations.forEach((mutation) => {
+                mutation.addedNodes.forEach((node) => {
+                    if (node.nodeType !== 1) {
+                        return;
+                    }
+                    const $rollbackLinks = $(node).find(".mw-rollback-link a:not([data-href])").addBack(".mw-rollback-link a:not([data-href])");
+                    $rollbackLinks.each(loop);
+                });
+            });
+        });
+        observer.observe(changesList, { childList: true });
+    }
 });
 // </pre>

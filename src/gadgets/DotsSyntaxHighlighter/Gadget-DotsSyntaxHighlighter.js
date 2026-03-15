@@ -19,6 +19,9 @@
 
 "use strict";
 (() => {
+    if (mw.user.options.get("usecodemirror")) {
+        return;
+    }
     let wpTextbox0;
     let wpTextbox1;
     let syntaxStyleTextNode;

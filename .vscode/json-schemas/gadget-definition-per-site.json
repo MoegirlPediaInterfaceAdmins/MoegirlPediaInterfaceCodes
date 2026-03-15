@@ -1,0 +1,90 @@
+{
+    "$id": "gadget-definition-per-site.json",
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "title": "小工具定义 - 站点设置",
+    "additionalProperties": false,
+    "required": [],
+    "properties": {
+        "ResourceLoader": {
+            "$ref": "./gadget-definition.json#/properties/ResourceLoader"
+        },
+        "hidden": {
+            "$ref": "./gadget-definition.json#/properties/hidden"
+        },
+        "default": {
+            "$ref": "./gadget-definition.json#/properties/default"
+        },
+        "supportsUrlLoad": {
+            "$ref": "./gadget-definition.json#/properties/supportsUrlLoad"
+        },
+        "skins": {
+            "$ref": "./gadget-definition.json#/properties/skins"
+        },
+        "actions": {
+            "$ref": "./gadget-definition.json#/properties/actions"
+        },
+        "categories": {
+            "$ref": "./gadget-definition.json#/properties/categories"
+        },
+        "namespaces": {
+            "$ref": "./gadget-definition.json#/properties/namespaces"
+        },
+        "contentModels": {
+            "$ref": "./gadget-definition.json#/properties/contentModels"
+        },
+        "type": {
+            "$ref": "./gadget-definition.json#/properties/type"
+        },
+        "package": {
+            "$ref": "./gadget-definition.json#/properties/package"
+        },
+        "rights": {
+            "$ref": "./gadget-definition.json#/properties/rights"
+        },
+        "peers": {
+            "$ref": "./gadget-definition.json#/properties/peers"
+        },
+        "dependencies": {
+            "$ref": "./gadget-definition.json#/properties/dependencies"
+        }
+    },
+    "default": {
+        "ResourceLoader": true,
+        "hidden": false,
+        "default": false,
+        "supportsUrlLoad": false,
+        "targets": [],
+        "skins": [],
+        "actions": [],
+        "type": "general",
+        "package": false,
+        "rights": [],
+        "peers": [],
+        "dependencies": []
+    },
+    "examples": [
+        {
+            "ResourceLoader": true,
+            "hidden": false,
+            "default": true,
+            "supportsUrlLoad": false,
+            "targets": [],
+            "skins": [],
+            "actions": [],
+            "type": "general",
+            "package": false,
+            "rights": [
+                "block",
+                "noratelimit"
+            ],
+            "peers": [],
+            "dependencies": [
+                "mediawiki.api",
+                "mediawiki.ForeignApi",
+                "moment",
+                "mediawiki.user"
+            ]
+        }
+    ]
+}

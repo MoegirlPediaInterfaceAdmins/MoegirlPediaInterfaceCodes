@@ -15,6 +15,7 @@
         "src",
         "scripts",
         "node_modules/types-mediawiki",
+        "node_modules/moment/moment.d.ts",
     ],
     "exclude": [
         "dist",

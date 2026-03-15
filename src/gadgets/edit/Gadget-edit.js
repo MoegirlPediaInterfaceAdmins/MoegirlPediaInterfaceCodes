@@ -14,10 +14,10 @@ $(() => {
         if (!isInitSummary) {
             $("div.ve-ui-mwSaveDialog-summaryLabel span.mw-summary-preset-item > a")
                 .removeAttr("target")
-                .on("click", function (e) {
+                .on("click", (e) => {
                     e.preventDefault();
                     const summaryBox = $("div.ve-ui-mwSaveDialog-summary > textarea");
-                    summaryBox.val(`${summaryBox.val()} ${$(this).text()}`.trim());
+                    summaryBox.val(`${summaryBox.val()} ${$(e.currentTarget).text()}`.trim());
                     summaryBox.on("focus");
                 });
             isInitSummary = true;
@@ -27,9 +27,9 @@ $(() => {
         isInitSummary = false;
     });
     // 2010版wikitext编辑器
-    $('[for="wpSummary"] .mw-summary-preset-item a').on("click", function () {
+    $('[for="wpSummary"] .mw-summary-preset-item a').on("click", (e) => {
         const summaryBox = $('[name="wpSummary"]');
-        summaryBox.val(`${summaryBox.val()} ${$(this).text()}`.trim());
+        summaryBox.val(`${summaryBox.val()} ${$(e.currentTarget).text()}`.trim());
         summaryBox.on("focus");
         return false;
     });

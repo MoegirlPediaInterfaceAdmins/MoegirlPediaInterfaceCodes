@@ -364,8 +364,8 @@ a.extiw:visited:hover span.heimu {
 }
 
 /* 黑幕 暗色模式 */
-[color-mode="dark"] .heimu,
-[color-mode="dark"] .heimu rt {
+html.dark .heimu,
+html.dark .heimu rt {
     --heimu-color: #5e6272;
 }
 
@@ -397,7 +397,7 @@ s.just-kidding-text {
 
 .infoBoxText {
     display: table-cell;
-    padding: 0.25em 0.5em 0.25em 1.3em;
+    padding: .25em .5em .25em 1.3em;
     width: 100%;
     vertical-align: middle;
 }
@@ -409,7 +409,7 @@ s.just-kidding-text {
 }
 
 html.skin-theme-clientpref-night .infoBoxContent,
-[color-mode="dark"] .infoBoxContent {
+html.dark .infoBoxContent {
     border-color: #3e4452;
     background: #23272e;
 }
@@ -418,6 +418,14 @@ html.skin-theme-clientpref-night .infoBoxContent,
     margin: 0 auto;
     padding: 0;
     text-align: center;
+}
+
+.ve-ui-mwNoticesPopupTool-items .infoBox .infoBoxIcon {
+    display: none;
+}
+
+.ve-ui-mwNoticesPopupTool-items .infoBox .infoBoxText {
+    padding: .25em .5em .25em .75em;
 }
 
 /* wikitable green */
@@ -431,6 +439,11 @@ table.wikitable-green {
 
 .wikitable-green td {
     background: #f3f3f3;
+}
+
+/* 隐藏只供登录用户查看的内容 */
+.user-show {
+    display: none !important;
 }
 
 /* 隐藏只供维护人员查看的内容 */
@@ -855,7 +868,7 @@ div.metadata-panel-is-closed .mw-mmv-image-links li.mw-mmv-license-li {
 
 /* 导航条（完全没有apple风格的apple风面包屑orz） 来源:http://www.jankoatwarpspeed.com/examples/breadcrumb/ */
 #breadcrumb {
-    background-image: url("//img.moegirl.org.cn/breadcrumb/bc_bg.png");
+    background-image: url("//storage.moegirl.org.cn/moegirl/breadcrumb/bc_bg.png");
     color: red;
     border: solid 1px #cacaca;
     border-radius: 10px;
@@ -869,7 +882,7 @@ div.metadata-panel-is-closed .mw-mmv-image-links li.mw-mmv-license-li {
 
 #breadcrumb a {
     display: block;
-    background: url("//img.moegirl.org.cn/breadcrumb/bc_separator.png") no-repeat right;
+    background: url("//storage.moegirl.org.cn/moegirl/breadcrumb/bc_separator.png") no-repeat right;
     padding-right: 15px;
     color: #454545;
 }
@@ -1070,6 +1083,7 @@ body.ns-2 div#catlinks {
 
 /* 适用于屏幕像素宽度大于800px的设备 */
 @media (width >=800px) {
+
     /* .container {
         width: 80%;
     } */
@@ -1421,34 +1435,43 @@ body.overlay-scrollbars #bodyContent {
 }
 
 /* TODO: 暗色模式 暂时降低暗度处理 */
-[color-mode="dark"] :is(.infobox, .infobox2, .moe-infobox, .infotemplatebox, .infoboxSpecial, .ztdh, #powersearch, #topicpath) {
+html.dark :is(.infobox, .infobox2, .moe-infobox, .infotemplatebox, .infoboxSpecial, .ztdh, #powersearch, #topicpath) {
     color: #222;
     filter: brightness(0.75);
 }
 
-[color-mode="dark"] :is(.infobox, .infobox2, .moe-infobox, .infotemplatebox, .infoboxSpecial, .ztdh, #powersearch) a:not(.new) {
+html.dark :is(.infobox, .infobox2, .moe-infobox, .infotemplatebox, .infoboxSpecial, .ztdh, #powersearch) a:not(.new) {
     --color: #155d33;
 }
 
-[color-mode="dark"] input[type="text"] {
+html.dark input[type="text"] {
     color: var(--theme-text-color);
 }
 
-[color-mode="dark"] :is(.navbox):not(.dark-theme-invert-disabled) {
+html.dark :is(.navbox):not(.dark-theme-invert-disabled) {
     --theme-link-color: rgb(51 102 187);
 
     color: rgb(44 62 80);
     filter: brightness(0.75);
 }
 
-[color-mode="dark"] .mw-datatable,
-[color-mode="dark"] .mw-json,
-[color-mode="dark"] table.wikitable {
+html.dark .mw-datatable,
+html.dark .mw-json,
+html.dark table.wikitable {
     background-color: var(--theme-background-color);
     color: var(--theme-text-color);
 }
 
 /* 隐藏不存在的用户创建日志 */
 body.mw-special-Log .mw-htmlform-flatlist > .oo-ui-fieldLayout:nth-child(4) {
+    display: none;
+}
+
+.mw-body-content .mw-editsection .mw-editsection-divider {
+    display: revert;
+}
+
+/* T:注解 */
+.annotation > .annotation-content {
     display: none;
 }

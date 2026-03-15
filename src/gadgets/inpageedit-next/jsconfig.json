@@ -1,0 +1,16 @@
+{
+    "include": ["*.js", "*.d.ts"],
+    "compilerOptions": {
+        "baseUrl": "./",
+        "target": "ES6",
+        "module": "ESNext",
+        "moduleResolution": "Node",
+        "lib": ["ES6", "DOM", "DOM.Iterable"],
+        "allowJs": true,
+        "checkJs": true,
+        "noEmit": true,
+        "skipLibCheck": true,
+        "types": ["@inpageedit/core", "types-mediawiki"],
+        "paths": {}
+    }
+}

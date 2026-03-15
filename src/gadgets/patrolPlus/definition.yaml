@@ -27,7 +27,6 @@ peers: []
 
 dependencies:
   - mediawiki.api
-  - mediawiki.Uri
 
 _sites:
   - zh

@@ -1,14 +1,15 @@
 "use strict";
 // <pre>
 $(() => {
+    const instanceRAF = new libRequestAnimationFrame.LibRequestAnimationFrame();
     const container = $("#mw-content-text");
+    let scrollTop = 0;
     const getScrollTop = () => {
         const headings = $("#mw-content-text .mw-parser-output > :is(h1, h2)");
-        return (headings.length >= 3 ? headings.last().offset().top : container.offset().top + container.outerHeight()) - 20;
+        scrollTop = (headings.length >= 3 ? headings.last().offset().top : container.offset().top + container.outerHeight()) - 20;
     };
-    let scrollTop = getScrollTop();
     setInterval(() => {
-        scrollTop = getScrollTop();
+        instanceRAF.request(getScrollTop);
     }, 7130);
     /**
      * @type {JQuery<HTMLElement>}
@@ -26,10 +27,13 @@ $(() => {
         }, 130);
     });
     const $document = $(document);
-    $(window).on("resize", () => {
-        scrollTop = getScrollTop();
-    }).on("scroll", () => {
+    const action = () => {
         btn.css("opacity", $document.scrollTop() < scrollTop ? ".6" : "0");
+    };
+    $(window).on("resize", () => {
+        instanceRAF.request(getScrollTop);
+    }).trigger("resize").on("scroll", () => {
+        instanceRAF.request(action);
     }).trigger("scroll");
 });
 // </pre>

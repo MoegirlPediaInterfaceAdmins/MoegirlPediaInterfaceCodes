@@ -28,7 +28,7 @@ dependencies:
   - ext.gadget.libOOUIDialog
   - user
   - mediawiki.api
-  - mediawiki.Uri
+  - ext.gadget.libRequestAnimationFrame
 
 _sites:
   - zh

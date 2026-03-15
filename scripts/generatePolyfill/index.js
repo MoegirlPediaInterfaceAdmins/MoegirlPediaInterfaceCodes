@@ -1,4 +1,5 @@
 import { endGroup, startGroup } from "@actions/core";
+import browserslist from "browserslist";
 import fs from "node:fs";
 import path from "node:path";
 import semver from "semver";
@@ -8,16 +9,31 @@ import jsonModule from "../modules/jsonModule.js";
 import yamlModule from "../modules/yamlModule.js";
 console.info("Initialization done.");
 
-const polyfillGadgetDefinitionPath = "src/gadgets/libPolyfill/definition.yaml";
+const polyfillGadgetPath = "src/gadgets/libPolyfill/";
+const polyfillGadgetDefinitionPath = path.join(polyfillGadgetPath, "definition.yaml");
 const polyfillGadgetDefinition = await yamlModule.readFile(polyfillGadgetDefinitionPath);
-const getPolyfillGadgetFiles = async () => (await fs.promises.readdir("src/gadgets/libPolyfill/")).filter((file) => path.extname(file) === ".js");
+const getPolyfillGadgetFiles = async () => (await fs.promises.readdir(polyfillGadgetPath)).filter((file) => path.extname(file) === ".js");
 
 /**
- * @type { { TARGET_CHROMIUM_VERSION: string | number, TARGET_ALIASES: string[] } }
+ * @type { { TARGET_ALIASES: string[] } }
  */
-const { TARGET_CHROMIUM_VERSION, TARGET_ALIASES } = await yamlModule.readFile("./scripts/generatePolyfill/config.yaml");
+const { TARGET_ALIASES } = await yamlModule.readFile("./scripts/generatePolyfill/config.yaml");
 
-const TARGET_VERSION = `${TARGET_CHROMIUM_VERSION}.0.0`;
+const browserslistQuery = browserslist.loadConfig({ path: process.cwd() }) || "defaults";
+const targetBrowsers = browserslist();
+const browserMinVersions = {};
+for (const entry of targetBrowsers) {
+    const spaceIndex = entry.indexOf(" ");
+    const name = entry.slice(0, spaceIndex);
+    const versionStr = entry.slice(spaceIndex + 1).split("-")[0];
+    const version = semver.coerce(versionStr);
+    if (!version) {
+        continue;
+    }
+    if (!browserMinVersions[name] || semver.lt(version, browserMinVersions[name])) {
+        browserMinVersions[name] = version;
+    }
+}
 const { POLYFILL_PATH } = process.env;
 
 if (!POLYFILL_PATH) {
@@ -25,9 +41,8 @@ if (!POLYFILL_PATH) {
 }
 
 startGroup("Config:");
-console.info("TARGET_CHROMIUM_VERSION:", TARGET_CHROMIUM_VERSION);
 console.info("TARGET_ALIASES:", TARGET_ALIASES);
-console.info("TARGET_VERSION:", TARGET_VERSION);
+console.info("TARGET_BROWSERS:", Object.fromEntries(Object.entries(browserMinVersions).map(([k, v]) => [k, v.version])));
 console.info("POLYFILL_PATH:", POLYFILL_PATH);
 endGroup();
 
@@ -37,23 +52,14 @@ const customPolyfillMainJSONPath = "./scripts/generatePolyfill/customPolyfill/ma
 const polyfillLibraryPath = path.join(POLYFILL_PATH, "library");
 const customPolyfillLibraryPath = "./scripts/generatePolyfill/customPolyfill/library";
 
-console.info("Start to delete old polyfill files:");
-for (const file of polyfillGadgetFiles) {
-    if (file.startsWith("Gadget-libPolyfill-")) {
-        continue;
-    }
-    console.info("\tDeleteting", file);
-    await fs.promises.rm(path.join("src/gadgets/libPolyfill/", file), {
-        force: true,
-        recursive: true,
-    });
-    console.info("\tDeleteting", file, "done.");
-}
 console.info("Start to read polyfill JSON...");
 const polyfillMainJSONArray = [
     ...Object.entries(await jsonModule.readFile(polyfillMainJSONPath)).map(([id, v]) => ({
         id,
         ...JSON.parse(v),
+    })).map(({ baseDir, ...v }) => ({
+        ...v,
+        baseDir: baseDir.replaceAll("/", "."), // Some polyfill entries use "baseDir" with "/" as separator, but the actual directory uses "." as separator. Replace it here for later use.
     })),
     ...Object.entries(await jsonModule.readFile(customPolyfillMainJSONPath)).map(([id, v]) => ({
         id,
@@ -68,8 +74,30 @@ const polyfillMainJSON = Object.fromEntries(polyfillMainJSONArray.map((v) => [v.
 console.info("Get", polyfillMainJSONArray.length, "polyfill entries.");
 const polyfillList = polyfillMainJSONArray.filter(({ aliases }) => Array.isArray(aliases) && TARGET_ALIASES.some((targetAliases) => aliases.includes(targetAliases)));
 console.info("Get", polyfillList.length, "polyfill entries with aliases.");
-const polyfillListAllowed = polyfillList.filter(({ browsers }) => browsers?.chrome && semver.satisfies(TARGET_VERSION, browsers?.chrome));
+const polyfillListAllowed = polyfillList.filter(({ browsers: polyfillBrowsers }) => {
+    if (!polyfillBrowsers) {
+        return false;
+    }
+    return Object.entries(browserMinVersions).some(([browser, minVersion]) => {
+        const range = polyfillBrowsers[browser];
+        return range && semver.satisfies(minVersion, range);
+    });
+});
 console.info("Get", polyfillListAllowed.length, "polyfill entries with aliases and target browsers.");
+
+const polyfillListAllowedFileNames = new Set(polyfillListAllowed.map(({ id }) => `Gadget-libPolyfill-${id}.js`));
+console.info("Start to delete stale polyfill files:");
+for (const file of polyfillGadgetFiles) {
+    if (polyfillListAllowedFileNames.has(file)) {
+        continue;
+    }
+    console.info("\tDeleting", file);
+    await fs.promises.rm(path.join(polyfillGadgetPath, file), {
+        force: true,
+        recursive: true,
+    });
+    console.info("\tDeleting", file, "done.");
+}
 
 const readPolyfillRawJS = async (dir) => {
     const rawJSPath = path.join(dir, "raw.js");
@@ -141,14 +169,14 @@ for (const polyfill of polyfillListAllowed) {
         " * Options:",
         ` *     polyfillFeature: ${polyfill.id}`,
         ` *     polyfillAliases: ${Array.isArray(polyfill.aliases) ? polyfill.aliases.join(", ") : null}`,
-        ` *     targetChromiumVersion: ${TARGET_VERSION}`,
-        ` *     polyfillVersionRange: ${polyfill.browsers?.chrome ? `${semver.validRange(polyfill.browsers.chrome)} (${polyfill.browsers.chrome})` : null}`,
+        ` *     browserslist: ${browserslistQuery.join(", ")}`,
+        ` *     polyfillBrowsers: ${polyfill.browsers ? Object.entries(polyfill.browsers).map(([b, r]) => `${b}: ${r}`).join(", ") : null}`,
         " */",
         "(() => {",
         ...await getPolyfillContent(polyfill),
         "})();",
     ];
-    const gadgetFilePath = path.join("src/gadgets/libPolyfill/", `Gadget-libPolyfill-${polyfill.id}.js`);
+    const gadgetFilePath = path.join(polyfillGadgetPath, `Gadget-libPolyfill-${polyfill.id}.js`);
     console.info("Start to write polyfill file:", polyfill.id, "@", gadgetFilePath);
     await fs.promises.writeFile(gadgetFilePath, content.join("\n"));
     console.info("Done.");

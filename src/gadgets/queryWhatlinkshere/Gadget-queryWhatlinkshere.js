@@ -119,7 +119,8 @@ $(() => (async () => {
             2303: { count: 0, redirect: 0 },
         };
         const global = { redirect: 0 };
-        whatlinkshere.text(`共有${list.length}个页面含有到本页面的站内链接（不考虑嵌入），其中有${list.filter((item) => Reflect.has(item, "redirect")).length}个重定向页面。`);
+        const redirectCount = list.filter((item) => Reflect.has(item, "redirect")).length;
+        whatlinkshere.text(`共有${list.length}个页面含有到本页面的站内链接（不考虑嵌入）${redirectCount > 0 ? `，其中有${redirectCount}个重定向页面。` : "。"}`);
         if (list.length > 0) {
             whatlinkshere.append("按命名空间划分如下：");
         }
@@ -131,7 +132,7 @@ $(() => (async () => {
                 global.redirect++;
             }
         });
-        Object.entries(nslist).filter(([, { count }]) => count > 0).sort(([a], [b]) => a - b).forEach(([nsnumber, { count, redirect }]) => ul.append(`<li>${upperFirstCase(nsids[nsnumber])}：${count}个页面（其中有${redirect}个重定向页面）`));
+        Object.entries(nslist).filter(([, { count }]) => count > 0).sort(([a], [b]) => a - b).forEach(([nsnumber, { count, redirect }]) => ul.append(`<li>${upperFirstCase(nsids[nsnumber])}：${count}个页面${redirect > 0 ? `（其中有${redirect}个重定向页面）` : ""}`));
         whatlinkshere.after(ul);
     });
     queryWhatembeddedin.on("click", async () => {

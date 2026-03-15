@@ -26,6 +26,7 @@ rights:
 peers: []
 
 dependencies:
+  - mediawiki.base
   - mediawiki.api
   - mediawiki.notification
   - ext.gadget.libCachedCode

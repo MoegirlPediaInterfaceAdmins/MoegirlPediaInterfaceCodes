@@ -38,6 +38,7 @@ package: false
 
 rights:
   - autoconfirmed
+  - disabled
 
 peers: []
 

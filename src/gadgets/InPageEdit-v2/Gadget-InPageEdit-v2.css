@@ -13,10 +13,6 @@
     display: none;
 }
 
-.noprint.plainlinks.hlist.navbar.nomobile {
-    width: 140px !important;
-}
-
 /* [[Special:Interwiki]] */
 .mw-interwikitable-modify .in-page-edit-article-link-group {
     display: none;

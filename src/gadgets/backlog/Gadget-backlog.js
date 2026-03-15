@@ -335,38 +335,45 @@ $(() => (async () => {
             domain: "library.moegirl.org.cn",
             cmtitle: "Category:即将删除的页面",
         }].map(async ({ domain, cmtitle }) => {
-            const api2 = domain === "zh.moegirl.org.cn" ? api : new mw.ForeignApi(`https://${domain}/api.php`, { anonymous: true });
-            let count = 0;
-            const eol = Symbol();
-            let cmcontinue = undefined;
-            const f = async () => await api2.get({
-                action: "query",
-                assertuser: wgUserName,
-                format: "json",
-                list: "categorymembers",
-                cmtitle,
-                cmprop: "ids",
-                cmtype: "page|subcat|file",
-                cmlimit: "max",
-                cmcontinue,
-            });
-            while (cmcontinue !== eol) {
-                const _result = await autoRetryAsyncFunction(f);
-                if (_result.query) {
-                    if (_result.continue) {
-                        // eslint-disable-next-line require-atomic-updates
-                        cmcontinue = _result.continue.cmcontinue;
+            try {
+                const api2 = domain === "zh.moegirl.org.cn" ? api : new mw.ForeignApi(`https://${domain}/api.php`);
+                let count = 0;
+                const eol = Symbol();
+                let cmcontinue = undefined;
+                const f = async () => await api2.get({
+                    action: "query",
+                    assertuser: wgUserName,
+                    format: "json",
+                    list: "categorymembers",
+                    cmtitle,
+                    cmprop: "ids",
+                    cmtype: "page|subcat|file",
+                    cmlimit: "max",
+                    cmcontinue,
+                });
+                while (cmcontinue !== eol) {
+                    const _result = await autoRetryAsyncFunction(f);
+                    if (_result && _result.query) {
+                        if (_result.continue) {
+                            // eslint-disable-next-line require-atomic-updates
+                            cmcontinue = _result.continue.cmcontinue;
+                        } else {
+                            // eslint-disable-next-line require-atomic-updates
+                            cmcontinue = eol;
+                        }
+                        count += _result.query.categorymembers.length;
                     } else {
+                        console.info(domain, cmtitle, _result);
+                        count = -1;
                         // eslint-disable-next-line require-atomic-updates
                         cmcontinue = eol;
                     }
-                    count += _result.query.categorymembers.length;
-                } else {
-                    console.info(domain, cmtitle, _result);
-                    count = -1;
                 }
+                return { domain, cmtitle, count };
+            } catch (error) {
+                console.error(`Failed to fetch data from ${domain}:`, error);
+                return { domain, cmtitle, count: -1 };
             }
-            return { domain, cmtitle, count };
         }));
         result.sort(({ domain: d1 }, { domain: d2 }) => sortIndex.indexOf(d1) - sortIndex.indexOf(d2));
         container.append("<hr>");
