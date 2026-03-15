@@ -161,3 +161,4 @@
     - libDiscussionUtil
     - libRequestAnimationFrame
     - libLoadMessagesWithCache
+    - libStandardMessages

@@ -1,6 +1,6 @@
 ResourceLoader: true
 
-hidden: false
+hidden: true
 
 default: false
 
@@ -21,24 +21,18 @@ type: general
 package: false
 
 rights:
-  - patrol
+  - hidden
 
 peers: []
 
 dependencies:
-  - mediawiki.api
-  - mediawiki.user
-  - jquery.tablesorter
-  - codex-styles
-  - ext.gadget.libPolyfill
-  - ext.gadget.libCachedCode
-  - ext.gadget.libStandardMessages
+  - ext.gadget.site-lib
 
 _sites:
   - zh
   - commons
 
-_section: user
+_section: system
 
 _files:
-  - Gadget-queryContributions.js
+  - Gadget-libStandardMessages.js

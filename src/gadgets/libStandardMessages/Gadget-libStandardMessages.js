@@ -1,0 +1,55 @@
+"use strict";
+(() => {
+    /* eslint-disable camelcase */
+    mw.messages.set({
+        Main: `（主${wgULS("", "", "", "", "要", "", "", "要", "")}）`,
+        Talk: wgULS("讨论", "討論"),
+        User: wgULS("用户", "使用者"),
+        User_talk: wgULS("用户讨论", "使用者討論"),
+        Project: "萌娘百科",
+        Project_talk: "萌娘百科讨论",
+        File: wgULS("文件", "檔案"),
+        File_talk: wgULS("文件讨论", "檔案討論"),
+        MediaWiki: wgULS("界面消息", "介面訊息"),
+        MediaWiki_talk: wgULS("界面消息讨论", "介面訊息討論"),
+        Template: "模板",
+        Template_talk: "模板讨论",
+        Help: wgULS("帮助", "說明"),
+        Help_talk: wgULS("帮助讨论", "說明討論"),
+        Category: wgULS("分类", "分類"),
+        Category_talk: wgULS("分类讨论", "分類討論"),
+        Widget: wgULS("小部件", "微件"),
+        Widget_talk: wgULS("小部件讨论", "微件討論"),
+        TimedText: "TimedText",
+        TimedText_talk: wgULS("TimedText讨论", "TimedText討論"),
+        Module: wgULS("模块", "模組"),
+        Module_talk: wgULS("模块讨论", "模組討論"),
+    });
+    /* eslint-enable camelcase */
+    mw.config.set({
+        wgLocalizedNamespaces: {
+            0: mw.msg("Main"),
+            1: mw.msg("Talk"),
+            2: mw.msg("User"),
+            3: mw.msg("User_talk"),
+            4: mw.msg("Project"),
+            5: mw.msg("Project_talk"),
+            6: mw.msg("File"),
+            7: mw.msg("File_talk"),
+            8: mw.msg("MediaWiki"),
+            9: mw.msg("MediaWiki_talk"),
+            10: mw.msg("Template"),
+            11: mw.msg("Template_talk"),
+            12: mw.msg("Help"),
+            13: mw.msg("Help_talk"),
+            14: mw.msg("Category"),
+            15: mw.msg("Category_talk"),
+            274: mw.msg("Widget"),
+            275: mw.msg("Widget_talk"),
+            710: mw.msg("TimedText"),
+            711: mw.msg("TimedText_talk"),
+            828: mw.msg("Module"),
+            829: mw.msg("Module_talk"),
+        },
+    });
+})();
