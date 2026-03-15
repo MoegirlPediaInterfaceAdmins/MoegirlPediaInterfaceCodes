@@ -43,3 +43,40 @@ mw.log.deprecate(window, "importScriptCallback", (page, ready) => libCachedCode.
 
 // eslint-disable-next-line promise/prefer-await-to-then
 mw.log.deprecate(window, "importScriptURICallback", (page, ready) => libCachedCode.injectCachedCode(page, "script").then(ready), "Use `await libCachedCode.injectCachedCode(page, \"script\")` instead");
+
+window.wgGetPageNames = () => {
+    const result = {
+        talkPage: false,
+        basePageName: false,
+    };
+    const wgNamespaceNumber = mw.config.get("wgNamespaceNumber");
+    const ns = [];
+    const talkNamespaceNumber = wgNamespaceNumber < 0 || wgNamespaceNumber % 2 === 1 ? NaN : wgNamespaceNumber + 1;
+    let talkns = "";
+    for (const [k, v] of Object.entries(mw.config.get("wgNamespaceIds"))) {
+        if (v === wgNamespaceNumber) {
+            ns.push(k);
+        }
+        if (!talkns && v === talkNamespaceNumber) {
+            talkns = k;
+        }
+    }
+    if (ns.length === 0) {
+        return result;
+    }
+    let page = mw.config.get("wgPageName");
+    const pageToLowerCase = page.toLowerCase();
+    for (const n of ns) {
+        const nsPrefix = `${n.toLowerCase()}:`;
+        if (pageToLowerCase.startsWith(nsPrefix)) {
+            const escapedNs = mw.util.escapeRegExp(n);
+            page = page.replace(new RegExp(`^${escapedNs}:`, "i"), "");
+            break;
+        }
+    }
+    result.basePageName = page;
+    if (talkns) {
+        result.talkPage = `${talkns}:${page}`;
+    }
+    return result;
+};
