@@ -147,8 +147,7 @@
     let cache;
     const api = new mw.Api();
     const eol = Symbol();
-    const fixZero = (n, l = 2) => `${n}`.padStart(l, "0");
-    const toLocalTimeZoneString = (date = new Date()) => `${date.getFullYear()}/${fixZero(date.getMonth() + 1)}/${fixZero(date.getDate())} ${fixZero(date.getHours())}:${fixZero(date.getMinutes())}:${fixZero(date.getSeconds())}.${fixZero(date.getMilliseconds(), 3)}`;
+    const toLocalTimeZoneString = (date = new Date()) => `${date.getFullYear()}/${libPrefixNumber(date.getMonth() + 1)}/${libPrefixNumber(date.getDate())} ${libPrefixNumber(date.getHours())}:${libPrefixNumber(date.getMinutes())}:${libPrefixNumber(date.getSeconds())}.${libPrefixNumber(date.getMilliseconds(), 3)}`;
     let loadMessagesPromise = Promise.resolve(true);
     try {
         cache = localObjectStorage.getItem("cache");

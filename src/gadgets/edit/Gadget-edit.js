@@ -46,47 +46,24 @@ $(() => {
     }
 
     // 编辑请求
-    const prefixNumber = (num) => {
-        let result = `${num}`;
-        if (result.length === 1) {
-            result = `0${result}`;
-        }
-        return result;
-    };
     if (!$("ul.permissions-errors").find('a[href*="MoeAuth"]').length && !!$(".permissions-errors, #wpTextbox1[readonly]")[1] && mw.config.get("wgUserName") && !$(".newComment")[0]) {
-        const ns = [];
-        if (wgNamespaceNumber < 0 || wgNamespaceNumber % 2 === 1) {
+        const { talkPage, basePageName } = libGetPageNames();
+        if (talkPage === false) {
             return;
         }
-        const talkNamespaceNumber = wgNamespaceNumber + 1;
-        let talkns = -1;
-        for (const [k, v] of Object.entries(mw.config.get("wgNamespaceIds"))) {
-            if (v === wgNamespaceNumber) {
-                ns.push(k);
-            }
-            if (talkns === -1 && v === talkNamespaceNumber) {
-                talkns = k;
-            }
-        }
-        if (!ns[0]) {
-            return;
-        }
-        let page = mw.config.get("wgPageName");
-        const pageToLowerCase = page.toLowerCase();
-        for (const n of ns) {
-            if (pageToLowerCase.startsWith(n)) {
-                page = page.replace(new RegExp(`^${n}:`, "i"), "");
-                break;
-            }
-        }
-        const talkpage = `${talkns}:${page}`;
         const container = $("<div/>", {
             "class": "editRequest",
         });
         const now = new Date();
         container.append("虽然您无权编辑本页面，但您可以点击右侧按钮在本页的讨论页提出编辑请求，让可以编辑的人代为编辑：");
         $("<span/>").addClass("newComment").text("提出编辑请求").on("click", () => {
-            window.open(`${mw.config.get("wgServer")}${mw.config.get("wgScriptPath")}/index.php?action=edit&preload=Template:编辑请求/${/^MediaWiki:Conversiontable\/zh-[a-z]+$/.test(wgPageName) ? page : "comment"}&preloadtitle=编辑请求 - ${encodeURIComponent(`${mw.config.get("wgUserName")} - ${now.getFullYear()}.${prefixNumber(now.getMonth() + 1)}.${prefixNumber(now.getDate())}`)}&section=new&title=${encodeURIComponent(talkpage)}`, "_blank");
+            const editRequestURL = new URL(`${mw.config.get("wgScriptPath")}/index.php`, location.origin);
+            editRequestURL.searchParams.set("action", "edit");
+            editRequestURL.searchParams.set("preload", wgGetEditRequestPreload(wgPageName, basePageName));
+            editRequestURL.searchParams.set("preloadtitle", `编辑请求 - ${mw.config.get("wgUserName")} - ${now.getFullYear()}.${libPrefixNumber(now.getMonth() + 1)}.${libPrefixNumber(now.getDate())}`);
+            editRequestURL.searchParams.set("section", "new");
+            editRequestURL.searchParams.set("title", talkPage);
+            window.open(editRequestURL.href, "_blank");
         }).appendTo(container);
         $("#mw-content-text").children(".wikiEditor-ui:first, textarea[readonly]:first").before("<hr>").before(container);
     }
@@ -102,11 +79,10 @@ $(() => {
         $("#multiboilerplateform").remove();
     }
     // 非维护组、技术组成员提出方针编辑请求时提醒需要走提案
-    if (
-        new URLSearchParams(location.search).get("preloadtitle")?.startsWith("编辑请求")
-            && wgNamespaceNumber === 5
-            && mw.config.get("wgAction") === "edit"
-            && !mw.config.get("wgUserGroups").some((value) => ["patroller", "sysop", "techeditor", "interface-admin", "staff"].includes(value))
+    if (new URLSearchParams(location.search).get("preloadtitle")?.startsWith("编辑请求")
+        && wgNamespaceNumber === 5
+        && mw.config.get("wgAction") === "edit"
+        && !mw.config.get("wgUserGroups").some((value) => ["patroller", "sysop", "techeditor", "interface-admin", "staff"].includes(value))
     ) {
         OO.ui.alert(
             $('<p>进行<b>实质性</b>修改时，需要通过<a href="/萌娘百科:提案" style="font-weight:bold">提案</a>或<a href="/萌娘百科:快速提案" style="font-weight:bold">快速提案</a>流程才可对方针和指引进行改动。</p><p>在讨论页发起的编辑请求仅可用于修正错别字等<b>非实质性</b>修改。</p>'),
