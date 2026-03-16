@@ -70,7 +70,7 @@
         "simple-git": "^3.33.0",
         "stylelint": "^17.4.0",
         "stylelint-config-standard": "^40.0.0",
-        "terser": "^5.46.0",
+        "terser": "^5.46.1",
         "types-mediawiki": "^2.0.0",
         "uglify-js": "^3.19.3",
         "unassertify": "^3.0.1",
