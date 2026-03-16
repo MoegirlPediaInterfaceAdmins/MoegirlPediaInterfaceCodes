@@ -18,6 +18,22 @@
         requestURL.searchParams.set("title", title);
         return requestURL.href;
     };
+    const appendRequestLink = ($list, { title, preload, preloadTitle, scriptPath, text }) => {
+        $("<li>").append($("<a>", {
+            href: buildRequestUrl({
+                title,
+                preload,
+                preloadTitle,
+                scriptPath,
+            }),
+            target: "_blank",
+            "class": "external",
+            css: {
+                marginLeft: "1em",
+            },
+            text,
+        })).appendTo($list);
+    };
     const getRequestTitleSuffix = (userName, now) => ` - ${userName} - ${now.getFullYear()}.${libPrefixNumber(now.getMonth() + 1)}.${libPrefixNumber(now.getDate())}`;
     const getEditRequestPreload = (pageName, basePageName) => wgGetEditRequestPreload(pageName, basePageName);
 
@@ -109,43 +125,31 @@
             const now = new Date();
             const requestTitleSuffix = getRequestTitleSuffix(wgUserName, now);
             if (actions.edit === false && talkPage && $editRequestList) {
-                $("<li>").append($("<a>", {
-                    href: buildRequestUrl({
-                        title: talkPage,
-                        preload: getEditRequestPreload(wgPageName, basePageName),
-                        preloadTitle: `编辑请求${requestTitleSuffix}`,
-                        scriptPath: wgScriptPath,
-                    }),
-                    target: "_blank",
-                    "class": "external",
+                appendRequestLink($editRequestList, {
+                    title: talkPage,
+                    preload: getEditRequestPreload(wgPageName, basePageName),
+                    preloadTitle: `编辑请求${requestTitleSuffix}`,
+                    scriptPath: wgScriptPath,
                     text: "提出编辑请求",
-                })).appendTo($editRequestList);
+                });
             }
             if (actions.move === false && $moveRequestList) {
-                $("<li>").append($("<a>", {
-                    href: buildRequestUrl({
-                        title: "萌娘百科讨论:讨论版/操作申请",
-                        preload: "Template:移动请求预载",
-                        preloadTitle: `移动请求${requestTitleSuffix}`,
-                        scriptPath: wgScriptPath,
-                    }),
-                    target: "_blank",
-                    "class": "external",
+                appendRequestLink($moveRequestList, {
+                    title: "萌娘百科讨论:讨论版/操作申请",
+                    preload: "Template:移动请求预载",
+                    preloadTitle: `移动请求${requestTitleSuffix}`,
+                    scriptPath: wgScriptPath,
                     text: "提出移动请求",
-                })).appendTo($moveRequestList);
+                });
             }
             if (actions.create === false && $createRequestList) {
-                $("<li>").append($("<a>", {
-                    href: buildRequestUrl({
-                        title: "萌娘百科讨论:讨论版/操作申请",
-                        preload: "Template:创建请求预载",
-                        preloadTitle: `创建请求${requestTitleSuffix}`,
-                        scriptPath: wgScriptPath,
-                    }),
-                    target: "_blank",
-                    "class": "external",
+                appendRequestLink($createRequestList, {
+                    title: "萌娘百科讨论:讨论版/操作申请",
+                    preload: "Template:创建请求预载",
+                    preloadTitle: `创建请求${requestTitleSuffix}`,
+                    scriptPath: wgScriptPath,
                     text: "提出创建请求",
-                })).appendTo($createRequestList);
+                });
             }
         }
     }
