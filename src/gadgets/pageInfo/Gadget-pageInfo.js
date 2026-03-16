@@ -1,13 +1,25 @@
 "use strict";
 (async () => {
     const sleep = (ms) => new Promise((res) => setTimeout(res, ms));
-    const prefixNumber = (num) => {
-        let result = `${num}`;
-        if (result.length === 1) {
-            result = `0${result}`;
+    const appendRestrictionSection = ($container, action, levels) => {
+        if (!Array.isArray(levels) || levels.length === 0) {
+            return null;
         }
-        return result;
+        const $requestList = $("<ul>");
+        $container.append($("<br>"), document.createTextNode(`${mw.msg(action)}：${levels.map((level) => mw.msg(`protect-level-${level}`)).join("、")}`), $requestList);
+        return $requestList;
     };
+    const buildRequestUrl = ({ title, preload, preloadTitle, scriptPath }) => {
+        const requestURL = new URL(`${scriptPath}/index.php`, location.origin);
+        requestURL.searchParams.set("action", "edit");
+        requestURL.searchParams.set("preload", preload);
+        requestURL.searchParams.set("preloadtitle", preloadTitle);
+        requestURL.searchParams.set("section", "new");
+        requestURL.searchParams.set("title", title);
+        return requestURL.href;
+    };
+    const getRequestTitleSuffix = (userName, now) => ` - ${userName} - ${now.getFullYear()}.${wgPrefixNumber(now.getMonth() + 1)}.${wgPrefixNumber(now.getDate())}`;
+    const getEditRequestPreload = (pageName, basePageName) => wgGetEditRequestPreload(pageName, basePageName);
 
     await $.ready;
 
@@ -78,19 +90,9 @@
             "class": "annotation-content",
         });
         $protectionInfoContent.append($("<b>").text(wgULS("页面受到以下保护：", "頁面受到以下保護：")));
-        let $editRequestList, $moveRequestList, $createRequestList;
-        if (Array.isArray(wgRestrictionEdit) && wgRestrictionEdit.length > 0) {
-            $editRequestList = $("<ul>");
-            $protectionInfoContent.append($("<br>"), document.createTextNode(`${mw.msg("edit")}：${wgRestrictionEdit.map((level) => mw.msg(`protect-level-${level}`)).join("、")}`), $editRequestList);
-        }
-        if (Array.isArray(wgRestrictionMove) && wgRestrictionMove.length > 0) {
-            $moveRequestList = $("<ul>");
-            $protectionInfoContent.append($("<br>"), document.createTextNode(`${mw.msg("move")}：${wgRestrictionMove.map((level) => mw.msg(`protect-level-${level}`)).join("、")}`), $moveRequestList);
-        }
-        if (Array.isArray(wgRestrictionCreate) && wgRestrictionCreate.length > 0) {
-            $createRequestList = $("<ul>");
-            $protectionInfoContent.append($("<br>"), document.createTextNode(`${mw.msg("create")}：${wgRestrictionCreate.map((level) => mw.msg(`protect-level-${level}`)).join("、")}`), $createRequestList);
-        }
+        const $editRequestList = appendRestrictionSection($protectionInfoContent, "edit", wgRestrictionEdit);
+        const $moveRequestList = appendRestrictionSection($protectionInfoContent, "move", wgRestrictionMove);
+        const $createRequestList = appendRestrictionSection($protectionInfoContent, "create", wgRestrictionCreate);
         $protectionInfoContent.appendTo($protectionInfoContainer);
         $protectionInfoContainer.trigger("mouseout");
         let actions = {};
@@ -105,33 +107,45 @@
         }
         if (wgUserName) {
             const now = new Date();
-            const requestTitleSuffix = ` - ${wgUserName} - ${now.getFullYear()}.${prefixNumber(now.getMonth() + 1)}.${prefixNumber(now.getDate())}`;
+            const requestTitleSuffix = getRequestTitleSuffix(wgUserName, now);
             if (actions.edit === false && talkPage && $editRequestList) {
-                const editRequestURL = new URL(`${wgScriptPath}/index.php`, location.origin);
-                editRequestURL.searchParams.set("action", "edit");
-                editRequestURL.searchParams.set("preload", `Template:编辑请求/${basePageName !== false && /^MediaWiki:Conversiontable\/zh-[a-z]+$/.test(wgPageName) ? basePageName : "comment"}`);
-                editRequestURL.searchParams.set("preloadtitle", `编辑请求${requestTitleSuffix}`);
-                editRequestURL.searchParams.set("section", "new");
-                editRequestURL.searchParams.set("title", talkPage);
-                $("<li>").append($("<a>", { href: editRequestURL.href, target: "_blank", "class": "external", text: "提出编辑请求" })).appendTo($editRequestList);
+                $("<li>").append($("<a>", {
+                    href: buildRequestUrl({
+                        title: talkPage,
+                        preload: getEditRequestPreload(wgPageName, basePageName),
+                        preloadTitle: `编辑请求${requestTitleSuffix}`,
+                        scriptPath: wgScriptPath,
+                    }),
+                    target: "_blank",
+                    "class": "external",
+                    text: "提出编辑请求",
+                })).appendTo($editRequestList);
             }
             if (actions.move === false && $moveRequestList) {
-                const moveRequestURL = new URL(`${wgScriptPath}/index.php`, location.origin);
-                moveRequestURL.searchParams.set("action", "edit");
-                moveRequestURL.searchParams.set("preload", "Template:移动请求预载");
-                moveRequestURL.searchParams.set("preloadtitle", `移动请求${requestTitleSuffix}`);
-                moveRequestURL.searchParams.set("section", "new");
-                moveRequestURL.searchParams.set("title", "萌娘百科讨论:讨论版/操作申请");
-                $("<li>").append($("<a>", { href: moveRequestURL.href, target: "_blank", "class": "external", text: "提出移动请求" })).appendTo($moveRequestList);
+                $("<li>").append($("<a>", {
+                    href: buildRequestUrl({
+                        title: "萌娘百科讨论:讨论版/操作申请",
+                        preload: "Template:移动请求预载",
+                        preloadTitle: `移动请求${requestTitleSuffix}`,
+                        scriptPath: wgScriptPath,
+                    }),
+                    target: "_blank",
+                    "class": "external",
+                    text: "提出移动请求",
+                })).appendTo($moveRequestList);
             }
             if (actions.create === false && $createRequestList) {
-                const createRequestURL = new URL(`${wgScriptPath}/index.php`, location.origin);
-                createRequestURL.searchParams.set("action", "edit");
-                createRequestURL.searchParams.set("preload", "Template:创建请求预载");
-                createRequestURL.searchParams.set("preloadtitle", `创建请求${requestTitleSuffix}`);
-                createRequestURL.searchParams.set("section", "new");
-                createRequestURL.searchParams.set("title", "萌娘百科讨论:讨论版/操作申请");
-                $("<li>").append($("<a>", { href: createRequestURL.href, target: "_blank", "class": "external", text: "提出创建请求" })).appendTo($createRequestList);
+                $("<li>").append($("<a>", {
+                    href: buildRequestUrl({
+                        title: "萌娘百科讨论:讨论版/操作申请",
+                        preload: "Template:创建请求预载",
+                        preloadTitle: `创建请求${requestTitleSuffix}`,
+                        scriptPath: wgScriptPath,
+                    }),
+                    target: "_blank",
+                    "class": "external",
+                    text: "提出创建请求",
+                })).appendTo($createRequestList);
             }
         }
     }

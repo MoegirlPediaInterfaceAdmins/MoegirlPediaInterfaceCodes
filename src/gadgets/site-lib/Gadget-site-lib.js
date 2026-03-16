@@ -17,6 +17,8 @@ window.wgULS = (hans, hant, cn, tw, hk, sg, zh, mo, my) => window.wgUXS(mw.confi
 
 window.wgUVS = (hans, hant, cn, tw, hk, sg, zh, mo, my) => window.wgUXS(mw.config.get("wgUserVariant"), hans, hant, cn, tw, hk, sg, zh, mo, my);
 
+window.wgPrefixNumber = (num, length = 2) => `${num}`.padStart(length, "0");
+
 /**
  * Map addPortletLink to mw.util
  *
@@ -44,16 +46,23 @@ mw.log.deprecate(window, "importScriptCallback", (page, ready) => libCachedCode.
 // eslint-disable-next-line promise/prefer-await-to-then
 mw.log.deprecate(window, "importScriptURICallback", (page, ready) => libCachedCode.injectCachedCode(page, "script").then(ready), "Use `await libCachedCode.injectCachedCode(page, \"script\")` instead");
 
+const {
+    wgNamespaceNumber,
+    wgNamespaceIds,
+} = mw.config.get([
+    "wgNamespaceNumber",
+    "wgNamespaceIds",
+]);
+
 window.wgGetPageNames = () => {
     const result = {
         talkPage: false,
         basePageName: false,
     };
-    const wgNamespaceNumber = mw.config.get("wgNamespaceNumber");
     const ns = [];
     const talkNamespaceNumber = wgNamespaceNumber < 0 || wgNamespaceNumber % 2 === 1 ? NaN : wgNamespaceNumber + 1;
     let talkns = "";
-    for (const [k, v] of Object.entries(mw.config.get("wgNamespaceIds"))) {
+    for (const [k, v] of Object.entries(wgNamespaceIds)) {
         if (v === wgNamespaceNumber) {
             ns.push(k);
         }
@@ -80,3 +89,5 @@ window.wgGetPageNames = () => {
     }
     return result;
 };
+
+window.wgGetEditRequestPreload = (pageName = mw.config.get("wgPageName"), basePageName = window.wgGetPageNames().basePageName) => basePageName !== false && /^MediaWiki:Conversiontable\/zh-[a-z]+$/.test(pageName) ? `Template:编辑请求/${basePageName}` : "Template:编辑请求/comment";

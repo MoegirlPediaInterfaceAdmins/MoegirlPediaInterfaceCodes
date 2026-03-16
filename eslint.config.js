@@ -91,6 +91,8 @@ const config = [
                 Prism: false,
                 libRequestAnimationFrame: false,
                 wgGetPageNames: false,
+                wgPrefixNumber: false,
+                wgGetEditRequestPreload: false,
                 libip: false,
             },
         },

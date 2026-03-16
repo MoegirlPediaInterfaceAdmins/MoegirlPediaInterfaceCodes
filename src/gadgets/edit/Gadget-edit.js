@@ -46,13 +46,6 @@ $(() => {
     }
 
     // 编辑请求
-    const prefixNumber = (num) => {
-        let result = `${num}`;
-        if (result.length === 1) {
-            result = `0${result}`;
-        }
-        return result;
-    };
     if (!$("ul.permissions-errors").find('a[href*="MoeAuth"]').length && !!$(".permissions-errors, #wpTextbox1[readonly]")[1] && mw.config.get("wgUserName") && !$(".newComment")[0]) {
         const { talkPage, basePageName } = wgGetPageNames();
         if (talkPage === false) {
@@ -66,8 +59,8 @@ $(() => {
         $("<span/>").addClass("newComment").text("提出编辑请求").on("click", () => {
             const editRequestURL = new URL(`${mw.config.get("wgScriptPath")}/index.php`, location.origin);
             editRequestURL.searchParams.set("action", "edit");
-            editRequestURL.searchParams.set("preload", `Template:编辑请求/${basePageName !== false && /^MediaWiki:Conversiontable\/zh-[a-z]+$/.test(wgPageName) ? basePageName : "comment"}`);
-            editRequestURL.searchParams.set("preloadtitle", `编辑请求 - ${mw.config.get("wgUserName")} - ${now.getFullYear()}.${prefixNumber(now.getMonth() + 1)}.${prefixNumber(now.getDate())}`);
+            editRequestURL.searchParams.set("preload", wgGetEditRequestPreload(wgPageName, basePageName));
+            editRequestURL.searchParams.set("preloadtitle", `编辑请求 - ${mw.config.get("wgUserName")} - ${now.getFullYear()}.${wgPrefixNumber(now.getMonth() + 1)}.${wgPrefixNumber(now.getDate())}`);
             editRequestURL.searchParams.set("section", "new");
             editRequestURL.searchParams.set("title", talkPage);
             window.open(editRequestURL.href, "_blank");
