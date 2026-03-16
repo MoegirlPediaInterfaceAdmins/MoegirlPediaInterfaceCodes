@@ -47,13 +47,6 @@
 
     let $container;
     switch (skin) {
-        case "vector-2022": {
-            $container = $("<li>", {
-                "class": "page-info-container vector-tab-noicon mw-list-item",
-            });
-            $container.appendTo("#p-views .vector-menu-content-list");
-            break;
-        }
         case "moeskin": {
             while (Number.MAX_SAFE_INTEGER > Number.MIN_SAFE_INTEGER) {
                 if (!document.querySelector(".edit-button-group")) {
@@ -66,6 +59,14 @@
                 "class": "page-info-container",
             });
             $container.prependTo($(document.querySelector("#pagetools-desktop-container .edit-button-group") || document.querySelector("#pagetools-mobile-container .mobile-page-more-actions")));
+            break;
+        }
+        case "vector-2022":
+        default: {
+            $container = $("<li>", {
+                "class": "page-info-container vector-tab-noicon mw-list-item",
+            });
+            $container.appendTo("#p-views .vector-menu-content-list");
             break;
         }
     }
