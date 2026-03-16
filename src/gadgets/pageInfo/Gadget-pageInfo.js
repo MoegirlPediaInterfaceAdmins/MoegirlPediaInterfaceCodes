@@ -102,6 +102,8 @@
         $protectionInfoContainer.appendTo($container);
         $("<img>", {
             src: "/resources/lib/ooui/themes/wikimediaui/images/icons/lock.svg",
+            alt: "",
+            "aria-hidden": "true",
         }).appendTo($protectionInfoContainer);
         const $protectionInfoContent = $("<div>", {
             "class": "annotation-content",
