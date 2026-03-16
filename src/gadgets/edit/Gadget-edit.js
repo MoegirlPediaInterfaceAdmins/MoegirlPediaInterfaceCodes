@@ -47,7 +47,7 @@ $(() => {
 
     // 编辑请求
     if (!$("ul.permissions-errors").find('a[href*="MoeAuth"]').length && !!$(".permissions-errors, #wpTextbox1[readonly]")[1] && mw.config.get("wgUserName") && !$(".newComment")[0]) {
-        const { talkPage, basePageName } = wgGetPageNames();
+        const { talkPage, basePageName } = libGetPageNames();
         if (talkPage === false) {
             return;
         }
@@ -60,7 +60,7 @@ $(() => {
             const editRequestURL = new URL(`${mw.config.get("wgScriptPath")}/index.php`, location.origin);
             editRequestURL.searchParams.set("action", "edit");
             editRequestURL.searchParams.set("preload", wgGetEditRequestPreload(wgPageName, basePageName));
-            editRequestURL.searchParams.set("preloadtitle", `编辑请求 - ${mw.config.get("wgUserName")} - ${now.getFullYear()}.${wgPrefixNumber(now.getMonth() + 1)}.${wgPrefixNumber(now.getDate())}`);
+            editRequestURL.searchParams.set("preloadtitle", `编辑请求 - ${mw.config.get("wgUserName")} - ${now.getFullYear()}.${libPrefixNumber(now.getMonth() + 1)}.${libPrefixNumber(now.getDate())}`);
             editRequestURL.searchParams.set("section", "new");
             editRequestURL.searchParams.set("title", talkPage);
             window.open(editRequestURL.href, "_blank");

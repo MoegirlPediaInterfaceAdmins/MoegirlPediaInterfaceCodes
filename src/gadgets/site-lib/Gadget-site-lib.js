@@ -17,8 +17,6 @@ window.wgULS = (hans, hant, cn, tw, hk, sg, zh, mo, my) => window.wgUXS(mw.confi
 
 window.wgUVS = (hans, hant, cn, tw, hk, sg, zh, mo, my) => window.wgUXS(mw.config.get("wgUserVariant"), hans, hant, cn, tw, hk, sg, zh, mo, my);
 
-window.wgPrefixNumber = (num, length = 2) => `${num}`.padStart(length, "0");
-
 /**
  * Map addPortletLink to mw.util
  *
@@ -46,6 +44,8 @@ mw.log.deprecate(window, "importScriptCallback", (page, ready) => libCachedCode.
 // eslint-disable-next-line promise/prefer-await-to-then
 mw.log.deprecate(window, "importScriptURICallback", (page, ready) => libCachedCode.injectCachedCode(page, "script").then(ready), "Use `await libCachedCode.injectCachedCode(page, \"script\")` instead");
 
+window.libPrefixNumber = (num, length = 2) => `${num}`.padStart(length, "0");
+
 const {
     wgNamespaceNumber,
     wgNamespaceIds,
@@ -54,7 +54,7 @@ const {
     "wgNamespaceIds",
 ]);
 
-window.wgGetPageNames = () => {
+window.libGetPageNames = () => {
     const result = {
         talkPage: false,
         basePageName: false,
@@ -90,4 +90,4 @@ window.wgGetPageNames = () => {
     return result;
 };
 
-window.wgGetEditRequestPreload = (pageName = mw.config.get("wgPageName"), basePageName = window.wgGetPageNames().basePageName) => basePageName !== false && /^MediaWiki:Conversiontable\/zh-[a-z]+$/.test(pageName) ? `Template:编辑请求/${basePageName}` : "Template:编辑请求/comment";
+window.wgGetEditRequestPreload = (pageName = mw.config.get("wgPageName"), basePageName = window.libGetPageNames().basePageName) => basePageName !== false && /^MediaWiki:Conversiontable\/zh-[a-z]+$/.test(pageName) ? `Template:编辑请求/${basePageName}` : "Template:编辑请求/comment";

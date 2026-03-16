@@ -18,7 +18,7 @@
         requestURL.searchParams.set("title", title);
         return requestURL.href;
     };
-    const getRequestTitleSuffix = (userName, now) => ` - ${userName} - ${now.getFullYear()}.${wgPrefixNumber(now.getMonth() + 1)}.${wgPrefixNumber(now.getDate())}`;
+    const getRequestTitleSuffix = (userName, now) => ` - ${userName} - ${now.getFullYear()}.${libPrefixNumber(now.getMonth() + 1)}.${libPrefixNumber(now.getDate())}`;
     const getEditRequestPreload = (pageName, basePageName) => wgGetEditRequestPreload(pageName, basePageName);
 
     await $.ready;
@@ -54,7 +54,7 @@
         }
     }
 
-    const { talkPage, basePageName } = wgGetPageNames();
+    const { talkPage, basePageName } = libGetPageNames();
     const protectLevels = new Set();
     if (Array.isArray(wgRestrictionEdit) && wgRestrictionEdit.length > 0) {
         wgRestrictionEdit.forEach((level) => protectLevels.add(`protect-level-${level}`));

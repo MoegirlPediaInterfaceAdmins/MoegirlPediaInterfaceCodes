@@ -15,7 +15,7 @@ declare const wgULS: typeof wgUXS extends (wg: string, ...rest: infer Rest) => i
 
 declare const wgUVS: typeof wgULS;
 
-declare function wgPrefixNumber(num: number | string, length?: number): string;
+declare function libPrefixNumber(num: number | string, length?: number): string;
 
 type pageNames = {
     /**
@@ -31,6 +31,6 @@ type pageNames = {
 /**
  * 获取当前页面的讨论页名称
  */
-declare function wgGetPageNames(): pageNames;
+declare function libGetPageNames(): pageNames;
 
 declare function wgGetEditRequestPreload(pageName?: string, basePageName?: string | false): string;
