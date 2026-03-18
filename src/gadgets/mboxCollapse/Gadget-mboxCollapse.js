@@ -1,8 +1,8 @@
 /**
  * Gadget-mboxCollapse
- * 自动折叠页面上的所有 mbox（.infoBox），
- * 折叠态保留原有边框与背景，只显示小号图标 + 单行省略标题，
- * 右上角 ＋/－ 按钮切换展开/折叠。
+ * 自动折叠页面上的所有 mbox（萌娘百科叫 .infoBox）
+ * 折叠态保留原有边框与背景，只显示小号图标 + 单行省略标题
+ * 右上角 ＋/－ 按钮切换展开/折叠
  */
 "use strict";
 mw.util.addCSS(".infoBoxText { padding-right: 20px }");
@@ -22,8 +22,9 @@ mw.hook("wikipage.content").add(($out) => {
             return;
         }
         // ── Extract title: first <b> text, or first line of text ──
+        const $mboxTitle = $content.find(".infoBoxTitle").first();
         const $firstBold = $text.find("b").first();
-        let titleText = $firstBold.length ? $firstBold.text() : $text.text().split("\n")[0];
+        let titleText = $mboxTitle.length ? $mboxTitle.text() : $firstBold.length ? $firstBold.text() : $text.text().split("\n")[0];
         titleText = titleText.replace(/\s+/g, " ").trim();
         // ── Get border color as fallback for title color ──
         const borderColor = $box.css("border-left-color") || "";
@@ -40,7 +41,8 @@ mw.hook("wikipage.content").add(($out) => {
             display: "flex",
             alignItems: "center",
             gap: "6px",
-            padding: "4px 28px 4px 0",
+            padding: "4px",
+            paddingRight: "28px", // space for toggle button
             minWidth: 0,
             overflow: "hidden",
         });
