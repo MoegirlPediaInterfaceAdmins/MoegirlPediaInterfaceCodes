@@ -868,6 +868,9 @@
             this.upToTopParent = function (func, parameters, stopAtTrue) {
                 let returnValue;
 
+                // eslint-disable-next-line no-param-reassign
+                parameters ||= [];
+
                 for (let currentTooltip = this; currentTooltip; currentTooltip = currentTooltip.parent) {
                     returnValue = Reflect.apply(func, currentTooltip, parameters);
                     if (stopAtTrue && returnValue) {
