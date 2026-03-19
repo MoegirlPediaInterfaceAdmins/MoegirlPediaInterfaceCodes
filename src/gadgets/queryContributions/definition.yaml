@@ -32,6 +32,7 @@ dependencies:
   - codex-styles
   - ext.gadget.libPolyfill
   - ext.gadget.libCachedCode
+  - ext.gadget.libStandardMessages
 
 _sites:
   - zh

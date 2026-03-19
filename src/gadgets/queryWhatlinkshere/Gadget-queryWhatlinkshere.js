@@ -4,41 +4,12 @@ $(() => (async () => {
     if (mw.config.get("wgCanonicalSpecialPageName") !== "Whatlinkshere") {
         return;
     }
-    const wgRelevantPageName = mw.config.get("wgRelevantPageName");
+    const { wgRelevantPageName, wgUserName, libLocalizedNamespaces } = mw.config.get(["wgRelevantPageName", "wgUserName", "libLocalizedNamespaces"]);
     if (typeof wgRelevantPageName !== "string" || wgRelevantPageName.length === 0) {
         return;
     }
-    const wgUserName = mw.config.get("wgUserName");
     const upperFirstCase = (s) => /^[a-z]/.test(s) ? s.substring(0, 1).toUpperCase() + s.substring(1) : s;
     const api = new mw.Api();
-    const nsids = {
-        0: "（主）",
-        1: "讨论",
-        2: "用户",
-        3: "用户讨论",
-        4: "萌娘百科",
-        5: "萌娘百科讨论",
-        6: "文件",
-        7: "文件讨论",
-        8: "MediaWiki",
-        9: "MediaWiki讨论",
-        10: "模板",
-        11: "模板讨论",
-        12: "帮助",
-        13: "帮助讨论",
-        14: "分类",
-        15: "分类讨论",
-        274: "Widget",
-        275: "Widget_talk",
-        710: "Timedtext",
-        711: "Timedtext_talk",
-        828: "模块",
-        829: "模块讨论",
-        2300: "Gadget",
-        2301: "Gadget_talk",
-        2302: "Gadget_definition",
-        2303: "Gadget_definition_talk",
-    };
     const wgNamespaceIds = {};
     for (const [ns, nsid] of Object.entries(mw.config.get("wgNamespaceIds"))) {
         if (!Array.isArray(wgNamespaceIds[nsid])) {
@@ -132,7 +103,7 @@ $(() => (async () => {
                 global.redirect++;
             }
         });
-        Object.entries(nslist).filter(([, { count }]) => count > 0).sort(([a], [b]) => a - b).forEach(([nsnumber, { count, redirect }]) => ul.append(`<li>${upperFirstCase(nsids[nsnumber])}：${count}个页面${redirect > 0 ? `（其中有${redirect}个重定向页面）` : ""}`));
+        Object.entries(nslist).filter(([, { count }]) => count > 0).sort(([a], [b]) => a - b).forEach(([nsnumber, { count, redirect }]) => ul.append(`<li>${upperFirstCase(libLocalizedNamespaces[nsnumber])}：${count}个页面${redirect > 0 ? `（其中有${redirect}个重定向页面）` : ""}`));
         whatlinkshere.after(ul);
     });
     queryWhatembeddedin.on("click", async () => {
@@ -230,7 +201,7 @@ $(() => (async () => {
             nslist[ns].redirect.push(title);
             global.redirect++;
         });
-        Object.entries(nslist).filter(([, { count }]) => count > 0).sort(([a], [b]) => a - b).forEach(([nsnumber, { count, redirect }]) => ul.append(`<li class="mw-parser-output">${upperFirstCase(nsids[nsnumber])}：${count}个页面${redirect.length > 0 ? `（其中有${redirect.length}个重定向页面：${redirect.map((title) => `<a target="_blank" rel="nofollow noreferrer noopener" class="external text" href="/index.php?title=${encodeURIComponent(title)}&amp;redirect=no">${title}</a>`).join("、")}）` : ""}`));
+        Object.entries(nslist).filter(([, { count }]) => count > 0).sort(([a], [b]) => a - b).forEach(([nsnumber, { count, redirect }]) => ul.append(`<li class="mw-parser-output">${upperFirstCase(libLocalizedNamespaces[nsnumber])}：${count}个页面${redirect.length > 0 ? `（其中有${redirect.length}个重定向页面：${redirect.map((title) => `<a target="_blank" rel="nofollow noreferrer noopener" class="external text" href="/index.php?title=${encodeURIComponent(title)}&amp;redirect=no">${title}</a>`).join("、")}）` : ""}`));
         whatembeddedin.after(ul);
     });
 })());

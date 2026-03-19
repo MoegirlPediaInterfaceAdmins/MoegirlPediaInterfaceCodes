@@ -119,31 +119,7 @@
             "autoblock",
         ].map((k) => [k, `apihelp-block-param-${k}`]),
     ];
-    const namespaceMap = {
-        0: "（主）",
-        1: wgULS("讨论", "討論"),
-        2: wgULS("用户", "使用者"),
-        3: wgULS("用户讨论", "使用者討論"),
-        4: "萌娘百科",
-        5: "萌娘百科讨论",
-        6: wgULS("文件", "檔案"),
-        7: wgULS("文件讨论", "檔案討論"),
-        8: wgULS("界面消息", "介面訊息"),
-        9: wgULS("界面消息讨论", "介面訊息討論"),
-        10: "模板",
-        11: "模板讨论",
-        12: wgULS("帮助", "說明"),
-        13: wgULS("帮助讨论", "說明討論"),
-        14: wgULS("分类", "分類"),
-        15: wgULS("分类讨论", "分類討論"),
-        274: "微件",
-        275: wgULS("微件讨论", "微件討論"),
-        710: "TimedText",
-        711: wgULS("TimedText讨论", "TimedText討論"),
-        828: wgULS("模组", "模組"),
-        829: wgULS("模组讨论", "模組討論"),
-    };
-    const wgUserName = mw.config.get("wgUserName");
+    const { libLocalizedNamespaces, wgUserName } = mw.config.get(["libLocalizedNamespaces", "wgUserName"]);
     let cache;
     const api = new mw.Api();
     const eol = Symbol();
@@ -318,7 +294,7 @@
                             }
                             if (blockInfo.restrictions.namespaces) {
                                 blockInfo.restrictions.namespaces.forEach((ns) => {
-                                    restrictions.push(`${wgULS("命名空间", "命名空間")}：${namespaceMap[ns]}`);
+                                    restrictions.push(`${wgULS("命名空间", "命名空間")}：${libLocalizedNamespaces[ns]}`);
                                 });
                             }
                             if (restrictions.length > 0) {
