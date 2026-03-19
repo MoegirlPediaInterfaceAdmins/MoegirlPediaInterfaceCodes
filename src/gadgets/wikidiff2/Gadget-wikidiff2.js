@@ -23,8 +23,8 @@
                 continue;
             }
 
-            const leftText = leftCell?.innerText ?? "",
-                rightText = rightCell?.innerText ?? "";
+            const leftText = leftCell?.textContent ?? "",
+                rightText = rightCell?.textContent ?? "";
             if (!leftText && !rightText) {
                 continue;
             }
