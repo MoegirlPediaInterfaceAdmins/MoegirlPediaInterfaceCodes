@@ -1,0 +1,37 @@
+ResourceLoader: true
+
+hidden: false
+
+default: true
+
+supportsUrlLoad: false
+
+skins: []
+
+actions: []
+
+categories: []
+
+namespaces: []
+
+contentModels: []
+
+type: general
+
+package: false
+
+rights: []
+
+peers: []
+
+dependencies:
+  - mediawiki.diff.styles
+
+_sites:
+  - zh
+  - commons
+
+_section: browsing
+
+_files:
+  - Gadget-wikidiff2.js

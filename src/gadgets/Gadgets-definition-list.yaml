@@ -36,6 +36,7 @@
     - JSONViewer
     - pageInfo
     - modIconPrep
+    - wikidiff2
 
 - name: skin
   gadgets:
