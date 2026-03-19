@@ -20,14 +20,12 @@ type: general
 
 package: false
 
-rights: []
+rights: 
+  - viewmywatchlist
 
 peers: []
 
-dependencies:
-  - mediawiki.api
-  - codex-styles
-  - ext.gadget.libStandardMessages
+dependencies: []
 
 _sites:
   - zh
@@ -35,4 +33,5 @@ _sites:
 _section: browsing
 
 _files:
-  - Gadget-queryWhatlinkshere.js
+  - Gadget-modIconPrep.js
+  - Gadget-modIconPrep.css

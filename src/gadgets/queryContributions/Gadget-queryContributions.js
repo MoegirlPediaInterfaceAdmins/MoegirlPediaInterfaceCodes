@@ -12,37 +12,9 @@ $(() => (async () => {
     const userRights = await mw.user.getRights();
     const hasApiHighLimits = !userRights.includes("apihighlimits");
     const isPatrolViewable = userRights.includes("patrol") || userRights.includes("patrolmarks");
-    const wgUserName = mw.config.get("wgUserName");
     const upperFirstCase = (s) => /^[a-z]/.test(s) ? s.substring(0, 1).toUpperCase() + s.substring(1) : s;
     const api = new mw.Api();
-    const ns = {
-        0: "",
-        1: "讨论",
-        2: "用户",
-        3: "用户讨论",
-        4: "萌娘百科",
-        5: "萌娘百科讨论",
-        6: "文件",
-        7: "文件讨论",
-        8: "MediaWiki",
-        9: "MediaWiki讨论",
-        10: "模板",
-        11: "模板讨论",
-        12: "帮助",
-        13: "帮助讨论",
-        14: "分类",
-        15: "分类讨论",
-        274: "Widget",
-        275: "Widget_talk",
-        710: "Timedtext",
-        711: "Timedtext_talk",
-        828: "模块",
-        829: "模块讨论",
-        2300: "Gadget",
-        2301: "Gadget_talk",
-        2302: "Gadget_definition",
-        2303: "Gadget_definition_talk",
-    };
+    const { wgUserName, libLocalizedNamespaces } = mw.config.get(["wgUserName", "libLocalizedNamespaces"]);
     const p = $('<div class="cdx-card" style="background-color:transparent;display:block"><span class="cdx-card__text"><span class="cdx-card__text__title">用户贡献分布</span><span class="cdx-card__text__description">是否需要加载用户贡献分布（对编辑数量较多的用户慎重使用！）</span><div><button id="confirmQueryContributions" class="cdx-button cdx-button--action-progressive">确认</button> <button id="cancelQueryContributions" class="cdx-button cdx-button--action-destructive">取消</button></div></span></div>').insertAfter("#mw-content-text > .mw-htmlform-ooui-wrapper");
     p.find("#confirmQueryContributions").on("click", async () => {
         p.text(`加载中${hasApiHighLimits ? "（由于您没有“在API查询中使用更高的上限”[apihighlimits]权限，本次加载将需要较长时间，请稍等）" : ""}……`);
@@ -71,7 +43,7 @@ $(() => (async () => {
             }
             return result;
         })();
-        const nslist = Object.fromEntries(Object.keys(ns).map((key) => [key, { count: 0, patrolled: 0, autopatrolled: 0, "new": 0, distinct: new Set() }]));
+        const nslist = Object.fromEntries(Object.keys(libLocalizedNamespaces).map((key) => [key, { count: 0, patrolled: 0, autopatrolled: 0, "new": 0, distinct: new Set() }]));
         const globalInfo = { patrolled: 0, autopatrolled: 0, "new": 0, distinct: new Set() };
         list.forEach((item) => {
             nslist[item.ns].count++;
@@ -111,8 +83,8 @@ $(() => (async () => {
 
         const chartData = [];
         Object.entries(nslist).filter(([, { count }]) => count > 0).sort(([a], [b]) => a - b).forEach(([nsnumber, { count, patrolled, autopatrolled, distinct, "new": newCount }]) => {
-            table.append(`<tr><td data-sort-value="${nsnumber}">${+nsnumber === 0 ? "（主命名空间）" : upperFirstCase(ns[+nsnumber])}</td><td>${count}</td>${isPatrolViewable ? `<td>${patrolled}</td><td>${patrolled - autopatrolled}</td>` : ""}<td>${distinct.size}</td><td>${newCount}</td></tr>`);
-            chartData.push({ value: count, name: +nsnumber === 0 ? "（主）" : upperFirstCase(ns[+nsnumber]) });
+            table.append(`<tr><td data-sort-value="${nsnumber}">${+nsnumber === 0 ? mw.msg("blanknamespace") : upperFirstCase(libLocalizedNamespaces[+nsnumber])}</td><td>${count}</td>${isPatrolViewable ? `<td>${patrolled}</td><td>${patrolled - autopatrolled}</td>` : ""}<td>${distinct.size}</td><td>${newCount}</td></tr>`);
+            chartData.push({ value: count, name: +nsnumber === 0 ? mw.msg("blanknamespace") : upperFirstCase(libLocalizedNamespaces[+nsnumber]) });
         });
         p.append(table.closest("table"));
         if (typeof table.closest("table").tablesorter === "function") {

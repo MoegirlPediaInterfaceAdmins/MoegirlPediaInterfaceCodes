@@ -25,7 +25,8 @@ rights:
 
 peers: []
 
-dependencies: 
+dependencies:
+  - ext.gadget.site-lib
   - ext.gadget.LocalObjectStorage
 
 _sites:
@@ -35,4 +36,4 @@ _sites:
 _section: system
 
 _files:
-  - Gadget-libLoadMessagesWithCache.js
+  - Gadget-libStandardMessages.js

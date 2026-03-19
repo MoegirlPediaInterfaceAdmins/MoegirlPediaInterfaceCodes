@@ -22,17 +22,7 @@ License: Quadruple licensed GFDL, GPL, LGPL and Creative Commons Attribution 3.0
 window.hotcat_translations_from_commons = false; // 禁止从维基共享获取翻译
 (async () => {
     await $.ready;
-    /**
-     * @type {{ wgServer: string, [keys: string]: any }}
-     */
-    const conf = new Proxy({}, {
-        get: (_, name) => {
-            if (name === "wgServer") {
-                return `https://${location.hostname}`;
-            }
-            return mw.config.values[name];
-        },
-    });
+    const conf = mw.config.values;
     if (window.HotCat && !window.HotCat.nodeName || conf.wgAction === "edit") {
         return;
     }
@@ -40,7 +30,7 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
     const expandedArticlePrefix = new URL(conf.wgArticlePath.replace("$1", ""), location.href).href;
     const userRights = await mw.user.getRights();
     const autopatrol = userRights.includes("autopatrol");
-    const skin = mw.config.get("skin");
+    const { skin } = conf;
     window.hotcat_no_autocommit = !autopatrol;
     window.hotcat_del_needs_diff = !autopatrol;
     const HC = window.HotCat = {
@@ -90,13 +80,13 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
         multi_tooltip: "Modify several categories",
         isSupportedContentModel: () => HC.wikitextContentModels.includes(conf.wgPageContentModel) || HC.jsonContentModels.includes(conf.wgPageContentModel),
         disable: () => {
-            const ns = mw.config.get("wgNamespaceNumber");
-            const nsIds = mw.config.get("wgNamespaceIds");
+            const ns = conf.wgNamespaceNumber;
+            const nsIds = conf.wgNamespaceIds;
             return ns < 0
                 || ns === nsIds.template
                 || ns === nsIds.module
                 || ns === nsIds.mediawiki
-                || ns === nsIds.file && !mw.config.get("wgArticleId")
+                || ns === nsIds.file && !conf.wgArticleId
                 || ns === nsIds.creator
                 || ns === nsIds.timedtext
                 || ns === nsIds.institution
