@@ -83,8 +83,8 @@ $(() => (async () => {
 
         const chartData = [];
         Object.entries(nslist).filter(([, { count }]) => count > 0).sort(([a], [b]) => a - b).forEach(([nsnumber, { count, patrolled, autopatrolled, distinct, "new": newCount }]) => {
-            table.append(`<tr><td data-sort-value="${nsnumber}">${+nsnumber === 0 ? "（主命名空间）" : upperFirstCase(libLocalizedNamespaces[+nsnumber])}</td><td>${count}</td>${isPatrolViewable ? `<td>${patrolled}</td><td>${patrolled - autopatrolled}</td>` : ""}<td>${distinct.size}</td><td>${newCount}</td></tr>`);
-            chartData.push({ value: count, name: +nsnumber === 0 ? "（主）" : upperFirstCase(libLocalizedNamespaces[+nsnumber]) });
+            table.append(`<tr><td data-sort-value="${nsnumber}">${upperFirstCase(libLocalizedNamespaces[+nsnumber])}</td><td>${count}</td>${isPatrolViewable ? `<td>${patrolled}</td><td>${patrolled - autopatrolled}</td>` : ""}<td>${distinct.size}</td><td>${newCount}</td></tr>`);
+            chartData.push({ value: count, name: upperFirstCase(libLocalizedNamespaces[+nsnumber]) });
         });
         p.append(table.closest("table"));
         if (typeof table.closest("table").tablesorter === "function") {
