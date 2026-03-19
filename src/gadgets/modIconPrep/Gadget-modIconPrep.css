@@ -1,0 +1,22 @@
+.mw-rcfilters-ui-highlights-enhanced-toplevel .pc-mip-count {
+    position: absolute;
+    bottom: -.4em;
+    right: -.4em;
+    display: inline-block;
+    background: #FFFD;
+    border: #AAA 1px dashed;
+    border-radius: 50%;
+    color: #222;
+    font-size: 9px;
+    font-style: normal;
+    line-height: 1.2em;
+    text-align: center;
+    width: 1.2em;
+    height: 1.2em;
+    user-select: none;
+    z-index: 1;
+}
+
+.mw-rcfilters-ui-highlights-enhanced-toplevel td.mw-changeslist-line-inner:not(:has(i.mod-status-icon)) {
+    padding-left: 19.5px;
+}

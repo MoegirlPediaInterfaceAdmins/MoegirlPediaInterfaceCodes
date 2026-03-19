@@ -1,0 +1,37 @@
+ResourceLoader: true
+
+hidden: false
+
+default: false
+
+supportsUrlLoad: false
+
+skins: []
+
+actions: []
+
+categories: []
+
+namespaces: []
+
+contentModels: []
+
+type: general
+
+package: false
+
+rights: 
+  - viewmywatchlist
+
+peers: []
+
+dependencies: []
+
+_sites:
+  - zh
+
+_section: browsing
+
+_files:
+  - Gadget-modIconPrep.js
+  - Gadget-modIconPrep.css
