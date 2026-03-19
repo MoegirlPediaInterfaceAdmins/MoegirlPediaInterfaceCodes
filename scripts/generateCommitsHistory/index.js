@@ -9,17 +9,17 @@ const githubWebInterfaceFlowSignature = {
     signatureKey: "4AEE18F83AFDEB23",
 };
 
+import artifactClient from "@actions/artifact";
 import { endGroup, exportVariable, startGroup } from "@actions/core";
 import fs from "node:fs";
 import path from "node:path";
-import artifactClient from "@actions/artifact";
 import console from "../modules/console.js";
 import createCommit from "../modules/createCommit.js";
 import git from "../modules/git.js";
 import jsonModule from "../modules/jsonModule.js";
 import mailmap from "../modules/mailmap.js";
 import mkdtmp from "../modules/mkdtmp.js";
-import { debugConsole, debugLoggingEnabled, isInGithubActions, isInMasterBranch } from "../modules/octokit.js";
+import { debugConsole, debugLoggingEnabled, isInGithubActions, isInMasterBranch, isInMoegirlPediaInterfaceCodes } from "../modules/octokit.js";
 
 /**
  * @param { string } file file path like "src/@types/libBottomRightCorner.d.ts"
@@ -31,6 +31,10 @@ const pathValidator = (file) => file.startsWith("src/") && ![
 
 exportVariable("linguist-generated-generateCommitsHistory", JSON.stringify(["src/global/zh/GHIAHistory.json"]));
 
+if (!isInMoegirlPediaInterfaceCodes) {
+    console.info("Not running in MoegirlPediaInterfaceAdmins/MoegirlPediaInterfaceCodes, exit.");
+    process.exit(0);
+}
 if (!isInMasterBranch) {
     console.info("Not running in master branch, exit.");
     process.exit(0);

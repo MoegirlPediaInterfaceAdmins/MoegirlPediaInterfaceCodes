@@ -1,13 +1,13 @@
+import { endGroup, startGroup } from "@actions/core";
+import { createActionAuth } from "@octokit/auth-action";
+import { createAppAuth } from "@octokit/auth-app";
+import { createUnauthenticatedAuth } from "@octokit/auth-unauthenticated";
+import { retry } from "@octokit/plugin-retry";
+import { Octokit } from "@octokit/rest";
 import console from "../modules/console.js";
+import { debugConsole, debugLoggingEnabled } from "../modules/debugLog.js";
 import yamlModule from "../modules/yamlModule.js";
 const { assignees } = await yamlModule.readFile(".github/auto_assign.yaml");
-import { startGroup, endGroup } from "@actions/core";
-import { Octokit } from "@octokit/rest";
-import { retry } from "@octokit/plugin-retry";
-import { createAppAuth } from "@octokit/auth-app";
-import { createActionAuth } from "@octokit/auth-action";
-import { createUnauthenticatedAuth } from "@octokit/auth-unauthenticated";
-import { debugLoggingEnabled, debugConsole } from "../modules/debugLog.js";
 const isInGithubActions = process.env.GITHUB_ACTIONS === "true";
 const isInMasterBranch = process.env.GITHUB_REF === "refs/heads/master";
 const isPush = ["push"].includes(process.env.GITHUB_EVENT_NAME);
@@ -16,6 +16,7 @@ const octokitBaseOptions = {
     owner: isInGithubActions ? process.env.GITHUB_REPOSITORY_OWNER : null,
     repo: isInGithubActions ? process.env.GITHUB_REPOSITORY.split("/")[1] : null,
 };
+const isInMoegirlPediaInterfaceCodes = octokitBaseOptions.owner === "MoegirlPediaInterfaceAdmins" && octokitBaseOptions.repo === "MoegirlPediaInterfaceCodes";
 const workflowLink = isInGithubActions ? `https://github.com/${octokitBaseOptions.owner}/${octokitBaseOptions.repo}/actions/runs/${process.env.GITHUB_RUN_ID}` : null;
 let defaultAuthStrategy;
 const defaultAuthStrategyParameter = {};
@@ -73,6 +74,7 @@ console.log("isPullRequest:", isPullRequest);
 console.log("debugLoggingEnabled:", debugLoggingEnabled);
 console.info("workflowLink:", workflowLink);
 console.log("octokitBaseOptions:", octokitBaseOptions);
+console.log("isInMoegirlPediaInterfaceCodes:", isInMoegirlPediaInterfaceCodes);
 console.log("auth:", auth);
 endGroup();
 /**
@@ -145,5 +147,5 @@ const createIssue = async (issueTitle, issueBody, labels, replyBody) => {
     endGroup();
     return issue_number;
 };
-export { octokit, isInMasterBranch, octokitBaseOptions, createIssue, isInGithubActions, isPush, isPullRequest, OctokitWithRetry, workflowLink, debugLoggingEnabled, debugConsole };
-export default { octokit, isInMasterBranch, octokitBaseOptions, createIssue, isInGithubActions, isPush, isPullRequest, OctokitWithRetry, workflowLink, debugLoggingEnabled, debugConsole };
+export { createIssue, debugConsole, debugLoggingEnabled, isInGithubActions, isInMasterBranch, isInMoegirlPediaInterfaceCodes, isPullRequest, isPush, octokit, octokitBaseOptions, OctokitWithRetry, workflowLink };
+export default { octokit, isInMasterBranch, isInMoegirlPediaInterfaceCodes, octokitBaseOptions, createIssue, isInGithubActions, isPush, isPullRequest, OctokitWithRetry, workflowLink, debugLoggingEnabled, debugConsole };
