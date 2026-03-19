@@ -4,7 +4,7 @@ $(() => (async () => {
     if (mw.config.get("wgCanonicalSpecialPageName") !== "Whatlinkshere") {
         return;
     }
-    const { wgRelevantPageName, wgUserName, wgLocalizedNamespaces } = mw.config.get(["wgRelevantPageName", "wgUserName", "wgLocalizedNamespaces"]);
+    const { wgRelevantPageName, wgUserName, libLocalizedNamespaces } = mw.config.get(["wgRelevantPageName", "wgUserName", "libLocalizedNamespaces"]);
     if (typeof wgRelevantPageName !== "string" || wgRelevantPageName.length === 0) {
         return;
     }
@@ -103,7 +103,7 @@ $(() => (async () => {
                 global.redirect++;
             }
         });
-        Object.entries(nslist).filter(([, { count }]) => count > 0).sort(([a], [b]) => a - b).forEach(([nsnumber, { count, redirect }]) => ul.append(`<li>${upperFirstCase(wgLocalizedNamespaces[nsnumber])}：${count}个页面${redirect > 0 ? `（其中有${redirect}个重定向页面）` : ""}`));
+        Object.entries(nslist).filter(([, { count }]) => count > 0).sort(([a], [b]) => a - b).forEach(([nsnumber, { count, redirect }]) => ul.append(`<li>${upperFirstCase(libLocalizedNamespaces[nsnumber])}：${count}个页面${redirect > 0 ? `（其中有${redirect}个重定向页面）` : ""}`));
         whatlinkshere.after(ul);
     });
     queryWhatembeddedin.on("click", async () => {
@@ -201,7 +201,7 @@ $(() => (async () => {
             nslist[ns].redirect.push(title);
             global.redirect++;
         });
-        Object.entries(nslist).filter(([, { count }]) => count > 0).sort(([a], [b]) => a - b).forEach(([nsnumber, { count, redirect }]) => ul.append(`<li class="mw-parser-output">${upperFirstCase(wgLocalizedNamespaces[nsnumber])}：${count}个页面${redirect.length > 0 ? `（其中有${redirect.length}个重定向页面：${redirect.map((title) => `<a target="_blank" rel="nofollow noreferrer noopener" class="external text" href="/index.php?title=${encodeURIComponent(title)}&amp;redirect=no">${title}</a>`).join("、")}）` : ""}`));
+        Object.entries(nslist).filter(([, { count }]) => count > 0).sort(([a], [b]) => a - b).forEach(([nsnumber, { count, redirect }]) => ul.append(`<li class="mw-parser-output">${upperFirstCase(libLocalizedNamespaces[nsnumber])}：${count}个页面${redirect.length > 0 ? `（其中有${redirect.length}个重定向页面：${redirect.map((title) => `<a target="_blank" rel="nofollow noreferrer noopener" class="external text" href="/index.php?title=${encodeURIComponent(title)}&amp;redirect=no">${title}</a>`).join("、")}）` : ""}`));
         whatembeddedin.after(ul);
     });
 })());

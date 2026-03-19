@@ -27,6 +27,7 @@ peers: []
 
 dependencies:
   - ext.gadget.site-lib
+  - ext.gadget.LocalObjectStorage
 
 _sites:
   - zh

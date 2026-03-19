@@ -119,7 +119,7 @@
             "autoblock",
         ].map((k) => [k, `apihelp-block-param-${k}`]),
     ];
-    const { wgLocalizedNamespaces, wgUserName } = mw.config.get(["wgLocalizedNamespaces", "wgUserName"]);
+    const { libLocalizedNamespaces, wgUserName } = mw.config.get(["libLocalizedNamespaces", "wgUserName"]);
     let cache;
     const api = new mw.Api();
     const eol = Symbol();
@@ -295,7 +295,7 @@
                             }
                             if (blockInfo.restrictions.namespaces) {
                                 blockInfo.restrictions.namespaces.forEach((ns) => {
-                                    restrictions.push(`${wgULS("命名空间", "命名空間")}：${wgLocalizedNamespaces[ns]}`);
+                                    restrictions.push(`${wgULS("命名空间", "命名空間")}：${libLocalizedNamespaces[ns]}`);
                                 });
                             }
                             if (restrictions.length > 0) {
