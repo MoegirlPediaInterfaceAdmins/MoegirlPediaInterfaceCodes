@@ -865,7 +865,7 @@
             // in the second parameter. If the third parameter passed to ToolTip.upToTopParent is true,
             // the execution stops when the function in question returns true for the first time,
             // and ToolTip.upToTopParent returns true as well.
-            this.upToTopParent = function (func, parameters, stopAtTrue) {
+            this.upToTopParent = function (func, parameters = [], stopAtTrue) {
                 let returnValue;
 
                 for (let currentTooltip = this; currentTooltip; currentTooltip = currentTooltip.parent) {
