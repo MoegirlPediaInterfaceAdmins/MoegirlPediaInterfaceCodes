@@ -45,7 +45,7 @@
     const wgRestrictionCreate = mw.config.get("wgRestrictionCreate");
     const { wgRestrictionEdit, wgRestrictionMove, wgPageName, wgUserName, wgScriptPath, skin } = mw.config.get(["wgRestrictionEdit", "wgRestrictionMove", "wgPageName", "wgUserName", "wgScriptPath", "skin"]);
 
-    if (!(wgRestrictionCreate && wgRestrictionEdit && wgRestrictionMove)) {
+    if (!wgRestrictionCreate && !wgRestrictionEdit && !wgRestrictionMove) {
         return;
     }
 
