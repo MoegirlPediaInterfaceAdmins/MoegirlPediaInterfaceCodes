@@ -44,6 +44,11 @@
     justify-content: center;
 }
 
-html.skin-theme-clientpref-night .annotation-content {
+html.skin-theme-clientpref-night .annotation-content,
+html.dark .annotation-content {
     color: white;
+}
+
+html.dark .oo-ui-popupWidget-popup {
+    background-color: black;
 }
