@@ -86,6 +86,7 @@
         protectLevels.add("create");
     }
     if (protectLevels.size > 0) {
+        const isDark = document.documentElement.classList.contains("skin-theme-clientpref-night") || document.documentElement.classList.contains("dark");
         const api = new mw.Api();
         await api.loadMessagesIfMissing(Array.from(protectLevels));
         const intestactionsPromise = api.post({
@@ -101,7 +102,7 @@
         });
         $protectionInfoContainer.appendTo($container);
         $("<img>", {
-            src: "/resources/lib/ooui/themes/wikimediaui/images/icons/lock.svg",
+            src: `/resources/lib/ooui/themes/wikimediaui/images/icons/${isDark ? "lock-invert.svg" : "lock.svg"}`,
             alt: "",
             "aria-hidden": "true",
         }).appendTo($protectionInfoContainer);
