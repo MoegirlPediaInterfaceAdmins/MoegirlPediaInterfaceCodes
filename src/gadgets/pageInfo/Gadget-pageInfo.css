@@ -43,3 +43,7 @@
 #pagetools-desktop-container .edit-button-group {
     justify-content: center;
 }
+
+html.skin-theme-clientpref-night .annotation-content {
+    color: white;
+}
