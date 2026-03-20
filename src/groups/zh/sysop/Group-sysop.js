@@ -12,7 +12,7 @@
             reasonPageName = href.slice(href.indexOf("title=") + 6, href.indexOf("&action"));
         $obj.before(`<a target="_blank" href="/${reasonPageName}">浏览${act}原因</a>`);
     };
-    // 防滥用过滤器相关
+    // 滥用过滤器相关
     // eslint-disable-next-line no-unused-vars
     const abuseLog = () => {
         if ($(".mw-special-AbuseLog")[0]) {
@@ -57,7 +57,7 @@
                     },
                 });
                 $('form[action="/Special:%E6%BB%A5%E7%94%A8%E6%97%A5%E5%BF%97"] > fieldset').append("<p/>").find("p").append($("<span/>", {
-                    text: `点击隐藏/显示防滥用过滤器${Array.from(needToggle.values()).join("、").replace(/、(?=[^、]+$)/, "和")}的日志：`,
+                    text: `点击隐藏/显示滥用过滤器${Array.from(needToggle.values()).join("、").replace(/、(?=[^、]+$)/, "和")}的日志：`,
                 })).append(input);
                 if (lastStatus) {
                     body.addClass("AbuseFilterHidden");
@@ -65,7 +65,7 @@
             }
         }
     };
-    // 防滥用过滤器列表
+    // 滥用过滤器列表
     const AbuseList = () => {
         const idList = $(".TablePager_col_af_id a"),
             // lvList = $(".TablePager_col_af_hidden"),
@@ -111,9 +111,9 @@
     if (mw.config.get("wgCanonicalSpecialPageName") === "Revisiondelete" && $(".mw-revdel-editreasons")[0]) {
         addLink($(".mw-revdel-editreasons > a"), "删除");
     }
-    // 防滥用过滤器日志
+    // 滥用过滤器日志
     // abuseLog();
-    // 防滥用过滤器列表
+    // 滥用过滤器列表
     if (mw.config.get("wgPageName") === "Special:滥用过滤器") {
         AbuseList();
     }

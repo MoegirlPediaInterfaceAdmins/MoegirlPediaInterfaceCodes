@@ -121,7 +121,7 @@ $(() => (async () => {
             }
             table.empty();
             if (result.length > 0) {
-                table.append(`<caption style="font-weight: 700;">命中防滥用过滤器${filter}的内容</caption><tr><th style="text-align: right;">规则（请勿泄漏！！！）</th><th style="text-align: left;">命中字符串上下文</th></tr>`);
+                table.append(`<caption style="font-weight: 700;">命中滥用过滤器${filter}的内容</caption><tr><th style="text-align: right;">规则（请勿泄漏！！！）</th><th style="text-align: left;">命中字符串上下文</th></tr>`);
                 result.sort(({ start: a }, { start: b }) => a - b);
                 const results = [];
                 result.forEach((r) => {
