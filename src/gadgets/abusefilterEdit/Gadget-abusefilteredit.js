@@ -19,7 +19,7 @@ $(() => {
             select = self.find("select").appendTo(self);
         let MWFP, MAWP, MWFC, MWFO;
         self.find("td").remove();
-        self.append('<td><fieldset><legend>使用现有的消息</legend><table><tr><td class="mw-label">用作警告的系统消息：</td><td class="mw-input" id="mw-abusefilter-edit-warn-message-select"></td></tr><tr><td class="mw-label">操作：</td><td class="mw-input"><p><input id="MWFP" type="button" value="预览消息"><input id="MWFC" type="button" value="清空预览" style="display: none;"><input id="MWFO" type="button" value="在新窗口打开"> </p></td></tr><tr><td id="MAWP" colspan="2"></td></tr><tr><td colspan="2"><p>P.S.只有这里的下拉栏设置的系统消息才是防滥用过滤器使用的系统消息，隔壁是创建用啦！</p></td></tr><tr><td colspan="2" id="MAWI"></td></tr></table></fieldset></td>').find("#mw-abusefilter-edit-warn-message-select").append(select);
+        self.append('<td><fieldset><legend>使用现有的消息</legend><table><tr><td class="mw-label">用作警告的系统消息：</td><td class="mw-input" id="mw-abusefilter-edit-warn-message-select"></td></tr><tr><td class="mw-label">操作：</td><td class="mw-input"><p><input id="MWFP" type="button" value="预览消息"><input id="MWFC" type="button" value="清空预览" style="display: none;"><input id="MWFO" type="button" value="在新窗口打开"> </p></td></tr><tr><td id="MAWP" colspan="2"></td></tr><tr><td colspan="2"><p>P.S.只有这里的下拉栏设置的系统消息才是滥用过滤器使用的系统消息，隔壁是创建用啦！</p></td></tr><tr><td colspan="2" id="MAWI"></td></tr></table></fieldset></td>').find("#mw-abusefilter-edit-warn-message-select").append(select);
         MWFP = $("#MWFP"), MAWP = $("#MAWP"), MWFC = $("#MWFC"), MWFO = $("#MWFO");
         MAWI = $("#MAWI"), selectOpt = select.html(), selectVal = select.val(); // 放置到上级作用域链以便其他元素执行
         MWFP.on("click", () => {
