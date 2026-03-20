@@ -68,6 +68,7 @@
     try {
         await mw.loader.getScript("https://fastly.jsdelivr.net/npm/diff@7.0.0/dist/diff.min.js");
         applyDiff(window.Diff);
+        console.log("wikidiff2 loaded.");
     } catch (error) {
         console.error(`加载JsDiff时发生错误：${error}`);
     }

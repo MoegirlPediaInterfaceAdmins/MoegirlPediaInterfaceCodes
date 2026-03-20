@@ -20,7 +20,8 @@ type: general
 
 package: false
 
-rights: []
+rights:
+  - patrol
 
 peers: []
 
