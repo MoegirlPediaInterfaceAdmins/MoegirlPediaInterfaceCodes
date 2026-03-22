@@ -51,7 +51,7 @@
         "concat-stream": "^2.0.0",
         "duplexify": "^4.1.3",
         "envify": "^4.1.0",
-        "eslint": "^10.0.3",
+        "eslint": "^10.1.0",
         "eslint-plugin-prefer-arrow-functions": "^3.9.1",
         "esmify": "^2.1.1",
         "hash-wasm": "^4.12.0",
@@ -75,11 +75,11 @@
         "uglify-js": "^3.19.3",
         "unassertify": "^3.0.1",
         "v8r": "^6.0.0",
-        "yaml": "^2.8.2"
+        "yaml": "^2.8.3"
     },
     "devDependencies": {
         "@inpageedit/core": "^0.17.1",
-        "javascript-obfuscator": "^5.3.0",
+        "javascript-obfuscator": "^5.4.1",
         "moment": "^2.30.1",
         "npm-run-all2": "^8.0.4",
         "typescript": "^5.7.3"
