@@ -8,6 +8,7 @@ env:
 
 permissions:
   contents: write
+  actions: write
 
 jobs:
   auto_fix:

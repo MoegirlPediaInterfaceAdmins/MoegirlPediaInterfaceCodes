@@ -2,6 +2,7 @@ name: Detect hardcoded-outdated NPM packages
 permissions:
   contents: read
   issues: write
+  actions: write
 
 on:
   workflow_dispatch:
