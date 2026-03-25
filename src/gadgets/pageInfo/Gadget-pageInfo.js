@@ -126,7 +126,7 @@
                 actions = pageActions;
             }
         } catch (error) {
-            mw.log.warn("[Gadget-pageInfo] Failed to query intestactions", error);
+            console.warn("[Gadget-pageInfo] Failed to query intestactions", error);
             actions = {};
         }
         if (wgUserName) {
@@ -140,6 +140,8 @@
                     scriptPath: wgScriptPath,
                     text: "提出编辑请求",
                 });
+            } else {
+                $editRequestList?.remove();
             }
             if (actions.move === false && $moveRequestList) {
                 appendRequestLink($moveRequestList, {
@@ -149,6 +151,8 @@
                     scriptPath: wgScriptPath,
                     text: "提出移动请求",
                 });
+            } else {
+                $moveRequestList?.remove();
             }
             if (actions.create === false && $createRequestList) {
                 appendRequestLink($createRequestList, {
@@ -158,6 +162,8 @@
                     scriptPath: wgScriptPath,
                     text: "提出创建请求",
                 });
+            } else {
+                $createRequestList?.remove();
             }
         }
     }
