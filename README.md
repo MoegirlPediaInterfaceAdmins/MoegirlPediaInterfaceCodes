@@ -64,9 +64,12 @@
 - `npm run test` 方便检测代码错误
 - `npm run format` 可修正可被自动修正的错误
 - `npm run ci` 可通过临时修改镜像源的方式加快 `npm ci` 速度
+- `npm run hooks:install` 可手动重新安装本仓库使用的本地 Git hooks
 - `npm run build` 手动编译全部（CSS+JS）代码
   - `npm run build:css` 手动编译所有 CSS 代码
   - `npm run build:js` 手动编译所有 JS 代码
+
+默认情况下，`npm install` / `npm run ci` 会自动安装本仓库的本地 Git hooks。安装完成后，当你执行 `git pull`（包括 `pull --rebase`）并且拉取结果修改了 [`package-lock.json`](package-lock.json) 时，Git 会自动执行一次 `npm run ci` 以刷新依赖。若你本地已经有自定义的 `post-merge` 或 `post-rewrite` hook，自动安装会跳过对应 hook，这种情况下需要你手动合并逻辑。
 
 ## 自动化流程
 
