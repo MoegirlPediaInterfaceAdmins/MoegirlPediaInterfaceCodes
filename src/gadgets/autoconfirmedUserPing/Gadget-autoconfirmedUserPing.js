@@ -10,8 +10,8 @@ $(() => (async () => {
     const chunkify = (arr, size = 50) => Array.from({ length: Math.ceil(arr.length / size) }, (_, i) => arr.slice(i * size, i * size + size));
     const sleep = (ms = 1000) => new Promise((res) => setTimeout(res, ms));
     const hasHighLimit = (await mw.user.getRights()).includes("apihighlimits");
-    const pageid = mw.config.get("wgArticleId");
-    const username = mw.config.get("wgUserName");
+    const wgArticleId = mw.config.get("wgArticleId");
+    const wgUserName = mw.config.get("wgUserName");
     let result = {};
 
     const $body = $("body");
@@ -115,9 +115,9 @@ $(() => (async () => {
             const pageCreationTimeResult = await api.get({
                 action: "query",
                 formatversion: 2,
-                assertuser: username,
+                assertuser: wgUserName,
                 prop: "revisions",
-                pageids: pageid,
+                pageids: wgArticleId,
                 rvprop: "timestamp",
                 rvlimit: 1,
                 rvdir: "newer",
@@ -128,7 +128,7 @@ $(() => (async () => {
             this.addStep(wgULS("正在获取忽略用户名单……", "正在獲取忽略使用者名單……"));
             const ignoreResult = await api.get({
                 action: "query",
-                assertuser: username,
+                assertuser: wgUserName,
                 prop: "revisions",
                 list: "allusers",
                 titles: "模块:UserGroup/data",
@@ -141,7 +141,7 @@ $(() => (async () => {
             const MGUsers = JSON.parse(ignoreResult.query.pages[0].revisions[0].content);
 
             const ignoreList = Array.from(new Set([...bots, ...MGUsers.bureaucrat, ...MGUsers.sysop, ...MGUsers.patroller, ...MGUsers.staff]));
-            const filterResult = (result) => result.query.pages[pageid].contributors.map((c) => c.name).filter((c) => !ignoreList.includes(c));
+            const filterResult = (result) => result.query.pages[wgArticleId].contributors.map((c) => c.name).filter((c) => !ignoreList.includes(c));
             console.log("[ACUserPing] Got ignored user list.", ignoreList);
 
             this.addStep(wgULS("正在获取发言用户名单……", "正在獲取發言使用者名稱單……"));
@@ -150,9 +150,9 @@ $(() => (async () => {
             do {
                 contributorsResult = await api.get({
                     action: "query",
-                    assertuser: username,
+                    assertuser: wgUserName,
                     prop: "contributors",
-                    pageids: pageid,
+                    pageids: wgArticleId,
                     pcexcludegroup: "bot|bureaucrat|sysop|staff",
                     pclimit: "max",
                     pccontinue: contributorsResult?.continue?.pccontinue,
@@ -165,7 +165,7 @@ $(() => (async () => {
                 this.addStep(wgULS(`正在复核用户条件……（第${i + 1}批）`, `正在複核使用者條件……（第${i + 1}批）`));
                 const prelimRes = (await api.get({
                     action: "query",
-                    assertuser: username,
+                    assertuser: wgUserName,
                     list: "users",
                     ususers: chunk.join("|"),
                     usprop: "implicitgroups|blockinfo|registration",
@@ -176,7 +176,7 @@ $(() => (async () => {
                     await sleep();
                     const queryResult = await api.get({
                         action: "query",
-                        assertuser: username,
+                        assertuser: wgUserName,
                         list: "usercontribs|logevents",
                         uclimit: 1,
                         ucstart: moment(pageCreationTime).unix(),

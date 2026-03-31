@@ -11,12 +11,12 @@
 //     [key: string]: any;
 // };
 $(() => (async () => {
-    const pagename = mw.config.get("wgPageName");
-    const username = mw.config.get("wgUserName");
+    const wgPageName = mw.config.get("wgPageName");
+    const wgUserName = mw.config.get("wgUserName");
     // await mw.loader.using(["mediawiki.api", "oojs-ui"]);
 
     const pageid = mw.config.get("wgArticleId");
-    const basepage = pagename.replace(/\/.*?$/, "");
+    const basepage = wgPageName.replace(/\/.*?$/, "");
     const api = new mw.Api(), zhAPI = /^m?zh\.moegirl\.org\.cn$/.test(location.hostname) ? api : new mw.ForeignApi("https://mzh.moegirl.org.cn/api.php", { anonymous: true });
 
     const lrAivc = $.extend({
@@ -43,7 +43,7 @@ $(() => (async () => {
         prepopContent = lrAivc.autoPopulate
             ? (await api.get({
                 action: "parse",
-                assertuser: username,
+                assertuser: wgUserName,
                 pageid,
                 prop: "wikitext",
             })).parse.wikitext["*"]
@@ -358,7 +358,7 @@ $(() => (async () => {
                 const text = `{{NoteTA|${this.config.noteTAStr}}}<pre id="converted">-{}-${replaced}</pre>`;
                 const parsed = $($.parseHTML((await zhAPI.post({
                     action: "parse",
-                    assertuser: username,
+                    assertuser: wgUserName,
                     text,
                     contentmodel: "wikitext",
                     prop: "text",
@@ -388,10 +388,10 @@ $(() => (async () => {
                 const text = this.textInputs[variant].getValue();
                 return api.postWithToken("csrf", {
                     action: "edit",
-                    assertuser: username,
+                    assertuser: wgUserName,
                     title: variantPage(variant),
                     text,
-                    summary: `自动转换自[[${pagename}]]`,
+                    summary: `自动转换自[[${wgPageName}]]`,
                     tags: "VariantConverter|Automation tool",
                     watchlist: this.config.watchlist,
                 });
@@ -399,10 +399,10 @@ $(() => (async () => {
                 const text = this.textInputs[parent/* as string */].getValue();
                 return api.postWithToken("csrf", {
                     action: "edit",
-                    assertuser: username,
+                    assertuser: wgUserName,
                     title: variantPage(variant),
                     text,
-                    summary: `自动转换自[[${pagename}]]（同步${parent}）`,
+                    summary: `自动转换自[[${wgPageName}]]（同步${parent}）`,
                     tags: "VariantConverter|Automation tool",
                     watchlist: this.config.watchlist,
                 });

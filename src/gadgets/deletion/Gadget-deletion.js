@@ -19,8 +19,8 @@ $(() => (async () => {
         "ja.moegirl.org.cn": "削除依頼中のページ",
         "library.moegirl.org.cn": "即将删除的页面",
     };
-    const PAGENAME = mw.config.get("wgPageName");
-    const USERNAME = mw.config.get("wgUserName");
+    const wgPageName = mw.config.get("wgPageName");
+    const wgUserName = mw.config.get("wgUserName");
     // Make sure that all links open in a new tab when locked
     $("body").on("click", "a", (e) => globalDeletionLock ? window.open(e.target.href, "_blank") && false : null);
 
@@ -44,7 +44,7 @@ $(() => (async () => {
             while (aufrom !== eol) {
                 const _result = await api.post({
                     action: "query",
-                    assertuser: USERNAME,
+                    assertuser: wgUserName,
                     list: "allusers",
                     aurights: "rollback",
                     aulimit: "max",
@@ -68,12 +68,12 @@ $(() => (async () => {
             while (gcmcontinue !== eol) {
                 const _result = await api.post({
                     action: "query",
-                    assertuser: USERNAME,
+                    assertuser: wgUserName,
                     format: "json",
                     rvprop: "user",
                     prop: "revisions",
                     generator: "categorymembers",
-                    gcmtitle: PAGENAME,
+                    gcmtitle: wgPageName,
                     gcmprop: "ids|title",
                     gcmtype: "page|subcat|file",
                     gcmlimit: "max",
@@ -94,7 +94,7 @@ $(() => (async () => {
                 try {
                     const html = (await api.post({
                         action: "parse",
-                        assertuser: USERNAME,
+                        assertuser: wgUserName,
                         pageid,
                         prop: "text",
                     })).parse.text["*"];
@@ -255,11 +255,11 @@ $(() => (async () => {
                     try {
                         await api.postWithToken("csrf", {
                             action: "delete",
-                            assertuser: USERNAME,
+                            assertuser: wgUserName,
                             format: "json",
                             title: target,
                             tags: "Automation tool",
-                            reason: `批量删除【${PAGENAME}】下的页面${isDelCat && page.isTrusted && page.reason && page.user ? `（[[User_talk:${page.user}|${page.user}]]的挂删理由：${page.reason} ）` : deletionReason}`,
+                            reason: `批量删除【${wgPageName}】下的页面${isDelCat && page.isTrusted && page.reason && page.user ? `（[[User_talk:${page.user}|${page.user}]]的挂删理由：${page.reason} ）` : deletionReason}`,
                         }, {
                             timeout: 99999,
                         });
