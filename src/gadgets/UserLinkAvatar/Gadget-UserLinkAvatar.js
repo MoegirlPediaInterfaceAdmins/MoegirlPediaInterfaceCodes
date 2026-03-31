@@ -18,7 +18,7 @@
         if (checkIfAvatarLoaded(target)) {
             return;
         }
-        const userName = target.textContent.trim();
+        const userName = target.title.trim();
         const avatar = target.dataset.userAvatar;
 
         const avatarLink = document.createElement("a");
