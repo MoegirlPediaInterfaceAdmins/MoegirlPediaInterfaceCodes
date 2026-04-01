@@ -5,9 +5,6 @@
     - code-prettify
     - HeimuToggle
     - HeimuToggleDefaultOn
-    - FlowthreadTOC
-    - hideFlowthreadDefaultly
-    - FlowThreadCheck
     - float-toc
     - GiveYouUp
     - LetYouDown
@@ -37,8 +34,7 @@
     - pageInfo
     - modIconPrep
     - wikidiff2
-    - displayname-copy
-    - displayname-show
+    - SectionPermanentLink
 
 - name: skin
   gadgets:
@@ -51,17 +47,17 @@
 
 - name: user
   gadgets:
-    - CommentsinLocalTime
-    - editCount
-    - Logout-confirm
     - ShowAvatar
     - UserLinkAvatar
     - userLinkAvatarMagnifier
+    - displayname-copy
+    - displayname-show
+    - CommentsinLocalTime
+    - editCount
+    - Logout-confirm
     - usergroup
     - queryContributions
     - userpageDelete
-    - SendWelcomeMessage
-    - SectionPermanentLink
 
 - name: editing
   gadgets:
@@ -96,6 +92,7 @@
     - wikiBlame
     - quickSave
     - ContentAboveBelowImage
+    - SendWelcomeMessage
 
 - name: interface
   gadgets:

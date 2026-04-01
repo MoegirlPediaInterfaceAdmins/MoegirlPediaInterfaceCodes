@@ -31,7 +31,7 @@ dependencies:
 _sites:
   - zh
 
-_section: user
+_section: browsing
 
 _files:
   - Gadget-SectionPermanentLink.js

@@ -32,7 +32,7 @@ _sites:
   - zh
   - commons
 
-_section: browsing
+_section: user
 
 _files:
   - Gadget-displayname-copy.js
