@@ -1,20 +1,26 @@
 // <pre>
 "use strict";
-$(() => (() => {
+$(() => {
     // for 外显昵称日志
-    if (mw.config.get("wgCanonicalSpecialPageName") === "Log"
-        && $(".mw-logevent-loglines .mw-logline-moedisplayname").length > 0) {
-        // 查找所有mw-userlink元素并更新其文本内容
-        $(".mw-userlink").each(function () {
-            const $this = $(this);
-            const dataUserName = $this.attr("data-user-name");
-            const children = $this.contents().filter(function () {
-                // 保留不是文本节点的元素（如moe-badges等）
-                return this.nodeType !== 3;
-            });
-            $this.text(dataUserName);
-            $this.append(children);
-        });
+    if (mw.config.get("wgCanonicalSpecialPageName") !== "Log") {
+        return;
     }
-})());
+
+    const userLinks = document.querySelectorAll(".mw-logevent-loglines .mw-logline-moedisplayname .mw-userlink");
+    if (userLinks.length === 0) {
+        return;
+    }
+
+    // 更新用户链接文本，同时保留徽章等非文本节点
+    for (const userLink of userLinks) {
+        const userName = userLink.dataset.userName;
+        if (!userName) {
+            continue;
+        }
+
+        const children = [...userLink.childNodes].filter((node) => node.nodeType !== Node.TEXT_NODE);
+        userLink.textContent = userName;
+        userLink.append(...children);
+    }
+});
 // </pre>
