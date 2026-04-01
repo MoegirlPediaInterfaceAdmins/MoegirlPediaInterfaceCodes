@@ -35,6 +35,7 @@
     - modIconPrep
     - wikidiff2
     - SectionPermanentLink
+    - FlowthreadTOC
 
 - name: skin
   gadgets:
@@ -62,7 +63,6 @@
 - name: editing
   gadgets:
     - Force_preview
-    - ForcePreviewUponUserRequest
     - editTopSection
     - DotsSyntaxHighlighter
     - HotCat
