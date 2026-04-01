@@ -1476,9 +1476,13 @@ body.mw-special-Log .mw-htmlform-flatlist > .oo-ui-fieldLayout:nth-child(4) {
     display: none;
 }
 
-/* 贡献页面不显示徽章 */
+/* 临时：参数设置、贡献页面内容、changelist前缀不显示徽章 */
+.mw-special-Preference moe-badges,
+.mw-special-Preference moe-badge,
 .mw-body-content .mw-contributions-list moe-badges,
-.mw-body-content .mw-contributions-list moe-badge {
+.mw-body-content .mw-contributions-list moe-badge,
+.mw-changeslist-line-prefix moe-badges,
+.mw-changeslist-line-prefix moe-badge {
     display: none;
 }
 
