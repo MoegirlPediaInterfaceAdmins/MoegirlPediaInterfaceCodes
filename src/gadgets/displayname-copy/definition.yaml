@@ -1,0 +1,38 @@
+ResourceLoader: true
+
+hidden: false
+
+default: false
+
+supportsUrlLoad: false
+
+skins: []
+
+actions: []
+
+categories: []
+
+namespaces: []
+
+contentModels: []
+
+type: general
+
+package: false
+
+rights: 
+  - viewmywatchlist
+
+peers: []
+
+dependencies:
+  - ext.gadget.displayname-show
+
+_sites:
+  - zh
+  - commons
+
+_section: browsing
+
+_files:
+  - Gadget-displayname-copy.js
