@@ -382,8 +382,6 @@
     noticeActivityClose();
     // 跨站重定向页顶链接
     crossDomainDetect();
-    // 修复用户页左侧栏头像链接
-    leftPanelAvatarLink();
     if (wgUserGroups.includes("user")) {
         topNoticeScroll();
     }
