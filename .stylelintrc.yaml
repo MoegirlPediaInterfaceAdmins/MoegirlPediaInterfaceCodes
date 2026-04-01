@@ -33,5 +33,7 @@ rules:
     - ignoreTypes:
         - ogvjs
         - rb
+        - moe-badges
+        - moe-badge
   no-duplicate-selectors: null
   declaration-property-value-no-unknown: true

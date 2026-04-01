@@ -1476,7 +1476,6 @@ body.mw-special-Log .mw-htmlform-flatlist > .oo-ui-fieldLayout:nth-child(4) {
     display: none;
 }
 
-/* stylelint-disable selector-type-no-unknown -- moe-badges & moe-badge are custom web components */
 /* 贡献页面不显示徽章 */
 .mw-body-content .mw-contributions-list moe-badges,
 .mw-body-content .mw-contributions-list moe-badge {
