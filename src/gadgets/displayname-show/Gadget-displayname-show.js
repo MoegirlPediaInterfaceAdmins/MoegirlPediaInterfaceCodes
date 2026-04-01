@@ -70,7 +70,6 @@ $(() => {
 
     const { wgAction, wgCanonicalSpecialPageName } = mw.config.get([
         "wgAction",
-        "wgCanonicalNamespace",
         "wgCanonicalSpecialPageName",
     ]);
     if (
