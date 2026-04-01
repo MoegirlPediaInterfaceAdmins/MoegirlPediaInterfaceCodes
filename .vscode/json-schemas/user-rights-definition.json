@@ -132,7 +132,8 @@
                 "userrights",
                 "viewmyprivateinfo",
                 "viewmywatchlist",
-                "viewsuppressed"
+                "viewsuppressed",
+                "moedisplayname-admin"
             ]
         }
     }
