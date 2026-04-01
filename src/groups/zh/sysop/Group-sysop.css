@@ -87,3 +87,7 @@ body[class*="page-萌娘百科_talk_讨论版_"] .userlink .userlink-menu {
 li.mw-moderation-line:not(.mw-moderation-approved) input[type="radio"] {
     visibility: unset;
 }
+
+li.mw-moderation-line:not(.mw-moderation-approved) {
+    opacity: unset;
+}
