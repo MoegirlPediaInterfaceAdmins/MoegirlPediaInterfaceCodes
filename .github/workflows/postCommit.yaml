@@ -50,6 +50,7 @@ concurrency:
 
 env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  ANNBOT_USER_AGENT: ${{ secrets.ANNBOT_USER_AGENT }}
 
 permissions:
   actions: write
