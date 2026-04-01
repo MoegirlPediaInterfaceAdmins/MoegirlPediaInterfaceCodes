@@ -21,7 +21,7 @@
     const instanceRAF = new libRequestAnimationFrame.LibRequestAnimationFrame();
 
     /* 共享站相关 */
-    if (["ViewAvatar", "Listfiles", "ListDuplicatedFiles", "Unusedimages", "Uncategorizedimages", "MediaStatistics", "TimedMediaHandler"].includes(mw.config.get("wgCanonicalSpecialPageName"))) {
+    if (["Listfiles", "ListDuplicatedFiles", "Unusedimages", "Uncategorizedimages", "MediaStatistics", "TimedMediaHandler"].includes(mw.config.get("wgCanonicalSpecialPageName"))) {
         const url = new URL(location.href);
         url.hostname = url.hostname.replace(/^[^.]+/g, "commons");
         url.pathname = mw.config.get("wgScript");

@@ -342,14 +342,6 @@
             console.error("Error in crossDomainDetect\n", e);
         }
     };
-    // 修复用户页左侧栏头像链接
-    const leftPanelAvatarLink = () => {
-        $("#t-viewavatar > a").each((_, ele) => {
-            const url = new URL(ele.href, location.origin);
-            url.hostname = url.hostname.replace("zh.moegirl", "commons.moegirl");
-            ele.href = url.href;
-        });
-    };
     // 修正hash跳转错误
     const hashJump = async () => {
         await mw.loader.using(["jquery.makeCollapsible"]);

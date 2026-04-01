@@ -2,12 +2,12 @@
 // <pre>
 $(() => {
     const UploadAvatar = (_, children) => $("<a>", {
-        href: "https://commons.moegirl.org.cn/Special:UploadAvatar",
+        href: "/Special:UploadAvatar",
         title: "上传头像",
         target: "_blank",
     }).append(children);
     const ViewAvatar = ({ userName }, children) => {
-        const url = new URL("https://commons.moegirl.org.cn/Special:Viewavatar");
+        const url = new URL("/Special:Viewavatar");
         userName && url.searchParams.set("user", userName);
         return $("<a>", {
             href: url.href,
