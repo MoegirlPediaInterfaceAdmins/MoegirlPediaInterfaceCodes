@@ -1,0 +1,38 @@
+ResourceLoader: true
+
+hidden: false
+
+default: true
+
+supportsUrlLoad: false
+
+skins: []
+
+actions: []
+
+categories: []
+
+namespaces: []
+
+contentModels: []
+
+type: general
+
+package: false
+
+rights: 
+  - viewmywatchlist
+  - moedisplayname-admin
+
+peers: []
+
+dependencies: []
+
+_sites:
+  - zh
+  - commons
+
+_section: administration
+
+_files:
+  - Gadget-displayname-admin.js
