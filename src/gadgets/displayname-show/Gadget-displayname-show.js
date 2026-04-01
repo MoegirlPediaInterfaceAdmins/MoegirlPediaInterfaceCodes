@@ -103,7 +103,8 @@ $(() => {
         userLink.textContent = displayText;
         userLink.append(...children);
 
-        if (!enableCopy) {
+        if (!enableCopy
+            || wgCanonicalSpecialPageName !== "Contributions" && wgAction !== "history") {
             continue;
         }
 
