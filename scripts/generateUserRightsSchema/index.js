@@ -4,6 +4,7 @@ import createCommit from "../modules/createCommit.js";
 import errorToString from "../modules/errorToString.js";
 import upstream from "../modules/getUpstream.js";
 import jsonModule from "../modules/jsonModule.js";
+import "../modules/setupFetchUserAgent.js";
 import { sortWithLowerFirstCharacter } from "../modules/sortWithLowerFirstCharacter.js";
 console.info("Initialization done.");
 
