@@ -68,13 +68,14 @@ $(() => {
 
     const buildDisplayText = (userName, userNick) => [userName, userNick].filter(Boolean).join(" | ");
 
-    const { wgAction, wgCanonicalSpecialPageName } = mw.config.get([
+    const { wgAction, wgCanonicalNamespace, wgCanonicalSpecialPageName } = mw.config.get([
         "wgAction",
+        "wgCanonicalNamespace",
         "wgCanonicalSpecialPageName",
     ]);
     if (
         wgAction !== "history"
-        && wgCanonicalSpecialPageName !== "Contributions"
+        && wgCanonicalNamespace !== "Special"
     ) {
         return;
     }
