@@ -74,3 +74,11 @@ div.vectorMenu li.sysop-show {
 .page-Category_即将删除的页面 #ca-delete {
     display: none;
 }
+
+li.mw-moderation-line:not(.mw-moderation-approved) input[type="radio"] {
+    visibility: unset;
+}
+
+li.mw-moderation-line:not(.mw-moderation-approved) {
+    opacity: unset;
+}
