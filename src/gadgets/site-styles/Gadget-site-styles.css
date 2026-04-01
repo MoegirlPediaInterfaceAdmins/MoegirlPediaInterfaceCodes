@@ -1481,3 +1481,9 @@ body.mw-special-Log .mw-htmlform-flatlist > .oo-ui-fieldLayout:nth-child(4) {
 .mw-body-content .mw-contributions-list moe-badge {
     display: none;
 }
+
+/* 自定义不显示徽章 */
+.no-moe-badges moe-badges,
+.no-moe-badges moe-badge {
+    display: none;
+}
