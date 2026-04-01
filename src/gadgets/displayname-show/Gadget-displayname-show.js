@@ -81,10 +81,9 @@ $(() => {
     }
 
     if (wgCanonicalSpecialPageName === "Contributions") {
-        for (const link of document.querySelectorAll(".mw-contributions-user-tools a")) {
-            if (link.nextElementSibling?.tagName === "MOE-BADGES") {
-                link.classList.add("mw-userlink");
-            }
+        const link = document.querySelector(".mw-contributions-user-tools a");
+        if (link) {
+            link.classList.add("mw-userlink");
         }
     }
 
