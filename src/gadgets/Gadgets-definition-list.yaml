@@ -113,7 +113,6 @@
     - abusefilter33test
     - flagEditWar
     - flagBlocked
-    - displayname-admin
 
 - name: system
   gadgets:
