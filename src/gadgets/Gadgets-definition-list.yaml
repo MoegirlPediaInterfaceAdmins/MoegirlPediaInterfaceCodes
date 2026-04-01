@@ -37,6 +37,8 @@
     - pageInfo
     - modIconPrep
     - wikidiff2
+    - displayname-copy
+    - displayname-show
 
 - name: skin
   gadgets:
