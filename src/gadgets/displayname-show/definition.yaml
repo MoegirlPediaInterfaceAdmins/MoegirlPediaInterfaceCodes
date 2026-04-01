@@ -25,7 +25,8 @@ rights:
 
 peers: []
 
-dependencies: []
+dependencies: 
+  - mediawiki.notification
 
 _sites:
   - zh

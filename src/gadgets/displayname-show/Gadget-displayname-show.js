@@ -91,7 +91,7 @@ $(() => {
     const userLinks = document.querySelectorAll(".mw-userlink");
 
     for (const userLink of userLinks) {
-        const { userName = "", userNick = "" } = userLink.dataset;
+        const { userName = userLink.textContent, userNick = "" } = userLink.dataset;
         const displayText = buildDisplayText(userName, userNick);
 
         if (!displayText) {
