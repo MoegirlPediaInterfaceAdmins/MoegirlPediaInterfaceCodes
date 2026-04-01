@@ -11,7 +11,7 @@ if (typeof globalThis.fetch === "function" && userAgent && !globalThis[fetchUser
                 headers.set(key, value);
             });
         }
-        headers.set("user-agent", userAgent);
+        headers.set("user-agent", `MoegirlPediaInterfaceCodes ${userAgent}`);
         return originalFetch(input, {
             ...init,
             headers,
