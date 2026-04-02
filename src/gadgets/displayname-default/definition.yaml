@@ -1,0 +1,38 @@
+ResourceLoader: true
+
+hidden: false
+
+default: true
+
+supportsUrlLoad: false
+
+skins: []
+
+actions: []
+
+categories: []
+
+namespaces: []
+
+contentModels: []
+
+type: general
+
+package: false
+
+rights: 
+  - viewmywatchlist
+
+peers: []
+
+dependencies: 
+  - user.options
+
+_sites:
+  - zh
+  - commons
+
+_section: user
+
+_files:
+  - Gadget-displayname-default.js
