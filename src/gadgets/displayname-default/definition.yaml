@@ -20,12 +20,12 @@ type: general
 
 package: false
 
-rights: 
+rights:
   - viewmywatchlist
 
 peers: []
 
-dependencies: 
+dependencies:
   - user.options
 
 _sites:
@@ -35,4 +35,4 @@ _sites:
 _section: user
 
 _files:
-  - Gadget-displayname-default.js
+  - Gadget-displayename-default.js
