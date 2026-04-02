@@ -570,7 +570,7 @@ body.page-Mainpage.rootpage-Mainpage #siteNotice {
 
 #mainpage.is-sp .mainpage-title::before,
 #mainpage.is-sp .mainpage-title::after {
-    background-image: url("https://img.moegirl.org.cn/common/f/f2/%E7%81%AF%E7%AC%BC1.png");
+    background-image: url("https://storage.moegirl.org.cn/moegirl/commons/f/f2/%E7%81%AF%E7%AC%BC1.png");
     background-size: contain;
     background-repeat: no-repeat;
     content: " ";

@@ -313,7 +313,7 @@ $(() => {
                     "file-alt": {
                         label: mw.msg("wikieditor-toolbar-tool-file-title"),
                         type: "button",
-                        icon: "https://img.moegirl.org.cn/common/3/3e/Insert-file.svg",
+                        icon: "https://storage.moegirl.org.cn/moegirl/commons/3/3e/Insert-file.svg",
                         offset: [2, -1438],
                         action: {
                             type: "callback",
