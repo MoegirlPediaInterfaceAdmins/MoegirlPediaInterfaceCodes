@@ -51,16 +51,16 @@
     - ShowAvatar
     - UserLinkAvatar
     - userLinkAvatarMagnifier
-    - displayname-copy
+    - displayname-default
+    - displayname-both
     - displayname-show
+    - displayname-copy
     - CommentsinLocalTime
     - editCount
     - Logout-confirm
     - usergroup
     - queryContributions
     - userpageDelete
-    - displayname-both
-    - displayname-default
 
 - name: editing
   gadgets:
