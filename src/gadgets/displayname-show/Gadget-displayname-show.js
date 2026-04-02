@@ -81,10 +81,7 @@ $(() => {
     }
 
     if (wgCanonicalSpecialPageName === "Contributions") {
-        const link = document.querySelector(".mw-contributions-user-tools a");
-        if (link) {
-            link.classList.add("mw-userlink");
-        }
+        document.querySelector(".mw-contributions-user-tools a")?.classList.add("mw-userlink");
     }
 
     const enableCopy = +mw.user.options.get("gadget-displayname-copy", 0) === 1;
