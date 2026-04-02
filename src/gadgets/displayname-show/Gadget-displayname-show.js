@@ -13,15 +13,9 @@ $(() => {
     /**
      * @param { Parameters<typeof mw.notify>[0] } message
      * @param { mw.notification.NotificationOptions["type"] } type
-     * @returns { ReturnType<typeof mw.notify> | Promise<void> }
+     * @returns { ReturnType<typeof mw.notify> }
      */
-    const notify = (message, type = "success") => {
-        if (typeof mw.notify === "function") {
-            return mw.notify(message, { type, ...baseNotificationOptions });
-        }
-        alert(message);
-        return Promise.resolve();
-    };
+    const notify = (message, type = "success") => mw.notify(message, { type, ...baseNotificationOptions });
 
     const legacyCopyText = (text) => {
         const textArea = document.createElement("textarea");
