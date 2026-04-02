@@ -10,12 +10,17 @@ $(() => {
         visibleTimeout: false,
     };
 
+    /**
+     * @param { Parameters<typeof mw.notify>[0] } message
+     * @param { mw.notification.NotificationOptions["type"] } type
+     * @returns { ReturnType<typeof mw.notify> | Promise<void> }
+     */
     const notify = (message, type = "success") => {
         if (typeof mw.notify === "function") {
-            mw.notify(message, { type, ...baseNotificationOptions });
-            return;
+            return mw.notify(message, { type, ...baseNotificationOptions });
         }
         alert(message);
+        return Promise.resolve();
     };
 
     const legacyCopyText = (text) => {
