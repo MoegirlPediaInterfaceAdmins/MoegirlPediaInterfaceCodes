@@ -59,6 +59,8 @@
     - usergroup
     - queryContributions
     - userpageDelete
+    - displayname-both
+    - displayname-default
 
 - name: editing
   gadgets:
