@@ -95,12 +95,7 @@ $(() => {
             continue;
         }
 
-        const children = [...userLink.childNodes].filter((node) => {
-            if (node.nodeType === Node.TEXT_NODE) {
-                return false;
-            }
-            return node.textContent !== displayText;
-        });
+        const children = [...userLink.childNodes].filter((node) => node.nodeType !== Node.TEXT_NODE && node.textContent !== displayText);
         userLink.textContent = displayText;
         userLink.append(...children);
 
