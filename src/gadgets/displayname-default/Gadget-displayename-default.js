@@ -6,6 +6,20 @@
         return;
     }
 
+    // 递归替换所有等于 userName 的文本节点
+    const replaceTextNodes = (node, userName, targetText) => {
+        if (node.nodeType === Node.TEXT_NODE) {
+            if (node.nodeValue.trim() === userName) {
+                node.nodeValue = targetText;
+            }
+        } else {
+            const children = [...node.childNodes];
+            for (const child of children) {
+                replaceTextNodes(child, userName, targetText);
+            }
+        }
+    };
+
     const links = container.querySelectorAll("a[data-user-nick]");
     for (const a of links) {
         const { userName, userNick } = a.dataset;
@@ -27,21 +41,7 @@
             ? `${userName} | ${userNick}`
             : userNick;
 
-        // 递归替换所有等于 userName 的文本节点
-        const replaceTextNodes = (node) => {
-            if (node.nodeType === Node.TEXT_NODE) {
-                if (node.nodeValue.trim() === userName) {
-                    node.nodeValue = targetText;
-                }
-            } else {
-                const children = [...node.childNodes];
-                for (const child of children) {
-                    replaceTextNodes(child);
-                }
-            }
-        };
-
-        replaceTextNodes(a);
+        replaceTextNodes(a, userName, targetText);
     }
 })();
 // </pre>
