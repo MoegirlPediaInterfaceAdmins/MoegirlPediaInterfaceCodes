@@ -1499,3 +1499,9 @@ body.mw-special-Log .mw-htmlform-flatlist > .oo-ui-fieldLayout:nth-child(4) {
 .mw-parser-output .show-moe-badges moe-badge {
     display: revert !important;
 }
+
+
+/* 用户页子页面隐藏标题下面的勋章 */
+#mw-content-subtitle moe-badges {
+    display: none;
+}
