@@ -67,10 +67,11 @@ $(() => {
 
     const buildDisplayText = (userName, userNick) => [userName, userNick].filter(Boolean).join(" | ");
 
-    const { wgAction, wgCanonicalNamespace, wgCanonicalSpecialPageName } = mw.config.get([
+    const { wgAction, wgCanonicalNamespace, wgCanonicalSpecialPageName, wgUserGroups } = mw.config.get([
         "wgAction",
         "wgCanonicalNamespace",
         "wgCanonicalSpecialPageName",
+        "wgUserGroups",
     ]);
     if (
         wgAction !== "history"
@@ -87,7 +88,11 @@ $(() => {
     const userLinks = document.querySelectorAll(".mw-userlink");
 
     for (const userLink of userLinks) {
-        const { userName = userLink.textContent, userNick = "" } = userLink.dataset;
+        let { userName = userLink.textContent } = userLink.dataset;
+        const { userNick = "" } = userLink.dataset;
+        if (userNick === "已注销#0000" && !wgUserGroups.includes("suppress")) {
+            userName = "";
+        }
         const displayText = buildDisplayText(userName, userNick);
 
         if (!displayText) {
