@@ -1,8 +1,8 @@
 {
+    "$schema": "https://json.schemastore.org/tsconfig",
     "extends": "./tsconfig.json",
     "compilerOptions": {
         "outDir": "./dist/_compiled",
-        "baseUrl": "./",
         "rootDir": "./src/",
         "target": "es2020",
     },
