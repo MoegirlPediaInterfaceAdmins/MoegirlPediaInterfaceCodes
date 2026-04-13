@@ -25,6 +25,8 @@
                 "abusefilter-modify",
                 "abusefilter-modify-blocked-external-domains",
                 "abusefilter-modify-restricted",
+                "abusefilter-privatedetails",
+                "abusefilter-privatedetails-log",
                 "abusefilter-protected-vars-log",
                 "abusefilter-revert",
                 "abusefilter-view",
@@ -36,6 +38,7 @@
                 "applychangetags",
                 "autoconfirmed",
                 "autopatrol",
+                "autotrans-admin",
                 "avataradmin",
                 "avatarupload",
                 "bigdelete",
@@ -91,6 +94,10 @@
                 "masseditregex",
                 "mergehistory",
                 "minoredit",
+                "moedisplayname-admin",
+                "moedisplayname-bypass-cooldown",
+                "moedisplayname-bypass-validation",
+                "moedisplayname-modify-self",
                 "move",
                 "move-categorypages",
                 "move-rootuserpages",
@@ -132,8 +139,7 @@
                 "userrights",
                 "viewmyprivateinfo",
                 "viewmywatchlist",
-                "viewsuppressed",
-                "moedisplayname-admin"
+                "viewsuppressed"
             ]
         }
     }
