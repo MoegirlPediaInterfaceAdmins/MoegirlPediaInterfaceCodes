@@ -29,7 +29,7 @@
     "dependencies": {
         "@actions/artifact": "^6.2.1",
         "@actions/core": "^3.0.0",
-        "@annangela/eslint-config": "^10.0.0",
+        "@annangela/eslint-config": "^11.0.0",
         "@annangela/eslint-formatter-gha": "^5.0.0",
         "@annangela/eslint-plugin-prefer-reflect": "^5.0.0",
         "@csstools/postcss-is-pseudo-class": "^6.0.0",
@@ -45,7 +45,7 @@
         "@types/jquery": "^4.0.0",
         "@types/oojs-ui": "^0.49.4",
         "@types/prismjs": "^1.26.6",
-        "autoprefixer": "^10.4.27",
+        "autoprefixer": "^10.5.0",
         "browser-pack-flat": "^3.5.0",
         "browserify": "^17.0.1",
         "browserslist": "^4.28.2",
