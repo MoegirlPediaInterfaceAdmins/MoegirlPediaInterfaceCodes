@@ -9,7 +9,7 @@
     // 递归替换所有等于 userName 的文本节点
     const replaceTextNodes = (node, userName, targetText) => {
         if (node.nodeType === Node.TEXT_NODE) {
-            if (node.nodeValue.trim() === userName) {
+            if (node.nodeValue.trim().replace(/_/g, " ") === userName) {
                 node.nodeValue = targetText;
             }
         } else {
