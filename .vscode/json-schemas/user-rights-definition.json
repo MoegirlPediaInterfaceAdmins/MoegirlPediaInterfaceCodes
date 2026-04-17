@@ -106,6 +106,7 @@
                 "nominornewtalk",
                 "noratelimit",
                 "nuke",
+                "override-antispoof",
                 "patrol",
                 "patrolleredit",
                 "patrolmarks",
