@@ -65,7 +65,7 @@ $(() => {
         tooltipFormats: [
             (_, originalText) => `原始时间戳：${originalText}`,
             "[年月日星时：]LLLL",
-            "[ISO 8601式：]YYYY-MM-DDTHH:mmZ",
+            "[ISO8601式：]YYYY-MM-DDTHH:mmZ",
         ],
         dynamic: true,
         excludeNamespaces: Object.keys(mw.config.get("wgFormattedNamespaces")).map((ns) => +ns).filter((ns) => ns < 0 || ns % 2 === 0),
