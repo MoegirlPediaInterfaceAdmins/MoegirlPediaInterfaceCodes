@@ -1514,3 +1514,8 @@ body.mw-special-Log .mw-htmlform-flatlist > .oo-ui-fieldLayout:nth-child(4) {
 .mw-parser-output .show-moe-badges moe-badge {
     display: revert !important;
 }
+
+/* 隐藏可视化编辑器一级标题 */
+.oo-ui-toolbar-popups .oo-ui-tool-name-heading1 {
+    display: none;
+}
