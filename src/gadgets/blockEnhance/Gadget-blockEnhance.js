@@ -105,7 +105,7 @@
                 ip = ipCidr[1];
                 cidr = ipCidr[2] || null;
                 const abbrevs = ip.match(/::/g);
-                if (abbrevs && abbrevs.length > 0) {
+                if (abbrevs?.length > 0) {
                     const colons = ip.match(/:/g);
                     let needed = 7 - (colons.length - 2);
                     let insert = "";

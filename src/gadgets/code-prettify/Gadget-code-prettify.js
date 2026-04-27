@@ -802,7 +802,7 @@ $(() => {
             recombineTagsAndDecorations(job);
         } catch (e) {
             if (window.console) {
-                console.log(e && e.stack || e);
+                console.log(e?.stack || e);
             }
         }
     };
@@ -906,7 +906,7 @@ $(() => {
                         } else {
                             const currentStyle = cs.currentStyle;
                             const defaultView = doc.defaultView;
-                            const whitespace = currentStyle ? currentStyle.whiteSpace : defaultView && defaultView.getComputedStyle ? defaultView.getComputedStyle(cs, null).getPropertyValue("white-space") : 0;
+                            const whitespace = currentStyle ? currentStyle.whiteSpace : defaultView?.getComputedStyle ? defaultView.getComputedStyle(cs, null).getPropertyValue("white-space") : 0;
                             preformatted = whitespace && "pre" === whitespace.substring(0, 3);
                         }
                         let lineNums = attrs.linenums;

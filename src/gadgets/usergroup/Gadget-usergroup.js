@@ -241,7 +241,7 @@
             }
             if (!ele.classList.contains("markBlockInfo")) {
                 const blockInfo = blockCache[username];
-                if (blockInfo && blockInfo.timestamp) {
+                if (blockInfo?.timestamp) {
                     markBlocked(ele, blockInfo);
                 } else {
                     ele.classList.add("unknownBlockInfo");
@@ -335,7 +335,7 @@
             for (const ele of querySelectorAll(".unknownBlockInfo")) {
                 const { username } = ele.dataset;
                 const blockInfo = blockCache[username];
-                if (blockInfo && blockInfo.timestamp) {
+                if (blockInfo?.timestamp) {
                     markBlocked(ele, blockInfo);
                 }
             }

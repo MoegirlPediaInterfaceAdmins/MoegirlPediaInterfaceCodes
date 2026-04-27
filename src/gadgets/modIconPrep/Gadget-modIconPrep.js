@@ -33,7 +33,7 @@
 
             $icons.each(function () {
                 const prevNode = this.previousSibling;
-                if (prevNode && prevNode.nodeType === Node.TEXT_NODE) {
+                if (prevNode?.nodeType === Node.TEXT_NODE) {
                     prevNode.remove();
                 }
                 this.remove();

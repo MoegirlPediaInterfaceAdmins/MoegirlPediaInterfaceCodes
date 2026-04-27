@@ -7,7 +7,7 @@ $(() => {
          * @type { HTMLTextAreaElement | null }
          */
         const wpTextbox = document.querySelector("#wpTextbox1");
-        if (wpTextbox && wpTextbox.value.length === 0) {
+        if (wpTextbox?.value.length === 0) {
             wpTextbox.value = message;
         }
     }

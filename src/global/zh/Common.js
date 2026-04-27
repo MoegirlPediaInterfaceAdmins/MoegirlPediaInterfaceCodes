@@ -127,7 +127,7 @@
                 return;
             }
             valueNode.text(value);
-            /* if (e.originalEvent.clipboardData && e.originalEvent.clipboardData.setData) {
+            /* if (e.originalEvent.clipboardData?.setData) {
                 e.originalEvent.clipboardData.setData("text/plain", div.text());
                 e.originalEvent.clipboardData.setData("text/html", div.html());
             } else { */
