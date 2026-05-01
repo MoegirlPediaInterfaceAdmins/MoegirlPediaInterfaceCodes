@@ -60,7 +60,7 @@
         "ip": "^2.0.1",
         "jsonc-parser": "^3.3.1",
         "localforage": "^1.10.0",
-        "postcss": "^8.5.12",
+        "postcss": "^8.5.13",
         "postcss-cli": "^11.0.1",
         "postcss-discard-comments": "^7.0.7",
         "postcss-font-variant": "^5.0.0",
