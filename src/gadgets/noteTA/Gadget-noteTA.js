@@ -4,7 +4,7 @@
  * 引自 https://zh.wikipedia.org/wiki/MediaWiki:Gadget-noteTA.js jQuery UI对话框版本
  * User:AnnAngela做了整合与现代化
  */
-mw.hook("wikipage.content").add(() => {
+const parser = () => {
     const map = {
         zh: "（不转换）",
         "zh-hans": "（简体）",
@@ -188,5 +188,7 @@ mw.hook("wikipage.content").add(() => {
             }
         }
     }, 0);
-});
+};
+$(".mw-parser-output").each(parser);
+mw.hook("wikipage.content").add(parser);
 // </pre>

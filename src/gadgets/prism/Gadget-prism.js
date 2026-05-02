@@ -130,71 +130,71 @@ $(() => {
                 });
         }
     });
-    mw.hook("wikipage.content").add(
-        /**
-         * @param { JQuery<HTMLElement> } $content
-         */
-        ($content) => (async () => {
-            const wgPageContentModel = mw.config.get("wgPageContentModel", "").toLowerCase();
-            const langSet = new Set();
-            const pluginsSet = new Set([
-                "match-braces",
-            ]);
-            if (Reflect.has(acceptsLangs, wgPageContentModel)) {
-                const lang = acceptsLangs[wgPageContentModel];
-                langSet.add(lang);
-                if (Reflect.has(appendPluginsList, lang)) {
-                    pluginsSet.add(appendPluginsList[lang]);
-                }
-                $content.find(".mw-code").addClass("line-numbers").wrapInner("<code>").children("code").addClass(`prism-prettyprint language-${lang}`).attr({
-                    "data-lang": lang,
-                });
+    /**
+     * @param { JQuery<HTMLElement> } $content
+     */
+    const parser = async ($content) => {
+        const wgPageContentModel = mw.config.get("wgPageContentModel", "").toLowerCase();
+        const langSet = new Set();
+        const pluginsSet = new Set([
+            "match-braces",
+        ]);
+        if (Reflect.has(acceptsLangs, wgPageContentModel)) {
+            const lang = acceptsLangs[wgPageContentModel];
+            langSet.add(lang);
+            if (Reflect.has(appendPluginsList, lang)) {
+                pluginsSet.add(appendPluginsList[lang]);
             }
-            for (const ele of $content.find("pre, code").not(".mw-code, .prism-prettyprint")) {
-                let $ele = $(ele);
-                const classListWithLang = [...ele.classList].filter((cls) => /^lang(?:uage)?-[\w-]+$/i.test(cls));
-                const lang = acceptsLangs[ele.getAttribute("lang")] || acceptsLangs[classListWithLang[0]?.replace(/^lang(?:uage)?-/, "")];
-                if (!lang) {
-                    continue;
-                }
-                langSet.add(lang);
-                if (Reflect.has(appendPluginsList, lang)) {
-                    pluginsSet.add(appendPluginsList[lang]);
-                }
-                if (ele.classList.contains("linenums")) {
-                    ele.classList.remove("linenums");
-                    ele.classList.add("line-numbers", "prism-prettyprint-container");
-                }
-                ele.removeAttribute("lang");
-                for (const cls of classListWithLang) {
-                    ele.classList.remove(cls);
-                }
-                if (ele.tagName === "PRE") {
-                    $ele = $ele.wrapInner("<code>").children("code");
-                }
-                $ele[0].dataset.lang = lang;
-                $ele.addClass(`prism-prettyprint language-${lang}`);
+            $content.find(".mw-code").addClass("line-numbers").wrapInner("<code>").children("code").addClass(`prism-prettyprint language-${lang}`).attr({
+                "data-lang": lang,
+            });
+        }
+        for (const ele of $content.find("pre, code").not(".mw-code, .prism-prettyprint")) {
+            let $ele = $(ele);
+            const classListWithLang = [...ele.classList].filter((cls) => /^lang(?:uage)?-[\w-]+$/i.test(cls));
+            const lang = acceptsLangs[ele.getAttribute("lang")] || acceptsLangs[classListWithLang[0]?.replace(/^lang(?:uage)?-/, "")];
+            if (!lang) {
+                continue;
             }
-            if (langSet.has("wiki") && !Reflect.has(window, "Parser")) {
-                await libCachedCode.injectCachedCode("//testingcf.jsdelivr.net/npm/wikiparser-node@browser", "script");
-                Parser.config = await (await fetch("/MediaWiki:Gadget-prism-language-wiki.json?action=raw&ctype=application/json")).json();
+            langSet.add(lang);
+            if (Reflect.has(appendPluginsList, lang)) {
+                pluginsSet.add(appendPluginsList[lang]);
             }
-            await mw.loader.using([
-                ...[...langSet].map((lang) => `ext.gadget.prism-language-${lang}`),
-                ...[...pluginsSet].map((plugin) => `ext.gadget.prism-plugin-${plugin}`),
-            ]);
-            for (const ele of $content.find("code.prism-prettyprint")) {
-                const lang = ele.dataset.lang;
-                if (!acceptsLangNames.includes(lang)) {
-                    continue;
-                }
-                const parent = ele.parentElement;
-                if (parent.tagName === "PRE") {
-                    parent.classList.add("line-numbers", "prism-prettyprint-container");
-                }
-                ele.classList.add("match-braces", "rainbow-braces");
-                Prism.highlightElement(ele);
+            if (ele.classList.contains("linenums")) {
+                ele.classList.remove("linenums");
+                ele.classList.add("line-numbers", "prism-prettyprint-container");
             }
-        })(),
-    );
+            ele.removeAttribute("lang");
+            for (const cls of classListWithLang) {
+                ele.classList.remove(cls);
+            }
+            if (ele.tagName === "PRE") {
+                $ele = $ele.wrapInner("<code>").children("code");
+            }
+            $ele[0].dataset.lang = lang;
+            $ele.addClass(`prism-prettyprint language-${lang}`);
+        }
+        if (langSet.has("wiki") && !Reflect.has(window, "Parser")) {
+            await libCachedCode.injectCachedCode("//testingcf.jsdelivr.net/npm/wikiparser-node@browser", "script");
+            Parser.config = await (await fetch("/MediaWiki:Gadget-prism-language-wiki.json?action=raw&ctype=application/json")).json();
+        }
+        await mw.loader.using([
+            ...[...langSet].map((lang) => `ext.gadget.prism-language-${lang}`),
+            ...[...pluginsSet].map((plugin) => `ext.gadget.prism-plugin-${plugin}`),
+        ]);
+        for (const ele of $content.find("code.prism-prettyprint")) {
+            const lang = ele.dataset.lang;
+            if (!acceptsLangNames.includes(lang)) {
+                continue;
+            }
+            const parent = ele.parentElement;
+            if (parent.tagName === "PRE") {
+                parent.classList.add("line-numbers", "prism-prettyprint-container");
+            }
+            ele.classList.add("match-braces", "rainbow-braces");
+            Prism.highlightElement(ele);
+        }
+    };
+    $(".mw-parser-output").each(parser);
+    mw.hook("wikipage.content").add(parser);
 });

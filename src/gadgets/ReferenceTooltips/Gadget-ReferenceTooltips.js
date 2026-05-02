@@ -10,11 +10,7 @@
     // enwiki settings
     const REF_LINK_SELECTOR = window.rt_REF_LINK_SELECTOR || '.reference, a[href^="#CITEREF"]',
         COMMENTED_TEXT_CLASS = window.rt_COMMENTED_TEXT_CLASS || "rt-commentedText",
-        COMMENTED_TEXT_SELECTOR
-            = window.rt_COMMENTED_TEXT_SELECTOR
-                || `${COMMENTED_TEXT_CLASS ? `.${COMMENTED_TEXT_CLASS}, ` : ""
-                }abbr[title]`
-        ;
+        COMMENTED_TEXT_SELECTOR = window.rt_COMMENTED_TEXT_SELECTOR || `${COMMENTED_TEXT_CLASS ? `.${COMMENTED_TEXT_CLASS}, ` : ""}abbr[title]`;
     mw.messages.set(wgULS({
         "rt-settings": "参考文献提示工具设置",
         "rt-enable-footer": "启用参考文献提示工具",
@@ -91,18 +87,7 @@
             settingsDialogOpening = false;
 
         const setSettingsCookie = () => {
-            mw.cookie.set(
-                "RTsettings",
-
-                `${Number(enabled)
-                }|${
-                    delay
-                }|${
-                    Number(activatedByClick)
-                }|${
-                    Number(tooltipsForComments)}`,
-                { path: "/", expires: 90 * 60 * 60 * 24, prefix: "" },
-            );
+            mw.cookie.set("RTsettings", `${Number(enabled)}|${delay}|${Number(activatedByClick)}|${Number(tooltipsForComments)}`, { path: "/", expires: 90 * 60 * 60 * 24, prefix: "" });
         };
 
         const enableRt = () => {
@@ -601,7 +586,7 @@
                                     || i === 0
                                     // Template:Cnote, Template:Note
                                     && ($this.is("b")
-                                    // Template:Note_label
+                                        // Template:Note_label
                                         || $this.is("a")
                                         && $this.attr("href").indexOf("#ref") === 0
                                     )
@@ -921,5 +906,6 @@
         tooltipsForComments = IS_TOUCHSCREEN && IS_MOBILE;
     }
 
+    $(".mw-parser-output").each(rt);
     mw.hook("wikipage.content").add(rt);
 })();

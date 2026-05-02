@@ -150,104 +150,104 @@
         const getOwnPropertyNamesLength = (obj) => Reflect.ownKeys(obj).length;
         const toLowerFirstCase = (str) => str.substring(0, 1).toLowerCase() + str.substring(1);
         const toUpperFirstCase = (str) => str.substring(0, 1).toUpperCase() + str.substring(1);
-        mw.hook("wikipage.content").add((content) => {
-            content.find(".Tabs").each((_, ele) => {
-                const self = $(ele);
-                if (self.children(".TabLabel")[0]) {
-                    return true;
+        const parser = (content) => content.find(".Tabs").each((_, ele) => {
+            const self = $(ele);
+            if (self.children(".TabLabel")[0]) {
+                return true;
+            }
+            const classList = Array.from(ele.classList).filter((n) => Reflect.has(defaultStyle, n));
+            const data = $.extend({
+                labelPadding: "2px",
+                labelBorderColor: "#aaa",
+                labelColor: "green",
+                labelBackgroundColor: $("#content").css("background-color") || "rgba(247,251,255,0.8)",
+                textPadding: "20px 30px",
+                textBorderColor: "#aaa",
+                textBackgroundColor: "white",
+                defaultTab: 1,
+            }, classList[0] ? defaultStyle[classList[0]] || {} : {}, ele.dataset || {});
+            const styleSheet = {
+                label: {},
+                text: {},
+            };
+            const tabLabel = self.append('<div class="TabLabel"></div>').children(".TabLabel"),
+                tabDivider = self.append('<div class="TabDivider"></div>').children(".TabDivider"),
+                tabContent = self.append('<div class="TabContent"></div>').children(".TabContent"),
+                labelPadding = data.labelPadding,
+                labelColor = data.labelColor,
+                labelSide = Reflect.has(sides, data.labelSide) ? data.labelSide : "top",
+                side = sides[labelSide],
+                labelColorSideReverse = truthy.includes(data.labelColorSideReverse),
+                dividerSize = parseInt(data.dividerSize);
+            let defaultTab = parseInt(data.defaultTab);
+            if (labelSide === "top") {
+                tabLabel.after(tabDivider);
+                tabDivider.after(tabContent);
+            } else if (labelSide === "bottom") {
+                tabContent.after(tabDivider);
+                tabDivider.after(tabLabel);
+            }
+            if (!isNaN(dividerSize) && dividerSize > 0) {
+                self.find(".TabDivider")[side.dividerSizeType](dividerSize);
+            }
+            const labelColorName = toUpperFirstCase(labelColorSideReverse ? side.labelColorSideReverse : side.labelColorSide);
+            self.addClass(side.className);
+            if (labelColorSideReverse) {
+                self.addClass("reverse");
+            }
+            self.children(".Tab").each((_, ele) => {
+                if ($(ele).children(".TabLabelText").text().replace(/\s/g, "").length || $(ele).children(".TabLabelText").children().length) {
+                    $(ele).children(".TabLabelText").appendTo(tabLabel);
+                    $(ele).children(".TabContentText").appendTo(self.children(".TabContent"));
                 }
-                const classList = Array.from(ele.classList).filter((n) => Reflect.has(defaultStyle, n));
-                const data = $.extend({
-                    labelPadding: "2px",
-                    labelBorderColor: "#aaa",
-                    labelColor: "green",
-                    labelBackgroundColor: $("#content").css("background-color") || "rgba(247,251,255,0.8)",
-                    textPadding: "20px 30px",
-                    textBorderColor: "#aaa",
-                    textBackgroundColor: "white",
-                    defaultTab: 1,
-                }, classList[0] ? defaultStyle[classList[0]] || {} : {}, ele.dataset || {});
-                const styleSheet = {
-                    label: {},
-                    text: {},
-                };
-                const tabLabel = self.append('<div class="TabLabel"></div>').children(".TabLabel"),
-                    tabDivider = self.append('<div class="TabDivider"></div>').children(".TabDivider"),
-                    tabContent = self.append('<div class="TabContent"></div>').children(".TabContent"),
-                    labelPadding = data.labelPadding,
-                    labelColor = data.labelColor,
-                    labelSide = Reflect.has(sides, data.labelSide) ? data.labelSide : "top",
-                    side = sides[labelSide],
-                    labelColorSideReverse = truthy.includes(data.labelColorSideReverse),
-                    dividerSize = parseInt(data.dividerSize);
-                let defaultTab = parseInt(data.defaultTab);
-                if (labelSide === "top") {
-                    tabLabel.after(tabDivider);
-                    tabDivider.after(tabContent);
-                } else if (labelSide === "bottom") {
-                    tabContent.after(tabDivider);
-                    tabDivider.after(tabLabel);
-                }
-                if (!isNaN(dividerSize) && dividerSize > 0) {
-                    self.find(".TabDivider")[side.dividerSizeType](dividerSize);
-                }
-                const labelColorName = toUpperFirstCase(labelColorSideReverse ? side.labelColorSideReverse : side.labelColorSide);
-                self.addClass(side.className);
-                if (labelColorSideReverse) {
-                    self.addClass("reverse");
-                }
-                self.children(".Tab").each((_, ele) => {
-                    if ($(ele).children(".TabLabelText").text().replace(/\s/g, "").length || $(ele).children(".TabLabelText").children().length) {
-                        $(ele).children(".TabLabelText").appendTo(tabLabel);
-                        $(ele).children(".TabContentText").appendTo(self.children(".TabContent"));
-                    }
-                    $(ele).remove();
-                });
-                if (isNaN(defaultTab) || defaultTab <= 0 || defaultTab > tabLabel.children(".TabLabelText").length) {
-                    defaultTab = 1;
-                }
-                tabLabel.children(".TabLabelText").on("click", (event) => {
-                    const label = $(event.currentTarget);
-                    label.addClass("selected").siblings().removeClass("selected").css({
-                        "border-color": "transparent",
-                        "background-color": "inherit",
-                    });
-                    tabContent.children(".TabContentText").eq(tabLabel.children(".TabLabelText").index(label)).addClass("selected").siblings().removeClass("selected").removeAttr("style");
-                    if (getOwnPropertyNamesLength(styleSheet.label) > 0) {
-                        label.css(styleSheet.label);
-                    }
-                    setTimeout(() => {
-                        $window.triggerHandler("scroll");
-                    }, 1);
-                }).eq(defaultTab - 1).trigger("click");
-                if (labelPadding) {
-                    tabLabel.children(".TabLabelText").css("padding", labelPadding);
-                }
-                ["labelBorderColor", "labelBackgroundColor", "textPadding", "textBorderColor", "textBackgroundColor"].forEach((n) => {
-                    const target = /^label/.test(n) ? "label" : "text",
-                        key = toLowerFirstCase(n.replace(target, ""));
-                    styleSheet[target][key] = data[n];
-                });
-                if (labelColor) {
-                    styleSheet.label[`border${labelColorName}Color`] = labelColor;
-                } else if (styleSheet.label.borderColor) {
-                    styleSheet.label[`border${labelColorName}Color`] = "green";
-                }
-                tabLabel.find(".selected").trigger("click");
-                if (getOwnPropertyNamesLength(styleSheet.text) > 0) {
-                    tabContent.css(styleSheet.text);
-                }
-                if (data.autoWidth === "yes") {
-                    self.addClass("AutoWidth");
-                }
-                if (data.float === "left") {
-                    self.addClass("FloatLeft");
-                }
-                if (data.float === "right") {
-                    self.addClass("FloatRight");
-                }
+                $(ele).remove();
             });
+            if (isNaN(defaultTab) || defaultTab <= 0 || defaultTab > tabLabel.children(".TabLabelText").length) {
+                defaultTab = 1;
+            }
+            tabLabel.children(".TabLabelText").on("click", (event) => {
+                const label = $(event.currentTarget);
+                label.addClass("selected").siblings().removeClass("selected").css({
+                    "border-color": "transparent",
+                    "background-color": "inherit",
+                });
+                tabContent.children(".TabContentText").eq(tabLabel.children(".TabLabelText").index(label)).addClass("selected").siblings().removeClass("selected").removeAttr("style");
+                if (getOwnPropertyNamesLength(styleSheet.label) > 0) {
+                    label.css(styleSheet.label);
+                }
+                setTimeout(() => {
+                    $window.triggerHandler("scroll");
+                }, 1);
+            }).eq(defaultTab - 1).trigger("click");
+            if (labelPadding) {
+                tabLabel.children(".TabLabelText").css("padding", labelPadding);
+            }
+            ["labelBorderColor", "labelBackgroundColor", "textPadding", "textBorderColor", "textBackgroundColor"].forEach((n) => {
+                const target = /^label/.test(n) ? "label" : "text",
+                    key = toLowerFirstCase(n.replace(target, ""));
+                styleSheet[target][key] = data[n];
+            });
+            if (labelColor) {
+                styleSheet.label[`border${labelColorName}Color`] = labelColor;
+            } else if (styleSheet.label.borderColor) {
+                styleSheet.label[`border${labelColorName}Color`] = "green";
+            }
+            tabLabel.find(".selected").trigger("click");
+            if (getOwnPropertyNamesLength(styleSheet.text) > 0) {
+                tabContent.css(styleSheet.text);
+            }
+            if (data.autoWidth === "yes") {
+                self.addClass("AutoWidth");
+            }
+            if (data.float === "left") {
+                self.addClass("FloatLeft");
+            }
+            if (data.float === "right") {
+                self.addClass("FloatRight");
+            }
         });
+        $(".mw-parser-output").each(parser);
+        mw.hook("wikipage.content").add(parser);
     };
     /* T:注解 */
     $("body").on("mouseover mouseout", ".annotation", (event) => {
@@ -551,6 +551,7 @@
         });
     }, 200);
     // 修复错误嵌套模板
+    $(".mw-parser-output").each(templateFix);
     mw.hook("wikipage.content").add(templateFix);
     // 仅在编辑界面修复验证码
     if (["edit", "submit"].includes(wgAction)) {

@@ -50,15 +50,15 @@
 
         return avatarLink;
     };
-
-    mw.hook("wikipage.content").add(
-        /**
-         * @param {JQuery<HTMLElement>} $content
-         */
-        ($content) => {
-            $content.find(".mw-userlink[data-user-avatar]").each((_, el) => {
-                attachAvatarToUserLink(el);
-            });
+    /**
+     * @param {JQuery<HTMLElement>} $content
+     */
+    const parser = ($content) => {
+        $content.find(".mw-userlink[data-user-avatar]").each((_, el) => {
+            attachAvatarToUserLink(el);
         });
+    };
+    $(".mw-parser-output").each(parser);
+    mw.hook("wikipage.content").add(parser);
 })();
 // </pre>

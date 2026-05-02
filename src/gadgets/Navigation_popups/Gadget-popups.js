@@ -6623,6 +6623,7 @@ $(() => {
             }
             setupPopups(doIt);
         }
+        $(".mw-parser-output").each(dynamicContentHandler);
         mw.hook("wikipage.content").add(dynamicContentHandler);
         mw.hook("ext.echo.overlay.beforeShowingOverlay").add(($overlay) => {
             dynamicContentHandler($overlay.find(".mw-echo-state"));

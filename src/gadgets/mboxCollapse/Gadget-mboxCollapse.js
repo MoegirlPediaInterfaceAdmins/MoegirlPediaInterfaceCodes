@@ -6,7 +6,7 @@
  */
 "use strict";
 mw.util.addCSS(".infoBoxText { padding-right: 20px }");
-mw.hook("wikipage.content").add(($out) => {
+const parser = ($out) => {
     const COLLAPSED_ICON_SIZE = 20;
     const $mboxes = $out.find(".infoBox");
     $mboxes.each(function () {
@@ -105,4 +105,6 @@ mw.hook("wikipage.content").add(($out) => {
             }
         });
     });
-});
+};
+$(".mw-parser-output").each(parser);
+mw.hook("wikipage.content").add(parser);
