@@ -2,6 +2,9 @@ const bots = [
     "GH:github-actions",
     "GH:GitHub",
     "GH:GitHub Actions",
+    "GH:Claude Opus 4.6",
+    "GH:Copilot",
+    "GH:Copilot Autofix powered by AI",
 ];
 const githubWebInterfaceFlowSignature = {
     committerName: "GitHub",
