@@ -906,6 +906,6 @@
         tooltipsForComments = IS_TOUCHSCREEN && IS_MOBILE;
     }
 
-    $(".mw-parser-output").each(rt);
+    document.querySelectorAll(".mw-parser-output").forEach((content) => rt($(content)));
     mw.hook("wikipage.content").add(rt);
 })();

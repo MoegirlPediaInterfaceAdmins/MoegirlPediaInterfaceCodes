@@ -150,7 +150,7 @@
         const getOwnPropertyNamesLength = (obj) => Reflect.ownKeys(obj).length;
         const toLowerFirstCase = (str) => str.substring(0, 1).toLowerCase() + str.substring(1);
         const toUpperFirstCase = (str) => str.substring(0, 1).toUpperCase() + str.substring(1);
-        const parser = (content) => content.find(".Tabs").each((_, ele) => {
+        const parser = ($content) => $content.find(".Tabs").each((_, ele) => {
             const self = $(ele);
             if (self.children(".TabLabel")[0]) {
                 return true;
@@ -246,7 +246,7 @@
                 self.addClass("FloatRight");
             }
         });
-        $(".mw-parser-output").each(parser);
+        document.querySelectorAll(".mw-parser-output").forEach((content) => parser($(content)));
         mw.hook("wikipage.content").add(parser);
     };
     /* T:注解 */
@@ -551,7 +551,7 @@
         });
     }, 200);
     // 修复错误嵌套模板
-    $(".mw-parser-output").each(templateFix);
+    document.querySelectorAll(".mw-parser-output").forEach((content) => templateFix($(content)));
     mw.hook("wikipage.content").add(templateFix);
     // 仅在编辑界面修复验证码
     if (["edit", "submit"].includes(wgAction)) {

@@ -106,5 +106,5 @@ const parser = ($out) => {
         });
     });
 };
-$(".mw-parser-output").each(parser);
+document.querySelectorAll(".mw-parser-output").forEach((content) => parser($(content)));
 mw.hook("wikipage.content").add(parser);

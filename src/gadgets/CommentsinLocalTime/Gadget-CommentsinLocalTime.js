@@ -171,10 +171,8 @@ $(() => {
     //     mw.loader.using(["moment"]),
     //     $.ready,
     // ]);
-    $(".mw-parser-output").each(parser);
-    mw.hook("wikipage.content").add(($content) => {
-        $content.each(parser);
-    });
+    document.querySelectorAll(".mw-parser-output").forEach((content) => parser(null, content));
+    mw.hook("wikipage.content").add(($content) => $content.each(parser));
     formatTimestamp();
     if (!window.LocalComments.dynamic) {
         return;

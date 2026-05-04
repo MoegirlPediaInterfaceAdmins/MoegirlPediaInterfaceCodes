@@ -189,6 +189,6 @@ const parser = () => {
         }
     }, 0);
 };
-$(".mw-parser-output").each(parser);
+$(parser);
 mw.hook("wikipage.content").add(parser);
 // </pre>
