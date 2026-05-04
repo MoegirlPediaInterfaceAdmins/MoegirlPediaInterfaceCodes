@@ -1,11 +1,3 @@
-const bots = [
-    "GH:github-actions",
-    "GH:GitHub",
-    "GH:GitHub Actions",
-    "GH:Claude Opus 4.6",
-    "GH:Copilot",
-    "GH:Copilot Autofix powered by AI",
-];
 const githubWebInterfaceFlowSignature = {
     committerName: "GitHub",
     committerEmail: "noreply@github.com",
@@ -23,6 +15,7 @@ import jsonModule from "../modules/jsonModule.js";
 import mailmap from "../modules/mailmap.js";
 import mkdtmp from "../modules/mkdtmp.js";
 import { debugConsole, debugLoggingEnabled, isInGithubActions, isInMasterBranch, isInMoegirlPediaInterfaceCodes } from "../modules/octokit.js";
+import yamlModule from "../modules/yamlModule.js";
 
 /**
  * @param { string } file file path like "src/@types/libBottomRightCorner.d.ts"
@@ -72,6 +65,7 @@ if (debugLoggingEnabled) {
     debugConsole.log(rawHistory);
     endGroup();
 }
+const bots = await yamlModule.readFile("scripts/generateCommitsHistory/bots.yaml");
 const history = {};
 const parser = ({ username, changedFiles, hash, date, indent }) => {
     if (username.endsWith("[bot]") || bots.includes(username)) {
