@@ -47,7 +47,6 @@ jobs:
       - uses: actions/checkout@v6
         name: Checkout main repo
         with:
-          fetch-depth: 0
           show-progress: false
       - name: Get the polyfill config
         id: polyfillConfig
