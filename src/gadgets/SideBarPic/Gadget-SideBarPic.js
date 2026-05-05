@@ -79,7 +79,7 @@
             self.find("img").width(self.width());
         });
     }).trigger("resize");
-    if ($sidebarCharacter.data("displaylogo") === "yes") {
+    if ($sidebarCharacter.is('[data-displaylogo="yes"]')) {
         $("body").addClass("show-logo");
     }
 })();
