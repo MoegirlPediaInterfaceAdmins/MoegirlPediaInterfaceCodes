@@ -35,6 +35,7 @@
     - wikidiff2
     - SectionPermanentLink
     - FlowthreadTOC
+    - SideBarPic
 
 - name: skin
   gadgets:
