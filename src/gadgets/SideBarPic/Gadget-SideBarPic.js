@@ -37,21 +37,21 @@
                 url.hostname += ".cn";
             }
             lazyload.addEventListener("load", () => {
-                img.src = url;
+                img.src = url.href;
                 res();
             });
             lazyload.addEventListener("error", () => {
                 if (retryCount++ < 3) {
                     const url = new URL(lazyload.src, location.origin);
                     url.searchParams.set("_", Math.random());
-                    lazyload.src = url;
+                    lazyload.src = url.href;
                 } else {
                     console.info("Widget:SideBarPic img-load-failed\n", img.dataset.src);
                     img.remove();
                     res();
                 }
             });
-            lazyload.src = url;
+            lazyload.src = url.href;
         } catch (e) {
             console.info("Widget:SideBarPic img-load-failed\n", e);
             img.remove();
