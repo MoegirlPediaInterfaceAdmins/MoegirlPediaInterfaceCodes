@@ -1,4 +1,4 @@
-/* eslint-disable no-unused-vars, prefer-arrow-functions/prefer-arrow-functions, no-use-before-define, camelcase */
+/* eslint-disable no-unused-vars, no-use-before-define, camelcase */
 /**
  * @source https://en.wikipedia.org/wiki/_?oldid=1322962085
  * 更新后请同步更新上面链接到最新版本
@@ -325,7 +325,7 @@ $(() => {
     }
     const log = (...args) => window.popupDebug && console.log(...args);
     const errlog = (...args) => window.popupDebug && console.error(...args);
-    function setupTooltips(_container, remove, force, popData) {
+    const setupTooltips = (_container, remove, force, popData) => {
         let container = _container;
         log(`setupTooltips, container=${container}, remove=${remove}`);
         if (!container) {
@@ -340,16 +340,16 @@ $(() => {
         container.ranSetupTooltipsAlready = !remove;
         const anchors = container.getElementsByTagName("A");
         setupTooltipsLoop(anchors, 0, 250, 100, remove, popData);
-    }
-    function defaultPopupsContainer() {
+    };
+    const defaultPopupsContainer = () => {
         if (getValueOf("popupOnlyArticleLinks")) {
             return document.querySelector(".skin-vector-2022 .vector-body") || document.getElementById("mw_content") || document.getElementById("content") || document.getElementById("article")
                 || document.getElementsByTagName("article")?.[0] // moeskin
                 || document;
         }
         return document;
-    }
-    function setupTooltipsLoop(anchors, begin, howmany, sleep, remove, popData) {
+    };
+    const setupTooltipsLoop = (anchors, begin, howmany, sleep, remove, popData) => {
         log(simplePrintf("setupTooltipsLoop(%s,%s,%s,%s,%s)", [anchors, begin, howmany, sleep, remove, popData]));
         const finish = begin + howmany;
         const loopend = Math.min(finish, anchors.length);
@@ -376,8 +376,8 @@ $(() => {
             }
             pg.flag.finishedLoading = true;
         }
-    }
-    function rmTocTooltips() {
+    };
+    const rmTocTooltips = () => {
         const toc = document.getElementById("toc");
         if (toc) {
             const tocLinks = toc.getElementsByTagName("A");
@@ -386,8 +386,8 @@ $(() => {
                 removeTooltip(tocLinks[j], true);
             }
         }
-    }
-    function addTooltip(a, popData) {
+    };
+    const addTooltip = (a, popData) => {
         if (!isPopupLink(a)) {
             return;
         }
@@ -396,8 +396,8 @@ $(() => {
         a.onmousedown = killPopup;
         a.hasPopup = true;
         a.popData = popData;
-    }
-    function removeTooltip(a) {
+    };
+    const removeTooltip = (a) => {
         if (!a.hasPopup) {
             return;
         }
@@ -407,23 +407,23 @@ $(() => {
             a.title = a.originalTitle;
         }
         a.hasPopup = false;
-    }
-    function removeTitle(a) {
+    };
+    const removeTitle = (a) => {
         if (!a.originalTitle) {
             a.originalTitle = a.title;
         }
         a.title = "";
-    }
-    function restoreTitle(a) {
+    };
+    const restoreTitle = (a) => {
         if (a.title || !a.originalTitle) {
             return;
         }
         a.title = a.originalTitle;
-    }
-    function registerHooks(np) {
+    };
+    const registerHooks = (np) => {
         const popupMaxWidth = getValueOf("popupMaxWidth");
         if (typeof popupMaxWidth === "number") {
-            const setMaxWidth = function () {
+            const setMaxWidth = () => {
                 np.mainDiv.style.maxWidth = `${popupMaxWidth}px`;
                 np.maxWidth = popupMaxWidth;
             };
@@ -431,11 +431,11 @@ $(() => {
         }
         np.addHook(addPopupShortcuts, "unhide", "after");
         np.addHook(rmPopupShortcuts, "hide", "before");
-    }
-    function removeModifierKeyHandler(a) {
+    };
+    const removeModifierKeyHandler = (a) => {
         document.removeEventListener("keydown", a.modifierKeyHandler, false);
         document.removeEventListener("keyup", a.modifierKeyHandler, false);
-    }
+    };
     function mouseOverWikiLink(_evt) {
         let evt = _evt;
         if (!evt && window.event) {
@@ -445,14 +445,14 @@ $(() => {
             const action = getValueOf("popupModifierAction");
             const key = action === "disable" ? "keyup" : "keydown";
             const a = this;
-            a.modifierKeyHandler = function (evt) {
+            a.modifierKeyHandler = (evt) => {
                 mouseOverWikiLink2(a, evt);
             };
             document.addEventListener(key, a.modifierKeyHandler, false);
         }
         return mouseOverWikiLink2(this, evt);
     }
-    function footnoteTarget(a) {
+    const footnoteTarget = (a) => {
         const aTitle = Title.fromAnchor(a);
         const anch = aTitle.anchor;
         if (!/^(cite_note-|_note-|endnote)/.test(anch)) {
@@ -476,11 +476,11 @@ $(() => {
             }
         }
         return false;
-    }
-    function footnotePreview(x, navpop) {
+    };
+    const footnotePreview = (x, navpop) => {
         setPopupHTML(`<hr />${x.innerHTML}`, "popupPreview", navpop.idNumber);
-    }
-    function modifierPressed(_evt) {
+    };
+    const modifierPressed = (_evt) => {
         let evt = _evt;
         const mod = getValueOf("popupModifier");
         if (!mod) {
@@ -490,15 +490,15 @@ $(() => {
             evt = window.event;
         }
         return evt && mod && evt[`${mod.toLowerCase()}Key`];
-    }
-    function isCorrectModifier(a, evt) {
+    };
+    const isCorrectModifier = (a, evt) => {
         if (!getValueOf("popupModifier")) {
             return true;
         }
         const action = getValueOf("popupModifierAction");
         return action === "enable" && modifierPressed(evt) || action === "disable" && !modifierPressed(evt);
-    }
-    function mouseOverWikiLink2(a, evt) {
+    };
+    const mouseOverWikiLink2 = (a, evt) => {
         if (!isCorrectModifier(a, evt)) {
             return;
         }
@@ -532,7 +532,7 @@ $(() => {
                 const s = document.createElement("span");
                 d.appendChild(s);
                 s.className = "popupPreviewButton";
-                s[`on${getValueOf("popupPreviewButtonEvent")}`] = function () {
+                s[`on${getValueOf("popupPreviewButtonEvent")}`] = () => {
                     a.simpleNoMore = true;
                     d.style.display = "none";
                     nonsimplePopupContent(a, article);
@@ -544,8 +544,8 @@ $(() => {
         if (a.navpopup.pending !== 0) {
             nonsimplePopupContent(a, article);
         }
-    }
-    function simplePopupContent(a, article) {
+    };
+    const simplePopupContent = (a, article) => {
         a.navpopup.hasPopupMenu = false;
         a.navpopup.setInnerHTML(popupHTML(a));
         fillEmptySpans({
@@ -563,13 +563,13 @@ $(() => {
         if (getValueOf("popupRedlinkRemoval") && a.className === "new") {
             setPopupHTML(`<br>${popupRedlinkHTML(article)}`, "popupRedlink", a.navpopup.idNumber);
         }
-    }
-    function debugData(navpopup) {
+    };
+    const debugData = (navpopup) => {
         if (getValueOf("popupDebugging") && navpopup.idNumber) {
             setPopupHTML(`idNumber=${navpopup.idNumber}, pending=${navpopup.pending}`, "popupError", navpopup.idNumber);
         }
-    }
-    function newNavpopup(a, article) {
+    };
+    const newNavpopup = (a, article) => {
         const navpopup = new Navpopup();
         navpopup.fuzz = 5;
         navpopup.delay = getValueOf("popupDelay") * 1e3;
@@ -579,17 +579,15 @@ $(() => {
         navpopup.article = article;
         registerHooks(navpopup);
         return navpopup;
-    }
-    function shouldShowNonSimple(a) {
-        return !getValueOf("simplePopups") || a.simpleNoMore;
-    }
-    function shouldShow(a, option) {
+    };
+    const shouldShowNonSimple = (a) => !getValueOf("simplePopups") || a.simpleNoMore;
+    const shouldShow = (a, option) => {
         if (shouldShowNonSimple(a)) {
             return getValueOf(option);
         }
         return typeof window[option] !== "undefined" && window[option];
-    }
-    function nonsimplePopupContent(a, article) {
+    };
+    const nonsimplePopupContent = (a, article) => {
         let diff = null,
             history = null;
         const params = parseParams(a.href);
@@ -625,32 +623,32 @@ $(() => {
                 startArticlePreview(article, oldid, a.navpopup);
             }
         }
-    }
-    function pendingNavpopTask(navpop) {
+    };
+    const pendingNavpopTask = (navpop) => {
         if (navpop && navpop.pending === null) {
             navpop.pending = 0;
         }
         ++navpop.pending;
         debugData(navpop);
-    }
-    function completedNavpopTask(navpop) {
+    };
+    const completedNavpopTask = (navpop) => {
         if (navpop && navpop.pending) {
             --navpop.pending;
         }
         debugData(navpop);
-    }
-    function startArticlePreview(article, oldid, navpop) {
+    };
+    const startArticlePreview = (article, oldid, navpop) => {
         navpop.redir = 0;
         loadPreview(article, oldid, navpop);
-    }
-    function loadPreview(article, oldid, navpop) {
+    };
+    const loadPreview = (article, oldid, navpop) => {
         if (!navpop.redir) {
             navpop.originalArticle = article;
         }
         article.oldid = oldid;
         loadAPIPreview("revision", article, navpop);
-    }
-    function loadPreviewFromRedir(redirMatch, navpop) {
+    };
+    const loadPreviewFromRedir = (redirMatch, navpop) => {
         const target = new Title().fromWikiText(redirMatch[2]);
         if (navpop.article.anchor) {
             target.anchor = navpop.article.anchor;
@@ -666,8 +664,8 @@ $(() => {
             navpopup: navpop,
         });
         return loadPreview(target, null, navpop);
-    }
-    function insertPreview(download) {
+    };
+    const insertPreview = (download) => {
         if (!download.owner) {
             return;
         }
@@ -685,8 +683,8 @@ $(() => {
                 return true;
             }, "unhide", "after", id);
         }
-    }
-    function insertPreviewNow(download) {
+    };
+    const insertPreviewNow = (download) => {
         if (!download.owner) {
             return;
         }
@@ -710,8 +708,8 @@ $(() => {
         if (getValueOf("popupPreviews")) {
             insertArticlePreview(download, art, navpop);
         }
-    }
-    function insertArticlePreview(download, art, navpop) {
+    };
+    const insertArticlePreview = (download, art, navpop) => {
         if (download && typeof download.data === typeof "") {
             if (art.namespaceId() === pg.nsTemplateId && getValueOf("popupPreviewRawTemplates")) {
                 const h = `<hr /><span style="font-family: monospace;">${download.data.entify().split("\\n").join("<br />\\n")}</span>`;
@@ -721,14 +719,14 @@ $(() => {
                 p.showPreview();
             }
         }
-    }
-    function prepPreviewmaker(data, article, navpop) {
+    };
+    const prepPreviewmaker = (data, article, navpop) => {
         const d = anchorize(data, article.anchorString());
         const urlBase = joinPath([pg.wiki.articlebase, article.urlString()]);
         const p = new Previewmaker(d, urlBase, navpop);
         return p;
-    }
-    function anchorize(d, anch) {
+    };
+    const anchorize = (d, anch) => {
         if (!anch) {
             return d;
         }
@@ -745,7 +743,7 @@ $(() => {
             }
         }
         return d;
-    }
+    };
     function killPopup() {
         removeModifierKeyHandler(this);
         if (getValueOf("popupShortcutKeys")) {
@@ -768,7 +766,7 @@ $(() => {
     class Drag {
         startCondition = null;
         endHook = null;
-        fixE(_e) {
+        fixE = (_e) => {
             let e = _e;
             if (typeof e === "undefined") {
                 e = window.event;
@@ -780,11 +778,11 @@ $(() => {
                 e.layerY = e.offsetY;
             }
             return e;
-        }
+        };
         init(o, oRoot) {
             const dragObj = this;
             this.obj = o;
-            o.onmousedown = function (e) {
+            o.onmousedown = (e) => {
                 dragObj.start.bind(dragObj)(e);
             };
             o.dragging = false;
@@ -798,9 +796,9 @@ $(() => {
             if (isNaN(parseInt(o.root.style.top, 10))) {
                 o.root.style.top = "0px";
             }
-            o.root.onthisStart = function () { };
-            o.root.onthisEnd = function () { };
-            o.root.onthis = function () { };
+            o.root.onthisStart = () => { };
+            o.root.onthisEnd = () => { };
+            o.root.onthis = () => { };
         }
         start(_e) {
             let e = _e;
@@ -817,10 +815,10 @@ $(() => {
             const dragObj = this;
             o.onmousemoveDefault = document.onmousemove;
             o.dragging = true;
-            document.onmousemove = function (e) {
+            document.onmousemove = (e) => {
                 dragObj.drag.bind(dragObj)(e);
             };
-            document.onmouseup = function (e) {
+            document.onmouseup = (e) => {
                 dragObj.end.bind(dragObj)(e);
             };
             return false;
@@ -852,40 +850,36 @@ $(() => {
         }
     }
     pg.structures.original = {};
-    pg.structures.original.popupLayout = function () {
-        return ["popupError", "popupImage", "popupTopLinks", "popupTitle", "popupUserData", "popupData", "popupOtherLinks", "popupRedir", ["popupWarnRedir", "popupRedirTopLinks", "popupRedirTitle", "popupRedirData", "popupRedirOtherLinks"], "popupMiscTools", ["popupRedlink"], "popupPrePreviewSep", "popupPreview", "popupSecondPreview", "popupPreviewMore", "popupPostPreview", "popupFixDab"];
-    };
-    pg.structures.original.popupRedirSpans = function () {
-        return ["popupRedir", "popupWarnRedir", "popupRedirTopLinks", "popupRedirTitle", "popupRedirData", "popupRedirOtherLinks"];
-    };
-    pg.structures.original.popupTitle = function (x) {
+    pg.structures.original.popupLayout = () => ["popupError", "popupImage", "popupTopLinks", "popupTitle", "popupUserData", "popupData", "popupOtherLinks", "popupRedir", ["popupWarnRedir", "popupRedirTopLinks", "popupRedirTitle", "popupRedirData", "popupRedirOtherLinks"], "popupMiscTools", ["popupRedlink"], "popupPrePreviewSep", "popupPreview", "popupSecondPreview", "popupPreviewMore", "popupPostPreview", "popupFixDab"];
+    pg.structures.original.popupRedirSpans = () => ["popupRedir", "popupWarnRedir", "popupRedirTopLinks", "popupRedirTitle", "popupRedirData", "popupRedirOtherLinks"];
+    pg.structures.original.popupTitle = (x) => {
         log("defaultstructure.popupTitle");
         if (!getValueOf("popupNavLinks")) {
             return navlinkStringToHTML("<b><<mainlink>></b>", x.article, x.params);
         }
         return "";
     };
-    pg.structures.original.popupTopLinks = function (x) {
+    pg.structures.original.popupTopLinks = (x) => {
         log("defaultstructure.popupTopLinks");
         if (getValueOf("popupNavLinks")) {
             return navLinksHTML(x.article, x.hint, x.params);
         }
         return "";
     };
-    pg.structures.original.popupImage = function (x) {
+    pg.structures.original.popupImage = (x) => {
         log(`original.popupImage, x.article=${x.article}, x.navpop.idNumber=${x.navpop.idNumber}`);
         return imageHTML(x.article, x.navpop.idNumber);
     };
     pg.structures.original.popupRedirTitle = pg.structures.original.popupTitle;
     pg.structures.original.popupRedirTopLinks = pg.structures.original.popupTopLinks;
-    function copyStructure(oldStructure, newStructure) {
+    const copyStructure = (oldStructure, newStructure) => {
         pg.structures[newStructure] = {};
         for (const prop in pg.structures[oldStructure]) {
             pg.structures[newStructure][prop] = pg.structures[oldStructure][prop];
         }
-    }
+    };
     copyStructure("original", "nostalgia");
-    pg.structures.nostalgia.popupTopLinks = function (x) {
+    pg.structures.nostalgia.popupTopLinks = (x) => {
         let str = "";
         str += "<b><<mainlink|shortcut= >></b>";
         str += "if(user){<br><<contribs|shortcut=c>>";
@@ -903,16 +897,14 @@ $(() => {
     };
     pg.structures.nostalgia.popupRedirTopLinks = pg.structures.nostalgia.popupTopLinks;
     copyStructure("original", "fancy");
-    pg.structures.fancy.popupTitle = function (x) {
-        return navlinkStringToHTML("<font size=+0><<mainlink>></font>", x.article, x.params);
-    };
-    pg.structures.fancy.popupTopLinks = function (x) {
+    pg.structures.fancy.popupTitle = (x) => navlinkStringToHTML("<font size=+0><<mainlink>></font>", x.article, x.params);
+    pg.structures.fancy.popupTopLinks = (x) => {
         const hist = "<<history|shortcut=h|hist>>|<<lastEdit|shortcut=/|last>>|<<editors|shortcut=E|eds>>";
         const watch = "<<unwatch|unwatchShort>>|<<watch|shortcut=w|watchThingy>>";
         const move = "<<move|shortcut=m|move>>";
         return navlinkStringToHTML(`if(talk){<<edit|shortcut=e>>|<<new|shortcut=+|+>>*${hist}*<<article|shortcut=a>>|<<editArticle|edit>>*${watch}*${move}}else{<<edit|shortcut=e>>*${hist}*<<talk|shortcut=t|>>|<<editTalk|edit>>|<<newTalk|shortcut=+|new>>*${watch}*${move}}<br>`, x.article, x.params);
     };
-    pg.structures.fancy.popupOtherLinks = function (x) {
+    pg.structures.fancy.popupOtherLinks = (x) => {
         const admin = "<<unprotect|unprotectShort>>|<<protect|shortcut=p>>*<<undelete|undeleteShort>>|<<delete|shortcut=d|del>>";
         let user = "<<contribs|shortcut=c>>if(wikimedia){|<<count|shortcut=#|#>>}";
         user += `if(ipuser){|<<arin>>}else{*<<email|shortcut=E|${popupString("email")}>>}if(admin){*<<block|shortcut=b>>}`;
@@ -923,17 +915,11 @@ $(() => {
     pg.structures.fancy.popupRedirTopLinks = pg.structures.fancy.popupTopLinks;
     pg.structures.fancy.popupRedirOtherLinks = pg.structures.fancy.popupOtherLinks;
     copyStructure("fancy", "fancy2");
-    pg.structures.fancy2.popupTopLinks = function (x) {
-        return `<br>${pg.structures.fancy.popupTopLinks(x).replace(/<br>$/i, "")}`;
-    };
-    pg.structures.fancy2.popupLayout = function () {
-        return ["popupError", "popupImage", "popupTitle", "popupUserData", "popupData", "popupTopLinks", "popupOtherLinks", "popupRedir", ["popupWarnRedir", "popupRedirTopLinks", "popupRedirTitle", "popupRedirData", "popupRedirOtherLinks"], "popupMiscTools", ["popupRedlink"], "popupPrePreviewSep", "popupPreview", "popupSecondPreview", "popupPreviewMore", "popupPostPreview", "popupFixDab"];
-    };
+    pg.structures.fancy2.popupTopLinks = (x) => `<br>${pg.structures.fancy.popupTopLinks(x).replace(/<br>$/i, "")}`;
+    pg.structures.fancy2.popupLayout = () => ["popupError", "popupImage", "popupTitle", "popupUserData", "popupData", "popupTopLinks", "popupOtherLinks", "popupRedir", ["popupWarnRedir", "popupRedirTopLinks", "popupRedirTitle", "popupRedirData", "popupRedirOtherLinks"], "popupMiscTools", ["popupRedlink"], "popupPrePreviewSep", "popupPreview", "popupSecondPreview", "popupPreviewMore", "popupPostPreview", "popupFixDab"];
     copyStructure("original", "menus");
-    pg.structures.menus.popupLayout = function () {
-        return ["popupError", "popupImage", "popupTopLinks", "popupTitle", "popupOtherLinks", "popupRedir", ["popupWarnRedir", "popupRedirTopLinks", "popupRedirTitle", "popupRedirData", "popupRedirOtherLinks"], "popupUserData", "popupData", "popupMiscTools", ["popupRedlink"], "popupPrePreviewSep", "popupPreview", "popupSecondPreview", "popupPreviewMore", "popupPostPreview", "popupFixDab"];
-    };
-    pg.structures.menus.popupTopLinks = function (x, shorter) {
+    pg.structures.menus.popupLayout = () => ["popupError", "popupImage", "popupTopLinks", "popupTitle", "popupOtherLinks", "popupRedir", ["popupWarnRedir", "popupRedirTopLinks", "popupRedirTitle", "popupRedirData", "popupRedirOtherLinks"], "popupUserData", "popupData", "popupMiscTools", ["popupRedlink"], "popupPrePreviewSep", "popupPreview", "popupSecondPreview", "popupPreviewMore", "popupPostPreview", "popupFixDab"];
+    pg.structures.menus.popupTopLinks = (x, shorter) => {
         const s = [];
         const dropclass = "popup_drop";
         const enddiv = "</div>";
@@ -1002,38 +988,34 @@ $(() => {
         }
         return navlinkStringToHTML(s.join(""), x.article, x.params);
     };
-    function menuTitle(dropclass, s) {
+    const menuTitle = (dropclass, s) => {
         const text = popupString(s); // i18n
         const len = text.length;
         return `<div class="${dropclass}" style="--navpop-m-len:${len}ch"><a href="#" noPopup=1>${text}</a>`;
-    }
+    };
     pg.structures.menus.popupRedirTitle = pg.structures.menus.popupTitle;
     pg.structures.menus.popupRedirTopLinks = pg.structures.menus.popupTopLinks;
     copyStructure("menus", "shortmenus");
-    pg.structures.shortmenus.popupTopLinks = function (x) {
-        return pg.structures.menus.popupTopLinks(x, true);
-    };
+    pg.structures.shortmenus.popupTopLinks = (x) => pg.structures.menus.popupTopLinks(x, true);
     pg.structures.shortmenus.popupRedirTopLinks = pg.structures.shortmenus.popupTopLinks;
     pg.structures.lite = {};
-    pg.structures.lite.popupLayout = function () {
-        return ["popupTitle", "popupPreview"];
-    };
-    pg.structures.lite.popupTitle = function (x) {
+    pg.structures.lite.popupLayout = () => ["popupTitle", "popupPreview"];
+    pg.structures.lite.popupTitle = (x) => {
         log(`${x.article}: structures.lite.popupTitle`);
         return `<div><span class="popup_mainlink"><b>${x.article.toString()}</b></span></div>`;
     };
-    function substitute(data, cmdBody) {
+    const substitute = (data, cmdBody) => {
         const fromRe = RegExp(cmdBody.from, cmdBody.flags);
         return data.replace(fromRe, cmdBody.to);
-    }
-    function execCmds(_data, cmdList) {
+    };
+    const execCmds = (_data, cmdList) => {
         let data = _data;
         for (let i = 0; i < cmdList.length; ++i) {
             data = cmdList[i].action(data, cmdList[i]);
         }
         return data;
-    }
-    function parseCmd(str) {
+    };
+    const parseCmd = (str) => {
         if (!str.length) {
             return [];
         }
@@ -1049,11 +1031,9 @@ $(() => {
             return [p].concat(parseCmd(p.remainder));
         }
         return false;
-    }
-    function unEscape(str, sep) {
-        return str.split("\\\\").join("\\").split(`\\${sep}`).join(sep).split("\\n").join("\n");
-    }
-    function parseSubstitute(_str) {
+    };
+    const unEscape = (str, sep) => str.split("\\\\").join("\\").split(`\\${sep}`).join(sep).split("\\n").join("\n");
+    const parseSubstitute = (_str) => {
         let str = _str;
         let from, to, flags, tmp;
         if (str.length < 4) {
@@ -1090,8 +1070,8 @@ $(() => {
             flags: flags,
             remainder: str,
         };
-    }
-    function skipOver(str, sep) {
+    };
+    const skipOver = (str, sep) => {
         const endSegment = findNext(str, sep);
         if (endSegment < 0) {
             return false;
@@ -1101,14 +1081,12 @@ $(() => {
             segment: segment,
             remainder: str.substring(endSegment + 1),
         };
-    }
-    function skipToEnd(str) {
-        return {
-            segment: str,
-            remainder: "",
-        };
-    }
-    function findNext(str, ch) {
+    };
+    const skipToEnd = (str) => ({
+        segment: str,
+        remainder: "",
+    });
+    const findNext = (str, ch) => {
         for (let i = 0; i < str.length; ++i) {
             if (str.charAt(i) === "\\") {
                 i += 2;
@@ -1118,8 +1096,8 @@ $(() => {
             }
         }
         return -1;
-    }
-    function setCheckbox(param, box) {
+    };
+    const setCheckbox = (param, box) => {
         const val = mw.util.getParamValue(param);
         if (val) {
             switch (val) {
@@ -1134,8 +1112,8 @@ $(() => {
                     box.checked = false;
             }
         }
-    }
-    function autoEdit() {
+    };
+    const autoEdit = () => {
         if (!document.editform) {
             return false;
         }
@@ -1192,8 +1170,8 @@ $(() => {
                 autoEdit2();
             }
         });
-    }
-    function autoEdit2(d) {
+    };
+    const autoEdit2 = (d) => {
         let summary = mw.util.getParamValue("autosummary");
         let summaryprompt = mw.util.getParamValue("autosummaryprompt");
         let summarynotice = "";
@@ -1220,11 +1198,9 @@ $(() => {
             document.editform.wpSummary.value = summary;
         }
         setTimeout(autoEdit3, 100);
-    }
-    function autoClickToken() {
-        return mw.user.sessionId();
-    }
-    function autoEdit3() {
+    };
+    const autoClickToken = () => mw.user.sessionId();
+    const autoEdit3 = () => {
         if (mw.util.getParamValue("actoken") !== autoClickToken()) {
             return;
         }
@@ -1243,16 +1219,16 @@ $(() => {
                 alert(tprintf("Could not find button %s. Please check the settings in your javascript file.", [btn]));
             }
         }
-    }
-    function bannerMessage(s) {
+    };
+    const bannerMessage = (s) => {
         const headings = document.getElementsByTagName("h1");
         if (headings) {
             const div = document.createElement("div");
             div.innerHTML = `<font size=+1><b>${pg.escapeQuotesHTML(s)}</b></font>`;
             headings[0].parentNode.insertBefore(div, headings[0]);
         }
-    }
-    function getRvSummary(template, json) {
+    };
+    const getRvSummary = (template, json) => {
         try {
             const o = getJsObj(json);
             const edit = anyChild(o.query.pages).revisions[0];
@@ -1261,7 +1237,7 @@ $(() => {
         } catch (badness) {
             return false;
         }
-    }
+    };
     class Downloader {
         id = null;
         lastModified = null;
@@ -1342,7 +1318,7 @@ $(() => {
         }
     }
     pg.misc.downloadsInProgress = {};
-    function newDownload(url, id, callback, _onfailure) {
+    const newDownload = (url, id, callback, _onfailure) => {
         let onfailure = _onfailure;
         const d = new Downloader(url);
         if (!d.http) {
@@ -1373,24 +1349,24 @@ $(() => {
         };
         d.setCallback(f);
         return d;
-    }
-    function fakeDownload(url, id, callback, data, lastModified, owner) {
+    };
+    const fakeDownload = (url, id, callback, data, lastModified, owner) => {
         const d = newDownload(url, callback);
         d.owner = owner;
         d.id = id;
         d.data = data;
         d.lastModified = lastModified;
         return callback(d);
-    }
-    function startDownload(url, id, callback) {
+    };
+    const startDownload = (url, id, callback) => {
         const d = newDownload(url, id, callback);
         if (typeof d === typeof "") {
             return d;
         }
         d.start();
         return d;
-    }
-    function abortAllDownloads() {
+    };
+    const abortAllDownloads = () => {
         for (const x in pg.misc.downloadsInProgress) {
             try {
                 pg.misc.downloadsInProgress[x].aborted = true;
@@ -1398,9 +1374,9 @@ $(() => {
                 Reflect.deleteProperty(pg.misc.downloadsInProgress, x);
             } catch { }
         }
-    }
+    };
     const Insta = {};
-    function setupLivePreview() {
+    const setupLivePreview = () => {
         Insta.conf = {
             baseUrl: "",
             user: {},
@@ -1425,7 +1401,7 @@ $(() => {
         Insta.conf.user.name ||= "Wikipedian";
         Insta.conf.user.signature = `[[${Insta.conf.locale.user}:${Insta.conf.user.name}|${Insta.conf.user.name}]]`;
         Insta.BLOCK_IMAGE = new RegExp(`^\\[\\[(?:File|Image|${Insta.conf.locale.image}):.*?\\|.*?(?:frame|thumbnail|thumb|none|right|left|center)`, "i");
-    }
+    };
     Insta.dump = function (_from, _to) {
         let from = _from, to = _to;
         if (typeof from === "string") {
@@ -1436,21 +1412,17 @@ $(() => {
         }
         to.innerHTML = this.convert(from.value);
     };
-    Insta.convert = function (wiki) {
+    Insta.convert = (wiki) => {
         const ll = typeof wiki === "string" ? wiki.replace(/\r/g, "").split(/\n/) : wiki;
         let o = "",
             p = 0,
             r;
-        function remain() {
-            return ll.length;
-        }
-        function sh() {
-            return ll.shift();
-        }
-        function ps(s) {
+        const remain = () => ll.length;
+        const sh = () => ll.shift();
+        const ps = (s) => {
             o += s;
-        }
-        function f(...a) {
+        };
+        const f = (...a) => {
             let i = 1,
                 f = a[0],
                 o = "",
@@ -1465,17 +1437,11 @@ $(() => {
                 }
             }
             return o + f;
-        }
-        function html_entities(s) {
-            return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-        }
-        function htmlescape_text(s) {
-            return s.replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/:/g, "&#58;").replace(/\[/g, "&#91;").replace(/]/g, "&#93;");
-        }
-        function htmlescape_attr(s) {
-            return htmlescape_text(s).replace(/'/g, "&#39;").replace(/"/g, "&quot;");
-        }
-        function str_imatch(a, b) {
+        };
+        const html_entities = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        const htmlescape_text = (s) => s.replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/:/g, "&#58;").replace(/\[/g, "&#91;").replace(/]/g, "&#93;");
+        const htmlescape_attr = (s) => htmlescape_text(s).replace(/'/g, "&#39;").replace(/"/g, "&quot;");
+        const str_imatch = (a, b) => {
             const l = Math.min(a.length, b.length);
             let i;
             for (i = 0; i < l; i++) {
@@ -1484,21 +1450,15 @@ $(() => {
                 }
             }
             return i;
-        }
-        function compareLineStringOrReg(c) {
-            return typeof c === "string" ? ll[0] && ll[0].substr(0, c.length) === c : r = ll[0] && ll[0].match(c);
-        }
-        function compareLineString(c) {
-            return ll[0] === c;
-        }
-        function charAtPoint(p) {
-            return ll[0].charAt(p);
-        }
-        function endl(s) {
+        };
+        const compareLineStringOrReg = (c) => typeof c === "string" ? ll[0] && ll[0].substr(0, c.length) === c : r = ll[0] && ll[0].match(c);
+        const compareLineString = (c) => ll[0] === c;
+        const charAtPoint = (p) => ll[0].charAt(p);
+        const endl = (s) => {
             ps(s);
             sh();
-        }
-        function parse_list() {
+        };
+        const parse_list = () => {
             let prev = "";
             while (remain() && compareLineStringOrReg(/^([*#:;]+)(.*)$/)) {
                 const l_match = r;
@@ -1548,8 +1508,8 @@ $(() => {
             for (let i = prev.length - 1; i >= 0; i--) {
                 ps(f("</?>", prev.charAt(i) === "*" ? "ul" : prev.charAt(i) === "#" ? "ol" : "dl"));
             }
-        }
-        function parse_table() {
+        };
+        const parse_table = () => {
             endl(f("<table>", compareLineStringOrReg(/^\{\|( .*)$/) ? r[1] : ""));
             while (remain()) {
                 if (compareLineStringOrReg("|")) {
@@ -1569,8 +1529,8 @@ $(() => {
                     sh();
                 }
             }
-        }
-        function parse_table_data() {
+        };
+        const parse_table_data = () => {
             let td_line, match_i;
             const td_match = sh().match(/^(\|\+|\||!)((?:([^[|]*?)\|(?!\|))?(.*))$/);
             if (td_match[1] === "|+") {
@@ -1612,18 +1572,18 @@ $(() => {
             if (td.length) {
                 ps(Insta.convert(td));
             }
-        }
-        function parse_pre() {
+        };
+        const parse_pre = () => {
             ps("<pre>");
             do {
                 endl(`${parse_inline_nowiki(ll[0].substring(1))}\n`);
             } while (remain() && compareLineStringOrReg(" "));
             ps("</pre>");
-        }
-        function parse_block_image() {
+        };
+        const parse_block_image = () => {
             ps(parse_image(sh()));
-        }
-        function parse_image(str) {
+        };
+        const parse_image = (str) => {
             let tag = str.substring(str.indexOf(":") + 1, str.length - 2);
             const attr = [];
             if (tag.match(/\|/)) {
@@ -1651,8 +1611,8 @@ $(() => {
                 attr.push(last_attr);
             }
             return "";
-        }
-        function parse_inline_nowiki(str) {
+        };
+        const parse_inline_nowiki = (str) => {
             let start, lastend = 0;
             let substart = 0,
                 nestlev = 0,
@@ -1685,8 +1645,8 @@ $(() => {
                 } while (subloop);
             }
             return html + parse_inline_wiki(str.substr(lastend));
-        }
-        function parse_inline_images(_str) {
+        };
+        const parse_inline_images = (_str) => {
             let str = _str;
             let start, substart = 0,
                 nestlev = 0;
@@ -1723,8 +1683,8 @@ $(() => {
                 }
             }
             return str;
-        }
-        function parse_inline_formatting(str) {
+        };
+        const parse_inline_formatting = (str) => {
             let em, st, i, li, o = "";
             while ((i = str.indexOf("''", li)) + 1) {
                 o += str.substring(li, i);
@@ -1739,8 +1699,8 @@ $(() => {
                 }
             }
             return o + str.substr(li);
-        }
-        function parse_inline_wiki(_str) {
+        };
+        const parse_inline_wiki = (_str) => {
             let str = _str;
             str = parse_inline_images(str);
             str = str.replace(/<(?:)math>(.*?)<\/math>/gi, "");
@@ -1766,7 +1726,7 @@ $(() => {
                 .replace(/(^| )(https?|news|ftp|mailto|gopher|irc):(\/*)([^ $]*[^.,!?;: $])/g, ($0, $1, $2, $3, $4) => f("?<a class='external' href='?:?'>?:?</a>", htmlescape_text($1), htmlescape_attr($2), htmlescape_attr($3) + htmlescape_attr($4), htmlescape_text($2), htmlescape_text($3) + htmlescape_text($4)))
                 .replace("__NOTOC__", "").replace("__NOINDEX__", "").replace("__INDEX__", "").replace("__NOEDITSECTION__", "");
             return parse_inline_formatting(str);
-        }
+        };
         while (remain()) {
             if (compareLineStringOrReg(/^(={1,6})(.*)\1(.*)$/)) {
                 p = 0;
@@ -1804,34 +1764,32 @@ $(() => {
         }
         return o;
     };
-    function wiki2html(txt, baseurl) {
+    const wiki2html = (txt, baseurl) => {
         Insta.conf.baseUrl = baseurl;
         return Insta.convert(txt);
-    }
-    function popupFilterPageSize(data) {
-        return formatBytes(data.length);
-    }
-    function popupFilterCountLinks(data) {
+    };
+    const popupFilterPageSize = (data) => formatBytes(data.length);
+    const popupFilterCountLinks = (data) => {
         const num = countLinks(data);
         return `${num}&nbsp;${num !== 1 ? popupString("wikiLinks") : popupString("wikiLink")}`;
-    }
-    function popupFilterCountImages(data) {
+    };
+    const popupFilterCountImages = (data) => {
         const num = countImages(data);
         return `${num}&nbsp;${num !== 1 ? popupString("images") : popupString("image")}`;
-    }
-    function popupFilterCountCategories(data) {
+    };
+    const popupFilterCountCategories = (data) => {
         const num = countCategories(data);
         return `${num}&nbsp;${num !== 1 ? popupString("categories") : popupString("category")}`;
-    }
-    function popupFilterLastModified(data, download) {
+    };
+    const popupFilterLastModified = (data, download) => {
         const lastmod = download.lastModified;
         const age = moment(lastmod); // formatAge 现仅直接接受 moment 对象
         if (lastmod && getValueOf("popupLastModified")) {
             return tprintf("%s old", [formatAge(age)]).replace(/ /g, "&nbsp;");
         }
         return "";
-    }
-    function formatAge(age) {
+    };
+    const formatAge = (age) => {
         const now = moment();
         const isBefore = age.isBefore(now);
         const monthsHave31Days = [0, 2, 4, 6, 7, 9, 11]; // 月份从0开始
@@ -1901,11 +1859,9 @@ $(() => {
             result += addunit(0, "second");
         }
         return result.replace(/(\d) /g, "$1");
-    }
-    function addunit(num, str) {
-        return `${num} ${num !== 1 ? popupString(`${str}s`) : popupString(str)}`;
-    }
-    function runPopupFilters(list, data, download) {
+    };
+    const addunit = (num, str) => `${num} ${num !== 1 ? popupString(`${str}s`) : popupString(str)}`;
+    const runPopupFilters = (list, data, download) => {
         const ret = [];
         for (let i = 0; i < list.length; ++i) {
             if (list[i] && typeof list[i] === "function") {
@@ -1916,8 +1872,8 @@ $(() => {
             }
         }
         return ret;
-    }
-    function getPageInfo(data, download) {
+    };
+    const getPageInfo = (data, download) => {
         if (!data || data.length === 0) {
             return popupString("Empty page");
         }
@@ -1929,17 +1885,11 @@ $(() => {
             pageInfo = upcaseFirst(pageInfo);
         }
         return pageInfo;
-    }
-    function countLinks(wikiText) {
-        return wikiText.split("[[").length - 1;
-    }
-    function countImages(wikiText) {
-        return (wikiText.parenSplit(pg.re.image).length - 1) / (pg.re.imageBracketCount + 1);
-    }
-    function countCategories(wikiText) {
-        return (wikiText.parenSplit(pg.re.category).length - 1) / (pg.re.categoryBracketCount + 1);
-    }
-    function popupFilterStubDetect(data, download, article) {
+    };
+    const countLinks = (wikiText) => wikiText.split("[[").length - 1;
+    const countImages = (wikiText) => (wikiText.parenSplit(pg.re.image).length - 1) / (pg.re.imageBracketCount + 1);
+    const countCategories = (wikiText) => (wikiText.parenSplit(pg.re.category).length - 1) / (pg.re.categoryBracketCount + 1);
+    const popupFilterStubDetect = (data, download, article) => {
         const counts = stubCount(data, article);
         if (counts.real) {
             return popupString("stub");
@@ -1948,16 +1898,14 @@ $(() => {
             return popupString("section stub");
         }
         return "";
-    }
-    function popupFilterDisambigDetect(data, download, article) {
+    };
+    const popupFilterDisambigDetect = (data, download, article) => {
         if (!getValueOf("popupAllDabsStubs") && article.namespace()) {
             return "";
         }
         return isDisambig(data, article) ? popupString("disambig") : "";
-    }
-    function formatBytes(num) {
-        return num > 949 ? Math.round(num / 100) / 10 + popupString("kB") : `${num}&nbsp;${popupString("bytes")}`;
-    }
+    };
+    const formatBytes = (num) => num > 949 ? Math.round(num / 100) / 10 + popupString("kB") : `${num}&nbsp;${popupString("bytes")}`;
     class Stringwrapper {
         indexOf(x) {
             return this.toString().indexOf(x);
@@ -1988,15 +1936,9 @@ $(() => {
             super();
             this.setUtf(val);
         }
-        static fromURL(h) {
-            return new Title().fromURL(h);
-        }
-        static fromAnchor(a) {
-            return new Title().fromAnchor(a);
-        }
-        static fromWikiText(txt) {
-            return new Title().fromWikiText(txt);
-        }
+        static fromURL = (h) => new Title().fromURL(h);
+        static fromAnchor = (a) => new Title().fromAnchor(a);
+        static fromWikiText = (txt) => new Title().fromWikiText(txt);
         toString(omitAnchor) {
             return this.value + (!omitAnchor && this.anchor ? `#${this.anchorString()}` : "");
         }
@@ -2036,7 +1978,7 @@ $(() => {
                 return txt;
             }
         }
-        decodeEscapes(txt) {
+        decodeEscapes = (txt) => {
             const split = txt.parenSplit(/((?:[%][0-9A-Fa-f]{2})+)/);
             const len = split.length;
             if (len === 1) {
@@ -2046,7 +1988,7 @@ $(() => {
                 split[i] = decodeURIComponent(split[i]);
             }
             return split.join("");
-        }
+        };
         hintValue() {
             if (!this.value) {
                 return "";
@@ -2275,7 +2217,7 @@ $(() => {
             return this;
         }
     }
-    function parseParams(_url) {
+    const parseParams = (_url) => {
         let url = _url;
         const specialDiff = pg.re.specialdiff.exec(url);
         if (specialDiff) {
@@ -2313,8 +2255,8 @@ $(() => {
             ret.oldid = helper;
         }
         return ret;
-    }
-    function myDecodeURI(str) {
+    };
+    const myDecodeURI = (str) => {
         let ret;
         try {
             ret = decodeURI(str.toString());
@@ -2327,18 +2269,18 @@ $(() => {
             ret = ret.split(from).join(to);
         }
         return ret;
-    }
-    function safeDecodeURI(str) {
+    };
+    const safeDecodeURI = (str) => {
         const ret = myDecodeURI(str);
         return ret || str;
-    }
-    function isDisambig(data, article) {
+    };
+    const isDisambig = (data, article) => {
         if (!getValueOf("popupAllDabsStubs") && article.namespace()) {
             return false;
         }
         return !article.isTalkPage() && pg.re.disambig.test(data);
-    }
-    function stubCount(data, article) {
+    };
+    const stubCount = (data, article) => {
         if (!getValueOf("popupAllDabsStubs") && article.namespace()) {
             return false;
         }
@@ -2358,17 +2300,11 @@ $(() => {
             real: realStub,
             sect: sectStub,
         };
-    }
-    function isValidImageName(str) {
-        return str.indexOf("{") === -1;
-    }
-    function isInStrippableNamespace(article) {
-        return article.namespaceId() !== 0;
-    }
-    function isInMainNamespace(article) {
-        return article.namespaceId() === 0;
-    }
-    function anchorContainsImage(a) {
+    };
+    const isValidImageName = (str) => str.indexOf("{") === -1;
+    const isInStrippableNamespace = (article) => article.namespaceId() !== 0;
+    const isInMainNamespace = (article) => article.namespaceId() === 0;
+    const anchorContainsImage = (a) => {
         if (a === null) {
             return false;
         }
@@ -2379,8 +2315,8 @@ $(() => {
             }
         }
         return false;
-    }
-    function isPopupLink(a) {
+    };
+    const isPopupLink = (a) => {
         if (!markNopopupSpanLinks.done) {
             markNopopupSpanLinks();
         }
@@ -2401,8 +2337,8 @@ $(() => {
             return true;
         }
         return (pg.re.email.test(h) || pg.re.contribs.test(h) || pg.re.backlinks.test(h) || pg.re.specialdiff.test(h)) && h.indexOf("&limit=") === -1;
-    }
-    function markNopopupSpanLinks() {
+    };
+    const markNopopupSpanLinks = () => {
         if (!getValueOf("popupOnlyArticleLinks")) {
             fixVectorMenuPopups();
         }
@@ -2414,11 +2350,11 @@ $(() => {
             }
         }
         markNopopupSpanLinks.done = true;
-    }
-    function fixVectorMenuPopups() {
+    };
+    const fixVectorMenuPopups = () => {
         $("div.vectorMenu h3:first a:first, div.vector-menu h3:first a:first, nav.vector-menu h3:first a:first").prop("inNopopupSpan", true);
-    }
-    function getPageWithCaching(url, onComplete, owner) {
+    };
+    const getPageWithCaching = (url, onComplete, owner) => {
         log(`getPageWithCaching, url=${url}`);
         const i = findInPageCache(url);
         let d;
@@ -2431,26 +2367,26 @@ $(() => {
                 d.owner = owner;
             }
         }
-    }
-    function getPage(url, onComplete, owner) {
+    };
+    const getPage = (url, onComplete, owner) => {
         log("getPage");
-        const callback = function (d) {
+        const callback = (d) => {
             if (!d.aborted) {
                 addPageToCache(d);
                 onComplete(d);
             }
         };
         return startDownload(url, owner.idNumber, callback);
-    }
-    function findInPageCache(url) {
+    };
+    const findInPageCache = (url) => {
         for (let i = 0; i < pg.cache.pages.length; ++i) {
             if (url === pg.cache.pages[i].url) {
                 return i;
             }
         }
         return -1;
-    }
-    function addPageToCache(download) {
+    };
+    const addPageToCache = (download) => {
         log(`addPageToCache ${download.url}`);
         const page = {
             url: download.url,
@@ -2458,7 +2394,7 @@ $(() => {
             lastModified: download.lastModified,
         };
         return pg.cache.pages.push(page);
-    }
+    };
     if (`${"abc".split(/(b)/)}` !== "a,b,c") {
         String.prototype.parenSplit = function (_re) {
             const re = nonGlobalRegex(_re);
@@ -2485,7 +2421,7 @@ $(() => {
         };
         String.prototype.parenSplit.isNative = true;
     }
-    function nonGlobalRegex(re) {
+    const nonGlobalRegex = (re) => {
         const s = re.toString();
         let flags = "";
         let j = s.length;
@@ -2496,8 +2432,8 @@ $(() => {
         }
         const t = s.substring(1, j);
         return RegExp(t, flags);
-    }
-    function getJsObj(json) {
+    };
+    const getJsObj = (json) => {
         try {
             const json_ret = JSON.parse(json);
             if (json_ret.warnings) {
@@ -2516,32 +2452,26 @@ $(() => {
             errlog(`Something went wrong with getJsObj, json=${json}`);
             return 1;
         }
-    }
-    function anyChild(obj) {
+    };
+    const anyChild = (obj) => {
         for (const p in obj) {
             return obj[p];
         }
         return null;
-    }
-    function upcaseFirst(str) {
+    };
+    const upcaseFirst = (str) => {
         if (typeof str !== typeof "" || str === "") {
             return "";
         }
         return str.charAt(0).toUpperCase() + str.substring(1);
-    }
-    function literalizeRegex(str) {
-        return mw.util.escapeRegExp(str);
-    }
+    };
+    const literalizeRegex = (str) => mw.util.escapeRegExp(str);
     String.prototype.entify = function () {
         return this.split("&").join("&amp;").split("<").join("&lt;").split(">").join("&gt;").split('"').join("&quot;");
     };
-    function removeNulls(val) {
-        return val !== null;
-    }
-    function joinPath(list) {
-        return list.filter(removeNulls).join("/");
-    }
-    function simplePrintf(str, subs) {
+    const removeNulls = (val) => val !== null;
+    const joinPath = (list) => list.filter(removeNulls).join("/");
+    const simplePrintf = (str, subs) => {
         if (!str || !subs) {
             return str;
         }
@@ -2571,48 +2501,38 @@ $(() => {
             }
         } while (s.length > 0);
         return ret.join("");
-    }
-    function isString(x) {
-        return typeof x === "string" || x instanceof String;
-    }
-    function isRegExp(x) {
-        return x instanceof RegExp;
-    }
-    function isArray(x) {
-        return Array.isArray(x);
-    }
-    function zeroFill(n, l = 2) {
-        return `${n}`.padStart(l, "0");
-    }
-    function map(f, o) {
+    };
+    const isString = (x) => typeof x === "string" || x instanceof String;
+    const isRegExp = (x) => x instanceof RegExp;
+    const isArray = (x) => Array.isArray(x);
+    const zeroFill = (n, l = 2) => `${n}`.padStart(l, "0");
+    const map = (f, o) => {
         if (isArray(o)) {
             return map_array(f, o);
         }
         return map_object(f, o);
-    }
-    function map_array(f, o) {
+    };
+    const map_array = (f, o) => {
         const ret = [];
         for (let i = 0; i < o.length; ++i) {
             ret.push(f(o[i]));
         }
         return ret;
-    }
-    function map_object(f, o) {
+    };
+    const map_object = (f, o) => {
         const ret = {};
         for (const i in o) {
             ret[o] = f(o[i]);
         }
         return ret;
-    }
-    pg.escapeQuotesHTML = function (text) {
-        return text.replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
     };
-    pg.unescapeQuotesHTML = function (html) {
+    pg.escapeQuotesHTML = (text) => text.replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    pg.unescapeQuotesHTML = (html) => {
         const txt = document.createElement("textarea");
         txt.innerHTML = html;
         return txt.value;
     };
-    function retargetDab(newTarget, oldTarget, friendlyCurrentArticleName, titleToEdit) {
+    const retargetDab = (newTarget, oldTarget, friendlyCurrentArticleName, titleToEdit) => {
         log(`retargetDab: newTarget=${newTarget} oldTarget=${oldTarget}`);
         return changeLinkTargetLink({
             newTarget: newTarget,
@@ -2625,8 +2545,8 @@ $(() => {
             watch: getValueOf("popupWatchDisambiggedPages"),
             title: titleToEdit,
         });
-    }
-    function listLinks(wikitext, oldTarget, titleToEdit) {
+    };
+    const listLinks = (wikitext, oldTarget, titleToEdit) => {
         const reg = RegExp("\\[\\[([^|]*?) *(\\||\\]\\])", "gi");
         let ret = [];
         const splitted = wikitext.parenSplit(reg);
@@ -2660,8 +2580,8 @@ $(() => {
             title: titleToEdit,
         }));
         return ret;
-    }
-    function rmDupesFromSortedList(list) {
+    };
+    const rmDupesFromSortedList = (list) => {
         const ret = [];
         for (let i = 0; i < list.length; ++i) {
             if (ret.length === 0 || list[i] !== ret[ret.length - 1]) {
@@ -2669,8 +2589,8 @@ $(() => {
             }
         }
         return ret;
-    }
-    function makeFixDab(data, navpop) {
+    };
+    const makeFixDab = (data, navpop) => {
         const titleToEdit = navpop.parentPopup && navpop.parentPopup.article.toString();
         const list = listLinks(data, navpop.originalArticle, titleToEdit);
         if (list.length === 0) {
@@ -2680,23 +2600,21 @@ $(() => {
         let html = `<hr />${popupString("Click to disambiguate this link to:")}<br>`;
         html += list.join(popupString("separator"));
         return html;
-    }
-    function makeFixDabs(wikiText, navpop) {
+    };
+    const makeFixDabs = (wikiText, navpop) => {
         if (getValueOf("popupFixDabs") && isDisambig(wikiText, navpop.article) && Title.fromURL(location.href).namespaceId() !== pg.nsSpecialId && navpop.article.talkPage()) {
             setPopupHTML(makeFixDab(wikiText, navpop), "popupFixDab", navpop.idNumber);
         }
-    }
-    function popupRedlinkHTML(article) {
-        return changeLinkTargetLink({
-            newTarget: null,
-            text: popupString("remove this link").split(" ").join("&nbsp;"),
-            hint: popupString("remove all links to this page from this article"),
-            clickButton: getValueOf("popupRedlinkAutoClick"),
-            oldTarget: article.toString(),
-            summary: simplePrintf(getValueOf("popupRedlinkSummary"), [article.toString()]),
-        });
-    }
-    function setPopupHTML(str, elementId, _popupId, onSuccess, append) {
+    };
+    const popupRedlinkHTML = (article) => changeLinkTargetLink({
+        newTarget: null,
+        text: popupString("remove this link").split(" ").join("&nbsp;"),
+        hint: popupString("remove all links to this page from this article"),
+        clickButton: getValueOf("popupRedlinkAutoClick"),
+        oldTarget: article.toString(),
+        summary: simplePrintf(getValueOf("popupRedlinkSummary"), [article.toString()]),
+    });
+    const setPopupHTML = (str, elementId, _popupId, onSuccess, append) => {
         let popupId = _popupId;
         if (typeof popupId === "undefined") {
             popupId = pg.idNumber;
@@ -2721,11 +2639,9 @@ $(() => {
             setPopupHTML(str, elementId, popupId, onSuccess);
         }, 600);
         return null;
-    }
-    function setPopupTrailer(str, id) {
-        return setPopupHTML(str, "popupData", id);
-    }
-    function fillEmptySpans(args) {
+    };
+    const setPopupTrailer = (str, id) => setPopupHTML(str, "popupData", id);
+    const fillEmptySpans = (args) => {
         let redir = true;
         let rcid;
         if (typeof args !== "object" || typeof args.redir === "undefined" || !args.redir) {
@@ -2786,8 +2702,8 @@ $(() => {
                     break;
             }
         }
-    }
-    function flatten(list, _start) {
+    };
+    const flatten = (list, _start) => {
         let start = _start;
         const ret = [];
         if (typeof start === "undefined") {
@@ -2800,8 +2716,8 @@ $(() => {
             ret.push(list[i]);
         }
         return ret;
-    }
-    function popupHTML(a) {
+    };
+    const popupHTML = (a) => {
         getValueOf("popupStructure");
         const structure = pg.structures[pg.option.popupStructure];
         if (typeof structure !== "object") {
@@ -2818,8 +2734,8 @@ $(() => {
             pg.misc.redirSpans = [];
         }
         return makeEmptySpans(pg.misc.layout, a.navpopup);
-    }
-    function makeEmptySpans(list, navpop) {
+    };
+    const makeEmptySpans = (list, navpop) => {
         let ret = "";
         for (let i = 0; i < list.length; ++i) {
             if (typeof list[i] === typeof "") {
@@ -2831,8 +2747,8 @@ $(() => {
             }
         }
         return ret;
-    }
-    function emptySpanHTML(name, id, _tag, _classname) {
+    };
+    const emptySpanHTML = (name, id, _tag, _classname) => {
         let classname = _classname;
         const tag = _tag || "span";
         if (!classname) {
@@ -2843,29 +2759,27 @@ $(() => {
             classname += " popupDragHandle";
         }
         return simplePrintf('<%s id="%s" class="%s"></%s>', [tag, name + id, classname, tag]);
-    }
+    };
     emptySpanHTML.classAliases = {
         popupSecondPreview: "popupPreview",
     };
-    function imageHTML(article, idNumber) {
-        return simplePrintf('<a id="popupImageLink$1"><img align="right" valign="top" id="popupImg$1" style="display: none;"></img></a>', [idNumber]);
-    }
-    function popTipsSoonFn(id, _when, popData) {
+    const imageHTML = (article, idNumber) => simplePrintf('<a id="popupImageLink$1"><img align="right" valign="top" id="popupImg$1" style="display: none;"></img></a>', [idNumber]);
+    const popTipsSoonFn = (id, _when, popData) => {
         let when = _when;
         if (!when) {
             when = 250;
         }
-        const popTips = function () {
+        const popTips = () => {
             setupTooltips(document.getElementById(id), false, true, popData);
         };
-        return function () {
+        return () => {
             setTimeout(popTips, when, popData);
         };
-    }
-    function setPopupTipsAndHTML(html, divname, idnumber, popData) {
+    };
+    const setPopupTipsAndHTML = (html, divname, idnumber, popData) => {
         setPopupHTML(html, divname, idnumber, getValueOf("popupSubpopups") ? popTipsSoonFn(divname + idnumber, null, popData) : null);
-    }
-    function fuzzyCursorOffMenus(x, y, fuzz, parent) {
+    };
+    const fuzzyCursorOffMenus = (x, y, fuzz, parent) => {
         if (!parent) {
             return null;
         }
@@ -2878,12 +2792,12 @@ $(() => {
             }
         }
         return true;
-    }
-    function checkPopupPosition() {
+    };
+    const checkPopupPosition = () => {
         if (pg.current.link && pg.current.link.navpopup) {
             pg.current.link.navpopup.limitHorizontalPosition();
         }
-    }
+    };
     function mouseOutWikiLink() {
         const a = this;
         removeModifierKeyHandler(a);
@@ -2897,56 +2811,54 @@ $(() => {
         restoreTitle(a);
         Navpopup.tracker.addHook(posCheckerHook(a.navpopup));
     }
-    function posCheckerHook(navpop) {
-        return function () {
-            if (!navpop.isVisible()) {
-                return true;
-            }
-            if (Navpopup.tracker.dirty) {
-                return false;
-            }
-            const x = Navpopup.tracker.x,
-                y = Navpopup.tracker.y;
-            const mouseOverNavpop = navpop.isWithin(x, y, navpop.fuzz, navpop.mainDiv) || !fuzzyCursorOffMenus(x, y, navpop.fuzz, navpop.mainDiv);
-            let t = getValueOf("popupHideDelay");
-            if (t) {
-                t = t * 1e3;
-            }
-            if (!t) {
-                if (!mouseOverNavpop) {
-                    if (navpop.parentAnchor) {
-                        restoreTitle(navpop.parentAnchor);
-                    }
-                    navpop.banish();
-                    return true;
+    const posCheckerHook = (navpop) => () => {
+        if (!navpop.isVisible()) {
+            return true;
+        }
+        if (Navpopup.tracker.dirty) {
+            return false;
+        }
+        const x = Navpopup.tracker.x,
+            y = Navpopup.tracker.y;
+        const mouseOverNavpop = navpop.isWithin(x, y, navpop.fuzz, navpop.mainDiv) || !fuzzyCursorOffMenus(x, y, navpop.fuzz, navpop.mainDiv);
+        let t = getValueOf("popupHideDelay");
+        if (t) {
+            t = t * 1e3;
+        }
+        if (!t) {
+            if (!mouseOverNavpop) {
+                if (navpop.parentAnchor) {
+                    restoreTitle(navpop.parentAnchor);
                 }
-                return false;
-            }
-            const d = +new Date();
-            if (!navpop.mouseLeavingTime) {
-                navpop.mouseLeavingTime = d;
-                return false;
-            }
-            if (mouseOverNavpop) {
-                navpop.mouseLeavingTime = null;
-                return false;
-            }
-            if (d - navpop.mouseLeavingTime > t) {
-                navpop.mouseLeavingTime = null;
                 navpop.banish();
                 return true;
             }
             return false;
-        };
-    }
-    function runStopPopupTimer(navpop) {
+        }
+        const d = +new Date();
+        if (!navpop.mouseLeavingTime) {
+            navpop.mouseLeavingTime = d;
+            return false;
+        }
+        if (mouseOverNavpop) {
+            navpop.mouseLeavingTime = null;
+            return false;
+        }
+        if (d - navpop.mouseLeavingTime > t) {
+            navpop.mouseLeavingTime = null;
+            navpop.banish();
+            return true;
+        }
+        return false;
+    };
+    const runStopPopupTimer = (navpop) => {
         if (!navpop.stopPopupTimer) {
             navpop.stopPopupTimer = setInterval(posCheckerHook(navpop), 500);
             navpop.addHook(() => {
                 clearInterval(navpop.stopPopupTimer);
             }, "hide", "before");
         }
-    }
+    };
     class Previewmaker {
         maxCharacters = getValueOf("popupMaxPreviewCharacters");
         maxSentences = getValueOf("popupMaxPreviewSentences");
@@ -3018,7 +2930,7 @@ $(() => {
             }
             return ret + (repl || "") + txt;
         }
-        makeRegexp(x, _prefix, _suffix) {
+        makeRegexp = (x, _prefix, _suffix) => {
             const prefix = _prefix || "";
             const suffix = _suffix || "";
             let reStr = "";
@@ -3038,7 +2950,7 @@ $(() => {
             }
             log(`makeRegexp: got reStr=${reStr}, flags=${flags}`);
             return RegExp(reStr, flags);
-        }
+        };
         killBoxTemplates() {
             this.kill(/[{][{][^{}\s|]*?(float|box)[_ ](begin|start)/i, /[}][}]\s*/, "{{");
             this.kill(/[{][{][^{}\s|]*?(infobox|elementbox|frame)[_ ]/i, /[}][}]\s*/, "{{");
@@ -3136,10 +3048,10 @@ $(() => {
             }
             return strs;
         }
-        firstSentences(strs, howmany) {
+        firstSentences = (strs, howmany) => {
             const t = strs.slice(0, 2 * howmany);
             return t.join("");
-        }
+        };
         killBadWhitespace() {
             this.data = this.data.replace(/^ *'+ *$/gm, "");
         }
@@ -3168,7 +3080,7 @@ $(() => {
             this.fixHTML();
             this.stripLongTemplates();
         }
-        esWiki2HtmlPart(data) {
+        esWiki2HtmlPart = (data) => {
             const reLinks = /(?:\[\[([^|\]]*)(?:\|([^|\]]*))*]]([a-z]*))/gi;
             reLinks.lastIndex = 0;
             let result = "";
@@ -3181,7 +3093,7 @@ $(() => {
             }
             result += pg.escapeQuotesHTML(data.substring(postfixIndex));
             return result;
-        }
+        };
         editSummaryPreview() {
             const reAes = /\/\* *(.*?) *\*\//g;
             reAes.lastIndex = 0;
@@ -3234,7 +3146,7 @@ $(() => {
             a.className = "popupMoreLink";
             a.innerHTML = popupString("more...");
             const savedThis = this;
-            a.onclick = function () {
+            a.onclick = () => {
                 savedThis.maxCharacters += 2e3;
                 savedThis.maxSentences += 20;
                 savedThis.setData();
@@ -3252,10 +3164,10 @@ $(() => {
             this.kill(/\s*[{][{][^{}]*\n/, "}}", "{{");
         }
     }
-    function loadAPIPreview(queryType, article, navpop) {
+    const loadAPIPreview = (queryType, article, navpop) => {
         const art = new Title(article).urlString();
         let url = `${pg.wiki.apiwikibase}?format=json&formatversion=2&action=query&`;
-        let htmlGenerator = function () {
+        let htmlGenerator = () => {
             alert("invalid html generator");
         };
         let usernameart = "";
@@ -3303,7 +3215,7 @@ $(() => {
                 } else {
                     url += `titles=${article.removeAnchor().urlString()}`;
                 }
-                url += `&prop=revisions|pageprops|info|images|categories${ /* @TODO: 萌百尚不支持 wikibase */ "" /* &meta=wikibase */ }&rvslots=main&rvprop=ids|timestamp|comment|user|content&cllimit=max&imlimit=max`;
+                url += `&prop=revisions|pageprops|info|images|categories${/* @TODO: 萌百尚不支持 wikibase */ "" /* &meta=wikibase */}&rvslots=main&rvprop=ids|timestamp|comment|user|content&cllimit=max&imlimit=max`;
                 htmlGenerator = APIrevisionPreviewHTML;
                 break;
         }
@@ -3317,7 +3229,7 @@ $(() => {
             }
             showAPIPreview(queryType, htmlGenerator(article, d, navpop), navpop.idNumber, navpop, d);
         };
-        const go = function () {
+        const go = () => {
             getPageWithCaching(url, callback, navpop);
             return true;
         };
@@ -3326,8 +3238,8 @@ $(() => {
         } else {
             navpop.addHook(go, "unhide", "before", `DOWNLOAD_${queryType}_QUERY_DATA`);
         }
-    }
-    function linkList(list) {
+    };
+    const linkList = (list) => {
         list.sort((x, y) => x === y ? 0 : x < y ? -1 : 1);
         const buf = [];
         for (let i = 0; i < list.length; ++i) {
@@ -3338,8 +3250,8 @@ $(() => {
             }));
         }
         return buf.join(popupString("separator"));
-    }
-    function getTimeOffset() {
+    };
+    const getTimeOffset = () => {
         const tz = mw.user.options.get("timecorrection");
         if (tz) {
             if (tz.indexOf("|") > -1) {
@@ -3347,8 +3259,8 @@ $(() => {
             }
         }
         return 0;
-    }
-    function getTimeZone() {
+    };
+    const getTimeZone = () => {
         if (!pg.user.timeZone) {
             const tz = mw.user.options.get("timecorrection");
             pg.user.timeZone = "UTC";
@@ -3362,8 +3274,8 @@ $(() => {
             }
         }
         return pg.user.timeZone;
-    }
-    function useTimeOffset() {
+    };
+    const useTimeOffset = () => {
         if (typeof Intl.DateTimeFormat.prototype.formatToParts === "undefined") {
             return true;
         }
@@ -3372,8 +3284,8 @@ $(() => {
             return true;
         }
         return false;
-    }
-    function getLocales() {
+    };
+    const getLocales = () => {
         if (!pg.user.locales) {
             let userLanguage = document.querySelector("html").getAttribute("lang");
             if (getValueOf("popupLocale")) {
@@ -3388,18 +3300,16 @@ $(() => {
             pg.user.locales = Intl.DateTimeFormat.supportedLocalesOf([userLanguage, navigator.language]);
         }
         return pg.user.locales;
-    }
-    function getMWDateFormat() {
-        return mw.user.options.get("date");
-    }
-    function editPreviewTable(article, h, reallyContribs) {
+    };
+    const getMWDateFormat = () => mw.user.options.get("date");
+    const editPreviewTable = (article, h, reallyContribs) => {
         let html = ["<table>"];
         let day = null;
         let curart = article;
         let page = null;
         let makeFirstColumnLinks;
         if (reallyContribs) {
-            makeFirstColumnLinks = function (currentRevision) {
+            makeFirstColumnLinks = (currentRevision) => {
                 let result = "(";
                 result += `<a href="${pg.wiki.titlebase}${new Title(currentRevision.title).urlString()}&diff=prev&oldid=${currentRevision.revid}">${popupString("diff")}</a>`;
                 result += "&nbsp;|&nbsp;";
@@ -3409,7 +3319,7 @@ $(() => {
             };
         } else {
             const firstRevid = h[0].revid;
-            makeFirstColumnLinks = function (currentRevision) {
+            makeFirstColumnLinks = (currentRevision) => {
                 let result = "(";
                 result += `<a href="${pg.wiki.titlebase}${new Title(curart).urlString()}&diff=${firstRevid}&oldid=${currentRevision.revid}">${popupString("cur")}</a>`;
                 result += "&nbsp;|&nbsp;";
@@ -3471,17 +3381,15 @@ $(() => {
         }
         html.push("</table>");
         return html.join("");
-    }
-    function adjustDate(d, offset) {
+    };
+    const adjustDate = (d, offset) => {
         const o = offset * 60 * 1e3;
         return new Date(+d + o);
-    }
-    function convertTimeZone(date, timeZone) {
-        return new Date(date.toLocaleString("en-US", {
-            timeZone: timeZone,
-        }));
-    }
-    function formattedDateTime(date) {
+    };
+    const convertTimeZone = (date, timeZone) => new Date(date.toLocaleString("en-US", {
+        timeZone: timeZone,
+    }));
+    const formattedDateTime = (date) => {
         if (useTimeOffset()) {
             return `${formattedDate(date)} ${formattedTime(date)}`;
         }
@@ -3492,8 +3400,8 @@ $(() => {
         const options = getValueOf("popupDateTimeFormatterOptions");
         options.timeZone = getTimeZone();
         return date.toLocaleString(getLocales(), options);
-    }
-    function formattedDate(date) {
+    };
+    const formattedDate = (date) => {
         if (useTimeOffset()) {
             const d2 = adjustDate(date, getTimeOffset());
             return map(zeroFill, [d2.getUTCFullYear(), d2.getUTCMonth() + 1, d2.getUTCDate()]).join("-");
@@ -3505,8 +3413,8 @@ $(() => {
         const options = getValueOf("popupDateFormatterOptions");
         options.timeZone = getTimeZone();
         return date.toLocaleDateString(getLocales(), options);
-    }
-    function formattedTime(date) {
+    };
+    const formattedTime = (date) => {
         if (useTimeOffset()) {
             const d2 = adjustDate(date, getTimeOffset());
             return map(zeroFill, [d2.getUTCHours(), d2.getUTCMinutes(), d2.getUTCSeconds()]).join(":");
@@ -3518,8 +3426,8 @@ $(() => {
         const options = getValueOf("popupTimeFormatterOptions");
         options.timeZone = getTimeZone();
         return date.toLocaleTimeString(getLocales(), options);
-    }
-    function fetchUserGroupNames(userinfoResponse) {
+    };
+    const fetchUserGroupNames = (userinfoResponse) => {
         const queryObj = getJsObj(userinfoResponse).query;
         const user = anyChild(queryObj.users);
         const messages = [];
@@ -3534,8 +3442,8 @@ $(() => {
             });
         }
         return getMwApi().loadMessagesIfMissing(messages);
-    }
-    function showAPIPreview(queryType, html, id, navpop, download) {
+    };
+    const showAPIPreview = (queryType, html, id, navpop, download) => {
         let target = "popupPreview";
         completedNavpopTask(navpop);
         switch (queryType) {
@@ -3551,8 +3459,8 @@ $(() => {
                 return;
         }
         setPopupTipsAndHTML(html, target, id);
-    }
-    function APIrevisionPreviewHTML(article, download) {
+    };
+    const APIrevisionPreviewHTML = (article, download) => {
         try {
             const jsObj = getJsObj(download.data);
             const page = anyChild(jsObj.query.pages);
@@ -3568,8 +3476,8 @@ $(() => {
         } catch (someError) {
             return "Revision preview failed :(";
         }
-    }
-    function APIbacklinksPreviewHTML(article, download) {
+    };
+    const APIbacklinksPreviewHTML = (article, download) => {
         try {
             const jsObj = getJsObj(download.data);
             const list = jsObj.query.backlinks;
@@ -3589,8 +3497,8 @@ $(() => {
         } catch (someError) {
             return "backlinksPreviewHTML went wonky";
         }
-    }
-    pg.fn.APIsharedImagePagePreviewHTML = function APIsharedImagePagePreviewHTML(obj) {
+    };
+    pg.fn.APIsharedImagePagePreviewHTML = (obj) => {
         log("APIsharedImagePagePreviewHTML");
         const popupid = obj.requestid;
         if (obj.query && obj.query.pages) {
@@ -3603,7 +3511,7 @@ $(() => {
             }
         }
     };
-    function APIimagepagePreviewHTML(article, download, navpop) {
+    const APIimagepagePreviewHTML = (article, download, navpop) => {
         try {
             const jsObj = getJsObj(download.data);
             const page = anyChild(jsObj.query.pages);
@@ -3640,8 +3548,8 @@ $(() => {
         } catch (someError) {
             return "API imagepage preview failed :(";
         }
-    }
-    function APIimagelinksPreviewHTML(article, download) {
+    };
+    const APIimagelinksPreviewHTML = (article, download) => {
         try {
             const jsobj = getJsObj(download.data);
             const list = jsobj.query.imageusage;
@@ -3659,8 +3567,8 @@ $(() => {
         } catch (someError) {
             return "Image links preview generation failed :(";
         }
-    }
-    function APIcategoryPreviewHTML(article, download) {
+    };
+    const APIcategoryPreviewHTML = (article, download) => {
         try {
             const jsobj = getJsObj(download.data);
             const list = jsobj.query.categorymembers;
@@ -3679,8 +3587,8 @@ $(() => {
         } catch (someError) {
             return "Category preview failed :(";
         }
-    }
-    function APIuserInfoPreviewHTML(article, download) {
+    };
+    const APIuserInfoPreviewHTML = (article, download) => {
         let ret = [];
         let queryobj = {};
         try {
@@ -3770,11 +3678,9 @@ $(() => {
         }
         ret = `<hr />${ret.join(popupString("comma"))}`;
         return ret;
-    }
-    function APIcontribsPreviewHTML(article, download, navpop) {
-        return APIhistoryPreviewHTML(article, download, navpop, true);
-    }
-    function APIhistoryPreviewHTML(article, download, navpop, reallyContribs) {
+    };
+    const APIcontribsPreviewHTML = (article, download, navpop) => APIhistoryPreviewHTML(article, download, navpop, true);
+    const APIhistoryPreviewHTML = (article, download, navpop, reallyContribs) => {
         try {
             const jsobj = getJsObj(download.data);
             let edits = [];
@@ -3788,12 +3694,12 @@ $(() => {
         } catch (someError) {
             return popupString("History preview failed");
         }
-    }
-    function setupDebugging() {
+    };
+    const setupDebugging = () => {
         // 已在开头设置 log 和 errlog 函数
         log("Initializing logger");
-    }
-    function loadImage(image, navpop) {
+    };
+    const loadImage = (image, navpop) => {
         if (typeof image.stripNamespace !== "function") {
             alert("loadImages bad");
         }
@@ -3808,10 +3714,10 @@ $(() => {
         url += `&prop=imageinfo&iiprop=url|mime&iiurlwidth=${getValueOf("popupImageSizeLarge")}`;
         url += `&titles=${art}`;
         pendingNavpopTask(navpop);
-        const callback = function (d) {
+        const callback = (d) => {
             popupsInsertImage(navpop.idNumber, navpop, d);
         };
-        const go = function () {
+        const go = () => {
             getPageWithCaching(url, callback, navpop);
             return true;
         };
@@ -3820,8 +3726,8 @@ $(() => {
         } else {
             navpop.addHook(go, "unhide", "after", "DOWNLOAD_IMAGE_QUERY_DATA");
         }
-    }
-    function popupsInsertImage(id, navpop, download) {
+    };
+    const popupsInsertImage = (id, navpop, download) => {
         log("popupsInsertImage");
         let imageinfo;
         try {
@@ -3872,7 +3778,7 @@ $(() => {
                 a.title = popupString("Open full-size image");
                 return;
         }
-    }
+    };
     function toggleSize() {
         const imgContainer = this;
         if (!imgContainer) {
@@ -3890,7 +3796,7 @@ $(() => {
             img.style.width = "";
         }
     }
-    function getValidImageFromWikiText(wikiText) {
+    const getValidImageFromWikiText = (wikiText) => {
         let matched = null;
         const t = removeMatchesUnless(wikiText, /(<!--[\s\S]*?-->)/, 1, /^<!--[^[]*popup/i);
         let match = pg.re.image.exec(t);
@@ -3907,8 +3813,8 @@ $(() => {
             return null;
         }
         return `${mw.config.get("wgFormattedNamespaces")[pg.nsImageId]}:${upcaseFirst(matched)}`;
-    }
-    function removeMatchesUnless(str, re1, parencount, re2) {
+    };
+    const removeMatchesUnless = (str, re1, parencount, re2) => {
         const split = str.parenSplit(re1);
         const c = parencount + 1;
         for (let i = 0; i < split.length; ++i) {
@@ -3918,8 +3824,8 @@ $(() => {
             split[i] = "";
         }
         return split.join("");
-    }
-    function setNamespaces() {
+    };
+    const setNamespaces = () => {
         pg.nsSpecialId = -1;
         pg.nsMainspaceId = 0;
         pg.nsImageId = 6;
@@ -3927,8 +3833,8 @@ $(() => {
         pg.nsUsertalkId = 3;
         pg.nsCategoryId = 14;
         pg.nsTemplateId = 10;
-    }
-    function setRedirs() {
+    };
+    const setRedirs = () => {
         const r = "redirect";
         const R = "REDIRECT";
         const redirLists = {
@@ -3969,8 +3875,8 @@ $(() => {
         };
         const redirList = redirLists[pg.wiki.lang] || [r, R];
         pg.re.redirect = RegExp(`^\\s*[#](${redirList.join("|")}).*?\\[{2}([^\\|\\]]*)(|[^\\]]*)?\\]{2}\\s*(.*)`, "i");
-    }
-    function setInterwiki() {
+    };
+    const setInterwiki = () => {
         if (pg.wiki.lang === "zh") {
             pg.wiki.interwiki = "en|ja";
         } else if (pg.wiki.lang === "en") {
@@ -3979,8 +3885,8 @@ $(() => {
             pg.wiki.interwiki = "zh|en";
         }
         pg.re.interwiki = RegExp(`^${pg.wiki.interwiki}:`);
-    }
-    function nsRe(namespaceId) {
+    };
+    const nsRe = (namespaceId) => {
         const imageNamespaceVariants = [];
         $.each(mw.config.get("wgNamespaceIds"), (_localizedNamespaceLc, _namespaceId) => {
             const localizedNamespaceLc = upcaseFirst(_localizedNamespaceLc);
@@ -3991,11 +3897,9 @@ $(() => {
             imageNamespaceVariants.push(mw.util.escapeRegExp(encodeURI(localizedNamespaceLc)));
         });
         return `(?:${imageNamespaceVariants.join("|")})`;
-    }
-    function nsReImage() {
-        return nsRe(pg.nsImageId);
-    }
-    function getEditboxSelection() {
+    };
+    const nsReImage = () => nsRe(pg.nsImageId);
+    const getEditboxSelection = () => {
         let editbox;
         try {
             editbox = document.editform.wpTextbox1;
@@ -4008,8 +3912,8 @@ $(() => {
         const selStart = editbox.selectionStart;
         const selEnd = editbox.selectionEnd;
         return editbox.value.substring(selStart, selEnd);
-    }
-    function doSelectionPopup() {
+    };
+    const doSelectionPopup = () => {
         const sel = getEditboxSelection();
         const open = sel.indexOf("[[");
         const pipe = sel.indexOf("|");
@@ -4035,8 +3939,8 @@ $(() => {
                 runStopPopupTimer(a.navpopup);
             }, "unhide", "after");
         }
-    }
-    function doSeparateSelectionPopup(str) {
+    };
+    const doSeparateSelectionPopup = (str) => {
         let div = document.getElementById("selectionPreview");
         if (!div) {
             div = document.createElement("div");
@@ -4051,7 +3955,7 @@ $(() => {
         div.innerHTML = wiki2html(str);
         div.ranSetupTooltipsAlready = false;
         popTipsSoonFn("selectionPreview")();
-    }
+    };
     class Mousetracker {
         loopDelay = 400;
         timer = null;
@@ -4145,7 +4049,7 @@ $(() => {
             this.active = true;
             this.savedHandler = document.onmousemove;
             const savedThis = this;
-            document.onmousemove = function (e) {
+            document.onmousemove = (e) => {
                 savedThis.track.bind(savedThis)(e);
             };
             if (this.loopDelay) {
@@ -4322,7 +4226,7 @@ $(() => {
             this.runHooks("create", "before");
             const mainDiv = document.createElement("div");
             const savedThis = this;
-            mainDiv.onclick = function (e) {
+            mainDiv.onclick = (e) => {
                 savedThis.onclickHandler(e);
             };
             mainDiv.className = this.className ? this.className : "navpopup_maindiv";
@@ -4345,7 +4249,7 @@ $(() => {
             }
             const drag = new Drag();
             if (!handleName) {
-                drag.startCondition = function (e) {
+                drag.startCondition = (e) => {
                     try {
                         if (!e.shiftKey) {
                             return false;
@@ -4364,7 +4268,7 @@ $(() => {
                 dragHandle = this.mainDiv;
             }
             const np = this;
-            drag.endHook = function (x, y) {
+            drag.endHook = (x, y) => {
                 Navpopup.tracker.dirty = true;
                 np.reposition(x, y);
             };
@@ -4418,19 +4322,19 @@ $(() => {
             this.downloads = [];
         }
     }
-    function delFmt(x) {
+    const delFmt = (x) => {
         if (!x.length) {
             return "";
         }
         return `<del class='popupDiff'>${x.join("")}</del>`;
-    }
-    function insFmt(x) {
+    };
+    const insFmt = (x) => {
         if (!x.length) {
             return "";
         }
         return `<ins class='popupDiff'>${x.join("")}</ins>`;
-    }
-    function countCrossings(a, b, i, eject) {
+    };
+    const countCrossings = (a, b, i, eject) => {
         if (!b[i].row && b[i].row !== 0) {
             return -1;
         }
@@ -4447,8 +4351,8 @@ $(() => {
             }
         }
         return count;
-    }
-    function shortenDiffString(str, context) {
+    };
+    const shortenDiffString = (str, context) => {
         const re = /(<del[\s\S]*?<\/del>|<ins[\s\S]*?<\/ins>)/;
         const splitted = str.parenSplit(re);
         let ret = [""];
@@ -4472,8 +4376,8 @@ $(() => {
             ret = ret.slice(1);
         }
         return ret;
-    }
-    function diffString(o, n, simpleSplit) {
+    };
+    const diffString = (o, n, simpleSplit) => {
         const splitRe = /([[]{2}|[\]]{2}|[{]{2,3}|[}]{2,3}|[|]|=|<|>|[*:]+|\s|\b)/;
         let i, oSplitted, nSplitted;
         if (simpleSplit) {
@@ -4526,16 +4430,16 @@ $(() => {
             }
         }
         return str;
-    }
+    };
     const jsReservedProperties = RegExp("^(constructor|prototype|__((define|lookup)[GS]etter)__|eval|hasOwnProperty|propertyIsEnumerable|to(Source|String|LocaleString)|(un)?watch|valueOf)$");
-    function diffBugAlert(word) {
+    const diffBugAlert = (word) => {
         if (!diffBugAlert.list[word]) {
             diffBugAlert.list[word] = 1;
             alert(`Bad word: ${word}\n\nPlease report this bug.`);
         }
-    }
+    };
     diffBugAlert.list = {};
-    function makeDiffHashtable(src) {
+    const makeDiffHashtable = (src) => {
         const ret = {};
         for (let i = 0; i < src.length; i++) {
             if (jsReservedProperties.test(src[i])) {
@@ -4551,8 +4455,8 @@ $(() => {
             }
         }
         return ret;
-    }
-    function diff(o, n) {
+    };
+    const diff = (o, n) => {
         const ns = makeDiffHashtable(n);
         const os = makeDiffHashtable(o);
         let i;
@@ -4602,8 +4506,8 @@ $(() => {
             o: o,
             n: n,
         };
-    }
-    function setSiteInfo() {
+    };
+    const setSiteInfo = () => {
         if (window.popupLocalDebug) {
             pg.wiki.hostname = "en.wikipedia.org";
         } else {
@@ -4616,8 +4520,8 @@ $(() => {
         pg.wiki.lang = mw.config.get("wgContentLanguage");
         const port = location.port ? `:${location.port}` : "";
         pg.wiki.sitebase = pg.wiki.hostname + port;
-    }
-    async function setUserInfo() {
+    };
+    const setUserInfo = async () => {
         const params = {
             action: "query",
             list: "users",
@@ -4630,8 +4534,8 @@ $(() => {
             const rights = data.query.users[0].rights;
             pg.user.canReview = rights.indexOf("review") !== -1;
         }
-    }
-    async function fetchSpecialPageNames() {
+    };
+    const fetchSpecialPageNames = async () => {
         const params = {
             action: "query",
             meta: "siteinfo",
@@ -4642,8 +4546,8 @@ $(() => {
         };
         const data = await getMwApi().get(params);
         pg.wiki.specialpagealiases = data.query.specialpagealiases;
-    }
-    function setTitleBase() {
+    };
+    const setTitleBase = () => {
         const protocol = window.popupLocalDebug ? "http:" : location.protocol;
         pg.wiki.articlePath = mw.config.get("wgArticlePath").replace(/\/\$1/, "");
         pg.wiki.botInterfacePath = mw.config.get("wgScript");
@@ -4656,15 +4560,15 @@ $(() => {
         pg.wiki.commonsbase = `${protocol}//${pg.wiki.commons}${pg.wiki.botInterfacePath}`;
         pg.wiki.apicommonsbase = `${protocol}//${pg.wiki.commons}${pg.wiki.APIPath}`;
         pg.re.basenames = RegExp(`^(${map(literalizeRegex, [pg.wiki.titlebase, pg.wiki.articlebase]).join("|")})`);
-    }
-    function setMainRegex() {
+    };
+    const setMainRegex = () => {
         const reStart = "[^:]*://";
-        let preTitles = `(?:${literalizeRegex(mw.config.get('wgScript'))}|${literalizeRegex(mw.config.get('wgScriptPath'))}/(?:index[.]php|wiki[.]phtml))`;
-        preTitles += `[?]title=|${literalizeRegex(pg.wiki.articlePath + '/')}`;
+        let preTitles = `(?:${literalizeRegex(mw.config.get("wgScript"))}|${literalizeRegex(mw.config.get("wgScriptPath"))}/(?:index[.]php|wiki[.]phtml))`;
+        preTitles += `[?]title=|${literalizeRegex(`${pg.wiki.articlePath}/`)}`;
         const reEnd = `(${preTitles})([^&?#]*)[^#]*(?:#(.+))?`;
         pg.re.main = RegExp(reStart + literalizeRegex(pg.wiki.sitebase) + reEnd);
-    }
-    function buildSpecialPageGroup(specialPageObj) {
+    };
+    const buildSpecialPageGroup = (specialPageObj) => {
         const variants = [];
         variants.push(mw.util.escapeRegExp(specialPageObj.realname));
         variants.push(mw.util.escapeRegExp(encodeURI(specialPageObj.realname)));
@@ -4673,8 +4577,8 @@ $(() => {
             variants.push(mw.util.escapeRegExp(encodeURI(alias)));
         });
         return variants.join("|");
-    }
-    function setRegexps() {
+    };
+    const setRegexps = () => {
         setMainRegex();
         const sp = nsRe(pg.nsSpecialId);
         pg.re.urlNoPopup = RegExp(`((title=|/)${sp}(?:%3A|:)|section=[0-9]|^#$)`);
@@ -4699,11 +4603,11 @@ $(() => {
         pg.re.disambig = RegExp(getValueOf("popupDabRegexp"), "im");
         pg.re.oldid = /[?&]oldid=([^&]*)/;
         pg.re.diff = /[?&]diff=([^&]*)/;
-    }
-    function setupCache() {
+    };
+    const setupCache = () => {
         pg.cache.pages = [];
-    }
-    function setMisc() {
+    };
+    const setMisc = () => {
         pg.current.link = null;
         pg.current.links = [];
         pg.current.linksHash = {};
@@ -4724,8 +4628,8 @@ $(() => {
             from: "%26",
             to: "&",
         }];
-    }
-    function getMwApi() {
+    };
+    const getMwApi = () => {
         if (!pg.api.client) {
             pg.api.userAgent = `Navigation popups/1.0 (${mw.config.get("wgServerName")})`;
             pg.api.client = new mw.Api({
@@ -4737,8 +4641,8 @@ $(() => {
             });
         }
         return pg.api.client;
-    }
-    async function setupPopups(callback) {
+    };
+    const setupPopups = async (callback) => {
         if (setupPopups.completed) {
             if (typeof callback === "function") {
                 callback();
@@ -4776,8 +4680,8 @@ $(() => {
         if (typeof callback === "function") {
             callback();
         }
-    }
-    function defaultNavlinkSpec() {
+    };
+    const defaultNavlinkSpec = () => {
         let str = "";
         str += "<b><<mainlink|shortcut= >></b>";
         if (getValueOf("popupLastEditLink")) {
@@ -4794,12 +4698,12 @@ $(() => {
         str += "<br><<whatLinksHere|shortcut=l>>*<<relatedChanges|shortcut=r>>*<<move|shortcut=m>>";
         str += "if(admin){<br><<unprotect|unprotectShort>>|<<protect|shortcut=p>>|<<protectlog|log>>*<<undelete|undeleteShort>>|<<delete|shortcut=d>>|<<deletelog|log>>}";
         return str;
-    }
-    function navLinksHTML(article, hint, params) {
+    };
+    const navLinksHTML = (article, hint, params) => {
         const str = `<span class="popupNavLinks">${defaultNavlinkSpec()}</span>`;
         return navlinkStringToHTML(str, article, params);
-    }
-    function expandConditionalNavlinkString(s, article, z, _recursionCount) {
+    };
+    const expandConditionalNavlinkString = (s, article, z, _recursionCount) => {
         const oldid = z.oldid,
             rcid = z.rcid,
             diff = z.diff;
@@ -4865,8 +4769,8 @@ $(() => {
             return expandConditionalNavlinkString(ret, article, z, recursionCount + 1);
         }
         return ret;
-    }
-    function navlinkStringToArray(_s, article, params) {
+    };
+    const navlinkStringToArray = (_s, article, params) => {
         const s = expandConditionalNavlinkString(_s, article, params);
         const splitted = s.parenSplit(/<<(.*?)>>/);
         const ret = [];
@@ -4905,14 +4809,10 @@ $(() => {
             }
         }
         return ret;
-    }
-    function navlinkSubstituteHTML(s) {
-        return s.split("*").join(getValueOf("popupNavLinkSeparator")).split("<menurow>").join('<li class="popup_menu_row">').split("</menurow>").join("</li>").split("<menu>").join('<ul class="popup_menu">').split("</menu>").join("</ul>");
-    }
-    function navlinkDepth(magic, s) {
-        return s.split(`<${magic}>`).length - s.split(`</${magic}>`).length;
-    }
-    function navlinkStringToHTML(s, article, params) {
+    };
+    const navlinkSubstituteHTML = (s) => s.split("*").join(getValueOf("popupNavLinkSeparator")).split("<menurow>").join('<li class="popup_menu_row">').split("</menurow>").join("</li>").split("<menu>").join('<ul class="popup_menu">').split("</menu>").join("</ul>");
+    const navlinkDepth = (magic, s) => s.split(`<${magic}>`).length - s.split(`</${magic}>`).length;
+    const navlinkStringToHTML = (s, article, params) => {
         const p = navlinkStringToArray(s, article, params);
         let html = "";
         let menudepth = 0;
@@ -4931,7 +4831,7 @@ $(() => {
             }
         }
         return html;
-    }
+    };
     class NavlinkTag {
         type = "navlinkTag";
         html() {
@@ -5258,7 +5158,7 @@ $(() => {
             }
         }
     }
-    function popupHandleKeypress(evt) {
+    const popupHandleKeypress = (evt) => {
         const keyCode = window.event ? window.event.keyCode : evt.keyCode ? evt.keyCode : evt.which;
         if (!keyCode || !pg.current.link || !pg.current.link.navpopup) {
             return;
@@ -5293,14 +5193,14 @@ $(() => {
             return document.oldPopupOnkeypress(evt);
         }
         return true;
-    }
-    function addPopupShortcuts() {
+    };
+    const addPopupShortcuts = () => {
         if (document.onkeypress !== popupHandleKeypress) {
             document.oldPopupOnkeypress = document.onkeypress;
         }
         document.onkeypress = popupHandleKeypress;
-    }
-    function rmPopupShortcuts() {
+    };
+    const rmPopupShortcuts = () => {
         popupHandleKeypress.lastPopupLinkSelected = null;
         try {
             if (document.oldPopupOnkeypress && document.oldPopupOnkeypress === popupHandleKeypress) {
@@ -5309,15 +5209,15 @@ $(() => {
             }
             document.onkeypress = document.oldPopupOnkeypress;
         } catch { }
-    }
-    function addLinkProperty(html, property) {
+    };
+    const addLinkProperty = (html, property) => {
         const i = html.indexOf(">");
         if (i < 0) {
             return html;
         }
         return `${html.substring(0, i)} ${property}${html.substring(i)}`;
-    }
-    function addPopupShortcut(html, _key) {
+    };
+    const addPopupShortcut = (html, _key) => {
         let key = _key;
         if (!getValueOf("popupShortcutKeys")) {
             return html;
@@ -5327,8 +5227,8 @@ $(() => {
             key = popupString("spacebar");
         }
         return ret.replace(/^(.*?)(title=")(.*?)(".*)$/i, `$1$2$3 [${key}]$4`);
-    }
-    async function loadDiff(article, oldid, diff, navpop) {
+    };
+    const loadDiff = async (article, oldid, diff, navpop) => {
         navpop.diffData = {
             oldRev: {},
             newRev: {},
@@ -5355,7 +5255,7 @@ $(() => {
                 }
                 break;
             case "prev":
-                if (oldid && oldid !== 'cur') {
+                if (oldid && oldid !== "cur") {
                     params.fromrev = oldid;
                 }
                 params.torelative = "prev";
@@ -5373,11 +5273,11 @@ $(() => {
         navpop.diffData.oldRev.revid = data.compare.fromrevid;
         navpop.diffData.newRev.revid = data.compare.torevid;
         addReviewLink(navpop, "popupMiscTools");
-        const go = function () {
+        const go = () => {
             pendingNavpopTask(navpop);
             let url = `${pg.wiki.apiwikibase}?format=json&formatversion=2&action=query&`;
             url += `revids=${navpop.diffData.oldRev.revid}|${navpop.diffData.newRev.revid}`;
-            url += `&prop=revisions&rvslots=main&rvprop=ids|timestamp|content`;
+            url += "&prop=revisions&rvslots=main&rvprop=ids|timestamp|content";
             getPageWithCaching(url, doneDiff, navpop);
             return true;
         };
@@ -5386,8 +5286,8 @@ $(() => {
         } else {
             navpop.addHook(go, "unhide", "before", "DOWNLOAD_DIFFS");
         }
-    }
-    async function addReviewLink(navpop, target) {
+    };
+    const addReviewLink = async (navpop, target) => {
         if (!pg.user.canReview) {
             return;
         }
@@ -5407,7 +5307,7 @@ $(() => {
             const a = document.createElement("a");
             a.innerHTML = popupString("mark patrolled");
             a.title = popupString("markpatrolledHint");
-            a.onclick = async function () {
+            a.onclick = async () => {
                 const params = {
                     action: "review",
                     revid: navpop.diffData.newRev.revid,
@@ -5422,8 +5322,8 @@ $(() => {
             };
             setPopupHTML(a, target, navpop.idNumber, null, true);
         }
-    }
-    function doneDiff(download) {
+    };
+    const doneDiff = (download) => {
         if (!download.owner || !download.owner.diffData) {
             return;
         }
@@ -5446,8 +5346,8 @@ $(() => {
             errlog("Could not get diff");
         }
         insertDiff(navpop);
-    }
-    function rmBoringLines(a, b, _context) {
+    };
+    const rmBoringLines = (a, b, _context) => {
         let context = _context;
         if (typeof context === "undefined") {
             context = 2;
@@ -5515,8 +5415,8 @@ $(() => {
             a: aaa,
             b: bbb,
         };
-    }
-    function stripOuterCommonLines(a, b, context) {
+    };
+    const stripOuterCommonLines = (a, b, context) => {
         let i = 0;
         while (i < a.length && i < b.length && a[i] === b[i]) {
             ++i;
@@ -5531,8 +5431,8 @@ $(() => {
             a: a.slice(Math.max(0, i - 1 - context), Math.min(a.length + 1, j + context + 1)),
             b: b.slice(Math.max(0, i - 1 - context), Math.min(b.length + 1, k + context + 1)),
         };
-    }
-    function insertDiff(navpop) {
+    };
+    const insertDiff = (navpop) => {
         let oldlines = navpop.diffData.oldRev.revision/* @TODO 萌百尚未更新1.32， rvslots 参数尚未支持 *//* .slots.main */.content.split("\n");
         let newlines = navpop.diffData.newRev.revision/* @TODO 萌百尚未更新1.32， rvslots 参数尚未支持 *//* .slots.main */.content.split("\n");
         let inner = stripOuterCommonLines(oldlines, newlines, getValueOf("popupDiffContextLines"));
@@ -5558,15 +5458,15 @@ $(() => {
         }
         html += shortenDiffString(diffString(oldlines2.join("\n"), newlines2.join("\n"), simpleSplit), getValueOf("popupDiffContextCharacters")).join("<hr />");
         setPopupTipsAndHTML(html.split("\n").join("<br>") + (truncated ? `<hr /><b>${popupString("Diff truncated for performance reasons")}</b>` : ""), "popupPreview", navpop.idNumber);
-    }
-    function diffDatesTable(navpop) {
+    };
+    const diffDatesTable = (navpop) => {
         let html = '<table class="popup_diff_dates">';
         html += diffDatesTableRow(navpop.diffData.newRev.revision, tprintf("New revision"));
         html += diffDatesTableRow(navpop.diffData.oldRev.revision, tprintf("Old revision"));
         html += "</table>";
         return html;
-    }
-    function diffDatesTableRow(revision, label) {
+    };
+    const diffDatesTableRow = (revision, label) => {
         let txt = "";
         const lastModifiedDate = new Date(revision.timestamp);
         txt = formattedDateTime(lastModifiedDate);
@@ -5576,19 +5476,17 @@ $(() => {
             title: label,
         });
         return simplePrintf("<tr><td>%s</td><td>%s</td></tr>", [revlink, txt]);
-    }
-    function titledDiffLink(l) {
-        return titledWikiLink({
-            article: l.article,
-            action: `${l.to}&oldid=${l.from}`,
-            newWin: l.newWin,
-            noPopup: l.noPopup,
-            text: l.text,
-            title: l.title,
-            actionName: "diff",
-        });
-    }
-    function wikiLink(l) {
+    };
+    const titledDiffLink = (l) => titledWikiLink({
+        article: l.article,
+        action: `${l.to}&oldid=${l.from}`,
+        newWin: l.newWin,
+        noPopup: l.noPopup,
+        text: l.text,
+        title: l.title,
+        actionName: "diff",
+    });
+    const wikiLink = (l) => {
         if (!(typeof l.article === typeof {} && typeof l.action === typeof "" && typeof l.text === typeof "")) {
             return null;
         }
@@ -5662,8 +5560,8 @@ $(() => {
             noPopup: l.noPopup,
             onclick: l.onclick,
         });
-    }
-    function revertSummary(oldid, diff) {
+    };
+    const revertSummary = (oldid, diff) => {
         let ret = "";
         if (diff === "prev") {
             ret = getValueOf("popupQueriedRevertToPreviousSummary");
@@ -5671,8 +5569,8 @@ $(() => {
             ret = getValueOf("popupQueriedRevertSummary");
         }
         return `${ret}&autorv=${oldid}`;
-    }
-    function titledWikiLink(l) {
+    };
+    const titledWikiLink = (l) => {
         if (typeof l.article === "undefined" || typeof l.action === "undefined") {
             errlog("got undefined article or action in titledWikiLink");
             return null;
@@ -5704,8 +5602,8 @@ $(() => {
             noPopup: l.noPopup,
             onclick: l.onclick,
         });
-    }
-    pg.fn.getLastContrib = function getLastContrib(wikipage, newWin) {
+    };
+    pg.fn.getLastContrib = (wikipage, newWin) => {
         getHistoryInfo(wikipage, (x) => {
             processLastContribInfo(x, {
                 page: wikipage,
@@ -5713,7 +5611,7 @@ $(() => {
             });
         });
     };
-    function processLastContribInfo(info, stuff) {
+    const processLastContribInfo = (info, stuff) => {
         if (!info.edits || !info.edits.length) {
             alert("Popups: an odd thing happened. Please retry.");
             return;
@@ -5724,8 +5622,8 @@ $(() => {
         }
         const newUrl = `${pg.wiki.titlebase + new Title(stuff.page).urlString()}&diff=cur&oldid=${info.firstNewEditor.oldid}`;
         displayUrl(newUrl, stuff.newWin);
-    }
-    pg.fn.getDiffSinceMyEdit = function getDiffSinceMyEdit(wikipage, newWin) {
+    };
+    pg.fn.getDiffSinceMyEdit = (wikipage, newWin) => {
         getHistoryInfo(wikipage, (x) => {
             processDiffSinceMyEdit(x, {
                 page: wikipage,
@@ -5733,7 +5631,7 @@ $(() => {
             });
         });
     };
-    function processDiffSinceMyEdit(info, stuff) {
+    const processDiffSinceMyEdit = (info, stuff) => {
         if (!info.edits || !info.edits.length) {
             alert("Popups: something fishy happened. Please try again.");
             return;
@@ -5749,21 +5647,21 @@ $(() => {
         }
         const newUrl = `${pg.wiki.titlebase + new Title(stuff.page).urlString()}&diff=cur&oldid=${info.myLastEdit.oldid}`;
         displayUrl(newUrl, stuff.newWin);
-    }
-    function displayUrl(url, newWin) {
+    };
+    const displayUrl = (url, newWin) => {
         if (newWin) {
             window.open(url);
         } else {
             document.location = url;
         }
-    }
-    pg.fn.purgePopups = function purgePopups() {
+    };
+    pg.fn.purgePopups = () => {
         processAllPopups(true);
         setupCache();
         pg.option = {};
         abortAllDownloads();
     };
-    function processAllPopups(nullify, banish) {
+    const processAllPopups = (nullify, banish) => {
         for (let i = 0; pg.current.links && i < pg.current.links.length; ++i) {
             if (!pg.current.links[i].navpopup) {
                 continue;
@@ -5776,12 +5674,12 @@ $(() => {
                 pg.current.links[i].navpopup = null;
             }
         }
-    }
-    pg.fn.disablePopups = function disablePopups() {
+    };
+    pg.fn.disablePopups = () => {
         processAllPopups(false, true);
         setupTooltips(null, true);
     };
-    pg.fn.togglePreviews = function togglePreviews() {
+    pg.fn.togglePreviews = () => {
         processAllPopups(true, true);
         pg.option.simplePopups = !pg.option.simplePopups;
         abortAllDownloads();
@@ -5790,7 +5688,7 @@ $(() => {
         l.onclick = simplePrintf("pg.fn.modifyWatchlist('%s','%s');return false;", [l.article.toString(true).split("\\").join("\\\\").split("'").join("\\'"), this.id]);
         return wikiLink(l);
     }
-    pg.fn.modifyWatchlist = async function modifyWatchlist(title, action) {
+    pg.fn.modifyWatchlist = async (title, action) => {
         const reqData = {
             action: "watch",
             formatversion: 2,
@@ -5814,7 +5712,7 @@ $(() => {
         ]);
         mw.notify(mw.message(messageName, title).parseDom());
     };
-    function magicHistoryLink(l) {
+    const magicHistoryLink = (l) => {
         let jsUrl = "",
             title = "",
             onClick = "";
@@ -5838,8 +5736,8 @@ $(() => {
             noPopup: l.noPopup,
             onclick: onClick,
         });
-    }
-    function popupMenuLink(l) {
+    };
+    const popupMenuLink = (l) => {
         const jsUrl = simplePrintf("javascript:pg.fn.%s()", [l.id]);
         const title = popupString(simplePrintf("%sHint", [l.id]));
         const onClick = simplePrintf("pg.fn.%s();return false;", [l.id]);
@@ -5851,8 +5749,8 @@ $(() => {
             noPopup: l.noPopup,
             onclick: onClick,
         });
-    }
-    function specialLink(l) {
+    };
+    const specialLink = (l) => {
         if (typeof l.specialpage === "undefined" || !l.specialpage) {
             return null;
         }
@@ -5904,34 +5802,34 @@ $(() => {
             newWin: l.newWin,
             noPopup: l.noPopup,
         });
-    }
-    function generalLink(l) {
-        if (typeof l.url === "undefined") {
+    };
+    const generalLink = (link) => {
+        if (typeof link.url === "undefined") {
             return null;
         }
         const elem = document.createElement("a");
-		elem.href = link.url;
-		elem.title = link.title;
-		elem.setAttribute("onclick", link.onclick);
-		if (link.noPopup) {
-			elem.setAttribute("noPopup", "1");
-		}
-		let newWin;
-		if (typeof link.newWin == "undefined" || link.newWin === null) {
-			newWin = getValueOf("popupNewWindows");
-		} else {
-			newWin = link.newWin;
-		}
-		if (newWin) {
-			elem.target = "_blank";
-		}
-		if (link.className) {
-			elem.className = link.className;
-		}
-		elem.innerText = pg.unescapeQuotesHTML(link.text);
-		return elem.outerHTML;
-    }
-    function appendParamsToLink(linkstr, params) {
+        elem.href = link.url;
+        elem.title = link.title;
+        elem.setAttribute("onclick", link.onclick);
+        if (link.noPopup) {
+            elem.setAttribute("noPopup", "1");
+        }
+        let newWin;
+        if (typeof link.newWin === "undefined" || link.newWin === null) {
+            newWin = getValueOf("popupNewWindows");
+        } else {
+            newWin = link.newWin;
+        }
+        if (newWin) {
+            elem.target = "_blank";
+        }
+        if (link.className) {
+            elem.className = link.className;
+        }
+        elem.innerText = pg.unescapeQuotesHTML(link.text);
+        return elem.outerHTML;
+    };
+    const appendParamsToLink = (linkstr, params) => {
         const sp = linkstr.parenSplit(/(href="[^"]+?)"/i);
         if (sp.length < 2) {
             return null;
@@ -5940,8 +5838,8 @@ $(() => {
         ret += `&${params}"`;
         ret += sp.join("");
         return ret;
-    }
-    function changeLinkTargetLink(x) {
+    };
+    const changeLinkTargetLink = (x) => {
         if (x.newTarget) {
             log(`changeLinkTargetLink: newTarget=${x.newTarget}`);
         }
@@ -5987,8 +5885,8 @@ $(() => {
         cmd += `&autosummary=${encodeURIComponent(x.summary)}`;
         cmd += `&autoimpl=${encodeURIComponent(popupString("autoedit_version"))}`;
         return appendParamsToLink(lk, cmd);
-    }
-    function redirLink(redirMatch, article) {
+    };
+    const redirLink = (redirMatch, article) => {
         let ret = "";
         if (getValueOf("popupAppendRedirNavLinks") && getValueOf("popupNavLinks")) {
             ret += "<hr />";
@@ -6029,8 +5927,8 @@ $(() => {
             text: safeDecodeURI(redirMatch),
             title: popupString("Bypass redirect"),
         })}`;
-    }
-    function arinLink(l) {
+    };
+    const arinLink = (l) => {
         if (!saneLinkCheck(l)) {
             return null;
         }
@@ -6045,21 +5943,21 @@ $(() => {
             text: l.text,
             noPopup: 1,
         });
-    }
-    function toolDbName(cookieStyle) {
+    };
+    const toolDbName = (cookieStyle) => {
         let ret = mw.config.get("wgDBname");
         if (!cookieStyle) {
             ret += "_p";
         }
         return ret;
-    }
-    function saneLinkCheck(l) {
+    };
+    const saneLinkCheck = (l) => {
         if (typeof l.article !== typeof {} || typeof l.text !== typeof "") {
             return false;
         }
         return true;
-    }
-    function editCounterLink(l) {
+    };
+    const editCounterLink = (l) => {
         if (!saneLinkCheck(l)) {
             return null;
         }
@@ -6090,8 +5988,8 @@ $(() => {
             text: l.text,
             noPopup: 1,
         });
-    }
-    function globalSearchLink(l) {
+    };
+    const globalSearchLink = (l) => {
         if (!saneLinkCheck(l)) {
             return null;
         }
@@ -6106,8 +6004,8 @@ $(() => {
             text: l.text,
             noPopup: 1,
         });
-    }
-    function googleLink(l) {
+    };
+    const googleLink = (l) => {
         if (!saneLinkCheck(l)) {
             return null;
         }
@@ -6122,8 +6020,8 @@ $(() => {
             text: l.text,
             noPopup: 1,
         });
-    }
-    function editorListLink(l) {
+    };
+    const editorListLink = (l) => {
         if (!saneLinkCheck(l)) {
             return null;
         }
@@ -6136,26 +6034,26 @@ $(() => {
             text: l.text,
             noPopup: 1,
         });
-    }
-    function generalNavLink(l) {
+    };
+    const generalNavLink = (l) => {
         l.className = l.className === null ? "popupNavLink" : l.className;
         return generalLink(l);
-    }
-    function getHistoryInfo(wikipage, whatNext) {
+    };
+    const getHistoryInfo = (wikipage, whatNext) => {
         log("getHistoryInfo");
         getHistory(wikipage, whatNext
             ? (d) => {
                 whatNext(processHistory(d));
             }
             : processHistory);
-    }
-    function getHistory(wikipage, onComplete) {
+    };
+    const getHistory = (wikipage, onComplete) => {
         log("getHistory");
         const url = `${pg.wiki.apiwikibase}?format=json&formatversion=2&action=query&prop=revisions&titles=${new Title(wikipage).urlString()}&rvlimit=${getValueOf("popupHistoryLimit")}`;
         log(`getHistory: url=${url}`);
         return startDownload(url, `${pg.idNumber}history`, onComplete);
-    }
-    function processHistory(download) {
+    };
+    const processHistory = (download) => {
         const jsobj = getJsObj(download.data);
         try {
             const revisions = anyChild(jsobj.query.pages).revisions;
@@ -6172,8 +6070,8 @@ $(() => {
             log("Something went wrong with JSON business");
             return finishProcessHistory([]);
         }
-    }
-    function finishProcessHistory(edits, userName) {
+    };
+    const finishProcessHistory = (edits, userName) => {
         const histInfo = {};
         histInfo.edits = edits;
         histInfo.userName = userName;
@@ -6194,8 +6092,8 @@ $(() => {
             }
         }
         return histInfo;
-    }
-    function defaultize(x) {
+    };
+    const defaultize = (x) => {
         if (pg.option[x] === null || typeof pg.option[x] === "undefined") {
             if (typeof window[x] !== "undefined") {
                 pg.option[x] = window[x];
@@ -6203,18 +6101,16 @@ $(() => {
                 pg.option[x] = pg.optionDefault[x];
             }
         }
-    }
-    function newOption(x, def) {
+    };
+    const newOption = (x, def) => {
         pg.optionDefault[x] = def;
-    }
-    function setDefault(x, def) {
-        return newOption(x, def);
-    }
-    function getValueOf(varName) {
+    };
+    const setDefault = (x, def) => newOption(x, def);
+    const getValueOf = (varName) => {
         defaultize(varName);
         return pg.option[varName];
-    }
-    function setOptions() {
+    };
+    const setOptions = () => {
         let userIsSysop = false;
         if (mw.config.get("wgUserGroups")) {
             for (let g = 0; g < mw.config.get("wgUserGroups").length; ++g) {
@@ -6340,7 +6236,7 @@ $(() => {
         newOption("popupAnchorRegexp", "anchors?");
         newOption("popupStubRegexp", "(sect)?stub[}][}]|This .*-related article is a .*stub");
         newOption("popupImageVarsRegexp", "image|image_(?:file|skyline|name|flag|seal)|cover|badge|logo");
-    }
+    };
     pg.string = {
         article: "article",
         category: "category",
@@ -6562,7 +6458,7 @@ $(() => {
     localStorage.removeItem("popupNoTranslation");
     const popupNoTranslation = new Set();
     window.popupNoTranslation = popupNoTranslation;
-    function popupString(str) {
+    const popupString = (str) => {
         if (typeof popupStrings !== "undefined" && popupStrings && popupStrings[str]) {
             return popupStrings[str];
         }
@@ -6571,33 +6467,33 @@ $(() => {
             console.info("popupNoTranslation", popupNoTranslation);
         }
         return str;
-    }
-    function tprintf(str, _subs) {
+    };
+    const tprintf = (str, _subs) => {
         let subs = _subs;
         if (typeof subs !== typeof []) {
             subs = [subs];
         }
         return simplePrintf(popupString(str), subs);
-    }
-    function run() {
+    };
+    const run = () => {
         autoEdit();
         setupPopups();
-    }
+    };
     if (document.readyState === "complete") {
         run();
     } else {
         $(window).on("load", run);
     }
-    (function () {
+    (() => {
         let once = true;
-        function dynamicContentHandler($content) {
+        const dynamicContentHandler = ($content) => {
             if ($content.attr("id") === "mw-content-text") {
                 if (once) {
                     once = false;
                     return;
                 }
             }
-            function registerHooksForVisibleNavpops() {
+            const registerHooksForVisibleNavpops = () => {
                 for (let i = 0; pg.current.links && i < pg.current.links.length; ++i) {
                     const navpop = pg.current.links[i].navpopup;
                     if (!navpop || !navpop.isVisible()) {
@@ -6605,16 +6501,16 @@ $(() => {
                     }
                     Navpopup.tracker.addHook(posCheckerHook(navpop));
                 }
-            }
-            function doIt() {
+            };
+            const doIt = () => {
                 registerHooksForVisibleNavpops();
                 $content.each(function () {
                     this.ranSetupTooltipsAlready = false;
                     setupTooltips(this);
                 });
-            }
+            };
             setupPopups(doIt);
-        }
+        };
         document.querySelectorAll(".mw-parser-output").forEach((content) => dynamicContentHandler($(content)));
         mw.hook("wikipage.content").add(dynamicContentHandler);
         mw.hook("ext.echo.overlay.beforeShowingOverlay").add(($overlay) => {
