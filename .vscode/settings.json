@@ -157,6 +157,7 @@
         "Gadget/SendWelcomeMessage",
         "Gadget/shortlink",
         "Gadget/ShowAvatar",
+        "Gadget/SideBarPic",
         "Gadget/sidebarHidden",
         "Gadget/site-js",
         "Gadget/site-lib",
