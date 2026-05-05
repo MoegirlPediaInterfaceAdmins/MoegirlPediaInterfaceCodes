@@ -25,7 +25,6 @@
         return;
     }
 
-    $("body").addClass("sideBarPic-executed");
     $sidebarCharacter.addClass("executed");
 
     await Promise.all($sidebarCharacter.find("img").toArray().map((img) => new Promise((res) => {
@@ -58,13 +57,15 @@
             res();
         }
     })));
-    $("body").addClass("sideBarPic");
+    const $activeSidebarCharacter = $sidebarCharacter.filter((_, ele) => !!$(ele).find("img")[0]);
+    if ($activeSidebarCharacter.length === 0) {
+        $sidebarCharacter.removeClass("executed");
+        return;
+    }
+    $("body").addClass("sideBarPic-executed sideBarPic");
 
-    $sidebarCharacter.each((_, ele) => {
+    $activeSidebarCharacter.each((_, ele) => {
         const $this = $(ele);
-        if (!$this.find("img")[0]) {
-            return;
-        }
         if (mw.config.get("skin") === "vector-2022") {
             $this.css("position", "absolute");
         }
@@ -74,12 +75,12 @@
         $this.addClass("active").find("img").removeAttr("width").removeAttr("height");
     });
     $(window).on("resize", () => {
-        $sidebarCharacter.each((_, ele) => {
+        $activeSidebarCharacter.each((_, ele) => {
             const self = $(ele);
             self.find("img").width(self.width());
         });
     }).trigger("resize");
-    if ($sidebarCharacter.is('[data-displaylogo="yes"]')) {
+    if ($activeSidebarCharacter.is('[data-displaylogo="yes"]')) {
         $("body").addClass("show-logo");
     }
 })();
