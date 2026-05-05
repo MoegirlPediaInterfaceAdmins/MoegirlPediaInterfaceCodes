@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars, prefer-arrow-functions/prefer-arrow-functions, no-use-before-define, camelcase */
 /**
- * @source https://en.wikipedia.org/wiki/_?oldid=1151460389
+ * @source https://en.wikipedia.org/wiki/_?oldid=1322962085
  * 更新后请同步更新上面链接到最新版本
  */
 /*
@@ -97,6 +97,7 @@ $(() => {
         // history, diffs, editors, related
         history: wgULS("历史", "歷史"),
         historyHint: wgULS("%s 的修订历史", "%s 的修訂歷史"),
+        "History preview failed": wgULS("历史记录预览失败 :-(", "歷史記錄預覽失敗 :-("),
         last: wgULS("之前", "之前"), // [[MediaWiki:Last]]
         lastEdit: wgULS("最近更改", "最近更改"),
         "show last edit": wgULS("最近一次更改", "最新一次修訂"),
@@ -790,7 +791,7 @@ $(() => {
             o.popups_draggable = true;
             o.hmode = true;
             o.vmode = true;
-            o.root = oRoot ? oRoot : o;
+            o.root = oRoot || o;
             if (isNaN(parseInt(o.root.style.left, 10))) {
                 o.root.style.left = "0px";
             }
@@ -923,7 +924,7 @@ $(() => {
     pg.structures.fancy.popupRedirOtherLinks = pg.structures.fancy.popupOtherLinks;
     copyStructure("fancy", "fancy2");
     pg.structures.fancy2.popupTopLinks = function (x) {
-        return `<br>${pg.structures.fancy.popupTopLinks(x).replace(RegExp("<br>$", "i"), "")}`;
+        return `<br>${pg.structures.fancy.popupTopLinks(x).replace(/<br>$/i, "")}`;
     };
     pg.structures.fancy2.popupLayout = function () {
         return ["popupError", "popupImage", "popupTitle", "popupUserData", "popupData", "popupTopLinks", "popupOtherLinks", "popupRedir", ["popupWarnRedir", "popupRedirTopLinks", "popupRedirTitle", "popupRedirData", "popupRedirOtherLinks"], "popupMiscTools", ["popupRedlink"], "popupPrePreviewSep", "popupPreview", "popupSecondPreview", "popupPreviewMore", "popupPostPreview", "popupFixDab"];
@@ -934,7 +935,7 @@ $(() => {
     };
     pg.structures.menus.popupTopLinks = function (x, shorter) {
         const s = [];
-        const dropdiv = '<div class="popup_drop">';
+        const dropclass = "popup_drop";
         const enddiv = "</div>";
         let hist = "<<history|shortcut=h>>";
         if (!shorter) {
@@ -957,9 +958,9 @@ $(() => {
         const newTopic = "if(talk){<<new|shortcut=+|new topic>>}";
         const protectDelete = `if(admin){${protect}${del}}`;
         if (getValueOf("popupActionsMenu")) {
-            s.push(`<<mainlink>>*${dropdiv}${menuTitle("actions")}`);
+            s.push(`<<mainlink>>*${menuTitle(dropclass, "actions")}`);
         } else {
-            s.push(`${dropdiv}<<mainlink>>`);
+            s.push(`<div class="${dropclass}"><<mainlink>>`);
         }
         s.push("<menu>");
         s.push(editRow + markPatrolled + newTopic + hist + lastedit + thank);
@@ -977,7 +978,7 @@ $(() => {
         s.push(`<hr />if(talk){<<article|shortcut=a|view article>><<editArticle|edit article>>}else{<<talk|shortcut=t|talk page>><<editTalk|edit talk>><<newTalk|shortcut=+|new topic>>}</menu>${enddiv}`);
         const email = "<<email|shortcut=E|email user>>";
         const contribs = "if(wikimedia){<menurow>}<<contribs|shortcut=c|contributions>>if(wikimedia){</menurow>}if(admin){<menurow><<deletedContribs>></menurow>}";
-        s.push(`if(user){*${dropdiv}${menuTitle("user")}`);
+        s.push(`if(user){*${menuTitle(dropclass, "user")}`);
         s.push("<menu>");
         s.push("<menurow><<userPage|shortcut=u|user&nbsp;page>>|<<userSpace|space>></menurow>");
         s.push("<<userTalk|shortcut=t|user talk>><<editUserTalk|edit user talk>><<newUserTalk|shortcut=+|leave comment>>");
@@ -993,7 +994,7 @@ $(() => {
         s.push(`</menu>${enddiv}}`);
         if (getValueOf("popupSetupMenu") && !x.navpop.hasPopupMenu) {
             x.navpop.hasPopupMenu = true;
-            s.push(`*${dropdiv}${menuTitle("popupsMenu")}<menu>`);
+            s.push(`*${menuTitle(dropclass, "popupsMenu")}<menu>`);
             s.push("<<togglePreviews|toggle previews>>");
             s.push("<<purgePopups|reset>>");
             s.push("<<disablePopups|disable>>");
@@ -1001,8 +1002,10 @@ $(() => {
         }
         return navlinkStringToHTML(s.join(""), x.article, x.params);
     };
-    function menuTitle(s) {
-        return `<a href="#" noPopup=1>${popupString(s)}</a>`;
+    function menuTitle(dropclass, s) {
+        const text = popupString(s); // i18n
+        const len = text.length;
+        return `<div class="${dropclass}" style="--navpop-m-len:${len}ch"><a href="#" noPopup=1>${text}</a>`;
     }
     pg.structures.menus.popupRedirTitle = pg.structures.menus.popupTitle;
     pg.structures.menus.popupRedirTopLinks = pg.structures.menus.popupTopLinks;
@@ -1824,7 +1827,7 @@ $(() => {
         const lastmod = download.lastModified;
         const age = moment(lastmod); // formatAge 现仅直接接受 moment 对象
         if (lastmod && getValueOf("popupLastModified")) {
-            return tprintf("%s old", [formatAge(age)]).replace(RegExp(" ", "g"), "&nbsp;");
+            return tprintf("%s old", [formatAge(age)]).replace(/ /g, "&nbsp;");
         }
         return "";
     }
@@ -2958,13 +2961,13 @@ $(() => {
             this.data = this.originalData.substring(0, maxSize);
         }
         killComments() {
-            this.data = this.data.replace(RegExp("^<!--[^$]*?-->\\n|\\n<!--[^$]*?-->(?=\\n)|<!--[^$]*?-->", "g"), "");
+            this.data = this.data.replace(/^<!--[^$]*?-->\n|\n<!--[^$]*?-->(?=\n)|<!--[^$]*?-->/g, "");
         }
         killDivs() {
-            this.data = this.data.replace(RegExp("< *div[^>]* *>[\\s\\S]*?< */ *div *>", "gi"), "");
+            this.data = this.data.replace(/< *div[^>]* *>[\s\S]*?< *\/ *div *>/ig, "");
         }
         killGalleries() {
-            this.data = this.data.replace(RegExp("< *gallery[^>]* *>[\\s\\S]*?< */ *gallery *>", "gi"), "");
+            this.data = this.data.replace(/< *gallery[^>]* *>[\s\S]*?< *\/ *gallery *>/ig, "");
         }
         kill(opening, closing, subopening, subclosing, repl) {
             let oldk = this.data;
@@ -3037,8 +3040,8 @@ $(() => {
             return RegExp(reStr, flags);
         }
         killBoxTemplates() {
-            this.kill(RegExp("[{][{][^{}\\s|]*?(float|box)[_ ](begin|start)", "i"), /[}][}]\s*/, "{{");
-            this.kill(RegExp("[{][{][^{}\\s|]*?(infobox|elementbox|frame)[_ ]", "i"), /[}][}]\s*/, "{{");
+            this.kill(/[{][{][^{}\s|]*?(float|box)[_ ](begin|start)/i, /[}][}]\s*/, "{{");
+            this.kill(/[{][{][^{}\s|]*?(infobox|elementbox|frame)[_ ]/i, /[}][}]\s*/, "{{");
         }
         killTemplates() {
             this.kill("{{", "}}", "{", "}", " ");
@@ -3050,7 +3053,7 @@ $(() => {
         }
         killImages() {
             const forbiddenNamespaceAliases = [];
-            jQuery.each(mw.config.get("wgNamespaceIds"), (_localizedNamespaceLc, _namespaceId) => {
+            $.each(mw.config.get("wgNamespaceIds"), (_localizedNamespaceLc, _namespaceId) => {
                 if (_namespaceId !== pg.nsImageId && _namespaceId !== pg.nsCategoryId) {
                     return;
                 }
@@ -3060,7 +3063,7 @@ $(() => {
         }
         killHTML() {
             this.kill(/<ref\b[^/>]*?>/i, /<\/ref>/i);
-            this.data = this.data.replace(RegExp("(^|\\n) *<.*", "g"), "\n");
+            this.data = this.data.replace(/(^|\n) *<.*/g, "\n");
             const splitted = this.data.parenSplit(/(<[\w\W]*?(?:>|$|(?=<)))/);
             const len = splitted.length;
             for (let i = 1; i < len; i = i + 2) {
@@ -3077,32 +3080,32 @@ $(() => {
             this.data = splitted.join("");
         }
         killChunks() {
-            const italicChunkRegex = new RegExp("((^|\\n)\\s*:*\\s*''[^']([^']|'''|'[^']){20}(.|\\n[^\\n])*''[.!?\\s]*\\n)+", "g");
+            const italicChunkRegex = /((^|\n)\s*:*\s*''[^']([^']|'''|'[^']){20}(.|\n[^\n])*''[.!?\s]*\n)+/g;
             this.data = this.data.replace(italicChunkRegex, "\n");
         }
         mopup() {
-            this.data = this.data.replace(RegExp("^-{4,}", "mg"), "");
-            this.data = this.data.replace(RegExp("(^|\\n) *:[^\\n]*", "g"), "");
-            this.data = this.data.replace(RegExp("^__[A-Z_]*__ *$", "gmi"), "");
+            this.data = this.data.replace(/^-{4,}/mg, "");
+            this.data = this.data.replace(/(^|\n) *:[^\n]*/g, "");
+            this.data = this.data.replace(/^__[A-Z_]*__ *$/img, "");
         }
         firstBit() {
             let d = this.data;
             if (getValueOf("popupPreviewCutHeadings")) {
-                this.data = this.data.replace(RegExp("\\s*(==+[^=]*==+)\\s*", "g"), "\n\n$1 ");
-                this.data = this.data.replace(RegExp("([:;]) *\\n{2,}", "g"), "$1\n");
-                this.data = this.data.replace(RegExp("^[\\s\\n]*"), "");
-                const stuff = RegExp("^([^\\n]|\\n[^\\n\\s])*").exec(this.data);
+                this.data = this.data.replace(/\s*(==+[^=]*==+)\s*/g, "\n\n$1 ");
+                this.data = this.data.replace(/([:;]) *\n{2,}/g, "$1\n");
+                this.data = this.data.replace(/^[\s\n]*/, "");
+                const stuff = /^([^\n]|\n[^\n\s])*/.exec(this.data);
                 if (stuff) {
                     d = stuff[0];
                 }
                 if (!getValueOf("popupPreviewFirstParOnly")) {
                     d = this.data;
                 }
-                d = d.replace(RegExp("(==+[^=]*==+)\\s*", "g"), "$1\n\n");
+                d = d.replace(/(==+[^=]*==+)\s*/g, "$1\n\n");
             }
-            d = d.parenSplit(RegExp("([!?.]+[\"']*\\s)", "g"));
-            d[0] = d[0].replace(RegExp("^\\s*"), "");
-            const notSentenceEnds = RegExp("([^.][a-z][.] *[a-z]|etc|sic|Dr|Mr|Mrs|Ms|St|no|op|cit|\\[[^\\]]*|\\s[A-Zvclm])$", "i");
+            d = d.parenSplit(/([!?.]+["']*\s)/g);
+            d[0] = d[0].replace(/^\s*/, "");
+            const notSentenceEnds = /([^.][a-z][.] *[a-z]|etc|sic|Dr|Mr|Mrs|Ms|St|no|op|cit|\[[^\]]*|\s[A-Zvclm])$/i;
             d = this.fixSentenceEnds(d, notSentenceEnds);
             this.fullLength = d.join("").length;
             let n = this.maxSentences;
@@ -3138,7 +3141,7 @@ $(() => {
             return t.join("");
         }
         killBadWhitespace() {
-            this.data = this.data.replace(RegExp("^ *'+ *$", "gm"), "");
+            this.data = this.data.replace(/^ *'+ *$/gm, "");
         }
         makePreview() {
             if (this.owner.article.namespaceId() !== pg.nsTemplateId && this.owner.article.namespaceId() !== pg.nsImageId) {
@@ -3240,13 +3243,13 @@ $(() => {
             return a;
         }
         stripLongTemplates() {
-            this.html = this.html.replace(RegExp("^.{0,1000}[{][{][^}]*?(<(p|br)( /)?>\\s*){2,}([^{}]*?[}][}])?", "gi"), "");
+            this.html = this.html.replace(/^.{0,1000}[{][{][^}]*?(<(p|br)( \/)?>\s*){2,}([^{}]*?[}][}])?/ig, "");
             this.html = this.html.split("\n").join(" ");
-            this.html = this.html.replace(RegExp("[{][{][^}]*<pre>[^}]*[}][}]", "gi"), "");
+            this.html = this.html.replace(/[{][{][^}]*<pre>[^}]*[}][}]/ig, "");
         }
         killMultilineTemplates() {
             this.kill("{{{", "}}}");
-            this.kill(RegExp("\\s*[{][{][^{}]*\\n"), "}}", "{{");
+            this.kill(/\s*[{][{][^{}]*\n/, "}}", "{{");
         }
     }
     function loadAPIPreview(queryType, article, navpop) {
@@ -3286,7 +3289,7 @@ $(() => {
                 if (getValueOf("popupImageLinks")) {
                     trail = `&list=imageusage&iutitle=${art}`;
                 }
-                url += `titles=${art}&prop=revisions|imageinfo${/* @TODO 萌百尚未更新1.32， rvslots 参数尚未支持 */ "" /* &rvslots=main */}&rvprop=content${trail}`;
+                url += `titles=${art}&prop=revisions|imageinfo&rvslots=main&rvprop=content${trail}`;
                 htmlGenerator = APIimagepagePreviewHTML;
                 break;
             }
@@ -3300,7 +3303,7 @@ $(() => {
                 } else {
                     url += `titles=${article.removeAnchor().urlString()}`;
                 }
-                url += `&prop=revisions|pageprops|info|images|categories${/* @TODO 萌百尚未更新1.32， rvslots 参数尚未支持 */ "" /* &rvslots=main */}&rvprop=ids|timestamp|comment|user|content&cllimit=max&imlimit=max`;
+                url += `&prop=revisions|pageprops|info|images|categories${ /* @TODO: 萌百尚不支持 wikibase */ "" /* &meta=wikibase */ }&rvslots=main&rvprop=ids|timestamp|comment|user|content&cllimit=max&imlimit=max`;
                 htmlGenerator = APIrevisionPreviewHTML;
                 break;
         }
@@ -3628,7 +3631,7 @@ $(() => {
             if (page && page.imagerepository === "shared") {
                 const art = new Title(article);
                 const encart = encodeURIComponent(`File:${art.stripNamespace()}`);
-                const shared_url = `${pg.wiki.apicommonsbase}?format=json&formatversion=2&callback=pg.fn.APIsharedImagePagePreviewHTML&requestid=${navpop.idNumber}&action=query&prop=revisions${/* @TODO 萌百尚未更新1.32， rvslots 参数尚未支持 */ "" /* &rvslots=main */}&rvprop=content&titles=${encart}`;
+                const shared_url = `${pg.wiki.apicommonsbase}?format=json&formatversion=2&callback=pg.fn.APIsharedImagePagePreviewHTML&requestid=${navpop.idNumber}&action=query&prop=revisions&rvslots=main&rvprop=content&titles=${encart}`;
                 ret = `${ret}<hr />${popupString("Image from Commons")}: <a href="${pg.wiki.commonsbase}?title=${encart}">${popupString("Description page")}</a>`;
                 mw.loader.load(shared_url);
             }
@@ -3783,7 +3786,7 @@ $(() => {
             const ret = editPreviewTable(article, edits, reallyContribs);
             return ret;
         } catch (someError) {
-            return "History preview failed :-(";
+            return popupString("History preview failed");
         }
     }
     function setupDebugging() {
@@ -3889,7 +3892,7 @@ $(() => {
     }
     function getValidImageFromWikiText(wikiText) {
         let matched = null;
-        const t = removeMatchesUnless(wikiText, RegExp("(<!--[\\s\\S]*?-->)"), 1, RegExp("^<!--[^[]*popup", "i"));
+        const t = removeMatchesUnless(wikiText, /(<!--[\s\S]*?-->)/, 1, /^<!--[^[]*popup/i);
         let match = pg.re.image.exec(t);
         while (match) {
             const m = match[2] || match[6];
@@ -3979,7 +3982,7 @@ $(() => {
     }
     function nsRe(namespaceId) {
         const imageNamespaceVariants = [];
-        jQuery.each(mw.config.get("wgNamespaceIds"), (_localizedNamespaceLc, _namespaceId) => {
+        $.each(mw.config.get("wgNamespaceIds"), (_localizedNamespaceLc, _namespaceId) => {
             const localizedNamespaceLc = upcaseFirst(_localizedNamespaceLc);
             if (_namespaceId !== namespaceId) {
                 return;
@@ -4446,7 +4449,7 @@ $(() => {
         return count;
     }
     function shortenDiffString(str, context) {
-        const re = RegExp("(<del[\\s\\S]*?</del>|<ins[\\s\\S]*?</ins>)");
+        const re = /(<del[\s\S]*?<\/del>|<ins[\s\S]*?<\/ins>)/;
         const splitted = str.parenSplit(re);
         let ret = [""];
         for (let i = 0; i < splitted.length; i += 2) {
@@ -4471,7 +4474,7 @@ $(() => {
         return ret;
     }
     function diffString(o, n, simpleSplit) {
-        const splitRe = RegExp("([[]{2}|[\\]]{2}|[{]{2,3}|[}]{2,3}|[|]|=|<|>|[*:]+|\\s|\\b)");
+        const splitRe = /([[]{2}|[\]]{2}|[{]{2,3}|[}]{2,3}|[|]|=|<|>|[*:]+|\s|\b)/;
         let i, oSplitted, nSplitted;
         if (simpleSplit) {
             oSplitted = o.split(/\b/);
@@ -4606,9 +4609,9 @@ $(() => {
         } else {
             pg.wiki.hostname = location.hostname;
         }
-        pg.wiki.wikimedia = RegExp("(wiki([pm]edia|source|books|news|quote|versity|species|voyage|data)|metawiki|wiktionary|mediawiki)[.]org").test(pg.wiki.hostname);
-        pg.wiki.wikia = RegExp("[.]wikia[.]com$", "i").test(pg.wiki.hostname);
-        pg.wiki.isLocal = RegExp("^localhost").test(pg.wiki.hostname);
+        pg.wiki.wikimedia = /(wiki([pm]edia|source|books|news|quote|versity|species|voyage|data)|metawiki|wiktionary|mediawiki)[.]org/.test(pg.wiki.hostname);
+        pg.wiki.wikia = /[.]wikia[.]com$/i.test(pg.wiki.hostname);
+        pg.wiki.isLocal = /^localhost/.test(pg.wiki.hostname);
         pg.wiki.commons = pg.wiki.wikimedia && pg.wiki.hostname !== "commons.wikimedia.org" ? "commons.wikimedia.org" : null;
         pg.wiki.lang = mw.config.get("wgContentLanguage");
         const port = location.port ? `:${location.port}` : "";
@@ -4656,8 +4659,8 @@ $(() => {
     }
     function setMainRegex() {
         const reStart = "[^:]*://";
-        let preTitles = `${literalizeRegex(mw.config.get("wgScriptPath"))}/(?:index[.]php|wiki[.]phtml)[?]title=`;
-        preTitles += `|${literalizeRegex(`${pg.wiki.articlePath}/`)}`;
+        let preTitles = `(?:${literalizeRegex(mw.config.get('wgScript'))}|${literalizeRegex(mw.config.get('wgScriptPath'))}/(?:index[.]php|wiki[.]phtml))`;
+        preTitles += `[?]title=|${literalizeRegex(pg.wiki.articlePath + '/')}`;
         const reEnd = `(${preTitles})([^&?#]*)[^#]*(?:#(.+))?`;
         pg.re.main = RegExp(reStart + literalizeRegex(pg.wiki.sitebase) + reEnd);
     }
@@ -4694,8 +4697,8 @@ $(() => {
         pg.re.ipUser = RegExp("^(?::(?::|(?::[0-9A-Fa-f]{1,4}){1,7})|[0-9A-Fa-f]{1,4}(?::[0-9A-Fa-f]{1,4}){0,6}::|[0-9A-Fa-f]{1,4}(?::[0-9A-Fa-f]{1,4}){7})|(((25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])\\.){3}(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9]))$");
         pg.re.stub = RegExp(getValueOf("popupStubRegexp"), "im");
         pg.re.disambig = RegExp(getValueOf("popupDabRegexp"), "im");
-        pg.re.oldid = RegExp("[?&]oldid=([^&]*)");
-        pg.re.diff = RegExp("[?&]diff=([^&]*)");
+        pg.re.oldid = /[?&]oldid=([^&]*)/;
+        pg.re.diff = /[?&]diff=([^&]*)/;
     }
     function setupCache() {
         pg.cache.pages = [];
@@ -4818,31 +4821,31 @@ $(() => {
             let testResult = null;
             switch (testString) {
                 case "user":
-                    testResult = article.userName() ? true : false;
+                    testResult = !!article.userName();
                     break;
                 case "talk":
-                    testResult = article.talkPage() ? false : true;
+                    testResult = !!article.talkPage();
                     break;
                 case "admin":
-                    testResult = getValueOf("popupAdminLinks") ? true : false;
+                    testResult = !!getValueOf("popupAdminLinks");
                     break;
                 case "oldid":
-                    testResult = typeof oldid !== "undefined" && oldid ? true : false;
+                    testResult = !!(typeof oldid !== "undefined" && oldid);
                     break;
                 case "rcid":
-                    testResult = typeof rcid !== "undefined" && rcid ? true : false;
+                    testResult = !!(typeof rcid !== "undefined" && rcid);
                     break;
                 case "ipuser":
-                    testResult = article.isIpUser() ? true : false;
+                    testResult = !!article.isIpUser();
                     break;
                 case "mainspace_en":
                     testResult = isInMainNamespace(article) && pg.wiki.hostname === "en.wikipedia.org";
                     break;
                 case "wikimedia":
-                    testResult = pg.wiki.wikimedia ? true : false;
+                    testResult = !!pg.wiki.wikimedia;
                     break;
                 case "diff":
-                    testResult = typeof diff !== "undefined" && diff ? true : false;
+                    testResult = !!(typeof diff !== "undefined" && diff);
                     break;
             }
             switch (testResult) {
@@ -4865,7 +4868,7 @@ $(() => {
     }
     function navlinkStringToArray(_s, article, params) {
         const s = expandConditionalNavlinkString(_s, article, params);
-        const splitted = s.parenSplit(RegExp("<<(.*?)>>"));
+        const splitted = s.parenSplit(/<<(.*?)>>/);
         const ret = [];
         for (let i = 0; i < splitted.length; ++i) {
             if (i % 2) {
@@ -5323,7 +5326,7 @@ $(() => {
         if (key === " ") {
             key = popupString("spacebar");
         }
-        return ret.replace(RegExp('^(.*?)(title=")(.*?)(".*)$', "i"), `$1$2$3 [${key}]$4`);
+        return ret.replace(/^(.*?)(title=")(.*?)(".*)$/i, `$1$2$3 [${key}]$4`);
     }
     async function loadDiff(article, oldid, diff, navpop) {
         navpop.diffData = {
@@ -5336,9 +5339,7 @@ $(() => {
             action: "compare",
             prop: "ids|title",
         };
-        if (article.title) {
-            params.fromtitle = article.title;
-        }
+        params.fromtitle = article.toString();
         switch (diff) {
             case "cur":
                 switch (oldid) {
@@ -5354,10 +5355,8 @@ $(() => {
                 }
                 break;
             case "prev":
-                if (oldid) {
+                if (oldid && oldid !== 'cur') {
                     params.fromrev = oldid;
-                } else {
-                    params.fromtitle;
                 }
                 params.torelative = "prev";
                 break;
@@ -5378,7 +5377,7 @@ $(() => {
             pendingNavpopTask(navpop);
             let url = `${pg.wiki.apiwikibase}?format=json&formatversion=2&action=query&`;
             url += `revids=${navpop.diffData.oldRev.revid}|${navpop.diffData.newRev.revid}`;
-            url += `&prop=revisions${/* @TODO 萌百尚未更新1.32， rvslots 参数尚未支持 */ "" /* &rvslots=main */}&rvprop=ids|timestamp|content`;
+            url += `&prop=revisions&rvslots=main&rvprop=ids|timestamp|content`;
             getPageWithCaching(url, doneDiff, navpop);
             return true;
         };
@@ -5910,38 +5909,30 @@ $(() => {
         if (typeof l.url === "undefined") {
             return null;
         }
-        const url = l.url.split('"').join("%22");
-        let ret = `<a href="${url}"`;
-        if (typeof l.title !== "undefined" && l.title) {
-            ret += ` title="${pg.escapeQuotesHTML(l.title)}"`;
-        }
-        if (typeof l.onclick !== "undefined" && l.onclick) {
-            ret += ` onclick="${pg.escapeQuotesHTML(l.onclick)}"`;
-        }
-        if (l.noPopup) {
-            ret += " noPopup=1";
-        }
-        let newWin;
-        if (typeof l.newWin === "undefined" || l.newWin === null) {
-            newWin = getValueOf("popupNewWindows");
-        } else {
-            newWin = l.newWin;
-        }
-        if (newWin) {
-            ret += ' target="_blank"';
-        }
-        if (typeof l.className !== "undefined" && l.className) {
-            ret += ` class="${l.className}"`;
-        }
-        ret += ">";
-        if (typeof l.text === typeof "") {
-            ret += pg.escapeQuotesHTML(pg.unescapeQuotesHTML(l.text));
-        }
-        ret += "</a>";
-        return ret;
+        const elem = document.createElement("a");
+		elem.href = link.url;
+		elem.title = link.title;
+		elem.setAttribute("onclick", link.onclick);
+		if (link.noPopup) {
+			elem.setAttribute("noPopup", "1");
+		}
+		let newWin;
+		if (typeof link.newWin == "undefined" || link.newWin === null) {
+			newWin = getValueOf("popupNewWindows");
+		} else {
+			newWin = link.newWin;
+		}
+		if (newWin) {
+			elem.target = "_blank";
+		}
+		if (link.className) {
+			elem.className = link.className;
+		}
+		elem.innerText = pg.unescapeQuotesHTML(link.text);
+		return elem.outerHTML;
     }
     function appendParamsToLink(linkstr, params) {
-        const sp = linkstr.parenSplit(RegExp('(href="[^"]+?)"', "i"));
+        const sp = linkstr.parenSplit(/(href="[^"]+?)"/i);
         if (sp.length < 2) {
             return null;
         }
@@ -5961,7 +5952,7 @@ $(() => {
         let chs = cA.charAt(0).toUpperCase();
         chs = `[${chs}${chs.toLowerCase()}]`;
         let currentArticleRegexBit = chs + cA.substring(1);
-        currentArticleRegexBit = currentArticleRegexBit.split(RegExp("(?:[_ ]+|%20)", "g")).join("(?:[_ ]+|%20)").split("\\(").join("(?:%28|\\()").split("\\)").join("(?:%29|\\))");
+        currentArticleRegexBit = currentArticleRegexBit.split(/(?:[_ ]+|%20)/g).join("(?:[_ ]+|%20)").split("\\(").join("(?:%28|\\()").split("\\)").join("(?:%29|\\))");
         currentArticleRegexBit = `\\s*(${currentArticleRegexBit}(?:#[^\\[\\|]*)?)\\s*`;
         const title = x.title || mw.config.get("wgPageName").split("_").join(" ");
         const lk = titledWikiLink({
@@ -6345,7 +6336,7 @@ $(() => {
             lastContrib: true,
             sinceMe: true,
         });
-        newOption("popupDabRegexp", "\\{\\{\\s*(d(ab|isamb(ig(uation)?)?)|(((geo|hn|road?|school|number)dis)|[234][lc][acw]|(road|ship)index))\\s*(\\|[^}]*)?\\}\\}|is a .*disambiguation.*page");
+        newOption("popupDabRegexp", "disambiguation\\}\\}|\\{\\{\\s*(d(ab|isamb(ig(uation)?)?)|(((geo|hn|road?|school|number)dis)|[234][lc][acw]|(road|ship)index))\\s*(\\|[^}]*)?\\}\\}|is a .*disambiguation.*page");
         newOption("popupAnchorRegexp", "anchors?");
         newOption("popupStubRegexp", "(sect)?stub[}][}]|This .*-related article is a .*stub");
         newOption("popupImageVarsRegexp", "image|image_(?:file|skyline|name|flag|seal)|cover|badge|logo");
@@ -6428,6 +6419,7 @@ $(() => {
         hist: "hist",
         history: "history",
         historyHint: "List the changes made to %s",
+        "History preview failed": "History preview failed :-(",
         last: "prev",
         lastEdit: "lastEdit",
         "mark patrolled": "mark patrolled",
