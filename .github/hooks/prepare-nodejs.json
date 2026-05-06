@@ -1,0 +1,12 @@
+{
+    "version": 1,
+    "hooks": {
+        "sessionStart": [
+            {
+                "type": "command",
+                "bash": "n lts && hash -r",
+                "timeoutSec": 137
+            }
+        ]
+    }
+}
