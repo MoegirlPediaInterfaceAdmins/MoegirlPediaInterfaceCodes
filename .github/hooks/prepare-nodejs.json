@@ -4,7 +4,7 @@
         "sessionStart": [
             {
                 "type": "command",
-                "bash": "n lts && hash -r",
+                "bash": "sudo n lts && hash -r",
                 "timeoutSec": 137
             }
         ],
