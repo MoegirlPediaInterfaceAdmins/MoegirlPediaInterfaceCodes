@@ -7,6 +7,13 @@
                 "bash": "n lts && hash -r",
                 "timeoutSec": 137
             }
+        ],
+        "preToolUse": [
+            {
+                "type": "command",
+                "bash": "node --version",
+                "timeoutSec": 137
+            }
         ]
     }
 }
