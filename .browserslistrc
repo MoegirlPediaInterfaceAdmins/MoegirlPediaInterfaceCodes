@@ -1,4 +1,4 @@
-defaults,
+defaults, baseline newly available,
 Chrome >= 132, # QQ 浏览器 和 360 极速浏览器的 Chromium 内核版本 —— 2026/03/06
 # 以下是禁用不受支持的浏览器
 not opera < 1307,
@@ -6,3 +6,11 @@ not op_mob < 1307,
 not android < 1307,
 not edge < 1307,
 not op_mini < 1307,
+not iOS < 1307,
+not samsung < 1307,
+not and_uc < 1307,
+not and_ff < 1307,
+not and_qq < 1307,
+not kaios < 1307,
+not op_mini < 1307,
+not op_mini all,
