@@ -4,7 +4,7 @@
  * Options:
  *     polyfillFeature: String.prototype.at
  *     polyfillAliases: es2022
- *     browserslist: defaults, Chrome >= 132, not opera < 1307, not op_mob < 1307, not android < 1307, not edge < 1307, not op_mini < 1307
+ *     browserslist: defaults, baseline newly available, Chrome >= 132, not opera < 1307, not op_mob < 1307, not android < 1307, not edge < 1307, not op_mini < 1307, not iOS < 1307, not samsung < 1307, not and_uc < 1307, not and_ff < 1307, not and_qq < 1307, not kaios < 1307, not op_mini < 1307, not op_mini all
  *     polyfillBrowsers: android: *, bb: *, chrome: < 92, edge: *, edge_mob: *, firefox: < 90, firefox_mob: < 90, ie: *, ie_mob: *, ios_chr: *, ios_saf: *, op_mini: *, op_mob: *, opera: < 78, safari: *, samsung_mob: < 16
  */
 (() => {
