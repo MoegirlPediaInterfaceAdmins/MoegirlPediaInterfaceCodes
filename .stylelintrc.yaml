@@ -12,6 +12,9 @@ ignoreFiles:
   - src/gadgets/prism-plugin-match-braces/Gadget-prism-plugin-match-braces.css
   - src/gadgets/prism-plugin-previewers/Gadget-prism-plugin-previewers.css
 
+plugins:
+  - stylelint-plugin-use-baseline
+
 rules:
   selector-id-pattern: null
   selector-class-pattern: null
@@ -37,3 +40,12 @@ rules:
         - moe-badge
   no-duplicate-selectors: null
   declaration-property-value-no-unknown: true
+  plugin/use-baseline:
+    - true
+    - severity: warning
+      available: newly
+      ignoreProperties:
+        user-select:
+          - /^(?:auto|text|none|all)$/
+        resize:
+          - /^(?:none|both|horizontal|vertical|block|inline)$/
