@@ -676,7 +676,7 @@ $(() => {
                 loadPreviewFromRedir(makeRedirectMatch(download.redirectTarget), download.owner);
                 return;
             }
-            const redirMatch = typeof download.wikiText === "string" ? pg.re.redirect.exec(download.wikiText) : null;
+            const redirMatch = pg.re.redirect.exec(download.wikiText || "");
             if (redirMatch) {
                 loadPreviewFromRedir(redirMatch, download.owner);
                 return;
@@ -696,7 +696,12 @@ $(() => {
         if (!download.owner) {
             return;
         }
-        const wikiText = typeof download.wikiText === "string" ? download.wikiText : typeof download.previewData === "string" ? download.previewData : "";
+        let wikiText = "";
+        if (typeof download.wikiText === "string") {
+            wikiText = download.wikiText;
+        } else if (typeof download.previewData === "string") {
+            wikiText = download.previewData;
+        }
         const navpop = download.owner;
         const art = navpop.redirTarget || navpop.originalArticle;
         makeFixDabs(wikiText, navpop);
@@ -3495,7 +3500,14 @@ $(() => {
                 images: Array.isArray(page.images) ? page.images.length : null,
                 categories: Array.isArray(page.categories) ? page.categories.length : null,
             };
-            download.pageImages = Array.isArray(page.images) ? page.images.filter((image) => typeof image?.title === "string").map((image) => image.title) : null;
+            download.pageImages = Array.isArray(page.images)
+                ? page.images.reduce((titles, image) => {
+                    if (typeof image?.title === "string") {
+                        titles.push(image.title);
+                    }
+                    return titles;
+                }, [])
+                : null;
             download.previewData = article.oldid || article.namespaceId() === pg.nsTemplateId ? content : extract || content;
             download.wikiText = content;
             download.redirectTarget = typeof jsObj.query?.redirects?.[0]?.to === "string" ? jsObj.query.redirects[0].to : null;
