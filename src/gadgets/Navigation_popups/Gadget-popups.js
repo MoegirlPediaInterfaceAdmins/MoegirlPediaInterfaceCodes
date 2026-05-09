@@ -3460,6 +3460,16 @@ $(() => {
         }
         setPopupTipsAndHTML(html, target, id);
     };
+    const getPageRevisionWikitext = (page) => {
+        const revision = page?.revisions?.[0];
+        if (revision?.contentmodel === "wikitext" && typeof revision.content === "string") {
+            return revision.content;
+        }
+        if (revision?.slots?.main?.contentmodel === "wikitext" && typeof revision.slots.main.content === "string") {
+            return revision.slots.main.content;
+        }
+        return null;
+    };
     const APIrevisionPreviewHTML = (article, download) => {
         try {
             const jsObj = getJsObj(download.data);
@@ -3468,7 +3478,7 @@ $(() => {
                 download.owner = null;
                 return;
             }
-            const content = page && page.revisions && page.revisions[0].contentmodel === "wikitext" ? page.revisions[0].content : null; // @TODO 萌百尚未更新1.32， rvslots 参数尚未支持 /* page && page.revisions && page.revisions[0] && page.revisions[0].slots && page.revisions[0].slots.main &&  */ page?.revisions?.[0]?.slots?.main?.contentmodel === "wikitext" ? page.revisions[0].content : null;
+            const content = getPageRevisionWikitext(page);
             if (typeof content === "string") {
                 download.data = content;
                 download.lastModified = new Date(page.revisions[0].timestamp);
@@ -3503,7 +3513,7 @@ $(() => {
         const popupid = obj.requestid;
         if (obj.query && obj.query.pages) {
             const page = anyChild(obj.query.pages);
-            const content = page && page.revisions && page.revisions[0].contentmodel === "wikitext" ? page.revisions[0].content : null; // @TODO 萌百尚未更新1.32， rvslots 参数尚未支持 /* page && page.revisions && page.revisions[0] && page.revisions[0].slots && page.revisions[0].slots.main &&  */ page?.revisions?.[0]?.slots?.main?.contentmodel === "wikitext" ? page.revisions[0].content : null;
+            const content = getPageRevisionWikitext(page);
             if (typeof content === "string" && pg && pg.current && pg.current.link && pg.current.link.navpopup) {
                 const p = new Previewmaker(content, pg.current.link.navpopup.article, pg.current.link.navpopup);
                 p.makePreview();
@@ -3515,7 +3525,7 @@ $(() => {
         try {
             const jsObj = getJsObj(download.data);
             const page = anyChild(jsObj.query.pages);
-            const content = page && page.revisions && page.revisions[0].contentmodel === "wikitext" ? page.revisions[0].content : null; // @TODO 萌百尚未更新1.32， rvslots 参数尚未支持 /* page && page.revisions && page.revisions[0] && page.revisions[0].slots && page.revisions[0].slots.main &&  */ page?.revisions?.[0]?.slots?.main?.contentmodel === "wikitext" ? page.revisions[0].content : null;
+            const content = getPageRevisionWikitext(page);
             let ret = "";
             let alt = "";
             try {
