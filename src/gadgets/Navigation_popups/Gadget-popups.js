@@ -666,13 +666,14 @@ $(() => {
         return loadPreview(target, null, navpop);
     };
     // 修改说明：以下预览插入逻辑为本仓库调整版本，与上游原版不符；新增了 TextExtracts 预览数据与结构化重定向/图片信息的处理。
+    const makeRedirectMatch = (redirectTarget) => [null, null, redirectTarget];
     const insertPreview = (download) => {
         if (!download.owner) {
             return;
         }
         if (download.owner.redir === 0) {
             if (typeof download.redirectTarget === "string" && download.redirectTarget.length > 0) {
-                loadPreviewFromRedir([null, null, download.redirectTarget], download.owner);
+                loadPreviewFromRedir(makeRedirectMatch(download.redirectTarget), download.owner);
                 return;
             }
             const redirMatch = typeof download.wikiText === "string" ? pg.re.redirect.exec(download.wikiText) : null;
@@ -3489,12 +3490,12 @@ $(() => {
             const content = page?.revisions?.[0]?.slots?.main?.contentmodel === "wikitext" ? page.revisions[0].content : null;
             const extract = typeof page.extract === "string" ? page.extract : null;
             download.pageInfo = {
-                size: page.length,
+                size: typeof page.length === "number" ? page.length : null,
                 links: Array.isArray(page.links) ? page.links.length : null,
                 images: Array.isArray(page.images) ? page.images.length : null,
                 categories: Array.isArray(page.categories) ? page.categories.length : null,
             };
-            download.pageImages = Array.isArray(page.images) ? page.images.map(({ title }) => title) : null;
+            download.pageImages = Array.isArray(page.images) ? page.images.filter((image) => typeof image?.title === "string").map((image) => image.title) : null;
             download.previewData = article.oldid || article.namespaceId() === pg.nsTemplateId ? content : extract || content;
             download.wikiText = content;
             download.redirectTarget = typeof jsObj.query?.redirects?.[0]?.to === "string" ? jsObj.query.redirects[0].to : null;
