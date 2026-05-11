@@ -665,30 +665,43 @@ $(() => {
         });
         return loadPreview(target, null, navpop);
     };
+    // 修改说明：以下预览插入逻辑为本仓库调整版本，与上游原版不符；新增了 TextExtracts 预览数据与结构化重定向/图片信息的处理。
+    const makeRedirectMatch = (redirectTarget) => [null, null, redirectTarget];
     const insertPreview = (download) => {
         if (!download.owner) {
             return;
         }
-        const redirMatch = pg.re.redirect.exec(download.data);
-        if (download.owner.redir === 0 && redirMatch) {
-            loadPreviewFromRedir(redirMatch, download.owner);
-            return;
+        if (download.owner.redir === 0) {
+            if (typeof download.redirectTarget === "string" && download.redirectTarget.length > 0) {
+                loadPreviewFromRedir(makeRedirectMatch(download.redirectTarget), download.owner);
+                return;
+            }
+            const redirMatch = pg.re.redirect.exec(download.wikiText || "");
+            if (redirMatch) {
+                loadPreviewFromRedir(redirMatch, download.owner);
+                return;
+            }
         }
         if (download.owner.visible || !getValueOf("popupLazyPreviews")) {
             insertPreviewNow(download);
-        } else {
-            const id = download.owner.redir ? "PREVIEW_REDIR_HOOK" : "PREVIEW_HOOK";
-            download.owner.addHook(() => {
-                insertPreviewNow(download);
-                return true;
-            }, "unhide", "after", id);
+            return;
         }
+        const id = download.owner.redir ? "PREVIEW_REDIR_HOOK" : "PREVIEW_HOOK";
+        download.owner.addHook(() => {
+            insertPreviewNow(download);
+            return true;
+        }, "unhide", "after", id);
     };
     const insertPreviewNow = (download) => {
         if (!download.owner) {
             return;
         }
-        const wikiText = download.data;
+        let wikiText = "";
+        if (typeof download.wikiText === "string") {
+            wikiText = download.wikiText;
+        } else if (typeof download.previewData === "string") {
+            wikiText = download.previewData;
+        }
         const navpop = download.owner;
         const art = navpop.redirTarget || navpop.originalArticle;
         makeFixDabs(wikiText, navpop);
@@ -699,8 +712,10 @@ $(() => {
         let imagePage = "";
         if (art.namespaceId() === pg.nsImageId) {
             imagePage = art.toString();
-        } else {
+        } else if (typeof download.wikiText === "string") {
             imagePage = getValidImageFromWikiText(wikiText);
+        } else if (Array.isArray(download.pageImages)) {
+            imagePage = download.pageImages.find((title) => typeof title === "string" && title.length > 0) || "";
         }
         if (imagePage) {
             loadImage(Title.fromWikiText(imagePage), navpop);
@@ -710,12 +725,14 @@ $(() => {
         }
     };
     const insertArticlePreview = (download, art, navpop) => {
-        if (download && typeof download.data === typeof "") {
+        const previewData = typeof download?.previewData === "string" ? download.previewData : download?.data;
+        if (typeof previewData === "string") {
             if (art.namespaceId() === pg.nsTemplateId && getValueOf("popupPreviewRawTemplates")) {
-                const h = `<hr /><span style="font-family: monospace;">${download.data.entify().split("\\n").join("<br />\\n")}</span>`;
+                const rawTemplateText = typeof download.wikiText === "string" ? download.wikiText : previewData;
+                const h = `<hr /><span style="font-family: monospace;">${rawTemplateText.entify().split("\\n").join("<br />\\n")}</span>`;
                 setPopupHTML(h, "popupPreview", navpop.idNumber);
             } else {
-                const p = prepPreviewmaker(download.data, art, navpop);
+                const p = prepPreviewmaker(previewData, art, navpop);
                 p.showPreview();
             }
         }
@@ -1768,17 +1785,18 @@ $(() => {
         Insta.conf.baseUrl = baseurl;
         return Insta.convert(txt);
     };
-    const popupFilterPageSize = (data) => formatBytes(data.length);
-    const popupFilterCountLinks = (data) => {
-        const num = countLinks(data);
+    // 修改说明：以下摘要统计逻辑为本仓库调整版本，与上游原版不符；为配合 TextExtracts 预览，优先复用 API 返回的结构化统计信息。
+    const popupFilterPageSize = (data, download) => formatBytes(typeof download?.pageInfo?.size === "number" ? download.pageInfo.size : data.length);
+    const popupFilterCountLinks = (data, download) => {
+        const num = typeof download?.pageInfo?.links === "number" ? download.pageInfo.links : countLinks(data);
         return `${num}&nbsp;${num !== 1 ? popupString("wikiLinks") : popupString("wikiLink")}`;
     };
-    const popupFilterCountImages = (data) => {
-        const num = countImages(data);
+    const popupFilterCountImages = (data, download) => {
+        const num = typeof download?.pageInfo?.images === "number" ? download.pageInfo.images : countImages(data);
         return `${num}&nbsp;${num !== 1 ? popupString("images") : popupString("image")}`;
     };
-    const popupFilterCountCategories = (data) => {
-        const num = countCategories(data);
+    const popupFilterCountCategories = (data, download) => {
+        const num = typeof download?.pageInfo?.categories === "number" ? download.pageInfo.categories : countCategories(data);
         return `${num}&nbsp;${num !== 1 ? popupString("categories") : popupString("category")}`;
     };
     const popupFilterLastModified = (data, download) => {
@@ -3215,7 +3233,12 @@ $(() => {
                 } else {
                     url += `titles=${article.removeAnchor().urlString()}`;
                 }
-                url += `&prop=revisions|pageprops|info|images|categories${/* @TODO: 萌百尚不支持 wikibase */ "" /* &meta=wikibase */}&rvslots=main&rvprop=ids|timestamp|comment|user|content&cllimit=max&imlimit=max`;
+                // 修改说明：以下 revision 请求为本仓库调整版本，与上游原版不符；普通页面预览优先使用 TextExtracts，模板页和旧修订仍保留原始 wikitext 路径。
+                if (article.oldid || article.namespaceId() === pg.nsTemplateId) {
+                    url += `&prop=revisions|pageprops|info|images|categories${/* @TODO: 萌百尚不支持 wikibase */ "" /* &meta=wikibase */}&rvslots=main&rvprop=ids|timestamp|user|content&cllimit=max&imlimit=max`;
+                } else {
+                    url += `&redirects=1&prop=revisions|extracts|pageprops|info|links|images|categories${/* @TODO: 萌百尚不支持 wikibase */ "" /* &meta=wikibase */}&rvslots=main&rvprop=ids|timestamp|user&explaintext=1&cllimit=max&imlimit=max&pllimit=max`;
+                }
                 htmlGenerator = APIrevisionPreviewHTML;
                 break;
         }
@@ -3460,6 +3483,7 @@ $(() => {
         }
         setPopupTipsAndHTML(html, target, id);
     };
+    // 修改说明：以下 revision 预览解析逻辑为本仓库调整版本，与上游原版不符；普通页面优先消费 TextExtracts，并保留模板/旧修订的原始 wikitext 回退。
     const APIrevisionPreviewHTML = (article, download) => {
         try {
             const jsObj = getJsObj(download.data);
@@ -3469,8 +3493,25 @@ $(() => {
                 return;
             }
             const content = page?.revisions?.[0]?.slots?.main?.contentmodel === "wikitext" ? page.revisions[0].content : null;
-            if (typeof content === "string") {
-                download.data = content;
+            const extract = typeof page.extract === "string" ? page.extract : null;
+            download.pageInfo = {
+                size: typeof page.length === "number" ? page.length : null,
+                links: Array.isArray(page.links) ? page.links.length : null,
+                images: Array.isArray(page.images) ? page.images.length : null,
+                categories: Array.isArray(page.categories) ? page.categories.length : null,
+            };
+            download.pageImages = Array.isArray(page.images)
+                ? page.images.reduce((titles, image) => {
+                    if (typeof image?.title === "string") {
+                        titles.push(image.title);
+                    }
+                    return titles;
+                }, [])
+                : null;
+            download.previewData = article.oldid || article.namespaceId() === pg.nsTemplateId ? content : extract || content;
+            download.wikiText = content;
+            download.redirectTarget = typeof jsObj.query?.redirects?.[0]?.to === "string" ? jsObj.query.redirects[0].to : null;
+            if (page?.revisions?.[0]?.timestamp) {
                 download.lastModified = new Date(page.revisions[0].timestamp);
             }
         } catch (someError) {
