@@ -4,7 +4,7 @@
         "sessionStart": [
             {
                 "type": "command",
-                "bash": "sudo n lts && hash -r",
+                "bash": "if [[ \"${GITHUB_ACTIONS}\" == \"true\" ]]; then sudo n lts && hash -r; fi",
                 "timeoutSec": 137
             }
         ],
