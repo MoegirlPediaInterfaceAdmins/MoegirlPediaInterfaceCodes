@@ -108,7 +108,7 @@ $(() => {
         cur: wgULS("当前", "當前"),
         diffCur: wgULS("与当前版本的差异", "與目前版本的差異"),
         "Show changes since revision %s": wgULS("显示自修订版本 %s 的差异", "顯示自修訂版本 %s 的差異"),
-        "%s old": wgULS("%s 前的最后版本", "%s 前的最后版本"),
+        "%s old": wgULS("%s 前的最后版本", "%s 前的最後版本"),
         // as in 4 weeks old
         oldEdit: wgULS("旧编辑", "舊編輯"),
         purge: wgULS("清除缓存", "清除快取"),
@@ -1685,17 +1685,17 @@ $(() => {
             return str;
         };
         const parse_inline_formatting = (str) => {
-            let em, st, i, li, o = "";
+            let italic, bold, i, li, o = "";
             while ((i = str.indexOf("''", li)) + 1) {
                 o += str.substring(li, i);
                 li = i + 2;
                 if (str.charAt(i + 2) === "'") {
                     li++;
-                    st = !st;
-                    o += st ? "<strong>" : "</strong>";
+                    bold = !bold;
+                    o += bold ? "<b>" : "</b>";
                 } else {
-                    em = !em;
-                    o += em ? "<em>" : "</em>";
+                    italic = !italic;
+                    o += italic ? "<i>" : "</i>";
                 }
             }
             return o + str.substr(li);
@@ -1788,6 +1788,15 @@ $(() => {
             return tprintf("%s old", [formatAge(age)]).replace(/ /g, "&nbsp;");
         }
         return "";
+    };
+    const popupFilterWikibaseItem = (data, download) => {
+        if (!download.wikibaseItem || !download.wikibaseRepo) {
+            return "";
+        }
+        return tprintf('<a href="%s">%s</a>', [
+            download.wikibaseRepo.replace(/\$1/g, download.wikibaseItem),
+            download.wikibaseItem,
+        ]);
     };
     const formatAge = (age) => {
         const now = moment();
@@ -3215,7 +3224,7 @@ $(() => {
                 } else {
                     url += `titles=${article.removeAnchor().urlString()}`;
                 }
-                url += `&prop=revisions|pageprops|info|images|categories${/* @TODO: 萌百尚不支持 wikibase */ "" /* &meta=wikibase */}&rvslots=main&rvprop=ids|timestamp|comment|user|content&cllimit=max&imlimit=max`;
+                url += "&prop=revisions|pageprops|info|images|categories&meta=wikibase&rvslots=main&rvprop=ids|timestamp|flags|comment|user|content&cllimit=max&imlimit=max";
                 htmlGenerator = APIrevisionPreviewHTML;
                 break;
         }
@@ -3468,10 +3477,14 @@ $(() => {
                 download.owner = null;
                 return;
             }
-            const content = page?.revisions?.[0]?.slots?.main?.contentmodel === "wikitext" ? page.revisions[0].content : null;
+            const content = page?.revisions?.[0]?.slots?.main?.contentmodel === "wikitext" ? page.revisions[0].slots.main.content : null;
             if (typeof content === "string") {
                 download.data = content;
                 download.lastModified = new Date(page.revisions[0].timestamp);
+            }
+            if (page.pageprops.wikibase_item) {
+                download.wikibaseItem = page.pageprops.wikibase_item;
+                download.wikibaseRepo = `${jsObj.query.wikibase.repo.url.base}${jsObj.query.wikibase.repo.url.articlepath}`;
             }
         } catch (someError) {
             return "Revision preview failed :(";
@@ -3503,7 +3516,7 @@ $(() => {
         const popupid = obj.requestid;
         if (obj.query && obj.query.pages) {
             const page = anyChild(obj.query.pages);
-            const content = page?.revisions?.[0]?.slots?.main?.contentmodel === "wikitext" ? page.revisions[0].content : null;
+            const content = page?.revisions?.[0]?.slots?.main?.contentmodel === "wikitext" ? page.revisions[0].slots.main.content : null;
             if (typeof content === "string" && pg && pg.current && pg.current.link && pg.current.link.navpopup) {
                 const p = new Previewmaker(content, pg.current.link.navpopup.article, pg.current.link.navpopup);
                 p.makePreview();
@@ -3515,7 +3528,7 @@ $(() => {
         try {
             const jsObj = getJsObj(download.data);
             const page = anyChild(jsObj.query.pages);
-            const content = page?.revisions?.[0]?.slots?.main?.contentmodel === "wikitext" ? page.revisions[0].content : null;
+            const content = page?.revisions?.[0]?.slots?.main?.contentmodel === "wikitext" ? page.revisions[0].slots.main.content : null;
             let ret = "";
             let alt = "";
             try {
@@ -6216,7 +6229,7 @@ $(() => {
         newOption("popupRedlinkSummary", popupString("defaultpopupRedlinkSummary"));
         newOption("popupRmDabLinkSummary", popupString("defaultpopupRmDabLinkSummary"));
         newOption("popupHistoryLimit", 50);
-        newOption("popupFilters", [popupFilterStubDetect, popupFilterDisambigDetect, popupFilterPageSize, popupFilterCountLinks, popupFilterCountImages, popupFilterCountCategories, popupFilterLastModified]);
+        newOption("popupFilters", [popupFilterStubDetect, popupFilterDisambigDetect, popupFilterPageSize, popupFilterCountLinks, popupFilterCountImages, popupFilterCountCategories, popupFilterLastModified, popupFilterWikibaseItem]);
         newOption("extraPopupFilters", []);
         newOption("popupOnEditSelection", "cursor");
         newOption("popupPreviewHistory", true);
