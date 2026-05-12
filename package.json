@@ -77,7 +77,7 @@
         "uglify-js": "^3.19.3",
         "unassertify": "^3.0.1",
         "v8r": "^6.0.0",
-        "yaml": "^2.8.4"
+        "yaml": "^2.9.0"
     },
     "devDependencies": {
         "@inpageedit/core": "^0.17.4",
