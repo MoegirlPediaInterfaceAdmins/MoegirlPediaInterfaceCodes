@@ -49,205 +49,292 @@
         instanceRAF.request(scrollbarCalc);
     }).trigger("resize");
     /* Tabs */
-    const tabs = () => {
-        const defaultStyle = {
-            purple: {
-                labelColor: " ", // anti check
-                labelBackgroundColor: "#9070c0",
-                labelBorderColor: "#b090e0 #7050a0 #9070c0 #b090e0",
-                labelPadding: ".2em .3em .2em .3em",
-                textBorderColor: "#9070c0",
-                textBackgroundColor: "#f0edf5",
-                textPadding: "1em",
-            },
-            green: {
-                labelColor: " ",
-                labelBackgroundColor: "#75c045",
-                labelBorderColor: "#90d060 #60b030 #75c045 #90d060",
-                labelPadding: ".2em .3em .2em .3em",
-                textBorderColor: "#75c045 #60b030 #60b030 #75c045",
-                textBackgroundColor: "#f5fffa",
-                textPadding: "1em",
-            },
-            red: {
-                labelColor: " ",
-                labelBackgroundColor: "#FF0000",
-                labelBorderColor: "#FF8888 #CC0000 #FF0000 #FF8888",
-                labelPadding: ".2em .3em .2em .3em",
-                textBorderColor: "#FF0000 #CC0000 #CC0000 #FF0000",
-                textBackgroundColor: "#fffafa",
-                textPadding: "1em",
-            },
-            blue: {
-                labelColor: " ",
-                labelBackgroundColor: "#5b8dd6",
-                labelBorderColor: "#88abde #3379de #5b8dd6 #88abde",
-                labelPadding: ".2em .3em .2em .3em",
-                textBackgroundColor: "#f0f8ff",
-                textBorderColor: "#5b8dd6 #3379de #3379de #5b8dd6",
-                textPadding: "1em",
-            },
-            yellow: {
-                labelColor: " ",
-                labelBackgroundColor: "#ffe147",
-                labelBorderColor: "#ffe977 #ffd813 #ffe147 #ffe977",
-                labelPadding: ".2em .3em .2em .3em",
-                textBackgroundColor: "#fffce8",
-                textBorderColor: "#ffe147 #ffd813 #ffd813 #ffe147",
-                textPadding: "1em",
-            },
-            orange: {
-                labelColor: " ",
-                labelBackgroundColor: "#ff9d42",
-                labelBorderColor: "#ffac5d #ff820e #ff9d42 #ffac5d",
-                labelPadding: ".2em .3em .2em .3em",
-                textBackgroundColor: "#ffeedd",
-                textBorderColor: "#ff9d42 #ff820e #ff820e #ff9d42",
-                textPadding: "1em",
-            },
-            black: {
-                labelColor: " ",
-                labelBackgroundColor: "#7f7f7f",
-                labelBorderColor: "#999999 #4c4c4c #7f7f7f #999999",
-                labelPadding: ".2em .3em .2em .3em",
-                textBackgroundColor: "#e5e5e5",
-                textBorderColor: "#7f7f7f #4c4c4c #4c4c4c #7f7f7f",
-                textPadding: "1em",
-            },
+    const tabDefaultStyle = {
+        purple: {
+            labelColor: " ", // anti check
+            labelBackgroundColor: "#9070c0",
+            labelBorderColor: "#b090e0 #7050a0 #9070c0 #b090e0",
+            labelPadding: ".2em .3em .2em .3em",
+            textBorderColor: "#9070c0",
+            textBackgroundColor: "#f0edf5",
+            textPadding: "1em",
+        },
+        green: {
+            labelColor: " ",
+            labelBackgroundColor: "#75c045",
+            labelBorderColor: "#90d060 #60b030 #75c045 #90d060",
+            labelPadding: ".2em .3em .2em .3em",
+            textBorderColor: "#75c045 #60b030 #60b030 #75c045",
+            textBackgroundColor: "#f5fffa",
+            textPadding: "1em",
+        },
+        red: {
+            labelColor: " ",
+            labelBackgroundColor: "#FF0000",
+            labelBorderColor: "#FF8888 #CC0000 #FF0000 #FF8888",
+            labelPadding: ".2em .3em .2em .3em",
+            textBorderColor: "#FF0000 #CC0000 #CC0000 #FF0000",
+            textBackgroundColor: "#fffafa",
+            textPadding: "1em",
+        },
+        blue: {
+            labelColor: " ",
+            labelBackgroundColor: "#5b8dd6",
+            labelBorderColor: "#88abde #3379de #5b8dd6 #88abde",
+            labelPadding: ".2em .3em .2em .3em",
+            textBackgroundColor: "#f0f8ff",
+            textBorderColor: "#5b8dd6 #3379de #3379de #5b8dd6",
+            textPadding: "1em",
+        },
+        yellow: {
+            labelColor: " ",
+            labelBackgroundColor: "#ffe147",
+            labelBorderColor: "#ffe977 #ffd813 #ffe147 #ffe977",
+            labelPadding: ".2em .3em .2em .3em",
+            textBackgroundColor: "#fffce8",
+            textBorderColor: "#ffe147 #ffd813 #ffd813 #ffe147",
+            textPadding: "1em",
+        },
+        orange: {
+            labelColor: " ",
+            labelBackgroundColor: "#ff9d42",
+            labelBorderColor: "#ffac5d #ff820e #ff9d42 #ffac5d",
+            labelPadding: ".2em .3em .2em .3em",
+            textBackgroundColor: "#ffeedd",
+            textBorderColor: "#ff9d42 #ff820e #ff820e #ff9d42",
+            textPadding: "1em",
+        },
+        black: {
+            labelColor: " ",
+            labelBackgroundColor: "#7f7f7f",
+            labelBorderColor: "#999999 #4c4c4c #7f7f7f #999999",
+            labelPadding: ".2em .3em .2em .3em",
+            textBackgroundColor: "#e5e5e5",
+            textBorderColor: "#7f7f7f #4c4c4c #4c4c4c #7f7f7f",
+            textPadding: "1em",
+        },
+    };
+    const tabSides = {
+        top: {
+            className: "tabLabelTop",
+            labelColorSide: "top",
+            labelBorderSide: ["left", "right"],
+            labelColorSideReverse: "bottom",
+            dividerSizeType: "height",
+        },
+        bottom: {
+            className: "tabLabelBottom",
+            labelColorSide: "bottom",
+            labelBorderSide: ["left", "right"],
+            labelColorSideReverse: "top",
+            dividerSizeType: "height",
+        },
+        left: {
+            className: "tabLabelLeft",
+            labelColorSide: "left",
+            labelBorderSide: ["top", "bottom"],
+            labelColorSideReverse: "right",
+            dividerSizeType: "width",
+        },
+        right: {
+            className: "tabLabelRight",
+            labelColorSide: "right",
+            labelBorderSide: ["top", "bottom"],
+            labelColorSideReverse: "left",
+            dividerSizeType: "width",
+        },
+    };
+    const tabTruthy = ["1", "on", "true", "yes"];
+    const tabStyleKeys = ["labelBorderColor", "labelBackgroundColor", "textPadding", "textBorderColor", "textBackgroundColor"];
+    const tabIndexAttribute = "data-tabs-index";
+    const getOwnPropertyNamesLength = (obj) => Reflect.ownKeys(obj).length;
+    const toLowerFirstCase = (str) => str.substring(0, 1).toLowerCase() + str.substring(1);
+    const toUpperFirstCase = (str) => str.substring(0, 1).toUpperCase() + str.substring(1);
+    const getTabsData = (ele) => {
+        const preset = Array.from(ele.classList).find((className) => Reflect.has(tabDefaultStyle, className));
+        return $.extend({
+            labelPadding: "2px",
+            labelBorderColor: "#aaa",
+            labelColor: "green",
+            labelBackgroundColor: $("#content").css("background-color") || "rgba(247,251,255,0.8)",
+            textPadding: "20px 30px",
+            textBorderColor: "#aaa",
+            textBackgroundColor: "white",
+            defaultTab: 1,
+        }, preset ? tabDefaultStyle[preset] || {} : {}, ele.dataset || {});
+    };
+    const normalizeTabsData = (data) => {
+        const labelSide = Reflect.has(tabSides, data.labelSide) ? data.labelSide : "top";
+        return {
+            labelPadding: data.labelPadding,
+            labelColor: data.labelColor,
+            labelSide,
+            side: tabSides[labelSide],
+            labelColorSideReverse: tabTruthy.includes(data.labelColorSideReverse),
+            dividerSize: parseInt(data.dividerSize),
+            defaultTab: parseInt(data.defaultTab),
         };
-        const sides = {
-            top: {
-                className: "tabLabelTop",
-                labelColorSide: "top",
-                labelBorderSide: ["left", "right"],
-                labelColorSideReverse: "bottom",
-                dividerSizeType: "height",
-            },
-            bottom: {
-                className: "tabLabelBottom",
-                labelColorSide: "bottom",
-                labelBorderSide: ["left", "right"],
-                labelColorSideReverse: "top",
-                dividerSizeType: "height",
-            },
-            left: {
-                className: "tabLabelLeft",
-                labelColorSide: "left",
-                labelBorderSide: ["top", "bottom"],
-                labelColorSideReverse: "right",
-                dividerSizeType: "width",
-            },
-            right: {
-                className: "tabLabelRight",
-                labelColorSide: "right",
-                labelBorderSide: ["top", "bottom"],
-                labelColorSideReverse: "left",
-                dividerSizeType: "width",
-            },
+    };
+    const createTabContainers = ($tabs) => {
+        const $tabLabel = $("<div>", {
+            "class": "TabLabel",
+        }).appendTo($tabs);
+        const $tabDivider = $("<div>", {
+            "class": "TabDivider",
+        }).appendTo($tabs);
+        const $tabContent = $("<div>", {
+            "class": "TabContent",
+        }).appendTo($tabs);
+        return {
+            $tabLabel,
+            $tabDivider,
+            $tabContent,
         };
-        const truthy = ["1", "on", "true", "yes"];
-        $body.addClass("tab");
-        const getOwnPropertyNamesLength = (obj) => Reflect.ownKeys(obj).length;
-        const toLowerFirstCase = (str) => str.substring(0, 1).toLowerCase() + str.substring(1);
-        const toUpperFirstCase = (str) => str.substring(0, 1).toUpperCase() + str.substring(1);
-        const parser = ($content) => $content.find(".Tabs").each((_, ele) => {
-            const self = $(ele);
-            if (self.children(".TabLabel")[0]) {
-                return true;
-            }
-            const classList = Array.from(ele.classList).filter((n) => Reflect.has(defaultStyle, n));
-            const data = $.extend({
-                labelPadding: "2px",
-                labelBorderColor: "#aaa",
-                labelColor: "green",
-                labelBackgroundColor: $("#content").css("background-color") || "rgba(247,251,255,0.8)",
-                textPadding: "20px 30px",
-                textBorderColor: "#aaa",
-                textBackgroundColor: "white",
-                defaultTab: 1,
-            }, classList[0] ? defaultStyle[classList[0]] || {} : {}, ele.dataset || {});
-            const styleSheet = {
-                label: {},
-                text: {},
-            };
-            const tabLabel = self.append('<div class="TabLabel"></div>').children(".TabLabel"),
-                tabDivider = self.append('<div class="TabDivider"></div>').children(".TabDivider"),
-                tabContent = self.append('<div class="TabContent"></div>').children(".TabContent"),
-                labelPadding = data.labelPadding,
-                labelColor = data.labelColor,
-                labelSide = Reflect.has(sides, data.labelSide) ? data.labelSide : "top",
-                side = sides[labelSide],
-                labelColorSideReverse = truthy.includes(data.labelColorSideReverse),
-                dividerSize = parseInt(data.dividerSize);
-            let defaultTab = parseInt(data.defaultTab);
-            if (labelSide === "top") {
-                tabLabel.after(tabDivider);
-                tabDivider.after(tabContent);
-            } else if (labelSide === "bottom") {
-                tabContent.after(tabDivider);
-                tabDivider.after(tabLabel);
-            }
-            if (!isNaN(dividerSize) && dividerSize > 0) {
-                self.find(".TabDivider")[side.dividerSizeType](dividerSize);
-            }
-            const labelColorName = toUpperFirstCase(labelColorSideReverse ? side.labelColorSideReverse : side.labelColorSide);
-            self.addClass(side.className);
-            if (labelColorSideReverse) {
-                self.addClass("reverse");
-            }
-            self.children(".Tab").each((_, ele) => {
-                if ($(ele).children(".TabLabelText").text().replace(/\s/g, "").length || $(ele).children(".TabLabelText").children().length) {
-                    $(ele).children(".TabLabelText").appendTo(tabLabel);
-                    $(ele).children(".TabContentText").appendTo(self.children(".TabContent"));
-                }
-                $(ele).remove();
-            });
-            if (isNaN(defaultTab) || defaultTab <= 0 || defaultTab > tabLabel.children(".TabLabelText").length) {
-                defaultTab = 1;
-            }
-            tabLabel.children(".TabLabelText").on("click", (event) => {
-                const label = $(event.currentTarget);
-                label.addClass("selected").siblings().removeClass("selected").css({
-                    "border-color": "transparent",
-                    "background-color": "inherit",
-                });
-                tabContent.children(".TabContentText").eq(tabLabel.children(".TabLabelText").index(label)).addClass("selected").siblings().removeClass("selected").removeAttr("style");
-                if (getOwnPropertyNamesLength(styleSheet.label) > 0) {
-                    label.css(styleSheet.label);
-                }
-                setTimeout(() => {
-                    $window.triggerHandler("scroll");
-                }, 1);
-            }).eq(defaultTab - 1).trigger("click");
-            if (labelPadding) {
-                tabLabel.children(".TabLabelText").css("padding", labelPadding);
-            }
-            ["labelBorderColor", "labelBackgroundColor", "textPadding", "textBorderColor", "textBackgroundColor"].forEach((n) => {
-                const target = /^label/.test(n) ? "label" : "text",
-                    key = toLowerFirstCase(n.replace(target, ""));
-                styleSheet[target][key] = data[n];
-            });
-            if (labelColor) {
-                styleSheet.label[`border${labelColorName}Color`] = labelColor;
-            } else if (styleSheet.label.borderColor) {
-                styleSheet.label[`border${labelColorName}Color`] = "green";
-            }
-            tabLabel.find(".selected").trigger("click");
-            if (getOwnPropertyNamesLength(styleSheet.text) > 0) {
-                tabContent.css(styleSheet.text);
-            }
-            if (data.autoWidth === "yes") {
-                self.addClass("AutoWidth");
-            }
-            if (data.float === "left") {
-                self.addClass("FloatLeft");
-            }
-            if (data.float === "right") {
-                self.addClass("FloatRight");
-            }
+    };
+    const arrangeTabContainers = (labelSide, $tabLabel, $tabDivider, $tabContent) => {
+        if (labelSide === "top") {
+            $tabLabel.after($tabDivider);
+            $tabDivider.after($tabContent);
+        } else if (labelSide === "bottom") {
+            $tabContent.after($tabDivider);
+            $tabDivider.after($tabLabel);
+        }
+    };
+    const getTabIndex = (ele) => ele.dataset.tabsIndex;
+    const activateTab = ($labels, $contents, styleSheet, tabIndex) => {
+        const normalizedTabIndex = `${tabIndex}`;
+        const $label = $labels.filter((_, ele) => getTabIndex(ele) === normalizedTabIndex).first();
+        const $content = $contents.filter((_, ele) => getTabIndex(ele) === normalizedTabIndex).first();
+        if ($label.length === 0 || $content.length === 0) {
+            return;
+        }
+        $label.addClass("selected").siblings().removeClass("selected").css({
+            "border-color": "transparent",
+            "background-color": "inherit",
         });
-        document.querySelectorAll(".mw-parser-output").forEach((content) => parser($(content)));
-        mw.hook("wikipage.content").add(parser);
+        $content.addClass("selected").siblings().removeClass("selected");
+        if (getOwnPropertyNamesLength(styleSheet.label) > 0) {
+            $label.css(styleSheet.label);
+        }
+        setTimeout(() => {
+            $window.triggerHandler("scroll");
+        }, 1);
+    };
+    const moveTabPanels = ($tabs, $tabLabel, $tabContent) => {
+        $tabs.children(".Tab").each((index, ele) => {
+            const $tab = $(ele);
+            const $tabLabelText = $tab.children(".TabLabelText");
+            // Keep the historical contract: tabs without a visible label are discarded even if they still have content.
+            if ($tabLabelText.text().replace(/\s/g, "").length || $tabLabelText.children().length) {
+                const tabIndex = `${index}`;
+                $tabLabelText.attr(tabIndexAttribute, tabIndex).appendTo($tabLabel);
+                $tab.children(".TabContentText").attr(tabIndexAttribute, tabIndex).appendTo($tabContent);
+            }
+            $tab.remove();
+        });
+    };
+    const bindTabLabels = ($labels, $contents, styleSheet) => {
+        $labels.each((_, ele) => {
+            ele.addEventListener("click", (event) => {
+                if (event.target === event.currentTarget) {
+                    return;
+                }
+                // Tab labels own click semantics, so nested interactive elements only switch tabs.
+                event.preventDefault();
+                event.stopPropagation();
+                event.stopImmediatePropagation();
+                $(event.currentTarget).triggerHandler("click");
+            }, {
+                capture: true,
+            });
+        });
+        $labels.on("click", (event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            activateTab($labels, $contents, styleSheet, getTabIndex(event.currentTarget));
+        });
+    };
+    const populateTabStyleSheet = (styleSheet, data, labelColorName) => {
+        tabStyleKeys.forEach((name) => {
+            const target = /^label/.test(name) ? "label" : "text";
+            const key = toLowerFirstCase(name.replace(target, ""));
+            styleSheet[target][key] = data[name];
+        });
+        if (data.labelColor) {
+            styleSheet.label[`border${labelColorName}Color`] = data.labelColor;
+        } else if (styleSheet.label.borderColor) {
+            styleSheet.label[`border${labelColorName}Color`] = "green";
+        }
+    };
+    const getDefaultTabIndex = (defaultTab, labelCount) => isNaN(defaultTab) || defaultTab <= 0 || defaultTab > labelCount ? 0 : defaultTab - 1;
+    const applyTabModifiers = ($tabs, data) => {
+        if (data.autoWidth === "yes") {
+            $tabs.addClass("AutoWidth");
+        }
+        if (data.float === "left") {
+            $tabs.addClass("FloatLeft");
+        }
+        if (data.float === "right") {
+            $tabs.addClass("FloatRight");
+        }
+    };
+    const initTabsContainer = ($tabs) => {
+        if ($tabs.children(".TabLabel")[0]) {
+            return;
+        }
+        const data = getTabsData($tabs[0]);
+        const {
+            labelPadding,
+            labelColor,
+            labelSide,
+            side,
+            labelColorSideReverse,
+            dividerSize,
+            defaultTab,
+        } = normalizeTabsData(data);
+        const {
+            $tabLabel,
+            $tabDivider,
+            $tabContent,
+        } = createTabContainers($tabs);
+        const styleSheet = {
+            label: {},
+            text: {},
+        };
+        arrangeTabContainers(labelSide, $tabLabel, $tabDivider, $tabContent);
+        if (!isNaN(dividerSize) && dividerSize > 0) {
+            $tabDivider[side.dividerSizeType](dividerSize);
+        }
+        const labelColorName = toUpperFirstCase(labelColorSideReverse ? side.labelColorSideReverse : side.labelColorSide);
+        $tabs.addClass(side.className);
+        if (labelColorSideReverse) {
+            $tabs.addClass("reverse");
+        }
+        moveTabPanels($tabs, $tabLabel, $tabContent);
+        const $labels = $tabLabel.children(".TabLabelText");
+        const $contents = $tabContent.children(".TabContentText");
+        if (labelPadding) {
+            $labels.css("padding", labelPadding);
+        }
+        if (labelColor || labelSide) {
+            populateTabStyleSheet(styleSheet, data, labelColorName);
+        }
+        if (getOwnPropertyNamesLength(styleSheet.text) > 0) {
+            $tabContent.css(styleSheet.text);
+        }
+        bindTabLabels($labels, $contents, styleSheet);
+        $labels.eq(getDefaultTabIndex(defaultTab, $labels.length)).trigger("click");
+        applyTabModifiers($tabs, data);
+    };
+    const initTabsInContent = ($content) => {
+        $content.find(".Tabs").each((_, ele) => {
+            initTabsContainer($(ele));
+        });
+    };
+    const tabs = () => {
+        $body.addClass("tab");
+        document.querySelectorAll(".mw-parser-output").forEach((content) => initTabsInContent($(content)));
+        mw.hook("wikipage.content").add(initTabsInContent);
     };
     /* T:注解 */
     $("body").on("mouseover mouseout", ".annotation", (event) => {
@@ -581,7 +668,8 @@
                 }
                 const tabContentTextUnselected = $target.closest(".TabContentText:not(.selected)");
                 if (tabContentTextUnselected.length > 0) {
-                    tabContentTextUnselected.closest(".Tabs").children(".TabLabel").children().eq(tabContentTextUnselected.index()).trigger("click");
+                    const tabIndex = tabContentTextUnselected.attr(tabIndexAttribute);
+                    tabContentTextUnselected.closest(".Tabs").children(".TabLabel").children().filter((_, ele) => getTabIndex(ele) === tabIndex).first().trigger("click");
                     // needScroll = false;
                 }
                 if (needScroll) {
