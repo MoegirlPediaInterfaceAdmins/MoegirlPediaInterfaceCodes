@@ -33,7 +33,7 @@
         "@annangela/eslint-formatter-gha": "^6.0.0",
         "@annangela/eslint-plugin-prefer-reflect": "^6.0.0",
         "@csstools/postcss-is-pseudo-class": "^6.0.0",
-        "@csstools/postcss-media-minmax": "^3.0.2",
+        "@csstools/postcss-media-minmax": "^3.0.3",
         "@csstools/stylelint-formatter-github": "^2.0.0",
         "@octokit/auth-action": "^6.0.2",
         "@octokit/auth-app": "^8.2.0",
