@@ -1,18 +1,20 @@
 {
     "version": 1,
     "hooks": {
-        "sessionStart": [
+        "SessionStart": [
             {
                 "type": "command",
-                "bash": "if [[ \"${GITHUB_ACTIONS}\" == \"true\" ]]; then sudo n lts && hash -r; fi",
-                "timeoutSec": 137
+                "linux": "if [ \"${GITHUB_ACTIONS}\" = \"true\" ]; then sudo n lts >/dev/null && hash -r; else :; fi && printf '%s\\n' '{\"continue\":true}'",
+                "osx": "if [ \"${GITHUB_ACTIONS}\" = \"true\" ]; then sudo n lts >/dev/null && hash -r; else :; fi && printf '%s\\n' '{\"continue\":true}'",
+                "timeout": 137
             }
         ],
-        "preToolUse": [
+        "PreToolUse": [
             {
                 "type": "command",
-                "bash": "node --version",
-                "timeoutSec": 137
+                "linux": "node -p 'JSON.stringify({continue:true,hookSpecificOutput:{hookEventName:\"PreToolUse\",additionalContext:`Node.js version: v${process.versions.node}`}})'",
+                "osx": "node -p 'JSON.stringify({continue:true,hookSpecificOutput:{hookEventName:\"PreToolUse\",additionalContext:`Node.js version: v${process.versions.node}`}})'",
+                "timeout": 137
             }
         ]
     }
