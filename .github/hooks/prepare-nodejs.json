@@ -4,16 +4,16 @@
         "SessionStart": [
             {
                 "type": "command",
-                "linux": "if [ \"${GITHUB_ACTIONS}\" = \"true\" ]; then sudo n lts >/dev/null && hash -r; else :; fi && printf '%s\\n' '{\"continue\":true}'",
-                "osx": "if [ \"${GITHUB_ACTIONS}\" = \"true\" ]; then sudo n lts >/dev/null && hash -r; else :; fi && printf '%s\\n' '{\"continue\":true}'",
+                "linux": "bash .github/hooks/prepare-nodejs-session-start.sh",
+                "osx": "bash .github/hooks/prepare-nodejs-session-start.sh",
                 "timeout": 137
             }
         ],
         "PreToolUse": [
             {
                 "type": "command",
-                "linux": "node -p 'JSON.stringify({continue:true,hookSpecificOutput:{hookEventName:\"PreToolUse\",additionalContext:`Node.js version: v${process.versions.node}`}})'",
-                "osx": "node -p 'JSON.stringify({continue:true,hookSpecificOutput:{hookEventName:\"PreToolUse\",additionalContext:`Node.js version: v${process.versions.node}`}})'",
+                "linux": "bash .github/hooks/prepare-nodejs-pre-tool-use.sh",
+                "osx": "bash .github/hooks/prepare-nodejs-pre-tool-use.sh",
                 "timeout": 137
             }
         ]
