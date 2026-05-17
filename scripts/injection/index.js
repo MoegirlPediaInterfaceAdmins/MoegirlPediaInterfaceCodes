@@ -51,11 +51,7 @@ for (const target of targets) {
             keep_classnames: false,
             keep_fnames: false,
             toplevel: true,
-            properties: {
-                ...options.mangle.properties,
-                keep_quoted: "strict",
-                regex: null,
-            },
+            properties: false,
         },
         toplevel: true,
         /* eslint-enable camelcase */

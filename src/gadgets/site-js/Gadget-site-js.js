@@ -278,11 +278,12 @@
             $tabs.addClass("FloatRight");
         }
     };
-    const initTabsContainer = ($tabs) => {
-        if ($tabs.children(".TabLabel")[0]) {
+    const initTabsContainer = (tab) => {
+        const $tab = $(tab);
+        if ($tab.children(".TabLabel")[0]) {
             return;
         }
-        const data = getTabsData($tabs[0]);
+        const data = getTabsData(tab);
         const {
             labelPadding,
             labelColor,
@@ -296,7 +297,7 @@
             $tabLabel,
             $tabDivider,
             $tabContent,
-        } = createTabContainers($tabs);
+        } = createTabContainers($tab);
         const styleSheet = {
             label: {},
             text: {},
@@ -306,11 +307,11 @@
             $tabDivider[side.dividerSizeType](dividerSize);
         }
         const labelColorName = toUpperFirstCase(labelColorSideReverse ? side.labelColorSideReverse : side.labelColorSide);
-        $tabs.addClass(side.className);
+        $tab.addClass(side.className);
         if (labelColorSideReverse) {
-            $tabs.addClass("reverse");
+            $tab.addClass("reverse");
         }
-        moveTabPanels($tabs, $tabLabel, $tabContent);
+        moveTabPanels($tab, $tabLabel, $tabContent);
         const $labels = $tabLabel.children(".TabLabelText");
         const $contents = $tabContent.children(".TabContentText");
         if (labelPadding) {
@@ -324,11 +325,11 @@
         }
         bindTabLabels($labels, $contents, styleSheet);
         $labels.eq(getDefaultTabIndex(defaultTab, $labels.length)).trigger("click");
-        applyTabModifiers($tabs, data);
+        applyTabModifiers($tab, data);
     };
     const initTabsInContent = ($content) => {
         $content.find(".Tabs").each((_, ele) => {
-            initTabsContainer($(ele));
+            initTabsContainer(ele);
         });
     };
     const tabs = () => {
