@@ -9,5 +9,5 @@ if command -v node >/dev/null 2>&1; then
     exit 0
 fi
 
-printf '%s\n' '{"continue":false,"stopReason":"Node.js is unavailable","systemMessage":"未检测到 Node.js","hookSpecificOutput":{"hookEventName":"PreToolUse","additionalContext":"Node.js is unavailable"}}'
+printf '%s\n' '{"continue":true,"stopReason":"Node.js is unavailable","systemMessage":"未检测到 Node.js","hookSpecificOutput":{"hookEventName":"PreToolUse","additionalContext":"Node.js is unavailable"}}'
 exit 2
