@@ -10,14 +10,14 @@ $(() => (async () => {
         return;
     }
     const userRights = await mw.user.getRights();
-    const hasApiHighLimits = !userRights.includes("apihighlimits");
+    const isUnderRateLimit = !userRights.includes("apihighlimits");
     const isPatrolViewable = userRights.includes("patrol") || userRights.includes("patrolmarks");
     const upperFirstCase = (s) => /^[a-z]/.test(s) ? s.substring(0, 1).toUpperCase() + s.substring(1) : s;
     const api = new mw.Api();
     const { wgUserName, libLocalizedNamespaces } = mw.config.get(["wgUserName", "libLocalizedNamespaces"]);
     const p = $('<div class="cdx-card" style="background-color:transparent;display:block"><span class="cdx-card__text"><span class="cdx-card__text__title">用户贡献分布</span><span class="cdx-card__text__description">是否需要加载用户贡献分布（对编辑数量较多的用户慎重使用！）</span><div><button id="confirmQueryContributions" class="cdx-button cdx-button--action-progressive">确认</button> <button id="cancelQueryContributions" class="cdx-button cdx-button--action-destructive">取消</button></div></span></div>').insertAfter("#mw-content-text > .mw-htmlform-ooui-wrapper");
     p.find("#confirmQueryContributions").on("click", async () => {
-        p.text(`加载中${hasApiHighLimits ? "（由于您没有“在API查询中使用更高的上限”[apihighlimits]权限，本次加载将需要较长时间，请稍等）" : ""}……`);
+        p.text(`加载中${isUnderRateLimit ? "（由于您没有“在API查询中使用更高的上限”[apihighlimits]权限，本次加载将需要较长时间，请稍等）" : ""}……`);
         const list = await (async () => {
             const result = [];
             const eol = Symbol();
