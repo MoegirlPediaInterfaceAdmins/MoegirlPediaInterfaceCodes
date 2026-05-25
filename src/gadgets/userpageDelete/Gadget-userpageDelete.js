@@ -90,11 +90,6 @@ $(() => {
 
         const windowManager = new OO.ui.WindowManager();
         $body.append(windowManager.$element);
-        const ns2dDialog = new Ns2dWindow({
-            size: "medium",
-            text: "test",
-        });
-        windowManager.addWindows([ns2dDialog]);
 
         $(mw.util.addPortletLink("p-cactions", "#", wgULS("自助删除", "自助刪除"), "ca-lr-ns2d", `${wgULS("自助删除用户页面", "自助刪除使用者頁面", null, null, "自助刪除用戶頁面")}`)).on("click", (e) => {
             e.preventDefault();
