@@ -92,7 +92,6 @@ $(() => {
         $body.append(windowManager.$element);
         const ns2dDialog = new Ns2dWindow({
             size: "medium",
-            text: "test",
         });
         windowManager.addWindows([ns2dDialog]);
 

@@ -76,12 +76,12 @@
             while ($ele.text().length + zero.length < idLength) {
                 zero += "0";
             }
-            $ele.prepend(`<span style="speak:none;visibility:hidden;color:transparent;">${zero}</span>`);
+            $ele.prepend(`<span style="visibility:hidden;">${zero}</span>`);
         });
         /* lvList.each((_, ele) => {
             const $ele = $(ele);
             if ($ele.text().length === 2) {
-                $ele.prepend('<span style="speak:none;visibility:hidden;color:transparent;">已</span>');
+                $ele.prepend('<span style="visibility:hidden;">已</span>');
             }
         }); */
     };
