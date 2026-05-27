@@ -21,8 +21,10 @@ jobs:
       - name: Use Node.js
         uses: actions/setup-node@v6
         with:
-          node-version: 24.11
+          node-version: lts/*
           check-latest: true
           cache: npm
-      - name: Install dependencies
-        run: npm run ci
+      - name: Installing the dependencies
+        uses: AnnAngela/cached_node-modules@v5
+        with:
+          command: npm run ci
