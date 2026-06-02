@@ -93,8 +93,7 @@
             "wbr",
             "hr",
             "meta",
-            "link",
-            "img"
+            "link"
         ]
     ],
     "namespaces": {
