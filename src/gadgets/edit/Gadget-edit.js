@@ -75,7 +75,7 @@ $(() => {
         }, 137);
     }
     // 只在ns0和ns2的子页面加载预加载工具
-    if (![0, 2].includes(wgNamespaceNumber) || wgNamespaceNumber === 2 && !wgPageName.includes("/") || mw.config.get("wgPageContentModel") !== "wikitext") {
+    if (![0, 2, 114, 118].includes(wgNamespaceNumber) || wgNamespaceNumber === 2 && !wgPageName.includes("/") || mw.config.get("wgPageContentModel") !== "wikitext") {
         $("#multiboilerplateform").remove();
     }
     // 非维护组、技术组成员提出方针编辑请求时提醒需要走提案
