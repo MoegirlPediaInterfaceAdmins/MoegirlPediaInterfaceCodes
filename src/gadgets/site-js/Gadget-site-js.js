@@ -560,9 +560,10 @@
         }
         return result;
     };
+    const watermarkZIndex = "99999";
     const watermark = (txt, size) => {
         const backgroundImageURL = `url("data:image/svg+xml;base64,${btoa(`<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}"><foreignObject width="${size}" height="${size}"><html xmlns="http://www.w3.org/1999/xhtml" style="width: ${size}px; height: ${size}px;"><head></head><body style="width: ${size}px; height: ${size}px; margin: 0px;"><div style="width: 100% !important; height: 100% !important; opacity: .17 !important; font-size: 24px !important; position: relative !important; color: black !important;"><div style="transform: rotate(-15deg) translateX(-50%) translateY(-50%) !important; word-break: break-all !important; top: 36% !important; left: 50% !important; position: absolute !important; width: 100% !important; text-align: center !important;">${unescapeString(encodeURIComponent(txt))}</div></div></body></html></foreignObject></svg>`)}")`;
-        const styleString = `position: fixed !important; z-index: 99999 !important; inset: 0px !important; background-image: ${backgroundImageURL} !important; background-repeat: repeat !important; pointer-events: none !important; display: block !important; visibility: visible !important; width: unset !important; height: unset !important; opacity: unset !important; background-color: unset !important;`;
+        const styleString = `position: fixed !important; z-index: ${watermarkZIndex} !important; inset: 0px !important; background-image: ${backgroundImageURL} !important; background-repeat: repeat !important; pointer-events: none !important; display: block !important; visibility: visible !important; width: unset !important; height: unset !important; opacity: unset !important; background-color: unset !important;`;
         const template = createElement("div");
         setAttribute.bind(template)("style", styleString);
         /**
@@ -583,8 +584,8 @@
             if (style.position !== "fixed") {
                 reasons.push(`position not fixed: ${style.position}`);
             }
-            if (style.zIndex !== "99999") {
-                reasons.push(`z-index not 99999: ${style.zIndex}`);
+            if (style.zIndex !== watermarkZIndex) {
+                reasons.push(`z-index not ${watermarkZIndex}: ${style.zIndex}`);
             }
             if (style.inset !== "0px") {
                 reasons.push(`inset not 0px: ${style.inset}`);
