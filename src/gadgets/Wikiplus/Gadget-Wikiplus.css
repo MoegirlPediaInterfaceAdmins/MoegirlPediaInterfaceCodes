@@ -21,6 +21,14 @@ body.skin-moeskin #moe-page-tools #Wikiplus-Edit-TopBtn a {
     color: var(--theme-button-color);
 }
 
+body.skin-moeskin #moe-page-tools #ca-wikiplus {
+    cursor: pointer;
+}
+
+body.skin-moeskin #moe-page-tools #ca-wikiplus+#Wikiplus-Edit-TopBtn {
+    display: none;
+}
+
 @media (width <=768px) {
 
     /* 调整窄屏的快速编辑按钮 */
