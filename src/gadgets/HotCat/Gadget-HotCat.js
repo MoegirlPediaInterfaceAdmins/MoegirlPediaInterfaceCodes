@@ -373,7 +373,7 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
         return once ? null : matches;
     };
     const find_category_wikitext = (wikitext, category, once) => {
-        let cat_regex = null;
+        let cat_regex;
         if (HC.template_categories[category]) {
             cat_regex = new RegExp(`\\{\\{${wikiTextBlankOrBidi}(${HC.template_regexp}(?=${wikiTextBlankOrBidi}:))?${wikiTextBlankOrBidi}(?:${HC.template_categories[category]})${wikiTextBlankOrBidi}(\\|.*?)?\\}\\}`, "g");
         } else {
@@ -386,7 +386,7 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
         }
         const copiedtext = wikitext.replace(/<!--(\s|\S)*?-->/g, replaceByBlanks).replace(/<nowiki>(\s|\S)*?<\/nowiki>/g, replaceByBlanks);
         const result = [];
-        let curr_match = null;
+        let curr_match;
         while ((curr_match = cat_regex.exec(copiedtext)) !== null) {
             result.push({
                 match: curr_match,
@@ -477,7 +477,7 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
                 index = findCatsRE.lastIndex;
             }
             if (index < 0) {
-                let match = null;
+                let match;
                 if (!interlanguageRE) {
                     match = /((^|\n\r?)(\[\[\s*(([a-z]{2,3}(-[a-z]+)*)|simple|tokipona)\s*:[^\]]+\]\]\s*))+$/.exec(copiedtext);
                 } else {
@@ -570,7 +570,7 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
                     error: HC.messages.cat_exists.replace(/\$1/g, toAdd),
                 };
             }
-            let onCat = false;
+            let onCat;
             if (cat_point < 0) {
                 const point = find_insertionpoint(wikitext);
                 cat_point = point.idx;
@@ -747,7 +747,7 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
         }
         makeLinkSpan() {
             this.normalLinks = make("span");
-            let lk = null;
+            let lk;
             if (this.originalCategory && this.originalCategory.length) {
                 lk = make("a");
                 lk.href = "#catlinks";
@@ -1632,7 +1632,7 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
             this.list.style.zIndex = 5;
             this.list.style.position = "absolute";
             const anchor = is_rtl ? "right" : "left";
-            let listh = 0;
+            let listh;
             if (this.list.style.display === "none") {
                 this.list.style.top = `${this.text.offsetTop}px`;
                 this.list.style[anchor] = "-10000px";
@@ -1693,7 +1693,7 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
             const textPos = position(this.text),
                 nl = 0,
                 textBoxWidth = this.text.offsetWidth || this.text.clientWidth;
-            let nt = 0,
+            let nt,
                 offset = 0;
             if (this.engineName) {
                 this.engineSelector.style.zIndex = 5;
@@ -1879,7 +1879,7 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
                 return false;
             }
             const curr = this.list.selectedIndex;
-            let tgt = -1;
+            let tgt;
             if (dir === 0) {
                 if (curr < 0 || curr >= this.list.options.length) {
                     return false;
@@ -2868,7 +2868,7 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
         const cat_regex = new RegExp(`\\[\\[${wikiTextBlankOrBidi}(${HC.category_regexp})${wikiTextBlankOrBidi}:${wikiTextBlankOrBidi}([^\\[\\]]+?)${wikiTextBlankOrBidi}(\\|.*?)?\\]\\]`, "g");
 
         const result = [];
-        let curr_match = null;
+        let curr_match;
         while ((curr_match = cat_regex.exec(cleanedText)) !== null) {
             result.push({
                 match: curr_match,
@@ -2938,7 +2938,7 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
                 length: cats.length,
             });
             const idxCopys = {};
-            let sTitle = null;
+            let sTitle;
             for (i = 0; i < cats.length; i++) {
                 copyCats[i] = cats[i];
                 sTitle = getTitle(copyCats[i]);
@@ -3025,7 +3025,7 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
         if (commitForm) {
             return;
         }
-        let format = "";
+        let format;
         if (HC.jsonContentModels.includes(conf.wgPageContentModel)) {
             format = "application/json";
         } else {

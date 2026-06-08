@@ -19,7 +19,8 @@ const parser = () => {
             return;
         }
         $("#p-variants").nextAll('.noteTA-menu, [class*="mw-indicator"], [id*="mw-indicator"]').remove();
-        let $dialog = null, $this = null;
+        let $dialog = null;
+        let $this;
         if (mw.config.get("skin") === "moeskin") {
             $this = $("#p-noteTA-moeskin");
             $("#p-noteTA-moeskin > button").addClass("noteTAViewer-button");

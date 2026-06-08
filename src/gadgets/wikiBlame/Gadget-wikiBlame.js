@@ -364,8 +364,7 @@ $(() => {
     };
 
     const getSelected = () => {
-        let text = "";
-        text = window.getSelection().toString();
+        const text = window.getSelection().toString();
         return text;
     };
     const createDialog = () => {

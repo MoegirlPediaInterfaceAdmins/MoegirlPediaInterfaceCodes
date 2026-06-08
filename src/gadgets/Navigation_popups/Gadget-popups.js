@@ -696,7 +696,7 @@ $(() => {
             getPageInfo(wikiText, download);
             setPopupTrailer(getPageInfo(wikiText, download), navpop.idNumber);
         }
-        let imagePage = "";
+        let imagePage;
         if (art.namespaceId() === pg.nsImageId) {
             imagePage = art.toString();
         } else {
@@ -1019,7 +1019,7 @@ $(() => {
         if (!str.length) {
             return [];
         }
-        let p = false;
+        let p;
         switch (str.charAt(0)) {
             case "s":
                 p = parseSubstitute(str);
@@ -2368,7 +2368,7 @@ $(() => {
         const i = findInPageCache(url);
         let d;
         if (i > -1) {
-            d = fakeDownload(url, owner.idNumber, onComplete, pg.cache.pages[i].data, pg.cache.pages[i].lastModified, owner);
+            fakeDownload(url, owner.idNumber, onComplete, pg.cache.pages[i].data, pg.cache.pages[i].lastModified, owner);
         } else {
             d = getPage(url, onComplete, owner);
             if (d && owner && owner.addDownload) {
@@ -2912,9 +2912,8 @@ $(() => {
             if (!op.test(txt)) {
                 return txt;
             }
-            let ret = "";
             const opResult = op.exec(txt);
-            ret = txt.substring(0, opResult.index);
+            const ret = txt.substring(0, opResult.index);
             txt = txt.substring(opResult.index + opResult[0].length);
             let depth = 1;
             while (txt.length > 0) {
@@ -3030,7 +3029,7 @@ $(() => {
             d = this.fixSentenceEnds(d, notSentenceEnds);
             this.fullLength = d.join("").length;
             let n = this.maxSentences;
-            let dd = this.firstSentences(d, n);
+            let dd;
             do {
                 dd = this.firstSentences(d, n);
                 --n;
@@ -3179,7 +3178,7 @@ $(() => {
         let htmlGenerator = () => {
             alert("invalid html generator");
         };
-        let usernameart = "";
+        let usernameart;
         switch (queryType) {
             case "history":
                 url += `titles=${art}&prop=revisions&rvlimit=${getValueOf("popupHistoryPreviewLimit")}`;
@@ -3357,8 +3356,8 @@ $(() => {
             html.push(`<tr class="popup_history_row_${i % 2 ? "odd" : "even"}">`);
             html.push(`<td>${makeFirstColumnLinks(h[i])}</td>`);
             html.push(`<td><a href="${pg.wiki.titlebase}${new Title(curart).urlString()}&oldid=${h[i].revid}">${thisTime}</a></td>`);
-            let col3url = "",
-                col3txt = "";
+            let col3url,
+                col3txt;
             if (!reallyContribs) {
                 const user = h[i].user;
                 if (!h[i].userhidden) {
@@ -3603,7 +3602,7 @@ $(() => {
     };
     const APIuserInfoPreviewHTML = (article, download) => {
         let ret = [];
-        let queryobj = {};
+        let queryobj;
         try {
             queryobj = getJsObj(download.data).query;
         } catch (someError) {
@@ -5480,9 +5479,8 @@ $(() => {
         return html;
     };
     const diffDatesTableRow = (revision, label) => {
-        let txt = "";
         const lastModifiedDate = new Date(revision.timestamp);
-        txt = formattedDateTime(lastModifiedDate);
+        const txt = formattedDateTime(lastModifiedDate);
         const revlink = generalLink({
             url: `${mw.config.get("wgScript")}?oldid=${revision.revid}`,
             text: label,
@@ -5575,7 +5573,7 @@ $(() => {
         });
     };
     const revertSummary = (oldid, diff) => {
-        let ret = "";
+        let ret;
         if (diff === "prev") {
             ret = getValueOf("popupQueriedRevertToPreviousSummary");
         } else {
@@ -5726,8 +5724,7 @@ $(() => {
         mw.notify(mw.message(messageName, title).parseDom());
     };
     const magicHistoryLink = (l) => {
-        let jsUrl = "",
-            title = "",
+        let title = "",
             onClick = "";
         switch (l.id) {
             case "lastContrib":
@@ -5739,7 +5736,7 @@ $(() => {
                 title = popupString("sinceMeHint");
                 break;
         }
-        jsUrl = `javascript:${onClick}`;
+        const jsUrl = `javascript:${onClick}`;
         onClick += ";return false;";
         return generalNavLink({
             url: jsUrl,
