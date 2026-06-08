@@ -66,7 +66,7 @@
         },
         getTalkPageFromTitle: (_title) => {
             const rens = /^(.+):/;
-            let pref = _title.match(rens), nsid = -1;
+            let pref = _title.match(rens), nsid;
             let title = _title;
             if (pref) {
                 pref = pref[1].toLowerCase().replace(/ /g, "_");

@@ -635,7 +635,7 @@ $(() => {
             decorations[decPos++] = startDec;
             i = end;
         }
-        nDecorations = decorations.length = decPos;
+        decorations.length = decPos;
         const sourceNode = job.sourceNode;
         let oldDisplay = "";
         if (sourceNode) {
@@ -835,14 +835,13 @@ $(() => {
         const doc = root.ownerDocument || document;
 
         const byTagName = (tn) => root.getElementsByTagName(tn);
-        let codeSegments = [byTagName("pre"), byTagName("code"), byTagName("xmp")];
+        const codeSegments = [byTagName("pre"), byTagName("code"), byTagName("xmp")];
         const elements = [];
         for (let i = 0; i < codeSegments.length; ++i) {
             for (let j = 0, n = codeSegments[i].length; j < n; ++j) {
                 elements.push(codeSegments[i][j]);
             }
         }
-        codeSegments = null;
         let clock = Date;
         if (!clock.now) {
             clock = {

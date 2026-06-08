@@ -44,7 +44,7 @@
             const ipV6 = mw.util.isIPv6Address(addy, true);
             const ipCidr = addy.match(/^(.*)(?:\/(\d+))?$/);
             let bin = "";
-            let x = 0, z = 0, start = 0, end = 0, ip, cidr, bloc, binBlock;
+            let x, z, start, end, ip, cidr, bloc, binBlock;
             if (ipV4) {
                 foundV4 = !0;
                 if (foundV6) {
