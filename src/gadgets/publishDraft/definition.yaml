@@ -30,6 +30,7 @@ peers: []
 
 dependencies:
   - mediawiki.api
+  - oojs-ui
   - ext.gadget.site-lib
 
 _sites:
