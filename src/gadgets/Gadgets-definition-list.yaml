@@ -76,6 +76,7 @@
     - uploader
     - temp-editcheck
     - wikiplus-highlight
+    - publishDraft
 
 - name: maintenance
   gadgets:

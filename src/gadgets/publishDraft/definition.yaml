@@ -1,0 +1,42 @@
+ResourceLoader: true
+
+hidden: false
+
+default: true
+
+supportsUrlLoad: false
+
+skins: []
+
+actions:
+  - view
+
+categories: []
+
+namespaces:
+  - 118
+
+contentModels: []
+
+type: general
+
+package: false
+
+rights:
+  - edit
+  - move
+
+peers: []
+
+dependencies:
+  - mediawiki.api
+  - oojs-ui
+  - ext.gadget.site-lib
+
+_sites:
+  - zh
+
+_section: editing
+
+_files:
+  - Gadget-publishDraft.js
