@@ -45,7 +45,6 @@ $(() => {
                 action: "move",
                 from: wgPageName,
                 to: wgTitle,
-                movesubpages: true,
                 reason: "发布草稿",
                 noredirect: true,
                 watchlist: "nochange",
