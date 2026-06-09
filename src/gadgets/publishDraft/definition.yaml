@@ -29,6 +29,7 @@ rights:
 peers: []
 
 dependencies:
+  - mediawiki.api
   - ext.gadget.site-lib
 
 _sites:
