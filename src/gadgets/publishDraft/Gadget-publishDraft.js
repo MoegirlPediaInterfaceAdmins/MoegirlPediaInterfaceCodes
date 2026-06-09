@@ -1,47 +1,18 @@
 "use strict";
 $(() => {
-    const { wgNamespaceNumber, wgArticleId, wgPageName, wgTitle } = mw.config.get([
-        "wgNamespaceNumber",
+    const { wgArticleId, wgPageName, wgTitle } = mw.config.get([
         "wgArticleId",
         "wgPageName",
         "wgTitle",
     ]);
 
-    if (wgNamespaceNumber !== 118 || wgArticleId === 0) {
+    if (wgArticleId === 0) {
         return;
     }
-    const api = new mw.Api();
-
-    const removeTemplate = async () => {
-        const {
-            query: {
-                pages: [
-                    {
-                        revisions: [{ content }],
-                    },
-                ],
-            },
-        } = await api.post({
-            action: "query",
-            prop: "revisions",
-            rvprop: "content",
-            titles: wgPageName,
-            formatversion: "2",
-        });
-        await api.postWithToken("csrf", {
-            action: "edit",
-            title: wgPageName,
-            text: content.replace(/\{\{\s*(?:(?:Template|T|[模样樣]板):)?\s*(草稿|draft)\s*\}\}/gimu, ""),
-            summary: "移除{{[[T:Draft|Draft]]}}模板",
-            minor: true,
-            tags: "Automation tool",
-            watchlist: "nochange",
-        });
-    };
 
     const publish = async () => {
         try {
-            const moveRes = await api.postWithToken("csrf", {
+            const moveRes = await new mw.Api().postWithToken("csrf", {
                 action: "move",
                 from: wgPageName,
                 to: wgTitle,
@@ -65,18 +36,17 @@ $(() => {
         "#",
         wgULS("发布草稿", "發佈草稿"),
         "ca-lr-publish-draft",
-        wgULS("将草稿发布到主命名空间", "將草稿發佈到主命名空間"),
+        wgULS("发布草稿", "發佈草稿"),
     )).on("click", async (e) => {
         e.preventDefault();
         try {
             const confirmed = await OO.ui.confirm(
-                wgULS("确认要将此草稿发布到主命名空间吗？", "確認要將此草稿發佈到主命名空間嗎？"),
+                wgULS(`确认要将此草稿发布到${wgTitle}吗？`, `確認要將此草稿發佈到${wgTitle}嗎？`),
                 { size: "medium" },
             );
             if (!confirmed) {
                 return;
             }
-            await removeTemplate();
             await publish();
             mw.notify(wgULS("即将刷新……", "即將刷新……"), {
                 title: wgULS("发布成功", "發佈成功"),
