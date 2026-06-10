@@ -218,6 +218,7 @@ $(() => {
                 summary: `标记讨论串「/* ${this.sectionTitle} */」状态为【${this.statusLabel}】`,
                 tags: "Automation tool",
                 nocreate: true,
+                watchlist: "nochange",
                 appendtext: `${this.precomment.length > 0 ? `\n:${this.precomment}——~~~~` : ""}\n\n{{MarkAsResolved|time={{subst:#timel:Ymd}}|status=${this.status}|archive-offset=${this.archiveOffset}|comment=${this.comment}|sign=~~~~}}`,
             });
             if (d.error) {
