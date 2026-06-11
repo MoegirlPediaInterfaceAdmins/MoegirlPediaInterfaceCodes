@@ -862,6 +862,7 @@
         ["UserMessages/NavSort", "NavSort", "大家族模板排序错误（1=页面名）", umsg.umFlagP2, "关于大家族模板的排序"],
         ["UserMessages/ReplyNoIndentation", "ReplyNoIndentation", "回复他人发言未缩进（1=页面名，2=被回复人）", umsg.umFlagP2 + umsg.umFlagP3, "关于您在讨论区的发言"],
         ["UserMessages/OverSpeedEdit", "OverSpeedEdit", "超速编辑", umsg.umFlagUM, "关于您近期的编辑"],
+        ["UserMessages/MovedToDraft", "MovedToDraft", "打回至草稿命名空间（1=页面名，2=原因）", umsg.umFlagP2 + umsg.umFlagP3, "页面打回通知"],
     ];
     const placeholderTemplate = ["", "请选择一个模板（本选项不可使用）", "给你的新留言~", 0];
     Object.defineProperties(umsg, {
