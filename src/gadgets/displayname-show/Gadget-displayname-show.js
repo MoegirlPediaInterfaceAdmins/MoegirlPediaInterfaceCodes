@@ -88,6 +88,10 @@ $(() => {
     const userLinks = document.querySelectorAll(".mw-userlink");
 
     for (const userLink of userLinks) {
+        if (userLink.classList.contains("history-deleted")) {
+            continue;
+        }
+
         let { userName = userLink.textContent } = userLink.dataset;
         const { userNick = "" } = userLink.dataset;
         if (userNick === "已注销#0000" && !wgUserGroups.includes("suppress")) {
