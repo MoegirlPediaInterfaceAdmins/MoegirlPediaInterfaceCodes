@@ -119,6 +119,12 @@
             "autoblock",
         ].map((k) => [k, `apihelp-block-param-${k}`]),
     ];
+    const actionsMap = {
+        upload: wgULS("上传文件（包括覆盖文件）", "上傳檔案（包括覆蓋檔案）"),
+        move: wgULS("移动页面及文件", "移動頁面及檔案"),
+        create: wgULS("创建新页面及上传新文件", "建立新頁面及上傳新檔案"),
+        thanks: wgULS("发送感谢", "傳送感謝"),
+    };
     const { libLocalizedNamespaces, wgUserName } = mw.config.get(["libLocalizedNamespaces", "wgUserName"]);
     let cache;
     const api = new mw.Api();
@@ -295,6 +301,11 @@
                             if (blockInfo.restrictions.namespaces) {
                                 blockInfo.restrictions.namespaces.forEach((ns) => {
                                     restrictions.push(`${wgULS("命名空间", "命名空間")}：${libLocalizedNamespaces[ns]}`);
+                                });
+                            }
+                            if (blockInfo.restrictions.actions) {
+                                blockInfo.restrictions.actions.forEach((action) => {
+                                    restrictions.push(`操作限制：${actionsMap[action]}`);
                                 });
                             }
                             if (restrictions.length > 0) {
