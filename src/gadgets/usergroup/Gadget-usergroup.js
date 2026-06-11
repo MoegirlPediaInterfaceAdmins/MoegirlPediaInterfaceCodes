@@ -305,7 +305,7 @@
                             }
                             if (blockInfo.restrictions.actions) {
                                 blockInfo.restrictions.actions.forEach((action) => {
-                                    restrictions.push(`操作限制：${actionsMap[action]}`);
+                                    restrictions.push(`操作限制：${actionsMap[action] || action}`);
                                 });
                             }
                             if (restrictions.length > 0) {
