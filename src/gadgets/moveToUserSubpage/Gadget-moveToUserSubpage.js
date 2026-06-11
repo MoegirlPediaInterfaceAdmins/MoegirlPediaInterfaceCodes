@@ -39,7 +39,7 @@ $(() => {
                 ...super.static,
                 tagName: "div",
                 name: "lr-mtus",
-                title: isModule ? wgULS("打回创建者模块沙盒", "打回創建者模塊沙盒") : wgULS("打回创建者用户页", "打回創建者用戶頁"),
+                title: isModule ? wgULS("打回创建者模块沙盒", "打回創建者模塊沙盒") : wgULS("打回页面", "打回頁面"),
                 actions: [
                     {
                         action: "cancel",
@@ -71,11 +71,26 @@ $(() => {
                     value: "内容极少或质量极差",
                     validate: "non-empty",
                 });
+                if (!isModule) {
+                    this.targetSelect = new OO.ui.RadioSelectWidget({
+                        items: [
+                            new OO.ui.RadioOptionWidget({
+                                data: "draft",
+                                label: wgULS("草稿命名空间", "草稿命名空間"),
+                                selected: true,
+                            }),
+                            new OO.ui.RadioOptionWidget({
+                                data: "user",
+                                label: wgULS("创建者用户页", "創建者用戶頁"),
+                            }),
+                        ],
+                    });
+                }
                 this.notifTitleBox = new OO.ui.TextInputWidget({
                     value: "提醒：请不要创建低质量页面",
                 });
                 this.notifContentBox = new OO.ui.MultilineTextInputWidget({
-                    value: `您好，您最近创建的“${wgPageName}”页面由于质量不足，待审核通过后将被移动至${isModule ? "[[Module:Sandbox]]下您的[[$2|用户名页面子页面]]" : "您的[[$2|用户页子页面]]"}下。请您以后避免在页面尚未达到最低质量标准的情况下直接在主命名空间创建。您可以先于[[Special:MyPage/sandbox|您的沙盒]]创建，待完善后再[[Help:移动页面|移动]]回主命名空间。感谢您的配合，祝您编辑愉快！`,
+                    value: `您好，您最近创建的“${wgPageName}”页面由于质量不足，待审核通过后将被移动至${isModule ? "[[Module:Sandbox]]下您的[[$2|用户名页面子页面]]" : "[[$2]]"}。请您以后避免在页面尚未达到最低质量标准的情况下直接在主命名空间创建。您可以先于[[Special:MyPage/sandbox|您的沙盒]]创建，待完善后再[[Help:移动页面|移动]]回主命名空间。感谢您的配合，祝您编辑愉快！`,
                     autosize: true,
                 });
                 this.noNoticeBox = new OO.ui.CheckboxInputWidget();
@@ -91,6 +106,12 @@ $(() => {
                     label: "打回理由",
                     align: "top",
                 });
+                if (this.targetSelect) {
+                    this.targetField = new OO.ui.FieldLayout(this.targetSelect, {
+                        label: wgULS("目标位置", "目標位置"),
+                        align: "top",
+                    });
+                }
                 const notifTitleField = new OO.ui.FieldLayout(this.notifTitleBox, {
                     label: wgULS("通知标题", "通知標題"),
                     align: "top",
@@ -118,6 +139,7 @@ $(() => {
 
                 this.panelLayout.$element.append(
                     reasonField.$element,
+                    this.targetField?.$element,
                     notifTitleField.$element,
                     notifContentField.$element,
                     noNoticeField.$element,
@@ -183,7 +205,7 @@ $(() => {
             async doMove() {
                 const api = new mw.Api();
 
-                const reason = `${isModule ? "移动至创建者模块沙盒" : "移动至创建者用户页"}：${this.reasonBox.getValue()}`;
+                const targetChoice = isModule ? "module" : this.targetSelect.findSelectedItem().getData();
                 const notifTitle = this.notifTitleBox.getValue();
                 const notifContent = this.notifContentBox.getValue();
                 const noNotice = this.noNoticeBox.isSelected();
@@ -201,9 +223,10 @@ $(() => {
                         pclimit: 2,
                     })).query.pages[wgArticleId].contributors;
                     if (contribs.length > 1) {
+                        const targetLabel = isModule ? "创建者模块沙盒" : targetChoice === "draft" ? "草稿命名空间" : "创建者用户页";
                         throw {
                             warning: true,
-                            msg: "贡献者并非只有创建者一人，请检查页面历史。确定打回创建者用户页？",
+                            msg: `贡献者并非只有创建者一人，请检查页面历史。确定打回至${targetLabel}？`,
                             code: "multipleContribs",
                         };
                     }
@@ -219,25 +242,9 @@ $(() => {
                     rvlimit: 1,
                     rvdir: "newer",
                 });
-                const page = isModule ? `Module:Sandbox/${user}/${wgTitle}` : `User:${user}/${wgPageName}`;
 
-                if (!noNotice) {
-                    // 留言
-                    const notifRes = await api.postWithToken("csrf", {
-                        action: "edit",
-                        assertuser: wgUserName,
-                        format: "json",
-                        title: `User talk:${user}`,
-                        section: "new",
-                        sectiontitle: notifTitle,
-                        text: `${convTemplate(notifContent, "2", page)}——~~~~`,
-                        watchlist: watchTalk,
-                        tags: "Automation tool",
-                    });
-                    if (notifRes?.value?.error) {
-                        throw notifRes.value.error;
-                    }
-                }
+                const page = isModule ? `Module:Sandbox/${user}/${wgTitle}` : targetChoice === "draft" ? `Draft:${wgPageName}` : `User:${user}/${wgPageName}`;
+                const reason = `${isModule ? "移动至创建者模块沙盒" : targetChoice === "draft" ? "移动至草稿命名空间" : "移动至创建者用户页"}：${this.reasonBox.getValue()}`;
 
                 // 移动页面
                 try {
@@ -261,6 +268,24 @@ $(() => {
                         throw e;
                     }
                 }
+
+                // 留言
+                if (!noNotice) {
+                    const notifRes = await api.postWithToken("csrf", {
+                        action: "edit",
+                        assertuser: wgUserName,
+                        format: "json",
+                        title: `User talk:${user}`,
+                        section: "new",
+                        sectiontitle: notifTitle,
+                        text: `${convTemplate(notifContent, "2", page)}——~~~~`,
+                        watchlist: watchTalk,
+                        tags: "Automation tool",
+                    });
+                    if (notifRes?.value?.error) {
+                        throw notifRes.value.error;
+                    }
+                }
             }
         }
 
@@ -271,7 +296,7 @@ $(() => {
         });
         windowManager.addWindows([mtusDialog]);
 
-        $(mw.util.addPortletLink("p-cactions", "#", "打回", "ca-lr-mtus", isModule ? wgULS("移动至创建者模块沙盒", "移至創建者模組沙盒") : wgULS("移动至创建者用户页并挂删", "移至創建者用戶頁並掛删"), "m")).on("click", (e) => {
+        $(mw.util.addPortletLink("p-cactions", "#", "打回", "ca-lr-mtus", wgULS("打回页面", "打回頁面"), "m")).on("click", (e) => {
             e.preventDefault();
             windowManager.openWindow(mtusDialog);
             $body.css("overflow", "auto");
