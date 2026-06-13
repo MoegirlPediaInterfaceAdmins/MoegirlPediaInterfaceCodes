@@ -25,6 +25,6 @@ jobs:
           check-latest: true
           cache: npm
       - name: Installing the dependencies
-        uses: AnnAngela/cached_node-modules@v5
+        uses: AnnAngela/cached_node-modules@v6
         with:
           command: npm run ci
