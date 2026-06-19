@@ -18,10 +18,9 @@ const browserifyTargets = await yamlModule.readFile("scripts/browserify/targets.
 startGroup("browserifyTargets:");
 console.info(browserifyTargets);
 endGroup();
-const tempPath = await mkdtmp({
-    local: true,
-});
+const tempPath = await mkdtmp();
 const inputPath = path.join(tempPath, "input.js");
+console.info("中间产物（临时入口）目录:", tempPath);
 const jsonOutput = await exec("npm ls --json");
 /**
  * @type {{ [name: string]: { version: string } }}

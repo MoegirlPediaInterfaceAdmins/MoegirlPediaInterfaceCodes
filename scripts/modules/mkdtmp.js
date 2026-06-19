@@ -1,20 +1,15 @@
-import crypto from "node:crypto";
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import console from "../modules/console.js";
 
-/**
- * @param { { local?: boolean, random?: boolean, subDir?: string } } [options]
- */
-export default async (options = {}) => {
-    const local = typeof options.local === "boolean" ? options.local : false;
-    const random = typeof options.random === "boolean" ? options.random : true;
-    const subDir = typeof options.subDir === "string" ? options.subDir : random ? crypto.randomUUID() : "MoegirlPediaInterfaceCodes";
-    const tempPath = path.join(local ? ".tmp" : process.env.RUNNER_TEMP || os.tmpdir(), subDir);
+// 跨进程复用由调用方经指针文件桥接（见 scripts/ci/before.js / after.js），
+// 本函数只负责在 $RUNNER_TEMP（CI）或 os.tmpdir()（本地）下原子创建一个随机临时目录。
+// 使用 fs.mkdtemp（O_EXCL 独占创建）而非 mkdir({recursive})：
+// 前者原子且文件名随机，杜绝固定名/竞态引发的覆盖与 insecure-temporary-file 隐患。
+export default async () => {
+    const root = process.env.RUNNER_TEMP || os.tmpdir();
+    const tempPath = await fs.promises.mkdtemp(path.join(root, "mgp-"));
     console.log("tempPath:", tempPath);
-    await fs.promises.mkdir(tempPath, {
-        recursive: true,
-    });
     return tempPath;
 };

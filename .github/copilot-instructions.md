@@ -74,7 +74,6 @@ This repository contains interface codes for MoegirlPedia (萌娘百科), a Chin
 ├── .github/
 │   ├── workflows/          # CI/CD workflows
 │   │   ├── postCommit.yaml          # Main CI: runs on every commit, handles auto-imports, validation
-│   │   ├── test.yaml                # Manual test workflow
 │   │   ├── CodeQL.yaml              # Security scanning (runs on push/PR to master)
 │   │   ├── generatePolyfill.yaml    # Weekly polyfill generation (Sun 23:00 UTC)
 │   │   ├── auto_fix.yaml            # Manual auto-fix workflow

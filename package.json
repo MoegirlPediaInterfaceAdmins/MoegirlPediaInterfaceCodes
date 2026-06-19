@@ -18,7 +18,7 @@
         "format:eslint": "npm run test:eslint -- --fix",
         "format:stylelint": "npm run test:stylelint -- --fix",
         "postinstall": "node scripts/gitHooks/install.js",
-        "ci": "export RANDOM_UUID=$(uuidgen) && rm -rdf node_modules && node scripts/ci/before.js && npm ci && node scripts/ci/after.js",
+        "ci": "trap 'code=$?; node scripts/ci/after.js; exit $code' EXIT && rm -rdf node_modules && node scripts/ci/before.js && npm ci",
         "hooks:install": "node scripts/gitHooks/install.js",
         "build": "run-p -l build:*",
         "build:css": "postcss 'src/**/*.css' --base src/ -d dist/ --verbose",
