@@ -13,3 +13,11 @@ export default async () => {
     console.log("tempPath:", tempPath);
     return tempPath;
 };
+
+export const mkdlocaltmp = async () => {
+    const root = path.join(import.meta.dirname, "../../.tmp");
+    await fs.promises.mkdir(root, { recursive: true });
+    const tempPath = await fs.promises.mkdtemp(path.join(root, "mgp-"));
+    console.log("local tempPath:", tempPath);
+    return tempPath;
+};

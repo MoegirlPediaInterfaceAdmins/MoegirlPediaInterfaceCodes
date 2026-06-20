@@ -6,7 +6,7 @@ import console from "../modules/console.js";
 import createCommit from "../modules/createCommit.js";
 import exec from "../modules/exec.js";
 import minifyStream from "../modules/minify-stream.js";
-import mkdtmp from "../modules/mkdtmp.js";
+import { mkdlocaltmp } from "../modules/mkdtmp.js";
 import modulePath from "../modules/modulePath.js";
 import yamlModule from "../modules/yamlModule.js";
 console.info("Initialization done.");
@@ -18,7 +18,7 @@ const browserifyTargets = await yamlModule.readFile("scripts/browserify/targets.
 startGroup("browserifyTargets:");
 console.info(browserifyTargets);
 endGroup();
-const tempPath = await mkdtmp();
+const tempPath = await mkdlocaltmp();
 const inputPath = path.join(tempPath, "input.js");
 console.info("中间产物（临时入口）目录:", tempPath);
 const jsonOutput = await exec("npm ls --json");
