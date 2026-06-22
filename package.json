@@ -48,7 +48,7 @@
         "autoprefixer": "^10.5.0",
         "browser-pack-flat": "^3.5.0",
         "browserify": "^17.0.1",
-        "browserslist": "^4.28.2",
+        "browserslist": "^4.28.4",
         "common-shakeify": "^1.1.2",
         "concat-stream": "^2.0.0",
         "duplexify": "^4.1.3",
