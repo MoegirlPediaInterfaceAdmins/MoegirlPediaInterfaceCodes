@@ -25,7 +25,7 @@ jobs:
           check-latest: true
           cache: npm
       - name: Installing the dependencies
-        uses: AnnAngela/cached_node-modules@8336d5acec06f1670b1097dc0b424527a8481659 # v6
+        uses: AnnAngela/cached_node-modules@095ea9ae366bc4a18c0f653aed2008d35660317d # v6
         with:
           command: npm run ci
       - name: Git config
