@@ -73,7 +73,7 @@
         "stylelint": "^17.14.0",
         "stylelint-config-standard": "^40.0.0",
         "terser": "^5.48.0",
-        "types-mediawiki": "^2.0.0",
+        "types-mediawiki": "^2.1.0",
         "uglify-js": "^3.19.3",
         "unassertify": "^3.0.1",
         "v8r": "^6.1.0",
