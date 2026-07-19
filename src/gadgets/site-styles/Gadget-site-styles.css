@@ -1499,6 +1499,8 @@ body.mw-special-Log .mw-htmlform-flatlist > .oo-ui-fieldLayout:nth-child(4) {
 .mw-prefixindex-list moe-badge,
 .mw-allpages-body moe-badges,
 .mw-allpages-body moe-badge,
+#mw-whatlinkshere-list moe-badges,
+#mw-whatlinkshere-list moe-badge,
 #mw-content-subtitle moe-badges {
     display: none;
 }
