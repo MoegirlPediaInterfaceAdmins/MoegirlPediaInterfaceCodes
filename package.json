@@ -60,7 +60,7 @@
         "ip": "^2.0.1",
         "jsonc-parser": "^3.3.1",
         "localforage": "^1.10.0",
-        "postcss": "^8.5.19",
+        "postcss": "^8.5.20",
         "postcss-cli": "^11.0.1",
         "postcss-discard-comments": "^8.0.1",
         "postcss-font-variant": "^5.0.0",
@@ -81,7 +81,7 @@
     },
     "devDependencies": {
         "@inpageedit/core": "^0.18.0",
-        "javascript-obfuscator": "^5.4.7",
+        "javascript-obfuscator": "^5.5.0",
         "moment": "^2.30.1",
         "npm-run-all2": "^9.0.2",
         "stylelint-plugin-use-baseline": "^1.4.4",
