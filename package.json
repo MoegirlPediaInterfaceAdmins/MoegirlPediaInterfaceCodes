@@ -70,7 +70,7 @@
         "pretty-bytes": "^7.1.1",
         "semver": "^7.8.5",
         "simple-git": "^3.36.0",
-        "stylelint": "^17.14.0",
+        "stylelint": "^17.14.1",
         "stylelint-config-standard": "^40.0.0",
         "terser": "^5.49.0",
         "types-mediawiki": "^2.1.0",
