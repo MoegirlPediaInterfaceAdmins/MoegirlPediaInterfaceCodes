@@ -68,7 +68,7 @@ jobs:
   skipCI:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           show-progress: false
       - name: Use Node.js
@@ -92,7 +92,7 @@ jobs:
       - skipCI
     if: always() && needs.skipCI.result == 'success' && needs.skipCI.outputs.skip != 'true'
     steps:
-      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         name: Checkout main repo
         with:
           fetch-depth: 0
@@ -140,7 +140,7 @@ jobs:
     env:
       commits: ${{ needs.postCommit.outputs.commits }}
     steps:
-      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           show-progress: false
       - name: Use Node.js
@@ -190,7 +190,7 @@ jobs:
       - linter_test
     if: always() && needs.skipCI.outputs.skip != 'true' && github.ref == 'refs/heads/master'
     steps:
-      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           show-progress: false
       - name: Use Node.js
