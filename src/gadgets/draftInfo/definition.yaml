@@ -1,0 +1,43 @@
+﻿ResourceLoader: true
+
+hidden: true
+
+default: true
+
+supportsUrlLoad: false
+
+skins: []
+
+actions:
+  - view
+
+categories: []
+
+namespaces:
+  - 118
+
+contentModels: []
+
+type: general
+
+package: false
+
+rights: []
+
+peers: []
+
+dependencies:
+  - ext.gadget.site-lib
+  - mediawiki.api
+  - oojs-ui-core
+
+_sites:
+  - zh
+
+_section: browsing
+
+_files:
+  - Gadget-draftInfo.css
+  - Gadget-draftInfo.js
+
+

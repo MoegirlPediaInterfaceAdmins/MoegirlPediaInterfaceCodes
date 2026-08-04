@@ -8,13 +8,11 @@ supportsUrlLoad: false
 
 skins: []
 
-actions:
-  - view
+actions: []
 
 categories: []
 
-namespaces:
-  - 118
+namespaces: []
 
 contentModels: []
 
@@ -29,9 +27,7 @@ rights:
 peers: []
 
 dependencies:
-  - mediawiki.api
-  - oojs-ui
-  - ext.gadget.site-lib
+  - ext.gadget.draftInfo
 
 _sites:
   - zh
