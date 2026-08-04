@@ -78,16 +78,18 @@ $(() => (async () => {
             13: { count: 0, redirect: 0 },
             14: { count: 0, redirect: 0 },
             15: { count: 0, redirect: 0 },
+            114: { count: 0, redirect: 0 },
+            115: { count: 0, redirect: 0 },
+            116: { count: 0, redirect: 0 },
+            117: { count: 0, redirect: 0 },
+            118: { count: 0, redirect: 0 },
+            119: { count: 0, redirect: 0 },
             274: { count: 0, redirect: 0 },
             275: { count: 0, redirect: 0 },
             710: { count: 0, redirect: 0 },
             711: { count: 0, redirect: 0 },
             828: { count: 0, redirect: 0 },
             829: { count: 0, redirect: 0 },
-            2300: { count: 0, redirect: 0 },
-            2301: { count: 0, redirect: 0 },
-            2302: { count: 0, redirect: 0 },
-            2303: { count: 0, redirect: 0 },
         };
         const global = { redirect: 0 };
         const redirectCount = list.filter((item) => Reflect.has(item, "redirect")).length;
