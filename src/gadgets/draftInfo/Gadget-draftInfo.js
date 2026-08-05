@@ -1,4 +1,4 @@
-﻿"use strict";
+"use strict";
 $(() => {
     const { wgArticleId, wgUserName, wgPageName, wgTitle, wgUserGroups, wgScriptPath } = mw.config.get([
         "wgArticleId",
@@ -24,7 +24,7 @@ $(() => {
                         <img src="https://storage.moegirl.org.cn/moegirl/commons/a/a3/MoeDraft.png!/fw/75" alt="草稿" width="50" height="50">
                     </div>
                     <div class="draft-notice-text">
-                        <div class="draft-notice-title">${wgULS("提示：本页面是【", "提示：本頁面是【")}<a href="${location.origin}/${encodeURIComponent(wgTitle)}">${wgTitle}</a>${wgULS("】的草稿", "】的草稿")}</div>
+                        <div class="draft-notice-title">${wgULS("提示：本页面是【", "提示：本頁面是【")}<a href="${location.origin}/${encodeURIComponent(wgTitle)}">${mw.html.escape(wgTitle)}</a>${wgULS("】的草稿", "】的草稿")}</div>
                         <ul>
                             <li>${wgULS("如有疑问，请到", "如有疑問，請到")}<a href="${location.origin}/%E8%90%8C%E5%A8%98%E7%99%BE%E7%A7%91_talk:%E8%AE%A8%E8%AE%BA%E7%89%88/%E6%8F%90%E9%97%AE%E6%B1%82%E5%8A%A9">${wgULS("提问求助区", "提問求助區")}</a>或<a href="${location.origin}/%E8%90%8C%E5%A8%98%E7%99%BE%E7%A7%91_talk:%E8%AE%A8%E8%AE%BA%E7%89%88/%E9%A1%B5%E9%9D%A2%E7%9B%B8%E5%85%B3">${wgULS("页面相关区", "頁面相關區")}</a>${wgULS("进行讨论。", "進行討論。")}</li>
                             <li>${wgULS("如果草稿已经完善，您可以", "如果草稿已經完善，您可以")}${enableButton ? wgULS("点击右侧的按钮", "點擊右側的按鈕") + (isAutoConfirmed ? wgULS("直接", "直接") : wgULS("请求", "請求")) : wgULS("自行", "自行")}${wgULS("发布草稿。", "發佈草稿。")}</li>
