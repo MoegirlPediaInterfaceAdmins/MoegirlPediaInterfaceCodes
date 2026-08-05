@@ -1,6 +1,6 @@
 ResourceLoader: true
 
-hidden: false
+hidden: true
 
 default: true
 
@@ -22,19 +22,22 @@ type: general
 
 package: false
 
-rights:
-  - edit
-  - move
+rights: []
 
 peers: []
 
 dependencies:
-  - ext.gadget.draftInfo
+  - ext.gadget.site-lib
+  - mediawiki.api
+  - oojs-ui-core
 
 _sites:
   - zh
 
-_section: editing
+_section: browsing
 
 _files:
-  - Gadget-publishDraft.js
+  - Gadget-draftInfo.css
+  - Gadget-draftInfo.js
+
+

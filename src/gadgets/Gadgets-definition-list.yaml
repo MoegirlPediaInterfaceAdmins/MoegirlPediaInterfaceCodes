@@ -36,6 +36,7 @@
     - SectionPermanentLink
     - FlowthreadTOC
     - SideBarPic
+    - draftInfo
 
 - name: skin
   gadgets:
