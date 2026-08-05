@@ -12,7 +12,9 @@ if (!isInMasterBranch) {
     console.info("Not running in non-master branch, exit.");
     process.exit(0);
 }
-if (!process.env.ANN_SERVER_SECRET_API_KEY) {
+const apiKey = process.env.ANN_SERVER_SECRET_API_KEY;
+delete process.env.ANN_SERVER_SECRET_API_KEY;
+if (!apiKey) {
     console.info("Api key not found, exit.");
     process.exit(0);
 }
@@ -62,7 +64,7 @@ for (let retryTime = 0; retryTime < 10; retryTime++) {
         const response = await fetch("https://webhook.annangela.cn/custom?from=MoegirlPediaInterfaceCodes", {
             headers: {
                 "Content-Type": "application/json",
-                "x-signature": generateHMACSignature(process.env.ANN_SERVER_SECRET_API_KEY, body),
+                "x-signature": generateHMACSignature(apiKey, body),
             },
             method: "POST",
             body,
