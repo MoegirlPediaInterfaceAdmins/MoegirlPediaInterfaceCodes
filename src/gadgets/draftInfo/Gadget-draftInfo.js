@@ -9,7 +9,7 @@ $(() => {
         "wgScriptPath",
     ]);
 
-    if (wgArticleId === 0) {
+    if (wgArticleId === 0 || wgPageName.startsWith("Draft:沙盒")) {
         return;
     }
 
