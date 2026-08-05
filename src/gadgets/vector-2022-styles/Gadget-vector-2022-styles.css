@@ -108,6 +108,5 @@ table:is(.moe-infobox, .infobox, .infobox2, .infoboxSpecial),
         max-width: 100% !important;
         float: unset !important;
         margin: 1rem 0 !important;
-        font-size: 1rem !important;
     }
 }
