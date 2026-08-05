@@ -98,16 +98,16 @@
     };
     /* 切换至旧外观改为萌皮 */
     const moeskinToggle = () => {
-        const menu = document.querySelector('.vector-main-menu-action-content'),
-            link = menu.querySelector('a'),
-            span = menu.querySelector('span'),
-            text = '切换到MoeSkin';
+        const menu = document.querySelector(".vector-main-menu-action-content"),
+            link = menu.querySelector("a"),
+            span = menu.querySelector("span"),
+            text = "切换到MoeSkin";
         const url = new URL(window.location.href);
-        url.searchParams.set('useskin', 'moeskin');
+        url.searchParams.set("useskin", "moeskin");
         Object.assign(link, {
             href: url.toString(),
             title: text,
-            target: '_blank',
+            target: "_blank",
         });
         span.textContent = text;
     };
