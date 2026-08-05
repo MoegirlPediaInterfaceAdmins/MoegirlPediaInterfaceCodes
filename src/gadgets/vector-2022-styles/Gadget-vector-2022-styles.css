@@ -89,3 +89,25 @@ h2 {
 .noprint.plainlinks.hlist.navbar.nomobile {
     white-space: nowrap;
 }
+
+/* 信息框最大宽度约束 */
+table:is(.moe-infobox, .infobox, .infobox2, .infoboxSpecial),
+.infotemplatebox,
+.infobox3 {
+    max-width: 320px;
+    box-sizing: border-box;
+}
+
+/* 移动设备优化 */
+@media (width <= 768px) {
+    body .infotemplatebox,
+    body table:is(.infobox, .infobox2, .moe-infobox, .infoboxSpecial),
+    body .infobox3 {
+        box-sizing: border-box;
+        width: 100% !important;
+        max-width: 100% !important;
+        float: unset !important;
+        margin: 1rem 0 !important;
+        font-size: 1rem !important;
+    }
+}
