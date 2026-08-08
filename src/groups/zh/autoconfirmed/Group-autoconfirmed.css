@@ -1,0 +1,4 @@
+/* 显示仅供自动确认用户查看的内容 */
+.autoconfirmed-show {
+    display: revert !important;
+}

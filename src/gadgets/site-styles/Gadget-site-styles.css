@@ -446,6 +446,11 @@ table.wikitable-green {
     display: none !important;
 }
 
+/* 隐藏仅供自动确认用户查看的内容 */
+.autoconfirmed-show {
+    display: none !important;
+}
+
 /* 隐藏只供维护人员查看的内容 */
 .patroller-show,
 .checkuser-show,
