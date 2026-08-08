@@ -98,6 +98,14 @@ table:is(.moe-infobox, .infobox, .infobox2, .infoboxSpecial),
     box-sizing: border-box;
 }
 
+/* 信息框内图片自适应 */
+table:is(.moe-infobox, .infobox, .infobox2, .infoboxSpecial) img,
+.infotemplatebox img,
+.infobox3 img {
+    max-width: 100%;
+    height: auto;
+}
+
 /* 移动设备优化 */
 @media (width <= 768px) {
     body .infotemplatebox,
