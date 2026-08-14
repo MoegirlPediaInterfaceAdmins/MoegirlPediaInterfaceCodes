@@ -1,5 +1,9 @@
 "use strict";
 (async () => {
+    if (mw.config.get("wgNamespaceNumber") === -1) {
+        return;
+    }
+
     const sleep = (ms) => new Promise((res) => setTimeout(res, ms));
     const appendRestrictionSection = ($container, action, levels) => {
         if (!Array.isArray(levels) || levels.length === 0) {
