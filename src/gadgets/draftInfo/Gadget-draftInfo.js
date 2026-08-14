@@ -21,7 +21,7 @@ $(() => {
             <div class="draft-notice-inner">
                 <div class="draft-notice-content">
                     <div class="draft-notice-icon">
-                        <img src="https://storage.moegirl.org.cn/moegirl/commons/a/a3/MoeDraft.png!/fw/75" alt="草稿" width="50" height="50">
+                        <img src="https://storage.moegirl.org.cn/moegirl/commons/a/a3/MoeDraft.png!/fw/50" srcset="https://storage.moegirl.org.cn/moegirl/commons/a/a3/MoeDraft.png!/fw/75 1.5x, https://storage.moegirl.org.cn/moegirl/commons/a/a3/MoeDraft.png!/fw/100 2x" alt="草稿" width="50" height="50" decoding="async">
                     </div>
                     <div class="draft-notice-text">
                         <div class="draft-notice-title">${wgULS("提示：本页面是【", "提示：本頁面是【")}<a href="${location.origin}/${encodeURIComponent(wgTitle)}">${mw.html.escape(wgTitle)}</a>${wgULS("】的草稿", "】的草稿")}</div>
