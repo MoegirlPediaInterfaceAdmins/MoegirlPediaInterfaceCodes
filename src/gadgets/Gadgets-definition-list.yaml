@@ -34,7 +34,6 @@
     - modIconPrep
     - wikidiff2
     - SectionPermanentLink
-    - FlowthreadTOC
     - SideBarPic
     - draftInfo
 
@@ -120,6 +119,7 @@
     - site-js
     - site-styles
     - vector-styles
+    - vector-2022-styles
     - moeskin-styles
     - edit
     - site-lib
@@ -135,6 +135,9 @@
     - libip
     - libJSON5
     - libCachedCode
+    - libDiscussionUtil
+    - libRequestAnimationFrame
+    - libStandardMessages
     - prism-core
     - prism-language-css
     - prism-language-javascript
@@ -162,7 +165,3 @@
     - prism-language-perl
     - prism-language-python
     - prism-language-ruby
-    - vector-2022-styles
-    - libDiscussionUtil
-    - libRequestAnimationFrame
-    - libStandardMessages
