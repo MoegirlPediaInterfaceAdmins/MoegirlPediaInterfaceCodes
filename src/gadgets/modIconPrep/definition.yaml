@@ -2,7 +2,7 @@ ResourceLoader: true
 
 hidden: false
 
-default: false
+default: true
 
 supportsUrlLoad: false
 
@@ -20,7 +20,7 @@ type: general
 
 package: false
 
-rights: 
+rights:
   - viewmywatchlist
 
 peers: []
@@ -29,6 +29,7 @@ dependencies: []
 
 _sites:
   - zh
+  - commons
 
 _section: browsing
 
