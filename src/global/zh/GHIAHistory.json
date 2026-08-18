@@ -6,18 +6,6 @@
             "changedFiles": 6
         }
     ],
-    "GH:Claude Opus 4.8 (1M context)": [
-        {
-            "commit": "59ad858d3947f253b7a986b0aabf13f784a76641",
-            "datetime": "2026-08-18T01:46:16.000Z",
-            "changedFiles": 1
-        },
-        {
-            "commit": "156b72e42801517e8ec0e62d15245f29b736f969",
-            "datetime": "2026-08-05T10:30:08.000Z",
-            "changedFiles": 1
-        }
-    ],
     "GH:peter": [
         {
             "commit": "de3b4c6bd6714c394193a79489765502ddf21397",
