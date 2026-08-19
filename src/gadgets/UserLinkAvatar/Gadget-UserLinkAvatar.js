@@ -14,11 +14,26 @@
     /**
      * @param {HTMLAnchorElement} target
      */
+    const getUserName = (target) => {
+        const url = new URL(target.href, location.origin);
+        const pathname = decodeURIComponent(url.pathname);
+        const title = url.searchParams.get("title");
+        if (/^\/User:[^/=%]+/.test(pathname)) {
+            return pathname.match(/^\/User:([^/=%]+)/)[1].replace(/_/g, " ");
+        } else if (/^User:[^/=%]+/.test(title)) {
+            return title.match(/^User:([^/=%]+)/)[1].replace(/_/g, " ");
+        }
+        return "";
+    };
+
+    /**
+     * @param {HTMLAnchorElement} target
+     */
     const attachAvatarToUserLink = (target) => {
         if (checkIfAvatarLoaded(target)) {
             return;
         }
-        const userName = target.dataset.username;
+        const userName = getUserName(target);
         const avatar = target.dataset.userAvatar;
 
         const avatarLink = document.createElement("a");
