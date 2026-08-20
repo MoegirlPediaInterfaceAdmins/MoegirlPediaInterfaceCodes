@@ -80,51 +80,58 @@ $(() => {
         return;
     }
 
-    if (wgCanonicalSpecialPageName === "Contributions") {
-        document.querySelector(".mw-contributions-user-tools a")?.classList.add("mw-userlink");
-    }
-
     const enableCopy = +mw.user.options.get("gadget-displayname-copy", 0) === 1;
-    const userLinks = document.querySelectorAll(".mw-userlink");
 
-    for (const userLink of userLinks) {
-        if (userLink.classList.contains("history-deleted")) {
-            continue;
+    const render = (content) => {
+        if (wgCanonicalSpecialPageName === "Contributions") {
+            document.querySelector(".mw-contributions-user-tools a")?.classList.add("mw-userlink");
         }
 
-        let { userName = userLink.textContent } = userLink.dataset;
-        const { userNick = "" } = userLink.dataset;
-        if (userNick === "已注销#0000" && !wgUserGroups.includes("suppress")) {
-            userName = "";
+        const root = content?.[0] ?? document;
+        const userLinks = root.querySelectorAll?.(".mw-userlink") ?? [];
+
+        for (const userLink of userLinks) {
+            if (userLink.classList.contains("history-deleted")) {
+                continue;
+            }
+
+            let { userName = userLink.textContent } = userLink.dataset;
+            const { userNick = "" } = userLink.dataset;
+            if (userNick === "已注销#0000" && !wgUserGroups.includes("suppress")) {
+                userName = "";
+            }
+            const displayText = buildDisplayText(userName, userNick);
+
+            if (!displayText) {
+                continue;
+            }
+
+            const children = [...userLink.childNodes].filter((node) => node.nodeType !== Node.TEXT_NODE && node.textContent !== displayText);
+            userLink.textContent = displayText;
+            userLink.append(...children);
+
+            if (!enableCopy
+                || wgCanonicalSpecialPageName !== "Contributions" && wgAction !== "history") {
+                continue;
+            }
+
+            const buttonsToAppend = [];
+
+            if (userName) {
+                buttonsToAppend.push(createCopyButton("👤", userName, "用户名"));
+            }
+
+            if (userNick) {
+                buttonsToAppend.push(createCopyButton("🏷️", userNick, "昵称"));
+            }
+
+            if (buttonsToAppend.length > 0) {
+                userLink.after(...buttonsToAppend);
+            }
         }
-        const displayText = buildDisplayText(userName, userNick);
+    };
 
-        if (!displayText) {
-            continue;
-        }
-
-        const children = [...userLink.childNodes].filter((node) => node.nodeType !== Node.TEXT_NODE && node.textContent !== displayText);
-        userLink.textContent = displayText;
-        userLink.append(...children);
-
-        if (!enableCopy
-            || wgCanonicalSpecialPageName !== "Contributions" && wgAction !== "history") {
-            continue;
-        }
-
-        const buttonsToAppend = [];
-
-        if (userName) {
-            buttonsToAppend.push(createCopyButton("👤", userName, "用户名"));
-        }
-
-        if (userNick) {
-            buttonsToAppend.push(createCopyButton("🏷️", userNick, "昵称"));
-        }
-
-        if (buttonsToAppend.length > 0) {
-            userLink.after(...buttonsToAppend);
-        }
-    }
+    render();
+    mw.hook("wikipage.content").add(render);
 });
 // </pre>
