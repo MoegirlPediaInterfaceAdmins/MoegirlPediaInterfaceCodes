@@ -59,7 +59,7 @@ permissions:
   discussions: read
   packages: read
   pages: read
-  pull-requests: read
+  pull-requests: write
   repository-projects: read
   security-events: write
   statuses: write
@@ -182,6 +182,31 @@ jobs:
       - name: Check .mailmap
         if: needs.postCommit.result == 'success'
         run: node scripts/emailmapChecker/index.js
+  notifyPrFailure:
+    runs-on: ubuntu-latest
+    needs:
+      - skipCI
+      - postCommit
+      - linter_test
+    if: always() && needs.skipCI.result == 'success' && needs.skipCI.outputs.skip != 'true' && (needs.postCommit.result == 'failure' || needs.linter_test.result == 'failure')
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          show-progress: false
+      - name: Use Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v6
+        with:
+          node-version: lts/*
+          check-latest: true
+          cache: npm
+      - name: Installing the dependencies
+        uses: AnnAngela/cached_node-modules@095ea9ae366bc4a18c0f653aed2008d35660317d # v6
+        with:
+          command: npm run ci
+      - name: Comment the failure to the relative pull request
+        run: node scripts/postCommit/commentOnPrFailure.js
+        env:
+          NEEDS: ${{ toJson(needs) }}
   webhook:
     runs-on: ubuntu-latest
     needs:
