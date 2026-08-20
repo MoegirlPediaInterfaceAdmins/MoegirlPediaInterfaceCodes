@@ -338,25 +338,58 @@
         mw.hook("wikipage.content").add(initTabsInContent);
     };
     /* T:注解 */
-    $("body").on("mouseover mouseout", ".annotation", (event) => {
+    $("body").on("mouseover mousemove mouseout", ".annotation", (event) => {
         const $target = $(event.currentTarget);
         let popup = $target.data("popup");
 
-        // 如果还没有创建 popup，则创建
+        // 惰性创建popup
         if (!popup) {
             const $content = $target.children(".annotation-content");
             if ($content.length === 0) {
                 return;
             }
+            // 创建不可见的标记元素当锚点，后续移到鼠标所在的文字行，使anchor定位准确
+            const $marker = $("<span>")
+                .addClass("annotation-marker")
+                .appendTo(document.body);
             popup = new OO.ui.PopupWidget({
                 $content: $content,
                 padded: true,
                 autoFlip: false,
+                $floatableContainer: $marker,
+                align: "center",
             });
-            $target.append(popup.$element).data("popup", popup);
+            popup.$element.addClass("annotation-popup");
+            $(document.body).append(popup.$element);
+            $target.data({ popup, marker: $marker });
         }
 
-        popup.toggle(event.type === "mouseover");
+        if (event.type === "mouseout") {
+            popup.toggle(false);
+            return;
+        }
+
+        // 跨行 inline 元素：用 getClientRects() 找到鼠标所在的行片段
+        const rects = $target[0].getClientRects();
+        let rect = rects[0];
+        if (rects.length > 1) {
+            for (const r of rects) {
+                if (event.clientY >= r.top && event.clientY <= r.bottom) {
+                    rect = r;
+                    break;
+                }
+            }
+        }
+
+        // 把定位基准移动到该行片段的水平中心
+        $target.data("marker").css({
+            left: rect.left + rect.width / 2 + window.scrollX,
+            top: rect.top + window.scrollY,
+            height: rect.height,
+        });
+
+        popup.toggle(true);
+        popup.updateDimensions();
     });
 
     /* 修正嵌套使用删除线、黑幕、彩色幕和胡话模板 */

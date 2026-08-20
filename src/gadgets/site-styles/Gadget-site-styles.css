@@ -241,18 +241,24 @@
     cursor: pointer;
 }
 
-.annotation .oo-ui-popupWidget {
+.annotation-marker {
+    position: absolute;
+    width: 0;
+    pointer-events: none;
+}
+
+.annotation-popup {
     z-index: 1000001;
     white-space: normal;
     color: #000;
     font-weight: normal;
 }
 
-.annotation .oo-ui-popupWidget-popup {
+.annotation-popup .oo-ui-popupWidget-popup {
     width: fit-content !important;
 }
 
-.annotation .oo-ui-popupWidget-body {
+.annotation-popup .oo-ui-popupWidget-body {
     width: fit-content;
     min-width: 5.5em;
     max-width: 11em !important;
