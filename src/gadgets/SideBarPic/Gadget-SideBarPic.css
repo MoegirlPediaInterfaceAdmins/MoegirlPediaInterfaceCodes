@@ -60,7 +60,7 @@ body.sideBarPic .vector-header-container .mw-header,
 body.sideBarPic .vector-dropdown .vector-dropdown-content {
     background-color: rgb(255 255 255 / 90%);
     background-color: light-dark(rgb(255 255 255 / 90%), rgb(20 20 20 / 90%)); /* Firefox 120 */
-    background-color: rgb(from var(--background-color-base, #fff) r g b / 0.9); /* Firefox 133 */
+    background-color: rgb(from var(--background-color-base, #fff) r g b / 90%); /* Firefox 133 */
 }
 
 body.sideBarPic .vector-pinned-container {
