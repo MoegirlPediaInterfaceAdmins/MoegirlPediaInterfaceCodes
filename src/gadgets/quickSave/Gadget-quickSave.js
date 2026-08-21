@@ -212,7 +212,7 @@ $(() => {
         async quickSave({ section }) {
             this.progress.log(wgULS("标题存在！", "標題存在！"));
             this.progress.nextStep();
-            this.progress.log(wgULS("正在获取段落内容……", "正在獲取段落內容……"));
+            this.progress.log(wgULS("正在获取段落内容……", "正在取得段落內容……"));
             const sectionContent = (await api.post({
                 action: "parse",
                 assertuser: wgUserName,
