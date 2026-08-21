@@ -88,7 +88,7 @@ const buildSection = (jobName, failedSteps, logTail) => {
 };
 
 startGroup("Collecting failure details:");
-const { data: jobs } = await octokit.rest.actions.listJobsForWorkflowRun({
+const { data: { jobs } } = await octokit.rest.actions.listJobsForWorkflowRun({
     owner,
     repo,
     run_id: runId,
