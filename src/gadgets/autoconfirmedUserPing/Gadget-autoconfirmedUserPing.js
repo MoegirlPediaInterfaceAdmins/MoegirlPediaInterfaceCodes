@@ -53,7 +53,7 @@ $(() => (async () => {
                 expanded: false,
                 padded: true,
             });
-            this.confirmPanel.$element.append(`<div>${wgULS("确认获取参与讨论的自动确认用户列表？（该操作将对每位可能用户发出一次查询贡献的API请求，请谨慎使用！）", "確認獲取參與討論的自動確認使用者列表？（該操作將對每位可能使用者發出一次查詢貢獻的API請求，請謹慎使用！）")}</div>`);
+            this.confirmPanel.$element.append(`<div>${wgULS("确认获取参与讨论的自动确认用户列表？（该操作将对每位可能用户发出一次查询贡献的API请求，请谨慎使用！）", "確認取得參與討論的自動確認使用者列表？（該操作將對每位可能使用者發出一次查詢貢獻的API請求，請謹慎使用！）")}</div>`);
 
             this.resultPanel = new OO.ui.PanelLayout({
                 scrollable: false,
@@ -111,7 +111,7 @@ $(() => (async () => {
                 this.stepList]);
             this.updateSize();
 
-            this.addStep(wgULS("正在获取提案发起时间……", "正在獲取提案發起時間……"));
+            this.addStep(wgULS("正在获取提案发起时间……", "正在取得提案發起時間……"));
             const pageCreationTimeResult = await api.get({
                 action: "query",
                 formatversion: 2,
@@ -125,7 +125,7 @@ $(() => (async () => {
             const pageCreationTime = pageCreationTimeResult.query.pages[0].revisions[0].timestamp;
             console.log("[ACUserPing] Got page creation time.", pageCreationTime);
 
-            this.addStep(wgULS("正在获取忽略用户名单……", "正在獲取忽略使用者名單……"));
+            this.addStep(wgULS("正在获取忽略用户名单……", "正在取得忽略使用者名單……"));
             const ignoreResult = await api.get({
                 action: "query",
                 assertuser: wgUserName,
@@ -144,7 +144,7 @@ $(() => (async () => {
             const filterResult = (result) => result.query.pages[wgArticleId].contributors.map((c) => c.name).filter((c) => !ignoreList.includes(c));
             console.log("[ACUserPing] Got ignored user list.", ignoreList);
 
-            this.addStep(wgULS("正在获取发言用户名单……", "正在獲取發言使用者名稱單……"));
+            this.addStep(wgULS("正在获取发言用户名单……", "正在取得發言使用者名稱單……"));
             let contributorsResult;
             let nonMGUsers = [];
             do {
@@ -285,7 +285,7 @@ $(() => (async () => {
     });
     windowManager.addWindows([acupDialog]);
 
-    $(mw.util.addPortletLink("p-tb", "#", wgULS("获取发言列表", "獲取發言列表"), "t-lr-ACUserPing", wgULS("获取参与讨论的自动确认用户列表", "獲取參與討論的自動確認使用者列表"))).on("click", (e) => {
+    $(mw.util.addPortletLink("p-tb", "#", wgULS("获取发言列表", "取得發言列表"), "t-lr-ACUserPing", wgULS("获取参与讨论的自动确认用户列表", "取得參與討論的自動確認使用者列表"))).on("click", (e) => {
         e.preventDefault();
         windowManager.openWindow(acupDialog);
         $body.css("overflow", "auto");

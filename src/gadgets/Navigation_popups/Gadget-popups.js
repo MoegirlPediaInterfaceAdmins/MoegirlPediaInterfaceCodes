@@ -242,7 +242,7 @@ $(() => {
         // Autoediting
         /////////////////////////////////////
         "Enter a non-empty edit summary or press cancel to abort": wgULS("输入编辑摘要，或按取消中止操作", "輸入編輯摘要，或按取消中止操作"),
-        "Failed to get revision information, please edit manually.\n\n": wgULS("获取修订版本信息失败，请手动修改。\n\n", "獲取修訂版本資訊失敗，請手動修改。\n\n"),
+        "Failed to get revision information, please edit manually.\n\n": wgULS("获取修订版本信息失败，请手动修改。\n\n", "取得修訂版本資訊失敗，請手動修改。\n\n"),
         "The %s button has been automatically clicked. Please wait for the next page to load.": wgULS("按钮 %s 已被自动点击，请等待下一个页面加载。", "按鈕 %s 已被自動點擊，請等待下一個頁面載入。"),
         "Could not find button %s. Please check the settings in your javascript file.": wgULS("找不到按钮 %s，请检查您 JavaScript 文件中的设置。", "找不到按鈕 %s，請檢查您 JavaScript 檔案中的設定。"),
         /////////////////////////////////////

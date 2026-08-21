@@ -139,7 +139,7 @@ $(() => (async () => {
         // For unprocessed links
         $items.find("a:not(.batdel-bypass, .batdel-checked)").each((_, ele) => {
             const $link = $(ele);
-            $link.prop("target", "_blank").after(`<div class="batdel-error">${wgULS("禁止删除：无法获取页面挂删信息", "禁止刪除：無法獲取頁面掛刪信息")}</div>`);
+            $link.prop("target", "_blank").after(`<div class="batdel-error">${wgULS("禁止删除：无法获取页面挂删信息", "禁止刪除：無法取得頁面掛刪信息")}</div>`);
             console.warn(`[BatchDelete] ${$link.text()} is not processed`);
         });
 
