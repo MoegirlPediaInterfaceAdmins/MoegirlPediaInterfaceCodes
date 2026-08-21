@@ -204,7 +204,7 @@ $(() => {
                     try {
                         await this.markAsResolved({ section });
                         this.close({ action });
-                        mw.notify(wgULS("即将刷新……", "即將刷新……"), {
+                        mw.notify(wgULS("即将刷新……", "即將重新整理……"), {
                             title: wgULS("标记成功", "標記成功"),
                             type: "success",
                             tag: "AnnTools_MarkAsResolved",

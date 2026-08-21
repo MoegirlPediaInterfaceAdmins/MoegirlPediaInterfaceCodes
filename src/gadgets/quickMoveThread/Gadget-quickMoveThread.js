@@ -168,7 +168,7 @@ $(() => {
                         try {
                             await this.doMove();
                             this.close({ action });
-                            mw.notify(wgULS("即将刷新……", "即將刷新……"), {
+                            mw.notify(wgULS("即将刷新……", "即將重新整理……"), {
                                 title: wgULS("移动成功", "移動成功"),
                                 type: "success",
                                 tag: "lr-qmt",

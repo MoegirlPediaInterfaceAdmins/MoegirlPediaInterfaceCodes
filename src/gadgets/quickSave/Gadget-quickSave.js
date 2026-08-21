@@ -195,7 +195,7 @@ $(() => {
                     const section = toclist[this.sectionTitle];
                     try {
                         await this.quickSave({ section });
-                        mw.notify(wgULS("即将刷新……", "即將刷新……"), {
+                        mw.notify(wgULS("即将刷新……", "即將重新整理……"), {
                             title: wgULS("存档成功", "存檔成功"),
                             type: "success",
                             tag: "AnnTools_QuickSave",
