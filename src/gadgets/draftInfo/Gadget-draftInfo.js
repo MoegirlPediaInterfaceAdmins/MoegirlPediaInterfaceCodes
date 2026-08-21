@@ -76,12 +76,12 @@ $(() => {
                         </ul>
                     </div>
                     ${enableButton
-                        ? `
+            ? `
                     <div class="draft-notice-action">
                         <button id="draft-action-btn" class="cdx-button cdx-button--action-progressive" disabled>${wgULS("检查中…", "檢查中…")}</button>
                     </div>
                     `
-                        : ""}
+            : ""}
                 </div>
             </div>
         </div>
@@ -119,7 +119,11 @@ $(() => {
             pclimit: "2",
             formatversion: 2,
         });
-        return Array.isArray(res.query.pages[0]?.contributors) ? res.query.pages[0].contributors : [];
+        const contributors = res.query.pages[0]?.contributors;
+        if (!Array.isArray(contributors)) {
+            throw new Error("[DraftInfo] Failed to get contributors");
+        }
+        return contributors;
     };
 
     const requestPreloadConfig = {
@@ -151,22 +155,24 @@ $(() => {
 
     const openRequest = (kind) => window.open(buildRequestUrl(kind), "_blank");
 
+    const buildConfirmOptions = ({
+        acceptLabel,
+        acceptFlags = ["primary", "progressive"],
+        rejectLabel = wgULS("取消", "取消"),
+        rejectFlags = ["safe", "close", "primary"],
+    }) => ({
+        size: "medium",
+        actions: [
+            { action: "reject", label: rejectLabel, flags: rejectFlags },
+            { action: "accept", label: acceptLabel, flags: acceptFlags },
+        ],
+    });
+
     const doMove = async () => {
-        const moveConfirmOptions = {
-            size: "medium",
-            actions: [
-                {
-                    action: "reject",
-                    label: "取消",
-                    flags: ["safe", "close", "primary"],
-                },
-                {
-                    action: "accept",
-                    label: wgULS("确认", "確認"),
-                    flags: ["progressive"],
-                },
-            ],
-        };
+        const moveConfirmOptions = buildConfirmOptions({
+            acceptLabel: wgULS("确认", "確認"),
+            acceptFlags: ["progressive"],
+        });
         const confirmed = await OO.ui.confirm(wgULS(`发布到：${wgTitle}`, `發佈到：${wgTitle}`), moveConfirmOptions);
         if (!confirmed) {
             return;
@@ -183,7 +189,7 @@ $(() => {
         if (Reflect.has(moveRes, "error")) {
             throw moveRes;
         }
-        mw.notify(wgULS("即将刷新……", "即將刷新……"), {
+        mw.notify(wgULS("即将刷新……", "即將重新整理……"), {
             title: wgULS("发布成功", "發佈成功"),
             type: "success",
             tag: "lr-publish-draft",
@@ -204,7 +210,7 @@ $(() => {
         const revision = res.query.pages[0]?.revisions?.[0];
         const content = revision?.slots?.main?.content;
         if (!revision || typeof content !== "string") {
-            throw new Error(`无法获取页面“${title}”的最新修订。`);
+            throw new Error(`[DraftInfo] Failed to get latest revision for page “${title}”.`);
         }
         return {
             revid: revision.revid,
@@ -229,21 +235,10 @@ $(() => {
             }).text(wgULS("在此查看差异", "在此查看差異")),
             document.createTextNode(wgULS("。", "。")),
         );
-        const existsConfirmOptions = {
-            size: "medium",
-            actions: [
-                {
-                    action: "reject",
-                    label: "取消",
-                    flags: ["safe", "close", "primary"],
-                },
-                {
-                    action: "accept",
-                    label: wgULS("继续", "繼續"),
-                    flags: ["progressive"],
-                },
-            ],
-        };
+        const existsConfirmOptions = buildConfirmOptions({
+            acceptLabel: wgULS("继续", "繼續"),
+            acceptFlags: ["progressive"],
+        });
         const existsConfirmed = await OO.ui.confirm(diffMessage, existsConfirmOptions);
         if (!existsConfirmed) {
             return;
@@ -253,21 +248,12 @@ $(() => {
             $("<b>").text(wgULS("覆盖", "覆蓋")),
             document.createTextNode(wgULS("至目标页面？", "至目標頁面？")),
         );
-        const overwriteConfirmOptions = {
-            size: "medium",
-            actions: [
-                {
-                    action: "reject",
-                    label: wgULS("返回", "返回"),
-                    flags: ["safe", "back", "primary"],
-                },
-                {
-                    action: "accept",
-                    label: wgULS("确认", "確認"),
-                    flags: ["destructive"],
-                },
-            ],
-        };
+        const overwriteConfirmOptions = buildConfirmOptions({
+            acceptLabel: wgULS("确认", "確認"),
+            acceptFlags: ["destructive"],
+            rejectLabel: wgULS("取消", "取消"),
+            rejectFlags: ["safe", "close", "primary"],
+        });
         const overwriteConfirmed = await OO.ui.confirm(overwriteMessage, overwriteConfirmOptions);
         if (!overwriteConfirmed) {
             return;
@@ -303,7 +289,7 @@ $(() => {
         if (Reflect.has(flagRes, "error")) {
             throw flagRes;
         }
-        mw.notify(wgULS("即将刷新……", "即將刷新……"), {
+        mw.notify(wgULS("即将刷新……", "即將重新整理……"), {
             title: wgULS("发布成功", "發佈成功"),
             type: "success",
             tag: "lr-publish-draft",
@@ -324,7 +310,7 @@ $(() => {
             return;
         }
         const errorMessage = e?.error?.info ?? e?.message ?? String(e ?? "");
-        OO.ui.alert(`错误信息：${oouiDialog.sanitize(errorMessage)}`, {
+        OO.ui.alert($("<p>").text(`错误信息：${errorMessage}`), {
             title: wgULS("发布草稿出错", "發佈草稿出錯"),
         });
     };
@@ -339,17 +325,26 @@ $(() => {
         });
     };
 
-    const askMergeRequest = async (isAssistedPublish) => {
-        const confirmed = await OO.ui.confirm(
-            wgULS(
+    const askMergeRequest = async (isAssistedPublish, contributorInfoError = false) => {
+        const mergeMessage = contributorInfoError
+            ? wgULS(
+                "未能获取草稿的实质贡献者。为避免错误覆盖目标页面，建议刷新页面后重试。您也可以申请合并页面历史，是否要发起合并请求？",
+                "未能取得草稿的實質貢獻者。為避免錯誤覆蓋目標頁面，建議重新整理頁面後重試。您也可以申請合併頁面歷史，是否要發起合併請求？",
+            )
+            : wgULS(
                 isAssistedPublish
                     ? "目标页面已存在，且草稿由其他编辑者贡献，您正在代为发布。建议先与该编辑者确认，再申请合并页面历史。是否要发起合并请求？"
                     : "目标页面已存在，且草稿可能有多名实质贡献者，需要合并页面历史。是否要发起合并请求？",
                 isAssistedPublish
                     ? "目標頁面已存在，且草稿由其他編輯者貢獻，您正在代為發布。建議先與該編輯者確認，再申請合併頁面歷史。是否要發起合併請求？"
                     : "目標頁面已存在，且草稿可能有多名实质贡献者，需要合併頁面歷史。是否要發起合併請求？",
-            ),
-            { size: "medium" },
+            );
+        const confirmed = await OO.ui.confirm(
+            mergeMessage,
+            buildConfirmOptions({
+                acceptLabel: wgULS("确认", "確認"),
+                acceptFlags: ["progressive"],
+            }),
         );
         if (confirmed) {
             openRequest("merge");
@@ -375,7 +370,19 @@ $(() => {
                 return;
             }
 
-            const contributors = await getNonBotContributors();
+            let contributors;
+            try {
+                contributors = await getNonBotContributors();
+            } catch {
+                $btn.text(wgULS("请求合并", "請求合併")).prop("disabled", false).on("click", async () => {
+                    try {
+                        await askMergeRequest(false, true);
+                    } catch (error) {
+                        handleActionError(error);
+                    }
+                });
+                return;
+            }
 
             if (contributors.length === 0 || contributors.length === 1 && contributors[0].name === wgUserName) {
                 setupSingleContributorPublish();
