@@ -52,6 +52,7 @@ $(() => {
 
     const createCopyButton = (icon, text, label) => {
         const button = document.createElement("span");
+        button.classList.add("displayname-copy-button");
         button.textContent = icon;
         button.style.marginLeft = "2px";
         button.style.cursor = "pointer";
@@ -116,6 +117,10 @@ $(() => {
             }
 
             const buttonsToAppend = [];
+
+            while (userLink.nextElementSibling?.classList.contains("displayname-copy-button")) {
+                userLink.nextElementSibling.remove();
+            }
 
             if (userName) {
                 buttonsToAppend.push(createCopyButton("👤", userName, "用户名"));
