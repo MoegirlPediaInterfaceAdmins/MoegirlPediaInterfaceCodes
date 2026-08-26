@@ -84,7 +84,7 @@
         "javascript-obfuscator": "^5.5.1",
         "moment": "^2.30.1",
         "npm-run-all2": "^9.0.3",
-        "stylelint-plugin-use-baseline": "^1.4.5",
+        "stylelint-plugin-use-baseline": "^1.4.6",
         "typescript": "^6.0.3"
     }
 }
