@@ -31,7 +31,7 @@
   - [`scripts/postCommit/linguist-generated.js`](scripts/postCommit/linguist-generated.js) 用来自动生成 [`.gitattributes`](.gitattributes) 以告知 Github 如何区分代码是否自动生成；
   - [`scripts/postCommit/push.js`](scripts/postCommit/push.js) 用来推送由 Github Actions 做出的更改；
   - [`scripts/emailmapChecker/index.js`](scripts/emailmapChecker/index.js) 用来检查相关用户是否将其萌娘百科用户名和邮箱地址添加到 [`.mailmap`](.mailmap)，若当前环境为本地则检测 git 配置文件里的邮箱地址，若当前环境为 Github Actions 则检查相关 commits 的邮箱地址。
-  - [`scripts/ci/before.js`](scripts/ci/before.js) 和 [`scripts/ci/after.js`](scripts/ci/after.js) 用来在 `npm run ci` 里自动替换 [`package-lock.json`](package-lock.json) 里的 `resolved` 对应的 registry 为你本地设置的 registry，有助于加快安装速度。
+  - [`scripts/ci/selectRegistry.js`](scripts/ci/selectRegistry.js) 用来在 `npm run ci` 里测速选出最快的 npm registry 并写入 `.cache/ci-registry`，随后 `npm ci --replace-registry-host=always` 会让 npm 在安装时把 [`package-lock.json`](package-lock.json) 里 `resolved` 对应的 registry 替换为该源（不会改动 lock 文件本身），有助于加快安装速度。
   - [`scripts/minification/terser.js`](scripts/minification/terser.js) 用来使用 [Terser](https://) 对编译后的 JavaScript 代码进行压缩和优化，生成的文件会被放置在 `dist/` 文件夹下。
 - 自动化工具的配置文件：
   - [`eslint.config.js`](eslint.config.js) 配置 eslint，由于所有 Javascript 代码都需经过编译，故其 `parserOptions.ecmaVersion` 被指定为 `latest` 以便充分利用最新标准；
@@ -63,7 +63,7 @@
 
 - `npm run test` 方便检测代码错误
 - `npm run format` 可修正可被自动修正的错误
-- `npm run ci` 可通过临时修改镜像源的方式加快 `npm ci` 速度
+- `npm run ci` 会测速选出最快的镜像源并让 npm 在安装时使用（不会改动 lock 文件），以加快 `npm ci` 速度
 - `npm run hooks:install` 可手动重新安装本仓库使用的本地 Git hooks
 - `npm run build` 手动编译全部（CSS+JS）代码
   - `npm run build:css` 手动编译所有 CSS 代码

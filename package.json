@@ -18,7 +18,7 @@
         "format:eslint": "npm run test:eslint -- --fix",
         "format:stylelint": "npm run test:stylelint -- --fix",
         "postinstall": "node scripts/gitHooks/install.js",
-        "ci": "trap 'code=$?; node scripts/ci/after.js; exit $code' EXIT && rm -rdf node_modules && node scripts/ci/before.js && npm ci",
+        "ci": "rm -rdf node_modules && node scripts/ci/selectRegistry.js && npm ci --registry=\"$(cat .cache/ci-registry)\" --replace-registry-host=always",
         "hooks:install": "node scripts/gitHooks/install.js",
         "build": "run-p -l build:*",
         "build:css": "postcss 'src/**/*.css' --base src/ -d dist/ --verbose",
