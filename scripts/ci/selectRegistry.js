@@ -12,7 +12,6 @@ const registryPointerFile = path.join(".cache", "ci-registry");
 
 const registries = [
     "https://registry.npmjs.org/",
-    "https://mirrors.cloud.tencent.com/npm/",
     "https://registry.npmmirror.com/",
 ];
 const targetPath = "index.json";
