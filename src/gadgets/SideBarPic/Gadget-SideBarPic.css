@@ -60,7 +60,18 @@ body.sideBarPic .vector-header-container .mw-header,
 body.sideBarPic .vector-dropdown .vector-dropdown-content {
     background-color: rgb(255 255 255 / 90%);
     background-color: light-dark(rgb(255 255 255 / 90%), rgb(20 20 20 / 90%)); /* Firefox 120 */
-    background-color: rgb(from var(--background-color-base, #fff) r g b / 90%); /* Firefox 133 */
+}
+
+/* 相对颜色语法含 var() 时，旧内核会在变量替换后才校验并走 IACVT（unset → 透明）
+   而非级联回退（issue #1023），因此必须用 @supports 门控；
+   测试值须用字面颜色——含 var() 的 @supports 测试恒为 true */
+/* stylelint-disable-next-line plugin/use-baseline -- 本站受众存在 Chromium <119 存量（issue #1023），兼容容忍度须低于 Baseline newly 默认值 */
+@supports (color: rgb(from red r g b)) {
+    body.sideBarPic.skin-vector-2022.mediawiki .mw-page-container,
+    body.sideBarPic .vector-header-container .mw-header,
+    body.sideBarPic .vector-dropdown .vector-dropdown-content {
+        background-color: rgb(from var(--background-color-base, #fff) r g b / 90%); /* Firefox 133 */
+    }
 }
 
 body.sideBarPic .vector-pinned-container {
