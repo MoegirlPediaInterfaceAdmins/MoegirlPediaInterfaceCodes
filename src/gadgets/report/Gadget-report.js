@@ -396,7 +396,7 @@ $(() => {
                     watchlist: "nochange",
                     nocontent: "true",
                 });
-                const commentAnchor = $("<div>").html(response.discussiontoolsedit.contentSub).find('a[href^="#c-"]').last().attr("href");
+                const commentAnchor = $("<div>").html(response.discussiontoolsedit.contentSub).find('a[href^="#c-"]').last().attr("href") || "";
                 const confirmBody = $("<div>").text(wgULS("您的反馈已提交到提问求助区，是否前往查看？", "您的反饋已提交到提問求助區，是否前往檢視？"));
                 if (await oouiDialog.confirm(confirmBody, oouiDialogConfig)) {
                     window.open(`${mw.util.getUrl("萌娘百科_talk:讨论版/提问求助")}${commentAnchor}`, "_blank");
