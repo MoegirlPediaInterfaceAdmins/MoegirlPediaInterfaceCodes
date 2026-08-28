@@ -338,9 +338,10 @@
         mw.hook("wikipage.content").add(initTabsInContent);
     };
     /* T:注解 */
-    $("body").on("mouseover mousemove mouseout", ".annotation", (event) => {
+    $("body").on("mouseenter mousemove mouseleave", ".annotation", (event) => {
         const $target = $(event.currentTarget);
         let popup = $target.data("popup");
+        let hideTimer = $target.data("hideTimer");
 
         // 惰性创建popup
         if (!popup) {
@@ -352,6 +353,7 @@
             const $marker = $("<span>")
                 .addClass("annotation-marker")
                 .appendTo(document.body);
+
             popup = new OO.ui.PopupWidget({
                 $content: $content,
                 padded: true,
@@ -361,20 +363,46 @@
             });
             popup.$element.addClass("annotation-popup");
             $(document.body).append(popup.$element);
+
+            // 鼠标进入popup时取消关闭
+            popup.$element.on("mouseenter", () => {
+                clearTimeout($target.data("hideTimer"));
+            });
+
+            // 鼠标离开popup后关闭
+            popup.$element.on("mouseleave", () => {
+                popup.toggle(false);
+            });
+
             $target.data({ popup, marker: $marker });
         }
 
-        if (event.type === "mouseout") {
+        if (event.type === "mouseleave") {
+            // 延迟关闭，给鼠标从annotation移动到popup留出时间
+            hideTimer = setTimeout(() => {
+                if (!popup.$element.is(":hover")) {
+                    popup.toggle(false);
+                }
+            }, 100);
+
+            $target.data("hideTimer", hideTimer);
+            return;
+        }
+
+        // 鼠标重新进入annotation时取消关闭
+        clearTimeout(hideTimer);
+
+        // 跨行 inline 元素：用 getClientRects() 找到鼠标所在的行片段
+        const rects = $target[0].getClientRects();
+        if (!rects.length) {
             popup.toggle(false);
             return;
         }
 
-        // 跨行 inline 元素：用 getClientRects() 找到鼠标所在的行片段
-        const rects = $target[0].getClientRects();
         let rect = rects[0];
         if (rects.length > 1) {
             for (const r of rects) {
-                if (event.clientY >= r.top && event.clientY <= r.bottom) {
+                if (event.clientY >= r.top && event.clientY < r.bottom) {
                     rect = r;
                     break;
                 }
