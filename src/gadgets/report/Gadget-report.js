@@ -204,6 +204,11 @@ $(() => {
             });
 
             this.reasonTextarea.$element.find(".oo-ui-labelElement-label").css("pointer-events", "none");
+            this.reasonTextarea.$element.find(".oo-ui-labelElement-label").css("padding-top", "5px");
+            this.reasonTextarea.$element.find(".oo-ui-labelElement-label").css({
+                lineHeight: "20px",
+                height: "40px",
+            });
             this.secondaryTypeSelectorField.$element.hide();
             this.suggestToTalkBoardInputField.$element.hide();
 
@@ -428,6 +433,7 @@ $(() => {
     const reportDialog = new MGPReportDialog({
         size: "large",
     });
+    reportDialog.$element.css("z-index", "auto");
     windowManager.addWindows([reportDialog]);
     const initReport = async () => {
         if (wgNamespaceNumber > 0 && !await oouiDialog.confirm(`${wgULS("本页面<b>并非条目页面</b>，并不直接介绍事物，而仅为萌娘百科", "本頁面<b>並非條目頁面</b>，並不直接介紹事物，而僅為萌娘百科")}${wgULS("用户", "使用者", null, null, "用戶")}${wgULS("为方便编辑、交流沟通等使用。<br>您确定您仍要反馈本页面吗？", "為方便編輯、交流溝通等使用。<br>您確定您仍要反饋本頁面嗎？")}`, oouiDialogConfig)) {
