@@ -233,8 +233,10 @@ $(() => {
             this.secondaryTypeSelector.connect(this, { change: "continueOK" });
             this.reasonTextarea.connect(this, { change: "continueOK" });
             this.emailInput.connect(this, { change: "continueOK" });
+            this.suggestToTalkBoardInput.connect(this, { change: "updateEmailRequirement" });
 
             this.$body.append(this.stackLayout.$element);
+            this.updateEmailRequirement();
         }
         openSecondary(value) {
             const config = MGPReportDialog.types[value];
@@ -263,9 +265,16 @@ $(() => {
             } else {
                 this.suggestToTalkBoardInputField.$element.slideUp("fast", () => this.updateSize());
             }
+            this.updateEmailRequirement();
         }
         continueOK() {
             this.actions.setAbilities({ "continue": true });
+        }
+        updateEmailRequirement() {
+            const config = MGPReportDialog.types[this.primaryTypeSelector.getValue()];
+            const postingToTalkBoard = userIsAutoconfirmed && config?.suggestToTalkBoard && this.suggestToTalkBoardInput.isSelected();
+            this.emailInput.setRequired(!postingToTalkBoard);
+            this.emailInput.setIndicator(postingToTalkBoard ? null : "required");
         }
         async validateFeedback() {
             this.primaryType = this.primaryTypeSelector.getValue();
@@ -335,10 +344,10 @@ $(() => {
                         if (this.secondaryType !== "none") {
                             details.push(`次要${wgULS("问题", "問題")}：${this.secondaryType}`);
                         }
-                        details.push(
-                            `${wgULS("电子邮件", "電子郵件")}：${this.email}`,
-                            `您的理由：${this.reason}`,
-                        );
+                        if (!(userIsAutoconfirmed && MGPReportDialog.types[this.primaryType].suggestToTalkBoard && this.suggestToTalkBoardInput.isSelected())) {
+                            details.push(`${wgULS("电子邮件", "電子郵件")}：${this.email}`);
+                        }
+                        details.push(`您的理由：${this.reason}`);
                         if (userIsAutoconfirmed && MGPReportDialog.types[this.primaryType].suggestToTalkBoard) {
                             details.push(`${wgULS("是否提交到提问求助区", "是否提交到提問求助區")}：${this.suggestToTalkBoardInput.isSelected() ? "是" : "否"}`);
                         }
@@ -376,27 +385,21 @@ $(() => {
         async postMessageToBackend() {
             if (userIsAutoconfirmed && MGPReportDialog.types[this.primaryType].suggestToTalkBoard && this.suggestToTalkBoardInput.isSelected()) {
                 const sectiontitle = `【页面反馈】${this.primaryType}${this.secondaryType !== "none" ? ` - ${this.secondaryType}` : ""} @ ${this.wgPageName}`;
-                await api.postWithToken("csrf", {
-                    action: "edit",
-                    assertuser: mw.config.get("wgUserName"),
-                    title: "萌娘百科_talk:讨论版/提问求助",
-                    section: "new",
+                const response = await api.postWithToken("csrf", {
+                    action: "discussiontoolsedit",
+                    paction: "addtopic",
+                    page: "萌娘百科_talk:讨论版/提问求助",
                     sectiontitle,
-                    text: `<dl>\n<dt>页面信息：</dt>\n<dd><table class="wikitable" style="word-break: break-all;">\n<tr><td>primaryType</td><td>${this.primaryType}${this.secondaryType !== "none" ? `</td></tr>\n<tr><td>secondaryType</td><td>${this.secondaryType}` : ""}</td></tr>\n<tr><td>reportURL</td><td>${window.location.href}</td></tr>\n<tr><td>wgPageName</td><td>${this.wgPageName}<hr>[[${this.wgPageName}]]</td></tr>\n<tr><td>wgArticleId</td><td>${this.wgArticleId}</td></tr>\n<tr><td>wgCurRevisionId</td><td>${this.wgCurRevisionId}</td></tr>\n<tr><td>wgRevisionId</td><td>${this.wgRevisionId}</td></tr>\n</table></dd>\n<dt>用户反馈内容：</dt>\n<dd>${this.reason}——~~~~</dd>\n</dl>`,
+                    wikitext: `<dl>\n<dt>页面信息：</dt>\n<dd><table class="wikitable" style="word-break: break-all;">\n<tr><td>primaryType</td><td>${this.primaryType}${this.secondaryType !== "none" ? `</td></tr>\n<tr><td>secondaryType</td><td>${this.secondaryType}` : ""}</td></tr>\n<tr><td>reportURL</td><td>${window.location.href}</td></tr>\n<tr><td>wgPageName</td><td>${this.wgPageName}<hr>[[${this.wgPageName}]]</td></tr>\n<tr><td>wgArticleId</td><td>${this.wgArticleId}</td></tr>\n<tr><td>wgCurRevisionId</td><td>${this.wgCurRevisionId}</td></tr>\n<tr><td>wgRevisionId</td><td>${this.wgRevisionId}</td></tr>\n</table></dd>\n<dt>用户反馈内容：</dt>\n<dd>${this.reason}——~~~~</dd>\n</dl>`,
+                    autosubscribe: "yes",
                     tags: "Automation tool",
-                    watchlist: "watch",
+                    watchlist: "nochange",
+                    nocontent: "true",
                 });
-                const goToTalkBoardInput = new OO.ui.CheckboxInputWidget({
-                    selected: true,
-                });
-                const goToTalkBoardInputField = new OO.ui.FieldLayout(goToTalkBoardInput, {
-                    label: wgULS("到提问求助区查看该反馈", "到提問求助區檢視該反饋"),
-                    align: "inline",
-                });
+                const commentAnchor = $("<div>").html(response.discussiontoolsedit.contentSub).find('a[href^="#c-"]').last().attr("href");
                 const confirmBody = $("<div>").text(wgULS("您的反馈已提交到提问求助区，是否前往查看？", "您的反饋已提交到提問求助區，是否前往檢視？"));
-                confirmBody.append("<br>").append(goToTalkBoardInputField.$element);
                 if (await oouiDialog.confirm(confirmBody, oouiDialogConfig)) {
-                    window.open("/%E8%90%8C%E5%A8%98%E7%99%BE%E7%A7%91_talk:%E8%AE%A8%E8%AE%BA%E7%89%88/%E6%8F%90%E9%97%AE%E6%B1%82%E5%8A%A9#footer", "_blank");
+                    window.open(`${mw.util.getUrl("萌娘百科_talk:讨论版/提问求助")}${commentAnchor}`, "_blank");
                 }
                 return;
             }
