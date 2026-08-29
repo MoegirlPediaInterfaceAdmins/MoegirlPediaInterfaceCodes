@@ -1,4 +1,3 @@
-// <pre>
 "use strict";
 $(() => (async () => {
     const diffDate = (_a, _b) => {
@@ -494,4 +493,3 @@ $(() => (async () => {
         }, 100);
     }
 })());
-// </pre>

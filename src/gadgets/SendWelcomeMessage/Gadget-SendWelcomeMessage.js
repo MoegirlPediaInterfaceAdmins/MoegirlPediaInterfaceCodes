@@ -1,5 +1,4 @@
 "use strict";
-// <pre>
 $(() => {
     const message = "{{Welcome}} ——~~~~{{clear}}";
     if (mw.config.get("wgNamespaceIds").user_talk === mw.config.get("wgNamespaceNumber") && !mw.config.get("wgPageName").includes("/") && mw.config.get("wgEditMessage") === "creating") {
@@ -178,4 +177,3 @@ $(() => {
         }
     }
 });
-// </pre>

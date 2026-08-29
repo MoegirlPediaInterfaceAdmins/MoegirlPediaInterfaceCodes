@@ -6,7 +6,6 @@
 /**
  * @file 引自 https://github.com/google/code-prettify，遵守 APL2.0 协议，Copyright (C) 2006 Google Inc.
  */
-// <pre>
 "use strict";
 $(() => {
     if (mw.user.options.get("gadget-prism")) {
@@ -1012,4 +1011,3 @@ $(() => {
     // init
     $prettyPrint();
 });
-// </pre>

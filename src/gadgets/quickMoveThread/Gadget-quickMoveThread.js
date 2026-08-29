@@ -1,5 +1,3 @@
-// <pre>
-// await mw.loader.using(["ext.gadget.site-lib", "ext.gadget.libOOUIDialog", "ext.gadget.LocalObjectStorage"])
 "use strict";
 $(() => {
     try {
@@ -284,4 +282,3 @@ $(() => {
         console.error("[QuickMoveThread] Setup error:", e);
     }
 });
-// </pre>

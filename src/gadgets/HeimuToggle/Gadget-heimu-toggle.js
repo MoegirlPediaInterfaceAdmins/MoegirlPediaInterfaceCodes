@@ -1,5 +1,4 @@
 "use strict";
-// <pre>
 $(() => {
     if (!$(".heimu, .colormu")[0] || $("#heimu_toggle")[0]) {
         return;
@@ -30,4 +29,3 @@ $(() => {
         btn.trigger("click");
     }
 });
-// </pre>

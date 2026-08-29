@@ -1,4 +1,3 @@
-// <pre>
 "use strict";
 $(() => {
     /**
@@ -139,4 +138,3 @@ $(() => {
     render();
     mw.hook("wikipage.content").add(render);
 });
-// </pre>

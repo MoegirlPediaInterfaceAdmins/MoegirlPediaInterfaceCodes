@@ -1,5 +1,4 @@
 "use strict";
-// <pre>
 $(() => {
     if ($(".mw-editsection")[0] && !$("#template-documentation, .template-documentation")[0]) {
         switch (mw.config.get("skin")) {
@@ -20,4 +19,3 @@ $(() => {
         }
     }
 });
-// </pre>

@@ -1,5 +1,4 @@
 "use strict";
-// <pre>
 $(() => {
     /**
      * @type {JQuery<HTMLElement>}
@@ -25,4 +24,3 @@ $(() => {
         instanceRAF.request(action);
     }).trigger("scroll");
 });
-// </pre>

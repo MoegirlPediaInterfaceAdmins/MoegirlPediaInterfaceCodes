@@ -1,4 +1,3 @@
-// <pre>
 "use strict";
 $(() => {
     try {
@@ -331,4 +330,3 @@ $(() => {
         console.error("[MoveToUserSubpage] Setup error: ", e);
     }
 });
-// </pre>

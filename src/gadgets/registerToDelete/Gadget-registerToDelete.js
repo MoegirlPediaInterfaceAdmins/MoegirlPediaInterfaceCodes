@@ -1,4 +1,3 @@
-// <pre>
 "use strict";
 $(() => {
     try {
@@ -269,4 +268,3 @@ $(() => {
         console.error("[FlagForDeletion] Setup error:", e);
     }
 });
-// </pre>

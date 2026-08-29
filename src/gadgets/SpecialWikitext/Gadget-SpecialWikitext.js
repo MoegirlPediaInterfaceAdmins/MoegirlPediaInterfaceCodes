@@ -1,6 +1,5 @@
 /* eslint-disable camelcase */
 "use strict";
-// <pre>
 (async () => {
     if (mw.config.get("wgIsSpecialWikitextPreview")) {
         return;
@@ -459,4 +458,3 @@
         }
     })();
 })();
-// </pre>

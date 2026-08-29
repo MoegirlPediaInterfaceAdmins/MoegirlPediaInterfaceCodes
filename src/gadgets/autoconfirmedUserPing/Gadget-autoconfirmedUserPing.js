@@ -1,4 +1,3 @@
-// <pre>
 "use strict";
 $(() => (async () => {
     if (!mw.config.get("wgPageName").startsWith("萌娘百科_talk:提案/讨论中提案/")) {
@@ -291,4 +290,3 @@ $(() => (async () => {
         $body.css("overflow", "auto");
     });
 })());
-// </pre>

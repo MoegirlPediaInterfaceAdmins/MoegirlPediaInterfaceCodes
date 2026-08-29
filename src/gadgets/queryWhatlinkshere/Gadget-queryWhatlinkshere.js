@@ -1,4 +1,3 @@
-// <pre>
 "use strict";
 $(() => (async () => {
     if (mw.config.get("wgCanonicalSpecialPageName") !== "Whatlinkshere") {
@@ -207,4 +206,3 @@ $(() => (async () => {
         whatembeddedin.after(ul);
     });
 })());
-// </pre>

@@ -10,7 +10,6 @@
   * 修改了 alert 为OOUI版本
   * 修改了 jsonp 为原生请求 - https://github.com/MoegirlPediaInterfaceAdmins/MoegirlPediaInterfaceCodes/commit/134859937c596c818e4a33f9d174022dc79d7bb8
   **/
-// <nowiki>
 /**
 HotCat V2.46
 
@@ -3197,4 +3196,3 @@ window.hotcat_translations_from_commons = false; // 禁止从维基共享获取�
     // ]);
     run();
 })();
-// </nowiki>

@@ -1,4 +1,3 @@
-// <pre>
 "use strict";
 $(() => {
     const usergroup = mw.config.get("wgUserGroups");
@@ -86,4 +85,3 @@ $(() => {
         main();
     });
 });
-// </pre>

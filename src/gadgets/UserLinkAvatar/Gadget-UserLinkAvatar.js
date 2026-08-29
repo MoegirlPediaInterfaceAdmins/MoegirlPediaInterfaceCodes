@@ -3,7 +3,6 @@
  */
 
 "use strict";
-// <pre>
 (() => {
     const DEFAULT_AVATAR = "https://storage.moegirl.org.cn/moegirl/moehime.jpg";
     /**
@@ -76,4 +75,3 @@
     document.querySelectorAll(".mw-parser-output").forEach((content) => parser($(content)));
     mw.hook("wikipage.content").add(parser);
 })();
-// </pre>

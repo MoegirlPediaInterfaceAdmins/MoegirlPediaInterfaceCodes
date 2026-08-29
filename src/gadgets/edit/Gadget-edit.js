@@ -1,5 +1,4 @@
 "use strict";
-// <pre>
 $(() => {
     const wgPageName = mw.config.get("wgPageName");
     const wgNamespaceNumber = mw.config.get("wgNamespaceNumber");
@@ -333,4 +332,3 @@ $(() => {
     });
     */
 });
-// </pre>

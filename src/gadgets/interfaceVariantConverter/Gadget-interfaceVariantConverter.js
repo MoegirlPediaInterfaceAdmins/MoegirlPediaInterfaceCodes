@@ -1,5 +1,4 @@
 // WARNING: This script would break if source wikitext contains <pre> tags, won't fix.
-// <pre>
 "use strict";
 // TODO: Fix MultilineTextInput initial height
 // Test: https://zh.moegirl.org.cn/index.php?oldid=5572397
@@ -428,4 +427,3 @@ $(() => (async () => {
         windowManager.openWindow(aivcDialog);
     });
 })());
-// </pre>

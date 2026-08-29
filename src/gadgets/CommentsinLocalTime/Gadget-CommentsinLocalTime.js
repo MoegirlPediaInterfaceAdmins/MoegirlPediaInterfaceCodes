@@ -1,7 +1,6 @@
 /**
  * @file 引自 [[enwp:Special:Permalink/1029979061]]，[[User:AnnAngela]] 作了较大幅度修改，参见[[Help:以本地时区显示签名时间]]
  */
-// <pre>
 /**
  * Comments in local time
  * [[User:Mxn/CommentsInLocalTime]]
@@ -182,4 +181,3 @@ $(() => {
         setInterval(formatTimestamp, 60 * 1000);
     }, 60000 - Date.now() % 60000);
 });
-// </pre>

@@ -1,4 +1,3 @@
-// <pre>
 "use strict";
 
 (() => {
@@ -94,4 +93,3 @@
     $(window).on("rcfilters-dynamic-updates-complete", throttledProcess);
     $(document).on("mw.cx.event.vc.rcupdates", throttledProcess);
 })();
-// </pre>

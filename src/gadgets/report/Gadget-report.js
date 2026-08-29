@@ -1,4 +1,3 @@
-// <pre>
 /**
  * @author 小鸣@AOKI
  * @author [[User:Leranjun]] refactor
@@ -486,4 +485,3 @@ $(() => {
             break;
     }
 });
-// </pre>

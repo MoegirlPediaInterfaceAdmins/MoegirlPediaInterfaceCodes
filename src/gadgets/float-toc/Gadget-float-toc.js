@@ -1,5 +1,4 @@
 "use strict";
-// <pre>
 $(async () => {
     if ($("#mw-content-text .mw-headline").length <= 3) {
         return;
@@ -153,4 +152,3 @@ $(async () => {
     container.append(`${html}</li></ul>`);
     localObjectStorage.setItem(key, apiResult.parse.sections);
 });
-// </pre>

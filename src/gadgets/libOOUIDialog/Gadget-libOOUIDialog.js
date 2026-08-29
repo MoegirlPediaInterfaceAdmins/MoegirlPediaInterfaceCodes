@@ -1,4 +1,3 @@
-// <pre>
 "use strict";
 (() => {
     let running = false;
@@ -75,4 +74,3 @@
     const sanity = $("<span>");
     window.oouiDialog.sanitize = (text) => sanity.text(text).html();
 })();
-// </pre>

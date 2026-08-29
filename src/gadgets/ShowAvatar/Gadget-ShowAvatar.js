@@ -1,5 +1,4 @@
 "use strict";
-// <pre>
 $(() => {
     const UploadAvatar = (_, children) => $("<a>", {
         href: "/Special:UploadAvatar",
@@ -50,4 +49,3 @@ $(() => {
     }
     */
 });
-// </pre>

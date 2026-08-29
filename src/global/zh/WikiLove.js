@@ -1,5 +1,4 @@
 /* 放置于这里的JavaScript定制WikiLove，请见 https://www.mediawiki.org/wiki/Extension:WikiLove#Custom_configuration */
-// <nowiki>
 "use strict";
 
 $.wikiLoveOptions = {
@@ -171,4 +170,3 @@ $.wikiLoveOptions.types.mgpSpecial = {
         },
     },
 };
-// </nowiki>

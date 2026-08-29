@@ -1,5 +1,4 @@
 "use strict";
-// <pre>
 $(() => {
     const instanceRAF = new libRequestAnimationFrame.LibRequestAnimationFrame();
     const container = $("#mw-content-text");
@@ -36,4 +35,3 @@ $(() => {
         instanceRAF.request(action);
     }).trigger("scroll");
 });
-// </pre>
