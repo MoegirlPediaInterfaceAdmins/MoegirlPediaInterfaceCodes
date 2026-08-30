@@ -690,26 +690,52 @@ $(() => {
         const wikiText = download.data;
         const navpop = download.owner;
         const art = navpop.redirTarget || navpop.originalArticle;
-        makeFixDabs(wikiText, navpop);
-        if (getValueOf("popupSummaryData")) {
-            getPageInfo(wikiText, download);
-            setPopupTrailer(getPageInfo(wikiText, download), navpop.idNumber);
-        }
-        let imagePage;
-        if (art.namespaceId() === pg.nsImageId) {
-            imagePage = art.toString();
-        } else {
-            imagePage = getValidImageFromWikiText(wikiText);
-        }
-        if (imagePage) {
-            loadImage(Title.fromWikiText(imagePage), navpop);
+        // 纯文本预览下，依赖 wikitext 的衍生功能（消歧义修复、页面信息统计、首图预加载）不适用
+        if (!download.plainText) {
+            makeFixDabs(wikiText, navpop);
+            if (getValueOf("popupSummaryData")) {
+                getPageInfo(wikiText, download);
+                setPopupTrailer(getPageInfo(wikiText, download), navpop.idNumber);
+            }
+            let imagePage;
+            if (art.namespaceId() === pg.nsImageId) {
+                imagePage = art.toString();
+            } else {
+                imagePage = getValidImageFromWikiText(wikiText);
+            }
+            if (imagePage) {
+                loadImage(Title.fromWikiText(imagePage), navpop);
+            }
         }
         if (getValueOf("popupPreviews")) {
             insertArticlePreview(download, art, navpop);
         }
     };
+    // 与 Previewmaker 的 popupMaxPreviewSentences / popupMaxPreviewCharacters 选项对齐的纯文本截断
+    const plainTextPreview = (text) => {
+        let t = text.trim();
+        const maxSentences = getValueOf("popupMaxPreviewSentences");
+        if (maxSentences > 0) {
+            const sentences = t.split(/(?<=[。．!?！?.])/);
+            if (sentences.length > maxSentences) {
+                t = sentences.slice(0, maxSentences).join("");
+            }
+        }
+        const maxChars = getValueOf("popupMaxPreviewCharacters");
+        if (maxChars > 0 && t.length > maxChars) {
+            t = t.slice(0, maxChars);
+            const cut = Math.max(t.lastIndexOf("。"), t.lastIndexOf("．"), t.lastIndexOf("！"), t.lastIndexOf("？"), t.lastIndexOf("!"), t.lastIndexOf("?"));
+            t = cut > 0 ? t.slice(0, cut + 1) : `${t}……`;
+        }
+        return t;
+    };
     const insertArticlePreview = (download, art, navpop) => {
         if (download && typeof download.data === typeof "") {
+            if (download.plainText) {
+                const h = `<hr /><div>${plainTextPreview(download.data).entify().split("\\n").join("<br />\\n")}</div>`;
+                setPopupHTML(h, "popupPreview", navpop.idNumber);
+                return;
+            }
             if (art.namespaceId() === pg.nsTemplateId && getValueOf("popupPreviewRawTemplates")) {
                 const h = `<hr /><span style="font-family: monospace;">${download.data.entify().split("\\n").join("<br />\\n")}</span>`;
                 setPopupHTML(h, "popupPreview", navpop.idNumber);
@@ -3222,7 +3248,19 @@ $(() => {
                 } else {
                     url += `titles=${article.removeAnchor().urlString()}`;
                 }
-                url += "&prop=revisions|pageprops|info|images|categories&meta=wikibase&rvslots=main&rvprop=ids|timestamp|flags|comment|user|content&cllimit=max&imlimit=max";
+                // 主命名空间且非 oldid 查询时改用 TextExtracts 纯文本预览；
+                // oldid（历史版本预览）与模板等命名空间保持 rvprop=content。
+                // rvprop=comment 在页面预览中从未被消费（仅历史/贡献预览使用），故移除
+                if (!article.oldid && !navpop.plainTextFallback && getValueOf("popupPreviewTextExtracts") && article.namespaceId() === 0) {
+                    // redirects=1 使重定向直接返回目标页内容与 redirects 数组；
+                    // popupPreviewFirstParOnly 映射为 exintro（仅首段），截断交给客户端的 popupMaxPreview*
+                    url += "&prop=extracts|pageprops|info&meta=wikibase&explaintext=1&exsectionformat=plain&redirects=1";
+                    if (getValueOf("popupPreviewFirstParOnly")) {
+                        url += "&exintro=1";
+                    }
+                } else {
+                    url += "&prop=revisions|pageprops|info|images|categories&meta=wikibase&rvslots=main&rvprop=ids|timestamp|flags|user|content&cllimit=max&imlimit=max";
+                }
                 htmlGenerator = APIrevisionPreviewHTML;
                 break;
         }
@@ -3475,10 +3513,36 @@ $(() => {
                 download.owner = null;
                 return;
             }
-            const content = page?.revisions?.[0]?.slots?.main?.contentmodel === "wikitext" ? page.revisions[0].slots.main.content : null;
-            if (typeof content === "string") {
-                download.data = content;
-                download.lastModified = new Date(page.revisions[0].timestamp);
+            // TextExtracts 分支：extract 为纯文本（redirects=1 时已直接是目标页的内容）
+            if (typeof page.extract === "string") {
+                if (page.extract === "") {
+                    // 页面可见文本全在模板/表格内时 extract 可能为空，回退到 wikitext 请求
+                    download.owner.plainTextFallback = true;
+                    loadPreview(new Title().fromWikiText(page.title), null, download.owner);
+                    return;
+                }
+                download.data = page.extract;
+                download.plainText = true;
+                if (jsObj.query.redirects && download.owner.redir === 0) {
+                    // 与 loadPreviewFromRedir 一致地补齐重定向状态；
+                    // 区别在于目标页内容已随本次请求返回，无需再次请求
+                    const target = new Title().fromWikiText(jsObj.query.redirects[0].to);
+                    download.owner.redir++;
+                    download.owner.redirTarget = target;
+                    setPopupHTML(redirLink(target.toString(), download.owner.article), "popupWarnRedir", download.owner.idNumber);
+                    download.owner.article = target;
+                    fillEmptySpans({
+                        redir: true,
+                        redirTarget: target,
+                        navpopup: download.owner,
+                    });
+                }
+            } else {
+                const content = page?.revisions?.[0]?.slots?.main?.contentmodel === "wikitext" ? page.revisions[0].slots.main.content : null;
+                if (typeof content === "string") {
+                    download.data = content;
+                    download.lastModified = new Date(page.revisions[0].timestamp);
+                }
             }
             if (page.pageprops.wikibase_item) {
                 download.wikibaseItem = page.pageprops.wikibase_item;
@@ -6205,6 +6269,9 @@ $(() => {
         newOption("popupPreviewKillTemplates", true);
         newOption("popupPreviewRawTemplates", true);
         newOption("popupPreviewFirstParOnly", true);
+        // 主命名空间预览改用 TextExtracts 纯文本（explaintext）；
+        // 模板等命名空间下 extracts 返回空，故仅对主命名空间生效，其余保持 rvprop=content
+        newOption("popupPreviewTextExtracts", true);
         newOption("popupPreviewCutHeadings", true);
         newOption("popupPreviewButton", false);
         newOption("popupPreviewButtonEvent", "click");
