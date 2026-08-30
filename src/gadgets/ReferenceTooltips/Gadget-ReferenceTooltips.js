@@ -145,8 +145,14 @@
                 }
                 return;
             }
-            if (mw.config.get("skin") !== "moeskin" || moeskinFooterObserver) {
+            if (mw.config.get("skin") !== "moeskin") {
                 return;
+            }
+            // rt() 可能因 wikipage.content 钩子被多次调用：先断开旧观察器（其闭包绑定的
+            // 是过期内容），再以本次调用的新闭包重建，保证启用链接作用于当前内容
+            if (moeskinFooterObserver) {
+                moeskinFooterObserver.disconnect();
+                moeskinFooterObserver = undefined;
             }
             moeskinFooterObserver = new MutationObserver(() => {
                 if (!$("#moe-global-footer-top").length) {
@@ -154,6 +160,10 @@
                 }
                 moeskinFooterObserver.disconnect();
                 moeskinFooterObserver = undefined;
+                if (enabled) {
+                    // 等待页脚期间工具已在设置面板中被重新启用，无需页脚入口
+                    return;
+                }
                 addEnableLink();
             });
             moeskinFooterObserver.observe(document.body, { childList: true, subtree: true });
