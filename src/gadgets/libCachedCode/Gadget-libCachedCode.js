@@ -11,11 +11,14 @@
         return URL.createObjectURL(blob);
     };
     const getCachedCode = async (url) => {
-        let { code } = localObjectStorage.getItem(`${url}`) || {}; // 读取缓存
+        // 读写必须使用同一个键，否则缓存永不命中（此前读 getItem(url)、写 setItem(前缀 + url)，
+        // 键名不一致导致 30 天缓存实际从未生效，每次都重新从 CDN 拉取）
+        const key = `AnnTools-libCachedCode:${url}`;
+        let { code } = localObjectStorage.getItem(key) || {}; // 读取缓存
         if (typeof code !== "string") { // 如无则获取数据
             code = await (await fetch(url)).text();
         }
-        localObjectStorage.setItem(`AnnTools-libCachedCode:${url}`, { code }); // 设置缓存
+        localObjectStorage.setItem(key, { code }); // 设置缓存
         return code;
     };
     const getCachedCodeUrl = async (url) => codeToUrl(await getCachedCode(url));

@@ -14,18 +14,30 @@
 
     // 库的加载与初始化只执行一次
     let mermaidLoading;
-    const loadMermaid = () => mermaidLoading ??= (async () => {
-        // dist/mermaid.min.js 是自包含的 IIFE 构建，挂载到 globalThis.mermaid；
-        // 不能使用 mermaid.esm.min.mjs，libCachedCode 的 Blob URL 注入不支持 ES module
-        await libCachedCode.injectCachedCode(MERMAID_LIB_URL, "script");
-        window.mermaid.initialize({
-            startOnLoad: false,
-            // 图表定义来自任意编辑者，开放 wiki 必须使用 strict 模式：
-            // 禁用 HTML 标签与点击回调，防止通过图表定义注入代码
-            securityLevel: "strict",
+    const loadMermaid = () => {
+        if (mermaidLoading) {
+            return mermaidLoading;
+        }
+        mermaidLoading = (async () => {
+            // dist/mermaid.min.js 是自包含的 IIFE 构建，挂载到 globalThis.mermaid；
+            // 不能使用 mermaid.esm.min.mjs，libCachedCode 的 Blob URL 注入不支持 ES module
+            await libCachedCode.injectCachedCode(MERMAID_LIB_URL, "script");
+            window.mermaid.initialize({
+                startOnLoad: false,
+                // 图表定义来自任意编辑者，开放 wiki 必须使用 strict 模式：
+                // 禁用 HTML 标签与点击回调，防止通过图表定义注入代码
+                securityLevel: "strict",
+            });
+            return window.mermaid;
+        })();
+        // 加载/初始化失败时清空缓存中的 Promise，让后续触发（如预览）可以重试瞬时网络/CDN 故障；
+        // 在赋值完成后的 Promise 回调里清理，避免与赋值本身产生时序竞争
+        // eslint-disable-next-line promise/prefer-await-to-then -- 这是 fire-and-forget 的清理回调，不是可用 await 替代的控制流
+        mermaidLoading.catch(() => {
+            mermaidLoading = undefined;
         });
-        return window.mermaid;
-    })();
+        return mermaidLoading;
+    };
 
     const render = async ($content) => {
         const containers = $content.find(CONTAINER_SELECTOR).toArray()
