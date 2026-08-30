@@ -24,6 +24,11 @@ html.dark #mw-content-text pre[class*="language-"] > code {
     background-image: linear-gradient(transparent 50%, rgb(69 142 209 / 9%) 50%);
 }
 
+html.skin-theme-clientpref-night #mw-content-text pre[class*="language-"],
+html.dark #mw-content-text pre[class*="language-"] {
+    background-color: #1e1f22;
+}
+
 html.skin-theme-clientpref-night #mw-content-text :not(pre) > code[class*="language-"],
 html.dark #mw-content-text :not(pre) > code[class*="language-"] {
     color: #ff8a80;

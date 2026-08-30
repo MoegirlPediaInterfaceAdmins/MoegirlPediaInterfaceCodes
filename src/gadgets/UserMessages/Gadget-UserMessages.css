@@ -3,6 +3,11 @@
     background-color: #eefddc;
 }
 
+html.skin-theme-clientpref-night #umInstantPreviewContainer,
+html.dark #umInstantPreviewContainer {
+    background-color: #1f2a1c;
+}
+
 /*
  * jQuery UI 深色模式适配：moeskin（html.dark）与 Vector 2022 夜间模式（html.skin-theme-clientpref-night）。
  * jquery.ui 模块自带浅色主题（使用位图渐变背景），无官方深色主题，故在此覆盖为纯色。

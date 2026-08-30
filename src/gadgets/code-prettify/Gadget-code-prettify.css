@@ -155,12 +155,12 @@ li.linenums-active {
 }
 
 /* 深色模式适配：moeskin（html.dark）与 Vector 2022 夜间模式（html.skin-theme-clientpref-night） */
-html.skin-theme-clientpref-night .pln,
-html.dark .pln {
-    color: #eaecf0;
-}
-
 @media screen {
+    html.skin-theme-clientpref-night .pln,
+    html.dark .pln {
+        color: #eaecf0;
+    }
+
     html.skin-theme-clientpref-night .str,
     html.dark .str {
         color: #7ec699;
@@ -223,26 +223,28 @@ html.dark .pln {
     }
 }
 
-html.skin-theme-clientpref-night pre.prettyprint,
-html.dark pre.prettyprint {
-    border-color: #54595d;
-}
+@media screen {
+    html.skin-theme-clientpref-night pre.prettyprint,
+    html.dark pre.prettyprint {
+        border-color: #54595d;
+    }
 
-html.skin-theme-clientpref-night li.L1,
-html.skin-theme-clientpref-night li.L3,
-html.skin-theme-clientpref-night li.L5,
-html.skin-theme-clientpref-night li.L7,
-html.skin-theme-clientpref-night li.L9,
-html.dark li.L1,
-html.dark li.L3,
-html.dark li.L5,
-html.dark li.L7,
-html.dark li.L9 {
-    background: #27292d;
-}
+    html.skin-theme-clientpref-night li.L1,
+    html.skin-theme-clientpref-night li.L3,
+    html.skin-theme-clientpref-night li.L5,
+    html.skin-theme-clientpref-night li.L7,
+    html.skin-theme-clientpref-night li.L9,
+    html.dark li.L1,
+    html.dark li.L3,
+    html.dark li.L5,
+    html.dark li.L7,
+    html.dark li.L9 {
+        background: #27292d;
+    }
 
-html.skin-theme-clientpref-night li.linenums-active,
-html.dark li.linenums-active {
-    background-color: #3a3421;
-    box-shadow: inset 2px 0 0 #d4a72c99;
+    html.skin-theme-clientpref-night li.linenums-active,
+    html.dark li.linenums-active {
+        background-color: #3a3421;
+        box-shadow: inset 2px 0 0 #d4a72c99;
+    }
 }
