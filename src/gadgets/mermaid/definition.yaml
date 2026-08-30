@@ -1,0 +1,38 @@
+ResourceLoader: true
+
+hidden: false
+
+default: false
+
+supportsUrlLoad: true
+
+skins: []
+
+actions: []
+
+categories: []
+
+namespaces: []
+
+contentModels: []
+
+type: general
+
+package: false
+
+rights: []
+
+peers: []
+
+dependencies:
+  - ext.gadget.site-lib
+  - ext.gadget.libCachedCode
+
+_sites:
+  - zh
+  - commons
+
+_section: browsing
+
+_files:
+  - Gadget-mermaid.js
