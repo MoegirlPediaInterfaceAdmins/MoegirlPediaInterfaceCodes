@@ -716,7 +716,7 @@ $(() => {
         let t = text.trim();
         const maxSentences = getValueOf("popupMaxPreviewSentences");
         if (maxSentences > 0) {
-            const sentences = t.split(/(?<=[。．!?！?.])/);
+            const sentences = t.split(/(?<=[。．!?！？.])/);
             if (sentences.length > maxSentences) {
                 t = sentences.slice(0, maxSentences).join("");
             }
@@ -725,19 +725,20 @@ $(() => {
         if (maxChars > 0 && t.length > maxChars) {
             t = t.slice(0, maxChars);
             const cut = Math.max(t.lastIndexOf("。"), t.lastIndexOf("．"), t.lastIndexOf("！"), t.lastIndexOf("？"), t.lastIndexOf("!"), t.lastIndexOf("?"));
-            t = cut > 0 ? t.slice(0, cut + 1) : `${t}……`;
+            // 无句读时预留省略号的空间，保证结果不超过 popupMaxPreviewCharacters
+            t = cut > 0 ? t.slice(0, cut + 1) : `${t.slice(0, Math.max(0, maxChars - 2))}……`;
         }
         return t;
     };
     const insertArticlePreview = (download, art, navpop) => {
         if (download && typeof download.data === typeof "") {
             if (download.plainText) {
-                const h = `<hr /><div>${plainTextPreview(download.data).entify().split("\\n").join("<br />\\n")}</div>`;
+                const h = `<hr /><div>${plainTextPreview(download.data).entify().split("\n").join("<br />\n")}</div>`;
                 setPopupHTML(h, "popupPreview", navpop.idNumber);
                 return;
             }
             if (art.namespaceId() === pg.nsTemplateId && getValueOf("popupPreviewRawTemplates")) {
-                const h = `<hr /><span style="font-family: monospace;">${download.data.entify().split("\\n").join("<br />\\n")}</span>`;
+                const h = `<hr /><span style="font-family: monospace;">${download.data.entify().split("\n").join("<br />\n")}</span>`;
                 setPopupHTML(h, "popupPreview", navpop.idNumber);
             } else {
                 const p = prepPreviewmaker(download.data, art, navpop);
@@ -3515,28 +3516,35 @@ $(() => {
             }
             // TextExtracts 分支：extract 为纯文本（redirects=1 时已直接是目标页的内容）
             if (typeof page.extract === "string") {
+                const navpop = download.owner;
+                // 先于空 extract 回退处理重定向状态，否则回退路径会丢失重定向徽标与目标状态
+                if (jsObj.query.redirects?.length && navpop.redir === 0) {
+                    // 与 loadPreviewFromRedir 一致地补齐重定向状态（含原链接锚点）；
+                    // 区别在于目标页内容已随本次请求返回，无需再次请求
+                    const target = new Title().fromWikiText(jsObj.query.redirects[0].to);
+                    if (navpop.article.anchor) {
+                        target.anchor = navpop.article.anchor;
+                    }
+                    navpop.redir++;
+                    navpop.redirTarget = target;
+                    setPopupHTML(redirLink(target.toString(), navpop.article), "popupWarnRedir", navpop.idNumber);
+                    navpop.article = target;
+                    fillEmptySpans({
+                        redir: true,
+                        redirTarget: target,
+                        navpopup: navpop,
+                    });
+                }
                 if (page.extract === "") {
-                    // 页面可见文本全在模板/表格内时 extract 可能为空，回退到 wikitext 请求
-                    download.owner.plainTextFallback = true;
-                    loadPreview(new Title().fromWikiText(page.title), null, download.owner);
+                    // 页面可见文本全在模板/表格内时 extract 可能为空，回退到 wikitext 请求；
+                    // 置空 owner 使本次 JSON 响应不再被 insertPreview 当作预览内容消费
+                    navpop.plainTextFallback = true;
+                    download.owner = null;
+                    loadPreview(new Title().fromWikiText(page.title), null, navpop);
                     return;
                 }
                 download.data = page.extract;
                 download.plainText = true;
-                if (jsObj.query.redirects && download.owner.redir === 0) {
-                    // 与 loadPreviewFromRedir 一致地补齐重定向状态；
-                    // 区别在于目标页内容已随本次请求返回，无需再次请求
-                    const target = new Title().fromWikiText(jsObj.query.redirects[0].to);
-                    download.owner.redir++;
-                    download.owner.redirTarget = target;
-                    setPopupHTML(redirLink(target.toString(), download.owner.article), "popupWarnRedir", download.owner.idNumber);
-                    download.owner.article = target;
-                    fillEmptySpans({
-                        redir: true,
-                        redirTarget: target,
-                        navpopup: download.owner,
-                    });
-                }
             } else {
                 const content = page?.revisions?.[0]?.slots?.main?.contentmodel === "wikitext" ? page.revisions[0].slots.main.content : null;
                 if (typeof content === "string") {
