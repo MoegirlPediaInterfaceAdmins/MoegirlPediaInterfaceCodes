@@ -234,24 +234,28 @@ $(() => {
         });
         windowManager.addWindows([qmtDialog]);
 
-        $(".mw-parser-output .mw-heading h2").each((_, ele) => {
-            const $ele = $(ele).parent();
-            if (!$ele.find(".mw-editsection")[0] || $ele.next(".movedToNotice, .movedFromNotice, .saveNotice")[0]) {
-                return;
-            }
-            const section = +new URL($ele.find('.mw-editsection a[href*="action=edit"][href*="section="]').attr("href"), location.origin).searchParams.get("section");
-            const anchor = $(ele).attr("id");
-            const button = $("<a>").attr("href", "#").prop("draggable", false).addClass("lr-qmt-link").text(wgULS("移动", "移動")).on("click", (e) => {
-                e.preventDefault();
-                windowManager.openWindow(qmtDialog, { section, anchor });
+        const injectButtons = () => {
+            $(".mw-parser-output .mw-heading h2").each((_, ele) => {
+                const $ele = $(ele).parent();
+                if (!$ele.find(".mw-editsection")[0] || $ele.find(".lr-qmt-link")[0] || $ele.next(".movedToNotice, .movedFromNotice, .saveNotice")[0]) {
+                    return;
+                }
+                const section = +new URL($ele.find('.mw-editsection a[href*="action=edit"][href*="section="]').attr("href"), location.origin).searchParams.get("section");
+                const anchor = $(ele).attr("id");
+                const button = $("<a>").attr("href", "#").prop("draggable", false).addClass("lr-qmt-link").text(wgULS("移动", "移動")).on("click", (e) => {
+                    e.preventDefault();
+                    windowManager.openWindow(qmtDialog, { section, anchor });
+                });
+                const $splButton = $ele.find(".section-permanent-link");
+                if ($splButton[0]) {
+                    $splButton.next(".mw-editsection-divider").after('<span class="mw-editsection-divider"> | </span>').after(button);
+                } else {
+                    $ele.find(".mw-editsection-bracket").first().after('<span class="mw-editsection-divider"> | </span>').after(button);
+                }
             });
-            const $splButton = $ele.find(".section-permanent-link");
-            if ($splButton[0]) {
-                $splButton.next(".mw-editsection-divider").after('<span class="mw-editsection-divider"> | </span>').after(button);
-            } else {
-                $ele.find(".mw-editsection-bracket").first().after('<span class="mw-editsection-divider"> | </span>').after(button);
-            }
-        });
+        };
+        injectButtons();
+        window.libDiscussionUtil.onContentChange(injectButtons);
     } catch (e) {
         const parseError = (errLike, _space) => {
             let space = _space;
