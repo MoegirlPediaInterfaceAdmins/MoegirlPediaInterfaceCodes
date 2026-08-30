@@ -262,8 +262,8 @@
                 return;
             }
             /** @type {HTMLElement} */
-            // 小工具“黑幕半隐”启用时正常跳转
-            if (document.body.closest(".heimu_toggle_on")) {
+            // 小工具“黑幕半隐”启用时正常跳转（与 externalLinkConfirm 中的判定方式保持一致）
+            if (document.body.classList.contains("heimu_toggle_on")) {
                 return;
             }
             const target = e.target;
