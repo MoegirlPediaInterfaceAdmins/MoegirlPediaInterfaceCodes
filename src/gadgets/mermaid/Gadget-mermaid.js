@@ -50,8 +50,10 @@
         await Promise.all(containers.map((ele) => mermaid
             .render(`mermaid-gadget-${Math.random().toString(36).slice(2)}`, ele.textContent ?? "")
             .then(({ svg }) => {
-                // strict 模式下 Mermaid 内部（DOMPurify）会对输出做净化
-                ele.innerHTML = svg;
+                // strict 模式下 Mermaid 内部（DOMPurify）已对输出做净化；
+                // 这里再经 DOMParser 解析为 SVG 文档后导入，导入的脚本节点按规范不可执行，作纵深防御
+                const doc = new DOMParser().parseFromString(svg, "image/svg+xml");
+                ele.replaceChildren(document.importNode(doc.documentElement, true));
                 ele.dataset.mermaidStatus = "done";
                 return ele;
             })

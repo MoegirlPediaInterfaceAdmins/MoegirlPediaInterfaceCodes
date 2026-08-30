@@ -1,3 +1,5 @@
+export {};
+
 declare global {
     interface Window {
         mermaid: {
@@ -9,3 +11,4 @@ declare global {
         };
     }
 }
+
