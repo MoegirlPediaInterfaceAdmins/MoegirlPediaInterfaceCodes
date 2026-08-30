@@ -8,6 +8,11 @@ $(() => (async () => {
 
     const deduplicate = (iterable) => [...new Set(iterable).values()];
     const generatePageLinkSelector = (title) => deduplicate([encodeURI(title), mw.util.wikiUrlencode(title)]).map((selector) => `a[href$="/${selector}"]`).join(",");
+    // e.stack 可能缺失或只有一行（此时取第二行会抛错），须做防御
+    const describeError = (e) => {
+        const detail = e instanceof Error && typeof e.stack === "string" ? (e.stack.split("\n")[1] || "").trim() : "";
+        return detail ? `${e} ${detail}` : e instanceof Error ? String(e) : JSON.stringify(e);
+    };
 
     let globalDeletionLock = false;
     const DELCATS = {
@@ -25,12 +30,24 @@ $(() => (async () => {
         if (!globalDeletionLock) {
             return;
         }
-        const $self = $(e.target).closest("a");
-        // Skip the batch deletion button and other in-page anchors, otherwise clicking them while locked opens a new page
-        if ($self.attr("href") === "#" || $self.closest("#ca-batdel").length) {
+        // Delegated handler: e.currentTarget is the matched <a>, more reliable than closest() from e.target
+        const $self = $(e.currentTarget);
+        const href = $self.attr("href");
+        if (!href) {
             return;
         }
-        window.open($self.prop("href"), "_blank");
+        // Skip the batch deletion button and same-page anchors (href="#...", or any URL resolving
+        // to the current page modulo the fragment, e.g. "javascript:"-free relative links);
+        // otherwise clicking them while locked opens a new page. Same-page check as suggested
+        // by gui-ying233 in #1027
+        const target = new URL(href, location.href);
+        target.hash = "";
+        const current = new URL(location.href);
+        current.hash = "";
+        if (target.href === current.href || $self.closest("#ca-batdel").length) {
+            return;
+        }
+        window.open(target.href, "_blank");
         return false;
     });
 
@@ -264,6 +281,7 @@ $(() => (async () => {
                         const url = new URL(self.prop("href"), location.origin);
                         const target = decodeURIComponent(url.searchParams.has("title") ? url.searchParams.get("title") : url.pathname.replace(/^\//, "")).replace(/_/g, " ");
                         let isDeleted = deletionResults.get(target);
+                        const fromCache = isDeleted !== undefined;
                         if (isDeleted === undefined) {
                             const page = pages.filter(({ title }) => title === target)[0];
                             try {
@@ -279,20 +297,23 @@ $(() => (async () => {
                                 });
                                 isDeleted = true;
                             } catch (e) {
-                                self.after(`<span class="batdel-result batdel-error"> ${wgULS("删除失败", "刪除失敗")}：${e instanceof Error ? `${e} ${e.stack.split("\n")[1].trim()}` : JSON.stringify(e)}</span>`);
+                                self.after(`<span class="batdel-result batdel-error"> ${wgULS("删除失败", "刪除失敗")}：${describeError(e)}</span>`);
                                 isDeleted = false;
                             }
                             deletionResults.set(target, isDeleted);
                         }
                         if (isDeleted) {
                             self.css("text-decoration", "line-through").after(`<span class="batdel-result batdel-success">${wgULS("删除成功", "刪除成功")}</span>`);
+                        } else if (fromCache) {
+                            // 详细错误已在首个链接旁展示，重复链接仅补充简短失败标记
+                            self.after(`<span class="batdel-result batdel-error"> ${wgULS("删除失败", "刪除失敗")}（${wgULS("同上", "同上")}）</span>`);
                         }
                     }
                     $spinner.remove();
                     $status.addClass("batdel-success").text(wgULS("删除已完成！", "刪除已完成！"));
                 } catch (e) {
                     $spinner.remove();
-                    $status.text(`${wgULS("发生错误", "發生錯誤")}：${e instanceof Error ? `${e} ${e.stack.split("\n")[1].trim()}` : JSON.stringify(e)}`);
+                    $status.text(`${wgULS("发生错误", "發生錯誤")}：${describeError(e)}`);
                 }
             } finally {
                 // eslint-disable-next-line require-atomic-updates
