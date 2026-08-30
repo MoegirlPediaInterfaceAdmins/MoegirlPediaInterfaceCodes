@@ -282,6 +282,18 @@
                 return;
             }
         });
+        // 半隐开启期间黑幕监听会跳过记录，lastClickedHeimu 会冻结在开启前的那次点击上；
+        // 若不清除，关闭半隐后首次点击该黑幕会被误判为“二次点击”而直接弹出确认框
+        // （gui-ying233 于 #1029 提出）。仅在“半隐由开→关”的跳变时重置，
+        // 避免其他 body class 变化在正常模式交互中途误清状态
+        let wasToggleOn = document.body.classList.contains("heimu_toggle_on");
+        new MutationObserver(() => {
+            const isToggleOn = document.body.classList.contains("heimu_toggle_on");
+            if (wasToggleOn && !isToggleOn) {
+                lastClickedHeimu = null;
+            }
+            wasToggleOn = isToggleOn;
+        }).observe(document.body, { attributes: true, attributeFilter: ["class"] });
     };
     /* noteTAIcon */
     const noteTAIcon = () => {
