@@ -1,0 +1,89 @@
+/* 实时预览容器（背景色由原 inline 样式迁入，便于深色模式覆盖） */
+#umInstantPreviewContainer {
+    background-color: #eefddc;
+}
+
+/*
+ * jQuery UI 深色模式适配：moeskin（html.dark）与 Vector 2022 夜间模式（html.skin-theme-clientpref-night）。
+ * jquery.ui 模块自带浅色主题（使用位图渐变背景），无官方深色主题，故在此覆盖为纯色。
+ */
+html.skin-theme-clientpref-night .ui-dialog,
+html.dark .ui-dialog {
+    color: #eaecf0;
+}
+
+html.skin-theme-clientpref-night .ui-dialog.ui-widget-content,
+html.skin-theme-clientpref-night .ui-autocomplete.ui-menu,
+html.dark .ui-dialog.ui-widget-content,
+html.dark .ui-autocomplete.ui-menu {
+    border-color: #54595d;
+    background-color: #202122;
+    background-image: none;
+    color: #eaecf0;
+}
+
+html.skin-theme-clientpref-night .ui-dialog .ui-dialog-titlebar,
+html.dark .ui-dialog .ui-dialog-titlebar {
+    border-color: #54595d;
+    background-color: #2c2d31;
+    background-image: none;
+    color: #eaecf0;
+}
+
+html.skin-theme-clientpref-night .ui-dialog .ui-dialog-titlebar .ui-button,
+html.dark .ui-dialog .ui-dialog-titlebar .ui-button {
+    background-color: transparent;
+    background-image: none;
+    border-color: transparent;
+}
+
+html.skin-theme-clientpref-night .ui-dialog .ui-dialog-buttonpane,
+html.dark .ui-dialog .ui-dialog-buttonpane {
+    border-top-color: #54595d;
+    background-color: #202122;
+    background-image: none;
+}
+
+html.skin-theme-clientpref-night .ui-dialog .ui-dialog-buttonpane .ui-button,
+html.dark .ui-dialog .ui-dialog-buttonpane .ui-button {
+    border-color: #54595d;
+    background-color: #36393f;
+    background-image: none;
+    color: #eaecf0;
+}
+
+html.skin-theme-clientpref-night .ui-dialog .ui-dialog-buttonpane .ui-button:hover,
+html.skin-theme-clientpref-night .ui-dialog .ui-dialog-buttonpane .ui-button:focus,
+html.dark .ui-dialog .ui-dialog-buttonpane .ui-button:hover,
+html.dark .ui-dialog .ui-dialog-buttonpane .ui-button:focus {
+    border-color: #9ab7e4;
+    background-color: #3f434a;
+    background-image: none;
+    color: #f8f9fa;
+}
+
+html.skin-theme-clientpref-night .ui-autocomplete.ui-menu .ui-menu-item,
+html.dark .ui-autocomplete.ui-menu .ui-menu-item {
+    color: #eaecf0;
+}
+
+html.skin-theme-clientpref-night .ui-autocomplete.ui-menu .ui-menu-item.ui-state-focus,
+html.skin-theme-clientpref-night .ui-autocomplete.ui-menu .ui-menu-item:hover,
+html.dark .ui-autocomplete.ui-menu .ui-menu-item.ui-state-focus,
+html.dark .ui-autocomplete.ui-menu .ui-menu-item:hover {
+    border-color: transparent;
+    background-color: rgb(102 153 255 / 25%);
+    background-image: none;
+    color: #f8f9fa;
+}
+
+html.skin-theme-clientpref-night .ui-dialog input[type="text"],
+html.skin-theme-clientpref-night .ui-dialog input[type="password"],
+html.skin-theme-clientpref-night .ui-dialog textarea,
+html.dark .ui-dialog input[type="text"],
+html.dark .ui-dialog input[type="password"],
+html.dark .ui-dialog textarea {
+    border-color: #54595d;
+    background-color: #27292d;
+    color: #eaecf0;
+}
