@@ -195,17 +195,17 @@
     };
 
     // externalLinkConfirm 与 setupHeimuClickListener 共享的状态：
-    // 记录上一次（touch/pen）点击所在的黑幕元素及其时间戳，用于实现“首次点击揭示黑幕内容，再次点击才触发”。
-    // 状态只在 HEIMU_CONFIRM_WINDOW 时间窗内被视为有效：超时后（包括半隐开关切换、长时间停留等
-    // 任何时序问题）一律按“首次点击”处理，从根上避免过期状态误判（gui-ying233 于 #1029 两度提出）。
+    // 记录上一次（touch/pen）点击所在的黑幕元素，用于实现“首次点击揭示黑幕内容，再次点击才触发”。
+    // HeimuToggle 小工具在半隐开关切换时会 fire "heimu_toggle" hook，本文件据此清空共享状态，
+    // 避免开关期间冻结的旧状态把切换后的首次点击误判为二次点击（#1029 评审意见，与 HeimuToggle 协同）。
     // 注意二者都监听 #mw-content-text 的 click，同一事件里先注册的先执行——
     // 因此 externalLinkConfirm 必须先于 setupHeimuClickListener 注册/调用（见文件底部 main 部分），
     // 这样外链确认读到的是上一次点击留下的状态，而本次点击的状态由黑幕监听随后写入。
     /** @type {HTMLElement|null} */
     let lastClickedHeimu = null;
-    let lastClickedHeimuAt = 0;
-    // “再次点击”的有效窗口：超过后视为新的一次“首次点击”（重新揭示，多一次点击但不会误弹确认框）
-    const HEIMU_CONFIRM_WINDOW = 10000;
+    mw.hook("heimu_toggle").add(() => {
+        lastClickedHeimu = null;
+    });
 
     /** 外部链接提示 */
     const externalLinkConfirm = () => {
@@ -237,16 +237,13 @@
             if (/^(?:.+\.)moegirl\.org\.cn$/i.test(hrefURL.host)) {
                 return;
             }
-            // 与黑幕二次点击逻辑联动：若链接在黑幕内且这是对该黑幕有效窗口内的首次点击，
+            // 与黑幕二次点击逻辑联动：若链接在黑幕内且这是对该黑幕的首次点击，
             // 本次点击只用于揭示黑幕内容，不出确认框（由黑幕监听阻止跳转）；
-            // 有效窗口内的再次点击才弹出确认框。黑幕半隐（heimu_toggle_on）时文字始终可见，无需联动。
+            // 再次点击同一黑幕才弹出确认框。黑幕半隐（heimu_toggle_on）时文字始终可见，无需联动。
             // 否则确认框会打断触摸屏的 hover 态，黑幕重新遮住文字，用户始终看不到链接文本（issue #708）
             if (!document.body.classList.contains("heimu_toggle_on")) {
                 const currentHeimu = target.closest(".heimu, .colormu, .heimu-like");
-                const isConfirmedSecondTap = currentHeimu
-                    && lastClickedHeimu === currentHeimu
-                    && Date.now() - lastClickedHeimuAt < HEIMU_CONFIRM_WINDOW;
-                if (currentHeimu && !isConfirmedSecondTap) {
+                if (currentHeimu && lastClickedHeimu !== currentHeimu) {
                     return;
                 }
             }
@@ -282,13 +279,11 @@
                 if (lastClickedHeimu !== currentHeimu) {
                     e.preventDefault();
                 }
-                // 记录最后点击的黑幕及其时间戳（供外链确认的新鲜度判断）
+                // 记录最后点击的黑幕
                 lastClickedHeimu = currentHeimu;
-                lastClickedHeimuAt = Date.now();
             } else {
                 // 这个元素不是黑幕，重置状态
                 lastClickedHeimu = null;
-                lastClickedHeimuAt = 0;
                 return;
             }
         });
