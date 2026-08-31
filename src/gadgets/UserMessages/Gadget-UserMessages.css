@@ -92,3 +92,49 @@ html.dark .ui-dialog textarea {
     background-color: #27292d;
     color: #eaecf0;
 }
+
+/* 补充覆盖（#1031 评审）：标题文字、label、下拉选单与内容部件 */
+html.skin-theme-clientpref-night .ui-dialog .ui-dialog-title,
+html.dark .ui-dialog .ui-dialog-title {
+	color: #eaecf0;
+}
+
+html.skin-theme-clientpref-night .ui-dialog label,
+html.dark .ui-dialog label {
+	color: #eaecf0;
+}
+
+html.skin-theme-clientpref-night .ui-dialog select,
+html.dark .ui-dialog select {
+	border-color: #54595d;
+	background-color: #27292d;
+	color: #eaecf0;
+}
+
+html.skin-theme-clientpref-night .ui-dialog .ui-widget-content,
+html.dark .ui-dialog .ui-widget-content {
+	border-color: #54595d;
+	background-color: #202122;
+	color: #eaecf0;
+}
+
+/* 左上角关闭按钮（旧版 jquery.ui 无 ui-button 类，图标为深色 sprite） */
+html.skin-theme-clientpref-night .ui-dialog .ui-dialog-titlebar-close,
+html.dark .ui-dialog .ui-dialog-titlebar-close {
+	border-color: #54595d;
+	background-color: #36393f;
+	background-image: none;
+}
+
+html.skin-theme-clientpref-night .ui-dialog .ui-dialog-titlebar-close:hover,
+html.skin-theme-clientpref-night .ui-dialog .ui-dialog-titlebar-close:focus,
+html.dark .ui-dialog .ui-dialog-titlebar-close:hover,
+html.dark .ui-dialog .ui-dialog-titlebar-close:focus {
+	border-color: #9ab7e4;
+	background-color: #3f434a;
+}
+
+html.skin-theme-clientpref-night .ui-dialog .ui-dialog-titlebar-close .ui-icon,
+html.dark .ui-dialog .ui-dialog-titlebar-close .ui-icon {
+	filter: invert(1);
+}
