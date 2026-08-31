@@ -1,19 +1,15 @@
 "use strict";
 $(() => {
     try {
-        const REVID = mw.config.get("wgRevisionId");
-        const NS = mw.config.get("wgNamespaceNumber");
-        if (REVID === 0 || (NS & 1) === 0) {
+        const { wgRevisionId, wgNamespaceNumber, wgPageName, wgRestrictionEdit, wgUserName } = mw.config.get(["wgRevisionId", "wgNamespaceNumber", "wgPageName", "wgRestrictionEdit", "wgUserName"]);
+        if (wgRevisionId === 0 || (wgNamespaceNumber & 1) === 0) {
             return;
         }
-        const PAGENAME = mw.config.get("wgPageName");
-        const RESTRICTION = mw.config.get("wgRestrictionEdit");
-        if (PAGENAME.startsWith("萌娘百科_talk:提案/") || RESTRICTION.includes("sysop")) {
+        if (wgPageName.startsWith("萌娘百科_talk:提案/") || wgRestrictionEdit.includes("sysop")) {
             return;
         }
-        const USERNAME = mw.config.get("wgUserName");
         const PUBLICDB = ["技术实现", "权限变更", "操作申请", "方针政策", "页面相关", "提问求助", "群组信息"].filter(
-            (v) => PAGENAME.substring(PAGENAME.lastIndexOf("/") + 1, PAGENAME.length) !== v,
+            (v) => wgPageName.substring(wgPageName.lastIndexOf("/") + 1, wgPageName.length) !== v,
         );
 
         const $body = $("body");
@@ -66,7 +62,7 @@ $(() => {
                     ],
                 });
                 this.targetText = new OO.ui.TextInputWidget({
-                    value: PAGENAME,
+                    value: wgPageName,
                 });
                 this.enterCheckbox = new OO.ui.CheckboxInputWidget({
                     selected: this.storage.getItem("submit-on-enter"),
@@ -157,7 +153,7 @@ $(() => {
                         if (!this.target) {
                             throw new OO.ui.Error(wgULS("请填写目标页面", "請填寫目標頁面"));
                         }
-                        if (this.target === PAGENAME) {
+                        if (this.target === wgPageName) {
                             throw new OO.ui.Error(wgULS("目标页面不得与当前页面相同", "目標頁面不得與當前頁面相同"));
                         }
                         if (!/talk|[讨討][论論]|[对對][话話]/i.test(this.target)) {
@@ -183,13 +179,13 @@ $(() => {
             }
             async doMove() {
                 const api = new mw.Api();
-                const fromAnchor = `${PAGENAME}#${this.anchor}`;
+                const fromAnchor = `${wgPageName}#${this.anchor}`;
                 const toAnchor = `${this.target}#${this.anchor}`;
 
                 let original = (await api.get({
                     action: "parse",
-                    assertuser: USERNAME,
-                    page: PAGENAME,
+                    assertuser: wgUserName,
+                    page: wgPageName,
                     prop: "wikitext",
                     section: this.section,
                 })).parse.wikitext["*"];
@@ -201,7 +197,7 @@ $(() => {
                 console.log("[QuickMoveThread] Moving thread to target page");
                 await api.postWithToken("csrf", {
                     action: "edit",
-                    assertuser: USERNAME,
+                    assertuser: wgUserName,
                     title: this.target,
                     section: "new",
                     sectiontitle: rawTitle,
@@ -214,8 +210,8 @@ $(() => {
                 console.log("[QuickMoveThread] Removing original thread");
                 await api.postWithToken("csrf", {
                     action: "edit",
-                    assertuser: USERNAME,
-                    title: PAGENAME,
+                    assertuser: wgUserName,
+                    title: wgPageName,
                     section: this.section,
                     text: `== ${rawTitle} ==\n{{movedto|1=${toAnchor}}}`,
                     summary: `/* ${this.anchor} */ 移动讨论串至[[${toAnchor}]] !nobot!`,
