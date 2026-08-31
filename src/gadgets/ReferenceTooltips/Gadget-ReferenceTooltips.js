@@ -71,6 +71,8 @@
         .addClass("rt-overlay")
         .appendTo($body);
     let windowManager;
+    // Guard against stacking multiple observers when rt() is called more than once
+    let moeskinFooterObserver;
     // Can't use before https://phabricator.wikimedia.org/T369880 is resolved
     // mw.loader.using( 'mediawiki.page.ready' ).then( function ( require ) {
     // $teleportTarget = $( require( 'mediawiki.page.ready' ).teleportTarget );
@@ -104,6 +106,14 @@
             $window.off(".rt");
         };
 
+        const makeEnableAnchor = () => $("<a>")
+            .text(mw.msg("rt-enable-footer"))
+            .attr("href", "#")
+            .click((e) => {
+                e.preventDefault();
+                enableRt();
+            });
+
         const addEnableLink = () => {
             // #footer-places – Vector
             // #f-list – Timeless, Monobook, Modern
@@ -112,21 +122,51 @@
             if (!$footer.length) {
                 $footer = $("#footer li").parent();
             }
-            if (!$footer.find(".rt-enableItem").length) {
-                $footer.append(
-                    $("<li>")
-                        .addClass("rt-enableItem")
-                        .append(
-                            $("<a>")
-                                .text(mw.msg("rt-enable-footer"))
-                                .attr("href", "#")
-                                .click((e) => {
-                                    e.preventDefault();
-                                    enableRt();
-                                }),
-                        ),
-                );
+            if ($footer.length) {
+                if (!$footer.find(".rt-enableItem").length) {
+                    $footer.append(
+                        $("<li>")
+                            .addClass("rt-enableItem")
+                            .append(makeEnableAnchor()),
+                    );
+                }
+                return;
             }
+            // #moe-global-footer-top – Moeskin, whose footer is rendered client-side (Vue)
+            // and therefore may not exist yet when this function runs
+            const $moeskinFooter = $("#moe-global-footer-top");
+            if ($moeskinFooter.length) {
+                if (!$moeskinFooter.find(".rt-enableItem").length) {
+                    $moeskinFooter.append(
+                        $("<span>")
+                            .addClass("rt-enableItem")
+                            .append(makeEnableAnchor()),
+                    );
+                }
+                return;
+            }
+            if (mw.config.get("skin") !== "moeskin") {
+                return;
+            }
+            // rt() 可能因 wikipage.content 钩子被多次调用：先断开旧观察器（其闭包绑定的
+            // 是过期内容），再以本次调用的新闭包重建，保证启用链接作用于当前内容
+            if (moeskinFooterObserver) {
+                moeskinFooterObserver.disconnect();
+                moeskinFooterObserver = undefined;
+            }
+            moeskinFooterObserver = new MutationObserver(() => {
+                if (!$("#moe-global-footer-top").length) {
+                    return;
+                }
+                moeskinFooterObserver.disconnect();
+                moeskinFooterObserver = undefined;
+                if (enabled) {
+                    // 等待页脚期间工具已在设置面板中被重新启用，无需页脚入口
+                    return;
+                }
+                addEnableLink();
+            });
+            moeskinFooterObserver.observe(document.body, { childList: true, subtree: true });
         };
 
         function TooltippedElement($element) {
