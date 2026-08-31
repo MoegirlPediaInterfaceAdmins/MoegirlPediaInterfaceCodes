@@ -8,7 +8,7 @@
  */
 "use strict";
 (async () => {
-    if (window.AxUserMsg || !mw.config.get("wgUserGroups").includes("patroller") && !mw.config.get("wgUserGroups").includes("sysop")) {
+    if (window.AxUserMsg || !mw.config.get("wgUserGroups").includes("patroller") && !mw.config.get("wgUserGroups").includes("sysop") || !mw.config.get("wgRelevantUserName")) {
         return;
     }
     // alternative for jQuery UI autocomplete: jquery.suggestions
