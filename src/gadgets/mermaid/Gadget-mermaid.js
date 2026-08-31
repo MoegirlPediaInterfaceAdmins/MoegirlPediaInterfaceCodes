@@ -72,9 +72,10 @@
             .catch((e) => {
                 console.error("[Gadget-mermaid] Failed to render diagram", e);
                 ele.dataset.mermaidStatus = "error";
-                // 保留原始定义文本，在容器后追加错误提示
+                // 保留原始定义文本，使用 mw 内置错误消息样式在容器后追加错误提示
                 const errorTip = document.createElement("div");
-                errorTip.className = "mermaid-error";
+                errorTip.className = "mw-message-box mw-message-box-error";
+                errorTip.setAttribute("role", "alert");
                 errorTip.textContent = wgULS("Mermaid 图表渲染失败，请检查图表定义语法。", "Mermaid 圖表渲染失敗，請檢查圖表定義語法。");
                 ele.after(errorTip);
             })));
