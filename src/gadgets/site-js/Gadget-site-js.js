@@ -374,7 +374,7 @@
                     if (!popup.$element.is(":hover") && !$target.is(":hover")) {
                         popup.toggle(false);
                     }
-                }, 100);
+                }, 500);
                 $target.data("hideTimer", timer);
             });
 
@@ -388,7 +388,7 @@
                 if (!popup.$element.is(":hover")) {
                     popup.toggle(false);
                 }
-            }, 100);
+            }, 500);
 
             $target.data("hideTimer", hideTimer);
             return;
