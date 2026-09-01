@@ -46,6 +46,7 @@
     - `definition.{站点代号}.yaml` （可选）保存小工具的站点配置，包括依赖项、所需权限等，在处理对应站点的配置文件时，将会在以覆盖方式合并到上述配置后生成配置文件，如 [`src/gadgets/HotCat/definition.commons.yaml`](src/gadgets/HotCat/definition.commons.yaml)；
     - `.eslintrc.yaml` （可选）用以阻止 eslint 在某些文件上进行检查，常见于来自 npm 和指定页面的代码；
     - `*.js` 和 `*.css` 为小工具代码，文件名为萌娘百科上对应页面的页面名；
+    - 特例：[`src/gadgets/Navigation_popups/Gadget-popups.js`](src/gadgets/Navigation_popups/Gadget-popups.js) 为构建产物，其源码在 [Navigation_popups 仓库](https://github.com/MoegirlPediaInterfaceAdmins/Navigation_popups) 中按上游原始文件结构拆分维护，由该仓库构建后回传本仓库，请勿在本仓库直接修改；同目录的 `Gadget-popups.css` 仍在本仓库维护；
   - [`src/groups`](src/groups) 以文件夹形式保存用户组级别代码，每一个文件夹都对应一个子站点，每一个站点文件夹的子文件夹对应一个用户组，里面包含 `*.js` 和 `*.css` 等代码，文件名为萌娘百科上对应页面的页面名；
   - [`src/global`](src/global) 保存全站代码，每一个文件夹都对应一个站点，里面包含 `*.js` 和 `*.css` 等代码，文件名为萌娘百科上对应页面的页面名。
 
