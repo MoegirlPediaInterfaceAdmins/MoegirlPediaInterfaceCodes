@@ -38,4 +38,5 @@ _sites:
 _section: maintenance
 
 _files:
+  - Gadget-UserMessages.css
   - Gadget-UserMessages.js

@@ -118,3 +118,8 @@ table:is(.moe-infobox, .infobox, .infobox2, .infoboxSpecial) img,
         margin: 1rem 0 !important;
     }
 }
+
+/* Vector 2022 夜间主题未覆盖 ProcessDialog 左侧的默认取消动作。 */
+html.skin-theme-clientpref-night .oo-ui-processDialog-actions-safe .oo-ui-iconElement-icon {
+    filter: invert(1);
+}

@@ -170,3 +170,100 @@ a.popup_change_title_link {
 .popupPreview td:last-child {
     word-break: break-all;
 }
+
+/* 深色模式适配：moeskin（html.dark）与 Vector 2022 夜间模式（html.skin-theme-clientpref-night） */
+html.skin-theme-clientpref-night ins.popupDiff,
+html.dark ins.popupDiff {
+    background: rgb(0 220 160 / 22%);
+}
+
+html.skin-theme-clientpref-night del.popupDiff,
+html.dark del.popupDiff {
+    background: rgb(255 90 90 / 22%);
+}
+
+html.skin-theme-clientpref-night #selectionPreview,
+html.dark #selectionPreview {
+    border-color: #54595d;
+    background-color: #262933;
+}
+
+html.skin-theme-clientpref-night .navpopup,
+html.dark .navpopup {
+    border-color: #54595d;
+    background-color: #202122;
+    box-shadow: 0 3px 8px rgb(0 0 0 / 55%);
+}
+
+html.skin-theme-clientpref-night .navpopup hr,
+html.dark .navpopup hr {
+    color: #54595d !important;
+    background-color: #54595d !important;
+}
+
+html.skin-theme-clientpref-night .popup_menu,
+html.dark .popup_menu {
+    background: #202122;
+    border-color: #54595d;
+}
+
+html.skin-theme-clientpref-night .popup_menu a,
+html.dark .popup_menu a {
+    color: #b6b9bf;
+}
+
+html.skin-theme-clientpref-night .popup_menu_row,
+html.dark .popup_menu_row {
+    color: #72777d;
+}
+
+html.skin-theme-clientpref-night .popup_drop a,
+html.skin-theme-clientpref-night .popup_drop a:visited,
+html.dark .popup_drop a,
+html.dark .popup_drop a:visited {
+    color: #9ab7e4;
+}
+
+html.skin-theme-clientpref-night .popup_drop:hover .popup_menu,
+html.skin-theme-clientpref-night .popup_drop .popup_menu:hover,
+html.dark .popup_drop:hover .popup_menu,
+html.dark .popup_drop .popup_menu:hover {
+    background: #202122;
+    color: #b6b9bf;
+}
+
+html.skin-theme-clientpref-night .popup_drop:hover,
+html.dark .popup_drop:hover {
+    background: rgb(102 153 255 / 20%);
+    color: #9ab7e4;
+}
+
+html.skin-theme-clientpref-night .popup_menu a:hover,
+html.dark .popup_menu a:hover {
+    background: #54595d;
+    color: #f8f9fa;
+}
+
+html.skin-theme-clientpref-night .popup_mainlink a,
+html.dark .popup_mainlink a {
+    color: #eaecf0;
+}
+
+html.skin-theme-clientpref-night a.popup_change_title_link,
+html.dark a.popup_change_title_link {
+    color: #6dbe76;
+}
+
+html.skin-theme-clientpref-night .popup_history_row_even,
+html.dark .popup_history_row_even {
+    background: #27292d;
+}
+
+html.skin-theme-clientpref-night .popupPreview a.extiw,
+html.skin-theme-clientpref-night .popupPreview a.extiw:active,
+html.skin-theme-clientpref-night .popupPreview .external,
+html.dark .popupPreview a.extiw,
+html.dark .popupPreview a.extiw:active,
+html.dark .popupPreview .external {
+    color: #9ab7e4;
+}
