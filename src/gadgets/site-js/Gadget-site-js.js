@@ -368,9 +368,14 @@
                 clearTimeout($target.data("hideTimer"));
             });
 
-            // 鼠标离开popup后关闭
+            // 鼠标离开popup后延迟关闭，与annotation的mouseleave对称，给鼠标从popup移回annotation留出时间
             popup.$element.on("mouseleave", () => {
-                popup.toggle(false);
+                const timer = setTimeout(() => {
+                    if (!popup.$element.is(":hover") && !$target.is(":hover")) {
+                        popup.toggle(false);
+                    }
+                }, 100);
+                $target.data("hideTimer", timer);
             });
 
             $target.data({ popup, marker: $marker });
@@ -378,6 +383,7 @@
 
         if (event.type === "mouseleave") {
             // 延迟关闭，给鼠标从annotation移动到popup留出时间
+            clearTimeout(hideTimer);
             hideTimer = setTimeout(() => {
                 if (!popup.$element.is(":hover")) {
                     popup.toggle(false);
