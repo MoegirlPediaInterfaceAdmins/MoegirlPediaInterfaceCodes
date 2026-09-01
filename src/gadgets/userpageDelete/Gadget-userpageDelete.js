@@ -1,4 +1,3 @@
-// <pre>
 "use strict";
 $(() => {
     try {
@@ -130,4 +129,3 @@ $(() => {
         console.error("[Ns2d] Setup error:", e);
     }
 });
-// </pre>

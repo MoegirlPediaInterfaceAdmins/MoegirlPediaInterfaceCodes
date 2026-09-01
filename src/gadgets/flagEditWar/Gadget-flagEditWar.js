@@ -1,4 +1,3 @@
-// <pre>
 "use strict";
 $(() => {
     const protectLevel = ["sysop", "patrolleredit", "extendedconfirmed", "techedit", "autoconfirmed"];
@@ -115,4 +114,3 @@ $(() => {
         main();
     });
 });
-// </pre>

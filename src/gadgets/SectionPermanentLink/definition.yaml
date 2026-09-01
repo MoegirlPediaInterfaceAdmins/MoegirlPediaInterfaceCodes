@@ -27,6 +27,7 @@ peers: []
 
 dependencies:
   - ext.gadget.site-lib
+  - ext.gadget.libDiscussionUtil
 
 _sites:
   - zh

@@ -153,3 +153,98 @@ li.linenums-active {
     width: max-content;
     min-width: 100%;
 }
+
+/* 深色模式适配：moeskin（html.dark）与 Vector 2022 夜间模式（html.skin-theme-clientpref-night） */
+@media screen {
+    html.skin-theme-clientpref-night .pln,
+    html.dark .pln {
+        color: #eaecf0;
+    }
+
+    html.skin-theme-clientpref-night .str,
+    html.dark .str {
+        color: #7ec699;
+    }
+
+    html.skin-theme-clientpref-night .kwd,
+    html.dark .kwd {
+        color: #7ba7ff;
+    }
+
+    html.skin-theme-clientpref-night .com,
+    html.dark .com {
+        color: #8b949e;
+    }
+
+    html.skin-theme-clientpref-night .typ,
+    html.dark .typ {
+        color: #ce93d8;
+    }
+
+    html.skin-theme-clientpref-night .lit,
+    html.dark .lit {
+        color: #5ac8c8;
+    }
+
+    html.skin-theme-clientpref-night .pun,
+    html.skin-theme-clientpref-night .opn,
+    html.skin-theme-clientpref-night .clo,
+    html.dark .pun,
+    html.dark .opn,
+    html.dark .clo {
+        color: #bfa46f;
+    }
+
+    html.skin-theme-clientpref-night .tag,
+    html.dark .tag {
+        color: #7ba7ff;
+    }
+
+    html.skin-theme-clientpref-night .atn,
+    html.dark .atn {
+        color: #ce93d8;
+    }
+
+    html.skin-theme-clientpref-night .atv,
+    html.dark .atv {
+        color: #7ec699;
+    }
+
+    html.skin-theme-clientpref-night .dec,
+    html.skin-theme-clientpref-night .var,
+    html.dark .dec,
+    html.dark .var {
+        color: #ce93d8;
+    }
+
+    html.skin-theme-clientpref-night .fun,
+    html.dark .fun {
+        color: #ff8a80;
+    }
+}
+
+@media screen {
+    html.skin-theme-clientpref-night pre.prettyprint,
+    html.dark pre.prettyprint {
+        border-color: #54595d;
+    }
+
+    html.skin-theme-clientpref-night li.L1,
+    html.skin-theme-clientpref-night li.L3,
+    html.skin-theme-clientpref-night li.L5,
+    html.skin-theme-clientpref-night li.L7,
+    html.skin-theme-clientpref-night li.L9,
+    html.dark li.L1,
+    html.dark li.L3,
+    html.dark li.L5,
+    html.dark li.L7,
+    html.dark li.L9 {
+        background: #27292d;
+    }
+
+    html.skin-theme-clientpref-night li.linenums-active,
+    html.dark li.linenums-active {
+        background-color: #3a3421;
+        box-shadow: inset 2px 0 0 #d4a72c99;
+    }
+}

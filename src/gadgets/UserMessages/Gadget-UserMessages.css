@@ -1,0 +1,185 @@
+/* 实时预览容器（背景色由原 inline 样式迁入，便于深色模式覆盖） */
+#umInstantPreviewContainer {
+    background-color: #eefddc;
+}
+
+html.skin-theme-clientpref-night #umInstantPreviewContainer,
+html.dark #umInstantPreviewContainer {
+    background-color: #1f2a1c;
+}
+
+/*
+ * jQuery UI 深色模式适配：moeskin（html.dark）与 Vector 2022 夜间模式（html.skin-theme-clientpref-night）。
+ * jquery.ui 模块自带浅色主题（使用位图渐变背景），无官方深色主题，故在此覆盖为纯色。
+ */
+html.skin-theme-clientpref-night .ui-dialog,
+html.dark .ui-dialog {
+    color: #eaecf0;
+}
+
+html.skin-theme-clientpref-night .ui-dialog.ui-widget-content,
+html.skin-theme-clientpref-night .ui-autocomplete.ui-menu,
+html.dark .ui-dialog.ui-widget-content,
+html.dark .ui-autocomplete.ui-menu {
+    border-color: #54595d;
+    background-color: #202122;
+    background-image: none;
+    color: #eaecf0;
+}
+
+html.skin-theme-clientpref-night .ui-dialog .ui-dialog-titlebar,
+html.dark .ui-dialog .ui-dialog-titlebar {
+    border-color: #54595d;
+    /* Overrides the site-level jquery.ui header rule, which uses !important. */
+    background: #2c2d31 !important;
+    color: #eaecf0;
+}
+
+html.skin-theme-clientpref-night .ui-dialog .ui-dialog-buttonpane,
+html.dark .ui-dialog .ui-dialog-buttonpane {
+    border-top-color: #54595d;
+    background-color: #202122;
+    background-image: none;
+}
+
+html.skin-theme-clientpref-night .ui-autocomplete.ui-menu .ui-menu-item,
+html.dark .ui-autocomplete.ui-menu .ui-menu-item {
+    color: #eaecf0;
+}
+
+html.skin-theme-clientpref-night .ui-autocomplete.ui-menu .ui-menu-item.ui-state-focus,
+html.skin-theme-clientpref-night .ui-autocomplete.ui-menu .ui-menu-item:hover,
+html.skin-theme-clientpref-night .ui-autocomplete.ui-menu .ui-menu-item > a.ui-state-focus,
+html.dark .ui-autocomplete.ui-menu .ui-menu-item.ui-state-focus,
+html.dark .ui-autocomplete.ui-menu .ui-menu-item:hover,
+html.dark .ui-autocomplete.ui-menu .ui-menu-item > a.ui-state-focus {
+    border-color: transparent;
+    background-color: rgb(102 153 255 / 25%);
+    background-image: none;
+    color: #f8f9fa;
+}
+
+html.skin-theme-clientpref-night .ui-dialog input[type="text"],
+html.skin-theme-clientpref-night .ui-dialog input[type="password"],
+html.skin-theme-clientpref-night .ui-dialog textarea,
+html.dark .ui-dialog input[type="text"],
+html.dark .ui-dialog input[type="password"],
+html.dark .ui-dialog textarea {
+    border-color: #54595d;
+    background-color: #27292d;
+    color: #eaecf0;
+}
+
+/* 补充覆盖（#1031 评审）：标题文字、label、下拉选单与内容部件 */
+html.skin-theme-clientpref-night .ui-dialog .ui-dialog-title,
+html.dark .ui-dialog .ui-dialog-title {
+	color: #eaecf0;
+}
+
+html.skin-theme-clientpref-night .ui-dialog label,
+html.dark .ui-dialog label {
+	color: #eaecf0;
+}
+
+html.skin-theme-clientpref-night .ui-dialog select,
+html.dark .ui-dialog select {
+    border-color: #54595d;
+    background-color: #27292d;
+    color: #eaecf0;
+    color-scheme: dark;
+}
+
+html.skin-theme-clientpref-night .ui-dialog select option,
+html.skin-theme-clientpref-night .ui-dialog select optgroup,
+html.dark .ui-dialog select option,
+html.dark .ui-dialog select optgroup {
+    background-color: #27292d;
+    color: #eaecf0;
+}
+
+html.skin-theme-clientpref-night .ui-dialog .ui-widget-content,
+html.dark .ui-dialog .ui-widget-content {
+    border-color: #54595d;
+    background-color: #202122;
+    background-image: none;
+    color: #eaecf0;
+}
+
+html.skin-theme-clientpref-night .ui-dialog .ui-button,
+html.dark .ui-dialog .ui-button {
+    border-color: #54595d !important;
+    background: #36393f !important;
+    color: #eaecf0;
+}
+
+html.skin-theme-clientpref-night .ui-dialog .ui-button:hover,
+html.skin-theme-clientpref-night .ui-dialog .ui-button:focus,
+html.dark .ui-dialog .ui-button:hover,
+html.dark .ui-dialog .ui-button:focus {
+    border-color: #9ab7e4 !important;
+    background: #3f434a !important;
+    color: #f8f9fa;
+}
+
+html.skin-theme-clientpref-night .ui-dialog .ui-button.ui-state-disabled,
+html.dark .ui-dialog .ui-button.ui-state-disabled {
+    border-color: #54595d !important;
+    background: #2c2d31 !important;
+    color: #a2a9b1;
+    opacity: 1;
+}
+
+html.skin-theme-clientpref-night .ui-dialog .ui-button .ui-icon,
+html.dark .ui-dialog .ui-button .ui-icon {
+    filter: brightness(0) invert(1);
+}
+
+html.skin-theme-clientpref-night .ui-dialog :is(input[type="text"], input[type="password"], textarea, select):focus,
+html.dark .ui-dialog :is(input[type="text"], input[type="password"], textarea, select):focus {
+    border-color: #9ab7e4;
+    outline: 1px solid #9ab7e4;
+}
+
+/* 左上角关闭按钮（旧版 jquery.ui 无 ui-button 类，图标为深色 sprite） */
+html.skin-theme-clientpref-night .ui-dialog .ui-dialog-titlebar-close,
+html.dark .ui-dialog .ui-dialog-titlebar-close {
+    border-color: #54595d;
+    background-color: #36393f;
+    background-image: none;
+}
+
+html.skin-theme-clientpref-night .ui-dialog .ui-dialog-titlebar-close:hover,
+html.skin-theme-clientpref-night .ui-dialog .ui-dialog-titlebar-close:focus,
+html.dark .ui-dialog .ui-dialog-titlebar-close:hover,
+html.dark .ui-dialog .ui-dialog-titlebar-close:focus {
+    border-color: #9ab7e4;
+    background-color: #3f434a;
+}
+
+html.skin-theme-clientpref-night .ui-dialog .ui-dialog-titlebar-close .ui-icon,
+html.dark .ui-dialog .ui-dialog-titlebar-close .ui-icon {
+    filter: invert(1);
+}
+
+html.skin-theme-clientpref-night .ui-dialog .ui-dialog-titlebar a,
+html.dark .ui-dialog .ui-dialog-titlebar a,
+html.skin-theme-clientpref-night .ui-autocomplete.ui-menu .ui-menu-item a,
+html.dark .ui-autocomplete.ui-menu .ui-menu-item a {
+    color: #a8c7fa;
+}
+
+html.skin-theme-clientpref-night .ui-dialog .ui-dialog-titlebar a:hover,
+html.skin-theme-clientpref-night .ui-dialog .ui-dialog-titlebar a:focus,
+html.dark .ui-dialog .ui-dialog-titlebar a:hover,
+html.dark .ui-dialog .ui-dialog-titlebar a:focus {
+    color: #d4e4ff;
+}
+
+html.skin-theme-clientpref-night .ui-autocomplete.ui-menu .ui-menu-item.ui-state-focus a,
+html.skin-theme-clientpref-night .ui-autocomplete.ui-menu .ui-menu-item:hover a,
+html.skin-theme-clientpref-night .ui-autocomplete.ui-menu .ui-menu-item > a.ui-state-focus,
+html.dark .ui-autocomplete.ui-menu .ui-menu-item.ui-state-focus a,
+html.dark .ui-autocomplete.ui-menu .ui-menu-item:hover a,
+html.dark .ui-autocomplete.ui-menu .ui-menu-item > a.ui-state-focus {
+    color: #f8f9fa;
+}

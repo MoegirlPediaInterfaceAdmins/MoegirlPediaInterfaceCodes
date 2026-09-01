@@ -1,5 +1,4 @@
 "use strict";
-// <pre>
 /*
  * 引自 https://zh.wikipedia.org/wiki/MediaWiki:Gadget-noteTA.js jQuery UI对话框版本
  * User:AnnAngela做了整合与现代化
@@ -192,4 +191,3 @@ const parser = () => {
 };
 $(parser);
 mw.hook("wikipage.content").add(parser);
-// </pre>

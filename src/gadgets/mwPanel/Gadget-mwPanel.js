@@ -1,5 +1,4 @@
 "use strict";
-// <pre>
 $(() => {
     const wgPageName = mw.config.get("wgRelevantPageName");
     const items = {
@@ -23,4 +22,3 @@ $(() => {
     }
     $("#t-log a").text(wgULS("用户日志", "使用者日誌", null, null, "用戶日誌"));
 });
-// </pre>

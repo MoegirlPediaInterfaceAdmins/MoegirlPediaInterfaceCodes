@@ -1,4 +1,3 @@
-// <pre>
 "use strict";
 (async () => {
     await $.ready;
@@ -386,4 +385,3 @@
     }
     mw.loader.addStyleTag(style.join("\n"));
 })();
-// </pre>

@@ -1,5 +1,4 @@
 "use strict";
-// <pre>
 $(() => {
     const {
         wgArticleId = -1,
@@ -147,4 +146,3 @@ $(() => {
         }
     }
 });
-// </pre>

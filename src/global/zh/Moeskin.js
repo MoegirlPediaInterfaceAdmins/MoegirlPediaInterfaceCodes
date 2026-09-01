@@ -194,6 +194,19 @@
         });
     };
 
+    // externalLinkConfirm 与 setupHeimuClickListener 共享的状态：
+    // 记录上一次（touch/pen）点击所在的黑幕元素，用于实现“首次点击揭示黑幕内容，再次点击才触发”。
+    // HeimuToggle 小工具在半隐开关切换时会 fire "heimu_toggle" hook，本文件据此清空共享状态，
+    // 避免开关期间冻结的旧状态把切换后的首次点击误判为二次点击（#1029 评审意见，与 HeimuToggle 协同）。
+    // 注意二者都监听 #mw-content-text 的 click，同一事件里先注册的先执行——
+    // 因此 externalLinkConfirm 必须先于 setupHeimuClickListener 注册/调用（见文件底部 main 部分），
+    // 这样外链确认读到的是上一次点击留下的状态，而本次点击的状态由黑幕监听随后写入。
+    /** @type {HTMLElement|null} */
+    let lastClickedHeimu = null;
+    mw.hook("heimu_toggle").add(() => {
+        lastClickedHeimu = null;
+    });
+
     /** 外部链接提示 */
     const externalLinkConfirm = () => {
         const modulesReady = mw.loader.using(["ext.gadget.site-lib", "oojs-ui-windows", "oojs-ui-core"]);
@@ -224,6 +237,16 @@
             if (/^(?:.+\.)moegirl\.org\.cn$/i.test(hrefURL.host)) {
                 return;
             }
+            // 与黑幕二次点击逻辑联动：若链接在黑幕内且这是对该黑幕的首次点击，
+            // 本次点击只用于揭示黑幕内容，不出确认框（由黑幕监听阻止跳转）；
+            // 再次点击同一黑幕才弹出确认框。黑幕半隐（heimu_toggle_on）时文字始终可见，无需联动。
+            // 否则确认框会打断触摸屏的 hover 态，黑幕重新遮住文字，用户始终看不到链接文本（issue #708）
+            if (!document.body.classList.contains("heimu_toggle_on")) {
+                const currentHeimu = target.closest(".heimu, .colormu, .heimu-like");
+                if (currentHeimu && lastClickedHeimu !== currentHeimu) {
+                    return;
+                }
+            }
             e.preventDefault();
             await modulesReady;
             const response = await OO.ui.confirm(getConfirmMessage(hrefURL));
@@ -236,8 +259,7 @@
      * 再次点击同一个黑幕里的元素，才会触发事件
      */
     const setupHeimuClickListener = () => {
-        /** @type {HTMLElement|null} */
-        let lastClickedHeimu = null;
+        // lastClickedHeimu 定义在本文件 externalLinkConfirm 之前，二者共享
         document.querySelector("#mw-content-text")?.addEventListener("click", (e) => {
             const pointerType = e.pointerType;
             if (pointerType !== "touch" && pointerType !== "pen") {
@@ -245,8 +267,8 @@
                 return;
             }
             /** @type {HTMLElement} */
-            // 小工具“黑幕半隐”启用时正常跳转
-            if (document.body.closest(".heimu_toggle_on")) {
+            // 小工具“黑幕半隐”启用时正常跳转（与 externalLinkConfirm 中的判定方式保持一致）
+            if (document.body.classList.contains("heimu_toggle_on")) {
                 return;
             }
             const target = e.target;

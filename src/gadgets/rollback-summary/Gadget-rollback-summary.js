@@ -1,4 +1,3 @@
-// <pre>
 "use strict";
 $(() => {
     const wgUserGroups = mw.config.get("wgUserGroups", []);
@@ -101,20 +100,9 @@ $(() => {
         return false;
     });
     new Image().src = "https://storage.moegirl.org.cn/moegirl/commons/d/d1/Windows_10_loading.gif";
-    const changesList = document.querySelector(".mw-changeslist");
-    if (changesList) {
-        const observer = new MutationObserver((mutations) => {
-            mutations.forEach((mutation) => {
-                mutation.addedNodes.forEach((node) => {
-                    if (node.nodeType !== 1) {
-                        return;
-                    }
-                    const $rollbackLinks = $(node).find(".mw-rollback-link a:not([data-href])").addBack(".mw-rollback-link a:not([data-href])");
-                    $rollbackLinks.each(loop);
-                });
-            });
-        });
-        observer.observe(changesList, { childList: true });
-    }
+    const processContent = ($content) => {
+        $content.find(".mw-rollback-link a:not([data-href])").addBack(".mw-rollback-link a:not([data-href])").each(loop);
+    };
+    processContent($(document));
+    mw.hook("wikipage.content").add(processContent);
 });
-// </pre>

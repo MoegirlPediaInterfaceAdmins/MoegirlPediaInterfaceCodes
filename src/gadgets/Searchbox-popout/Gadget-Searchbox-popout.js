@@ -1,5 +1,4 @@
 "use strict";
-// <pre>
 $(() => {
     const $simpleSearch = $("#simpleSearch");
     $("input#searchInput").on({
@@ -15,4 +14,3 @@ $(() => {
         },
     });
 });
-// </pre>

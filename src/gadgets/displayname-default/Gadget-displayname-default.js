@@ -1,4 +1,3 @@
-// <pre>
 "use strict";
 (() => {
     const container = document.querySelector(".mw-parser-output");
@@ -44,4 +43,3 @@
         replaceTextNodes(a, userName, targetText);
     }
 })();
-// </pre>

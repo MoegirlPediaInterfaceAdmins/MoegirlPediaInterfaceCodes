@@ -1,5 +1,4 @@
 "use strict";
-// <pre>
 ((isCompleted) => {
     const run = () => {
         if (mw.config.get("wgNamespaceNumber") !== -1 || mw.config.get("wgCanonicalSpecialPageName") !== "Allmessages") {
@@ -148,4 +147,3 @@
         $(window).on("load", run);
     }
 })(document.readyState === "complete");
-// </pre>

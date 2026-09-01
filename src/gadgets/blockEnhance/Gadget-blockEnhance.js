@@ -1,4 +1,3 @@
-// <pre>
 "use strict";
 (async () => {
     // await mw.loader.using(["ext.gadget.libOOUIDialog"]);
@@ -226,4 +225,3 @@
         flag = true;
     }
 })();
-// </pre>

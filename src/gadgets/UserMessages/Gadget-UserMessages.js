@@ -8,7 +8,7 @@
  */
 "use strict";
 (async () => {
-    if (window.AxUserMsg || !mw.config.get("wgUserGroups").includes("patroller") && !mw.config.get("wgUserGroups").includes("sysop")) {
+    if (window.AxUserMsg || !mw.config.get("wgUserGroups").includes("patroller") && !mw.config.get("wgUserGroups").includes("sysop") || !mw.config.get("wgRelevantUserName")) {
         return;
     }
     // alternative for jQuery UI autocomplete: jquery.suggestions
@@ -807,7 +807,7 @@
             cancelButtonLabel: "取消",
         },
         umInstPrevContainer: $("<div>", {
-            id: "umInstantPreviewContainer", style: "background-color:#EFD;height:380px;overflow:scroll;vertical-align:middle;",
+            id: "umInstantPreviewContainer", style: "height:380px;overflow:scroll;vertical-align:middle;",
         }),
         umInitImgUserExists: '<img id="%ID%" src="https://storage.moegirl.org.cn/moegirl/commons/4/42/P_no.svg" width="20" alt="?"/>',
         umImgUserUndefined: "https://storage.moegirl.org.cn/moegirl/commons/4/42/P_no.svg",

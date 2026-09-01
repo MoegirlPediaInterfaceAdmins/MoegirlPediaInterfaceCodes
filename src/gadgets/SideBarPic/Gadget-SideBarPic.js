@@ -1,4 +1,3 @@
-// <pre>
 "use strict";
 (async () => {
     const sleep = (ms = 1000) => new Promise((res) => setTimeout(res, ms));
@@ -84,4 +83,3 @@
         $("body").addClass("show-logo");
     }
 })();
-// </pre>

@@ -7,7 +7,6 @@
  * 全部内容引自 https://en.wikipedia.org/wiki/MediaWiki:Gadget-popups.js
  * 当前版本相较于引述版本有大量优化，请不要直接复制粘贴新版本代码
  */
-// <pre>
 /* global wikEdUseWikEd, WikEdUpdateFrame */
 "use strict";
 $(() => {
@@ -6528,4 +6527,3 @@ $(() => {
         });
     })();
 });
-// </pre>

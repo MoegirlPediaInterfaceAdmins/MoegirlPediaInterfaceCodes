@@ -1,5 +1,4 @@
 "use strict";
-// <pre>
 $(() => {
     $("#pt-logout > a[href*=logoutToken], .moe-user-dropdown-inner #logout").each((_, ele) => {
         const url = new URL(ele.href, location.origin);
@@ -15,4 +14,3 @@ $(() => {
         }
     }
 });
-// </pre>

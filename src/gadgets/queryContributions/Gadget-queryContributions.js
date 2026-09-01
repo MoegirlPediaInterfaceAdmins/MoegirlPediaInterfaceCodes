@@ -1,4 +1,3 @@
-// <pre>
 // remake by [[User:Leranjun]]
 "use strict";
 $(() => (async () => {
@@ -154,4 +153,3 @@ $(() => (async () => {
         p.remove();
     });
 })());
-// </pre>

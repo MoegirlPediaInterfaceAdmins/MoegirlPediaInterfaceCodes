@@ -284,3 +284,61 @@ table.navbox > tbody > tr > td > table {
 .ve-ui-mwWikitextSurface .ve-ce-paragraphNode {
     line-height: 1.5em !important;
 }
+
+/*
+ * OOUI 弹窗深色模式适配（自 site-styles 迁入，见 #1031 评审意见）。
+ * OOUI 没有官方深色主题，libOOUIDialog、shortlink 等所有 OOUI 弹窗消费方统一在此获得深色支持。
+ */
+html.dark .oo-ui-window {
+    color: #eaecf0;
+}
+
+html.dark .oo-ui-window-frame {
+    background-color: #202122;
+}
+
+html.dark .oo-ui-dialog-content {
+    background-color: #202122;
+}
+
+html.dark .oo-ui-window .oo-ui-window-head {
+    background-color: #2c2d31;
+}
+
+html.dark .oo-ui-window .oo-ui-window-body {
+    background-color: #202122;
+}
+
+html.dark .oo-ui-window .oo-ui-window-foot {
+    background-color: #2c2d31;
+}
+
+html.dark .oo-ui-messageDialog-message {
+    color: #eaecf0;
+}
+
+html.dark .oo-ui-inputWidget-input {
+    border-color: #54595d;
+    background-color: #27292d;
+    color: #eaecf0;
+    box-shadow: none;
+}
+
+html.dark .oo-ui-textInputWidget .oo-ui-inputWidget-input::placeholder {
+    color: #72777d;
+}
+
+html.dark .oo-ui-dropdownWidget-handle {
+    border-color: #54595d;
+    background-color: #27292d;
+    color: #eaecf0;
+}
+
+html.dark .oo-ui-menuSelectWidget {
+    border-color: #54595d;
+    background-color: #202122;
+}
+
+html.dark .oo-ui-optionWidget-selected {
+    background-color: rgb(102 153 255 / 25%);
+}

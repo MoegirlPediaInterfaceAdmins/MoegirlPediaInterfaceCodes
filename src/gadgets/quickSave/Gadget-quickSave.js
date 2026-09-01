@@ -1,4 +1,3 @@
-// <pre>
 "use strict";
 $(() => {
     const wgUserGroups = mw.config.get("wgUserGroups"),
@@ -325,26 +324,32 @@ $(() => {
     $body.append(windowManager.$element);
     const qsDialog = new QSWindow();
     windowManager.addWindows([qsDialog]);
-    for (const { self, sectionTitle } of window.libDiscussionUtil.getDiscussionHeader(["saveNotice"])) {
-        const button = $("<a>");
-        button.attr("href", "javascript:void(0);").prop("draggable", false).addClass("AnnTools_QuickSave").text(wgULS("快速存档", "快速存檔"));
-        self.find(".mw-editsection-bracket").first()
-            .after('<span class="mw-editsection-divider"> | </span>')
-            .after(button);
-        button.on("click", () => {
-            if (!qsDialog.isVisible()) {
-                qsDialog.setSectionTitle(sectionTitle);
-                windowManager.openWindow(qsDialog);
+    const injectButtons = () => {
+        for (const { self, sectionTitle } of window.libDiscussionUtil.getDiscussionHeader(["saveNotice"])) {
+            if (self.find(".AnnTools_QuickSave")[0]) {
+                continue;
             }
-            return false;
-        });
-        const quicksave = self.find(".AnnTools_QuickSave");
-        if (self.find(".AnnTools_MarkAsResolved")[0]) {
-            const divider = quicksave.next(".mw-editsection-divider");
-            if (divider.length > 0) {
-                self.find(".mw-editsection .mw-editsection-bracket").first().after(divider).after(quicksave);
+            const button = $("<a>");
+            button.attr("href", "javascript:void(0);").prop("draggable", false).addClass("AnnTools_QuickSave").text(wgULS("快速存档", "快速存檔"));
+            self.find(".mw-editsection-bracket").first()
+                .after('<span class="mw-editsection-divider"> | </span>')
+                .after(button);
+            button.on("click", () => {
+                if (!qsDialog.isVisible()) {
+                    qsDialog.setSectionTitle(sectionTitle);
+                    windowManager.openWindow(qsDialog);
+                }
+                return false;
+            });
+            const quicksave = self.find(".AnnTools_QuickSave");
+            if (self.find(".AnnTools_MarkAsResolved")[0]) {
+                const divider = quicksave.next(".mw-editsection-divider");
+                if (divider.length > 0) {
+                    self.find(".mw-editsection .mw-editsection-bracket").first().after(divider).after(quicksave);
+                }
             }
         }
-    }
+    };
+    injectButtons();
+    window.libDiscussionUtil.onContentChange(injectButtons);
 });
-// </pre>

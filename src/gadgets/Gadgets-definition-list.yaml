@@ -36,6 +36,7 @@
     - SectionPermanentLink
     - SideBarPic
     - draftInfo
+    - mermaid
 
 - name: skin
   gadgets:

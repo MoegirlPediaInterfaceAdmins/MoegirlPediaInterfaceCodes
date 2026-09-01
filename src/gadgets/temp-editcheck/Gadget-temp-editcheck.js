@@ -1,4 +1,3 @@
-// <pre>
 /* eslint-disable require-atomic-updates */
 "use strict";
 $(() => {
@@ -218,4 +217,3 @@ $(() => {
         unloading = true;
     });
 });
-// </pre>

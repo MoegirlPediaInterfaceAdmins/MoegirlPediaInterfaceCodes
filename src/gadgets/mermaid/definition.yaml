@@ -4,7 +4,7 @@ hidden: false
 
 default: false
 
-supportsUrlLoad: false
+supportsUrlLoad: true
 
 skins: []
 
@@ -20,23 +20,19 @@ type: general
 
 package: false
 
-rights:
-  - edit
-  - patrol
+rights: []
 
 peers: []
 
 dependencies:
   - ext.gadget.site-lib
-  - ext.gadget.libUtil
-  - jquery.ui
-  - mediawiki.util
+  - ext.gadget.libCachedCode
 
 _sites:
   - zh
+  - commons
 
-_section: maintenance
+_section: browsing
 
 _files:
-  - Gadget-UserMessages.css
-  - Gadget-UserMessages.js
+  - Gadget-mermaid.js

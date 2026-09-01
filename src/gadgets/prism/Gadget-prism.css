@@ -9,3 +9,139 @@
 pre[class*="language-"] {
     display: flow-root;
 }
+
+/* 深色模式适配：moeskin（html.dark）与 Vector 2022 夜间模式（html.skin-theme-clientpref-night） */
+html.skin-theme-clientpref-night #mw-content-text code[class*="language-"],
+html.dark #mw-content-text code[class*="language-"] {
+    color: #e8e8e8;
+}
+
+html.skin-theme-clientpref-night #mw-content-text pre[class*="language-"] > code,
+html.dark #mw-content-text pre[class*="language-"] > code {
+    border-left-color: #358ccb;
+    box-shadow: -1px 0 0 0 #358ccb, 0 0 0 1px #3e4045;
+    background-color: #1e1f22;
+    background-image: linear-gradient(transparent 50%, rgb(69 142 209 / 9%) 50%);
+}
+
+html.skin-theme-clientpref-night #mw-content-text pre[class*="language-"],
+html.dark #mw-content-text pre[class*="language-"] {
+    background-color: #1e1f22;
+}
+
+html.skin-theme-clientpref-night #mw-content-text :not(pre) > code[class*="language-"],
+html.dark #mw-content-text :not(pre) > code[class*="language-"] {
+    color: #ff8a80;
+    border-color: rgb(255 255 255 / 15%);
+    background-color: #26272b;
+}
+
+html.skin-theme-clientpref-night pre[class*="language-"]::before,
+html.skin-theme-clientpref-night pre[class*="language-"]::after,
+html.dark pre[class*="language-"]::before,
+html.dark pre[class*="language-"]::after {
+    box-shadow: 0 13px 8px rgb(0 0 0 / 60%);
+}
+
+html.skin-theme-clientpref-night .token.comment,
+html.skin-theme-clientpref-night .token.block-comment,
+html.skin-theme-clientpref-night .token.prolog,
+html.skin-theme-clientpref-night .token.doctype,
+html.skin-theme-clientpref-night .token.cdata,
+html.dark .token.comment,
+html.dark .token.block-comment,
+html.dark .token.prolog,
+html.dark .token.doctype,
+html.dark .token.cdata {
+    color: #8b949e;
+}
+
+html.skin-theme-clientpref-night .token.punctuation,
+html.dark .token.punctuation {
+    color: #c9d1d9;
+}
+
+html.skin-theme-clientpref-night .token.property,
+html.skin-theme-clientpref-night .token.tag,
+html.skin-theme-clientpref-night .token.boolean,
+html.skin-theme-clientpref-night .token.number,
+html.skin-theme-clientpref-night .token.function-name,
+html.skin-theme-clientpref-night .token.constant,
+html.skin-theme-clientpref-night .token.symbol,
+html.skin-theme-clientpref-night .token.deleted,
+html.dark .token.property,
+html.dark .token.tag,
+html.dark .token.boolean,
+html.dark .token.number,
+html.dark .token.function-name,
+html.dark .token.constant,
+html.dark .token.symbol,
+html.dark .token.deleted {
+    color: #ff7b72;
+}
+
+html.skin-theme-clientpref-night .token.selector,
+html.skin-theme-clientpref-night .token.attr-name,
+html.skin-theme-clientpref-night .token.string,
+html.skin-theme-clientpref-night .token.char,
+html.skin-theme-clientpref-night .token.function,
+html.skin-theme-clientpref-night .token.builtin,
+html.skin-theme-clientpref-night .token.inserted,
+html.dark .token.selector,
+html.dark .token.attr-name,
+html.dark .token.string,
+html.dark .token.char,
+html.dark .token.function,
+html.dark .token.builtin,
+html.dark .token.inserted {
+    color: #7ec699;
+}
+
+html.skin-theme-clientpref-night .token.operator,
+html.skin-theme-clientpref-night .token.entity,
+html.skin-theme-clientpref-night .token.url,
+html.skin-theme-clientpref-night .token.variable,
+html.dark .token.operator,
+html.dark .token.entity,
+html.dark .token.url,
+html.dark .token.variable {
+    color: #d7ba7d;
+    background: rgb(0 0 0 / 25%);
+}
+
+html.skin-theme-clientpref-night .token.atrule,
+html.skin-theme-clientpref-night .token.attr-value,
+html.skin-theme-clientpref-night .token.keyword,
+html.skin-theme-clientpref-night .token.class-name,
+html.dark .token.atrule,
+html.dark .token.attr-value,
+html.dark .token.keyword,
+html.dark .token.class-name {
+    color: #79c0ff;
+}
+
+html.skin-theme-clientpref-night .token.regex,
+html.skin-theme-clientpref-night .token.important,
+html.dark .token.regex,
+html.dark .token.important {
+    color: #f2cc60;
+}
+
+html.skin-theme-clientpref-night .language-css .token.string,
+html.skin-theme-clientpref-night .style .token.string,
+html.dark .language-css .token.string,
+html.dark .style .token.string {
+    color: #d7ba7d;
+    background: rgb(0 0 0 / 25%);
+}
+
+/* 行号（prism-line-numbers 为 prefetch 生成物，深色覆盖在此维护） */
+html.skin-theme-clientpref-night .line-numbers .line-numbers-rows,
+html.dark .line-numbers .line-numbers-rows {
+    border-right-color: #54595d;
+}
+
+html.skin-theme-clientpref-night .line-numbers-rows > span::before,
+html.dark .line-numbers-rows > span::before {
+    color: #8b949e;
+}

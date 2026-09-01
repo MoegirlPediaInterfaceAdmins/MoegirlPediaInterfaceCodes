@@ -1,4 +1,3 @@
-// <pre>
 "use strict";
 (async () => {
     /* 函数定义块 */
@@ -30,4 +29,3 @@
         addLink($(".mw-revdel-editreasons > a"), "隐藏");
     }
 })();
-// </pre>

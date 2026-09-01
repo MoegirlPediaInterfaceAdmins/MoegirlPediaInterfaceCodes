@@ -1,5 +1,4 @@
 /* eslint-disable no-use-before-define */
-// <pre>
 /**
    Author: ZUO Haocheng from ZHWikipedia
    URL:https://zh.wikipedia.org/w/index.php?title=User:Zuohaocheng/patrollCount.js
@@ -455,4 +454,3 @@ $(() => {
         instanceRAF.request(updateUnpatrolled);
     });
 });
-// </pre>

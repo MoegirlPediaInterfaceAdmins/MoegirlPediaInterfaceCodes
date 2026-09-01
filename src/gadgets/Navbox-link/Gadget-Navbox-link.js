@@ -1,4 +1,3 @@
-// <pre>
 "use strict";
 $(() => {
     if ($("#mw-content-text .navbox:not(.template-documentation .navbox)").length === 0) {
@@ -81,4 +80,3 @@ $(() => {
         targetLoc.show();
     }).trigger("click");
 });
-// </pre>

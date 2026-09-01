@@ -1,4 +1,3 @@
-// <pre>
 "use strict";
 $(() => (async () => {
     if (!mw.config.get("wgIsArticle") || !mw.config.get("wgUserGroups").includes("sysop") || !$(".mw-category-generated > div")[0]) {
@@ -9,6 +8,11 @@ $(() => (async () => {
 
     const deduplicate = (iterable) => [...new Set(iterable).values()];
     const generatePageLinkSelector = (title) => deduplicate([encodeURI(title), mw.util.wikiUrlencode(title)]).map((selector) => `a[href$="/${selector}"]`).join(",");
+    // e.stack 可能缺失或只有一行（此时取第二行会抛错），须做防御
+    const describeError = (e) => {
+        const detail = e instanceof Error && typeof e.stack === "string" ? (e.stack.split("\n")[1] || "").trim() : "";
+        return detail ? `${e} ${detail}` : e instanceof Error ? String(e) : JSON.stringify(e);
+    };
 
     let globalDeletionLock = false;
     const DELCATS = {
@@ -22,7 +26,30 @@ $(() => (async () => {
     const wgPageName = mw.config.get("wgPageName");
     const wgUserName = mw.config.get("wgUserName");
     // Make sure that all links open in a new tab when locked
-    $("body").on("click", "a", (e) => globalDeletionLock ? window.open(e.target.href, "_blank") && false : null);
+    $("body").on("click", "a", (e) => {
+        if (!globalDeletionLock) {
+            return;
+        }
+        // Delegated handler: e.currentTarget is the matched <a>, more reliable than closest() from e.target
+        const $self = $(e.currentTarget);
+        const href = $self.attr("href");
+        if (!href) {
+            return;
+        }
+        // Skip the batch deletion button and same-page anchors (href="#...", or any URL resolving
+        // to the current page modulo the fragment, e.g. "javascript:"-free relative links);
+        // otherwise clicking them while locked opens a new page. Same-page check as suggested
+        // by gui-ying233 in #1027
+        const target = new URL(href, location.href);
+        target.hash = "";
+        const current = new URL(location.href);
+        current.hash = "";
+        if (target.href === current.href || $self.closest("#ca-batdel").length) {
+            return;
+        }
+        window.open(target.href, "_blank");
+        return false;
+    });
 
     const api = new mw.Api();
     const $root = $(".mw-category-generated"), $items = $root.find("li");
@@ -152,7 +179,8 @@ $(() => (async () => {
     }
 
     // Deletion buttons
-    $portlet.on("click", () => {
+    $portlet.on("click", (e) => {
+        e.preventDefault();
         if ($("#batdel-control")[0] || globalDeletionLock) {
             return;
         }
@@ -232,47 +260,64 @@ $(() => (async () => {
 
             const $spinner = $('<img src="https://storage.moegirl.org.cn/moegirl/commons/d/d1/Windows_10_loading.gif" style="height: 1em; margin-top: -.25em;">'), $status = $("<span>");
 
-            $root.find(".batdel-result").remove();
-            $root.find(".batdel-select").prop("disabled", true);
-            $control.append("<br>", $spinner, $status);
-            $root.find("a:not(.batdel-bypass)").each((_, ele) => {
-                const self = $(ele);
-                if (!self.closest("li").find(".batdel-select:checked")[0]) {
-                    self.addClass("batdel-disabled");
-                }
-            });
             try {
-                $status.text(wgULS("正在删除，已完成删除的页面将会被删除线划去……", "正在刪除，已完成刪除的頁面將會被刪除線划去……"));
-                for (const ele of $root.find("a").not(".batdel-bypass, .batdel-disabled").toArray()) {
+                $root.find(".batdel-result").remove();
+                $root.find(".batdel-select").prop("disabled", true);
+                $control.append("<br>", $spinner, $status);
+                $root.find("a:not(.batdel-bypass)").each((_, ele) => {
                     const self = $(ele);
-                    if (!self.text().trim()) {
-                        return;
+                    if (!self.closest("li").find(".batdel-select:checked")[0]) {
+                        self.addClass("batdel-disabled");
                     }
-                    self.css("margin-right", "1em");
-                    const url = new URL(self.prop("href"), location.origin);
-                    const target = decodeURIComponent(url.searchParams.has("title") ? url.searchParams.get("title") : url.pathname.replace(/^\//, "")).replace(/_/g, " ");
-                    const page = pages.filter(({ title }) => title === target)[0];
-                    try {
-                        await api.postWithToken("csrf", {
-                            action: "delete",
-                            assertuser: wgUserName,
-                            format: "json",
-                            title: target,
-                            tags: "Automation tool",
-                            reason: `批量删除【${wgPageName}】下的页面${isDelCat && page.isTrusted && page.reason && page.user ? `（[[User_talk:${page.user}|${page.user}]]的挂删理由：${page.reason} ）` : deletionReason}`,
-                        }, {
-                            timeout: 99999,
-                        });
-                        self.css("text-decoration", "line-through").after(`<span class="batdel-result batdel-success">${wgULS("删除成功", "刪除成功")}</span>`);
-                    } catch (e) {
-                        self.after(`<span class="batdel-result batdel-error"> ${wgULS("删除失败", "刪除失敗")}：${e instanceof Error ? `${e} ${e.stack.split("\n")[1].trim()}` : JSON.stringify(e)}</span>`);
+                });
+                try {
+                    $status.text(wgULS("正在删除，已完成删除的页面将会被删除线划去……", "正在刪除，已完成刪除的頁面將會被刪除線划去……"));
+                    // Cache deletion results by target title, so that duplicated links pointing to the same page
+                    // (e.g. the thumbnail link and the caption link of one gallery item) won't be deleted twice
+                    const deletionResults = new Map();
+                    for (const ele of $root.find("a").not(".batdel-bypass, .batdel-disabled").toArray()) {
+                        const self = $(ele);
+                        self.css("margin-right", "1em");
+                        const url = new URL(self.prop("href"), location.origin);
+                        const target = decodeURIComponent(url.searchParams.has("title") ? url.searchParams.get("title") : url.pathname.replace(/^\//, "")).replace(/_/g, " ");
+                        let isDeleted = deletionResults.get(target);
+                        const fromCache = isDeleted !== undefined;
+                        if (isDeleted === undefined) {
+                            const page = pages.filter(({ title }) => title === target)[0];
+                            try {
+                                await api.postWithToken("csrf", {
+                                    action: "delete",
+                                    assertuser: wgUserName,
+                                    format: "json",
+                                    title: target,
+                                    tags: "Automation tool",
+                                    reason: `批量删除【${wgPageName}】下的页面${isDelCat && page && page.isTrusted && page.reason && page.user ? `（[[User_talk:${page.user}|${page.user}]]的挂删理由：${page.reason} ）` : deletionReason}`,
+                                }, {
+                                    timeout: 99999,
+                                });
+                                isDeleted = true;
+                            } catch (e) {
+                                self.after(`<span class="batdel-result batdel-error"> ${wgULS("删除失败", "刪除失敗")}：${describeError(e)}</span>`);
+                                isDeleted = false;
+                            }
+                            deletionResults.set(target, isDeleted);
+                        }
+                        if (isDeleted) {
+                            self.css("text-decoration", "line-through").after(`<span class="batdel-result batdel-success">${wgULS("删除成功", "刪除成功")}</span>`);
+                        } else if (fromCache) {
+                            // 详细错误已在首个链接旁展示，重复链接仅补充简短失败标记
+                            self.after(`<span class="batdel-result batdel-error"> ${wgULS("删除失败", "刪除失敗")}（${wgULS("同上", "同上")}）</span>`);
+                        }
                     }
+                    $spinner.remove();
+                    $status.addClass("batdel-success").text(wgULS("删除已完成！", "刪除已完成！"));
+                } catch (e) {
+                    $spinner.remove();
+                    $status.text(`${wgULS("发生错误", "發生錯誤")}：${describeError(e)}`);
                 }
-                $spinner.remove();
-                $status.addClass("batdel-success").text(wgULS("删除已完成！", "刪除已完成！"));
-            } catch (e) {
-                $spinner.remove();
-                $status.text(`${wgULS("发生错误", "發生錯誤")}：${e instanceof Error ? `${e} ${e.stack.split("\n")[1].trim()}` : JSON.stringify(e)}`);
+            } finally {
+                // eslint-disable-next-line require-atomic-updates
+                globalDeletionLock = false;
             }
         });
 
@@ -280,4 +325,3 @@ $(() => (async () => {
         return false;
     });
 })());
-// </pre>
