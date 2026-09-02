@@ -33,7 +33,6 @@ _sites:
 _section: system
 
 _files:
-  - Gadget-libPolyfill-Array.prototype.at.js
+  - Gadget-libPolyfill-Array.prototype.flatMap.js
   - Gadget-libPolyfill-String.prototype.at.js
   - Gadget-libPolyfill-TypedArray.prototype.at.js
-  - Gadget-libPolyfill-scheduler.js
