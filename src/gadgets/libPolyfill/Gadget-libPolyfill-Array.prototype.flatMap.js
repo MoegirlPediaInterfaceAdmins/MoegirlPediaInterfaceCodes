@@ -4,7 +4,7 @@
  * Options:
  *     polyfillFeature: Array.prototype.flatMap
  *     polyfillAliases: es2019
- *     browserslist: baseline newly available, last 3 Firefox versions, not dead, Chrome 132, not ChromeAndroid < 1307, not iOS < 1307
+ *     browserslist: baseline newly available, last 3 Firefox versions, not dead, Chrome 132, not ChromeAndroid < 1307, not iOS < 1307, not and_ff < 1307
  *     polyfillBrowsers: android: *, bb: *, chrome: < 69, edge: *, edge_mob: *, firefox: < 62, firefox_mob: < 62, ie: *, ie_mob: *, ios_chr: < 12, ios_saf: < 12, op_mini: *, op_mob: *, opera: < 56, safari: < 12, samsung_mob: *
  */
 (() => {

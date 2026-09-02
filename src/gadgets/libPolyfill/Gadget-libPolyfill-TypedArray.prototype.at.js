@@ -4,7 +4,7 @@
  * Options:
  *     polyfillFeature: TypedArray.prototype.at
  *     polyfillAliases: es2022
- *     browserslist: baseline newly available, last 3 Firefox versions, not dead, Chrome 132, not ChromeAndroid < 1307, not iOS < 1307
+ *     browserslist: baseline newly available, last 3 Firefox versions, not dead, Chrome 132, not ChromeAndroid < 1307, not iOS < 1307, not and_ff < 1307
  *     polyfillBrowsers: android: *, bb: *, chrome: < 92, edge: *, edge_mob: *, firefox: < 90, firefox_mob: < 90, ie: *, ie_mob: *, ios_chr: *, ios_saf: *, op_mini: *, op_mob: *, opera: < 78, safari: *, samsung_mob: < 16
  */
 (() => {
