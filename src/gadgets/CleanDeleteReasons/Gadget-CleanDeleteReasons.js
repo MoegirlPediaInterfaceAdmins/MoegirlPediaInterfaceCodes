@@ -9,9 +9,6 @@
         return;
     }
     const api = new mw.Api();
-    if (/(?:^内容|內容|被清空前|页面为空|頁面為空|page was empty|content was|content before blanking was)/i.test(wpReason.value)) {
-        wpReason.value = "";
-    }
     const html = (await api.post({
         action: "parse",
         pageid: mw.config.get("wgArticleId"),
