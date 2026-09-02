@@ -79,6 +79,9 @@ const polyfillListAllowed = polyfillList.filter(({ browsers: polyfillBrowsers })
         return false;
     }
     return Object.entries(browserMinVersions).some(([browser, minVersion]) => {
+        if (browser === "edge") {
+            return false;
+        }
         const range = polyfillBrowsers[browser];
         return range && semver.satisfies(minVersion, range);
     });
