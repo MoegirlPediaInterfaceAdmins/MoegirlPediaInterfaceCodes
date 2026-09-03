@@ -12,7 +12,7 @@ console.info("Initialization done.");
 const polyfillGadgetPath = "src/gadgets/libPolyfill/";
 const polyfillGadgetDefinitionPath = path.join(polyfillGadgetPath, "definition.yaml");
 const polyfillGadgetDefinition = await yamlModule.readFile(polyfillGadgetDefinitionPath);
-const getPolyfillGadgetFiles = async () => (await fs.promises.readdir(polyfillGadgetPath)).filter((file) => path.extname(file) === ".js");
+const getPolyfillGadgetFiles = async () => (await fs.promises.readdir(polyfillGadgetPath)).filter((file) => path.extname(file) === ".js").sort();
 
 /**
  * @type { { TARGET_ALIASES: string[] } }
@@ -186,6 +186,7 @@ for (const polyfill of polyfillListAllowed) {
     console.info("Done.");
     endGroup();
 }
+polyfillGadgetDefinition._files = [placeholderFileName, ...await getPolyfillGadgetFiles()];
 const placeholderFilePath = path.join(polyfillGadgetPath, placeholderFileName);
 console.info("Start to write placeholder file:", placeholderFilePath);
 await fs.promises.writeFile(placeholderFilePath, [
@@ -199,7 +200,6 @@ await fs.promises.writeFile(placeholderFilePath, [
     "})();",
 ].join("\n"));
 console.info("Done.");
-polyfillGadgetDefinition._files = await getPolyfillGadgetFiles();
 await yamlModule.writeFile(polyfillGadgetDefinitionPath, polyfillGadgetDefinition);
 await createCommit("auto: regenerated polyfill files by generatePolyfill");
 console.info("Done.");
