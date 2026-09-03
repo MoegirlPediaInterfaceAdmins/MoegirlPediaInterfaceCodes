@@ -199,5 +199,6 @@
         "Group/user"
     ],
     "conventionalCommits.storeScopesGlobally": false,
-    "github.copilot.chat.organizationInstructions.enabled": false
+    "github.copilot.chat.organizationInstructions.enabled": false,
+    "css.format.spaceAroundSelectorSeparator": true
 }
