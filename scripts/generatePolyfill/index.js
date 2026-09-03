@@ -12,6 +12,7 @@ console.info("Initialization done.");
 const polyfillGadgetPath = "src/gadgets/libPolyfill/";
 const polyfillGadgetDefinitionPath = path.join(polyfillGadgetPath, "definition.yaml");
 const polyfillGadgetDefinition = await yamlModule.readFile(polyfillGadgetDefinitionPath);
+const placeholderFileName = "Gadget-libPolyfill-placeholder.js";
 const getPolyfillGadgetFiles = async () => (await fs.promises.readdir(polyfillGadgetPath)).filter((file) => path.extname(file) === ".js" && file !== placeholderFileName).sort();
 
 /**
@@ -88,7 +89,6 @@ const polyfillListAllowed = polyfillList.filter(({ browsers: polyfillBrowsers })
 });
 console.info("Get", polyfillListAllowed.length, "polyfill entries with aliases and target browsers.");
 
-const placeholderFileName = "Gadget-libPolyfill-placeholder.js";
 const polyfillListAllowedFileNames = new Set(polyfillListAllowed.map(({ id }) => `Gadget-libPolyfill-${id}.js`));
 console.info("Start to delete stale polyfill files:");
 for (const file of polyfillGadgetFiles) {
