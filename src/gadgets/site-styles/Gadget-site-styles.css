@@ -278,16 +278,17 @@
  * 如果你使用思源黑体（非 CN、JP、KO、TW 版）、Noto Sans CJK 显示文字的话就有可能看到效果。
  * 关于上述这个 CSS 属性的用法，参阅：https://developer.mozilla.org/en-US/docs/Web/CSS/font-feature-settings 注意：此文引用的 OpenType Feature Tags list 同样需要关注。
  * 如有任何问题请即刻禁用之
- * Nbdd0121: 将原来的[lang]改为span[lang]，这样就不会影响非{{lang}}的[lang]了 (e.g. div#mw-content-text)
+ * [[User:Nbdd0121]]：将原来的[lang]改为span[lang]，这样就不会影响非{{lang}}的[lang]了 (e.g. div#mw-content-text)
+ * [[User:默默无闻的杜邦线]]：将 span[lang] 扩展为 :is(.lang-text, span, bdi)[lang]；其中 .lang-text 类用于{{lang/div}}输出的 div[lang]，bdi[lang] 用于后续{{lang}}改动，保留 span 以兼容现有写法
+ * 使用 :lang(ja) 匹配带有子标签的日语语言标签
+ * 移除 font-feature-settings 属性；根据 .browserslistrc 的支持范围，目标浏览器皆已默认启用 locl 特性
  */
-span[lang] {
+:is(.lang-text, span, bdi)[lang] {
     font-family: initial;
-    font-feature-settings: "locl" on;
-    -webkit-font-feature-settings: "locl" on;
 }
 
-[style*="font:" i] span[lang],
-[style*="font-family:" i] span[lang] {
+[style*="font:" i] :is(.lang-text, span, bdi)[lang],
+[style*="font-family:" i] :is(.lang-text, span, bdi)[lang] {
     font-family: inherit;
 }
 
@@ -297,13 +298,13 @@ span[lang] {
     src: local(meiryo);
 }
 
-:is(i, [style*="italic" i]) span[lang="ja" i],
-span[lang="ja" i] :is(i, [style*="italic" i]) {
+:is(i, [style*="italic" i]) :is(.lang-text, span, bdi)[lang]:lang(ja),
+:is(.lang-text, span, bdi)[lang]:lang(ja) :is(i, [style*="italic" i]) {
     font-family: JapaneseItalic, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
 }
 
-:is([style*="font:" i], [style*="font-family:" i]) :is(i, [style*="italic" i]) span[lang="ja" i],
-:is([style*="font:" i], [style*="font-family:" i]) span[lang="ja" i] :is(i, [style*="italic" i]) {
+:is([style*="font:" i], [style*="font-family:" i]) :is(i, [style*="italic" i]) :is(.lang-text, span, bdi)[lang]:lang(ja),
+:is([style*="font:" i], [style*="font-family:" i]) :is(.lang-text, span, bdi)[lang]:lang(ja) :is(i, [style*="italic" i]) {
     font-family: inherit;
 }
 
