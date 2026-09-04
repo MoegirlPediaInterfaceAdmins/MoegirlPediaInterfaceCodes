@@ -77,12 +77,12 @@ $(() => {
                         </ul>
                     </div>
                     ${enableButton
-            ? `
+                        ? `
                     <div class="draft-notice-action">
                         <button id="draft-action-btn" class="cdx-button cdx-button--action-progressive" disabled>${wgULS("检查中…", "檢查中…")}</button>
                     </div>
                     `
-            : ""}
+                        : ""}
                 </div>
             </div>
         </div>
