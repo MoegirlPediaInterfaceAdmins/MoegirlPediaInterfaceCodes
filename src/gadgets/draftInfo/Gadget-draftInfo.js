@@ -1,15 +1,16 @@
 "use strict";
 $(() => {
-    const { wgArticleId, wgUserName, wgPageName, wgTitle, wgUserGroups, wgScriptPath } = mw.config.get([
+    const { wgArticleId, wgUserName, wgPageName, wgTitle, wgUserGroups, wgScriptPath, wgIsRedirect } = mw.config.get([
         "wgArticleId",
         "wgUserName",
         "wgPageName",
         "wgTitle",
         "wgUserGroups",
         "wgScriptPath",
+        "wgIsRedirect",
     ]);
 
-    if (wgArticleId === 0 || wgPageName.startsWith("Draft:沙盒") || document.querySelector(".nsdd")) {
+    if (wgArticleId === 0 || wgPageName.startsWith("Draft:沙盒") || document.querySelector(".nsdd") || wgIsRedirect) {
         return;
     }
 
@@ -76,12 +77,12 @@ $(() => {
                         </ul>
                     </div>
                     ${enableButton
-                        ? `
+            ? `
                     <div class="draft-notice-action">
                         <button id="draft-action-btn" class="cdx-button cdx-button--action-progressive" disabled>${wgULS("检查中…", "檢查中…")}</button>
                     </div>
                     `
-                        : ""}
+            : ""}
                 </div>
             </div>
         </div>
