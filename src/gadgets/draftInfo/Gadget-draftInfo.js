@@ -73,7 +73,7 @@ $(() => {
                         <div class="draft-notice-title">${wgULS("提示：本页面是【", "提示：本頁面是【")}<a href="/${encodeURIComponent(wgTitle)}">${mw.html.escape(wgTitle)}</a>${wgULS("】的", "】的")}<a href="/%E8%90%8C%E5%A8%98%E7%99%BE%E7%A7%91:%E8%8D%89%E7%A8%BF%E6%96%B9%E9%92%88">${wgULS("草稿", "草稿")}</a></div>
                         <ul>
                             <li id="draft-discussion-notice">${buildDiscussionNotice(false)}</li>
-                            <li>${wgULS("如果草稿已经完善，您可以", "如果草稿已經完善，您可以")}${enableButton ? wgULS("点击右侧的按钮", "點擊右側的按鈕") : wgULS("自行", "自行")}${wgULS("发布草稿。", "發佈草稿。")}</li>
+                            <li>${wgULS("如果草稿已经完善，您可以", "如果草稿已經完善，您可以")}${enableButton ? wgULS("使用按钮", "使用按鈕") : wgULS("自行", "自行")}${wgULS("发布草稿。", "發佈草稿。")}</li>
                         </ul>
                     </div>
                     ${enableButton
