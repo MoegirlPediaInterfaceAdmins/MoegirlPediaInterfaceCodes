@@ -1,17 +1,39 @@
-import { spawn } from "node:child_process";
+import { ESLint } from "eslint";
 import { nodeLintTargets } from "../modules/lintTargets.js";
 
 // 扫描范围与 eslint.config.js 的 node 配置共用 scripts/modules/lintTargets.js，
 // 新增待检查的文件或目录只需改那一处，避免命令里写死文件名列表后漂移。
-// 用 Node 脚本而非 shell 命令替换（`$(...)`），以保证 Windows cmd.exe 下同样可用。
-const npxCommand = process.platform === "win32" ? "npx.cmd" : "npx";
-const childProcess = spawn(npxCommand, ["eslint", ...nodeLintTargets, ...process.argv.slice(2)], {
-    stdio: "inherit",
+//
+// 直接用 ESLint 的 Node API 而不是 spawn 一个 `npx eslint` 子进程：
+// 省去 npx 解析与额外进程开销，且不必让脚本再依赖 CLI 的 flag 解析。
+const eslint = new ESLint({
+    cache: true,
+    cacheStrategy: "content",
+    cacheLocation: ".cache/",
 });
-childProcess.on("error", (error) => {
-    process.stderr.write(`Failed to run eslint: ${error.message}\n`);
-    process.exitCode = 1;
-});
-childProcess.on("exit", (exitCode, signal) => {
-    process.exitCode = exitCode ?? (signal ? 1 : 0);
-});
+
+const results = await eslint.lintFiles(nodeLintTargets);
+
+// 只保留 `--format` 这一个参数（CI 用它切换 GitHub Actions 注解格式），
+// 其余原先写在 package.json 里的 flag 都成为本脚本的固定策略。
+const formatIndex = process.argv.indexOf("--format");
+const formatterName = formatIndex === -1 ? "stylish" : process.argv[formatIndex + 1];
+const formatter = await eslint.loadFormatter(formatterName);
+
+// `color` 必须显式传入：省略时 stylish 在非 TTY 环境下不会着色，
+// 而 CLI 的 `--color` 会强制着色（本地重定向与 CI 日志都依赖这一点）。
+process.stdout.write(await formatter.format(results, { color: true }));
+
+const { errorCount, fatalErrorCount, warningCount } = results.reduce((counts, result) => ({
+    errorCount: counts.errorCount + result.errorCount,
+    fatalErrorCount: counts.fatalErrorCount + result.fatalErrorCount,
+    warningCount: counts.warningCount + result.warningCount,
+}), { errorCount: 0, fatalErrorCount: 0, warningCount: 0 });
+
+if (fatalErrorCount > 0) {
+    // 对齐 CLI 的 `--exit-on-fatal-error`：致命错误（如解析失败）单独以 2 退出。
+    process.exitCode = 2;
+} else {
+    // 对齐 CLI 的 `--max-warnings 0`：任何 error 或 warning 都判负。
+    process.exitCode = errorCount > 0 || warningCount > 0 ? 1 : 0;
+}
