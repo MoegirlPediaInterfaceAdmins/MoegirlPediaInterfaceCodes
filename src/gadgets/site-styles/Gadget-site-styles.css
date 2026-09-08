@@ -283,6 +283,7 @@
     font-family: JapaneseItalic, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
 }
 
+:is([style*="font:" i], [style*="font-family:" i]):is(i, em, [style*="italic" i]) [lang]:lang(ja),
 :is([style*="font:" i], [style*="font-family:" i]) :is(i, em, [style*="italic" i]) [lang]:lang(ja),
 :is([style*="font:" i], [style*="font-family:" i]) [lang]:lang(ja):is(i, em, [style*="italic" i]),
 :is([style*="font:" i], [style*="font-family:" i]) [lang]:lang(ja) :is(i, em, [style*="italic" i]) {
