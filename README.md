@@ -66,7 +66,7 @@
   - `npm run test:stylelint` 用 [stylelint](https://stylelint.io/) 检查 [`src`](src) 下的 CSS；
   - `npm run test:v8r` 用 [v8r](https://github.com/chrishrb/v8r) 校验各小工具 `definition.yaml` 是否符合 [JSON Schema](.vscode/json-schemas)；
   - `npm run test:mailmap` 检查本地 git 配置中的邮箱是否已登记在 [`.mailmap`](.mailmap)。
-- `npm run lint:scripts` 用 [ESLint](https://eslint.org/) 检查 [`scripts`](scripts) 下的代码、[`eslint.config.js`](eslint.config.js)、[`commitlint.config.mjs`](commitlint.config.mjs) 与 [`.husky/install.mjs`](.husky/install.mjs)（即 `npm run test:eslint` 未覆盖的部分）
+- `npm run lint:scripts` 用 [ESLint](https://eslint.org/) 检查 `npm run test:eslint` 未覆盖的 Node 侧代码（[`scripts`](scripts)、根目录配置文件与 [`.husky`](.husky) 下的 `.mjs`）；检查范围由 [`scripts/modules/lintTargets.js`](scripts/modules/lintTargets.js) 定义，与 [`eslint.config.js`](eslint.config.js) 共用同一份
 - `npm run format` 可修正可被自动修正的错误
 - `npm run ci` 会测速选出最快的镜像源并让 npm 在安装时使用（不会改动 lock 文件），以加快 `npm ci` 速度
 - `npm run build` 手动编译全部（CSS+JS）代码
