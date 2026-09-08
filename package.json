@@ -15,6 +15,7 @@
         "test:stylelint": "stylelint 'src/**/*.css' --cache --cache-strategy content --cache-location .cache/ --color --max-warnings 0",
         "test:v8r": "node scripts/v8r/index.js",
         "test:mailmap": "node scripts/emailmapChecker/index.js",
+        "lint:scripts": "eslint scripts eslint.config.js commitlint.config.mjs .husky/install.mjs --cache --cache-strategy content --cache-location .cache/ --color --exit-on-fatal-error --max-warnings 0",
         "format": "run-p --aggregate-output -clx format:*",
         "format:eslint": "npm run test:eslint -- --fix",
         "format:stylelint": "npm run test:stylelint -- --fix",

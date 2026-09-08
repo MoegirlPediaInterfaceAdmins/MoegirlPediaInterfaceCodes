@@ -66,13 +66,14 @@
   - `npm run test:stylelint` 用 [stylelint](https://stylelint.io/) 检查 [`src`](src) 下的 CSS；
   - `npm run test:v8r` 用 [v8r](https://github.com/chrishrb/v8r) 校验各小工具 `definition.yaml` 是否符合 [JSON Schema](.vscode/json-schemas)；
   - `npm run test:mailmap` 检查本地 git 配置中的邮箱是否已登记在 [`.mailmap`](.mailmap)。
+- `npm run lint:scripts` 用 [ESLint](https://eslint.org/) 检查 [`scripts`](scripts) 下的代码、[`eslint.config.js`](eslint.config.js)、[`commitlint.config.mjs`](commitlint.config.mjs) 与 [`.husky/install.mjs`](.husky/install.mjs)（即 `npm run test:eslint` 未覆盖的部分）
 - `npm run format` 可修正可被自动修正的错误
 - `npm run ci` 会测速选出最快的镜像源并让 npm 在安装时使用（不会改动 lock 文件），以加快 `npm ci` 速度
 - `npm run build` 手动编译全部（CSS+JS）代码
   - `npm run build:css` 手动编译所有 CSS 代码
   - `npm run build:js` 手动编译所有 JS 代码
 
-`npm run test` 是提交前的快速检查，**不等价于 CI 的完整验证**：CI 还会额外执行 [`scripts/postcss/index.js`](scripts/postcss/index.js)（PostCSS 警告）与完整的编译流程；其中 `.mailmap` 检查在本地只校验当前 git 配置的邮箱，而在 CI 会校验本次推送或 PR 中每个 commit 的作者与提交者邮箱。`npm run test` 也不检查 [`scripts`](scripts) 下的代码和 TypeScript 类型。
+`npm run test` 是提交前的快速检查，**不等价于 CI 的完整验证**：CI 还会额外执行 `npm run lint:scripts`、[`scripts/postcss/index.js`](scripts/postcss/index.js)（PostCSS 警告）与完整的编译流程；其中 `.mailmap` 检查在本地只校验当前 git 配置的邮箱，而在 CI 会校验本次推送或 PR 中每个 commit 的作者与提交者邮箱。`npm run test` 与 `npm run lint:scripts` 均不做 TypeScript 类型检查。
 
 ### 提交前检查（Git hooks）
 

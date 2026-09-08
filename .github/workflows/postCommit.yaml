@@ -167,6 +167,8 @@ jobs:
           ls -lhA .cache
       - name: Run eslint
         run: npm run test:eslint -- --format @annangela/eslint-formatter-gha
+      - name: Run eslint for scripts and config files
+        run: npm run lint:scripts -- --format @annangela/eslint-formatter-gha
       - name: Run stylelint
         run: npm run test:stylelint -- --custom-formatter=@csstools/stylelint-formatter-github
       - name: Run v8r
