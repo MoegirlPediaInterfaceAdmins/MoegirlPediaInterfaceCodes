@@ -14,6 +14,9 @@ const ignores = [
     "**/.*/**",
     "node_modules",
     "src/gadgets/libPolyfill/*",
+    // .husky/ 是点目录、会被上一条 `**/.*/**` 整体忽略，而 install.mjs 是其中唯一的源码文件，
+    // 需显式反忽略才能被 lint。
+    "!.husky/install.mjs",
 ];
 
 const srcESlintrcFiles = (await readDir("./src")).filter((n) => path.basename(n) === ".eslintrc.yaml");
@@ -47,6 +50,8 @@ const fileSpec = {
         files: [
             "scripts/**/*",
             "eslint.config.js",
+            "commitlint.config.mjs",
+            ".husky/install.mjs",
         ],
         ignores: [
             ...ignores,
