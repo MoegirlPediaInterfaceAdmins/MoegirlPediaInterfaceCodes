@@ -16,7 +16,8 @@ body.skin-moeskin {
     font-family: sans-serif, NospzGothicMoe, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
 }
 
-html :is(i, [style*="italic"i]) :is(.lang-text, span, bdi)[lang]:lang(ja),
-html :is(.lang-text, span, bdi)[lang]:lang(ja) :is(i, [style*="italic"i]) {
+html :is(i, em, [style*="italic" i]) [lang]:lang(ja),
+html [lang]:lang(ja):is(i, em, [style*="italic" i]),
+html [lang]:lang(ja) :is(i, em, [style*="italic" i]) {
     font-family: JapaneseItalic, sans-serif, NospzGothicMoe, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
 }
