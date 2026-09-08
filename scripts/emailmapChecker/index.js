@@ -3,9 +3,12 @@ console.info("Initialization done.");
 import mailmap from "../modules/mailmap.js";
 import git from "../modules/git.js";
 import { startGroup, endGroup } from "@actions/core";
-import { isInGithubActions } from "../modules/octokit.js";
+import { isInGithubActions, isPullRequest, isPush, octokit, octokitBaseOptions } from "../modules/octokit.js";
+import readWorkflowEvent from "../modules/workflowEvent.js";
 
 const detectIfBot = (name, email) => name.endsWith("[bot]") || email.split("@")[1] === "github.com";
+// mailmap.js 解析时把邮箱键统一转成小写，而 git / GitHub API 返回的邮箱大小写不固定，查询前必须同样归一化。
+const isMapped = (email) => Reflect.has(mailmap, email.toLowerCase());
 
 /**
  * @param {string[]} types
@@ -17,23 +20,21 @@ if (!isInGithubActions && localGitConfigs.length === 0) {
     console.info("No email found, exit.");
     process.exit(0);
 }
-if (isInGithubActions) {
-    const { commits } = process.env;
-    if (typeof commits !== "string" || commits.length === 0) {
-        console.info("Running in github actions, but no commit input, exit.");
-        process.exit(0);
-    }
+/**
+ * @param {{ author: { name: string; email: string; }; committer: { name: string; email: string; }; id: string; message: string; url: string; }[]} allCommits
+ * @returns {never}
+ */
+const checkCommits = (allCommits) => {
     const failures = [];
-    const allCommits = JSON.parse(commits);
     startGroup("Running in github actions, commits input:");
     console.info(allCommits);
     endGroup();
     for (const { author: { email: authorEmail, name: authorName }, committer: { email: committerEmail, name: committerName }, id, message, url } of allCommits) {
         const failure = [];
-        if (!detectIfBot(authorName, authorEmail) && !Reflect.has(mailmap, authorEmail)) {
+        if (!detectIfBot(authorName, authorEmail) && !isMapped(authorEmail)) {
             failure.push(`author: ${authorName} <${authorEmail}>`);
         }
-        if (!detectIfBot(committerName, committerEmail) && !Reflect.has(mailmap, committerEmail)) {
+        if (!detectIfBot(committerName, committerEmail) && !isMapped(committerEmail)) {
             failure.push(`committer: ${committerName} <${committerEmail}>`);
         }
         if (failure.length > 0) {
@@ -46,13 +47,51 @@ if (isInGithubActions) {
     }
     console.error("Found emails not in .mailmap, please add it:", failures);
     process.exit(1);
+};
+if (isInGithubActions) {
+    const workflowEvent = await readWorkflowEvent();
+    if (isPush) {
+        // push 事件的事件载荷自带本次推送的全部 commit（含 author/committer 的 name、email），
+        // 无需依赖已被删除的 postCommit job output。
+        const { commits } = workflowEvent;
+        if (!Array.isArray(commits) || commits.length === 0) {
+            console.info("Running in github actions push event, but no commit in payload, exit.");
+            process.exit(0);
+        }
+        checkCommits(commits);
+    } else if (isPullRequest) {
+        // pull_request 事件载荷不含 commit 列表，只能通过 API 拉取；分页取满，避免漏检靠后的提交。
+        const pull_number = workflowEvent.pull_request.number;
+        startGroup("Running in github actions pull request event, fetching commits:");
+        // octokit.paginate 不会经过 octokit.js 里补全 {owner}/{repo} 的 request 钩子，必须显式传入。
+        const commits = await octokit.paginate(octokit.rest.pulls.listCommits, {
+            ...octokitBaseOptions,
+            pull_number,
+            per_page: 100,
+        });
+        endGroup();
+        if (commits.length === 0) {
+            console.info("Running in github actions pull request event, but no commit found, exit.");
+            process.exit(0);
+        }
+        checkCommits(commits.map((commit) => ({
+            id: commit.sha,
+            message: commit.commit.message,
+            url: commit.html_url,
+            author: commit.commit.author,
+            committer: commit.commit.committer,
+        })));
+    } else {
+        console.info(`Running in github actions, but event "${process.env.GITHUB_EVENT_NAME}" has no commit list, exit.`);
+        process.exit(0);
+    }
 } else {
     const failures = [];
     startGroup("Running in local, localGitConfigs:");
     console.info(localGitConfigs);
     endGroup();
     for (const { type, email, name } of localGitConfigs) {
-        if (!Reflect.has(mailmap, email)) {
+        if (!isMapped(email)) {
             failures.push({ type, failure: `${name} <${email}>` });
         }
     }
@@ -60,6 +99,6 @@ if (isInGithubActions) {
         console.info("All the emails are in .mailmap, exit.");
         process.exit(0);
     }
-    console("Found emails not in .mailmap, please add it:", failures);
+    console.error("Found emails not in .mailmap, please add it:", failures);
     process.exit(1);
 }
