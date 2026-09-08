@@ -95,7 +95,9 @@ if (isInGithubActions) {
     console.info(localGitConfigs);
     endGroup();
     for (const { type, email, name } of localGitConfigs) {
-        if (!isMapped(email)) {
+        // 与 CI 分支保持一致地豁免 bot：CI 的自动提交使用 github-actions[bot]，
+        // 该身份在本地跑 test:mailmap 时同样不应被判为未映射。
+        if (!detectIfBot(name ?? "", email) && !isMapped(email)) {
             failures.push({ type, failure: `${name} <${email}>` });
         }
     }
