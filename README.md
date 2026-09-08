@@ -68,14 +68,21 @@
   - `npm run test:mailmap` 检查本地 git 配置中的邮箱是否已登记在 [`.mailmap`](.mailmap)。
 - `npm run format` 可修正可被自动修正的错误
 - `npm run ci` 会测速选出最快的镜像源并让 npm 在安装时使用（不会改动 lock 文件），以加快 `npm ci` 速度
-- `npm run hooks:install` 可手动重新安装本仓库使用的本地 Git hooks
 - `npm run build` 手动编译全部（CSS+JS）代码
   - `npm run build:css` 手动编译所有 CSS 代码
   - `npm run build:js` 手动编译所有 JS 代码
 
 `npm run test` 是提交前的快速检查，**不等价于 CI 的完整验证**：CI 还会额外执行 [`scripts/postcss/index.js`](scripts/postcss/index.js)（PostCSS 警告）与完整的编译流程；其中 `.mailmap` 检查在本地只校验当前 git 配置的邮箱，而在 CI 会校验本次推送或 PR 中每个 commit 的作者与提交者邮箱。`npm run test` 也不检查 [`scripts`](scripts) 下的代码和 TypeScript 类型。
 
-默认情况下，`npm install` / `npm run ci` 会自动安装本仓库的本地 Git hooks。安装完成后，当你执行 `git pull`（包括 `pull --rebase`）并且拉取结果修改了 [`package-lock.json`](package-lock.json) 时，Git 会自动执行一次 `npm run ci` 以刷新依赖。若你本地已经有自定义的 `post-merge` 或 `post-rewrite` hook，自动安装会跳过对应 hook，这种情况下需要你手动合并逻辑。
+### 提交前检查（Git hooks）
+
+本仓库使用 [Husky](https://typicode.github.io/husky/) 管理本地 Git hooks，由 `npm install` / `npm run ci` 触发的 `prepare` 脚本自动安装。提交时会自动执行：
+
+- `commit-msg`：用 [commitlint](https://commitlint.js.org/) 校验提交信息符合 [Conventional Commits](https://www.conventionalcommits.org/)（规则见 [`commitlint.config.mjs`](commitlint.config.mjs)）；
+- `pre-commit`：检查本地 git 配置的邮箱是否已登记在 [`.mailmap`](.mailmap)；
+- `post-merge` / `post-rewrite`：当你执行 `git pull`（包括 `pull --rebase`）且拉取结果修改了 [`package-lock.json`](package-lock.json) 时，自动执行一次 `npm run ci` 以刷新依赖。
+
+如需跳过检查，可用 `git commit --no-verify`，或临时设置 `HUSKY=0`（影响范围更大，会跳过全部 hooks）。请仅在确有必要时使用。
 
 ## 自动化流程
 
