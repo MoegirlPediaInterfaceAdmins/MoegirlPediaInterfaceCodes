@@ -67,6 +67,7 @@
   - `npm run test:v8r` 用 [v8r](https://github.com/chrishrb/v8r) 校验各小工具 `definition.yaml` 是否符合 [JSON Schema](.vscode/json-schemas)；
   - `npm run test:mailmap` 检查本地 git 配置中的邮箱是否已登记在 [`.mailmap`](.mailmap)。
 - `npm run lint:scripts` 用 [ESLint](https://eslint.org/) 检查 `npm run test:eslint` 未覆盖的 Node 侧代码（[`scripts`](scripts)、根目录配置文件与 [`.husky`](.husky) 下的 `.mjs`）；检查范围由 [`scripts/modules/lintTargets.js`](scripts/modules/lintTargets.js) 定义，与 [`eslint.config.js`](eslint.config.js) 共用同一份
+- `npm run lint:commit-message` / `npm run lint:pr-title` 用 [commitlint](https://commitlint.js.org/) 校验当前 CI 事件中的提交信息 / PR 标题（规则见 [`commitlint.config.mjs`](commitlint.config.mjs)），供 CI 使用；两者均需在 GitHub Actions 中运行，本地直接执行会因缺少事件载荷而直接退出
 - `npm run format` 可修正可被自动修正的错误
 - `npm run ci` 会测速选出最快的镜像源并让 npm 在安装时使用（不会改动 lock 文件），以加快 `npm ci` 速度
 - `npm run build` 手动编译全部（CSS+JS）代码
@@ -90,7 +91,8 @@
 - 每周日 23:00 UTC 会自动触发一次 Generate Polyfill CI；
 - 每天 00:15 UTC（但愿，Github Actions的 cron 延迟真的好高 \_(:з」∠)\_）会自动触发一次 postCommit CI；
 - 每提交一次 commit（包括提交 pull request 和在 pull request 里提交新的 commit），postCommit CI 会触发；
-- 当 postCommit CI 检测到新内容时，会自动触发一次 Linter test。
+- 当 postCommit CI 检测到新内容时，会自动触发一次 Linter test；
+- 每次 push、以及 PR 创建/重开/更新标题时，commit lint CI 会校验提交信息与 PR 标题是否符合 [Conventional Commits](https://www.conventionalcommits.org/)（用于兜底 `git commit --no-verify` 等绕过本地钩子的情况，并保证 squash 合并进入历史的 PR 标题合规）。
 
 ## 编译流程
 
