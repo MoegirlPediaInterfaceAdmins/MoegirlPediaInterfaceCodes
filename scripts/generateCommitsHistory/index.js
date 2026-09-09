@@ -1,7 +1,6 @@
-const githubWebInterfaceFlowSignature = {
+const githubWebInterfaceCommitter = {
     committerName: "GitHub",
     committerEmail: "noreply@github.com",
-    signatureKey: "4AEE18F83AFDEB23",
 };
 
 import artifactClient from "@actions/artifact";
@@ -14,7 +13,7 @@ import git from "../modules/git.js";
 import jsonModule from "../modules/jsonModule.js";
 import mailmap from "../modules/mailmap.js";
 import mkdtmp from "../modules/mkdtmp.js";
-import { debugConsole, debugLoggingEnabled, isInGithubActions, isInMasterBranch, isInMoegirlPediaInterfaceCodes } from "../modules/octokit.js";
+import { debugConsole, debugLoggingEnabled, isInGithubActions, isInMasterBranch, isInMoegirlPediaInterfaceCodes, octokit } from "../modules/octokit.js";
 import yamlModule from "../modules/yamlModule.js";
 
 /**
@@ -66,6 +65,21 @@ if (debugLoggingEnabled) {
     endGroup();
 }
 const bots = await yamlModule.readFile("scripts/generateCommitsHistory/bots.yaml");
+/**
+ * GitHub 会轮换其 web-flow 签名密钥（2024-01-16 曾由 4AEE18F83AFDEB23 换为 B5690EEEBB952194，
+ * 旧密钥此后过期的 commit 一律改用新密钥签名），因此不能把密钥 ID 写死在代码里，
+ * 否则每次轮换后网页界面合并的 commit 都会被误判为非网页提交、进而归到被 bots.yaml 跳过的
+ * GH:GitHub 名下而静默丢失。改为运行时向 GitHub 拉取 web-flow 当前公布的全部公钥 ID。
+ */
+console.info("Start to fetch GitHub web-flow GPG keys");
+const githubWebFlowSignatureKeys = new Set((await octokit.rest.users.listGpgKeysForUser({ username: "web-flow" })).data
+    // 只保留仍有效且属于 noreply@github.com 的密钥，避免已被吊销的密钥被当作可信来源
+    .filter(({ revoked, emails }) => !revoked && emails.some(({ email, verified }) => verified && email === githubWebInterfaceCommitter.committerEmail))
+    .map(({ key_id }) => key_id));
+console.info("GitHub web-flow GPG keys:", [...githubWebFlowSignatureKeys]);
+if (githubWebFlowSignatureKeys.size === 0) {
+    throw new Error("No valid GitHub web-flow GPG key found, refuse to continue to avoid mis-attributing commits.");
+}
 const history = {};
 const parser = ({ username, changedFiles, hash, date, indent }) => {
     if (username.endsWith("[bot]") || bots.includes(username)) {
@@ -108,7 +122,7 @@ for (const { hash, _date, authorName, _authorEmail, _signatureKey, committerName
         debugConsole.log("\tNothing in src/ has been changed, skip.");
         continue;
     }
-    const isFromGithubWebInterface = signatureKey === githubWebInterfaceFlowSignature.signatureKey && committerName === githubWebInterfaceFlowSignature.committerName && committerEmail === githubWebInterfaceFlowSignature.committerEmail;
+    const isFromGithubWebInterface = githubWebFlowSignatureKeys.has(signatureKey) && committerName === githubWebInterfaceCommitter.committerName && committerEmail === githubWebInterfaceCommitter.committerEmail;
     debugConsole.log("\tisFromGithubWebInterface:", isFromGithubWebInterface);
     const name = isFromGithubWebInterface ? authorName : committerName;
     const email = (isFromGithubWebInterface ? authorEmail : committerEmail).toLowerCase();

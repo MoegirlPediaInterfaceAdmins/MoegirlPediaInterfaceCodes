@@ -152,6 +152,7 @@ const config = [
                         "run_id",
                         "per_page",
                         "workflow_runs",
+                        "key_id",
                     ],
                 },
             ],
