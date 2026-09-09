@@ -1,0 +1,48 @@
+name: commit lint
+
+# 独立于 postCommit：本地 Husky 钩子可被 `--no-verify` / `HUSKY=0` 绕过，
+# 且 PR 标题只在本仓库的 squash 合并中进入历史，均需在 CI 侧兜底。
+# 不能并入 postCommit —— 后者带 paths 过滤，而改标题/正文没有文件变更，不会触发。
+on:
+  push:
+  pull_request:
+    types:
+      - opened
+      - edited
+      - reopened
+      - synchronize
+
+env:
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+jobs:
+  commitLint:
+    # edited 只在改动标题时才需要检查（Sourcery 等机器人会频繁改正文，
+    # 只改正文时不应为此重跑整套依赖安装）。提交信息与标题共用一个 job，
+    # 避免两套 npm run ci。
+    if: github.event_name != 'pull_request' || github.event.action != 'edited' || github.event.changes.title != null
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          show-progress: false
+      - name: Use Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v6
+        with:
+          node-version: lts/*
+          check-latest: true
+          cache: npm
+      - name: Installing the dependencies
+        uses: AnnAngela/cached_node-modules@095ea9ae366bc4a18c0f653aed2008d35660317d # v6
+        with:
+          command: npm run ci
+      - name: Check commit messages
+        # 只改标题/正文不会改变提交列表，无需重查。
+        if: github.event_name != 'pull_request' || github.event.action != 'edited'
+        run: npm run lint:commit-message
+      - name: Check pull request title
+        if: github.event_name == 'pull_request'
+        run: npm run lint:pr-title
