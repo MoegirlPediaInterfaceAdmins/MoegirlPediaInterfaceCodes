@@ -66,13 +66,15 @@
   - `npm run test:stylelint` 用 [stylelint](https://stylelint.io/) 检查 [`src`](src) 下的 CSS；
   - `npm run test:v8r` 用 [v8r](https://github.com/chrishrb/v8r) 校验各小工具 `definition.yaml` 是否符合 [JSON Schema](.vscode/json-schemas)；
   - `npm run test:mailmap` 检查本地 git 配置中的邮箱是否已登记在 [`.mailmap`](.mailmap)。
+- `npm run lint:scripts` 用 [ESLint](https://eslint.org/) 检查 `npm run test:eslint` 未覆盖的 Node 侧代码（[`scripts`](scripts)、根目录配置文件与 [`.husky`](.husky) 下的 `.mjs`）；检查范围由 [`scripts/modules/lintTargets.js`](scripts/modules/lintTargets.js) 定义，与 [`eslint.config.js`](eslint.config.js) 共用同一份
+- `npm run lint:commit-message` / `npm run lint:pr-title` 用 [commitlint](https://commitlint.js.org/) 校验当前 CI 事件中的提交信息 / PR 标题（规则见 [`commitlint.config.mjs`](commitlint.config.mjs)），供 CI 使用；两者均需在 GitHub Actions 中运行，本地直接执行会因缺少事件载荷而直接退出
 - `npm run format` 可修正可被自动修正的错误
 - `npm run ci` 会测速选出最快的镜像源并让 npm 在安装时使用（不会改动 lock 文件），以加快 `npm ci` 速度
 - `npm run build` 手动编译全部（CSS+JS）代码
   - `npm run build:css` 手动编译所有 CSS 代码
   - `npm run build:js` 手动编译所有 JS 代码
 
-`npm run test` 是提交前的快速检查，**不等价于 CI 的完整验证**：CI 还会额外执行 [`scripts/postcss/index.js`](scripts/postcss/index.js)（PostCSS 警告）与完整的编译流程；其中 `.mailmap` 检查在本地只校验当前 git 配置的邮箱，而在 CI 会校验本次推送或 PR 中每个 commit 的作者与提交者邮箱。`npm run test` 也不检查 [`scripts`](scripts) 下的代码和 TypeScript 类型。
+`npm run test` 是提交前的快速检查，**不等价于 CI 的完整验证**：CI 还会额外执行 `npm run lint:scripts` 与 [`scripts/postcss/index.js`](scripts/postcss/index.js)（PostCSS 警告）；其中 `.mailmap` 检查在本地只校验当前 git 配置的邮箱，而在 CI 会校验本次推送或 PR 中每个 commit 的作者与提交者邮箱。`npm run test` 与 `npm run lint:scripts` 均不做 TypeScript 类型检查。完整的编译流程不在 GitHub Actions 中执行，而是在提交合并后由机器人完成（见下方[「编译流程」](#编译流程)）。
 
 ### 提交前检查（Git hooks）
 
@@ -89,7 +91,8 @@
 - 每周日 23:00 UTC 会自动触发一次 Generate Polyfill CI；
 - 每天 00:15 UTC（但愿，Github Actions的 cron 延迟真的好高 \_(:з」∠)\_）会自动触发一次 postCommit CI；
 - 每提交一次 commit（包括提交 pull request 和在 pull request 里提交新的 commit），postCommit CI 会触发；
-- 当 postCommit CI 检测到新内容时，会自动触发一次 Linter test。
+- 当 postCommit CI 检测到新内容时，会自动触发一次 Linter test；
+- 每次 push、以及 PR 创建/重开/更新标题时，commit lint CI 会校验提交信息与 PR 标题是否符合 [Conventional Commits](https://www.conventionalcommits.org/)（用于兜底 `git commit --no-verify` 等绕过本地钩子的情况，并保证 squash 合并进入历史的 PR 标题合规）。
 
 ## 编译流程
 
