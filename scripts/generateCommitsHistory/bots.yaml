@@ -1,7 +1,11 @@
 - GH:github-actions
 - GH:GitHub
 - GH:GitHub Actions
+- GH:Claude
 - GH:Claude Opus 4.6
 - GH:Copilot
 - GH:Copilot Autofix powered by AI
+# Claude Code 的 co-author trailer 大小写不固定（历史提交中 "1M Context" 与 "1M context" 均出现过），
+# 而 parser 用精确匹配，故两种写法都要列出，否则漏网的那批会被计入贡献历史。
+- GH:Claude Opus 4.8 (1M Context)
 - GH:Claude Opus 4.8 (1M context)
