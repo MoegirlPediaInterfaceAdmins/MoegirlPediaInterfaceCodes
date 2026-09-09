@@ -90,7 +90,6 @@
         "Gadget/libJQuery",
         "Gadget/libJSON5",
         "Gadget/libOOUIDialog",
-        "Gadget/libPolyfill",
         "Gadget/libRequestAnimationFrame",
         "Gadget/libStandardMessages",
         "Gadget/libUtil",

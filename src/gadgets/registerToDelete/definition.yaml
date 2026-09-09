@@ -30,7 +30,6 @@ dependencies:
   - ext.gadget.libOOUIDialog
   - ext.gadget.site-lib
   - ext.gadget.LocalObjectStorage
-  - ext.gadget.libPolyfill
 
 _sites:
   - zh

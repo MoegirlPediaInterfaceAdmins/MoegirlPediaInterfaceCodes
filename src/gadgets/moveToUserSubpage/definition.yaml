@@ -33,7 +33,6 @@ dependencies:
   - ext.gadget.site-lib
   - ext.gadget.libOOUIDialog
   - mediawiki.api
-  - ext.gadget.libPolyfill
 
 _sites:
   - zh

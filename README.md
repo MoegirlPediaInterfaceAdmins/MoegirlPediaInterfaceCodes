@@ -18,14 +18,12 @@
 
 - [`.github`](.github) 文件夹用以保存 GitHub Dependabot 和 GitHub Actions 所需配置文件，其中：
   - [`.github/workflows/postCommit.yaml`](.github/workflows/postCommit.yaml) 用以保存自动化流程，包含自动配置 Conventional Commits（约定式提交）所需 scope（作用域）信息、自动导入来自 npm 和指定页面的代码、自动补全小工具列表；
-  - [`.github/workflows/generatePolyfill.yaml`](.github/workflows/generatePolyfill.yaml) 用以自动生成 polyfill 文件；
   - [`.github/workflows/auto_assign.yaml`](.github/workflows/auto_assign.yaml) 用以自动对 pull request 和 issue 添加 assignees 和 reviewers（若有）。
 - [`.vscode/settings.json`](.vscode/settings.json) 用来保存 Conventional Commits（约定式提交）所需 scope（作用域）信息；
 - [`scripts`](scripts) 文件夹用以保存流程所需代码，其中：
   - [`scripts/postCommit/prepareGit.js`](scripts/postCommit/prepareGit.js) 用来准备 Github Actions 上的 git 环境，自动生成 author 和 committer 的相关信息；
   - [`scripts/browserify/index.js`](scripts/browserify/index.js) 用来通过 [browserify](https://browserify.org/) 库导入来自 npm 的代码，其目标在 [`scripts/browserify/targets.yaml`](scripts/browserify/targets.yaml) 中定义；
   - [`scripts/prefetch/index.js`](scripts/prefetch/index.js) 用来导入来自指定页面的代码，其目标在 [`scripts/prefetch/targets.yaml`](scripts/prefetch/targets.yaml) 中定义；
-  - [`scripts/generatePolyfill/index.js`](scripts/generatePolyfill/index.js) 用来自动生成 polyfill 文件，该代码使用了 [JakeChampion/polyfill-service 库](https://github.com/JakeChampion/polyfill-service)；
   - [`scripts/generateGadgetsDefinition/index.js`](scripts/generateGadgetsDefinition/index.js) 用来自动补全小工具列表，当发现新增小工具时，该代码会自动将对应小工具插入到 [`src/gadgets/Gadgets-definition-list.yaml`](src/gadgets/Gadgets-definition-list.yaml) 的响应列表的末尾；
   - [`scripts/generateConventionalCommitsScopes/index.js`](scripts/generateConventionalCommitsScopes/index.js) 用来自动配置 Conventional Commits（约定式提交）所需 scope（作用域）信息；
   - [`scripts/postCommit/linguist-generated.js`](scripts/postCommit/linguist-generated.js) 用来自动生成 [`.gitattributes`](.gitattributes) 以告知 Github 如何区分代码是否自动生成；
@@ -39,7 +37,7 @@
   - [`tsconfig.production.json`](tsconfig.production.json) 配置 tsc，用于编译代码；
   - [`.stylelintrc.yaml`](.stylelintrc.yaml) 配置 stylelint；
   - [`.postcssrc.yaml`](.postcssrc.yaml) 配置 postcss；
-  - [`.browserslistrc`](.browserslistrc) 配置 [autoprefixer](https://github.com/postcss/autoprefixer) 和 [`scripts/generatePolyfill`](scripts/generatePolyfill/index.js) 所使用的 [browserslist](https://github.com/browserslist/browserslist)，目前暂定锚定为 [`baseline newly available`](https://web.dev/series/baseline-newly-available?hl=zh-cn) 的基础上添加 `last 3 Firefox versions` 和 `Chrome 132`，并排除移动端以适应萌百编辑群体。
+  - [`.browserslistrc`](.browserslistrc) 配置 [autoprefixer](https://github.com/postcss/autoprefixer) 和 [browserify](https://browserify.org/) 所使用的 [browserslist](https://github.com/browserslist/browserslist)，目前暂定锚定为 [`baseline newly available`](https://web.dev/series/baseline-newly-available?hl=zh-cn) 的基础上添加 `last 3 Firefox versions` 和 `Chrome 132`，并排除移动端以适应萌百编辑群体。
 - 代码部分：
   - [`src/gadgets`](src/gadgets) 以文件夹形式保存小工具，每一个文件夹都是一个小工具，里面包含以下内容：
     - `definition.yaml` 保存小工具配置，包括依赖项、所需权限等，以 `_` 开头的键值对是其他配置，如小工具所在的章节等；
@@ -88,7 +86,6 @@
 
 ## 自动化流程
 
-- 每周日 23:00 UTC 会自动触发一次 Generate Polyfill CI；
 - 每天 00:15 UTC（但愿，Github Actions的 cron 延迟真的好高 \_(:з」∠)\_）会自动触发一次 postCommit CI；
 - 每提交一次 commit（包括提交 pull request 和在 pull request 里提交新的 commit），postCommit CI 会触发；
 - 当 postCommit CI 检测到新内容时，会自动触发一次 Linter test；

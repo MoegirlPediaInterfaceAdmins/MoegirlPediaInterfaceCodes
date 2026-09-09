@@ -48,7 +48,6 @@ dependencies:
   - oojs-ui.styles.icons-movement
   - oojs-ui.styles.icons-user
   - oojs-ui.styles.icons-wikimedia
-  - ext.gadget.libPolyfill
 
 _sites:
   - zh

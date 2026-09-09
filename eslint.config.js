@@ -14,7 +14,6 @@ const ignores = [
     "**/dist/**",
     "**/.*/**",
     "node_modules",
-    "src/gadgets/libPolyfill/*",
     // .husky/ 是点目录、会被上一条 `**/.*/**` 整体忽略，而其中的 .mjs 是需要检查的源码，
     // 需显式反忽略才能被 lint。
     "!.husky/*.mjs",
@@ -41,7 +40,6 @@ const fileSpec = {
     browser: {
         files: [
             "src/**/*",
-            "scripts/generatePolyfill/customPolyfills/**/*",
         ],
         ignores: [
             ...ignores,
@@ -53,7 +51,6 @@ const fileSpec = {
         ],
         ignores: [
             ...ignores,
-            "scripts/generatePolyfill/customPolyfills/**/*",
         ],
     },
 };
