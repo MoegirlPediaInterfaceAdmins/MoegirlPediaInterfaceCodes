@@ -11,6 +11,9 @@ const parser = ($out) => {
     const $mboxes = $out.find(".infoBox");
     $mboxes.each(function () {
         const $box = $(this);
+        if ($box.parents(".mw-editnotice").length) {
+            return;
+        }
         if ($box.data("mbox-collapse-initialized")) {
             return;
         }
