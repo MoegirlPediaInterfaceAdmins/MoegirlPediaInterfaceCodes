@@ -28,7 +28,8 @@ dependencies:
   - mediawiki.api
   - ext.gadget.site-lib
   - jquery.makeCollapsible
-  - jquery.ui
+  - oojs-ui-core
+  - oojs-ui-windows
 
 _sites:
   - zh
