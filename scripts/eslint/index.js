@@ -1,6 +1,20 @@
 import { ESLint } from "eslint";
 import { nodeLintTargets } from "../modules/lintTargets.js";
 
+// 只保留 `--format` 这一个参数（CI 用它切换 GitHub Actions 注解格式），
+// 其余原先写在 package.json 里的 flag 都成为本脚本的固定策略。
+//
+// 先解析参数再 lint：参数错误应当立即失败，不必白跑一遍扫描。
+const formatIndex = process.argv.indexOf("--format");
+const formatterName = formatIndex === -1 ? "stylish" : process.argv[formatIndex + 1];
+// `--format` 后缺值会落到 undefined（loadFormatter 的默认参数会兜成 stylish），
+// 但后跟另一个 flag（如 `--format --fix`）会被当成 formatter 名，抛出
+// ERR_MODULE_NOT_FOUND 的原始堆栈。这里按 ESLint CLI 的语义以退出码 2 报错。
+if (typeof formatterName !== "string" || formatterName.startsWith("-")) {
+    process.stderr.write("Usage: npm run lint:scripts -- --format <formatter>\n");
+    process.exit(2);
+}
+
 // 扫描范围与 eslint.config.js 的 node 配置共用 scripts/modules/lintTargets.js，
 // 新增待检查的文件或目录只需改那一处，避免命令里写死文件名列表后漂移。
 //
@@ -12,13 +26,15 @@ const eslint = new ESLint({
     cacheLocation: ".cache/",
 });
 
-const results = await eslint.lintFiles(nodeLintTargets);
+let formatter;
+try {
+    formatter = await eslint.loadFormatter(formatterName);
+} catch (error) {
+    process.stderr.write(`Failed to load formatter "${formatterName}": ${error.message}\n`);
+    process.exit(2);
+}
 
-// 只保留 `--format` 这一个参数（CI 用它切换 GitHub Actions 注解格式），
-// 其余原先写在 package.json 里的 flag 都成为本脚本的固定策略。
-const formatIndex = process.argv.indexOf("--format");
-const formatterName = formatIndex === -1 ? "stylish" : process.argv[formatIndex + 1];
-const formatter = await eslint.loadFormatter(formatterName);
+const results = await eslint.lintFiles(nodeLintTargets);
 
 // 不传 `color`：stylish 在 `color` 为 undefined 时用 Node 内置的 `util.styleText`
 // 做终端检测（尊重 NO_COLOR / FORCE_COLOR 与 isTTY），因此重定向到文件时不会写入
