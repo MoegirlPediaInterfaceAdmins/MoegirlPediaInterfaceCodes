@@ -1,59 +1,4 @@
 {
-    "GH:Claude": [
-        {
-            "commit": "ef530b60ba1680162248a602aeb8dd84ec6847ea",
-            "datetime": "2026-08-05T01:57:46.000Z",
-            "changedFiles": 6
-        }
-    ],
-    "GH:Claude Opus 4.8 (1M Context)": [
-        {
-            "commit": "172989c2cfbdc125e1256d59f2c83aeb0a6f72b9",
-            "datetime": "2026-08-31T05:34:50.000Z",
-            "changedFiles": 1
-        }
-    ],
-    "GH:LJL": [
-        {
-            "commit": "3c81fd2880bf2e852ca55e41475a1d8fd0379d08",
-            "datetime": "2026-03-21T15:59:01.000Z",
-            "changedFiles": 1
-        },
-        {
-            "commit": "0e9522cd279c73d416d130f61d9f00c3be0538f8",
-            "datetime": "2026-03-20T02:17:07.000Z",
-            "changedFiles": 1
-        },
-        {
-            "commit": "fd0cb76fcd2c024f865796997ba2649b2de0c626",
-            "datetime": "2026-03-16T02:01:14.000Z",
-            "changedFiles": 3
-        },
-        {
-            "commit": "5ea23e6fcf7acd0e871a5477ce3c983583b2096c",
-            "datetime": "2025-08-25T03:34:11.000Z",
-            "changedFiles": 1
-        },
-        {
-            "commit": "0f6845a5dc35c99ed4cb0477be0e168291329c91",
-            "datetime": "2025-08-06T15:40:01.000Z",
-            "changedFiles": 1
-        }
-    ],
-    "GH:TwoBYin": [
-        {
-            "commit": "324212ef310b958f998a2caa1db964b894109cbf",
-            "datetime": "2024-09-17T11:53:58.000Z",
-            "changedFiles": 1
-        }
-    ],
-    "GH:peter": [
-        {
-            "commit": "de3b4c6bd6714c394193a79489765502ddf21397",
-            "datetime": "2023-03-09T05:28:35.000Z",
-            "changedFiles": 1
-        }
-    ],
     "GH:undefined": [
         {
             "commit": "0bbd8012ff7e0adb783bd98ba109507a1f3c5a45",
@@ -3042,6 +2987,33 @@
             "changedFiles": 1
         }
     ],
+    "U:LJL": [
+        {
+            "commit": "3c81fd2880bf2e852ca55e41475a1d8fd0379d08",
+            "datetime": "2026-03-21T15:59:01.000Z",
+            "changedFiles": 1
+        },
+        {
+            "commit": "0e9522cd279c73d416d130f61d9f00c3be0538f8",
+            "datetime": "2026-03-20T02:17:07.000Z",
+            "changedFiles": 1
+        },
+        {
+            "commit": "fd0cb76fcd2c024f865796997ba2649b2de0c626",
+            "datetime": "2026-03-16T02:01:14.000Z",
+            "changedFiles": 3
+        },
+        {
+            "commit": "5ea23e6fcf7acd0e871a5477ce3c983583b2096c",
+            "datetime": "2025-08-25T03:34:11.000Z",
+            "changedFiles": 1
+        },
+        {
+            "commit": "0f6845a5dc35c99ed4cb0477be0e168291329c91",
+            "datetime": "2025-08-06T15:40:01.000Z",
+            "changedFiles": 1
+        }
+    ],
     "U:Leranjun": [
         {
             "commit": "50dccaf5ff4b9e29dba7554f7d34884266346cba",
@@ -3216,6 +3188,13 @@
         {
             "commit": "52cb2fa5c24ea25f418bd908c77b9cff78a71f9b",
             "datetime": "2022-07-14T05:53:03.000Z",
+            "changedFiles": 1
+        }
+    ],
+    "U:Lihaohong": [
+        {
+            "commit": "de3b4c6bd6714c394193a79489765502ddf21397",
+            "datetime": "2023-03-09T05:28:35.000Z",
             "changedFiles": 1
         }
     ],
@@ -3668,6 +3647,13 @@
         {
             "commit": "a21050d860f56fbbe8386649f017b95ac9834333",
             "datetime": "2025-01-04T13:14:40.000Z",
+            "changedFiles": 1
+        }
+    ],
+    "U:TwoBYin": [
+        {
+            "commit": "324212ef310b958f998a2caa1db964b894109cbf",
+            "datetime": "2024-09-17T11:53:58.000Z",
             "changedFiles": 1
         }
     ],
