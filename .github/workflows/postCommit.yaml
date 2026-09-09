@@ -20,6 +20,11 @@ on:
       - .swcrc
       - .*.yaml
       - package-lock.json
+      # `npm run lint:scripts` 的检查目标（见 scripts/modules/lintTargets.js）：
+      # 只改这些文件时也必须触发，否则 linter_test 里的该步骤不会运行。
+      - eslint.config.js
+      - commitlint.config.mjs
+      - .husky/**
   merge_group:
   pull_request:
     paths:
@@ -39,6 +44,11 @@ on:
       - .browserslistrc
       - .*.yaml
       - package-lock.json
+      # `npm run lint:scripts` 的检查目标（见 scripts/modules/lintTargets.js）：
+      # 只改这些文件时也必须触发，否则 linter_test 里的该步骤不会运行。
+      - eslint.config.js
+      - commitlint.config.mjs
+      - .husky/**
   workflow_dispatch:
   schedule:
     - cron: 0 23 * * * # Every 07:00 CST
@@ -167,6 +177,8 @@ jobs:
           ls -lhA .cache
       - name: Run eslint
         run: npm run test:eslint -- --format @annangela/eslint-formatter-gha
+      - name: Run eslint for scripts and config files
+        run: npm run lint:scripts -- --format @annangela/eslint-formatter-gha
       - name: Run stylelint
         run: npm run test:stylelint -- --custom-formatter=@csstools/stylelint-formatter-github
       - name: Run v8r
