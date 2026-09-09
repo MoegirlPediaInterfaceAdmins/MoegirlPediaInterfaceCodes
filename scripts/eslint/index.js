@@ -20,9 +20,10 @@ const formatIndex = process.argv.indexOf("--format");
 const formatterName = formatIndex === -1 ? "stylish" : process.argv[formatIndex + 1];
 const formatter = await eslint.loadFormatter(formatterName);
 
-// `color` 必须显式传入：省略时 stylish 在非 TTY 环境下不会着色，
-// 而 CLI 的 `--color` 会强制着色（本地重定向与 CI 日志都依赖这一点）。
-process.stdout.write(await formatter.format(results, { color: true }));
+// 不传 `color`：stylish 在 `color` 为 undefined 时用 Node 内置的 `util.styleText`
+// 做终端检测（尊重 NO_COLOR / FORCE_COLOR 与 isTTY），因此重定向到文件时不会写入
+// ANSI 序列，而交互终端下仍有颜色。若显式传 true 则会强制着色，日志文件里会出现转义码。
+process.stdout.write(await formatter.format(results, {}));
 
 const { errorCount, fatalErrorCount, warningCount } = results.reduce((counts, result) => ({
     errorCount: counts.errorCount + result.errorCount,
