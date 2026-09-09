@@ -30,6 +30,12 @@
     display: block;
 }
 
+.noteTA-indicator-icon {
+    height: 1.5em;
+    width: auto;
+    vertical-align: middle;
+}
+
 /* 只有打开小工具才有的按钮动画, written by User:机智的小鱼君 */
 .noteTAViewer-button:hover {
     border-color: #36ad6a;

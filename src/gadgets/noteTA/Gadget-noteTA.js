@@ -287,7 +287,7 @@ const setupViewer = ($dom) => {
         $("#p-noteTA-moeskin > button").addClass("noteTAViewer-button");
     } else {
         const noteTAIndicator = $("[id^=mw-indicator-noteTA-]").hide();
-        const $noteTAIndicatorImg = noteTAIndicator.find("img").first().clone().css("height", "17.5px");
+        const $noteTAIndicatorImg = noteTAIndicator.find("img").first().clone().addClass("noteTA-indicator-icon");
         const $vectorVariantsDropdown = $("#vector-variants-dropdown");
         if ($vectorVariantsDropdown.length) {
             $trigger = $("<div/>", {
