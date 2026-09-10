@@ -25,6 +25,26 @@ import yamlModule from "../modules/yamlModule.js";
 const pathValidator = (file) => file.startsWith("src/") && ![
     "src/@types/",
 ].some((blacklist) => file.startsWith(blacklist));
+/**
+ * 处理 --numstat -M 的两种重命名写法：`{a => b}`（同目录/部分相同）与 `a => b`（完全不同）。
+ * 重命名两侧只要任一侧位于 src/ 就算改动，否则跨目录重命名（如 scripts/x => src/x）会被漏计。
+ * @param { string } raw 形如 "src/gadgets/{A.js => B.js}" 或 "scripts/a.js => src/a.js"
+ * @returns { boolean }
+ */
+const renamePathValidator = (raw) => {
+    if (pathValidator(raw)) {
+        return true;
+    }
+    if (!raw.includes("=>")) {
+        return false;
+    }
+    const braceMatch = /^(.*?)\{(.*?) => (.*?)\}(.*)$/.exec(raw);
+    if (braceMatch) {
+        return pathValidator(braceMatch[1] + braceMatch[2] + braceMatch[4]) || pathValidator(braceMatch[1] + braceMatch[3] + braceMatch[4]);
+    }
+    const [from, to] = raw.split(" => ");
+    return pathValidator(from.trim()) || pathValidator(to.trim());
+};
 const execFile = promisify(execFileCallback);
 
 exportVariable("linguist-generated-generateCommitsHistory", JSON.stringify(["src/global/zh/GHIAHistory.json"]));
@@ -79,9 +99,11 @@ const { all: rawHistory } = await git.log({
         _signatureKey: "%GK",
         _signatureStatus: "%G?",
         _signatureSigner: "%GS",
+        parents: "%P",
         coAuthors: "%(trailers:key=Co-authored-by)",
     },
-    "--stat": "10000",
+    "--numstat": null,
+    "-M": null,
 });
 console.info("Successfully fetched raw history, it has", rawHistory.length, "items.");
 const signatureStatuses = {};
@@ -89,6 +111,40 @@ for (const { _signatureStatus } of rawHistory) {
     signatureStatuses[_signatureStatus] = (signatureStatuses[_signatureStatus] || 0) + 1;
 }
 console.info("Signature status distribution:", signatureStatuses);
+/**
+ * git log --numstat 对合并提交默认不输出任何改动（diff 为 null），因此合并提交的
+ * 「冲突解决产物」会被整体漏掉。这里对每个合并提交单独求「与所有父提交都不同」的
+ * src/ 文件集合——只有这些文件才是合并提交自身的贡献。
+ *
+ * 不能用 --cc/-c：实测二者输出等于「相对第一父的 diff」，会把被并入分支的改动
+ * 重复计入合并提交（本仓库实测多算 1160 个文件条目，而真正独有的仅 69 个）。
+ * 不能用 -m：会为每个父各输出一份，重复更严重。
+ */
+const numstatFiles = async (from, to) => (await git.raw(["diff", "--numstat", "-M", from, to])).split("\n").filter((line) => line.trim().length > 0).map((line) => line.split("\t").pop());
+const mergeChangedFiles = new Map();
+let mergeCandidates = 0;
+for (const { hash, parents } of rawHistory) {
+    const parentList = parents.trim().split(/\s+/).filter(Boolean);
+    if (parentList.length < 2) {
+        continue;
+    }
+    // 预筛：相对第一父没有 src/ 改动就直接跳过，避免对全部合并提交都发起 git 调用
+    const firstParentSrcFiles = (await numstatFiles(parentList[0], hash)).filter(renamePathValidator);
+    if (firstParentSrcFiles.length === 0) {
+        continue;
+    }
+    mergeCandidates++;
+    let intersection = new Set(firstParentSrcFiles);
+    for (const parent of parentList.slice(1)) {
+        const parentFiles = new Set((await numstatFiles(parent, hash)).filter(renamePathValidator));
+        intersection = new Set([...intersection].filter((file) => parentFiles.has(file)));
+    }
+    if (intersection.size > 0) {
+        mergeChangedFiles.set(hash, intersection.size);
+        console.info(`Merge commit ${hash.slice(0, 8)} has ${intersection.size} file(s) differing from all parents:`, [...intersection]);
+    }
+}
+console.info("Merge commits with src/ first-parent changes:", mergeCandidates, "| with unique resolution changes:", mergeChangedFiles.size);
 await jsonModule.writeFile(rawHistoryPath, rawHistory);
 console.info("Successfully saved to", rawHistoryPath);
 console.info(await fs.promises.stat(rawHistoryPath));
@@ -131,12 +187,18 @@ for (const { hash, _date, authorName, _authorEmail, _signatureKey, _signatureSta
     let changedFiles = 0;
     if (Array.isArray(diff?.files)) {
         debugConsole.log("\tdiff.files:", diff.files);
-        for (const { file, changes, before, after, binary } of diff.files) {
-            if ((binary ? before !== after : changes > 0) && pathValidator(file)) {
+        // --numstat -M 下重命名条目为 `0 0 路径`，不能再用 changes > 0 判定，
+        // 否则纯重命名提交会被整体跳过（实测漏掉 6 个此类提交）。
+        for (const { file } of diff.files) {
+            if (renamePathValidator(file)) {
                 changedFiles++;
             }
         }
         debugConsole.log("\tchangedFiles:", changedFiles);
+    } else if (mergeChangedFiles.has(hash)) {
+        // 合并提交：仅计入「与所有父提交都不同」的冲突解决产物
+        changedFiles = mergeChangedFiles.get(hash);
+        debugConsole.log("\tchangedFiles (merge, differing from all parents):", changedFiles);
     } else {
         debugConsole.log("\tNothing changed by this commit.");
     }
