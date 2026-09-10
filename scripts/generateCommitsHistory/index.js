@@ -185,24 +185,36 @@ for (const { hash, _date, authorName, _authorEmail, _signatureKey, _signatureSta
     const signatureKey = removeSplitter(_signatureKey);
     debugConsole.log("Parsing:", { date, hash, authorName, authorEmail, committerName, committerEmail, signatureKey, signatureStatus: _signatureStatus, signatureSigner: _signatureSigner, coAuthors, diff });
     let changedFiles = 0;
+    let touchedSrc = false;
     if (Array.isArray(diff?.files)) {
         debugConsole.log("\tdiff.files:", diff.files);
-        // --numstat -M 下重命名条目为 `0 0 路径`，不能再用 changes > 0 判定，
-        // 否则纯重命名提交会被整体跳过（实测漏掉 6 个此类提交）。
-        for (const { file } of diff.files) {
-            if (renamePathValidator(file)) {
+        // 计数与入选必须解耦：changedFiles 会被 Gadget-queryContributions 直接求和成
+        // GHIA 编辑数，须保持修复前口径——纯重命名（`0 0 路径`）不计权，否则重命名
+        // 密集提交会显著膨胀该统计；但入选判定用 touchedSrc（含纯重命名），否则纯
+        // 重命名提交会重新被整体丢弃（#1065 实测漏掉 6 个此类提交），以
+        // changedFiles: 0 入库即可两全。
+        // binary 条目没有行数（changes 为 undefined），且 simple-git 的 numstat 解析
+        // 把 before/after 恒置为 0，无法沿用修复前的 before !== after 判定；而会
+        // 出现在 diff 输出里的 binary 文件必然发生过变化，故直接计权。
+        for (const { file, changes, binary } of diff.files) {
+            if (!renamePathValidator(file)) {
+                continue;
+            }
+            touchedSrc = true;
+            if (binary || changes > 0) {
                 changedFiles++;
             }
         }
-        debugConsole.log("\tchangedFiles:", changedFiles);
+        debugConsole.log("\tchangedFiles:", changedFiles, "| touchedSrc:", touchedSrc);
     } else if (mergeChangedFiles.has(hash)) {
         // 合并提交：仅计入「与所有父提交都不同」的冲突解决产物
+        touchedSrc = true;
         changedFiles = mergeChangedFiles.get(hash);
         debugConsole.log("\tchangedFiles (merge, differing from all parents):", changedFiles);
     } else {
         debugConsole.log("\tNothing changed by this commit.");
     }
-    if (changedFiles === 0) {
+    if (!touchedSrc) {
         debugConsole.log("\tNothing in src/ has been changed, skip.");
         continue;
     }
