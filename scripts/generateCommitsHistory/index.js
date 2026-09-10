@@ -5,8 +5,10 @@ const githubWebInterfaceCommitter = {
 
 import artifactClient from "@actions/artifact";
 import { endGroup, exportVariable, startGroup } from "@actions/core";
+import { execFile as execFileCallback } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
+import { promisify } from "node:util";
 import console from "../modules/console.js";
 import createCommit from "../modules/createCommit.js";
 import git from "../modules/git.js";
@@ -23,6 +25,7 @@ import yamlModule from "../modules/yamlModule.js";
 const pathValidator = (file) => file.startsWith("src/") && ![
     "src/@types/",
 ].some((blacklist) => file.startsWith(blacklist));
+const execFile = promisify(execFileCallback);
 
 exportVariable("linguist-generated-generateCommitsHistory", JSON.stringify(["src/global/zh/GHIAHistory.json"]));
 
@@ -37,6 +40,33 @@ if (!isInMasterBranch) {
 console.info("Initialization done.");
 const tempPath = await mkdtmp();
 const rawHistoryPath = path.join(tempPath, "rawHistory.json");
+/**
+ * 判定「提交是否来自 GitHub 网页界面」必须靠密码学签名验证，而不能只看 %GK（%GK 只是
+ * 签名里声明的签发者 ID，可以伪造：手工构造 gpgsig 即可让 %GK 等于 web-flow 的密钥 ID）。
+ * 这里拉取 web-flow 当前公布的全部公钥（含已过期的旧密钥，历史提交正是用它们签名的——
+ * 实测 2024-01-16 前的 912 个提交 %G? 为 Y，即「签名有效但密钥现已过期」，若按
+ * expires_at/revoked 过滤会把这批提交全部误判为非网页提交而静默丢失）。
+ */
+console.info("Start to fetch GitHub web-flow GPG keys");
+const githubWebFlowKeys = (await octokit.rest.users.listGpgKeysForUser({ username: "web-flow" })).data;
+console.info("GitHub web-flow GPG keys:", githubWebFlowKeys.map(({ key_id }) => key_id));
+if (githubWebFlowKeys.length === 0) {
+    throw new Error("No GitHub web-flow GPG key found, refuse to continue to avoid mis-attributing commits.");
+}
+// 导入独立的 GNUPGHOME，既不污染 runner 上可能存在的用户 keyring，也不受其状态影响
+const gpgHome = await mkdtmp();
+await fs.promises.chmod(gpgHome, 0o700);
+for (const { key_id, raw_key } of githubWebFlowKeys) {
+    if (!raw_key) {
+        throw new Error(`GitHub web-flow GPG key ${key_id} has no raw_key, cannot verify commit signatures.`);
+    }
+    const keyPath = path.join(gpgHome, `${key_id}.asc`);
+    await fs.promises.writeFile(keyPath, raw_key);
+    await execFile("gpg", ["--batch", "--import", keyPath], { env: { ...process.env, GNUPGHOME: gpgHome } });
+}
+console.info("GPG home:", gpgHome);
+// 之后所有 git 调用都带上此 env，%G? / %GS 才有密钥可供验证
+git.env({ GNUPGHOME: gpgHome });
 console.info("Start to fetch raw history");
 const { all: rawHistory } = await git.log({
     format: {
@@ -47,11 +77,18 @@ const { all: rawHistory } = await git.log({
         committerName: "%cN",
         _committerEmail: "%cE",
         _signatureKey: "%GK",
+        _signatureStatus: "%G?",
+        _signatureSigner: "%GS",
         coAuthors: "%(trailers:key=Co-authored-by)",
     },
     "--stat": "10000",
 });
 console.info("Successfully fetched raw history, it has", rawHistory.length, "items.");
+const signatureStatuses = {};
+for (const { _signatureStatus } of rawHistory) {
+    signatureStatuses[_signatureStatus] = (signatureStatuses[_signatureStatus] || 0) + 1;
+}
+console.info("Signature status distribution:", signatureStatuses);
 await jsonModule.writeFile(rawHistoryPath, rawHistory);
 console.info("Successfully saved to", rawHistoryPath);
 console.info(await fs.promises.stat(rawHistoryPath));
@@ -65,21 +102,6 @@ if (debugLoggingEnabled) {
     endGroup();
 }
 const bots = await yamlModule.readFile("scripts/generateCommitsHistory/bots.yaml");
-/**
- * GitHub 会轮换其 web-flow 签名密钥（2024-01-16 曾由 4AEE18F83AFDEB23 换为 B5690EEEBB952194，
- * 旧密钥此后过期的 commit 一律改用新密钥签名），因此不能把密钥 ID 写死在代码里，
- * 否则每次轮换后网页界面合并的 commit 都会被误判为非网页提交、进而归到被 bots.yaml 跳过的
- * GH:GitHub 名下而静默丢失。改为运行时向 GitHub 拉取 web-flow 当前公布的全部公钥 ID。
- */
-console.info("Start to fetch GitHub web-flow GPG keys");
-const githubWebFlowSignatureKeys = new Set((await octokit.rest.users.listGpgKeysForUser({ username: "web-flow" })).data
-    // 只保留仍有效且属于 noreply@github.com 的密钥，避免已被吊销的密钥被当作可信来源
-    .filter(({ revoked, emails }) => !revoked && emails.some(({ email, verified }) => verified && email === githubWebInterfaceCommitter.committerEmail))
-    .map(({ key_id }) => key_id));
-console.info("GitHub web-flow GPG keys:", [...githubWebFlowSignatureKeys]);
-if (githubWebFlowSignatureKeys.size === 0) {
-    throw new Error("No valid GitHub web-flow GPG key found, refuse to continue to avoid mis-attributing commits.");
-}
 const history = {};
 const parser = ({ username, changedFiles, hash, date, indent }) => {
     if (username.endsWith("[bot]") || bots.includes(username)) {
@@ -100,12 +122,12 @@ const removeSplitter = (str) => str.replace(/ò$/, "").trim();
 if (debugLoggingEnabled) {
     startGroup("Raw history parsing:");
 }
-for (const { hash, _date, authorName, _authorEmail, _signatureKey, committerName, _committerEmail, diff, coAuthors } of rawHistory) {
+for (const { hash, _date, authorName, _authorEmail, _signatureKey, _signatureStatus, _signatureSigner, committerName, _committerEmail, diff, coAuthors } of rawHistory) {
     const date = new Date(_date).toISOString();
     const authorEmail = _authorEmail.toLowerCase();
     const committerEmail = removeSplitter(_committerEmail).toLowerCase();
     const signatureKey = removeSplitter(_signatureKey);
-    debugConsole.log("Parsing:", { date, hash, authorName, authorEmail, committerName, committerEmail, signatureKey, coAuthors, diff });
+    debugConsole.log("Parsing:", { date, hash, authorName, authorEmail, committerName, committerEmail, signatureKey, signatureStatus: _signatureStatus, signatureSigner: _signatureSigner, coAuthors, diff });
     let changedFiles = 0;
     if (Array.isArray(diff?.files)) {
         debugConsole.log("\tdiff.files:", diff.files);
@@ -122,7 +144,10 @@ for (const { hash, _date, authorName, _authorEmail, _signatureKey, committerName
         debugConsole.log("\tNothing in src/ has been changed, skip.");
         continue;
     }
-    const isFromGithubWebInterface = githubWebFlowSignatureKeys.has(signatureKey) && committerName === githubWebInterfaceCommitter.committerName && committerEmail === githubWebInterfaceCommitter.committerEmail;
+    // %G? 的 G/U/X/Y/R 均为「签名密码学有效」，其中 Y 表示签名有效但密钥现已过期——
+    // 必须接受，否则会丢掉旧密钥（2024-01-16 前冻结）签名的全部历史提交；
+    // N/E/B 分别表示无签名、无法验证（密钥缺失）、签名损坏，均不可信。
+    const isFromGithubWebInterface = ["G", "U", "X", "Y", "R"].includes(_signatureStatus) && _signatureSigner.endsWith(`<${githubWebInterfaceCommitter.committerEmail}>`) && committerName === githubWebInterfaceCommitter.committerName && committerEmail === githubWebInterfaceCommitter.committerEmail;
     debugConsole.log("\tisFromGithubWebInterface:", isFromGithubWebInterface);
     const name = isFromGithubWebInterface ? authorName : committerName;
     const email = (isFromGithubWebInterface ? authorEmail : committerEmail).toLowerCase();
