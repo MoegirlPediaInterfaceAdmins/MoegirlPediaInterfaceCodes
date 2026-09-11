@@ -132,7 +132,6 @@
     - libHashwasm
     - libJQuery
     - libUtil
-    - libPolyfill
     - libip
     - libJSON5
     - libCachedCode

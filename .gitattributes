@@ -7,7 +7,6 @@ src/**/*.json linguist-generated=false
 src/*.json linguist-generated=false
 src/**/*.yaml linguist-generated=false
 src/*.yaml linguist-generated=false
-src/gadgets/libPolyfill/Gadget-libPolyfill.*.js linguist-generated=true
 
 # From browserify
 src/gadgets/libHashwasm/Gadget-libHashwasm.js linguist-generated=true

@@ -28,7 +28,6 @@ peers: []
 dependencies:
   - mediawiki.api
   - ext.gadget.site-lib
-  - ext.gadget.libPolyfill
 
 _sites:
   - zh

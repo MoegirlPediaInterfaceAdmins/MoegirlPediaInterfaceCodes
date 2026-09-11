@@ -26,7 +26,6 @@ rights:
 peers: []
 
 dependencies:
-  - ext.gadget.libPolyfill
   - moment
 
 _sites:
