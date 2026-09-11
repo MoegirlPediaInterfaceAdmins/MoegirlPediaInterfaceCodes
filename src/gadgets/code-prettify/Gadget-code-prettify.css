@@ -139,21 +139,6 @@ li.linenums-active {
     box-shadow: inset 2px 0 0 #D4A72C66;
 }
 
-/* 优化移动端代码显示 */
-.skin-minerva pre.prettyprint {
-    white-space: pre;
-    overflow-x: auto;
-}
-
-.skin-minerva pre.prettyprint li {
-    margin-bottom: 0;
-}
-
-.skin-minerva ol.linenums {
-    width: max-content;
-    min-width: 100%;
-}
-
 /* 深色模式适配：moeskin（html.dark）与 Vector 2022 夜间模式（html.skin-theme-clientpref-night） */
 @media screen {
     html.skin-theme-clientpref-night .pln,
