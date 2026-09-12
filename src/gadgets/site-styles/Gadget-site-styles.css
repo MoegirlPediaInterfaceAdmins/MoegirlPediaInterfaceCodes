@@ -672,9 +672,20 @@ a.extiw:visited:hover span.heimu {
 }
 
 /* 黑幕 暗色模式 */
-html.dark .heimu,
-html.dark .heimu rt {
-    --heimu-color: #5e6272;
+@media screen {
+    html.skin-theme-clientpref-night .heimu,
+    html.skin-theme-clientpref-night .heimu rt,
+    html.dark .heimu,
+    html.dark .heimu rt {
+        --heimu-color: #5e6272;
+    }
+}
+
+@media screen and (prefers-color-scheme: dark) {
+    html.skin-theme-clientpref-os .heimu,
+    html.skin-theme-clientpref-os .heimu rt {
+        --heimu-color: #5e6272;
+    }
 }
 
 /* 胡话模板配合CSS */
