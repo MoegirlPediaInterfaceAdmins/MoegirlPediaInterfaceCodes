@@ -1429,12 +1429,12 @@ body.overlay-scrollbars #bodyContent {
 }
 
 /* TODO: 暗色模式 暂时降低暗度处理 */
-html.dark :is(.infobox, .infobox2, .moe-infobox, .infotemplatebox, .infoboxSpecial, .ztdh, #powersearch, #topicpath) {
+html.dark :is(.infobox, .infobox2, .moe-infobox, .infotemplatebox, .infoboxSpecial, #powersearch, #topicpath) {
     color: #222;
     filter: brightness(0.75);
 }
 
-html.dark :is(.infobox, .infobox2, .moe-infobox, .infotemplatebox, .infoboxSpecial, .ztdh, #powersearch) a:not(.new) {
+html.dark :is(.infobox, .infobox2, .moe-infobox, .infotemplatebox, .infoboxSpecial, #powersearch) a:not(.new) {
     --color: #155d33;
 }
 
