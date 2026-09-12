@@ -63,6 +63,7 @@ aside#moe-global-siderail #moe-custom-sidenav-block h2 {
 
 /* 移动设备优化 */
 @media (width <=576px) {
+
     /* 清除浮动 */
     body.skin-moeskin .mw-parser-output > * {
         float: unset !important;
@@ -278,6 +279,34 @@ table.navbox > tbody > tr > td > table {
 
 .skin-moeskin table.navbox + table.navbox {
     margin-top: 0.5rem;
+}
+
+/* TODO: 暗色模式 暂时降低暗度处理 */
+html.dark :is(.infobox, .infobox2, .moe-infobox, .infotemplatebox, .infoboxSpecial, #powersearch, #topicpath) {
+    color: #222;
+    filter: brightness(0.75);
+}
+
+html.dark :is(.infobox, .infobox2, .moe-infobox, .infotemplatebox, .infoboxSpecial, #powersearch) a:not(.new) {
+    --color: #155d33;
+}
+
+html.dark input[type="text"] {
+    color: var(--theme-text-color);
+}
+
+html.dark :is(.navbox):not(.dark-theme-invert-disabled) {
+    --theme-link-color: rgb(51 102 187);
+
+    color: rgb(44 62 80);
+    filter: brightness(0.75);
+}
+
+html.dark .mw-datatable,
+html.dark .mw-json,
+html.dark table.wikitable {
+    background-color: var(--theme-background-color);
+    color: var(--theme-text-color);
 }
 
 /* @fix 2017源代码编辑器行高bug */

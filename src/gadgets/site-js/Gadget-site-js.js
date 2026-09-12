@@ -48,71 +48,6 @@
         instanceRAF.request(scrollbarCalc);
     }).trigger("resize");
     /* Tabs */
-    const tabDefaultStyle = {
-        purple: {
-            labelColor: " ", // anti check
-            labelBackgroundColor: "#9070c0",
-            labelBorderColor: "#b090e0 #7050a0 #9070c0 #b090e0",
-            labelPadding: ".2em .3em .2em .3em",
-            textBorderColor: "#9070c0",
-            textBackgroundColor: "#f0edf5",
-            textPadding: "1em",
-        },
-        green: {
-            labelColor: " ",
-            labelBackgroundColor: "#75c045",
-            labelBorderColor: "#90d060 #60b030 #75c045 #90d060",
-            labelPadding: ".2em .3em .2em .3em",
-            textBorderColor: "#75c045 #60b030 #60b030 #75c045",
-            textBackgroundColor: "#f5fffa",
-            textPadding: "1em",
-        },
-        red: {
-            labelColor: " ",
-            labelBackgroundColor: "#FF0000",
-            labelBorderColor: "#FF8888 #CC0000 #FF0000 #FF8888",
-            labelPadding: ".2em .3em .2em .3em",
-            textBorderColor: "#FF0000 #CC0000 #CC0000 #FF0000",
-            textBackgroundColor: "#fffafa",
-            textPadding: "1em",
-        },
-        blue: {
-            labelColor: " ",
-            labelBackgroundColor: "#5b8dd6",
-            labelBorderColor: "#88abde #3379de #5b8dd6 #88abde",
-            labelPadding: ".2em .3em .2em .3em",
-            textBackgroundColor: "#f0f8ff",
-            textBorderColor: "#5b8dd6 #3379de #3379de #5b8dd6",
-            textPadding: "1em",
-        },
-        yellow: {
-            labelColor: " ",
-            labelBackgroundColor: "#ffe147",
-            labelBorderColor: "#ffe977 #ffd813 #ffe147 #ffe977",
-            labelPadding: ".2em .3em .2em .3em",
-            textBackgroundColor: "#fffce8",
-            textBorderColor: "#ffe147 #ffd813 #ffd813 #ffe147",
-            textPadding: "1em",
-        },
-        orange: {
-            labelColor: " ",
-            labelBackgroundColor: "#ff9d42",
-            labelBorderColor: "#ffac5d #ff820e #ff9d42 #ffac5d",
-            labelPadding: ".2em .3em .2em .3em",
-            textBackgroundColor: "#ffeedd",
-            textBorderColor: "#ff9d42 #ff820e #ff820e #ff9d42",
-            textPadding: "1em",
-        },
-        black: {
-            labelColor: " ",
-            labelBackgroundColor: "#7f7f7f",
-            labelBorderColor: "#999999 #4c4c4c #7f7f7f #999999",
-            labelPadding: ".2em .3em .2em .3em",
-            textBackgroundColor: "#e5e5e5",
-            textBorderColor: "#7f7f7f #4c4c4c #4c4c4c #7f7f7f",
-            textPadding: "1em",
-        },
-    };
     const tabSides = {
         top: {
             className: "tabLabelTop",
@@ -144,13 +79,9 @@
         },
     };
     const tabTruthy = ["1", "on", "true", "yes"];
-    const tabStyleKeys = ["labelBorderColor", "labelBackgroundColor", "textPadding", "textBorderColor", "textBackgroundColor"];
     const tabIndexAttribute = "data-tabs-index";
-    const getOwnPropertyNamesLength = (obj) => Reflect.ownKeys(obj).length;
-    const toLowerFirstCase = (str) => str.substring(0, 1).toLowerCase() + str.substring(1);
-    const toUpperFirstCase = (str) => str.substring(0, 1).toUpperCase() + str.substring(1);
     const getTabsData = (ele) => {
-        const preset = Array.from(ele.classList).find((className) => Reflect.has(tabDefaultStyle, className));
+        const dataset = ele.dataset || {};
         return $.extend({
             labelPadding: "2px",
             labelBorderColor: "#aaa",
@@ -160,7 +91,9 @@
             textBorderColor: "#aaa",
             textBackgroundColor: "white",
             defaultTab: 1,
-        }, preset ? tabDefaultStyle[preset] || {} : {}, ele.dataset || {});
+        }, dataset, {
+            styleData: dataset,
+        });
     };
     const normalizeTabsData = (data) => {
         const labelSide = Reflect.has(tabSides, data.labelSide) ? data.labelSide : "top";
@@ -200,21 +133,25 @@
         }
     };
     const getTabIndex = (ele) => ele.dataset.tabsIndex;
-    const activateTab = ($labels, $contents, styleSheet, tabIndex) => {
+    const activateTab = ($labels, $contents, tabIndex) => {
         const normalizedTabIndex = `${tabIndex}`;
-        const $label = $labels.filter((_, ele) => getTabIndex(ele) === normalizedTabIndex).first();
-        const $content = $contents.filter((_, ele) => getTabIndex(ele) === normalizedTabIndex).first();
+        const $label = $labels
+            .filter((_, ele) => getTabIndex(ele) === normalizedTabIndex)
+            .first();
+        const $content = $contents
+            .filter((_, ele) => getTabIndex(ele) === normalizedTabIndex)
+            .first();
+
         if ($label.length === 0 || $content.length === 0) {
             return;
         }
-        $label.addClass("selected").siblings().removeClass("selected").css({
-            "border-color": "transparent",
-            "background-color": "inherit",
-        });
-        $content.addClass("selected").siblings().removeClass("selected");
-        if (getOwnPropertyNamesLength(styleSheet.label) > 0) {
-            $label.css(styleSheet.label);
-        }
+
+        $labels.removeClass("selected");
+        $label.addClass("selected");
+
+        $contents.removeClass("selected");
+        $content.addClass("selected");
+
         setTimeout(() => {
             $window.triggerHandler("scroll");
         }, 1);
@@ -232,7 +169,7 @@
             $tab.remove();
         });
     };
-    const bindTabLabels = ($labels, $contents, styleSheet) => {
+    const bindTabLabels = ($labels, $contents) => {
         $labels.each((_, ele) => {
             ele.addEventListener("click", (event) => {
                 if (event.target === event.currentTarget) {
@@ -250,20 +187,44 @@
         $labels.on("click", (event) => {
             event.preventDefault();
             event.stopPropagation();
-            activateTab($labels, $contents, styleSheet, getTabIndex(event.currentTarget));
+            activateTab($labels, $contents, getTabIndex(event.currentTarget));
         });
     };
-    const populateTabStyleSheet = (styleSheet, data, labelColorName) => {
-        tabStyleKeys.forEach((name) => {
-            const target = /^label/.test(name) ? "label" : "text";
-            const key = toLowerFirstCase(name.replace(target, ""));
-            styleSheet[target][key] = data[name];
+    const populateTabStyleSheet = ($tabs, data) => {
+        const styleData = data.styleData || data;
+        const styleMap = {
+            labelPadding: ["--tab-label-padding"],
+            labelBorderColor: [
+                "--tab-label-border-color",
+                "--tab-label-border-top-color",
+                "--tab-label-border-right-color",
+                "--tab-label-border-bottom-color",
+                "--tab-label-border-left-color",
+            ],
+            labelColor: ["--tab-label-color"],
+            labelBackgroundColor: ["--tab-label-background-color"],
+            textPadding: ["--tab-text-padding"],
+            textBorderColor: [
+                "--tab-text-border-color",
+                "--tab-text-border-top-color",
+                "--tab-text-border-right-color",
+                "--tab-text-border-bottom-color",
+                "--tab-text-border-left-color",
+            ],
+            textBackgroundColor: ["--tab-text-background-color"],
+        };
+
+        const style = {};
+
+        Object.entries(styleMap).forEach(([name, variables]) => {
+            if (styleData[name] && (name !== "labelColor" || styleData[name].trim())) {
+                variables.forEach((variable) => {
+                    style[variable] = styleData[name];
+                });
+            }
         });
-        if (data.labelColor) {
-            styleSheet.label[`border${labelColorName}Color`] = data.labelColor;
-        } else if (styleSheet.label.borderColor) {
-            styleSheet.label[`border${labelColorName}Color`] = "green";
-        }
+
+        $tabs.css(style);
     };
     const getDefaultTabIndex = (defaultTab, labelCount) => isNaN(defaultTab) || defaultTab <= 0 || defaultTab > labelCount ? 0 : defaultTab - 1;
     const applyTabModifiers = ($tabs, data) => {
@@ -284,8 +245,6 @@
         }
         const data = getTabsData(tab);
         const {
-            labelPadding,
-            labelColor,
             labelSide,
             side,
             labelColorSideReverse,
@@ -297,15 +256,10 @@
             $tabDivider,
             $tabContent,
         } = createTabContainers($tab);
-        const styleSheet = {
-            label: {},
-            text: {},
-        };
         arrangeTabContainers(labelSide, $tabLabel, $tabDivider, $tabContent);
         if (!isNaN(dividerSize) && dividerSize > 0) {
             $tabDivider[side.dividerSizeType](dividerSize);
         }
-        const labelColorName = toUpperFirstCase(labelColorSideReverse ? side.labelColorSideReverse : side.labelColorSide);
         $tab.addClass(side.className);
         if (labelColorSideReverse) {
             $tab.addClass("reverse");
@@ -313,16 +267,8 @@
         moveTabPanels($tab, $tabLabel, $tabContent);
         const $labels = $tabLabel.children(".TabLabelText");
         const $contents = $tabContent.children(".TabContentText");
-        if (labelPadding) {
-            $labels.css("padding", labelPadding);
-        }
-        if (labelColor || labelSide) {
-            populateTabStyleSheet(styleSheet, data, labelColorName);
-        }
-        if (getOwnPropertyNamesLength(styleSheet.text) > 0) {
-            $tabContent.css(styleSheet.text);
-        }
-        bindTabLabels($labels, $contents, styleSheet);
+        populateTabStyleSheet($tab, data);
+        bindTabLabels($labels, $contents);
         $labels.eq(getDefaultTabIndex(defaultTab, $labels.length)).trigger("click");
         applyTabModifiers($tab, data);
     };
