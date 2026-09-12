@@ -6,11 +6,37 @@
  */
 
 /* Tabs */
+.tab .Tabs {
+    --tab-label-selected-top-color: green;
+    --tab-label-selected-right-color: green;
+    --tab-label-selected-bottom-color: green;
+    --tab-label-selected-left-color: green;
+    --tab-label-border-color: #aaa;
+    --tab-label-border-top-color: var(--tab-label-border-color);
+    --tab-label-border-right-color: var(--tab-label-border-color);
+    --tab-label-border-bottom-color: var(--tab-label-border-color);
+    --tab-label-border-left-color: var(--tab-label-border-color);
+    --tab-label-background-color: #fff;
+    --tab-label-padding: 2px;
+    --tab-text-border-color: #aaa;
+    --tab-text-border-top-color: var(--tab-text-border-color);
+    --tab-text-border-right-color: var(--tab-text-border-color);
+    --tab-text-border-bottom-color: var(--tab-text-border-color);
+    --tab-text-border-left-color: var(--tab-text-border-color);
+    --tab-text-background-color: white;
+    --tab-text-padding: 20px 30px;
+}
+
 .tab .TabLabelText {
-    padding: 1px;
-    background: #fff;
+    padding: var(--tab-label-padding);
+    background-color: transparent;
+    border-color: transparent;
     cursor: pointer;
     flex: none;
+}
+
+.tab .TabLabelText.selected {
+    background-color: var(--tab-label-background-color);
 }
 
 .tab .TabLabel {
@@ -25,17 +51,14 @@
     flex-wrap: wrap;
 }
 
-.tab .TabLabelText.selected {
-    padding: 1px;
-    background: white;
-}
-
 .tab .TabContent {
-    background: white;
-    padding: 20px 30px;
+    background: var(--tab-text-background-color);
+    padding: var(--tab-text-padding);
     position: relative;
     z-index: 1;
-    border: 1px solid #aaa;
+    border-width: 1px;
+    border-style: solid;
+    border-color: var(--tab-text-border-top-color) var(--tab-text-border-right-color) var(--tab-text-border-bottom-color) var(--tab-text-border-left-color);
 }
 
 .tab .TabContentText {
@@ -46,6 +69,150 @@
     display: block;
 }
 
+
+/* Tab presets */
+.tab .Tabs.purple {
+    --tab-label-selected-top-color: var(--tab-label-border-top-color);
+    --tab-label-selected-right-color: var(--tab-label-border-right-color);
+    --tab-label-selected-bottom-color: var(--tab-label-border-bottom-color);
+    --tab-label-selected-left-color: var(--tab-label-border-left-color);
+    --tab-label-background-color: #9070c0;
+    --tab-label-border-top-color: #b090e0;
+    --tab-label-border-right-color: #7050a0;
+    --tab-label-border-bottom-color: #9070c0;
+    --tab-label-border-left-color: #b090e0;
+    --tab-label-padding: .2em .3em;
+    --tab-text-border-color: #9070c0;
+    --tab-text-border-top-color: #9070c0;
+    --tab-text-border-right-color: #9070c0;
+    --tab-text-border-bottom-color: #9070c0;
+    --tab-text-border-left-color: #9070c0;
+    --tab-text-background-color: #f0edf5;
+    --tab-text-padding: 1em;
+}
+
+.tab .Tabs.green {
+    --tab-label-selected-top-color: var(--tab-label-border-top-color);
+    --tab-label-selected-right-color: var(--tab-label-border-right-color);
+    --tab-label-selected-bottom-color: var(--tab-label-border-bottom-color);
+    --tab-label-selected-left-color: var(--tab-label-border-left-color);
+    --tab-label-background-color: #75c045;
+    --tab-label-border-top-color: #90d060;
+    --tab-label-border-right-color: #60b030;
+    --tab-label-border-bottom-color: #75c045;
+    --tab-label-border-left-color: #90d060;
+    --tab-label-padding: .2em .3em;
+    --tab-text-border-color: #75c045 #60b030 #60b030 #75c045;
+    --tab-text-border-top-color: #75c045;
+    --tab-text-border-right-color: #60b030;
+    --tab-text-border-bottom-color: #60b030;
+    --tab-text-border-left-color: #75c045;
+    --tab-text-background-color: #f5fffa;
+    --tab-text-padding: 1em;
+}
+
+.tab .Tabs.red {
+    --tab-label-selected-top-color: var(--tab-label-border-top-color);
+    --tab-label-selected-right-color: var(--tab-label-border-right-color);
+    --tab-label-selected-bottom-color: var(--tab-label-border-bottom-color);
+    --tab-label-selected-left-color: var(--tab-label-border-left-color);
+    --tab-label-background-color: #f00;
+    --tab-label-border-top-color: #f88;
+    --tab-label-border-right-color: #c00;
+    --tab-label-border-bottom-color: #f00;
+    --tab-label-border-left-color: #f88;
+    --tab-label-padding: .2em .3em;
+    --tab-text-border-color: #f00 #c00 #c00 #f00;
+    --tab-text-border-top-color: #f00;
+    --tab-text-border-right-color: #c00;
+    --tab-text-border-bottom-color: #c00;
+    --tab-text-border-left-color: #f00;
+    --tab-text-background-color: #fffafa;
+    --tab-text-padding: 1em;
+}
+
+.tab .Tabs.blue {
+    --tab-label-selected-top-color: var(--tab-label-border-top-color);
+    --tab-label-selected-right-color: var(--tab-label-border-right-color);
+    --tab-label-selected-bottom-color: var(--tab-label-border-bottom-color);
+    --tab-label-selected-left-color: var(--tab-label-border-left-color);
+    --tab-label-background-color: #5b8dd6;
+    --tab-label-border-top-color: #88abde;
+    --tab-label-border-right-color: #3379de;
+    --tab-label-border-bottom-color: #5b8dd6;
+    --tab-label-border-left-color: #88abde;
+    --tab-label-padding: .2em .3em;
+    --tab-text-border-color: #5b8dd6 #3379de #3379de #5b8dd6;
+    --tab-text-border-top-color: #5b8dd6;
+    --tab-text-border-right-color: #3379de;
+    --tab-text-border-bottom-color: #3379de;
+    --tab-text-border-left-color: #5b8dd6;
+    --tab-text-background-color: #f0f8ff;
+    --tab-text-padding: 1em;
+}
+
+.tab .Tabs.yellow {
+    --tab-label-selected-top-color: var(--tab-label-border-top-color);
+    --tab-label-selected-right-color: var(--tab-label-border-right-color);
+    --tab-label-selected-bottom-color: var(--tab-label-border-bottom-color);
+    --tab-label-selected-left-color: var(--tab-label-border-left-color);
+    --tab-label-background-color: #ffe147;
+    --tab-label-border-top-color: #ffe977;
+    --tab-label-border-right-color: #ffd813;
+    --tab-label-border-bottom-color: #ffe147;
+    --tab-label-border-left-color: #ffe977;
+    --tab-label-padding: .2em .3em;
+    --tab-text-border-color: #ffe147 #ffd813 #ffd813 #ffe147;
+    --tab-text-border-top-color: #ffe147;
+    --tab-text-border-right-color: #ffd813;
+    --tab-text-border-bottom-color: #ffd813;
+    --tab-text-border-left-color: #ffe147;
+    --tab-text-background-color: #fffce8;
+    --tab-text-padding: 1em;
+}
+
+.tab .Tabs.orange {
+    --tab-label-selected-top-color: var(--tab-label-border-top-color);
+    --tab-label-selected-right-color: var(--tab-label-border-right-color);
+    --tab-label-selected-bottom-color: var(--tab-label-border-bottom-color);
+    --tab-label-selected-left-color: var(--tab-label-border-left-color);
+    --tab-label-background-color: #ff9d42;
+    --tab-label-border-top-color: #ffac5d;
+    --tab-label-border-right-color: #ff820e;
+    --tab-label-border-bottom-color: #ff9d42;
+    --tab-label-border-left-color: #ffac5d;
+    --tab-label-padding: .2em .3em;
+    --tab-text-border-color: #ff9d42 #ff820e #ff820e #ff9d42;
+    --tab-text-border-top-color: #ff9d42;
+    --tab-text-border-right-color: #ff820e;
+    --tab-text-border-bottom-color: #ff820e;
+    --tab-text-border-left-color: #ff9d42;
+    --tab-text-background-color: #fed;
+    --tab-text-padding: 1em;
+}
+
+.tab .Tabs.black {
+    --tab-label-selected-top-color: var(--tab-label-border-top-color);
+    --tab-label-selected-right-color: var(--tab-label-border-right-color);
+    --tab-label-selected-bottom-color: var(--tab-label-border-bottom-color);
+    --tab-label-selected-left-color: var(--tab-label-border-left-color);
+    --tab-label-background-color: #aaa;
+    --tab-label-border-top-color: #999;
+    --tab-label-border-right-color: #4c4c4c;
+    --tab-label-border-bottom-color: #7f7f7f;
+    --tab-label-border-left-color: #999;
+    --tab-label-padding: .2em .3em;
+    --tab-text-border-color: #7f7f7f #4c4c4c #4c4c4c #7f7f7f;
+    --tab-text-border-top-color: #7f7f7f;
+    --tab-text-border-right-color: #4c4c4c;
+    --tab-text-border-bottom-color: #4c4c4c;
+    --tab-text-border-left-color: #7f7f7f;
+    --tab-text-background-color: #e5e5e5;
+    --tab-text-padding: 1em;
+}
+
+
+/* Tab label sides */
 .tab .tabLabelTop .TabLabelText {
     border-top: 3px solid transparent;
     border-left: 1px solid transparent;
@@ -53,9 +220,9 @@
 }
 
 .tab .tabLabelTop .TabLabelText.selected {
-    border-top: 3px solid green;
-    border-left: 1px solid #aaa;
-    border-right: 1px solid #aaa;
+    border-top-color: var(--tab-label-color, var(--tab-label-selected-top-color));
+    border-left-color: var(--tab-label-border-left-color);
+    border-right-color: var(--tab-label-border-right-color);
 }
 
 .tab .tabLabelTop.reverse .TabLabelText {
@@ -66,10 +233,7 @@
 }
 
 .tab .tabLabelTop.reverse .TabLabelText.selected {
-    border-bottom: 3px solid green;
-    border-left: 1px solid #aaa;
-    border-right: 1px solid #aaa;
-    border-top: 1px solid transparent;
+    border-color: transparent var(--tab-label-border-right-color) var(--tab-label-color, var(--tab-label-selected-bottom-color)) var(--tab-label-border-left-color);
 }
 
 .tab .tabLabelBottom .TabLabelText {
@@ -79,9 +243,9 @@
 }
 
 .tab .tabLabelBottom .TabLabelText.selected {
-    border-bottom: 3px solid green;
-    border-left: 1px solid #aaa;
-    border-right: 1px solid #aaa;
+    border-bottom-color: var(--tab-label-color, var(--tab-label-selected-bottom-color));
+    border-left-color: var(--tab-label-border-left-color);
+    border-right-color: var(--tab-label-border-right-color);
 }
 
 .tab .tabLabelBottom.reverse .TabLabelText {
@@ -92,10 +256,7 @@
 }
 
 .tab .tabLabelBottom.reverse .TabLabelText.selected {
-    border-top: 3px solid green;
-    border-left: 1px solid #aaa;
-    border-right: 1px solid #aaa;
-    border-bottom: 1px solid transparent;
+    border-color: var(--tab-label-color, var(--tab-label-selected-top-color)) var(--tab-label-border-right-color) transparent var(--tab-label-border-left-color);
 }
 
 .tab .tabLabelLeft .TabLabelText {
@@ -105,9 +266,9 @@
 }
 
 .tab .tabLabelLeft .TabLabelText.selected {
-    border-left: 3px solid green;
-    border-top: 1px solid #aaa;
-    border-bottom: 1px solid #aaa;
+    border-left-color: var(--tab-label-color, var(--tab-label-selected-left-color));
+    border-top-color: var(--tab-label-border-top-color);
+    border-bottom-color: var(--tab-label-border-bottom-color);
 }
 
 .tab .tabLabelLeft.reverse .TabLabelText {
@@ -118,10 +279,7 @@
 }
 
 .tab .tabLabelLeft.reverse .TabLabelText.selected {
-    border-right: 3px solid green;
-    border-top: 1px solid #aaa;
-    border-bottom: 1px solid #aaa;
-    border-left: 1px solid transparent;
+    border-color: var(--tab-label-border-top-color) var(--tab-label-color, var(--tab-label-selected-right-color)) var(--tab-label-border-bottom-color) transparent;
 }
 
 .tab .tabLabelRight .TabLabelText {
@@ -131,9 +289,9 @@
 }
 
 .tab .tabLabelRight .TabLabelText.selected {
-    border-right: 3px solid green;
-    border-top: 1px solid #aaa;
-    border-bottom: 1px solid #aaa;
+    border-right-color: var(--tab-label-color, var(--tab-label-selected-right-color));
+    border-top-color: var(--tab-label-border-top-color);
+    border-bottom-color: var(--tab-label-border-bottom-color);
 }
 
 .tab .tabLabelRight.reverse .TabLabelText {
@@ -144,12 +302,11 @@
 }
 
 .tab .tabLabelRight.reverse .TabLabelText.selected {
-    border-left: 3px solid green;
-    border-top: 1px solid #aaa;
-    border-bottom: 1px solid #aaa;
-    border-right: 1px solid transparent;
+    border-color: var(--tab-label-border-top-color) transparent var(--tab-label-border-bottom-color) var(--tab-label-color, var(--tab-label-selected-left-color));
 }
 
+
+/* Layout */
 .tab .Tabs .TabDivider {
     width: 100%;
     order: 2;
@@ -234,6 +391,168 @@
 .infotemplatebox > table td > .Tabs .TabLabel,
 .infotemplatebox > table td > .Tabs .TabContent {
     margin: 0 -1px;
+}
+
+
+/* Dark mode */
+@media screen {
+    html.dark .tab .Tabs,
+    html.skin-theme-clientpref-night .tab .Tabs {
+        --tab-label-background-color: #252525;
+    }
+
+    html.dark .tab .Tabs.purple,
+    html.skin-theme-clientpref-night .tab .Tabs.purple {
+        --tab-label-background-color: #5a3d8a;
+        --tab-label-border-top-color: #8060b0;
+        --tab-label-border-right-color: #604090;
+        --tab-label-border-bottom-color: #8060b0;
+        --tab-label-border-left-color: #8060b0;
+        --tab-text-border-color: #8060b0;
+        --tab-text-background-color: #302b38;
+    }
+
+    html.dark .tab .Tabs.green,
+    html.skin-theme-clientpref-night .tab .Tabs.green {
+        --tab-label-background-color: #3f7626;
+        --tab-label-border-top-color: #70b848;
+        --tab-label-border-right-color: #509030;
+        --tab-label-border-bottom-color: #70b848;
+        --tab-label-border-left-color: #70b848;
+        --tab-text-border-color: #70b848 #509030 #509030 #70b848;
+        --tab-text-background-color: #26352b;
+    }
+
+    html.dark .tab .Tabs.red,
+    html.skin-theme-clientpref-night .tab .Tabs.red {
+        --tab-label-background-color: #8f3030;
+        --tab-label-border-top-color: #d66;
+        --tab-label-border-right-color: #a00;
+        --tab-label-border-bottom-color: #d66;
+        --tab-label-border-left-color: #d66;
+        --tab-text-border-color: #d66 #a00 #a00 #d66;
+        --tab-text-background-color: #382626;
+    }
+
+    html.dark .tab .Tabs.blue,
+    html.skin-theme-clientpref-night .tab .Tabs.blue {
+        --tab-label-background-color: #3e649f;
+        --tab-label-border-top-color: #7099d0;
+        --tab-label-border-right-color: #2860b0;
+        --tab-label-border-bottom-color: #7099d0;
+        --tab-label-border-left-color: #7099d0;
+        --tab-text-border-color: #7099d0 #2860b0 #2860b0 #7099d0;
+        --tab-text-background-color: #26303d;
+    }
+
+    html.dark .tab .Tabs.yellow,
+    html.skin-theme-clientpref-night .tab .Tabs.yellow {
+        --tab-label-background-color: #78650f;
+        --tab-label-border-top-color: #d9c45a;
+        --tab-label-border-right-color: #b5a010;
+        --tab-label-border-bottom-color: #d9c45a;
+        --tab-label-border-left-color: #d9c45a;
+        --tab-text-border-color: #d9c45a #b5a010 #b5a010 #d9c45a;
+        --tab-text-background-color: #383521;
+    }
+
+    html.dark .tab .Tabs.orange,
+    html.skin-theme-clientpref-night .tab .Tabs.orange {
+        --tab-label-background-color: #8a4f1f;
+        --tab-label-border-top-color: #d88942;
+        --tab-label-border-right-color: #b56510;
+        --tab-label-border-bottom-color: #d88942;
+        --tab-label-border-left-color: #d88942;
+        --tab-text-border-color: #d88942 #b56510 #b56510 #d88942;
+        --tab-text-background-color: #3b3026;
+    }
+
+    html.dark .tab .Tabs.black,
+    html.skin-theme-clientpref-night .tab .Tabs.black {
+        --tab-label-background-color: #555;
+        --tab-label-border-top-color: #888;
+        --tab-label-border-right-color: #444;
+        --tab-label-border-bottom-color: #777;
+        --tab-label-border-left-color: #888;
+        --tab-text-border-color: #777 #444 #444 #777;
+        --tab-text-background-color: #303030;
+    }
+}
+
+@media screen and (prefers-color-scheme: dark) {
+    html.skin-theme-clientpref-os .tab .Tabs {
+        --tab-label-background-color: #252525;
+    }
+
+    html.skin-theme-clientpref-os .tab .Tabs.purple {
+        --tab-label-background-color: #5a3d8a;
+        --tab-label-border-top-color: #8060b0;
+        --tab-label-border-right-color: #604090;
+        --tab-label-border-bottom-color: #8060b0;
+        --tab-label-border-left-color: #8060b0;
+        --tab-text-border-color: #8060b0;
+        --tab-text-background-color: #302b38;
+    }
+
+    html.skin-theme-clientpref-os .tab .Tabs.green {
+        --tab-label-background-color: #3f7626;
+        --tab-label-border-top-color: #70b848;
+        --tab-label-border-right-color: #509030;
+        --tab-label-border-bottom-color: #70b848;
+        --tab-label-border-left-color: #70b848;
+        --tab-text-border-color: #70b848 #509030 #509030 #70b848;
+        --tab-text-background-color: #26352b;
+    }
+
+    html.skin-theme-clientpref-os .tab .Tabs.red {
+        --tab-label-background-color: #8f3030;
+        --tab-label-border-top-color: #d66;
+        --tab-label-border-right-color: #a00;
+        --tab-label-border-bottom-color: #d66;
+        --tab-label-border-left-color: #d66;
+        --tab-text-border-color: #d66 #a00 #a00 #d66;
+        --tab-text-background-color: #382626;
+    }
+
+    html.skin-theme-clientpref-os .tab .Tabs.blue {
+        --tab-label-background-color: #3e649f;
+        --tab-label-border-top-color: #7099d0;
+        --tab-label-border-right-color: #2860b0;
+        --tab-label-border-bottom-color: #7099d0;
+        --tab-label-border-left-color: #7099d0;
+        --tab-text-border-color: #7099d0 #2860b0 #2860b0 #7099d0;
+        --tab-text-background-color: #26303d;
+    }
+
+    html.skin-theme-clientpref-os .tab .Tabs.yellow {
+        --tab-label-background-color: #78650f;
+        --tab-label-border-top-color: #d9c45a;
+        --tab-label-border-right-color: #b5a010;
+        --tab-label-border-bottom-color: #d9c45a;
+        --tab-label-border-left-color: #d9c45a;
+        --tab-text-border-color: #d9c45a #b5a010 #b5a010 #d9c45a;
+        --tab-text-background-color: #383521;
+    }
+
+    html.skin-theme-clientpref-os .tab .Tabs.orange {
+        --tab-label-background-color: #8a4f1f;
+        --tab-label-border-top-color: #d88942;
+        --tab-label-border-right-color: #b56510;
+        --tab-label-border-bottom-color: #d88942;
+        --tab-label-border-left-color: #d88942;
+        --tab-text-border-color: #d88942 #b56510 #b56510 #d88942;
+        --tab-text-background-color: #3b3026;
+    }
+
+    html.skin-theme-clientpref-os .tab .Tabs.black {
+        --tab-label-background-color: #555;
+        --tab-label-border-top-color: #888;
+        --tab-label-border-right-color: #444;
+        --tab-label-border-bottom-color: #777;
+        --tab-label-border-left-color: #888;
+        --tab-text-border-color: #777 #444 #444 #777;
+        --tab-text-background-color: #303030;
+    }
 }
 
 /* 注解 */
