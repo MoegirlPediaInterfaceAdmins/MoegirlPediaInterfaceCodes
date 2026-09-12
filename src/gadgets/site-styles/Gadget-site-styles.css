@@ -716,10 +716,19 @@ s.just-kidding-text {
     background: #fbfbfb;
 }
 
-html.skin-theme-clientpref-night .infoBoxContent,
-html.dark .infoBoxContent {
-    border-color: #3e4452;
-    background: #23272e;
+@media screen {
+    html.skin-theme-clientpref-night .infoBoxContent,
+    html.dark .infoBoxContent {
+        border-color: #3e4452;
+        background: #23272e;
+    }
+}
+
+@media screen and (prefers-color-scheme: dark) {
+    html.skin-theme-clientpref-os .infoBoxContent {
+        border-color: #3e4452;
+        background: #23272e;
+    }
 }
 
 .infoBoxBelow {
@@ -1745,34 +1754,6 @@ body:not(.ns--1):not(.ns--2) .navbox .mw-collapsible:not(.mw-collapsed) > tbody 
 /* 浮动滚动条 */
 body.overlay-scrollbars #bodyContent {
     padding-right: 24px;
-}
-
-/* TODO: 暗色模式 暂时降低暗度处理 */
-html.dark :is(.infobox, .infobox2, .moe-infobox, .infotemplatebox, .infoboxSpecial, #powersearch, #topicpath) {
-    color: #222;
-    filter: brightness(0.75);
-}
-
-html.dark :is(.infobox, .infobox2, .moe-infobox, .infotemplatebox, .infoboxSpecial, #powersearch) a:not(.new) {
-    --color: #155d33;
-}
-
-html.dark input[type="text"] {
-    color: var(--theme-text-color);
-}
-
-html.dark :is(.navbox):not(.dark-theme-invert-disabled) {
-    --theme-link-color: rgb(51 102 187);
-
-    color: rgb(44 62 80);
-    filter: brightness(0.75);
-}
-
-html.dark .mw-datatable,
-html.dark .mw-json,
-html.dark table.wikitable {
-    background-color: var(--theme-background-color);
-    color: var(--theme-text-color);
 }
 
 /* 隐藏不存在的用户创建日志 */

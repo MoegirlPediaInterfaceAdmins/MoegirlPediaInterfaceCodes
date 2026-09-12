@@ -208,6 +208,59 @@ li.linenums-active {
     }
 }
 
+@media screen and (prefers-color-scheme: dark) {
+    html.skin-theme-clientpref-os .pln {
+        color: #eaecf0;
+    }
+
+    html.skin-theme-clientpref-os .str {
+        color: #7ec699;
+    }
+
+    html.skin-theme-clientpref-os .kwd {
+        color: #7ba7ff;
+    }
+
+    html.skin-theme-clientpref-os .com {
+        color: #8b949e;
+    }
+
+    html.skin-theme-clientpref-os .typ {
+        color: #ce93d8;
+    }
+
+    html.skin-theme-clientpref-os .lit {
+        color: #5ac8c8;
+    }
+
+    html.skin-theme-clientpref-os .pun,
+    html.skin-theme-clientpref-os .opn,
+    html.skin-theme-clientpref-os .clo {
+        color: #bfa46f;
+    }
+
+    html.skin-theme-clientpref-os .tag {
+        color: #7ba7ff;
+    }
+
+    html.skin-theme-clientpref-os .atn {
+        color: #ce93d8;
+    }
+
+    html.skin-theme-clientpref-os .atv {
+        color: #7ec699;
+    }
+
+    html.skin-theme-clientpref-os .dec,
+    html.skin-theme-clientpref-os .var {
+        color: #ce93d8;
+    }
+
+    html.skin-theme-clientpref-os .fun {
+        color: #ff8a80;
+    }
+}
+
 @media screen {
     html.skin-theme-clientpref-night pre.prettyprint,
     html.dark pre.prettyprint {
@@ -229,6 +282,25 @@ li.linenums-active {
 
     html.skin-theme-clientpref-night li.linenums-active,
     html.dark li.linenums-active {
+        background-color: #3a3421;
+        box-shadow: inset 2px 0 0 #d4a72c99;
+    }
+}
+
+@media screen and (prefers-color-scheme: dark) {
+    html.skin-theme-clientpref-os pre.prettyprint {
+        border-color: #54595d;
+    }
+
+    html.skin-theme-clientpref-os li.L1,
+    html.skin-theme-clientpref-os li.L3,
+    html.skin-theme-clientpref-os li.L5,
+    html.skin-theme-clientpref-os li.L7,
+    html.skin-theme-clientpref-os li.L9 {
+        background: #27292d;
+    }
+
+    html.skin-theme-clientpref-os li.linenums-active {
         background-color: #3a3421;
         box-shadow: inset 2px 0 0 #d4a72c99;
     }

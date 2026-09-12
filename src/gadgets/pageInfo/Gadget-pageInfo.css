@@ -44,9 +44,17 @@
     justify-content: center;
 }
 
-html.skin-theme-clientpref-night .annotation-content,
-html.dark .annotation-content {
-    color: white;
+@media screen {
+    html.skin-theme-clientpref-night .annotation-content,
+    html.dark .annotation-content {
+        color: white;
+    }
+}
+
+@media screen and (prefers-color-scheme: dark) {
+    html.skin-theme-clientpref-os .annotation-content {
+        color: white;
+    }
 }
 
 html.dark .oo-ui-popupWidget-popup {
