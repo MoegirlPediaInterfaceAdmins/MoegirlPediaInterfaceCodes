@@ -193,20 +193,34 @@
     const populateTabStyleSheet = ($tabs, data) => {
         const styleData = data.styleData || data;
         const styleMap = {
-            labelPadding: "--tab-label-padding",
-            labelBorderColor: "--tab-label-border-color",
-            labelColor: "--tab-label-color",
-            labelBackgroundColor: "--tab-label-background-color",
-            textPadding: "--tab-text-padding",
-            textBorderColor: "--tab-text-border-color",
-            textBackgroundColor: "--tab-text-background-color",
+            labelPadding: ["--tab-label-padding"],
+            labelBorderColor: [
+                "--tab-label-border-color",
+                "--tab-label-border-top-color",
+                "--tab-label-border-right-color",
+                "--tab-label-border-bottom-color",
+                "--tab-label-border-left-color",
+            ],
+            labelColor: ["--tab-label-color"],
+            labelBackgroundColor: ["--tab-label-background-color"],
+            textPadding: ["--tab-text-padding"],
+            textBorderColor: [
+                "--tab-text-border-color",
+                "--tab-text-border-top-color",
+                "--tab-text-border-right-color",
+                "--tab-text-border-bottom-color",
+                "--tab-text-border-left-color",
+            ],
+            textBackgroundColor: ["--tab-text-background-color"],
         };
 
         const style = {};
 
-        Object.entries(styleMap).forEach(([name, variable]) => {
+        Object.entries(styleMap).forEach(([name, variables]) => {
             if (styleData[name] && (name !== "labelColor" || styleData[name].trim())) {
-                style[variable] = styleData[name];
+                variables.forEach((variable) => {
+                    style[variable] = styleData[name];
+                });
             }
         });
 
