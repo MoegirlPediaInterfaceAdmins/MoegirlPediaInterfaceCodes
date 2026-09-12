@@ -119,7 +119,6 @@
   gadgets:
     - site-js
     - site-styles
-    - vector-styles
     - vector-2022-styles
     - moeskin-styles
     - edit
