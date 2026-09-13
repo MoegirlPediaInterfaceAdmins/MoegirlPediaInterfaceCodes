@@ -82,7 +82,6 @@
     --tab-label-border-bottom-color: #9070c0;
     --tab-label-border-left-color: #b090e0;
     --tab-label-padding: .2em .3em;
-    --tab-text-border-color: #9070c0;
     --tab-text-border-top-color: #9070c0;
     --tab-text-border-right-color: #9070c0;
     --tab-text-border-bottom-color: #9070c0;
@@ -102,7 +101,6 @@
     --tab-label-border-bottom-color: #75c045;
     --tab-label-border-left-color: #90d060;
     --tab-label-padding: .2em .3em;
-    --tab-text-border-color: #75c045 #60b030 #60b030 #75c045;
     --tab-text-border-top-color: #75c045;
     --tab-text-border-right-color: #60b030;
     --tab-text-border-bottom-color: #60b030;
@@ -122,7 +120,6 @@
     --tab-label-border-bottom-color: #f00;
     --tab-label-border-left-color: #f88;
     --tab-label-padding: .2em .3em;
-    --tab-text-border-color: #f00 #c00 #c00 #f00;
     --tab-text-border-top-color: #f00;
     --tab-text-border-right-color: #c00;
     --tab-text-border-bottom-color: #c00;
@@ -142,7 +139,6 @@
     --tab-label-border-bottom-color: #5b8dd6;
     --tab-label-border-left-color: #88abde;
     --tab-label-padding: .2em .3em;
-    --tab-text-border-color: #5b8dd6 #3379de #3379de #5b8dd6;
     --tab-text-border-top-color: #5b8dd6;
     --tab-text-border-right-color: #3379de;
     --tab-text-border-bottom-color: #3379de;
@@ -162,7 +158,6 @@
     --tab-label-border-bottom-color: #ffe147;
     --tab-label-border-left-color: #ffe977;
     --tab-label-padding: .2em .3em;
-    --tab-text-border-color: #ffe147 #ffd813 #ffd813 #ffe147;
     --tab-text-border-top-color: #ffe147;
     --tab-text-border-right-color: #ffd813;
     --tab-text-border-bottom-color: #ffd813;
@@ -182,7 +177,6 @@
     --tab-label-border-bottom-color: #ff9d42;
     --tab-label-border-left-color: #ffac5d;
     --tab-label-padding: .2em .3em;
-    --tab-text-border-color: #ff9d42 #ff820e #ff820e #ff9d42;
     --tab-text-border-top-color: #ff9d42;
     --tab-text-border-right-color: #ff820e;
     --tab-text-border-bottom-color: #ff820e;
@@ -197,12 +191,11 @@
     --tab-label-selected-bottom-color: var(--tab-label-border-bottom-color);
     --tab-label-selected-left-color: var(--tab-label-border-left-color);
     --tab-label-background-color: #aaa;
-    --tab-label-border-top-color: #999;
+    --tab-label-border-top-color: #bbb;
     --tab-label-border-right-color: #4c4c4c;
     --tab-label-border-bottom-color: #7f7f7f;
-    --tab-label-border-left-color: #999;
+    --tab-label-border-left-color: #bbb;
     --tab-label-padding: .2em .3em;
-    --tab-text-border-color: #7f7f7f #4c4c4c #4c4c4c #7f7f7f;
     --tab-text-border-top-color: #7f7f7f;
     --tab-text-border-right-color: #4c4c4c;
     --tab-text-border-bottom-color: #4c4c4c;
@@ -408,7 +401,10 @@
         --tab-label-border-right-color: #604090;
         --tab-label-border-bottom-color: #8060b0;
         --tab-label-border-left-color: #8060b0;
-        --tab-text-border-color: #8060b0;
+        --tab-text-border-top-color: #8060b0;
+        --tab-text-border-right-color: #8060b0;
+        --tab-text-border-bottom-color: #8060b0;
+        --tab-text-border-left-color: #8060b0;
         --tab-text-background-color: #302b38;
     }
 
@@ -419,7 +415,10 @@
         --tab-label-border-right-color: #509030;
         --tab-label-border-bottom-color: #70b848;
         --tab-label-border-left-color: #70b848;
-        --tab-text-border-color: #70b848 #509030 #509030 #70b848;
+        --tab-text-border-top-color: #70b848;
+        --tab-text-border-right-color: #509030;
+        --tab-text-border-bottom-color: #509030;
+        --tab-text-border-left-color: #70b848;
         --tab-text-background-color: #26352b;
     }
 
@@ -430,7 +429,10 @@
         --tab-label-border-right-color: #a00;
         --tab-label-border-bottom-color: #d66;
         --tab-label-border-left-color: #d66;
-        --tab-text-border-color: #d66 #a00 #a00 #d66;
+        --tab-text-border-top-color: #d66;
+        --tab-text-border-right-color: #a00;
+        --tab-text-border-bottom-color: #a00;
+        --tab-text-border-left-color: #d66;
         --tab-text-background-color: #382626;
     }
 
@@ -441,7 +443,10 @@
         --tab-label-border-right-color: #2860b0;
         --tab-label-border-bottom-color: #7099d0;
         --tab-label-border-left-color: #7099d0;
-        --tab-text-border-color: #7099d0 #2860b0 #2860b0 #7099d0;
+        --tab-text-border-top-color: #7099d0;
+        --tab-text-border-right-color: #2860b0;
+        --tab-text-border-bottom-color: #2860b0;
+        --tab-text-border-left-color: #7099d0;
         --tab-text-background-color: #26303d;
     }
 
@@ -452,7 +457,10 @@
         --tab-label-border-right-color: #b5a010;
         --tab-label-border-bottom-color: #d9c45a;
         --tab-label-border-left-color: #d9c45a;
-        --tab-text-border-color: #d9c45a #b5a010 #b5a010 #d9c45a;
+        --tab-text-border-top-color: #d9c45a;
+        --tab-text-border-right-color: #b5a010;
+        --tab-text-border-bottom-color: #b5a010;
+        --tab-text-border-left-color: #d9c45a;
         --tab-text-background-color: #383521;
     }
 
@@ -463,7 +471,10 @@
         --tab-label-border-right-color: #b56510;
         --tab-label-border-bottom-color: #d88942;
         --tab-label-border-left-color: #d88942;
-        --tab-text-border-color: #d88942 #b56510 #b56510 #d88942;
+        --tab-text-border-top-color: #d88942;
+        --tab-text-border-right-color: #b56510;
+        --tab-text-border-bottom-color: #b56510;
+        --tab-text-border-left-color: #d88942;
         --tab-text-background-color: #3b3026;
     }
 
@@ -474,7 +485,10 @@
         --tab-label-border-right-color: #444;
         --tab-label-border-bottom-color: #777;
         --tab-label-border-left-color: #888;
-        --tab-text-border-color: #777 #444 #444 #777;
+        --tab-text-border-top-color: #777;
+        --tab-text-border-right-color: #444;
+        --tab-text-border-bottom-color: #444;
+        --tab-text-border-left-color: #777;
         --tab-text-background-color: #303030;
     }
 }
@@ -490,7 +504,10 @@
         --tab-label-border-right-color: #604090;
         --tab-label-border-bottom-color: #8060b0;
         --tab-label-border-left-color: #8060b0;
-        --tab-text-border-color: #8060b0;
+        --tab-text-border-top-color: #8060b0;
+        --tab-text-border-right-color: #8060b0;
+        --tab-text-border-bottom-color: #8060b0;
+        --tab-text-border-left-color: #8060b0;
         --tab-text-background-color: #302b38;
     }
 
@@ -500,7 +517,10 @@
         --tab-label-border-right-color: #509030;
         --tab-label-border-bottom-color: #70b848;
         --tab-label-border-left-color: #70b848;
-        --tab-text-border-color: #70b848 #509030 #509030 #70b848;
+        --tab-text-border-top-color: #70b848;
+        --tab-text-border-right-color: #509030;
+        --tab-text-border-bottom-color: #509030;
+        --tab-text-border-left-color: #70b848;
         --tab-text-background-color: #26352b;
     }
 
@@ -510,7 +530,10 @@
         --tab-label-border-right-color: #a00;
         --tab-label-border-bottom-color: #d66;
         --tab-label-border-left-color: #d66;
-        --tab-text-border-color: #d66 #a00 #a00 #d66;
+        --tab-text-border-top-color: #d66;
+        --tab-text-border-right-color: #a00;
+        --tab-text-border-bottom-color: #a00;
+        --tab-text-border-left-color: #d66;
         --tab-text-background-color: #382626;
     }
 
@@ -520,7 +543,10 @@
         --tab-label-border-right-color: #2860b0;
         --tab-label-border-bottom-color: #7099d0;
         --tab-label-border-left-color: #7099d0;
-        --tab-text-border-color: #7099d0 #2860b0 #2860b0 #7099d0;
+        --tab-text-border-top-color: #7099d0;
+        --tab-text-border-right-color: #2860b0;
+        --tab-text-border-bottom-color: #2860b0;
+        --tab-text-border-left-color: #7099d0;
         --tab-text-background-color: #26303d;
     }
 
@@ -530,7 +556,10 @@
         --tab-label-border-right-color: #b5a010;
         --tab-label-border-bottom-color: #d9c45a;
         --tab-label-border-left-color: #d9c45a;
-        --tab-text-border-color: #d9c45a #b5a010 #b5a010 #d9c45a;
+        --tab-text-border-top-color: #d9c45a;
+        --tab-text-border-right-color: #b5a010;
+        --tab-text-border-bottom-color: #b5a010;
+        --tab-text-border-left-color: #d9c45a;
         --tab-text-background-color: #383521;
     }
 
@@ -540,7 +569,10 @@
         --tab-label-border-right-color: #b56510;
         --tab-label-border-bottom-color: #d88942;
         --tab-label-border-left-color: #d88942;
-        --tab-text-border-color: #d88942 #b56510 #b56510 #d88942;
+        --tab-text-border-top-color: #d88942;
+        --tab-text-border-right-color: #b56510;
+        --tab-text-border-bottom-color: #b56510;
+        --tab-text-border-left-color: #d88942;
         --tab-text-background-color: #3b3026;
     }
 
@@ -550,7 +582,10 @@
         --tab-label-border-right-color: #444;
         --tab-label-border-bottom-color: #777;
         --tab-label-border-left-color: #888;
-        --tab-text-border-color: #777 #444 #444 #777;
+        --tab-text-border-top-color: #777;
+        --tab-text-border-right-color: #444;
+        --tab-text-border-bottom-color: #444;
+        --tab-text-border-left-color: #777;
         --tab-text-background-color: #303030;
     }
 }
