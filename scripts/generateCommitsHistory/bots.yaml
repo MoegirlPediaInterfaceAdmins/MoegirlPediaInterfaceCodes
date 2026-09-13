@@ -9,3 +9,4 @@
 # 而 parser 用精确匹配，故两种写法都要列出，否则漏网的那批会被计入贡献历史。
 - GH:Claude Opus 4.8 (1M Context)
 - GH:Claude Opus 4.8 (1M context)
+- GH:Claude Code

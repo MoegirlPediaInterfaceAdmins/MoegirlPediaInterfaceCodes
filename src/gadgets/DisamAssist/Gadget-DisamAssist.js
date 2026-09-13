@@ -53,6 +53,7 @@ $(() => {
     const inFlightSaves = new Map();
     let sessionSequence = 0;
     let activeSession = 0;
+    let unloadConfirmRegistered = false;
 
     const isSessionActive = (session) => running && session === activeSession;
 
@@ -173,21 +174,27 @@ $(() => {
 
     /**
      * 关闭页面前，如果存在待处理的更改则显示确认提示。
+     * @returns {string|undefined} 需要显示的关闭确认消息；没有待处理编辑时返回 `undefined`。
      */
+    const unloadConfirmHandler = () => {
+        if (running && checkActualChanges()) {
+            return wgULS(
+                "存在尚未保存的编辑。如欲保存，请按“关闭”。",
+                "存在尚未保存的編輯。如欲保存，請按“關閉”。",
+            );
+        } else if (editCount !== 0) {
+            return wgULS(
+                "DisamAssist正在提交编辑。如果您将该页面关闭，可能会丢失您的编辑。",
+                "DisamAssist正在提交編輯。如果您將該頁面關閉，可能會遺失您的編輯。",
+            );
+        }
+    };
+
     const addUnloadConfirm = () => {
-        $(window).on("beforeunload", () => {
-            if (running && checkActualChanges()) {
-                return wgULS(
-                    "存在尚未保存的编辑。如欲保存，请按“关闭”。",
-                    "存在尚未保存的編輯。如欲保存，請按“關閉”。",
-                );
-            } else if (editCount !== 0) {
-                return wgULS(
-                    "DisamAssist正在提交编辑。如果您将该页面关闭，可能会丢失您的编辑。",
-                    "DisamAssist正在提交編輯。如果您將該頁面關閉，可能會遺失您的編輯。",
-                );
-            }
-        });
+        if (!unloadConfirmRegistered) {
+            $(window).on("beforeunload", unloadConfirmHandler);
+            unloadConfirmRegistered = true;
+        }
     };
 
     /**
