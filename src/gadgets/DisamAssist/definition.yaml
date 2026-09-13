@@ -1,0 +1,44 @@
+ResourceLoader: true
+
+hidden: false
+
+default: false
+
+supportsUrlLoad: false
+
+skins: []
+
+actions:
+  - view
+
+categories: []
+
+namespaces:
+  - 0
+
+contentModels:
+  - 消歧义页
+
+type: general
+
+package: false
+
+rights:
+  - autopatrol
+
+peers: []
+
+dependencies:
+  - mediawiki.Title
+  - mediawiki.api
+  - mediawiki.user
+  - ext.gadget.site-lib
+
+_sites:
+  - zh
+
+_section: editing
+
+_files:
+  - Gadget-DisamAssist.js
+  - Gadget-DisamAssist.css
