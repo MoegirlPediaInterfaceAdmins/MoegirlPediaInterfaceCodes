@@ -11,13 +11,13 @@ skins: []
 actions:
   - view
 
-categories: []
+categories:
+  - 消歧义页
 
 namespaces:
   - 0
 
-contentModels:
-  - 消歧义页
+contentModels: []
 
 type: general
 
