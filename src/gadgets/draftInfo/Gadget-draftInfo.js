@@ -29,7 +29,17 @@ $(() => {
         return !res.query.pages[0].missing;
     };
 
-    const targetExistsPromise = getTargetExists();
+    const updateTargetLink = (targetExists) => {
+        if (targetExists) {
+            return;
+        }
+        const $targetLink = $(".draft-notice-title > a").first();
+        const targetURL = new URL($targetLink.attr("href"), location.origin);
+        targetURL.searchParams.set("action", "edit");
+        targetURL.searchParams.set("redlink", "1");
+        $targetLink.attr("href", `${targetURL.pathname}${targetURL.search}${targetURL.hash}`).addClass("new");
+    };
+
     const buildDiscussionNotice = (targetExists) => {
         const buildLink = (title, label, edit = true) => {
             const url = new URL(`${wgScriptPath}/index.php`, location.origin);
@@ -88,24 +98,16 @@ $(() => {
         </div>
     `);
 
-    (async () => {
-        try {
-            const targetExists = await targetExistsPromise;
-            $("#draft-discussion-notice").html(buildDiscussionNotice(targetExists));
-            if (targetExists) {
-                return;
-            }
-            const $targetLink = $(".draft-notice-title > a").first();
-            const targetURL = new URL($targetLink.attr("href"), location.origin);
-            targetURL.searchParams.set("action", "edit");
-            targetURL.searchParams.set("redlink", "1");
-            $targetLink.attr("href", `${targetURL.pathname}${targetURL.search}${targetURL.hash}`).addClass("new");
-        } catch (e) {
-            console.error("[DraftInfo] Failed to resolve target link:", e);
-        }
-    })();
-
     if (!enableButton) {
+        (async () => {
+            try {
+                const targetExists = await getTargetExists();
+                $("#draft-discussion-notice").html(buildDiscussionNotice(targetExists));
+                updateTargetLink(targetExists);
+            } catch (e) {
+                console.error("[DraftInfo] Failed to resolve target link:", e);
+            }
+        })();
         return;
     }
 
@@ -317,7 +319,7 @@ $(() => {
     };
 
     const setupSingleContributorPublish = () => {
-        $btn.text(wgULS("发布草稿", "發布草稿")).prop("disabled", false).off("click").on("click", async () => {
+        $btn.text(wgULS("发布草稿", "發布草稿")).prop("disabled", false).on("click", async () => {
             try {
                 await doSingleContributorPublish();
             } catch (e) {
@@ -352,9 +354,16 @@ $(() => {
         }
     };
 
-    (async () => {
+    const updateDiscussionNotice = (targetExists) => {
+        $("#draft-discussion-notice").html(buildDiscussionNotice(targetExists));
+        updateTargetLink(targetExists);
+    };
+
+    const checkPublishStrategy = async () => {
+        $btn.prop("disabled", true).text(wgULS("检查中…", "檢查中…"));
         try {
-            const targetExists = await targetExistsPromise;
+            const targetExists = await getTargetExists();
+            updateDiscussionNotice(targetExists);
 
             if (!targetExists) {
                 if (isAutoConfirmed) {
@@ -401,5 +410,7 @@ $(() => {
             console.error("[DraftInfo] Failed to resolve publish strategy:", e);
             $btn.text(wgULS("请求发布", "請求發佈")).prop("disabled", false).on("click", () => openRequest("move"));
         }
-    })();
+    };
+
+    $btn.text(wgULS("检查并发布", "檢查並發布")).prop("disabled", false).on("click", checkPublishStrategy);
 });
