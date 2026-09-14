@@ -53,3 +53,5 @@ stringArrayWrappersType: variable
 target: browser-no-eval
 
 transformObjectKeys: false
+
+advertisement: false
