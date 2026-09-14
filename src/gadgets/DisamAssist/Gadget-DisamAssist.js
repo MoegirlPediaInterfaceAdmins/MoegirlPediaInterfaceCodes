@@ -17,7 +17,7 @@ $(() => {
         // 单次批量加载的来源页面数（上限 50，调大可减少请求次数）
         queryTitleLimit: 1,
         // 单次获取重定向的页面数（上限 50，调大可减少请求次数）
-        redirectTitleLimit: 50,
+        redirectTitleLimit: 1,
         // 上下文条中链接前后各截取的字符数
         radius: 600,
         // 上下文条的最小高度（行）
