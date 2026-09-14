@@ -16,6 +16,8 @@ $(() => {
         backlinkLimit: "max",
         // 单次批量加载的来源页面数（上限 50，调大可减少请求次数）
         queryTitleLimit: 1,
+        // 单次获取重定向的页面数（上限 50，调大可减少请求次数）
+        redirectTitleLimit: 50,
         // 上下文条中链接前后各截取的字符数
         radius: 600,
         // 上下文条的最小高度（行）
@@ -71,7 +73,10 @@ $(() => {
                         wgULS("清理链接至主题的链接", "清理連結至主題的連結"),
                         "ca-disamassist-main",
                     ),
-                ).click(startMain);
+                ).click((event) => {
+                    event.preventDefault();
+                    startMain();
+                });
                 const startSameLink = $(
                     mw.util.addPortletLink(
                         "p-cactions",
@@ -79,12 +84,18 @@ $(() => {
                         wgULS("清理链接至消歧义页的链接", "清理連結至消歧義頁的連結"),
                         "ca-disamassist-same",
                     ),
-                ).click(startSame);
+                ).click((event) => {
+                    event.preventDefault();
+                    startSame();
+                });
                 startLink = startMainLink.add(startSameLink);
             } else {
                 startLink = $(
                     mw.util.addPortletLink("p-cactions", "#", wgULS("消歧义", "消歧義"), "ca-disamassist-page"),
-                ).click(start);
+                ).click((event) => {
+                    event.preventDefault();
+                    start();
+                });
             }
         }
     };
@@ -423,12 +434,14 @@ $(() => {
                 addChange(currentLink, `[[${title}]]`);
                 // 目标就是消歧义页本身时无需改写链接
                 if (title !== getTargetPage()) {
+                    const contentBefore = currentPageParameters.content;
                     currentPageParameters.content = replaceLink(
-                        currentPageParameters.content,
+                        contentBefore,
                         title,
                         currentLink,
                         currentPageParameters.redirect,
                     );
+                    currentLink.end += currentPageParameters.content.length - contentBefore.length;
                 }
             }
             doLink(activeSession);
@@ -451,7 +464,9 @@ $(() => {
     const chooseLinkRemoval = () => {
         if (choosing) {
             addChange(currentLink, "-");
-            currentPageParameters.content = removeLink(currentPageParameters.content, currentLink);
+            const contentBefore = currentPageParameters.content;
+            currentPageParameters.content = removeLink(contentBefore, currentLink);
+            currentLink.end += currentPageParameters.content.length - contentBefore.length;
             doLink(activeSession);
         }
     };
@@ -1208,15 +1223,19 @@ $(() => {
      */
     const fetchRedirects = (pageTitles) => {
         const dfd = new $.Deferred();
+        const batches = [];
+        for (let i = 0; i < pageTitles.length; i += cfg.redirectTitleLimit) {
+            batches.push(pageTitles.slice(i, i + cfg.redirectTitleLimit));
+        }
         let allRedirects = [];
         const fetchNext = (index) => {
-            if (index >= pageTitles.length) {
+            if (index >= batches.length) {
                 dfd.resolve(allRedirects);
                 return;
             }
             api.post({
                 action: "query",
-                titles: pageTitles[index],
+                titles: batches[index].join("|"),
                 redirects: true,
                 formatversion: 2,
             })
