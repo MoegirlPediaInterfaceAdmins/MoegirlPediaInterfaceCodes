@@ -78,6 +78,7 @@
     - temp-editcheck
     - wikiplus-highlight
     - publishDraft
+    - DisamAssist
 
 - name: maintenance
   gadgets:
