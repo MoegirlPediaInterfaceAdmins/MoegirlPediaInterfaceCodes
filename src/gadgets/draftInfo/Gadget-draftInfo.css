@@ -49,15 +49,32 @@
     flex: 0 0 auto;
 }
 
-html.skin-theme-clientpref-night .draft-notice-inner,
-html.dark .draft-notice-inner {
-    background: #1a2a4a;
-    color: #e0e8f0;
+@media screen {
+    html.skin-theme-clientpref-night .draft-notice-inner,
+    html.dark .draft-notice-inner {
+        background: #1a2a4a;
+        color: #e0e8f0;
+    }
 }
 
-html.skin-theme-clientpref-night .draft-notice,
-html.dark .draft-notice {
-    border-left-color: #5b9aff;
+@media screen and (prefers-color-scheme: dark) {
+    html.skin-theme-clientpref-os .draft-notice-inner {
+        background: #1a2a4a;
+        color: #e0e8f0;
+    }
+}
+
+@media screen {
+    html.skin-theme-clientpref-night .draft-notice,
+    html.dark .draft-notice {
+        border-left-color: #5b9aff;
+    }
+}
+
+@media screen and (prefers-color-scheme: dark) {
+    html.skin-theme-clientpref-os .draft-notice {
+        border-left-color: #5b9aff;
+    }
 }
 
 body.skin-moeskin .draft-notice {
@@ -66,7 +83,7 @@ body.skin-moeskin .draft-notice {
 }
 
 
-@media (width <= 720px) {
+@media (width <=720px) {
     .draft-notice {
         width: 100%;
     }
@@ -85,6 +102,3 @@ body.skin-moeskin .draft-notice {
         padding-top: 8px;
     }
 }
-
-
-
