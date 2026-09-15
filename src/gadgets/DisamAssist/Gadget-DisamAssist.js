@@ -441,7 +441,10 @@ $(() => {
                         currentLink,
                         currentPageParameters.redirect,
                     );
-                    currentLink.end += currentPageParameters.content.length - contentBefore.length;
+                    currentLink = {
+                        ...currentLink,
+                        end: currentLink.end + currentPageParameters.content.length - contentBefore.length,
+                    };
                 }
             }
             doLink(activeSession);
@@ -466,7 +469,10 @@ $(() => {
             addChange(currentLink, "-");
             const contentBefore = currentPageParameters.content;
             currentPageParameters.content = removeLink(contentBefore, currentLink);
-            currentLink.end += currentPageParameters.content.length - contentBefore.length;
+            currentLink = {
+                ...currentLink,
+                end: currentLink.end + currentPageParameters.content.length - contentBefore.length,
+            };
             doLink(activeSession);
         }
     };
@@ -675,7 +681,8 @@ $(() => {
         }
         const lastPageChange = pageChanges[pageChanges.length - 1];
         lastPageChange.contentBefore.push(currentPageParameters.content);
-        lastPageChange.links.push(link);
+        // 保存坐标快照，避免后续更新当前链接位置时污染撤销记录
+        lastPageChange.links.push({ ...link });
         lastPageChange.summary.push(summary);
     };
 
