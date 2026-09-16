@@ -10,13 +10,9 @@
 //     [key: string]: any;
 // };
 $(() => (async () => {
-    const wgPageName = mw.config.get("wgPageName");
-    const wgUserName = mw.config.get("wgUserName");
-    // await mw.loader.using(["mediawiki.api", "oojs-ui"]);
-
-    const pageid = mw.config.get("wgArticleId");
+    const { wgPageName, wgUserName, wgArticleId } = mw.config.get(["wgPageName", "wgUserName", "wgArticleId"]);
     const basepage = wgPageName.replace(/\/.*?$/, "");
-    const api = new mw.Api(), zhAPI = /^m?zh\.moegirl\.org\.cn$/.test(location.hostname) ? api : new mw.ForeignApi("https://mzh.moegirl.org.cn/api.php", { anonymous: true });
+    const api = new mw.Api(), zhAPI = /^m?zh\.moegirl\.org\.cn$/.test(location.hostname) ? api : new mw.ForeignApi("https://mzh.moegirl.org.cn/api.php");
 
     const lrAivc = $.extend({
         main: ["zh-cn", "zh-tw", "zh-hk"],
@@ -43,7 +39,7 @@ $(() => (async () => {
             ? (await api.get({
                 action: "parse",
                 assertuser: wgUserName,
-                pageid,
+                pageid: wgArticleId,
                 prop: "wikitext",
             })).parse.wikitext["*"]
             : "";
