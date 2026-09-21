@@ -41,3 +41,4 @@ _section: maintenance
 
 _files:
   - Gadget-UserMessages.js
+  - Gadget-UserMessages.json
