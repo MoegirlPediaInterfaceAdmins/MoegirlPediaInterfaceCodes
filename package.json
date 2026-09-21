@@ -85,7 +85,7 @@
         "@commitlint/load": "^21.2.2",
         "@csstools/stylelint-formatter-github": "^2.0.0",
         "@inpageedit/core": "^0.18.0",
-        "eslint": "^10.10.0",
+        "eslint": "^10.11.0",
         "eslint-plugin-prefer-arrow-functions": "^3.10.2",
         "husky": "^9.1.7",
         "stylelint": "^17.15.0",
