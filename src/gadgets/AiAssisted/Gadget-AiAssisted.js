@@ -4,6 +4,10 @@ $(() => {
     const wikitextInputId = "wpAiAssisted";
     const visualEditorInputId = "veAiAssisted";
 
+    // 整页重渲染（显示预览 / 显示更改 / 编辑冲突 / 过滤器拦截）会重建整个编辑表单，
+    // 客户端注入的隐藏字段随之消失，因此勾选状态另存一份，重渲染后再恢复
+    const wikitextStateKey = `AiAssisted-selection-${mw.config.get("wgPageName")}`;
+
     /**
      * 在逗号分隔的标签串中增删本小工具负责的标签，其余标签原样保留
      * @param {string | number | string[] | null | undefined} changeTags 现有的标签串，可为空
@@ -58,7 +62,26 @@ $(() => {
     };
 
     // 2010 版 wikitext 编辑器（WikiEditor）
+    let wikitextCheckbox = null;
     let wikitextField = null;
+
+    /**
+     * 取出暂存的勾选状态；`wgAction` 为 `edit` 表示新开一个编辑会话，此时清除暂存、不沿用上次的选择
+     */
+    const readStoredSelection = () => {
+        if (mw.config.get("wgAction") !== "submit") {
+            sessionStorage.removeItem(wikitextStateKey);
+            return false;
+        }
+        return sessionStorage.getItem(wikitextStateKey) === "1";
+    };
+
+    /**
+     * 暂存勾选状态，供整页重渲染后恢复
+     */
+    const storeSelection = (selected) => {
+        sessionStorage.setItem(wikitextStateKey, selected ? "1" : "0");
+    };
 
     /**
      * 取得承载标签的隐藏字段：WikiEditor 的编辑表单默认不输出该字段，需要自行创建
@@ -83,22 +106,31 @@ $(() => {
 
     /**
      * 在编辑表单中插入复选框；重复调用不会重复插入
+     *
+     * 整页重渲染后需要按暂存状态恢复勾选与隐藏字段的值，否则用户此前的选择会被静默丢弃
      */
     const setupWikitextCheckbox = () => {
         if (document.getElementById(wikitextInputId)) {
             return;
         }
+        const selected = readStoredSelection();
         const $container = $(".editCheckboxes > .oo-ui-horizontalLayout").first();
-        if (!$container[0] || !getChangeTagsInput()) {
+        const $changeTags = getChangeTagsInput();
+        if (!$container[0] || !$changeTags) {
             return;
         }
-        if (!wikitextField) {
-            const { field } = createCheckboxField(wikitextInputId, false, (selected) => {
+        $changeTags.val(mergeChangeTag($changeTags.val(), selected));
+        if (wikitextField) {
+            wikitextCheckbox.setSelected(selected);
+        } else {
+            const { checkbox, field } = createCheckboxField(wikitextInputId, selected, (isSelected) => {
+                storeSelection(isSelected);
                 const $input = getChangeTagsInput();
                 if ($input) {
-                    $input.val(mergeChangeTag($input.val(), selected));
+                    $input.val(mergeChangeTag($input.val(), isSelected));
                 }
             });
+            wikitextCheckbox = checkbox;
             wikitextField = field;
         }
         insertAfterMinorEditCheckbox($container, wikitextField.$element, '[name="wpMinoredit"]');
