@@ -28,9 +28,11 @@ peers: []
 
 dependencies:
   - ext.gadget.site-lib
-  - ext.gadget.libUtil
-  - jquery.ui
+  - mediawiki.api
   - mediawiki.util
+  - mediawiki.widgets
+  - mediawiki.widgets.UserInputWidget
+  - oojs-ui
 
 _sites:
   - zh
@@ -38,5 +40,4 @@ _sites:
 _section: maintenance
 
 _files:
-  - Gadget-UserMessages.css
   - Gadget-UserMessages.js
