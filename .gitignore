@@ -103,6 +103,9 @@ dist
 # TernJS port file
 .tern-port
 
+# WorkBuddy agent workspace data (project memory, local skills, caches)
+.workbuddy/
+
 .tmp
 
 ### macOS ###

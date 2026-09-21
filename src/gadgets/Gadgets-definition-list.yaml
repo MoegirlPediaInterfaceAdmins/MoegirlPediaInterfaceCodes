@@ -79,6 +79,7 @@
     - wikiplus-highlight
     - publishDraft
     - DisamAssist
+    - AiAssisted
 
 - name: maintenance
   gadgets:
