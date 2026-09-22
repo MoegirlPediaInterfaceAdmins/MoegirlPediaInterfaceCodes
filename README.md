@@ -117,7 +117,7 @@
 
 提交贡献的原因有很多，可能是发现了 typo，可能你写成了一个小工具，不论如何我们都欢迎你来提交贡献。
 
-但首先，最重要的一点是：**务必阅读并遵守 [CODE OF CONDUCT.md](CODE_OF_CONDUCT.md)**，否则你的贡献有可能被拒绝。
+但首先，最重要的一点是：**务必阅读并遵守 [CONTRIBUTING.md](CONTRIBUTING.md)**，否则你的贡献有可能被拒绝。
 
 我们建议你使用 [Visual Studio Code](https://code.visualstudio.com/)，本仓库专为 VSCode 配置。我们也建议你搭配以下 VSCode 扩展结合本仓库提供的配置以优化体验：
 
