@@ -299,8 +299,10 @@ table.navbox {
     box-shadow: 0 0 0 1px #aaa;
 }
 
-/* box-shadow 不随上面的 border-color 变化，深色下要单独覆盖，否则导航框仍留一圈亮灰外轮廓 */
-html.dark table.navbox {
+/* box-shadow 不随上面的 border-color 变化，深色下要单独覆盖，否则导航框仍留一圈亮灰外轮廓。
+   同样要保留 .dark-theme-invert-disabled 的排除——它由编辑者加在导航框容器上，用来跳过深色
+   反转；这类导航框整块保持浅色外观，外轮廓也应留在浅色的 #aaa。 */
+html.dark table.navbox:not(.dark-theme-invert-disabled) {
     box-shadow: 0 0 0 1px #54595d;
 }
 
