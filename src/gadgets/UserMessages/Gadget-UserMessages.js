@@ -805,6 +805,11 @@
             if (restored) {
                 this.templateDropdown.getMenu().selectItemByData(restored.title);
                 this.applyTemplate(restored);
+                // applyTemplate 会填入模板默认摘要，那会把用户上次改过的摘要冲掉；此处按持久化值回填
+                // （setValue 会触发 change 处理器，顺带把它写回存储）
+                if (persisted.editSummary !== "") {
+                    this.summaryInput.setValue(persisted.editSummary);
+                }
             } else {
                 this.onFormChanged();
             }
@@ -871,9 +876,17 @@
 
             try {
                 const source = await fetchPageContentOrThrow(template.template);
+                // 等待期间用户可以改选模板，此时 selected 已换人：这次结果属于旧模板，丢弃
+                if (template !== this.selected) {
+                    return;
+                }
                 this.customInput.setValue(stripNoInclude(source));
                 this.setCustomMode(true);
             } catch (error) {
+                // 同上：错误的归因也已过期，别拿旧模板的名字去打扰用户当前的选择
+                if (template !== this.selected) {
+                    return;
+                }
                 this.setCustomMode(false);
                 showError(wgULS("加载失败", "載入失敗"), wgULS(`无法加载 ${template.template} 的源代码：${toErrorMessage(error)}`, `無法載入 ${template.template} 的原始碼：${toErrorMessage(error)}`));
             } finally {

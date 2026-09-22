@@ -388,6 +388,25 @@
 			"template": "Template:UserMessages/OverSpeedEdit",
 			"summary": "关于您近期的编辑",
 			"parameters": []
+		},
+		{
+			"title": "移动至草稿",
+			"template": "Template:UserMessages/MovedToDraft",
+			"summary": "页面移动通知",
+			"parameters": [
+				{
+					"key": "1",
+					"label": "页面名",
+					"type": "page",
+					"required": true
+				},
+				{
+					"key": "2",
+					"label": "原因",
+					"type": "multiline",
+					"required": true
+				}
+			]
 		}
 	]
 }
