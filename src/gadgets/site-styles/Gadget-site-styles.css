@@ -827,9 +827,10 @@ table.wikitable-green {
 }
 
 /* wikitable green 暗色模式。原配色为亮绿系，暗色下白底刺眼且与正文反差过大。
-   真实页面里 th / td 常被编辑者用内联 background 指定颜色，普通规则盖不过，故底色用
-   !important 压回深色；仍然不设文字色——深色主题的正文色（--theme-text-color）本就是浅色，
-   写出来是冗余的，而一旦底色没压住，固定文字色反而会凑成「亮底浅字」。 */
+   编辑者用内联 background 指定的颜色优先于本段：内联样式盖过一切普通规则，这里刻意不加
+   !important，以免把页面自己挑的配色抹掉。
+   仍然不设文字色——深色主题的正文色（--theme-text-color）本就是浅色，写出来是冗余的，
+   而一旦底色被内联色顶掉，固定文字色反而会凑成「亮底浅字」。 */
 @media screen {
     html.skin-theme-clientpref-night table.wikitable-green,
     html.dark table.wikitable-green {
@@ -838,7 +839,7 @@ table.wikitable-green {
 
     html.skin-theme-clientpref-night .wikitable-green th,
     html.dark .wikitable-green th {
-        background: #2e6b4f !important;
+        background: #2e6b4f;
     }
 
     html.skin-theme-clientpref-night .wikitable-green td,
@@ -853,7 +854,7 @@ table.wikitable-green {
     }
 
     html.skin-theme-clientpref-os .wikitable-green th {
-        background: #2e6b4f !important;
+        background: #2e6b4f;
     }
 
     html.skin-theme-clientpref-os .wikitable-green td {
