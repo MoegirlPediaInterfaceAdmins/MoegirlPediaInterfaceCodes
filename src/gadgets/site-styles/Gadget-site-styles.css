@@ -1413,99 +1413,94 @@ table.navbox th {
 
  /* 大家族模板 暗色模式。浅色版的绿饱和度约 50%、色相 120（#a5e4a5 / #c0ecc0 / #e6f6e6）。
    等比压暗在暗色下照样刺眼，但把饱和度压到 20% 以下、色相又漂向 90 附近（偏黄）就会显脏、
-   像褪色，所以统一色相 128 去掉黄味、饱和度保留 24~32%，层级只靠明度拉开。
-   `.dark-theme-invert-disabled` 是编辑者用来让导航框跳过深色反转的类（原 moeskin-styles 那条
-   压暗规则就带这个排除），它加在容器上，所以每条规则都要保留这个 :not()。 */
+   像褪色，所以统一色相 128 去掉黄味、饱和度保留 24~32%，层级只靠明度拉开。 */
 @media screen {
-    html.skin-theme-clientpref-night table.navbox:not(.dark-theme-invert-disabled),
-    html.dark table.navbox:not(.dark-theme-invert-disabled) {
+    html.skin-theme-clientpref-night table.navbox,
+    html.dark table.navbox {
         border-color: #54595d;
     }
 
-    html.skin-theme-clientpref-night .navbox:not(.dark-theme-invert-disabled),
-    html.skin-theme-clientpref-night .navbox:not(.dark-theme-invert-disabled) .navbox-subgroup,
-    html.dark .navbox:not(.dark-theme-invert-disabled),
-    html.dark .navbox:not(.dark-theme-invert-disabled) .navbox-subgroup {
+    html.skin-theme-clientpref-night .navbox,
+    html.skin-theme-clientpref-night .navbox .navbox-subgroup,
+    html.dark .navbox,
+    html.dark .navbox .navbox-subgroup {
         background: none repeat scroll 0 0 #202122;
     }
 
     /* Template:Navbox 给列表格硬写了 border-left:2px solid #fdfdfd。该边框本意是与浅色底
        融为一体，深色下却会变成成排的亮白分隔线，且内联样式压过一切普通规则，只能用
        !important 压回深底色。列表格其余三边没有边框样式，故只处理左边。 */
-    html.skin-theme-clientpref-night .navbox:not(.dark-theme-invert-disabled) .navbox-list,
-    html.dark .navbox:not(.dark-theme-invert-disabled) .navbox-list {
+    html.skin-theme-clientpref-night .navbox .navbox-list,
+    html.dark .navbox .navbox-list {
         border-left-color: #202122 !important;
     }
 
-    html.skin-theme-clientpref-night .navbox:not(.dark-theme-invert-disabled) .navbox-title,
-    html.skin-theme-clientpref-night table.navbox:not(.dark-theme-invert-disabled) th,
-    html.dark .navbox:not(.dark-theme-invert-disabled) .navbox-title,
-    html.dark table.navbox:not(.dark-theme-invert-disabled) th {
+    html.skin-theme-clientpref-night table.navbox th,
+    html.dark table.navbox th {
         background: none repeat scroll 0 0 #326239;
     }
 
-    html.skin-theme-clientpref-night .navbox:not(.dark-theme-invert-disabled) .navbox-abovebelow,
-    html.skin-theme-clientpref-night .navbox:not(.dark-theme-invert-disabled) .navbox-group,
-    html.skin-theme-clientpref-night .navbox:not(.dark-theme-invert-disabled) .navbox-subgroup .navbox-title,
-    html.dark .navbox:not(.dark-theme-invert-disabled) .navbox-abovebelow,
-    html.dark .navbox:not(.dark-theme-invert-disabled) .navbox-group,
-    html.dark .navbox:not(.dark-theme-invert-disabled) .navbox-subgroup .navbox-title {
+    html.skin-theme-clientpref-night .navbox .navbox-abovebelow,
+    html.skin-theme-clientpref-night .navbox .navbox-group,
+    html.skin-theme-clientpref-night .navbox .navbox-subgroup .navbox-title,
+    html.dark .navbox .navbox-abovebelow,
+    html.dark .navbox .navbox-group,
+    html.dark .navbox .navbox-subgroup .navbox-title {
         background: none repeat scroll 0 0 #2d5332;
     }
 
-    html.skin-theme-clientpref-night .navbox:not(.dark-theme-invert-disabled) .navbox-subgroup .navbox-group,
-    html.skin-theme-clientpref-night .navbox:not(.dark-theme-invert-disabled) .navbox-subgroup .navbox-abovebelow,
-    html.dark .navbox:not(.dark-theme-invert-disabled) .navbox-subgroup .navbox-group,
-    html.dark .navbox:not(.dark-theme-invert-disabled) .navbox-subgroup .navbox-abovebelow {
+    html.skin-theme-clientpref-night .navbox .navbox-subgroup .navbox-group,
+    html.skin-theme-clientpref-night .navbox .navbox-subgroup .navbox-abovebelow,
+    html.dark .navbox .navbox-subgroup .navbox-group,
+    html.dark .navbox .navbox-subgroup .navbox-abovebelow {
         background: none repeat scroll 0 0 #27452b;
     }
 
-    html.skin-theme-clientpref-night .navbox:not(.dark-theme-invert-disabled) .navbox-even,
-    html.dark .navbox:not(.dark-theme-invert-disabled) .navbox-even {
+    html.skin-theme-clientpref-night .navbox .navbox-even,
+    html.dark .navbox .navbox-even {
         background: none repeat scroll 0 0 #213624;
     }
 
-    html.skin-theme-clientpref-night .navbox:not(.dark-theme-invert-disabled) .navbox-odd,
-    html.dark .navbox:not(.dark-theme-invert-disabled) .navbox-odd {
+    html.skin-theme-clientpref-night .navbox .navbox-odd,
+    html.dark .navbox .navbox-odd {
         background: none repeat scroll 0 0 #202122;
     }
 }
 
 @media screen and (prefers-color-scheme: dark) {
-    html.skin-theme-clientpref-os table.navbox:not(.dark-theme-invert-disabled) {
+    html.skin-theme-clientpref-os table.navbox {
         border-color: #54595d;
     }
 
-    html.skin-theme-clientpref-os .navbox:not(.dark-theme-invert-disabled),
-    html.skin-theme-clientpref-os .navbox:not(.dark-theme-invert-disabled) .navbox-subgroup {
+    html.skin-theme-clientpref-os .navbox,
+    html.skin-theme-clientpref-os .navbox .navbox-subgroup {
         background: none repeat scroll 0 0 #202122;
     }
 
-    html.skin-theme-clientpref-os .navbox:not(.dark-theme-invert-disabled) .navbox-list {
+    html.skin-theme-clientpref-os .navbox .navbox-list {
         border-left-color: #202122 !important;
     }
 
-    html.skin-theme-clientpref-os .navbox:not(.dark-theme-invert-disabled) .navbox-title,
-    html.skin-theme-clientpref-os table.navbox:not(.dark-theme-invert-disabled) th {
+    html.skin-theme-clientpref-os table.navbox th {
         background: none repeat scroll 0 0 #326239;
     }
 
-    html.skin-theme-clientpref-os .navbox:not(.dark-theme-invert-disabled) .navbox-abovebelow,
-    html.skin-theme-clientpref-os .navbox:not(.dark-theme-invert-disabled) .navbox-group,
-    html.skin-theme-clientpref-os .navbox:not(.dark-theme-invert-disabled) .navbox-subgroup .navbox-title {
+    html.skin-theme-clientpref-os .navbox .navbox-abovebelow,
+    html.skin-theme-clientpref-os .navbox .navbox-group,
+    html.skin-theme-clientpref-os .navbox .navbox-subgroup .navbox-title {
         background: none repeat scroll 0 0 #2d5332;
     }
 
-    html.skin-theme-clientpref-os .navbox:not(.dark-theme-invert-disabled) .navbox-subgroup .navbox-group,
-    html.skin-theme-clientpref-os .navbox:not(.dark-theme-invert-disabled) .navbox-subgroup .navbox-abovebelow {
+    html.skin-theme-clientpref-os .navbox .navbox-subgroup .navbox-group,
+    html.skin-theme-clientpref-os .navbox .navbox-subgroup .navbox-abovebelow {
         background: none repeat scroll 0 0 #27452b;
     }
 
-    html.skin-theme-clientpref-os .navbox:not(.dark-theme-invert-disabled) .navbox-even {
+    html.skin-theme-clientpref-os .navbox .navbox-even {
         background: none repeat scroll 0 0 #213624;
     }
 
-    html.skin-theme-clientpref-os .navbox:not(.dark-theme-invert-disabled) .navbox-odd {
+    html.skin-theme-clientpref-os .navbox .navbox-odd {
         background: none repeat scroll 0 0 #202122;
     }
 }
