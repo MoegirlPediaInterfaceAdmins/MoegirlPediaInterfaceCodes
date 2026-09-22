@@ -810,6 +810,12 @@ s.just-kidding-text {
 /* wikitable green */
 table.wikitable-green {
     background: #c9f6e1;
+
+    /* MoeSkin 皮肤样式里有一条裸 table{border-collapse:collapse;border-spacing:0}，本类只声明了
+       background、没声明边框模型，就会被它接管。而这套配色的绿正是透过 border-spacing 的缝隙
+       显出来的，collapse 之后单元格彼此贴合，绿色被完全盖住。 */
+    border-collapse: separate;
+    border-spacing: 2px;
 }
 
 .wikitable-green th {
@@ -821,9 +827,9 @@ table.wikitable-green {
 }
 
 /* wikitable green 暗色模式。原配色为亮绿系，暗色下白底刺眼且与正文反差过大。
-   只改背景、不设文字色：深色主题的正文色（--theme-text-color）本就是浅色，写出来是冗余的；
-   而真实页面里 th 常带内联 background，那时我们的背景规则不会生效，再固定文字色反而
-   会凑成「亮底浅字」。 */
+   真实页面里 th / td 常被编辑者用内联 background 指定颜色，普通规则盖不过，故底色用
+   !important 压回深色；仍然不设文字色——深色主题的正文色（--theme-text-color）本就是浅色，
+   写出来是冗余的，而一旦底色没压住，固定文字色反而会凑成「亮底浅字」。 */
 @media screen {
     html.skin-theme-clientpref-night table.wikitable-green,
     html.dark table.wikitable-green {
@@ -832,7 +838,7 @@ table.wikitable-green {
 
     html.skin-theme-clientpref-night .wikitable-green th,
     html.dark .wikitable-green th {
-        background: #2e6b4f;
+        background: #2e6b4f !important;
     }
 
     html.skin-theme-clientpref-night .wikitable-green td,
@@ -847,7 +853,7 @@ table.wikitable-green {
     }
 
     html.skin-theme-clientpref-os .wikitable-green th {
-        background: #2e6b4f;
+        background: #2e6b4f !important;
     }
 
     html.skin-theme-clientpref-os .wikitable-green td {
