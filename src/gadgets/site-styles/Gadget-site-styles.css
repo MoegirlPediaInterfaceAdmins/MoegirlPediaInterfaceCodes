@@ -729,6 +729,22 @@ s.just-kidding-text {
     text-decoration-color: #000;
 }
 
+/* 胡话模板 暗色模式。暗色背景上 #666 与删除线均对比不足 */
+@media screen {
+    html.skin-theme-clientpref-night s.just-kidding-text,
+    html.dark s.just-kidding-text {
+        color: #a2a9b1;
+        text-decoration-color: #eaecf0;
+    }
+}
+
+@media screen and (prefers-color-scheme: dark) {
+    html.skin-theme-clientpref-os s.just-kidding-text {
+        color: #a2a9b1;
+        text-decoration-color: #eaecf0;
+    }
+}
+
 /* info类模板 */
 .infoBox {
     margin: 0 auto;
@@ -802,6 +818,106 @@ table.wikitable-green {
 
 .wikitable-green td {
     background: #f3f3f3;
+}
+
+/* wikitable green 暗色模式。原配色为亮绿系，暗色下白底刺眼且与正文反差过大。
+   只改背景、不设文字色：深色主题的正文色（--theme-text-color）本就是浅色，写出来是冗余的；
+   而真实页面里 th 常带内联 background，那时我们的背景规则不会生效，再固定文字色反而
+   会凑成「亮底浅字」。 */
+@media screen {
+    html.skin-theme-clientpref-night table.wikitable-green,
+    html.dark table.wikitable-green {
+        background: #1b3a2c;
+    }
+
+    html.skin-theme-clientpref-night .wikitable-green th,
+    html.dark .wikitable-green th {
+        background: #2e6b4f;
+    }
+
+    html.skin-theme-clientpref-night .wikitable-green td,
+    html.dark .wikitable-green td {
+        background: #27292d;
+    }
+}
+
+@media screen and (prefers-color-scheme: dark) {
+    html.skin-theme-clientpref-os table.wikitable-green {
+        background: #1b3a2c;
+    }
+
+    html.skin-theme-clientpref-os .wikitable-green th {
+        background: #2e6b4f;
+    }
+
+    html.skin-theme-clientpref-os .wikitable-green td {
+        background: #27292d;
+    }
+}
+
+/* Template:Main Characters Infolist（{{MCI}}）的角色卡片配色。
+   ⚠️ Module:Main_Characters_Infolist 现在把 bg-color / th-color / td-color / cv-color 的
+   默认值直接拼进元素的内联 style，内联样式优先级高于本表，因此下面这组默认值**只有当模块
+   改成「仅显式传参时才写内联」之后才会生效**；在此之前对现有页面没有任何影响。 */
+.role-list-item {
+    background: #f3f3f3;
+}
+
+.role-name {
+    background: #aea;
+}
+
+.role-info,
+.role-cv {
+    background: #f3f3f3;
+}
+
+.role-info-divider {
+    border-bottom: 1px solid #aea;
+}
+
+/* 角色卡片暗色模式。层次与浅色一致：卡片底最暗，名称条略亮，信息区居中 */
+@media screen {
+    html.skin-theme-clientpref-night .role-list-item,
+    html.dark .role-list-item {
+        background: #202122;
+    }
+
+    html.skin-theme-clientpref-night .role-name,
+    html.dark .role-name {
+        background: #2c2d31;
+    }
+
+    html.skin-theme-clientpref-night .role-info,
+    html.skin-theme-clientpref-night .role-cv,
+    html.dark .role-info,
+    html.dark .role-cv {
+        background: #27292d;
+    }
+
+    html.skin-theme-clientpref-night .role-info-divider,
+    html.dark .role-info-divider {
+        border-bottom-color: #54595d;
+    }
+}
+
+@media screen and (prefers-color-scheme: dark) {
+    html.skin-theme-clientpref-os .role-list-item {
+        background: #202122;
+    }
+
+    html.skin-theme-clientpref-os .role-name {
+        background: #2c2d31;
+    }
+
+    html.skin-theme-clientpref-os .role-info,
+    html.skin-theme-clientpref-os .role-cv {
+        background: #27292d;
+    }
+
+    html.skin-theme-clientpref-os .role-info-divider {
+        border-bottom-color: #54595d;
+    }
 }
 
 /* 隐藏只供登录用户查看的内容 */
@@ -1352,6 +1468,101 @@ table.navbox th {
 
 .navbox-odd {
     background: none repeat scroll 0 0 #fdfdfd;
+}
+
+/* 大家族模板 暗色模式。绿底在暗色下刺眼，改为同色相的暗色，并压低层级对比 */
+@media screen {
+    html.skin-theme-clientpref-night table.navbox,
+    html.dark table.navbox {
+        border-color: #54595d;
+    }
+
+    html.skin-theme-clientpref-night .navbox,
+    html.skin-theme-clientpref-night .navbox-subgroup,
+    html.dark .navbox,
+    html.dark .navbox-subgroup {
+        background: none repeat scroll 0 0 #202122;
+    }
+
+    /* Template:Navbox 给列表格硬写了 border-left:2px solid #fdfdfd。该边框本意是与浅色底
+       融为一体，深色下却会变成成排的亮白分隔线，且内联样式压过一切普通规则，只能用
+       !important 压回深底色。列表格其余三边没有边框样式，故只处理左边。 */
+    html.skin-theme-clientpref-night .navbox-list,
+    html.dark .navbox-list {
+        border-left-color: #202122 !important;
+    }
+
+    html.skin-theme-clientpref-night .navbox-title,
+    html.skin-theme-clientpref-night table.navbox th,
+    html.dark .navbox-title,
+    html.dark table.navbox th {
+        background: none repeat scroll 0 0 #34452f;
+    }
+
+    html.skin-theme-clientpref-night .navbox-abovebelow,
+    html.skin-theme-clientpref-night .navbox-group,
+    html.skin-theme-clientpref-night .navbox-subgroup .navbox-title,
+    html.dark .navbox-abovebelow,
+    html.dark .navbox-group,
+    html.dark .navbox-subgroup .navbox-title {
+        background: none repeat scroll 0 0 #2b3826;
+    }
+
+    html.skin-theme-clientpref-night .navbox-subgroup .navbox-group,
+    html.skin-theme-clientpref-night .navbox-subgroup .navbox-abovebelow,
+    html.dark .navbox-subgroup .navbox-group,
+    html.dark .navbox-subgroup .navbox-abovebelow {
+        background: none repeat scroll 0 0 #232d1f;
+    }
+
+    html.skin-theme-clientpref-night .navbox-even,
+    html.dark .navbox-even {
+        background: none repeat scroll 0 0 #24291f;
+    }
+
+    html.skin-theme-clientpref-night .navbox-odd,
+    html.dark .navbox-odd {
+        background: none repeat scroll 0 0 #202122;
+    }
+}
+
+@media screen and (prefers-color-scheme: dark) {
+    html.skin-theme-clientpref-os table.navbox {
+        border-color: #54595d;
+    }
+
+    html.skin-theme-clientpref-os .navbox,
+    html.skin-theme-clientpref-os .navbox-subgroup {
+        background: none repeat scroll 0 0 #202122;
+    }
+
+    html.skin-theme-clientpref-os .navbox-list {
+        border-left-color: #202122 !important;
+    }
+
+    html.skin-theme-clientpref-os .navbox-title,
+    html.skin-theme-clientpref-os table.navbox th {
+        background: none repeat scroll 0 0 #34452f;
+    }
+
+    html.skin-theme-clientpref-os .navbox-abovebelow,
+    html.skin-theme-clientpref-os .navbox-group,
+    html.skin-theme-clientpref-os .navbox-subgroup .navbox-title {
+        background: none repeat scroll 0 0 #2b3826;
+    }
+
+    html.skin-theme-clientpref-os .navbox-subgroup .navbox-group,
+    html.skin-theme-clientpref-os .navbox-subgroup .navbox-abovebelow {
+        background: none repeat scroll 0 0 #232d1f;
+    }
+
+    html.skin-theme-clientpref-os .navbox-even {
+        background: none repeat scroll 0 0 #24291f;
+    }
+
+    html.skin-theme-clientpref-os .navbox-odd {
+        background: none repeat scroll 0 0 #202122;
+    }
 }
 
 /* 表格宽度 */
