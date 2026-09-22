@@ -1470,7 +1470,9 @@ table.navbox th {
     background: none repeat scroll 0 0 #fdfdfd;
 }
 
-/* 大家族模板 暗色模式。绿底在暗色下刺眼，改为同色相的暗色，并压低层级对比 */
+/* 大家族模板 暗色模式。浅色版的绿饱和度约 50%、色相 120（#a5e4a5 / #c0ecc0 / #e6f6e6）。
+   等比压暗在暗色下照样刺眼，但把饱和度压到 20% 以下、色相又漂向 90 附近（偏黄）就会显脏、
+   像褪色，所以统一色相 128 去掉黄味、饱和度保留 24~32%，层级只靠明度拉开。 */
 @media screen {
     html.skin-theme-clientpref-night table.navbox,
     html.dark table.navbox {
@@ -1496,7 +1498,7 @@ table.navbox th {
     html.skin-theme-clientpref-night table.navbox th,
     html.dark .navbox-title,
     html.dark table.navbox th {
-        background: none repeat scroll 0 0 #34452f;
+        background: none repeat scroll 0 0 #326239;
     }
 
     html.skin-theme-clientpref-night .navbox-abovebelow,
@@ -1505,19 +1507,19 @@ table.navbox th {
     html.dark .navbox-abovebelow,
     html.dark .navbox-group,
     html.dark .navbox-subgroup .navbox-title {
-        background: none repeat scroll 0 0 #2b3826;
+        background: none repeat scroll 0 0 #2d5332;
     }
 
     html.skin-theme-clientpref-night .navbox-subgroup .navbox-group,
     html.skin-theme-clientpref-night .navbox-subgroup .navbox-abovebelow,
     html.dark .navbox-subgroup .navbox-group,
     html.dark .navbox-subgroup .navbox-abovebelow {
-        background: none repeat scroll 0 0 #232d1f;
+        background: none repeat scroll 0 0 #27452b;
     }
 
     html.skin-theme-clientpref-night .navbox-even,
     html.dark .navbox-even {
-        background: none repeat scroll 0 0 #24291f;
+        background: none repeat scroll 0 0 #213624;
     }
 
     html.skin-theme-clientpref-night .navbox-odd,
@@ -1542,22 +1544,22 @@ table.navbox th {
 
     html.skin-theme-clientpref-os .navbox-title,
     html.skin-theme-clientpref-os table.navbox th {
-        background: none repeat scroll 0 0 #34452f;
+        background: none repeat scroll 0 0 #326239;
     }
 
     html.skin-theme-clientpref-os .navbox-abovebelow,
     html.skin-theme-clientpref-os .navbox-group,
     html.skin-theme-clientpref-os .navbox-subgroup .navbox-title {
-        background: none repeat scroll 0 0 #2b3826;
+        background: none repeat scroll 0 0 #2d5332;
     }
 
     html.skin-theme-clientpref-os .navbox-subgroup .navbox-group,
     html.skin-theme-clientpref-os .navbox-subgroup .navbox-abovebelow {
-        background: none repeat scroll 0 0 #232d1f;
+        background: none repeat scroll 0 0 #27452b;
     }
 
     html.skin-theme-clientpref-os .navbox-even {
-        background: none repeat scroll 0 0 #24291f;
+        background: none repeat scroll 0 0 #213624;
     }
 
     html.skin-theme-clientpref-os .navbox-odd {

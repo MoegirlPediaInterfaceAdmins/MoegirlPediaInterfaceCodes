@@ -144,11 +144,11 @@ aside#moe-global-siderail #moe-custom-sidenav-block h2 {
     }
 
     html.dark > body.skin-moeskin .navbox-subgroup .navbox-group {
-        background: #232d1f;
+        background: #27452b;
     }
 
     html.dark > body.skin-moeskin .navbox-abovebelow {
-        background: #2b3826;
+        background: #2d5332;
     }
 
     html.dark > body.skin-moeskin .navbox-group + * {
