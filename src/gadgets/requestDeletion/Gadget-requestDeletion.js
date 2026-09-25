@@ -1,13 +1,14 @@
 "use strict";
 $(() => {
     try {
-        const { wgArticleId, wgPageName, wgUserName, wgUserGroups, wgNamespaceNumber, wgNamespaceIds } = mw.config.get([
+        const { wgArticleId, wgPageName, wgUserName, wgUserGroups, wgNamespaceNumber, wgNamespaceIds, wgIsRedirect } = mw.config.get([
             "wgArticleId",
             "wgPageName",
             "wgUserName",
             "wgUserGroups",
             "wgNamespaceNumber",
             "wgNamespaceIds",
+            "wgIsRedirect",
         ]);
 
         if (
@@ -43,24 +44,21 @@ $(() => {
          */
         const buildWikitext = (reason, detail) => {
             const lines = [
-                `* '''${wgULS("页面", "頁面")}'''：[[:${linkedPageName}]]`,
-                `* '''${wgULS("理由", "緣由")}'''：${reason}`,
+                `* '''页面标题'''：${wgIsRedirect ? `{{NoRedirectLink|${linkedPageName}}}` : `[[:${linkedPageName}]]`}`,
+                `* '''申请理由：'''：${reason}`,
             ];
             if (detail) {
-                lines.push(`* '''${wgULS("详情", "詳情")}'''：${detail}`);
+                lines.push(`* '''详细原因'''：${detail}`);
             }
             lines.push("~~~~");
             return lines.join("\n");
         };
 
-        const fetchNewSectionAnchor = async (revid) => {
-            if (!revid) {
-                return "";
-            }
+        const fetchNewSectionAnchor = async (oldid) => {
             try {
                 const res = await zhAPI.get({
                     action: "parse",
-                    oldid: revid,
+                    oldid,
                     prop: "sections",
                     formatversion: 2,
                 });
