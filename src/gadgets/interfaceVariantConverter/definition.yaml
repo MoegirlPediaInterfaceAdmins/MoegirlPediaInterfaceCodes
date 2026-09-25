@@ -13,10 +13,10 @@ actions:
 
 categories: []
 
-namespaces: 
+namespaces:
   - 8
 
-contentModels: 
+contentModels:
   - wikitext
 
 type: general
@@ -34,6 +34,7 @@ dependencies:
   - mediawiki.ForeignApi
   - oojs-ui
   - ext.gadget.libCachedCode
+  - ext.gadget.site-lib
 
 _sites:
   - zh

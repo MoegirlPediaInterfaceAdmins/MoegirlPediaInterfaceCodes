@@ -29,6 +29,7 @@ dependencies:
   - mediawiki.api
   - oojs-ui-core
   - moment
+  - ext.gadget.site-lib
 
 _sites:
   - zh

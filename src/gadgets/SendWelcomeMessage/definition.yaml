@@ -28,6 +28,7 @@ peers: []
 dependencies:
   - ext.gadget.libOOUIDialog
   - mediawiki.api
+  - ext.gadget.site-lib
 
 _sites:
   - zh

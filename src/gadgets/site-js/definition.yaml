@@ -29,6 +29,7 @@ dependencies:
   - user
   - mediawiki.api
   - ext.gadget.libRequestAnimationFrame
+  - ext.gadget.site-lib
 
 _sites:
   - zh
