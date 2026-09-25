@@ -43,7 +43,7 @@ $(() => {
          */
         const buildWikitext = (reason, detail) => {
             const lines = [
-                `* '''${wgULS("页面", "頁面")}'''：[[${linkedPageName}]]`,
+                `* '''${wgULS("页面", "頁面")}'''：[[:${linkedPageName}]]`,
                 `* '''${wgULS("理由", "緣由")}'''：${reason}`,
             ];
             if (detail) {
