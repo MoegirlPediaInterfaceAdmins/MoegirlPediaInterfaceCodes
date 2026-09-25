@@ -1,0 +1,44 @@
+ResourceLoader: true
+
+hidden: false
+
+default: true
+
+supportsUrlLoad: false
+
+skins: []
+
+actions: []
+
+categories: []
+
+namespaces: []
+
+contentModels: []
+
+type: general
+
+package: false
+
+rights:
+  - edit
+  - autopatrol
+
+peers: []
+
+dependencies:
+  - ext.gadget.libOOUIDialog
+  - ext.gadget.site-lib
+  - ext.gadget.LocalObjectStorage
+  - mediawiki.api
+  - mediawiki.ForeignApi
+  - mediawiki.util
+
+_sites:
+  - zh
+  - commons
+
+_section: user
+
+_files:
+  - Gadget-requestDeletion.js

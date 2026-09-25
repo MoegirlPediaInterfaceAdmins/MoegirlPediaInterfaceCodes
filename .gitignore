@@ -105,6 +105,7 @@ dist
 
 # WorkBuddy agent workspace data (project memory, local skills, caches)
 .workbuddy/
+.tmp-verify/
 
 .tmp
 
