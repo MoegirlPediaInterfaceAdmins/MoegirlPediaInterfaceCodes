@@ -6,6 +6,7 @@
     const DIALOG_SIZE = "large";
     const MAX_MAIN_BODY_HEIGHT = 520;
     const MAX_PREVIEW_BODY_HEIGHT = 560;
+    const REDIRECT_DELAY = 3000;
 
     /** 允许出现入口的命名空间：2 = User，3 = User talk，-1 = Special。 */
     const ALLOWED_NAMESPACES = [2, 3, -1];
@@ -559,9 +560,9 @@
      * 用 .then(onOk, onError) 而非 try/catch：postWithToken 以 (code, result, ...) 多参 reject，
      * await 只会拿到第一个参数（错误码），会丢掉 result.error.info。
      *
-     * 失败不抛错，返回判别联合以便上层「重试」。
+     * 失败不抛错，返回判别联合以便上层「重试」；成功时带回 newrevid，供上层回读新章节锚点。
      * @param {{ targetUser: string, text: string, summary: string }} params 发送参数
-     * @returns {Promise<{ ok: true } | { ok: false, code: string, detail: string }>} 发送结果
+     * @returns {Promise<{ ok: true, newrevid: number | undefined } | { ok: false, code: string, detail: string }>} 发送结果
      */
     /* eslint-disable promise/prefer-await-to-then -- 多参 reject 无法用 await 取到 result，必须用 .catch 的第二个形参 */
     const sendEdit = (params) => api
@@ -576,12 +577,71 @@
             summary: params.summary,
             tags: "Automation tool|UserMessages",
         })
-        .then(() => ({ ok: true }))
+        .then((res) => ({ ok: true, newrevid: res?.edit?.newrevid }))
         .catch((code, result) => {
             console.warn("[UserMessages] 发送失败", code, result);
             return { ok: false, code, detail: describeSendError(code, result) };
         });
     /* eslint-enable promise/prefer-await-to-then */
+
+    /**
+     * 读取指定修订里最后一个章节的锚点。
+     *
+     * 新章节的标题由模板自身给出（如「提醒：请勿人身攻击」），小工具事先无从得知，所以锚点只能保存后回读：
+     * prop=sections 按文档顺序列出目录，而新章节是追加在页尾的，故最后一项就是刚发出的那节。
+     * 传 oldid 而非 page，是为了把解析固定在刚保存的修订上，避免期间有人编辑导致目录位移。
+     *
+     * 取不到时返回空串（例如模板本身没有标题，内容会并入上一节），由调用方退化为不带锚点的跳转。
+     * @param {number | undefined} revid 刚保存的修订 ID
+     * @returns {Promise<string>} 章节锚点；取不到时为空串
+     */
+    const fetchLastSectionAnchor = async (revid) => {
+        if (!revid) {
+            return "";
+        }
+        try {
+            const res = await api.post({
+                action: "parse",
+                oldid: revid,
+                prop: "sections",
+                formatversion: 2,
+            });
+            const sections = res.parse?.sections ?? [];
+            return sections.at(-1)?.anchor ?? "";
+        } catch (error) {
+            console.warn("[UserMessages] 读取新章节锚点失败", error);
+            return "";
+        }
+    };
+
+    /**
+     * 目标用户讨论页新章节的 URL。锚点为空时只给讨论页。
+     * @param {string} user 用户名，不含命名空间前缀
+     * @param {string} anchor 章节锚点
+     * @returns {string} URL
+     */
+    const newSectionUrl = (user, anchor) => {
+        const url = mw.util.getUrl(talkPageTitle(user));
+        return anchor === "" ? url : `${url}#${encodeURIComponent(anchor)}`;
+    };
+
+    /**
+     * 在当前标签页跳到目标用户讨论页的新章节。
+     *
+     * 已经身处目标讨论页时不能直接 location.assign：只有 hash 不同属同文档导航，页面不会重新加载，
+     * 而新章节并不在现有 DOM 里，浏览器只会静默地不滚动。故先写入 hash 再 reload，让新文档按锚点定位。
+     * @param {string} user 用户名，不含命名空间前缀
+     * @param {string} anchor 章节锚点；为空时跳到讨论页顶部
+     */
+    const gotoNewSection = (user, anchor) => {
+        const url = newSectionUrl(user, anchor);
+        if (mw.config.get("wgPageName") === talkPageTitle(user).replace(/ /g, "_")) {
+            location.hash = new URL(url, location.href).hash;
+            location.reload();
+            return;
+        }
+        location.assign(url);
+    };
 
     /**
      * 主对话框：选择模板、填写参数（或自定义内容）、填写编辑摘要，然后进入预览。
@@ -1060,8 +1120,10 @@
                         for (;;) {
                             const result = await sendEdit(params);
                             if (result.ok) {
+                                // 锚点必须在关框前回读：用户看到的是连续的「发送中…」，而不是框已关闭却在干等
+                                const anchor = await fetchLastSectionAnchor(result.newrevid);
                                 // 对话框即将关闭，无需恢复按钮状态
-                                this.close({ action: "sent" });
+                                this.close({ action: "sent", anchor });
                                 return;
                             }
                             if (await confirmRetry(wgULS("发送失败", "傳送失敗"), result.detail) !== "retry") {
@@ -1121,7 +1183,8 @@
 
     /**
      * 在主对话框之上叠开预览对话框；主对话框保持开启。
-     * 「返回」（或按 Esc）仅关掉预览，主对话框原样回到前台；发送成功则一并关掉主对话框。
+     * 「返回」（或按 Esc）仅关掉预览，主对话框原样回到前台；
+     * 发送成功则一并关掉主对话框，提示 REDIRECT_DELAY 后再跳到新章节。
      * @param {object} data 预览数据
      * @param {MainDialog} mainDialog 主对话框实例
      */
@@ -1129,7 +1192,9 @@
         openWindow(new PreviewDialog({ size: DIALOG_SIZE }), data, (result) => {
             if (result?.action === "sent") {
                 mainDialog.close();
-                mw.notify(wgULS("已成功发送到讨论页", "已成功傳送到討論頁"), { type: "success" });
+                mw.notify(wgULS("发送成功，3 秒后跳转", "傳送成功，3 秒後跳轉"), { type: "success" });
+                // 提示先露个脸，再离场：这一步是刻意延迟的，故此刻页面还能看见通知
+                window.setTimeout(() => gotoNewSection(data.targetUser, result.anchor ?? ""), REDIRECT_DELAY);
             }
         });
     };
