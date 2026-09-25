@@ -152,6 +152,7 @@
         "Gadget/ReferenceTooltips",
         "Gadget/registerToDelete",
         "Gadget/report",
+        "Gadget/requestDeletion",
         "Gadget/rollback-summary",
         "Gadget/Searchbox-integration",
         "Gadget/Searchbox-popout",
