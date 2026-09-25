@@ -132,6 +132,32 @@ aside#moe-global-siderail #moe-custom-sidenav-block h2 {
     html > body.skin-moeskin .navbox-group + .navbox-list > .navbox-subgroup {
         border-left: 0.75em solid transparent;
     }
+
+    /* 以下为上方同名浅色声明的深色对应项。它们特异性为 (0,3,2)，高于上方的 (0,2,2)，
+       也高于 site-styles 的 html.dark .navbox… (0,3,1)——不加这段的话，窄屏下 site-styles
+       的深色配色会被上方的 #fdfdfd / #e6f6e6 整条盖掉，导航框重新变亮。
+       色值须与 site-styles 中 .navbox 系列的深色配色保持一致。 */
+    html.dark > body.skin-moeskin .navbox {
+        border-color: #54595d;
+        background: #202122;
+    }
+
+    html.dark > body.skin-moeskin .navbox .navbox-subgroup .navbox-group {
+        background: #27452b;
+    }
+
+    html.dark > body.skin-moeskin .navbox .navbox-abovebelow {
+        background: #2d5332;
+    }
+
+    /* 上一条会覆盖到嵌套子表的 abovebelow，把它拉平成顶层色，故再补一层。 */
+    html.dark > body.skin-moeskin .navbox .navbox-subgroup .navbox-abovebelow {
+        background: #27452b;
+    }
+
+    html.dark > body.skin-moeskin .navbox .navbox-group + * {
+        border-top-color: #202122;
+    }
 }
 
 :is(.image-box, .image-clip, .fit-image) img.lazyload[data-lazy-state="pending"] {
@@ -272,6 +298,11 @@ table.navbox {
     box-shadow: 0 0 0 1px #aaa;
 }
 
+/* box-shadow 不随上面的 border-color 变化，深色下要单独覆盖，否则导航框仍留一圈亮灰外轮廓。 */
+html.dark table.navbox {
+    box-shadow: 0 0 0 1px #54595d;
+}
+
 table.navbox > tbody > tr > td > table {
     border-radius: 0.375rem;
     overflow: hidden;
@@ -296,12 +327,9 @@ table.navbox > tbody > tr > td > table {
         color: var(--theme-text-color);
     }
 
-    html.dark :is(.navbox):not(.dark-theme-invert-disabled) {
-        --theme-link-color: rgb(51 102 187);
-
-        color: rgb(44 62 80);
-        filter: brightness(0.75);
-    }
+    /* 大家族模板不再走「压暗」方案：site-styles 已为 .navbox 系列提供成体系的深色配色，
+       这里的 color 会把文字压成深色（与深底冲突）、filter 又会把配色整体压暗 25%，
+       两者都会让 site-styles 的配色失效，故整条规则移除。 */
 
     html.dark .mw-datatable,
     html.dark .mw-json,
