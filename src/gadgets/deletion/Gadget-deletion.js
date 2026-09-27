@@ -1,6 +1,8 @@
 "use strict";
 $(() => (async () => {
-    if (!mw.config.get("wgIsArticle") || !mw.config.get("wgUserGroups").includes("sysop") || !$(".mw-category-generated > div")[0]) {
+    const { wgIsArticle, wgUserGroups, wgPageName, wgUserName, wgTitle } = mw.config.get();
+
+    if (!wgIsArticle || !wgUserGroups.includes("sysop") || !$(".mw-category-generated > div")[0]) {
         return;
     }
 
@@ -14,6 +16,25 @@ $(() => (async () => {
         return detail ? `${e} ${detail}` : e instanceof Error ? String(e) : JSON.stringify(e);
     };
 
+    const CONTENT_BATCH_SIZE = 500;
+    const FLAG_CALL = /\{\{\s*(?:(?:模板|样板|t|模板|template)\s*:\s*)?即将删除\s*(?:\|([^{}]*))?\}\}/i;
+    const ARG_SEPARATOR = /\|(?![^[]*\]\])/u;
+
+    const extractFlag = (wikitext) => {
+        const args = new Map();
+        let index = 1;
+        for (const part of (FLAG_CALL.exec(wikitext.replace(/<!--[\s\S]*?-->/g, ""))?.[1] ?? "").split(ARG_SEPARATOR)) {
+            const [key, ...value] = part.split("=");
+            if (value.length) {
+                args.set(key.trim(), value.join("=").trim());
+            } else {
+                args.set(String(index), part);
+                index += 1;
+            }
+        }
+        return { reason: (args.get("1") ?? "").trim(), actor: (args.get("user") ?? "").trim() };
+    };
+
     let globalDeletionLock = false;
     const DELCATS = {
         "zh.moegirl.org.cn": "即将删除的页面",
@@ -23,8 +44,6 @@ $(() => (async () => {
         "ja.moegirl.org.cn": "削除依頼中のページ",
         "library.moegirl.org.cn": "即将删除的页面",
     };
-    const wgPageName = mw.config.get("wgPageName");
-    const wgUserName = mw.config.get("wgUserName");
     // Make sure that all links open in a new tab when locked
     $("body").on("click", "a", (e) => {
         if (!globalDeletionLock) {
@@ -57,8 +76,44 @@ $(() => (async () => {
     const $portlet = $(mw.util.addPortletLink("p-cactions", "#", wgULS("批量删除本分类下页面", "批次刪除本分類下頁面"), "ca-batdel", wgULS("批量删除本分类下页面", "批次刪除本分類下頁面"))).addClass("sysop-show"), $portletAnchor = $portlet.find("a");
     const pages = [];
 
+    const fetchLatestContents = async (pageids) => {
+        const contents = new Map();
+        const fetchChunk = async (ids) => {
+            try {
+                const { query: { pages: fetchedPages } } = await api.post({
+                    action: "query",
+                    assertuser: wgUserName,
+                    formatversion: 2,
+                    prop: "revisions",
+                    pageids: ids.join("|"),
+                    rvprop: "ids|user|content",
+                    rvslots: "main",
+                }, { timeout: 120000 });
+                for (const { pageid, revisions } of fetchedPages) {
+                    const revision = revisions?.[0];
+                    if (revision) {
+                        contents.set(pageid, { user: revision.user, content: revision.slots?.main?.content ?? "" });
+                    }
+                }
+            } catch (e) {
+                // 整批失败（响应过大 / 超时）就二分重试，单页仍失败才放弃
+                if (ids.length === 1) {
+                    console.warn("[BatchDelete]", e);
+                    return;
+                }
+                const middle = Math.ceil(ids.length / 2);
+                await fetchChunk(ids.slice(0, middle));
+                await fetchChunk(ids.slice(middle));
+            }
+        };
+        for (let i = 0; i < pageids.length; i += CONTENT_BATCH_SIZE) {
+            await fetchChunk(pageids.slice(i, i + CONTENT_BATCH_SIZE));
+        }
+        return contents;
+    };
+
     // Auto load flag status (for delcats)
-    const isDelCat = mw.config.get("wgTitle") === DELCATS[location.hostname];
+    const isDelCat = wgTitle === DELCATS[location.hostname];
     if (isDelCat) {
         globalDeletionLock = true;
         $portletAnchor.text(wgULS("正在加载中……", "正在加載中……"));
@@ -97,8 +152,6 @@ $(() => (async () => {
                     action: "query",
                     assertuser: wgUserName,
                     format: "json",
-                    rvprop: "user",
-                    prop: "revisions",
                     generator: "categorymembers",
                     gcmtitle: wgPageName,
                     gcmprop: "ids|title",
@@ -116,50 +169,34 @@ $(() => (async () => {
             return result.filter(({ title }) => document.querySelector(generatePageLinkSelector(title)));
         })();
 
-        for (const { title, pageid, revisions: [{ user }] } of candidatePages) {
-            for (let retryTimes = 0; retryTimes < 3; retryTimes++) {
-                try {
-                    const html = (await api.post({
-                        action: "parse",
-                        assertuser: wgUserName,
-                        pageid,
-                        prop: "text",
-                    })).parse.text["*"];
-                    const $html = $(html).children(".infoBox.will2Be2Deleted");
-                    const $reason = $html.find("#reason"), $actor = $html.find("#actor a").first();
-                    const reason = $reason.text().trim(), actor = $actor.text().trim();
-                    const link = $(generatePageLinkSelector(title));
-                    if ($reason.length === 1 && $actor.length === 1 && reason && actor) {
-                        const isTrusted = user === actor && trustedUsers.includes(user);
-                        pages.push({
-                            title,
-                            user,
-                            isTrusted,
-                            reason,
-                        });
-                        link.addClass("batdel-checked");
-                        if (isTrusted) {
-                            // Flag is trusted
-                            link.after(`<div>${wgULS("挂删人", "掛刪人")}：<a href="/User:${user}" class="mw-userlink batdel-bypass"><bdi>${user}</bdi></a></div><div>${wgULS("挂删理由", "掛刪理由")}：${reason}</div>`);
-                        } else {
-                            // Flag is not trusted, do not delete
-                            link.prop("target", "_blank").after(`<div class="batdel-error">${wgULS("禁止删除：该次挂删不可靠，请手动检查", "禁止刪除：該次掛刪不可靠，請手動檢查")}（${user !== $actor.text() ? wgULS("最后编辑者与挂删人不符", "最後編輯者與掛刪人不符") : wgULS("最后编辑者没有巡查权限", "最後編輯者沒有巡查權限")}）</div>`);
-                            console.warn(`[BatchDelete] ${title} does not have a trusted flag`);
-                        }
-                    } else {
-                        pages.push({
-                            title,
-                            user: actor,
-                            isTrusted: false,
-                            reason,
-                        });
-                        link.addClass("batdel-bypass").prop("target", "_blank").after(`<div class="batdel-error">${wgULS("禁止删除：该次挂删不可靠，请手动检查（挂删模板未给出理由或挂删人）", "禁止刪除：該次掛刪不可靠，請手動檢查（掛刪模板未給出理由或掛刪人）")}</div>`);
-                        console.warn(`[BatchDelete] ${title} has empty reason or actor`);
-                    }
-                    break;
-                } catch (e) {
-                    console.error("[BatchDelete]", e);
-                }
+        const contents = await fetchLatestContents(candidatePages.map(({ pageid }) => pageid));
+
+        for (const { title, pageid } of candidatePages) {
+            const link = $(generatePageLinkSelector(title));
+            const fetched = contents.get(pageid);
+            if (!fetched) {
+                // 取不到源码的链接，留给下面「For unprocessed links」统一标注
+                continue;
+            }
+            const { reason, actor } = extractFlag(fetched.content);
+            const isTrusted = Boolean(reason && actor && fetched.user === actor && trustedUsers.includes(actor));
+            pages.push({
+                title,
+                user: actor,
+                isTrusted,
+                reason,
+            });
+            if (!reason || !actor) {
+                link.addClass("batdel-bypass").prop("target", "_blank").after(`<div class="batdel-error">${wgULS("禁止删除：该次挂删不可靠，请手动检查（挂删模板未给出理由或挂删人）", "禁止刪除：該次掛刪不可靠，請手動檢查（掛刪模板未給出理由或掛刪人）")}</div>`);
+                console.warn(`[BatchDelete] ${title} has empty reason or actor`);
+            } else if (isTrusted) {
+                link.addClass("batdel-checked").after(
+                    $("<div>").text(`${wgULS("挂删人", "掛刪人")}：`).append($("<a>").addClass("mw-userlink batdel-bypass").attr("href", `/User:${actor}`).append($("<bdi>").text(actor))),
+                    $("<div>").text(`${wgULS("挂删理由", "掛刪理由")}：${reason}`),
+                );
+            } else {
+                link.addClass("batdel-bypass").prop("target", "_blank").after(`<div class="batdel-error">${wgULS("禁止删除：该次挂删不可靠，请手动检查", "禁止刪除：該次掛刪不可靠，請手動檢查")}（${fetched.user !== actor ? wgULS("最后编辑者与挂删人不符", "最後編輯者與掛刪人不符") : wgULS("最后编辑者没有巡查权限", "最後編輯者沒有巡查權限")}）</div>`);
+                console.warn(`[BatchDelete] ${title} does not have a trusted flag`);
             }
         }
 
