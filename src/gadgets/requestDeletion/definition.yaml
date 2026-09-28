@@ -22,7 +22,6 @@ package: false
 
 rights:
   - edit
-  - autopatrol
 
 peers: []
 
