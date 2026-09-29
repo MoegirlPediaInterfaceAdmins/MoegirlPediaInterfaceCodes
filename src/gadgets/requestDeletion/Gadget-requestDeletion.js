@@ -45,7 +45,7 @@ $(() => {
         const buildWikitext = (reason, detail) => {
             const lines = [
                 `* '''页面标题'''：${wgIsRedirect ? `{{NoRedirectLink|${linkedPageName}}}` : `[[:${linkedPageName}]]`}`,
-                `* '''申请理由：'''：${reason}`,
+                `* '''申请理由'''：${reason}`,
             ];
             if (detail) {
                 lines.push(`* '''详细原因'''：${detail}`);
