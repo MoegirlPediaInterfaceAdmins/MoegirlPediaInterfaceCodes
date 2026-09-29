@@ -45,26 +45,28 @@ $(() => {
     }
 
     // 编辑请求
-    if (!$("ul.permissions-errors").find('a[href*="MoeAuth"]').length && !!$(".permissions-errors, #wpTextbox1[readonly]")[1] && mw.config.get("wgUserName") && !$(".newComment")[0]) {
+    if (!$("ul.permissions-errors").find('a[href*="MoeAuth"]').length && !!$(".permissions-errors, #wpTextbox1[readonly]")[1] && mw.config.get("wgUserName") && !$(".editRequest .cdx-button")[0]) {
         const { talkPage, basePageName } = libGetPageNames();
-        if (talkPage === false) {
-            return;
+        if (talkPage !== false) {
+            const container = $("<div/>", {
+                "class": "editRequest",
+            });
+            const now = new Date();
+            container.append(wgULS("虽然您无权编辑本页面，但您可以点击右侧按钮在本页的讨论页提出编辑请求，让可以编辑的人代为编辑：", "雖然您無權編輯本頁面，但您可以點擊右側按鈕在本頁的討論頁提出編輯請求，讓可以編輯的人代為編輯："));
+            $("<button/>", {
+                "class": "cdx-button cdx-button--action-progressive cdx-button--weight-primary",
+            }).text(wgULS("提出编辑请求", "提出編輯請求")).on("click", () => {
+                const editRequestURL = new URL(`${mw.config.get("wgScriptPath")}/index.php`, location.origin);
+                editRequestURL.searchParams.set("action", "edit");
+                editRequestURL.searchParams.set("preload", wgGetEditRequestPreload(wgPageName, basePageName));
+                editRequestURL.searchParams.set("preloadtitle", `编辑请求 - ${mw.config.get("wgUserName")} - ${now.getFullYear()}.${libPrefixNumber(now.getMonth() + 1)}.${libPrefixNumber(now.getDate())}`);
+                editRequestURL.searchParams.set("section", "new");
+                editRequestURL.searchParams.set("title", talkPage);
+                editRequestURL.searchParams.set("dtpreload", "1");
+                window.open(editRequestURL.href, "_blank");
+            }).appendTo(container);
+            $("#mw-content-text").children(".wikiEditor-ui:first, textarea[readonly]:first").before("<hr>").before(container);
         }
-        const container = $("<div/>", {
-            "class": "editRequest",
-        });
-        const now = new Date();
-        container.append("虽然您无权编辑本页面，但您可以点击右侧按钮在本页的讨论页提出编辑请求，让可以编辑的人代为编辑：");
-        $("<span/>").addClass("newComment").text("提出编辑请求").on("click", () => {
-            const editRequestURL = new URL(`${mw.config.get("wgScriptPath")}/index.php`, location.origin);
-            editRequestURL.searchParams.set("action", "edit");
-            editRequestURL.searchParams.set("preload", wgGetEditRequestPreload(wgPageName, basePageName));
-            editRequestURL.searchParams.set("preloadtitle", `编辑请求 - ${mw.config.get("wgUserName")} - ${now.getFullYear()}.${libPrefixNumber(now.getMonth() + 1)}.${libPrefixNumber(now.getDate())}`);
-            editRequestURL.searchParams.set("section", "new");
-            editRequestURL.searchParams.set("title", talkPage);
-            window.open(editRequestURL.href, "_blank");
-        }).appendTo(container);
-        $("#mw-content-text").children(".wikiEditor-ui:first, textarea[readonly]:first").before("<hr>").before(container);
     }
 
     const explainconflict = $("#mw-content-text > .mw-explainconflict #explainconflict-info");
@@ -77,26 +79,6 @@ $(() => {
     if (![0, 2, 114, 118].includes(wgNamespaceNumber) || wgNamespaceNumber === 2 && !wgPageName.includes("/") || mw.config.get("wgPageContentModel") !== "wikitext") {
         $("#multiboilerplateform").remove();
     }
-    // 非维护组、技术组成员提出方针编辑请求时提醒需要走提案
-    if (new URLSearchParams(location.search).get("preloadtitle")?.startsWith("编辑请求")
-        && wgNamespaceNumber === 5
-        && mw.config.get("wgAction") === "edit"
-        && !mw.config.get("wgUserGroups").some((value) => ["patroller", "sysop", "techeditor", "interface-admin", "staff"].includes(value))
-    ) {
-        OO.ui.alert(
-            $('<p>进行<b>实质性</b>修改时，需要通过<a href="/萌娘百科:提案" style="font-weight:bold">提案</a>或<a href="/萌娘百科:快速提案" style="font-weight:bold">快速提案</a>流程才可对方针和指引进行改动。</p><p>在讨论页发起的编辑请求仅可用于修正错别字等<b>非实质性</b>修改。</p>'),
-            {
-                title: "提醒",
-                size: "small",
-                actions: [
-                    {
-                        action: "Confirm",
-                        label: "我知道了",
-                    },
-                ],
-            });
-    }
-
     // Customized File Insertion dialog
     // Copyright 2017 The Little Moe New LLC. All rights reserved.
     /*
