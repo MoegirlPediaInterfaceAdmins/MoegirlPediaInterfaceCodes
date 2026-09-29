@@ -125,6 +125,7 @@
     - vector-2022-styles
     - moeskin-styles
     - edit
+    - editRequestWarning
     - site-lib
     - libBottomRightCorner
     - libOOUIDialog
