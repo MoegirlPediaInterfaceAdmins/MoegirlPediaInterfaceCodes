@@ -2,7 +2,7 @@ ResourceLoader: true
 
 hidden: false
 
-default: false
+default: true
 
 supportsUrlLoad: true
 
@@ -30,7 +30,6 @@ dependencies:
 
 _sites:
   - zh
-  - commons
 
 _section: browsing
 
