@@ -10,10 +10,12 @@ skins: []
 
 actions:
   - edit
+  - view
 
 categories: []
 
-namespaces: []
+namespaces:
+  - 5
 
 contentModels: []
 
@@ -27,6 +29,7 @@ rights:
 peers: []
 
 dependencies:
+  - ext.gadget.libOOUIDialog
   - ext.gadget.site-lib
 
 _sites:
@@ -35,4 +38,4 @@ _sites:
 _section: system
 
 _files:
-  - Gadget-edit.js
+  - Gadget-editRequestWarning.js

@@ -41,7 +41,7 @@ $(() => {
         const field = new OO.ui.FieldLayout(checkbox, {
             align: "inline",
             label: wgULS("AI辅助编辑", "AI輔助編輯"),
-            title: wgULS("本次编辑使用了人工智能工具进行辅助", "本次編輯使用了人工智能工具進行輔助"),
+            title: wgULS("本次编辑使用了人工智能工具进行辅助", "本次編輯使用了人工智慧工具進行輔助", null, null, "本次編輯使用了人工智能工具進行輔助"),
         });
         return { checkbox, field };
     };

@@ -13,9 +13,11 @@ window.wgUXS = (wg, hans, hant, cn, tw, hk, sg, zh, mo, my) => {
     return ret[wg] || zh || hans || hant || cn || tw || hk || sg || mo || my; // 保證每一語言有值
 };
 
-window.wgULS = (hans, hant, cn, tw, hk, sg, zh, mo, my) => window.wgUXS(mw.config.get("wgUserLanguage"), hans, hant, cn, tw, hk, sg, zh, mo, my);
-
 window.wgUVS = (hans, hant, cn, tw, hk, sg, zh, mo, my) => window.wgUXS(mw.config.get("wgUserVariant"), hans, hant, cn, tw, hk, sg, zh, mo, my);
+
+// https://github.com/MoegirlPediaInterfaceAdmins/MoegirlPediaInterfaceCodes/issues/1097#issuecomment-5856656123
+// window.wgULS = (hans, hant, cn, tw, hk, sg, zh, mo, my) => window.wgUXS(mw.config.get("wgUserLanguage"), hans, hant, cn, tw, hk, sg, zh, mo, my);
+window.wgULS = window.wgUVS;
 
 /**
  * Map addPortletLink to mw.util
