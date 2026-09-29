@@ -74,7 +74,7 @@ $(() => {
                 ...super.static,
                 tagName: "div",
                 name: "lr-rd",
-                title: wgULS("提删", "提刪"),
+                title: wgULS("请求删除", "請求刪除"),
                 actions: [
                     {
                         action: "cancel",
@@ -121,7 +121,7 @@ $(() => {
                 this.reasonsDropdownMenu = this.reasonsDropdown.dropdownWidget.getMenu();
 
                 const reasonsField = new OO.ui.FieldLayout(this.reasonsDropdown, {
-                    label: wgULS("提删理由", "提刪緣由"),
+                    label: wgULS("删除理由", "刪除緣由"),
                     align: "top",
                 });
                 const detailsField = new OO.ui.FieldLayout(this.detailsText, {
@@ -197,7 +197,7 @@ $(() => {
                         try {
                             const anchor = await this.postRequest(buildWikitext(reason || detail, reason ? detail : ""));
                             this.close({ action });
-                            mw.notify(wgULS("提删请求已发出，3 秒后跳转到讨论串", "提刪請求已發出，3 秒後跳轉到討論串"), {
+                            mw.notify(wgULS("删除请求已发出，3 秒后跳转到讨论串", "删除請求已發出，3 秒後跳轉到討論串"), {
                                 title: wgULS("提删成功", "提刪成功"),
                                 type: "success",
                                 tag: "lr-rd",
@@ -252,7 +252,7 @@ $(() => {
 
         let loadReason = false;
 
-        $(mw.util.addPortletLink("p-cactions", "#", wgULS("提删", "提刪"), "ca-lr-rd", wgULS("向讨论版提出删除请求", "向討論版提出刪除請求"))).on("click", async (e) => {
+        $(mw.util.addPortletLink("p-cactions", "#", wgULS("提出删除请求", "提出刪除請求"), "ca-lr-rd", wgULS("向讨论版提出删除请求", "向討論版提出刪除請求"))).on("click", async (e) => {
             e.preventDefault();
             windowManager.openWindow(rdDialog);
             $body.css("overflow", "auto");
