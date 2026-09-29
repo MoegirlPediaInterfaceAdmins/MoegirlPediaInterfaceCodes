@@ -13,9 +13,13 @@ window.wgUXS = (wg, hans, hant, cn, tw, hk, sg, zh, mo, my) => {
     return ret[wg] || zh || hans || hant || cn || tw || hk || sg || mo || my; // 保證每一語言有值
 };
 
-window.wgULS = (hans, hant, cn, tw, hk, sg, zh, mo, my) => window.wgUXS(mw.config.get("wgUserLanguage"), hans, hant, cn, tw, hk, sg, zh, mo, my);
-
 window.wgUVS = (hans, hant, cn, tw, hk, sg, zh, mo, my) => window.wgUXS(mw.config.get("wgUserVariant"), hans, hant, cn, tw, hk, sg, zh, mo, my);
+
+/**
+ * @todo: Temporarily disable wgULS until the value of wgUserLanguage is no longer normalised to zh.
+ */
+// window.wgULS = (hans, hant, cn, tw, hk, sg, zh, mo, my) => window.wgUXS(mw.config.get("wgUserLanguage"), hans, hant, cn, tw, hk, sg, zh, mo, my);
+window.wgULS = window.wgUVS;
 
 /**
  * Map addPortletLink to mw.util
