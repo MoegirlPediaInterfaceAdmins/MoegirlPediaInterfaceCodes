@@ -197,7 +197,7 @@ $(() => {
                         try {
                             const anchor = await this.postRequest(buildWikitext(reason || detail, reason ? detail : ""));
                             this.close({ action });
-                            mw.notify(wgULS("删除请求已发出，3 秒后跳转到讨论串", "删除請求已發出，3 秒後跳轉到討論串"), {
+                            mw.notify(wgULS("删除请求已发出，3 秒后跳转到讨论串", "刪除請求已發出，3 秒後跳轉到討論串"), {
                                 title: wgULS("提删成功", "提刪成功"),
                                 type: "success",
                                 tag: "lr-rd",
