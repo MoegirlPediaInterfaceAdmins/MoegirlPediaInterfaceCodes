@@ -15,9 +15,7 @@ window.wgUXS = (wg, hans, hant, cn, tw, hk, sg, zh, mo, my) => {
 
 window.wgUVS = (hans, hant, cn, tw, hk, sg, zh, mo, my) => window.wgUXS(mw.config.get("wgUserVariant"), hans, hant, cn, tw, hk, sg, zh, mo, my);
 
-/**
- * @todo: Temporarily disable wgULS until the value of wgUserLanguage is no longer normalised to zh.
- */
+// https://github.com/MoegirlPediaInterfaceAdmins/MoegirlPediaInterfaceCodes/issues/1097#issuecomment-5856656123
 // window.wgULS = (hans, hant, cn, tw, hk, sg, zh, mo, my) => window.wgUXS(mw.config.get("wgUserLanguage"), hans, hant, cn, tw, hk, sg, zh, mo, my);
 window.wgULS = window.wgUVS;
 
