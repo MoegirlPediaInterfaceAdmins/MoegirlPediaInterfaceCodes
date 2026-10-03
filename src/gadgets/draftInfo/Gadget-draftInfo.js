@@ -20,6 +20,7 @@ $(() => {
     const getRequestTitleSuffix = (userName, now) => ` - ${userName} - ${now.getFullYear()}.${libPrefixNumber(now.getMonth() + 1)}.${libPrefixNumber(now.getDate())}`;
 
     const getTargetExists = async () => {
+        /** @type {ApiQueryResponse} */
         const res = await api.get({
             action: "query",
             titles: wgTitle,
@@ -114,6 +115,7 @@ $(() => {
     const $btn = $("#draft-action-btn");
 
     const getNonBotContributors = async () => {
+        /** @type {ApiQueryResponse} */
         const res = await api.get({
             action: "query",
             titles: wgPageName,
@@ -180,6 +182,7 @@ $(() => {
         if (!confirmed) {
             return;
         }
+        /** @type {ApiMoveResponse} */
         const moveRes = await api.postWithToken("csrf", {
             action: "move",
             from: wgPageName,
@@ -201,6 +204,7 @@ $(() => {
     };
 
     const getLatestRevision = async (title) => {
+        /** @type {ApiQueryResponse} */
         const res = await api.get({
             action: "query",
             titles: title,
@@ -261,6 +265,7 @@ $(() => {
         if (!overwriteConfirmed) {
             return;
         }
+        /** @type {ApiEditResponse} */
         const editRes = await api.postWithToken("csrf", {
             action: "edit",
             assertuser: wgUserName,
@@ -276,6 +281,7 @@ $(() => {
         if (Reflect.has(editRes, "error")) {
             throw editRes;
         }
+        /** @type {ApiEditResponse} */
         const flagRes = await api.postWithToken("csrf", {
             action: "edit",
             assertuser: wgUserName,

@@ -124,6 +124,7 @@ $(() => (async () => {
         };
 
         const loadBlockLogSection = async () => {
+            /** @type {ApiQueryResponse} */
             const blockLogResult = await autoRetryAsyncFunction(async () => await api.post({
                 action: "query",
                 assertuser: wgUserName,
@@ -272,6 +273,7 @@ $(() => (async () => {
         };
 
         const loadAbuseLogSection = async () => {
+            /** @type {ApiQueryResponse} */
             const abuseLogResult = await autoRetryAsyncFunction(async () => await api.post({
                 action: "query",
                 assertuser: wgUserName,
@@ -285,7 +287,7 @@ $(() => (async () => {
                 throw new Error("未能获取滥用日志数据");
             }
 
-            const veryFirstAbuselogId = abuseLogResult.query.abuselog.slice(-1)[0]?.id;
+            const veryFirstAbuselogId = /** @type {ApiAbuseLogEntry[]} */ (abuseLogResult.query.abuselog).slice(-1)[0]?.id;
             const abuseLogAcceptedFlags = ["block", "blockautopromote", "degroup"];
             const abuselogevents = abuseLogResult.query.abuselog.filter(({ result: _result }) => _result.split(/,\s*/).some((tag) => abuseLogAcceptedFlags.includes(tag))).slice(0, 10);
             const body = sections.abuse.body;

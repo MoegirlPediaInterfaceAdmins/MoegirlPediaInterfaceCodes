@@ -80,7 +80,7 @@ $(() => (async () => {
         const contents = new Map();
         const fetchChunk = async (ids) => {
             try {
-                const { query: { pages: fetchedPages } } = await api.post({
+                const { query: { pages: fetchedPages } } = /** @type {ApiQueryResponse} */ (await api.post({
                     action: "query",
                     assertuser: wgUserName,
                     formatversion: 2,
@@ -88,7 +88,7 @@ $(() => (async () => {
                     pageids: ids.join("|"),
                     rvprop: "ids|user|content",
                     rvslots: "main",
-                }, { timeout: 120000 });
+                }, { timeout: 120000 }));
                 for (const { pageid, revisions } of fetchedPages) {
                     const revision = revisions?.[0];
                     if (revision) {

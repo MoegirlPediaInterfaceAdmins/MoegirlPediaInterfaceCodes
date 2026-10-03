@@ -111,6 +111,7 @@ $(() => (async () => {
             this.updateSize();
 
             this.addStep(wgULS("正在获取提案发起时间……", "正在取得提案發起時間……"));
+            /** @type {ApiQueryResponse} */
             const pageCreationTimeResult = await api.get({
                 action: "query",
                 formatversion: 2,
@@ -125,6 +126,7 @@ $(() => (async () => {
             console.log("[ACUserPing] Got page creation time.", pageCreationTime);
 
             this.addStep(wgULS("正在获取忽略用户名单……", "正在取得忽略使用者名單……"));
+            /** @type {ApiQueryResponse} */
             const ignoreResult = await api.get({
                 action: "query",
                 assertuser: wgUserName,
@@ -144,6 +146,7 @@ $(() => (async () => {
             console.log("[ACUserPing] Got ignored user list.", ignoreList);
 
             this.addStep(wgULS("正在获取发言用户名单……", "正在取得發言使用者名稱單……"));
+            /** @type {ApiQueryResponse | undefined} */
             let contributorsResult;
             let nonMGUsers = [];
             do {

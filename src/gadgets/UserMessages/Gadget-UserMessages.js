@@ -83,6 +83,7 @@
      * @returns {Promise<string>} 页面内容；页面不存在时为空字符串
      */
     const fetchPageContent = async (title) => {
+        /** @type {ApiQueryResponse} */
         const res = await api.post({
             action: "query",
             titles: title,
@@ -121,6 +122,7 @@
      * @returns {Promise<string>} 渲染出的 HTML
      */
     const parseWikitext = async (wikitext, title) => {
+        /** @type {ApiParseResponse} */
         const res = await api.post({
             action: "parse",
             title,
@@ -577,7 +579,7 @@
             summary: params.summary,
             tags: "Automation tool|UserMessages",
         })
-        .then((res) => ({ ok: true, newrevid: res?.edit?.newrevid }))
+        .then((res) => ({ ok: true, newrevid: /** @type {ApiEditResponse} */ (res)?.edit?.newrevid }))
         .catch((code, result) => {
             console.warn("[UserMessages] 发送失败", code, result);
             return { ok: false, code, detail: describeSendError(code, result) };
@@ -600,6 +602,7 @@
             return "";
         }
         try {
+            /** @type {ApiParseResponse} */
             const res = await api.post({
                 action: "parse",
                 oldid: revid,

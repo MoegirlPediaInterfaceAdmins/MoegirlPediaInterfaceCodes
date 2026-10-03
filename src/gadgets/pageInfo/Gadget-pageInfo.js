@@ -130,7 +130,7 @@
         $protectionInfoContainer.trigger("mouseout");
         let actions = {};
         try {
-            const pageActions = (await intestactionsPromise)?.query?.pages?.[0]?.actions;
+            const pageActions = (/** @type {ApiQueryResponse} */ (await intestactionsPromise))?.query?.pages?.[0]?.actions;
             if (pageActions && typeof pageActions === "object") {
                 actions = pageActions;
             }
