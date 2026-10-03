@@ -92,5 +92,9 @@
         "stylelint-config-standard": "^40.0.0",
         "stylelint-plugin-use-baseline": "^1.4.6",
         "v8r": "^6.1.0"
+    },
+    "allowScripts": {
+        "core-js@2.6.12": true,
+        "es5-ext@0.10.63": true
     }
 }
