@@ -37,6 +37,7 @@
         "@type/LocalObjectStorage.d.ts",
         "@type/mermaid.d.ts",
         "@type/site-lib.d.ts",
+        "@type/types-mediawiki-response.d.ts",
         "Gadget/abusefilter33test",
         "Gadget/abusefilterEdit",
         "Gadget/abusefilterResize",
