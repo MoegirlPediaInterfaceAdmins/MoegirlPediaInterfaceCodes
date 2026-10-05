@@ -29,6 +29,11 @@ $(() => {
             }
         }
 
+        const creatorModuleSandboxLabel = `${wgULS("创建者", "創建者")}${mw.msg("module")}沙盒`;
+        const draftNamespaceLabel = `${mw.msg("draft")}${wgULS("命名空间", "命名空間")}`;
+        const creatorUserPageLabel = `${wgULS("创建者", "創建者")}${mw.msg("user")}${wgULS("页面", "頁面")}`;
+        const userTalkPageLabel = `${mw.msg("user_talk")}${wgULS("页面", "頁面")}`;
+
         const $body = $("body");
         $("#mw-notification-area").appendTo($body);
 
@@ -38,7 +43,7 @@ $(() => {
                 ...super.static,
                 tagName: "div",
                 name: "lr-mtus",
-                title: isModule ? wgULS("打回创建者模块沙盒", "打回創建者模塊沙盒") : wgULS("打回页面", "打回頁面"),
+                title: isModule ? `打回${creatorModuleSandboxLabel}` : wgULS("打回页面", "打回頁面"),
                 actions: [
                     {
                         action: "cancel",
@@ -75,12 +80,12 @@ $(() => {
                         items: [
                             new OO.ui.RadioOptionWidget({
                                 data: "draft",
-                                label: wgULS("草稿命名空间", "草稿命名空間"),
+                                label: draftNamespaceLabel,
                                 selected: true,
                             }),
                             new OO.ui.RadioOptionWidget({
                                 data: "user",
-                                label: wgULS("创建者用户页", "創建者用戶頁"),
+                                label: creatorUserPageLabel,
                             }),
                         ],
                     });
@@ -120,7 +125,7 @@ $(() => {
                     align: "top",
                 });
                 const noNoticeField = new OO.ui.FieldLayout(this.noNoticeBox, {
-                    label: wgULS("不在用户讨论页留下通知", "不在用戶討論頁留下通知"),
+                    label: `不在${userTalkPageLabel}留下通知`,
                     align: "inline",
                 });
                 const moveTalkField = new OO.ui.FieldLayout(this.moveTalkBox, {
@@ -132,7 +137,7 @@ $(() => {
                     align: "inline",
                 });
                 const watchTalkField = new OO.ui.FieldLayout(this.watchTalkBox, {
-                    label: wgULS("监视创建者讨论页", "監視創建者討論頁"),
+                    label: `${wgULS("监视创建者", "監視創建者")}${userTalkPageLabel}`,
                     align: "inline",
                 });
 
@@ -222,7 +227,7 @@ $(() => {
                         pclimit: 2,
                     })).query.pages[wgArticleId].contributors;
                     if (contribs.length > 1) {
-                        const targetLabel = isModule ? "创建者模块沙盒" : targetChoice === "draft" ? "草稿命名空间" : "创建者用户页";
+                        const targetLabel = isModule ? creatorModuleSandboxLabel : targetChoice === "draft" ? draftNamespaceLabel : creatorUserPageLabel;
                         throw {
                             warning: true,
                             msg: `贡献者并非只有创建者一人，请检查页面历史。确定打回至${targetLabel}？`,
