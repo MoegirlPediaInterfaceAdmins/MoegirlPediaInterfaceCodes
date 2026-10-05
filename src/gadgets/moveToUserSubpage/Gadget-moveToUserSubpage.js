@@ -230,7 +230,7 @@ $(() => {
                         const targetLabel = isModule ? creatorModuleSandboxLabel : targetChoice === "draft" ? draftNamespaceLabel : creatorUserPageLabel;
                         throw {
                             warning: true,
-                            msg: `贡献者并非只有创建者一人，请检查页面历史。确定打回至${targetLabel}？`,
+                            msg: wgULS(`贡献者并非只有创建者一人，请检查页面历史。确定打回至${targetLabel}？`, `貢獻者並非只有創建者一人，請檢查頁面歷史。確定打回至${targetLabel}？`),
                             code: "multipleContribs",
                         };
                     }
