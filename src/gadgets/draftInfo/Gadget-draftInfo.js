@@ -15,7 +15,6 @@ $(() => {
     }
 
     const isAutoConfirmed = wgUserGroups.includes("autoconfirmed");
-    const enableButton = +mw.user.options.get("gadget-publishDraft", 0) === 1;
     const api = new mw.Api();
     const getRequestTitleSuffix = (userName, now) => ` - ${userName} - ${now.getFullYear()}.${libPrefixNumber(now.getMonth() + 1)}.${libPrefixNumber(now.getDate())}`;
 
@@ -84,33 +83,16 @@ $(() => {
                         <div class="draft-notice-title">${wgUVS("提示：本页面是【", "提示：本頁面是【")}<a href="/${encodeURIComponent(wgTitle)}">${mw.html.escape(wgTitle)}</a>${wgUVS("】的", "】的")}<a href="/%E8%90%8C%E5%A8%98%E7%99%BE%E7%A7%91:%E8%8D%89%E7%A8%BF%E6%96%B9%E9%92%88">${wgUVS("草稿", "草稿")}</a></div>
                         <ul>
                             <li id="draft-discussion-notice">${buildDiscussionNotice(false)}</li>
-                            <li>${wgUVS("如果草稿已经完善，您可以", "如果草稿已經完善，您可以")}${enableButton ? wgUVS("使用按钮", "使用按鈕") : wgUVS("自行", "自行")}${wgUVS("发布草稿。", "發佈草稿。")}</li>
+                            <li>${wgUVS("如果草稿已经完善，您可以", "如果草稿已經完善，您可以")}${wgUVS("使用按钮", "使用按鈕")}${wgUVS("发布草稿。", "發佈草稿。")}</li>
                         </ul>
                     </div>
-                    ${enableButton
-                        ? `
                     <div class="draft-notice-action">
                         <button id="draft-action-btn" class="cdx-button cdx-button--action-progressive" disabled>${wgUVS("检查中…", "檢查中…")}</button>
                     </div>
-                    `
-                        : ""}
                 </div>
             </div>
         </div>
     `);
-
-    if (!enableButton) {
-        (async () => {
-            try {
-                const targetExists = await getTargetExists();
-                $("#draft-discussion-notice").html(buildDiscussionNotice(targetExists));
-                updateTargetLink(targetExists);
-            } catch (e) {
-                console.error("[DraftInfo] Failed to resolve target link:", e);
-            }
-        })();
-        return;
-    }
 
     const $btn = $("#draft-action-btn");
 
