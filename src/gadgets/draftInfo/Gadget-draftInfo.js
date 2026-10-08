@@ -54,11 +54,11 @@ $(() => {
         };
 
         const questionLink = buildLink(
-            "Project talk:讨论版/提问求助",
+            "萌娘百科讨论:讨论版/提问求助",
             wgUVS("提问求助区", "提問求助區"),
         );
         const pageLink = buildLink(
-            "Project talk:讨论版/页面相关",
+            "萌娘百科讨论:讨论版/页面相关",
             wgUVS("页面相关区", "頁面相關區"),
         );
         const talkLink = targetExists
