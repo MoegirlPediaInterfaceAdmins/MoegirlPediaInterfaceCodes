@@ -39,23 +39,16 @@ $(() => {
             ],
         };
 
-        static statusList = mw.config.get("wgPageName") === "萌娘百科_talk:讨论版/操作申请/注销账号申请"
-            ? [
-                ["c", wgULS("注销进行中", "註銷進行中")],
-                ["a", wgULS("请求被接受", "請求被接受")],
-                ["s", wgULS("请求被搁置", "請求被擱置")],
-                ["w", wgULS("请求被撤回", "請求被撤回")],
-                ["d", wgULS("请求被拒绝", "請求被拒絕")],
-            ]
-            : [
-                ["r", wgULS("问题已解决", "問題已解決")],
-                ["p", wgULS("问题已答复", "問題已答覆")],
-                ["a", wgULS("请求被接受", "請求被接受")],
-                ["s", wgULS("请求被搁置", "請求被擱置")],
-                ["w", wgULS("请求被撤回", "請求被撤回")],
-                ["d", wgULS("请求被拒绝", "請求被拒絕")],
-                ["n", wgULS("无人回复", "無人回覆")],
-            ];
+        static statusList = [
+            ["r", wgULS("问题已解决", "問題已解決")],
+            ["p", wgULS("问题已答复", "問題已答覆")],
+            ["a", wgULS("请求被接受", "請求被接受")],
+            ["s", wgULS("请求被搁置", "請求被擱置")],
+            ["w", wgULS("请求被撤回", "請求被撤回")],
+            ["d", wgULS("请求被拒绝", "請求被拒絕")],
+            ["n", wgULS("无人回复", "無人回覆")],
+        ];
+
         static archiveOffsetsFromStatus = {
             ...Object.fromEntries(MARWindow.statusList.map(([status]) => [status, 3])),
             n: 10,
