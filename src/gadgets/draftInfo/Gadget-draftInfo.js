@@ -63,7 +63,7 @@ $(() => {
         );
         const talkLink = targetExists
             ? `或${buildLink(
-                mw.Title.newFromText(wgTitle).getTalkPage().getPrefixedText(),
+                mw.Title.newFromText(wgTitle).getTalkPage().getPrefixedDb(),
                 wgUVS("对应页面的讨论页", "對應頁面的討論頁"),
                 false,
             )}`
