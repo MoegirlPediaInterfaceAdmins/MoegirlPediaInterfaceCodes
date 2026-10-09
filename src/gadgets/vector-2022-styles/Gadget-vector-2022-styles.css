@@ -36,19 +36,29 @@
 #footer-info-copyright {
     background: url("//storage.moegirl.org.cn/moegirl/weixin_mengbai.png") 0 15px no-repeat;
     padding: 15px 0 30px;
-    font-family: sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
     min-height: 165px;
 }
 
 #footer-moegirl {
     padding-left: 160px;
-    color: #2F2F2F;
+    color: var(--color-subtle, #54595d);
 }
 
 #footer-moegirl h4 {
     color: #243C4A;
-    font-family: AllerBold, "Helvetica Neue", Arial, Helvetica, Geneva, sans-serif;
     margin-bottom: 8px;
+}
+
+@media screen {
+    html.skin-theme-clientpref-night #footer-moegirl h4 {
+        color: #cce3ff;
+    }
+}
+
+@media (prefers-color-scheme: dark) {
+    html.skin-theme-clientpref-os #footer-moegirl h4 {
+        color: #cce3ff;
+    }
 }
 
 #footer-moegirl ul {
@@ -63,15 +73,18 @@
     margin-right: 0;
 }
 
+#footer-moegirl ul li {
+    color: var(--color-subtle, #54595d);
+}
+
 #footer-moegirl ul a {
-    color: #2F2F2F;
+    color: var(--color-base, #202122);
 }
 
 #footer-moegirl .copyright {
     clear: left;
     display: block;
     line-height: 1.3;
-    color: #999;
 }
 
 /* 标题下划线增强 700 = bold */
