@@ -41,7 +41,7 @@
 
 #footer-moegirl {
     padding-left: 160px;
-    color: var(--color-subtle, #54595d);
+    color: var(--color-subtle, #54595D);
 }
 
 #footer-moegirl h4 {
@@ -51,13 +51,13 @@
 
 @media screen {
     html.skin-theme-clientpref-night #footer-moegirl h4 {
-        color: #cce3ff;
+        color: #CCE3FF;
     }
 }
 
 @media (prefers-color-scheme: dark) {
     html.skin-theme-clientpref-os #footer-moegirl h4 {
-        color: #cce3ff;
+        color: #CCE3FF;
     }
 }
 
@@ -74,7 +74,7 @@
 }
 
 #footer-moegirl ul li {
-    color: var(--color-subtle, #54595d);
+    color: var(--color-subtle, #54595D);
 }
 
 #footer-moegirl ul a {
@@ -90,7 +90,7 @@
 /* 标题下划线增强 700 = bold */
 h2 {
     font-weight: 700;
-    border-bottom: 1px solid #4b77d6;
+    border-bottom: 1px solid #4B77D6;
 }
 
 /* [[Template:Navbar]]意外换行 */
