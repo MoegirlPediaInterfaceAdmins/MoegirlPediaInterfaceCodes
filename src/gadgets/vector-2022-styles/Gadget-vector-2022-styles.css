@@ -88,11 +88,6 @@
 }
 
 /* 标题下划线增强 700 = bold */
-h1 {
-    font-weight: 700;
-    border-bottom: 2px solid #0074F9;
-}
-
 h2 {
     font-weight: 700;
     border-bottom: 1px solid #0074F9;
