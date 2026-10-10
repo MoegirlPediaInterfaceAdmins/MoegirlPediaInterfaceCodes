@@ -1,5 +1,5 @@
 "use strict";
-$(async () => {
+$(() => {
     const { wgArticleId, wgUserName, wgPageName, wgTitle, wgUserGroups, wgScriptPath, wgIsRedirect } = mw.config.get([
         "wgArticleId",
         "wgUserName",
@@ -29,11 +29,25 @@ $(async () => {
         return !res.query.pages[0].missing;
     };
 
+    const getTargetExistsWithRetry = async (retryCount = 1) => {
+        try {
+            return await getTargetExists();
+        } catch (e) {
+            if (retryCount === 0) {
+                throw e;
+            }
+            return getTargetExistsWithRetry(retryCount - 1);
+        }
+    };
+
     const updateTargetLink = (targetExists) => {
+        const $targetLink = $(".draft-notice-title > a").first();
+        const normalHref = $targetLink.data("draft-info-normal-href") || $targetLink.attr("href");
+        $targetLink.data("draft-info-normal-href", normalHref);
         if (targetExists) {
+            $targetLink.attr("href", normalHref).removeClass("new");
             return;
         }
-        const $targetLink = $(".draft-notice-title > a").first();
         const targetURL = new URL($targetLink.attr("href"), location.origin);
         targetURL.searchParams.set("action", "edit");
         targetURL.searchParams.set("redlink", "1");
@@ -343,13 +357,6 @@ $(async () => {
         updateTargetLink(targetExists);
     };
 
-    try {
-        const targetExists = await getTargetExists();
-        updateDiscussionNotice(targetExists);
-    } catch (e) {
-        console.error("[DraftInfo] Failed to resolve target page existence:", e);
-    }
-
     const checkPublishStrategy = async () => {
         $btn.prop("disabled", true).text(wgUVS("检查中…", "檢查中…"));
         try {
@@ -404,4 +411,12 @@ $(async () => {
     };
 
     $btn.text(wgUVS("检查并发布", "檢查並發布")).prop("disabled", false).on("click", checkPublishStrategy);
+    const initializeTargetState = async () => {
+        try {
+            updateDiscussionNotice(await getTargetExistsWithRetry());
+        } catch (e) {
+            console.error("[DraftInfo] Failed to resolve target page existence:", e);
+        }
+    };
+    initializeTargetState();
 });
