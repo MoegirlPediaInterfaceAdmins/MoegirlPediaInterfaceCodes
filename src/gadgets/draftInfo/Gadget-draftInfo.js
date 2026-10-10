@@ -29,11 +29,25 @@ $(() => {
         return !res.query.pages[0].missing;
     };
 
+    const getTargetExistsWithRetry = async (retryCount = 1) => {
+        try {
+            return await getTargetExists();
+        } catch (e) {
+            if (retryCount === 0) {
+                throw e;
+            }
+            return getTargetExistsWithRetry(retryCount - 1);
+        }
+    };
+
     const updateTargetLink = (targetExists) => {
+        const $targetLink = $(".draft-notice-title > a").first();
+        const normalHref = $targetLink.data("draft-info-normal-href") || $targetLink.attr("href");
+        $targetLink.data("draft-info-normal-href", normalHref);
         if (targetExists) {
+            $targetLink.attr("href", normalHref).removeClass("new");
             return;
         }
-        const $targetLink = $(".draft-notice-title > a").first();
         const targetURL = new URL($targetLink.attr("href"), location.origin);
         targetURL.searchParams.set("action", "edit");
         targetURL.searchParams.set("redlink", "1");
@@ -53,13 +67,10 @@ $(() => {
             return `<a href="${mw.html.escape(`${url.pathname}${url.search}`)}">${label}</a>`;
         };
 
-        const questionLink = buildLink(
-            "萌娘百科讨论:讨论版/提问求助",
-            wgUVS("提问求助区", "提問求助區"),
-        );
-        const pageLink = wgTitle.startsWith("萌娘百科:")
+        const questionLink = wgTitle.startsWith("萌娘百科:")
             ? buildLink("萌娘百科讨论:讨论版/方针政策", wgUVS("方针政策区", "方針政策區"))
-            : buildLink("萌娘百科讨论:讨论版/页面相关", wgUVS("页面相关区", "頁面相關區"));
+            : buildLink("萌娘百科讨论:讨论版/提问求助", wgUVS("提问求助区", "提問求助區"));
+        const pageLink = buildLink("萌娘百科讨论:讨论版/页面相关", wgUVS("页面相关区", "頁面相關區"));
         const talkLink = targetExists
             ? `或${buildLink(
                 mw.Title.newFromText(wgTitle).getTalkPage().getPrefixedDb(),
@@ -400,4 +411,12 @@ $(() => {
     };
 
     $btn.text(wgUVS("检查并发布", "檢查並發布")).prop("disabled", false).on("click", checkPublishStrategy);
+    const initializeTargetState = async () => {
+        try {
+            updateDiscussionNotice(await getTargetExistsWithRetry());
+        } catch (e) {
+            console.error("[DraftInfo] Failed to resolve target page existence:", e);
+        }
+    };
+    initializeTargetState();
 });
