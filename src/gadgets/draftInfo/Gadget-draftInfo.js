@@ -57,10 +57,9 @@ $(() => {
             "萌娘百科讨论:讨论版/提问求助",
             wgUVS("提问求助区", "提問求助區"),
         );
-        const pageLink = buildLink(
-            "萌娘百科讨论:讨论版/页面相关",
-            wgUVS("页面相关区", "頁面相關區"),
-        );
+        const pageLink = wgTitle.startsWith("萌娘百科:")
+            ? buildLink("萌娘百科讨论:讨论版/方针政策", wgUVS("方针政策区", "方針政策區"))
+            : buildLink("萌娘百科讨论:讨论版/页面相关", wgUVS("页面相关区", "頁面相關區"));
         const talkLink = targetExists
             ? `或${buildLink(
                 mw.Title.newFromText(wgTitle).getTalkPage().getPrefixedDb(),
