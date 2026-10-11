@@ -15,6 +15,24 @@ $(() => {
         const $body = $("body");
         $("#mw-notification-area").appendTo($body);
 
+        // 锚点进入 {{movedfrom|1=…}}/{{movedto|1=…}} 参数时必须转义：模板标题（如 {{tl|foo}}）的
+        // h2 锚点字面含 {{foo}}，未转义的 {{ }} | [ ] 会在模板展开或链接解析阶段被当作语法，
+        // 通知链接因此碎裂（#1112）。HTML 实体在模板展开阶段不解析、在链接解析阶段解码；
+        // # 例外地用 %23，因为服务端片段切分取最后一个 #、发生在实体解码之后，&#35; 会被
+        // 解码回 # 再遭截断，而 %23 由服务端解码回字面 # 输出进 href，浏览器按第一个 # 取片段恰好命中。
+        // 顺序约束：# 与 & 必须先于其余替换执行，否则已插入实体（如 &#123;）中的 # / & 会被二次转义。
+        // 残余限制：锚点含字面 % 且后跟两位十六进制时浏览器解码有歧义，此类锚点无法命中。
+        const escapeAnchorForTemplateParam = (s) => s
+            .replaceAll("#", "%23")
+            .replaceAll("&", "&amp;")
+            .replaceAll("{", "&#123;")
+            .replaceAll("}", "&#125;")
+            .replaceAll("|", "&#124;")
+            .replaceAll("[", "&#91;")
+            .replaceAll("]", "&#93;")
+            .replaceAll("<", "&lt;")
+            .replaceAll(">", "&gt;");
+
         class QMTWindow extends OO.ui.ProcessDialog {
             static static = {
                 ...super.static,
@@ -179,8 +197,12 @@ $(() => {
             }
             async doMove() {
                 const api = new mw.Api();
+                // 摘要中的链接保留未转义锚点：摘要不经过模板展开，字面 {{}} 原样存活
                 const fromAnchor = `${wgPageName}#${this.anchor}`;
                 const toAnchor = `${this.target}#${this.anchor}`;
+                // 模板参数中的锚点须转义，见 escapeAnchorForTemplateParam 的注释
+                const fromAnchorEscaped = `${wgPageName}#${escapeAnchorForTemplateParam(this.anchor)}`;
+                const toAnchorEscaped = `${this.target}#${escapeAnchorForTemplateParam(this.anchor)}`;
 
                 let original = (await api.get({
                     action: "parse",
@@ -189,9 +211,10 @@ $(() => {
                     prop: "wikitext",
                     section: this.section,
                 })).parse.wikitext["*"];
-                const rawTitle = original.match(/^== *([^=\n]+) *==/m)?.[1] || this.anchor;
+                // 惰性匹配以支持含 = 的标题（如 {{tl|1=a=b}}），并避免捕获尾随空格
+                const rawTitle = original.match(/^== *(.*?) *==/m)?.[1] || this.anchor;
                 original = original.replace(/^==.*?==/, "").trim();
-                original = `{{movedfrom|1=${fromAnchor}}}\n\n${original}`;
+                original = `{{movedfrom|1=${fromAnchorEscaped}}}\n\n${original}`;
 
                 // Move to target
                 console.log("[QuickMoveThread] Moving thread to target page");
@@ -213,7 +236,7 @@ $(() => {
                     assertuser: wgUserName,
                     title: wgPageName,
                     section: this.section,
-                    text: `== ${rawTitle} ==\n{{movedto|1=${toAnchor}}}`,
+                    text: `== ${rawTitle} ==\n{{movedto|1=${toAnchorEscaped}}}`,
                     summary: `/* ${this.anchor} */ 移动讨论串至[[${toAnchor}]] !nobot!`,
                     tags: "Automation tool",
                 });
