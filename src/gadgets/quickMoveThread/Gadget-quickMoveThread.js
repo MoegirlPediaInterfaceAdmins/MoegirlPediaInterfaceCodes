@@ -18,11 +18,14 @@ $(() => {
         // 锚点进入 {{movedfrom|1=…}}/{{movedto|1=…}} 参数时必须转义：模板标题（如 {{tl|foo}}）的
         // h2 锚点字面含 {{foo}}，未转义的 {{ }} | [ ] 会在模板展开或链接解析阶段被当作语法，
         // 通知链接因此碎裂（#1112）。HTML 实体在模板展开阶段不解析、在链接解析阶段解码；
-        // # 例外地用 %23，因为服务端片段切分取最后一个 #、发生在实体解码之后，&#35; 会被
-        // 解码回 # 再遭截断，而 %23 由服务端解码回字面 # 输出进 href，浏览器按第一个 # 取片段恰好命中。
-        // 顺序约束：# 与 & 必须先于其余替换执行，否则已插入实体（如 &#123;）中的 # / & 会被二次转义。
-        // 残余限制：锚点含字面 % 且后跟两位十六进制时浏览器解码有歧义，此类锚点无法命中。
+        // # 与字面 % 用百分号编码——服务端片段切分取最后一个 #、发生在实体解码之后，&#35; 会被
+        // 解码回 # 再遭截断，%23 则由服务端解码回字面 # 输出进 href，%25 使字面 % 免遭浏览器
+        // 对片段的百分号解码错位。浏览器按第一个 # 取片段，恰好命中。
+        // 顺序约束：% → # → & 依次先于其余替换执行，否则已插入序列（%23、&#123;）中的
+        // % / # / & 会被后续替换二次转义。
+        // 残余限制：锚点同时含字面 % 与 # 时无解（服务端与浏览器各解码一次，语义冲突）。
         const escapeAnchorForTemplateParam = (s) => s
+            .replaceAll("%", "%25")
             .replaceAll("#", "%23")
             .replaceAll("&", "&amp;")
             .replaceAll("{", "&#123;")
@@ -32,6 +35,16 @@ $(() => {
             .replaceAll("]", "&#93;")
             .replaceAll("<", "&lt;")
             .replaceAll(">", "&gt;");
+
+        // 编辑摘要中的 [[…]] 链接走 CommentFormatter：其目标正则不允许 | [ ]（含它们时链接被
+        // 截断或不渲染），且该链路对含 % 的目标做一次 rawurldecode，故此处用百分号编码而非实体。
+        // 摘要不经过模板展开，{{ }} 无需处理。字面 % 后跟两位十六进制、或锚点含 # 时摘要链接
+        // 仍会错位（各解码一次，语义冲突），属已知限制；仅影响历史记录里的链接外观。
+        const escapeAnchorForSummaryLink = (s) => s
+            .replaceAll("%", "%25")
+            .replaceAll("|", "%7C")
+            .replaceAll("[", "%5B")
+            .replaceAll("]", "%5D");
 
         class QMTWindow extends OO.ui.ProcessDialog {
             static static = {
@@ -197,23 +210,25 @@ $(() => {
             }
             async doMove() {
                 const api = new mw.Api();
-                // 摘要中的链接保留未转义锚点：摘要不经过模板展开，字面 {{}} 原样存活
-                const fromAnchor = `${wgPageName}#${this.anchor}`;
-                const toAnchor = `${this.target}#${this.anchor}`;
-                // 模板参数中的锚点须转义，见 escapeAnchorForTemplateParam 的注释
+                // 摘要链接与模板参数需按各自解析链路转义（两个转义函数的注释说明了分层机制）
+                const fromAnchor = `${wgPageName}#${escapeAnchorForSummaryLink(this.anchor)}`;
+                const toAnchor = `${this.target}#${escapeAnchorForSummaryLink(this.anchor)}`;
                 const fromAnchorEscaped = `${wgPageName}#${escapeAnchorForTemplateParam(this.anchor)}`;
                 const toAnchorEscaped = `${this.target}#${escapeAnchorForTemplateParam(this.anchor)}`;
 
-                let original = (await api.get({
+                const { wikitext, revid } = (await api.get({
                     action: "parse",
                     assertuser: wgUserName,
                     page: wgPageName,
-                    prop: "wikitext",
+                    prop: "wikitext|revid",
                     section: this.section,
-                })).parse.wikitext["*"];
-                // 惰性匹配以支持含 = 的标题（如 {{tl|1=a=b}}），并避免捕获尾随空格
-                const rawTitle = original.match(/^== *(.*?) *==/m)?.[1] || this.anchor;
-                original = original.replace(/^==.*?==/, "").trim();
+                })).parse;
+                let original = wikitext["*"];
+                // 行尾锚定的惰性匹配：支持含 = 或内部 == 的标题（如 {{tl|1=a==b}}），避免在
+                // 标题内首个 == 处截断；两侧 * 与 [ \t]*$ 剥离定界空白
+                const rawTitle = original.match(/^== *(.*?) *==[ \t]*$/m)?.[1] || this.anchor;
+                // 剥离标题行：greedy 回溯到行内最后一个 ==，与上面的提取口径一致
+                original = original.replace(/^==.*==/, "").trim();
                 original = `{{movedfrom|1=${fromAnchorEscaped}}}\n\n${original}`;
 
                 // Move to target
@@ -236,6 +251,9 @@ $(() => {
                     assertuser: wgUserName,
                     title: wgPageName,
                     section: this.section,
+                    // 乐观锁：解析与替换之间页面被他人编辑（含其他章节）时以 editconflict 失败，
+                    // 避免旧编号 section 替换到错误的讨论串；目标页编辑为追加语义，无位移风险，不加锁
+                    baserevid: revid,
                     text: `== ${rawTitle} ==\n{{movedto|1=${toAnchorEscaped}}}`,
                     summary: `/* ${this.anchor} */ 移动讨论串至[[${toAnchor}]] !nobot!`,
                     tags: "Automation tool",
