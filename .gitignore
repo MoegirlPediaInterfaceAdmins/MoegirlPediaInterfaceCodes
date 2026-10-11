@@ -142,3 +142,6 @@ Temporary Items
 # iCloud generated files
 *.icloud
 
+# ZCode workspace config（skills 内含明文 bot 凭据，禁止入库）
+.zcode/
+
