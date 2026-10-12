@@ -223,6 +223,11 @@ $(() => {
                     prop: "wikitext|revid",
                     section: this.section,
                 })).parse;
+                // 渲染后页面已被编辑：按钮注入时的 section 编号与锚点基于 wgRevisionId 的渲染，
+                // 与当前修订不一致时直接中止，在复制到目标页之前拦截（baserevid 只覆盖解析→替换段）
+                if (revid !== wgRevisionId) {
+                    throw new Error(wgULS("页面已被他人编辑，请刷新后重试", "頁面已被他人編輯，請重新整理後重試"));
+                }
                 let original = wikitext["*"];
                 // 行尾锚定的惰性匹配：支持含 = 或内部 == 的标题（如 {{tl|1=a==b}}），避免在
                 // 标题内首个 == 处截断；两侧 * 与 [ \t]*$ 剥离定界空白
