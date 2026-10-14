@@ -211,12 +211,30 @@
             ele.after(sup);
         }
     };
+    /**
+     * 让出主线程，供下方长循环分片执行。
+     *
+     * Safari 至今未实现 `scheduler.yield()`（截至 Safari 26.6 仍为 unsupported），
+     * 此前依赖 `ext.gadget.libPolyfill` 的 scheduler 条目兜底，而该机制已整体移除，
+     * 故此处自带 MessageChannel 兜底；原生实现存在时仍优先使用，以保留任务优先级语义。
+     * 注意：本函数若抛错会让调用方的 `guardedHook` 永久卡在 pending 状态，
+     * 后续所有 `wikipage.content` / `anntools.usergroup` 钩子都会被静默丢弃。
+     */
+    const yieldToMainThread = Reflect.has(globalThis, "scheduler") && Reflect.has(globalThis.scheduler, "yield")
+        ? () => globalThis.scheduler.yield()
+        : (() => {
+            const channel = new MessageChannel();
+            return () => new Promise((resolve) => {
+                channel.port1.onmessage = resolve;
+                channel.port2.postMessage(null);
+            });
+        })();
     const hook = async () => {
         const unknownUsernames = new Set();
         const elements = querySelectorAll("a.mw-userlink:not(.markrights), .userlink > a:not(.markrights)");
         for (let _i = 0; _i < elements.length; _i++) {
             if (_i > 0 && _i % 50 === 0) {
-                await scheduler.yield();
+                await yieldToMainThread();
             }
             const ele = elements[_i];
             if (ele.closest(".navbox")) {

@@ -1,0 +1,41 @@
+ResourceLoader: true
+
+hidden: true
+
+default: true
+
+supportsUrlLoad: false
+
+skins: []
+
+actions:
+  - edit
+  - view
+
+categories: []
+
+namespaces:
+  - 5
+
+contentModels: []
+
+type: general
+
+package: false
+
+rights:
+  - edit
+
+peers: []
+
+dependencies:
+  - ext.gadget.libOOUIDialog
+  - ext.gadget.site-lib
+
+_sites:
+  - zh
+
+_section: system
+
+_files:
+  - Gadget-editRequestWarning.js

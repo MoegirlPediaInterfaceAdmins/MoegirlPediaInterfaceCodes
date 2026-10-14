@@ -1,0 +1,233 @@
+html {
+    --dasm-surface: var(--background-color-base, #fff);
+    --dasm-surface-subtle: var(--background-color-neutral-subtle, #f8f9fa);
+    --dasm-hover: var(--background-color-interactive-subtle, #eaecf0);
+    --dasm-line: var(--border-color-subtle, #c8ccd1);
+    --dasm-control-line: var(--border-color-subtle, #c8ccd1);
+    --dasm-control-line-hover: var(--border-color-interactive, #72777d);
+    --dasm-ink: var(--color-base, #202122);
+    --dasm-ink-muted: var(--color-subtle, #54595d);
+    --dasm-ink-disabled: var(--color-disabled, #72777d);
+    --dasm-accent: var(--color-progressive, #36c);
+    --dasm-mark: var(--color-destructive, #a33);
+    --dasm-error-bg: var(--background-color-error-subtle, #fee7e6);
+}
+
+/* 深色：皮肤由用户手动选择深色主题 */
+html.skin-theme-clientpref-night,
+html.dark {
+    --dasm-surface: var(--background-color-base, #202122);
+    --dasm-surface-subtle: var(--background-color-neutral-subtle, #2a2d30);
+    --dasm-hover: var(--background-color-interactive-subtle, #2a2d30);
+    --dasm-line: var(--border-color-subtle, #54595d);
+    --dasm-control-line: var(--border-color-subtle, #72777d);
+    --dasm-control-line-hover: var(--border-color-interactive, #a2a9b1);
+    --dasm-ink: var(--color-base, #f8f9fa);
+    --dasm-ink-muted: var(--color-subtle, #c8ccd1);
+    --dasm-ink-disabled: var(--color-disabled, #a2a9b1);
+    --dasm-accent: var(--color-progressive, #5b9aff);
+    --dasm-mark: var(--color-destructive, #ff6b6b);
+    --dasm-error-bg: var(--background-color-error-subtle, #3b2525);
+}
+
+/* 深色：皮肤设置为跟随系统 */
+@media screen and (prefers-color-scheme: dark) {
+    html.skin-theme-clientpref-os {
+        --dasm-surface: var(--background-color-base, #202122);
+        --dasm-surface-subtle: var(--background-color-neutral-subtle, #2a2d30);
+        --dasm-hover: var(--background-color-interactive-subtle, #2a2d30);
+        --dasm-line: var(--border-color-subtle, #54595d);
+        --dasm-control-line: var(--border-color-subtle, #72777d);
+        --dasm-control-line-hover: var(--border-color-interactive, #a2a9b1);
+        --dasm-ink: var(--color-base, #f8f9fa);
+        --dasm-ink-muted: var(--color-subtle, #c8ccd1);
+        --dasm-ink-disabled: var(--color-disabled, #a2a9b1);
+        --dasm-accent: var(--color-progressive, #5b9aff);
+        --dasm-mark: var(--color-destructive, #ff6b6b);
+        --dasm-error-bg: var(--background-color-error-subtle, #3b2525);
+    }
+}
+
+.disamassist-box {
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35em;
+    width: 100%;
+    margin: 0 0 0.75em;
+    padding: 0.5em 0.75em;
+    border: 1px solid var(--dasm-line);
+    border-radius: 0;
+    background: var(--dasm-surface);
+    color: var(--dasm-ink);
+}
+
+.disamassist-pendingeditbox {
+    background: var(--dasm-surface-subtle);
+}
+
+.disamassist-errorbox {
+    flex-direction: row;
+    align-items: center;
+    gap: 1em;
+    background: var(--dasm-error-bg);
+}
+
+.disamassist-top {
+    display: flex;
+    align-items: baseline;
+    gap: 0.75em;
+    padding-bottom: 0.35em;
+    border-bottom: 1px solid var(--dasm-line);
+}
+
+.disamassist-pagetitleline {
+    margin-right: auto;
+    font-weight: bold;
+}
+
+.disamassist-finished {
+    margin-right: auto;
+    color: var(--dasm-ink-muted);
+}
+
+.disamassist-editcounter {
+    flex: none;
+    color: var(--dasm-ink-muted);
+    font-size: 0.8125em;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+}
+
+/* 预留 cfg.numContextLines 行，切换链接时框体不跳动 */
+.disamassist-context {
+    display: block;
+    min-height: calc(var(--disamassist-context-lines, 6) * 1.6em);
+    padding: 0.35em 0.5em;
+    background: var(--dasm-surface-subtle);
+    color: var(--dasm-ink-muted);
+    font-family: var(--font-family-monospace, monospace);
+    font-size: 0.875em;
+    line-height: 1.6;
+    white-space: normal;
+    overflow-wrap: break-word;
+}
+
+.disamassist-context.disamassist-preserve-linebreaks {
+    white-space: pre-line;
+}
+
+/* 用 text-decoration 画下划线，跨行折断时能跟着走 */
+.disamassist-inclink {
+    color: var(--dasm-mark);
+    font-weight: bold;
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.15em;
+}
+
+.disamassist-allbuttons {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5em 1em;
+    padding-top: 0.35em;
+    border-top: 1px solid var(--dasm-line);
+}
+
+.disamassist-leftbuttons,
+.disamassist-rightbuttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.375em;
+}
+
+.disamassist-rightbuttons {
+    margin-left: auto;
+}
+
+.disamassist-button {
+    appearance: none;
+    flex: none;
+    padding: 0.2em 0.65em;
+    border: 1px solid var(--dasm-control-line);
+    border-radius: 0;
+    background: var(--dasm-surface);
+    color: var(--dasm-ink);
+    font-family: inherit;
+    font-size: 0.85em;
+    line-height: 1.4;
+    cursor: pointer;
+}
+
+.disamassist-button:hover:not(:disabled) {
+    border-color: var(--dasm-control-line-hover);
+    background: var(--dasm-hover);
+}
+
+.disamassist-button:focus-visible {
+    outline: 2px solid var(--dasm-accent);
+    outline-offset: 1px;
+}
+
+.disamassist-button:disabled {
+    color: var(--dasm-ink-disabled);
+    background: var(--dasm-surface-subtle);
+    cursor: not-allowed;
+}
+
+.disamassist-errorbutton {
+    flex: none;
+    margin-left: auto;
+}
+
+.disamassist-pendingedittext {
+    font-weight: bold;
+}
+
+.disamassist-subtitle {
+    margin-top: 0.25em;
+    color: var(--dasm-ink-muted);
+    font-size: 0.8125em;
+    line-height: 1.5;
+}
+
+/* 消歧义页上的候选标记，沿用普通链接的样式而非做成标签 */
+.disamassist-optionmarker {
+    margin-left: 0.25em;
+    color: var(--dasm-accent) !important;
+    font-size: 0.8125em;
+    font-style: normal;
+    font-weight: normal;
+    text-decoration: none;
+}
+
+.disamassist-optionmarker:hover {
+    text-decoration: underline;
+}
+
+.disamassist-curroptionmarker {
+    font-weight: bold;
+}
+
+/* 移动版视图下两组按钮无法并排（面板内宽不足约 320px），改为上下各占一行 */
+@media (width <= 440px) {
+    .disamassist-top {
+        flex-wrap: wrap;
+        gap: 0.25em 0.75em;
+    }
+
+    .disamassist-editcounter {
+        white-space: normal;
+    }
+
+    .disamassist-allbuttons {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .disamassist-rightbuttons {
+        margin-left: 0;
+    }
+}

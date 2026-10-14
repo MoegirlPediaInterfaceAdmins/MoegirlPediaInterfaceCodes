@@ -1,16 +1,42 @@
 /*
  * 放置于这里的CSS将同时应用于桌面端和移动端
  * 萌娘百科仅开放Vector和Moeskin皮肤
- * 请尊重萌娘百科版权，以下代码除非注明均是管理员手敲出来的！！！复制需要注明源自萌娘百科，并且附上URL地址 https://zh.moegirl.org.cn/MediaWiki:Gadget-site-styles.css
- * 版权协定：知识共享 署名-非商业性使用-相同方式共享 3.0
+ * 请尊重萌娘百科著作权！！！复制需要注明源自萌娘百科，并且附上URL地址 https://zh.moegirl.org.cn/MediaWiki:Gadget-site-styles.css
+ * 著作权协定：知识共享 署名-非商业性使用-相同方式共享 4.0
  */
 
 /* Tabs */
+.tab .Tabs {
+    --tab-label-selected-top-color: green;
+    --tab-label-selected-right-color: green;
+    --tab-label-selected-bottom-color: green;
+    --tab-label-selected-left-color: green;
+    --tab-label-border-color: #aaa;
+    --tab-label-border-top-color: var(--tab-label-border-color);
+    --tab-label-border-right-color: var(--tab-label-border-color);
+    --tab-label-border-bottom-color: var(--tab-label-border-color);
+    --tab-label-border-left-color: var(--tab-label-border-color);
+    --tab-label-background-color: #fff;
+    --tab-label-padding: 2px;
+    --tab-text-border-color: #aaa;
+    --tab-text-border-top-color: var(--tab-text-border-color);
+    --tab-text-border-right-color: var(--tab-text-border-color);
+    --tab-text-border-bottom-color: var(--tab-text-border-color);
+    --tab-text-border-left-color: var(--tab-text-border-color);
+    --tab-text-background-color: white;
+    --tab-text-padding: 20px 30px;
+}
+
 .tab .TabLabelText {
-    padding: 1px;
-    background: #fff;
+    padding: var(--tab-label-padding);
+    background-color: transparent;
+    border-color: transparent;
     cursor: pointer;
     flex: none;
+}
+
+.tab .TabLabelText.selected {
+    background-color: var(--tab-label-background-color);
 }
 
 .tab .TabLabel {
@@ -25,17 +51,14 @@
     flex-wrap: wrap;
 }
 
-.tab .TabLabelText.selected {
-    padding: 1px;
-    background: white;
-}
-
 .tab .TabContent {
-    background: white;
-    padding: 20px 30px;
+    background: var(--tab-text-background-color);
+    padding: var(--tab-text-padding);
     position: relative;
     z-index: 1;
-    border: 1px solid #aaa;
+    border-width: 1px;
+    border-style: solid;
+    border-color: var(--tab-text-border-top-color) var(--tab-text-border-right-color) var(--tab-text-border-bottom-color) var(--tab-text-border-left-color);
 }
 
 .tab .TabContentText {
@@ -46,6 +69,143 @@
     display: block;
 }
 
+
+/* Tab presets */
+.tab .Tabs.purple {
+    --tab-label-selected-top-color: var(--tab-label-border-top-color);
+    --tab-label-selected-right-color: var(--tab-label-border-right-color);
+    --tab-label-selected-bottom-color: var(--tab-label-border-bottom-color);
+    --tab-label-selected-left-color: var(--tab-label-border-left-color);
+    --tab-label-background-color: #9070c0;
+    --tab-label-border-top-color: #b090e0;
+    --tab-label-border-right-color: #7050a0;
+    --tab-label-border-bottom-color: #9070c0;
+    --tab-label-border-left-color: #b090e0;
+    --tab-label-padding: .2em .3em;
+    --tab-text-border-top-color: #9070c0;
+    --tab-text-border-right-color: #9070c0;
+    --tab-text-border-bottom-color: #9070c0;
+    --tab-text-border-left-color: #9070c0;
+    --tab-text-background-color: #f0edf5;
+    --tab-text-padding: 1em;
+}
+
+.tab .Tabs.green {
+    --tab-label-selected-top-color: var(--tab-label-border-top-color);
+    --tab-label-selected-right-color: var(--tab-label-border-right-color);
+    --tab-label-selected-bottom-color: var(--tab-label-border-bottom-color);
+    --tab-label-selected-left-color: var(--tab-label-border-left-color);
+    --tab-label-background-color: #75c045;
+    --tab-label-border-top-color: #90d060;
+    --tab-label-border-right-color: #60b030;
+    --tab-label-border-bottom-color: #75c045;
+    --tab-label-border-left-color: #90d060;
+    --tab-label-padding: .2em .3em;
+    --tab-text-border-top-color: #75c045;
+    --tab-text-border-right-color: #60b030;
+    --tab-text-border-bottom-color: #60b030;
+    --tab-text-border-left-color: #75c045;
+    --tab-text-background-color: #f5fffa;
+    --tab-text-padding: 1em;
+}
+
+.tab .Tabs.red {
+    --tab-label-selected-top-color: var(--tab-label-border-top-color);
+    --tab-label-selected-right-color: var(--tab-label-border-right-color);
+    --tab-label-selected-bottom-color: var(--tab-label-border-bottom-color);
+    --tab-label-selected-left-color: var(--tab-label-border-left-color);
+    --tab-label-background-color: #f00;
+    --tab-label-border-top-color: #f88;
+    --tab-label-border-right-color: #c00;
+    --tab-label-border-bottom-color: #f00;
+    --tab-label-border-left-color: #f88;
+    --tab-label-padding: .2em .3em;
+    --tab-text-border-top-color: #f00;
+    --tab-text-border-right-color: #c00;
+    --tab-text-border-bottom-color: #c00;
+    --tab-text-border-left-color: #f00;
+    --tab-text-background-color: #fffafa;
+    --tab-text-padding: 1em;
+}
+
+.tab .Tabs.blue {
+    --tab-label-selected-top-color: var(--tab-label-border-top-color);
+    --tab-label-selected-right-color: var(--tab-label-border-right-color);
+    --tab-label-selected-bottom-color: var(--tab-label-border-bottom-color);
+    --tab-label-selected-left-color: var(--tab-label-border-left-color);
+    --tab-label-background-color: #5b8dd6;
+    --tab-label-border-top-color: #88abde;
+    --tab-label-border-right-color: #3379de;
+    --tab-label-border-bottom-color: #5b8dd6;
+    --tab-label-border-left-color: #88abde;
+    --tab-label-padding: .2em .3em;
+    --tab-text-border-top-color: #5b8dd6;
+    --tab-text-border-right-color: #3379de;
+    --tab-text-border-bottom-color: #3379de;
+    --tab-text-border-left-color: #5b8dd6;
+    --tab-text-background-color: #f0f8ff;
+    --tab-text-padding: 1em;
+}
+
+.tab .Tabs.yellow {
+    --tab-label-selected-top-color: var(--tab-label-border-top-color);
+    --tab-label-selected-right-color: var(--tab-label-border-right-color);
+    --tab-label-selected-bottom-color: var(--tab-label-border-bottom-color);
+    --tab-label-selected-left-color: var(--tab-label-border-left-color);
+    --tab-label-background-color: #ffe147;
+    --tab-label-border-top-color: #ffe977;
+    --tab-label-border-right-color: #ffd813;
+    --tab-label-border-bottom-color: #ffe147;
+    --tab-label-border-left-color: #ffe977;
+    --tab-label-padding: .2em .3em;
+    --tab-text-border-top-color: #ffe147;
+    --tab-text-border-right-color: #ffd813;
+    --tab-text-border-bottom-color: #ffd813;
+    --tab-text-border-left-color: #ffe147;
+    --tab-text-background-color: #fffce8;
+    --tab-text-padding: 1em;
+}
+
+.tab .Tabs.orange {
+    --tab-label-selected-top-color: var(--tab-label-border-top-color);
+    --tab-label-selected-right-color: var(--tab-label-border-right-color);
+    --tab-label-selected-bottom-color: var(--tab-label-border-bottom-color);
+    --tab-label-selected-left-color: var(--tab-label-border-left-color);
+    --tab-label-background-color: #ff9d42;
+    --tab-label-border-top-color: #ffac5d;
+    --tab-label-border-right-color: #ff820e;
+    --tab-label-border-bottom-color: #ff9d42;
+    --tab-label-border-left-color: #ffac5d;
+    --tab-label-padding: .2em .3em;
+    --tab-text-border-top-color: #ff9d42;
+    --tab-text-border-right-color: #ff820e;
+    --tab-text-border-bottom-color: #ff820e;
+    --tab-text-border-left-color: #ff9d42;
+    --tab-text-background-color: #fed;
+    --tab-text-padding: 1em;
+}
+
+.tab .Tabs.black {
+    --tab-label-selected-top-color: var(--tab-label-border-top-color);
+    --tab-label-selected-right-color: var(--tab-label-border-right-color);
+    --tab-label-selected-bottom-color: var(--tab-label-border-bottom-color);
+    --tab-label-selected-left-color: var(--tab-label-border-left-color);
+    --tab-label-background-color: #aaa;
+    --tab-label-border-top-color: #bbb;
+    --tab-label-border-right-color: #4c4c4c;
+    --tab-label-border-bottom-color: #7f7f7f;
+    --tab-label-border-left-color: #bbb;
+    --tab-label-padding: .2em .3em;
+    --tab-text-border-top-color: #7f7f7f;
+    --tab-text-border-right-color: #4c4c4c;
+    --tab-text-border-bottom-color: #4c4c4c;
+    --tab-text-border-left-color: #7f7f7f;
+    --tab-text-background-color: #e5e5e5;
+    --tab-text-padding: 1em;
+}
+
+
+/* Tab label sides */
 .tab .tabLabelTop .TabLabelText {
     border-top: 3px solid transparent;
     border-left: 1px solid transparent;
@@ -53,9 +213,9 @@
 }
 
 .tab .tabLabelTop .TabLabelText.selected {
-    border-top: 3px solid green;
-    border-left: 1px solid #aaa;
-    border-right: 1px solid #aaa;
+    border-top-color: var(--tab-label-color, var(--tab-label-selected-top-color));
+    border-left-color: var(--tab-label-border-left-color);
+    border-right-color: var(--tab-label-border-right-color);
 }
 
 .tab .tabLabelTop.reverse .TabLabelText {
@@ -66,10 +226,7 @@
 }
 
 .tab .tabLabelTop.reverse .TabLabelText.selected {
-    border-bottom: 3px solid green;
-    border-left: 1px solid #aaa;
-    border-right: 1px solid #aaa;
-    border-top: 1px solid transparent;
+    border-color: transparent var(--tab-label-border-right-color) var(--tab-label-color, var(--tab-label-selected-bottom-color)) var(--tab-label-border-left-color);
 }
 
 .tab .tabLabelBottom .TabLabelText {
@@ -79,9 +236,9 @@
 }
 
 .tab .tabLabelBottom .TabLabelText.selected {
-    border-bottom: 3px solid green;
-    border-left: 1px solid #aaa;
-    border-right: 1px solid #aaa;
+    border-bottom-color: var(--tab-label-color, var(--tab-label-selected-bottom-color));
+    border-left-color: var(--tab-label-border-left-color);
+    border-right-color: var(--tab-label-border-right-color);
 }
 
 .tab .tabLabelBottom.reverse .TabLabelText {
@@ -92,10 +249,7 @@
 }
 
 .tab .tabLabelBottom.reverse .TabLabelText.selected {
-    border-top: 3px solid green;
-    border-left: 1px solid #aaa;
-    border-right: 1px solid #aaa;
-    border-bottom: 1px solid transparent;
+    border-color: var(--tab-label-color, var(--tab-label-selected-top-color)) var(--tab-label-border-right-color) transparent var(--tab-label-border-left-color);
 }
 
 .tab .tabLabelLeft .TabLabelText {
@@ -105,9 +259,9 @@
 }
 
 .tab .tabLabelLeft .TabLabelText.selected {
-    border-left: 3px solid green;
-    border-top: 1px solid #aaa;
-    border-bottom: 1px solid #aaa;
+    border-left-color: var(--tab-label-color, var(--tab-label-selected-left-color));
+    border-top-color: var(--tab-label-border-top-color);
+    border-bottom-color: var(--tab-label-border-bottom-color);
 }
 
 .tab .tabLabelLeft.reverse .TabLabelText {
@@ -118,10 +272,7 @@
 }
 
 .tab .tabLabelLeft.reverse .TabLabelText.selected {
-    border-right: 3px solid green;
-    border-top: 1px solid #aaa;
-    border-bottom: 1px solid #aaa;
-    border-left: 1px solid transparent;
+    border-color: var(--tab-label-border-top-color) var(--tab-label-color, var(--tab-label-selected-right-color)) var(--tab-label-border-bottom-color) transparent;
 }
 
 .tab .tabLabelRight .TabLabelText {
@@ -131,9 +282,9 @@
 }
 
 .tab .tabLabelRight .TabLabelText.selected {
-    border-right: 3px solid green;
-    border-top: 1px solid #aaa;
-    border-bottom: 1px solid #aaa;
+    border-right-color: var(--tab-label-color, var(--tab-label-selected-right-color));
+    border-top-color: var(--tab-label-border-top-color);
+    border-bottom-color: var(--tab-label-border-bottom-color);
 }
 
 .tab .tabLabelRight.reverse .TabLabelText {
@@ -144,12 +295,11 @@
 }
 
 .tab .tabLabelRight.reverse .TabLabelText.selected {
-    border-left: 3px solid green;
-    border-top: 1px solid #aaa;
-    border-bottom: 1px solid #aaa;
-    border-right: 1px solid transparent;
+    border-color: var(--tab-label-border-top-color) transparent var(--tab-label-border-bottom-color) var(--tab-label-color, var(--tab-label-selected-left-color));
 }
 
+
+/* Layout */
 .tab .Tabs .TabDivider {
     width: 100%;
     order: 2;
@@ -236,6 +386,210 @@
     margin: 0 -1px;
 }
 
+
+/* Dark mode */
+@media screen {
+    html.dark .tab .Tabs,
+    html.skin-theme-clientpref-night .tab .Tabs {
+        --tab-label-background-color: #252525;
+    }
+
+    html.dark .tab .Tabs.purple,
+    html.skin-theme-clientpref-night .tab .Tabs.purple {
+        --tab-label-background-color: #5a3d8a;
+        --tab-label-border-top-color: #8060b0;
+        --tab-label-border-right-color: #604090;
+        --tab-label-border-bottom-color: #8060b0;
+        --tab-label-border-left-color: #8060b0;
+        --tab-text-border-top-color: #8060b0;
+        --tab-text-border-right-color: #8060b0;
+        --tab-text-border-bottom-color: #8060b0;
+        --tab-text-border-left-color: #8060b0;
+        --tab-text-background-color: #302b38;
+    }
+
+    html.dark .tab .Tabs.green,
+    html.skin-theme-clientpref-night .tab .Tabs.green {
+        --tab-label-background-color: #3f7626;
+        --tab-label-border-top-color: #70b848;
+        --tab-label-border-right-color: #509030;
+        --tab-label-border-bottom-color: #70b848;
+        --tab-label-border-left-color: #70b848;
+        --tab-text-border-top-color: #70b848;
+        --tab-text-border-right-color: #509030;
+        --tab-text-border-bottom-color: #509030;
+        --tab-text-border-left-color: #70b848;
+        --tab-text-background-color: #26352b;
+    }
+
+    html.dark .tab .Tabs.red,
+    html.skin-theme-clientpref-night .tab .Tabs.red {
+        --tab-label-background-color: #8f3030;
+        --tab-label-border-top-color: #d66;
+        --tab-label-border-right-color: #a00;
+        --tab-label-border-bottom-color: #d66;
+        --tab-label-border-left-color: #d66;
+        --tab-text-border-top-color: #d66;
+        --tab-text-border-right-color: #a00;
+        --tab-text-border-bottom-color: #a00;
+        --tab-text-border-left-color: #d66;
+        --tab-text-background-color: #382626;
+    }
+
+    html.dark .tab .Tabs.blue,
+    html.skin-theme-clientpref-night .tab .Tabs.blue {
+        --tab-label-background-color: #3e649f;
+        --tab-label-border-top-color: #7099d0;
+        --tab-label-border-right-color: #2860b0;
+        --tab-label-border-bottom-color: #7099d0;
+        --tab-label-border-left-color: #7099d0;
+        --tab-text-border-top-color: #7099d0;
+        --tab-text-border-right-color: #2860b0;
+        --tab-text-border-bottom-color: #2860b0;
+        --tab-text-border-left-color: #7099d0;
+        --tab-text-background-color: #26303d;
+    }
+
+    html.dark .tab .Tabs.yellow,
+    html.skin-theme-clientpref-night .tab .Tabs.yellow {
+        --tab-label-background-color: #78650f;
+        --tab-label-border-top-color: #d9c45a;
+        --tab-label-border-right-color: #b5a010;
+        --tab-label-border-bottom-color: #d9c45a;
+        --tab-label-border-left-color: #d9c45a;
+        --tab-text-border-top-color: #d9c45a;
+        --tab-text-border-right-color: #b5a010;
+        --tab-text-border-bottom-color: #b5a010;
+        --tab-text-border-left-color: #d9c45a;
+        --tab-text-background-color: #383521;
+    }
+
+    html.dark .tab .Tabs.orange,
+    html.skin-theme-clientpref-night .tab .Tabs.orange {
+        --tab-label-background-color: #8a4f1f;
+        --tab-label-border-top-color: #d88942;
+        --tab-label-border-right-color: #b56510;
+        --tab-label-border-bottom-color: #d88942;
+        --tab-label-border-left-color: #d88942;
+        --tab-text-border-top-color: #d88942;
+        --tab-text-border-right-color: #b56510;
+        --tab-text-border-bottom-color: #b56510;
+        --tab-text-border-left-color: #d88942;
+        --tab-text-background-color: #3b3026;
+    }
+
+    html.dark .tab .Tabs.black,
+    html.skin-theme-clientpref-night .tab .Tabs.black {
+        --tab-label-background-color: #555;
+        --tab-label-border-top-color: #888;
+        --tab-label-border-right-color: #444;
+        --tab-label-border-bottom-color: #777;
+        --tab-label-border-left-color: #888;
+        --tab-text-border-top-color: #777;
+        --tab-text-border-right-color: #444;
+        --tab-text-border-bottom-color: #444;
+        --tab-text-border-left-color: #777;
+        --tab-text-background-color: #303030;
+    }
+}
+
+@media screen and (prefers-color-scheme: dark) {
+    html.skin-theme-clientpref-os .tab .Tabs {
+        --tab-label-background-color: #252525;
+    }
+
+    html.skin-theme-clientpref-os .tab .Tabs.purple {
+        --tab-label-background-color: #5a3d8a;
+        --tab-label-border-top-color: #8060b0;
+        --tab-label-border-right-color: #604090;
+        --tab-label-border-bottom-color: #8060b0;
+        --tab-label-border-left-color: #8060b0;
+        --tab-text-border-top-color: #8060b0;
+        --tab-text-border-right-color: #8060b0;
+        --tab-text-border-bottom-color: #8060b0;
+        --tab-text-border-left-color: #8060b0;
+        --tab-text-background-color: #302b38;
+    }
+
+    html.skin-theme-clientpref-os .tab .Tabs.green {
+        --tab-label-background-color: #3f7626;
+        --tab-label-border-top-color: #70b848;
+        --tab-label-border-right-color: #509030;
+        --tab-label-border-bottom-color: #70b848;
+        --tab-label-border-left-color: #70b848;
+        --tab-text-border-top-color: #70b848;
+        --tab-text-border-right-color: #509030;
+        --tab-text-border-bottom-color: #509030;
+        --tab-text-border-left-color: #70b848;
+        --tab-text-background-color: #26352b;
+    }
+
+    html.skin-theme-clientpref-os .tab .Tabs.red {
+        --tab-label-background-color: #8f3030;
+        --tab-label-border-top-color: #d66;
+        --tab-label-border-right-color: #a00;
+        --tab-label-border-bottom-color: #d66;
+        --tab-label-border-left-color: #d66;
+        --tab-text-border-top-color: #d66;
+        --tab-text-border-right-color: #a00;
+        --tab-text-border-bottom-color: #a00;
+        --tab-text-border-left-color: #d66;
+        --tab-text-background-color: #382626;
+    }
+
+    html.skin-theme-clientpref-os .tab .Tabs.blue {
+        --tab-label-background-color: #3e649f;
+        --tab-label-border-top-color: #7099d0;
+        --tab-label-border-right-color: #2860b0;
+        --tab-label-border-bottom-color: #7099d0;
+        --tab-label-border-left-color: #7099d0;
+        --tab-text-border-top-color: #7099d0;
+        --tab-text-border-right-color: #2860b0;
+        --tab-text-border-bottom-color: #2860b0;
+        --tab-text-border-left-color: #7099d0;
+        --tab-text-background-color: #26303d;
+    }
+
+    html.skin-theme-clientpref-os .tab .Tabs.yellow {
+        --tab-label-background-color: #78650f;
+        --tab-label-border-top-color: #d9c45a;
+        --tab-label-border-right-color: #b5a010;
+        --tab-label-border-bottom-color: #d9c45a;
+        --tab-label-border-left-color: #d9c45a;
+        --tab-text-border-top-color: #d9c45a;
+        --tab-text-border-right-color: #b5a010;
+        --tab-text-border-bottom-color: #b5a010;
+        --tab-text-border-left-color: #d9c45a;
+        --tab-text-background-color: #383521;
+    }
+
+    html.skin-theme-clientpref-os .tab .Tabs.orange {
+        --tab-label-background-color: #8a4f1f;
+        --tab-label-border-top-color: #d88942;
+        --tab-label-border-right-color: #b56510;
+        --tab-label-border-bottom-color: #d88942;
+        --tab-label-border-left-color: #d88942;
+        --tab-text-border-top-color: #d88942;
+        --tab-text-border-right-color: #b56510;
+        --tab-text-border-bottom-color: #b56510;
+        --tab-text-border-left-color: #d88942;
+        --tab-text-background-color: #3b3026;
+    }
+
+    html.skin-theme-clientpref-os .tab .Tabs.black {
+        --tab-label-background-color: #555;
+        --tab-label-border-top-color: #888;
+        --tab-label-border-right-color: #444;
+        --tab-label-border-bottom-color: #777;
+        --tab-label-border-left-color: #888;
+        --tab-text-border-top-color: #777;
+        --tab-text-border-right-color: #444;
+        --tab-text-border-bottom-color: #444;
+        --tab-text-border-left-color: #777;
+        --tab-text-background-color: #303030;
+    }
+}
+
 /* 注解 */
 .annotation > span {
     cursor: pointer;
@@ -271,39 +625,22 @@
     margin-top: 0;
 }
 
-/*
- * 感谢[[User:Great Brightstar]]的贡献，源码来自[[special:diff/834104]]
- * 以下是原注释：
- * 在这里使用 font-feature-settings 属性会让使用“lang”标签的元素强制使用 OpenType 技术显示本地化的变体字（通过激活 locl 标签，即便浏览器本身不直接激活）。
- * 如果你使用思源黑体（非 CN、JP、KO、TW 版）、Noto Sans CJK 显示文字的话就有可能看到效果。
- * 关于上述这个 CSS 属性的用法，参阅：https://developer.mozilla.org/en-US/docs/Web/CSS/font-feature-settings 注意：此文引用的 OpenType Feature Tags list 同样需要关注。
- * 如有任何问题请即刻禁用之
- * Nbdd0121: 将原来的[lang]改为span[lang]，这样就不会影响非{{lang}}的[lang]了 (e.g. div#mw-content-text)
- */
-span[lang] {
-    font-family: initial;
-    font-feature-settings: "locl" on;
-    -webkit-font-feature-settings: "locl" on;
-}
-
-[style*="font:" i] span[lang],
-[style*="font-family:" i] span[lang] {
-    font-family: inherit;
-}
-
 /* 日语斜体 */
 @font-face {
     font-family: JapaneseItalic;
     src: local(meiryo);
 }
 
-:is(i, [style*="italic" i]) span[lang="ja" i],
-span[lang="ja" i] :is(i, [style*="italic" i]) {
+:is(i, em, [style*="italic" i]) [lang]:lang(ja),
+[lang]:lang(ja):is(i, em, [style*="italic" i]),
+[lang]:lang(ja) :is(i, em, [style*="italic" i]) {
     font-family: JapaneseItalic, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
 }
 
-:is([style*="font:" i], [style*="font-family:" i]) :is(i, [style*="italic" i]) span[lang="ja" i],
-:is([style*="font:" i], [style*="font-family:" i]) span[lang="ja" i] :is(i, [style*="italic" i]) {
+:is(i, em, [style*="italic" i]):is([style*="font:" i], [style*="font-family:" i]) [lang]:lang(ja),
+:is([style*="font:" i], [style*="font-family:" i]) :is(i, em, [style*="italic" i]) [lang]:lang(ja),
+:is([style*="font:" i], [style*="font-family:" i]) [lang]:lang(ja):is(i, em, [style*="italic" i]),
+:is([style*="font:" i], [style*="font-family:" i]) [lang]:lang(ja) :is(i, em, [style*="italic" i]) {
     font-family: inherit;
 }
 
@@ -370,15 +707,42 @@ a.extiw:visited:hover span.heimu {
 }
 
 /* 黑幕 暗色模式 */
-html.dark .heimu,
-html.dark .heimu rt {
-    --heimu-color: #5e6272;
+@media screen {
+    html.skin-theme-clientpref-night .heimu,
+    html.skin-theme-clientpref-night .heimu rt,
+    html.dark .heimu,
+    html.dark .heimu rt {
+        --heimu-color: #5e6272;
+    }
+}
+
+@media screen and (prefers-color-scheme: dark) {
+    html.skin-theme-clientpref-os .heimu,
+    html.skin-theme-clientpref-os .heimu rt {
+        --heimu-color: #5e6272;
+    }
 }
 
 /* 胡话模板配合CSS */
 s.just-kidding-text {
     color: #666;
     text-decoration-color: #000;
+}
+
+/* 胡话模板 暗色模式。暗色背景上 #666 与删除线均对比不足 */
+@media screen {
+    html.skin-theme-clientpref-night s.just-kidding-text,
+    html.dark s.just-kidding-text {
+        color: #a2a9b1;
+        text-decoration-color: #eaecf0;
+    }
+}
+
+@media screen and (prefers-color-scheme: dark) {
+    html.skin-theme-clientpref-os s.just-kidding-text {
+        color: #a2a9b1;
+        text-decoration-color: #eaecf0;
+    }
 }
 
 /* info类模板 */
@@ -414,10 +778,19 @@ s.just-kidding-text {
     background: #fbfbfb;
 }
 
-html.skin-theme-clientpref-night .infoBoxContent,
-html.dark .infoBoxContent {
-    border-color: #3e4452;
-    background: #23272e;
+@media screen {
+    html.skin-theme-clientpref-night .infoBoxContent,
+    html.dark .infoBoxContent {
+        border-color: #3e4452;
+        background: #23272e;
+    }
+}
+
+@media screen and (prefers-color-scheme: dark) {
+    html.skin-theme-clientpref-os .infoBoxContent {
+        border-color: #3e4452;
+        background: #23272e;
+    }
 }
 
 .infoBoxBelow {
@@ -437,6 +810,12 @@ html.dark .infoBoxContent {
 /* wikitable green */
 table.wikitable-green {
     background: #c9f6e1;
+
+    /* MoeSkin 皮肤样式里有一条裸 table{border-collapse:collapse;border-spacing:0}，本类只声明了
+       background、没声明边框模型，就会被它接管。而这套配色的绿正是透过 border-spacing 的缝隙
+       显出来的，collapse 之后单元格彼此贴合，绿色被完全盖住。 */
+    border-collapse: separate;
+    border-spacing: 2px;
 }
 
 .wikitable-green th {
@@ -445,6 +824,42 @@ table.wikitable-green {
 
 .wikitable-green td {
     background: #f3f3f3;
+}
+
+/* wikitable green 暗色模式。原配色为亮绿系，暗色下白底刺眼且与正文反差过大。
+   编辑者用内联 background 指定的颜色优先于本段：内联样式盖过一切普通规则，这里刻意不加
+   !important，以免把页面自己挑的配色抹掉。
+   仍然不设文字色——深色主题的正文色（--theme-text-color）本就是浅色，写出来是冗余的，
+   而一旦底色被内联色顶掉，固定文字色反而会凑成「亮底浅字」。 */
+@media screen {
+    html.skin-theme-clientpref-night table.wikitable-green,
+    html.dark table.wikitable-green {
+        background: #1b3a2c;
+    }
+
+    html.skin-theme-clientpref-night .wikitable-green th,
+    html.dark .wikitable-green th {
+        background: #2e6b4f;
+    }
+
+    html.skin-theme-clientpref-night .wikitable-green td,
+    html.dark .wikitable-green td {
+        background: #27292d;
+    }
+}
+
+@media screen and (prefers-color-scheme: dark) {
+    html.skin-theme-clientpref-os table.wikitable-green {
+        background: #1b3a2c;
+    }
+
+    html.skin-theme-clientpref-os .wikitable-green th {
+        background: #2e6b4f;
+    }
+
+    html.skin-theme-clientpref-os .wikitable-green td {
+        background: #27292d;
+    }
 }
 
 /* 隐藏只供登录用户查看的内容 */
@@ -822,7 +1237,7 @@ body .mw-mmv-wrapper {
     position: fixed;
 }
 
-/* mutilmediaViewer 信息栏修复 */
+/* MultimediaViewer 信息栏修复 */
 .mw-mmv-image-metadata-column.mw-mmv-image-metadata-desc-column {
     width: 30%;
 }
@@ -997,6 +1412,100 @@ table.navbox th {
     background: none repeat scroll 0 0 #fdfdfd;
 }
 
+ /* 大家族模板 暗色模式。浅色版的绿饱和度约 50%、色相 120（#a5e4a5 / #c0ecc0 / #e6f6e6）。
+   等比压暗在暗色下照样刺眼，但把饱和度压到 20% 以下、色相又漂向 90 附近（偏黄）就会显脏、
+   像褪色，所以统一色相 128 去掉黄味、饱和度保留 24~32%，层级只靠明度拉开。 */
+@media screen {
+    html.skin-theme-clientpref-night table.navbox,
+    html.dark table.navbox {
+        border-color: #54595d;
+    }
+
+    html.skin-theme-clientpref-night .navbox,
+    html.skin-theme-clientpref-night .navbox .navbox-subgroup,
+    html.dark .navbox,
+    html.dark .navbox .navbox-subgroup {
+        background: none repeat scroll 0 0 #202122;
+    }
+
+    /* Template:Navbox 给列表格硬写了 border-left:2px solid #fdfdfd。该边框本意是与浅色底
+       融为一体，深色下却会变成成排的亮白分隔线，且内联样式压过一切普通规则，只能用
+       !important 压回深底色。列表格其余三边没有边框样式，故只处理左边。 */
+    html.skin-theme-clientpref-night .navbox .navbox-list,
+    html.dark .navbox .navbox-list {
+        border-left-color: #202122 !important;
+    }
+
+    html.skin-theme-clientpref-night table.navbox th,
+    html.dark table.navbox th {
+        background: none repeat scroll 0 0 #326239;
+    }
+
+    html.skin-theme-clientpref-night .navbox .navbox-abovebelow,
+    html.skin-theme-clientpref-night .navbox .navbox-group,
+    html.skin-theme-clientpref-night .navbox .navbox-subgroup .navbox-title,
+    html.dark .navbox .navbox-abovebelow,
+    html.dark .navbox .navbox-group,
+    html.dark .navbox .navbox-subgroup .navbox-title {
+        background: none repeat scroll 0 0 #2d5332;
+    }
+
+    html.skin-theme-clientpref-night .navbox .navbox-subgroup .navbox-group,
+    html.skin-theme-clientpref-night .navbox .navbox-subgroup .navbox-abovebelow,
+    html.dark .navbox .navbox-subgroup .navbox-group,
+    html.dark .navbox .navbox-subgroup .navbox-abovebelow {
+        background: none repeat scroll 0 0 #27452b;
+    }
+
+    html.skin-theme-clientpref-night .navbox .navbox-even,
+    html.dark .navbox .navbox-even {
+        background: none repeat scroll 0 0 #213624;
+    }
+
+    html.skin-theme-clientpref-night .navbox .navbox-odd,
+    html.dark .navbox .navbox-odd {
+        background: none repeat scroll 0 0 #202122;
+    }
+}
+
+@media screen and (prefers-color-scheme: dark) {
+    html.skin-theme-clientpref-os table.navbox {
+        border-color: #54595d;
+    }
+
+    html.skin-theme-clientpref-os .navbox,
+    html.skin-theme-clientpref-os .navbox .navbox-subgroup {
+        background: none repeat scroll 0 0 #202122;
+    }
+
+    html.skin-theme-clientpref-os .navbox .navbox-list {
+        border-left-color: #202122 !important;
+    }
+
+    html.skin-theme-clientpref-os table.navbox th {
+        background: none repeat scroll 0 0 #326239;
+    }
+
+    html.skin-theme-clientpref-os .navbox .navbox-abovebelow,
+    html.skin-theme-clientpref-os .navbox .navbox-group,
+    html.skin-theme-clientpref-os .navbox .navbox-subgroup .navbox-title {
+        background: none repeat scroll 0 0 #2d5332;
+    }
+
+    html.skin-theme-clientpref-os .navbox .navbox-subgroup .navbox-group,
+    html.skin-theme-clientpref-os .navbox .navbox-subgroup .navbox-abovebelow {
+        background: none repeat scroll 0 0 #27452b;
+    }
+
+    html.skin-theme-clientpref-os .navbox .navbox-even {
+        background: none repeat scroll 0 0 #213624;
+    }
+
+    html.skin-theme-clientpref-os .navbox .navbox-odd {
+        background: none repeat scroll 0 0 #202122;
+    }
+}
+
 /* 表格宽度 */
 .wikitable {
     max-width: 100%;
@@ -1022,32 +1531,6 @@ body.ns-2 div#catlinks {
     border-radius: 3px;
     margin: 1em 2.5em;
     padding: 1em;
-    background: white;
-}
-
-.editRequest .newComment {
-    white-space: nowrap;
-    background: #347bff;
-    color: #fff;
-    border: 1px solid #347bff;
-    text-shadow: 0 1px rgb(0 0 0 / 10%);
-    font-family: inherit;
-    font-size: 1em;
-    min-width: 4em;
-    max-width: 28.75em;
-    padding: 0.5em 1em;
-    margin: 0;
-    border-radius: 2px;
-    -webkit-box-sizing: border-box;
-    -moz-box-sizing: border-box;
-    box-sizing: border-box;
-    -webkit-appearance: none;
-    appearance: none;
-    zoom: 1;
-    vertical-align: middle;
-    text-align: center;
-    font-weight: bold;
-    cursor: pointer;
 }
 
 /* 注释里的列表 */
@@ -1443,34 +1926,6 @@ body:not(.ns--1):not(.ns--2) .navbox .mw-collapsible:not(.mw-collapsed) > tbody 
 /* 浮动滚动条 */
 body.overlay-scrollbars #bodyContent {
     padding-right: 24px;
-}
-
-/* TODO: 暗色模式 暂时降低暗度处理 */
-html.dark :is(.infobox, .infobox2, .moe-infobox, .infotemplatebox, .infoboxSpecial, .ztdh, #powersearch, #topicpath) {
-    color: #222;
-    filter: brightness(0.75);
-}
-
-html.dark :is(.infobox, .infobox2, .moe-infobox, .infotemplatebox, .infoboxSpecial, .ztdh, #powersearch) a:not(.new) {
-    --color: #155d33;
-}
-
-html.dark input[type="text"] {
-    color: var(--theme-text-color);
-}
-
-html.dark :is(.navbox):not(.dark-theme-invert-disabled) {
-    --theme-link-color: rgb(51 102 187);
-
-    color: rgb(44 62 80);
-    filter: brightness(0.75);
-}
-
-html.dark .mw-datatable,
-html.dark .mw-json,
-html.dark table.wikitable {
-    background-color: var(--theme-background-color);
-    color: var(--theme-text-color);
 }
 
 /* 隐藏不存在的用户创建日志 */

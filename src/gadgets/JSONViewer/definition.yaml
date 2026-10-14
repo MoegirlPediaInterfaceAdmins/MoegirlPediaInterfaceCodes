@@ -24,7 +24,8 @@ rights: []
 
 peers: []
 
-dependencies: []
+dependencies:
+  - mediawiki.api
 
 _sites:
   - zh
@@ -34,3 +35,4 @@ _section: browsing
 
 _files:
   - Gadget-JSONViewer.js
+  - Gadget-JSONViewer.css

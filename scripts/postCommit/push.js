@@ -1,10 +1,10 @@
+import { endGroup, startGroup } from "@actions/core";
 import console from "../modules/console.js";
-console.info("Initialization done.");
-import { startGroup, endGroup } from "@actions/core";
+import upstream from "../modules/getUpstream.js";
 import git from "../modules/git.js";
 import { isInGithubActions, octokit } from "../modules/octokit.js";
 import readWorkflowEvent from "../modules/workflowEvent.js";
-import upstream from "../modules/getUpstream.js";
+console.info("Initialization done.");
 if (!isInGithubActions) {
     console.info("Not running in github actions, exit.");
     process.exit(0);
@@ -39,8 +39,9 @@ console.info("Pushing these commits...");
 console.info("Successfully pushed the commits:", await git.push());
 if (process.env.DISPATCH_POST_COMMIT_WORKFLOW === "true") {
     console.info("Dispatching postCommit workflow...");
+    const branch = await git.revparse(["--abbrev-ref", "HEAD"]);
     await octokit.rest.actions.createWorkflowDispatch({
         workflow_id: ".github/workflows/postCommit.yaml",
-        ref: upstream,
+        ref: branch,
     });
 }

@@ -124,6 +124,7 @@ $(() => (async () => {
         };
 
         const loadBlockLogSection = async () => {
+            /** @type {ApiQueryResponse} */
             const blockLogResult = await autoRetryAsyncFunction(async () => await api.post({
                 action: "query",
                 assertuser: wgUserName,
@@ -272,6 +273,7 @@ $(() => (async () => {
         };
 
         const loadAbuseLogSection = async () => {
+            /** @type {ApiQueryResponse} */
             const abuseLogResult = await autoRetryAsyncFunction(async () => await api.post({
                 action: "query",
                 assertuser: wgUserName,
@@ -285,7 +287,7 @@ $(() => (async () => {
                 throw new Error("未能获取滥用日志数据");
             }
 
-            const veryFirstAbuselogId = abuseLogResult.query.abuselog.slice(-1)[0]?.id;
+            const veryFirstAbuselogId = /** @type {ApiAbuseLogEntry[]} */ (abuseLogResult.query.abuselog).slice(-1)[0]?.id;
             const abuseLogAcceptedFlags = ["block", "blockautopromote", "degroup"];
             const abuselogevents = abuseLogResult.query.abuselog.filter(({ result: _result }) => _result.split(/,\s*/).some((tag) => abuseLogAcceptedFlags.includes(tag))).slice(0, 10);
             const body = sections.abuse.body;
@@ -368,22 +370,30 @@ $(() => (async () => {
         };
 
         const loadDeletionSection = async () => {
-            const sortIndex = ["zh.moegirl.org.cn", "commons.moegirl.org.cn", "en.moegirl.org.cn", "ja.moegirl.org.cn", "library.moegirl.org.cn"];
+            // const sortIndex = ["zh.moegirl.org.cn", "commons.moegirl.org.cn", "en.moegirl.org.cn", "ja.moegirl.org.cn", "library.moegirl.org.cn"];
+            const sortIndex = ["zh.moegirl.org.cn", "commons.moegirl.org.cn"];
             const splitIndex = 2;
+            // const targets = [{
+            //     domain: "zh.moegirl.org.cn",
+            //     cmtitle: "Category:即将删除的页面",
+            // }, {
+            //     domain: "commons.moegirl.org.cn",
+            //     cmtitle: "Category:即将删除的页面",
+            // }, {
+            //     domain: "en.moegirl.org.cn",
+            //     cmtitle: "Category:Pages_awaiting_deletion",
+            // }, {
+            //     domain: "ja.moegirl.org.cn",
+            //     cmtitle: "カテゴリ:削除依頼中のページ",
+            // }, {
+            //     domain: "library.moegirl.org.cn",
+            //     cmtitle: "Category:即将删除的页面",
+            //     }];
             const targets = [{
                 domain: "zh.moegirl.org.cn",
                 cmtitle: "Category:即将删除的页面",
             }, {
                 domain: "commons.moegirl.org.cn",
-                cmtitle: "Category:即将删除的页面",
-            }, {
-                domain: "en.moegirl.org.cn",
-                cmtitle: "Category:Pages_awaiting_deletion",
-            }, {
-                domain: "ja.moegirl.org.cn",
-                cmtitle: "カテゴリ:削除依頼中のページ",
-            }, {
-                domain: "library.moegirl.org.cn",
                 cmtitle: "Category:即将删除的页面",
             }];
             let finishedSites = 0;

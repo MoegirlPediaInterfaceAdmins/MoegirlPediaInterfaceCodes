@@ -27,7 +27,6 @@ peers: []
 
 dependencies:
   - ext.gadget.libOOUIDialog
-  - ext.gadget.libPolyfill
   - mediawiki.util
 
 _sites:

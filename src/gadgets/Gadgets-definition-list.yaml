@@ -62,6 +62,7 @@
     - usergroup
     - queryContributions
     - userpageDelete
+    - requestDeletion
 
 - name: editing
   gadgets:
@@ -77,7 +78,8 @@
     - uploader
     - temp-editcheck
     - wikiplus-highlight
-    - publishDraft
+    - DisamAssist
+    - AiAssisted
 
 - name: maintenance
   gadgets:
@@ -119,10 +121,10 @@
   gadgets:
     - site-js
     - site-styles
-    - vector-styles
     - vector-2022-styles
     - moeskin-styles
     - edit
+    - editRequestWarning
     - site-lib
     - libBottomRightCorner
     - libOOUIDialog
@@ -130,9 +132,6 @@
     - localforage
     - jQueryLazyload
     - libHashwasm
-    - libJQuery
-    - libUtil
-    - libPolyfill
     - libip
     - libJSON5
     - libCachedCode

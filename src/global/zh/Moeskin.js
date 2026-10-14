@@ -1,8 +1,8 @@
 "use strict";
 /**
  * 这里的任何JavaScript将在 MoeSkin 皮肤下加载
- * 请尊重萌娘百科版权，以下代码复制需要注明原自萌娘百科，并且附上URL地址http://zh.moegirl.org.cn/MediaWiki:MoeSkin.js
- * 版权协定：知识共享 署名-非商业性使用-相同方式共享 3.0
+ * 请尊重萌娘百科著作权，以下代码复制需要注明原自萌娘百科，并且附上URL地址http://zh.moegirl.org.cn/MediaWiki:MoeSkin.js
+ * 著作权协定：知识共享 署名-非商业性使用-相同方式共享 4.0
  */
 (async () => {
     const IS_MOEPAD_APP = location.hostname === "mobile.moegirl.org.cn";

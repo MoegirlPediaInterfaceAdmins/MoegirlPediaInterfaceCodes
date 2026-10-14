@@ -390,7 +390,6 @@ $(() => {
                     page: "萌娘百科_talk:讨论版/提问求助",
                     sectiontitle,
                     wikitext: `<dl>\n<dt>页面信息：</dt>\n<dd><table class="wikitable" style="word-break: break-all;">\n<tr><td>primaryType</td><td>${this.primaryType}${this.secondaryType !== "none" ? `</td></tr>\n<tr><td>secondaryType</td><td>${this.secondaryType}` : ""}</td></tr>\n<tr><td>reportURL</td><td>${window.location.href}</td></tr>\n<tr><td>wgPageName</td><td>${this.wgPageName}<hr>[[${this.wgPageName}]]</td></tr>\n<tr><td>wgArticleId</td><td>${this.wgArticleId}</td></tr>\n<tr><td>wgCurRevisionId</td><td>${this.wgCurRevisionId}</td></tr>\n<tr><td>wgRevisionId</td><td>${this.wgRevisionId}</td></tr>\n</table></dd>\n<dt>用户反馈内容：</dt>\n<dd>${this.reason}——~~~~</dd>\n</dl>`,
-                    autosubscribe: "yes",
                     tags: "Automation tool",
                     watchlist: "nochange",
                     nocontent: "true",

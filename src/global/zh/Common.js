@@ -1,12 +1,12 @@
 /* 这里的任何JavaScript将在全站加载
- * 请尊重萌娘百科版权，以下代码复制需要注明原自萌娘百科，并且附上URL地址http://zh.moegirl.org.cn/MediaWiki:Common.js
- * 版权协定：知识共享 署名-非商业性使用-相同方式共享 3.0 中国大陆
+ * 请尊重萌娘百科著作权，以下代码复制需要注明原自萌娘百科，并且附上URL地址http://zh.moegirl.org.cn/MediaWiki:Common.js
+ * 著作权协定：知识共享 署名-非商业性使用-相同方式共享 4.0
  */
 "use strict";
 (async () => {
     /* 函数定义体 */
     const { wgUserGroups, wgServer, wgServerName, wgScriptPath, wgPageName, wgAction, skin, wgNamespaceNumber, wgMainPageTitle } = mw.config.get();
-    /* 以下为允许添加版权声明的命名空间列表 */
+    /* 以下为允许添加著作权声明的命名空间列表 */
     const copyRightsNameSpaces = [
         0, // （主）
         4, // 萌娘百科
@@ -114,7 +114,7 @@
                 left: "-99999px",
                 "z-index": "-99999",
             },
-            html: `<pre></pre><br>\n阅读更多：${/%/.test(mw.util.wikiUrlencode(wgPageName)) ? `${wgPageName}（${wgServer}${wgScriptPath}/${encodeURIComponent(wgPageName)} ）` : `${wgServer}${wgScriptPath}/${wgPageName}`}<br>\n本文引自萌娘百科(${wgServer.replace(/^\/\//, "https://")} )，文字内容默认使用《知识共享 署名-非商业性使用-相同方式共享 3.0 中国大陆》协议。`,
+            html: `<pre></pre><br>\n阅读更多：${/%/.test(mw.util.wikiUrlencode(wgPageName)) ? `${wgPageName}（${wgServer}${wgScriptPath}/${encodeURIComponent(wgPageName)} ）` : `${wgServer}${wgScriptPath}/${wgPageName}`}<br>\n本文引自萌娘百科(${wgServer.replace(/^\/\//, "https://")} )，文字内容默认使用《知识共享 署名-非商业性使用-相同方式共享 4.0》协议。`,
         }).appendTo("body");
         const valueNode = div.find("pre");
         $("#mw-content-text").on("copy", () => {
@@ -357,7 +357,7 @@
     if (wgMainPageTitle === wgPageName && wgAction === "view") {
         $("body").addClass("mainpage");
     }
-    // 复制内容版权声明
+    // 复制内容著作权声明
     if (window.getSelection && !allowedInGroup && !["edit", "submit"].includes(wgAction) && copyRightsNameSpaces.includes(wgNamespaceNumber)) {
         copyRights();
     }

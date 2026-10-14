@@ -240,7 +240,7 @@ $(() => {
                 summary: `快速存档讨论串：/* ${this.sectionTitle} */`,
             });
             this.progress.nextStep();
-            if ([543140, 443483].includes(wgArticleId)) { // 群组信息、注销
+            if (wgArticleId === 543140) { // 群组信息
                 this.progress.log(wgULS("无需添加已存档标记，正在清空段落……", "無需添加已存檔標記，正在清空段落……"));
                 await api.postWithToken("csrf", {
                     action: "edit",

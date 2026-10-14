@@ -74,6 +74,10 @@ $(() => (async () => {
                 formatversion: 2,
             });
             const GHIAHistory = JSON.parse(content);
+            // changedFiles 的计数口径由 scripts/generateCommitsHistory/index.js 定义并
+            // 与此处耦合：只计有实际行数变化（或 binary 变化）的文件，纯重命名提交以
+            // changedFiles: 0 入库（对求和与 > 0 判断均无影响），避免重命名密集提交
+            // 膨胀此处的编辑数。
             GHIAEditCount = Reflect.has(GHIAHistory, `U:${target}`) ? GHIAHistory[`U:${target}`].reduce((p, { changedFiles }) => p + changedFiles, 0) : 0;
             nslist[8].count += GHIAEditCount;
         }

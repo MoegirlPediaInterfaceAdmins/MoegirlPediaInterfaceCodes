@@ -1,0 +1,8 @@
+#!/usr/bin/env sh
+# 迁移自 scripts/gitHooks/install.js 原本托管的 post-merge / post-rewrite：
+# rebase 后若 package-lock.json 变化，自动刷新依赖。
+if [ -n "$GITHUB_ACTIONS" ]; then
+    exit 0
+fi
+
+node scripts/gitHooks/runCiOnPackageLockChange.js post-rewrite "$@"

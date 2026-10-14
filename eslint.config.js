@@ -1,6 +1,7 @@
 import { configs } from "@annangela/eslint-config";
 import path from "node:path";
 import jsonModule from "./scripts/modules/jsonModule.js";
+import { nodeLintTargets } from "./scripts/modules/lintTargets.js";
 import readDir from "./scripts/modules/readDir.js";
 import yamlModule from "./scripts/modules/yamlModule.js";
 
@@ -13,7 +14,9 @@ const ignores = [
     "**/dist/**",
     "**/.*/**",
     "node_modules",
-    "src/gadgets/libPolyfill/*",
+    // .husky/ 是点目录、会被上一条 `**/.*/**` 整体忽略，而其中的 .mjs 是需要检查的源码，
+    // 需显式反忽略才能被 lint。
+    "!.husky/*.mjs",
 ];
 
 const srcESlintrcFiles = (await readDir("./src")).filter((n) => path.basename(n) === ".eslintrc.yaml");
@@ -37,7 +40,6 @@ const fileSpec = {
     browser: {
         files: [
             "src/**/*",
-            "scripts/generatePolyfill/customPolyfills/**/*",
         ],
         ignores: [
             ...ignores,
@@ -45,12 +47,10 @@ const fileSpec = {
     },
     node: {
         files: [
-            "scripts/**/*",
-            "eslint.config.js",
+            ...nodeLintTargets,
         ],
         ignores: [
             ...ignores,
-            "scripts/generatePolyfill/customPolyfills/**/*",
         ],
     },
 };
@@ -149,6 +149,8 @@ const config = [
                         "run_id",
                         "per_page",
                         "workflow_runs",
+                        "key_id",
+                        "raw_key",
                     ],
                 },
             ],

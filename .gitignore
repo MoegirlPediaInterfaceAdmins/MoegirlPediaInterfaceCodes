@@ -103,6 +103,10 @@ dist
 # TernJS port file
 .tern-port
 
+# WorkBuddy agent workspace data (project memory, local skills, caches)
+.workbuddy/
+.tmp-verify/
+
 .tmp
 
 ### macOS ###
@@ -137,4 +141,7 @@ Temporary Items
 ### macOS Patch ###
 # iCloud generated files
 *.icloud
+
+# ZCode workspace config（skills 内含明文 bot 凭据，禁止入库）
+.zcode/
 

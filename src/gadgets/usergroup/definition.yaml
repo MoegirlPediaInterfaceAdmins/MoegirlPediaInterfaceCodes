@@ -30,7 +30,6 @@ dependencies:
   - mediawiki.user
   - ext.gadget.LocalObjectStorage
   - ext.gadget.site-lib
-  - ext.gadget.libPolyfill
   - ext.gadget.libStandardMessages
 
 _sites:

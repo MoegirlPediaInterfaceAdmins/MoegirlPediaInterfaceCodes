@@ -79,7 +79,7 @@ $(() => {
                     align: "inline",
                 });
                 const enterField = new OO.ui.FieldLayout(this.enterCheckbox, {
-                    label: wgULS("理由详情按回车提交（浏览器级设置）", "緣由詳情按回車鍵提交（瀏覽器級設置）"),
+                    label: wgULS("理由详情按回车提交（浏览器级设置）", "緣由詳情按確認鍵提交（瀏覽器級設置）"),
                     align: "inline",
                 });
 

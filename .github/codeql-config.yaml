@@ -5,7 +5,6 @@ paths-ignore:
   - src/gadgets/code-prettify
   - src/gadgets/libHashwasm
   - src/gadgets/libJSON5
-  - src/gadgets/libPolyfill
   - src/gadgets/libUtil
   - src/gadgets/libip
   - src/gadgets/localforage

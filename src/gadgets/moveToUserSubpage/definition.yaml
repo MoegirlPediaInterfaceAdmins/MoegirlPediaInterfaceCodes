@@ -31,9 +31,9 @@ peers: []
 
 dependencies:
   - ext.gadget.site-lib
+  - ext.gadget.libStandardMessages
   - ext.gadget.libOOUIDialog
   - mediawiki.api
-  - ext.gadget.libPolyfill
 
 _sites:
   - zh

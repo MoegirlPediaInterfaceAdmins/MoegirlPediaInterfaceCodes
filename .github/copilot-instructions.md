@@ -75,7 +75,6 @@ This repository contains interface codes for MoegirlPedia (萌娘百科), a Chin
 │   ├── workflows/          # CI/CD workflows
 │   │   ├── postCommit.yaml          # Main CI: runs on every commit, handles auto-imports, validation
 │   │   ├── CodeQL.yaml              # Security scanning (runs on push/PR to master)
-│   │   ├── generatePolyfill.yaml    # Weekly polyfill generation (Sun 23:00 UTC)
 │   │   ├── auto_fix.yaml            # Manual auto-fix workflow
 │   │   └── auto_assign.yaml         # Auto-assign reviewers/assignees
 │   └── copilot-instructions.md      # This file
@@ -83,7 +82,6 @@ This repository contains interface codes for MoegirlPedia (萌娘百科), a Chin
 │   ├── browserify/         # Import code from npm packages
 │   ├── prefetch/           # Import code from specified pages
 │   ├── generateGadgetsDefinition/   # Auto-generate gadget definitions
-│   ├── generatePolyfill/            # Generate polyfill files
 │   ├── postCommit/         # Git automation and push logic
 │   ├── minification/       # Terser-based minification
 │   ├── ci/                 # Before/after CI scripts for registry switching
@@ -193,12 +191,6 @@ Runs after postCommit if changes detected:
 - Scheduled daily at 23:15 UTC
 - Analyzes JavaScript/TypeScript and GitHub Actions
 - **Always address CodeQL findings**
-
-### Generate Polyfill Workflow
-
-- Scheduled weekly: Sunday 23:00 UTC
-- Can be triggered manually
-- Clones polyfill-service repo and generates polyfills
 
 ## Common Issues & Workarounds
 

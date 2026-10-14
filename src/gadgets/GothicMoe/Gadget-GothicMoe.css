@@ -7,16 +7,17 @@
 }
 
 .mw-body-content :is(h1, h2) {
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif, NospzGothicMoe;
+    font-family: sans-serif, NospzGothicMoe, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
 }
 
 h1#firstHeading,
 body.skin-vector-2022,
 body.skin-moeskin {
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif, NospzGothicMoe;
+    font-family: sans-serif, NospzGothicMoe, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
 }
 
-html :is(i, [style*="italic"i]) span[lang="ja"i],
-html span[lang="ja"i] :is(i, [style*="italic"i]) {
+html :is(i, em, [style*="italic" i]) [lang]:lang(ja),
+html [lang]:lang(ja):is(i, em, [style*="italic" i]),
+html [lang]:lang(ja) :is(i, em, [style*="italic" i]) {
     font-family: JapaneseItalic, sans-serif, NospzGothicMoe, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
 }

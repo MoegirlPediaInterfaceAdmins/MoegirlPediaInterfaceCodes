@@ -1,0 +1,7 @@
+#!/usr/bin/env sh
+# CI 的自动提交由 scripts/modules/createCommit.js 生成，本地检查对机器人无意义且会拖慢流程。
+if [ -n "$GITHUB_ACTIONS" ]; then
+    exit 0
+fi
+
+node scripts/emailmapChecker/index.js

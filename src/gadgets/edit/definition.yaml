@@ -27,7 +27,6 @@ rights:
 peers: []
 
 dependencies:
-  - ext.gadget.libOOUIDialog
   - ext.gadget.site-lib
 
 _sites:
