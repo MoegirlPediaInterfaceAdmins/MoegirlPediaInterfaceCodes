@@ -303,3 +303,17 @@
   moduleName: prismjs
   distFilePath: plugins/previewers/prism-previewers.css
   version: "1"
+
+- type: github-release
+  gadget:
+    name: Navigation_popups
+    fileName: Gadget-popups.js
+  repo: MoegirlPediaInterfaceAdmins/Navigation_popups
+  asset: Gadget-popups.js
+
+- type: github-release
+  gadget:
+    name: Navigation_popups
+    fileName: Gadget-popups.css
+  repo: MoegirlPediaInterfaceAdmins/Navigation_popups
+  asset: Gadget-popups.css
