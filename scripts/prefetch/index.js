@@ -67,8 +67,13 @@ for (const prefetchTarget of prefetchTargets) {
             return await response.text();
         }
         if (type === "github-release") {
-            // getLatestRelease 只返回最新的正式 release，草稿与 prerelease 天然被排除；
-            // owner/repo 必须显式传入，否则 URL 中的占位符会被 octokit 模块改写为本仓库
+            // octokit 的 request hook 会在参数缺失时把 URL 中的 {owner}/{repo} 占位符替换为本仓库
+            // （见 scripts/modules/octokit.js），格式错误的 repo 会静默查询错误仓库并报出难排查的
+            // 404，因此先校验「恰好两段非空、以单斜杠分隔」再调用；getLatestRelease 只返回最新的
+            // 正式 release，草稿与 prerelease 天然被排除
+            if (!/^[^/\s]+\/[^/\s]+$/.test(repo)) {
+                throw new Error(`[${name}] Invalid \`repo\` value: ${JSON.stringify(repo)}, expected "owner/repository"`);
+            }
             const [owner, repository] = repo.split("/");
             const { data: release } = await octokit.rest.repos.getLatestRelease({ owner, repo: repository });
             console.info(`[${name}]`, "release:", release.tag_name);
@@ -100,7 +105,13 @@ for (const prefetchTarget of prefetchTargets) {
             // 对原始字节取哈希后再解码为文本，避免文本解码往返造成哈希不一致
             const buffer = Buffer.from(await assetResponse.arrayBuffer());
             const sha256 = createHash("sha256").update(buffer).digest("hex");
-            const expectedSha256 = (await sumsResponse.text()).trim().split("\n").map((line) => line.trim().split(/\s+/)).find(([, fileName]) => fileName === asset)?.[0];
+            // GNU sha256sum 行格式固定为「64 位哈希 + 两字符分隔符 + 文件名」，text 模式分隔符为
+            // 两个空格、binary 模式（sha256sum -b）为空格加星号；文件名可含空格，须整段取到行尾，
+            // 不能按空白拆分，否则二进制标记与含空格的文件名都会匹配失败
+            const expectedSha256 = (await sumsResponse.text()).trim().split(/\r?\n/)
+                .map((line) => /^([0-9a-f]{64}) (?: |\*)(.+)$/.exec(line))
+                .filter(Boolean)
+                .find(([, , fileName]) => fileName === asset)?.[1];
             if (!expectedSha256) {
                 throw new Error(`[${name}] No sha256 record for \`${asset}\` in sha256sums.txt of release ${release.tag_name}`);
             }
