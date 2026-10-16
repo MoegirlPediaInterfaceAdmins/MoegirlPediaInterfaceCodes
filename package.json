@@ -60,7 +60,7 @@
         "localforage": "^1.10.0",
         "moment": "^2.31.0",
         "npm-run-all2": "^9.0.3",
-        "postcss": "^8.5.29",
+        "postcss": "^8.5.30",
         "postcss-cli": "^12.0.0",
         "postcss-discard-comments": "^9.0.8",
         "postcss-font-variant": "^5.0.0",
