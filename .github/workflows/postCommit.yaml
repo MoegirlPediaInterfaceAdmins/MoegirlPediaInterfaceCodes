@@ -187,6 +187,10 @@ jobs:
         run: npx v8r
       - name: Run tsc
         run: npm run test:tsc
+      # linter_test 检出的是触发修订，不包含 postCommit job 重建产物后的自动提交；
+      # 先在本检出内重建，package:test 的「与磁盘产物一致」对比才有意义
+      - name: Rebuild packages
+        run: npm run package:build
       - name: Run packages test
         run: npm run package:test
       - name: Run postcss test

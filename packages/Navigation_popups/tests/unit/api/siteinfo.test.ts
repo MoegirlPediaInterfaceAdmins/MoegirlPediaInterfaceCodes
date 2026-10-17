@@ -86,13 +86,15 @@ describe("setSiteInfo", () => {
     it("popupLocalDebug：en.wikipedia.org 的 wikimedia 形态", async () => {
         const { site } = await fresh();
         window.popupLocalDebug = true;
+        // stub 掉 jsdom 的 :3000 端口，使 titlebase 断言可以精确到完整字符串
+        vi.stubGlobal("location", { hostname: "en.wikipedia.org", port: "", protocol: "https:" });
         site.setSiteInfo();
         expect(site.siteState.hostname).toBe("en.wikipedia.org");
         expect(site.siteState.wikimedia).toBe(true);
         expect(site.siteState.commons).toBe("commons.wikimedia.org");
         // localDebug 下 setTitleBase 用 http: 协议
         site.setTitleBase();
-        expect(site.siteState.titlebase).toMatch(/^http:\/\/en\.wikipedia\.org/);
+        expect(site.siteState.titlebase).toBe("http://en.wikipedia.org/index.php?title=");
     });
 
     it("hostname 即 commons 站：wikimedia 真但不设 commons；port 为空不入 sitebase", async () => {
@@ -106,6 +108,28 @@ describe("setSiteInfo", () => {
         expect(site.siteState.commons).toBeNull();
         expect(site.siteState.sitebase).toBe("commons.wikimedia.org");
         expect(site.siteState.titlebase).toBe("https://commons.wikimedia.org/index.php?title=");
+    });
+
+    it("伪装主机名（后缀拼接）不得判为 wikimedia 站，也不设 commons", async () => {
+        const { site } = await fresh();
+        vi.stubGlobal("location", { hostname: "wikipedia.org.example.com", port: "", protocol: "https:" });
+        site.setSiteInfo();
+        expect(site.siteState.wikimedia).toBe(false);
+        expect(site.siteState.commons).toBeNull();
+    });
+
+    it("伪装主机名（前缀拼接）不得判为 wikimedia 站", async () => {
+        const { site } = await fresh();
+        vi.stubGlobal("location", { hostname: "notwikimedia.org", port: "", protocol: "https:" });
+        site.setSiteInfo();
+        expect(site.siteState.wikimedia).toBe(false);
+    });
+
+    it("wikimedia 站的深层子域仍判为 wikimedia 站", async () => {
+        const { site } = await fresh();
+        vi.stubGlobal("location", { hostname: "m.wikisource.org", port: "", protocol: "https:" });
+        site.setSiteInfo();
+        expect(site.siteState.wikimedia).toBe(true);
     });
 });
 

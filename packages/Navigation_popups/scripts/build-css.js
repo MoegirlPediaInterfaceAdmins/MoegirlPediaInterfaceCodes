@@ -59,13 +59,10 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
             if (!first.equals(second)) {
                 throw new Error("CSS build is not deterministic: two consecutive builds differ");
             }
-            let onDisk = null;
-            try {
-                onDisk = await fs.promises.readFile(distFile);
-            } catch {
-                onDisk = null;
-            }
-            if (onDisk !== null && !first.equals(onDisk)) {
+            // 产物是提交进仓库的文件，缺失（ENOENT）本身就是异常，直接让读取失败抛出，
+            // 不再把缺失当作「跳过对比」处理
+            const onDisk = await fs.promises.readFile(distFile);
+            if (!first.equals(onDisk)) {
                 throw new Error(`${path.relative(repoRoot, distFile)} on disk differs from a fresh build`);
             }
             console.log(`CSS idempotency check passed (${first.length} bytes)`);

@@ -1561,7 +1561,7 @@ const setSiteInfo = () => {
   } else {
     siteState.hostname = location.hostname;
   }
-  siteState.wikimedia = /(wiki([pm]edia|source|books|news|quote|versity|species|voyage|data)|metawiki|wiktionary|mediawiki)[.]org/.test(siteState.hostname);
+  siteState.wikimedia = /(?:^|[.])(?:wiki(?:[pm]edia|source|books|news|quote|versity|species|voyage|data)|metawiki|wiktionary|mediawiki)[.]org$/.test(siteState.hostname);
   siteState.wikia = /[.]wikia[.]com$/i.test(siteState.hostname);
   siteState.isLocal = siteState.hostname.startsWith("localhost");
   siteState.commons = siteState.wikimedia && siteState.hostname !== "commons.wikimedia.org" ? "commons.wikimedia.org" : null;

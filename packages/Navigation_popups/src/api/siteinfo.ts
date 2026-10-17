@@ -66,7 +66,10 @@ export const setSiteInfo = (): void => {
     } else {
         siteState.hostname = location.hostname;
     }
-    siteState.wikimedia = /(wiki([pm]edia|source|books|news|quote|versity|species|voyage|data)|metawiki|wiktionary|mediawiki)[.]org/.test(siteState.hostname);
+    // 锚定（^|[.] 前界 + $ 尾界）：legacy 公式未锚定，"wikipedia.org.example.com"
+    // 之类拼接主机名会被误判为 wikimedia 站并启用 commons 图片链；对全部合法
+    // 主机（含深层子域）锚定前后判定一致。有意偏差，登记于 docs/semantic-notes.md A9。
+    siteState.wikimedia = /(?:^|[.])(?:wiki(?:[pm]edia|source|books|news|quote|versity|species|voyage|data)|metawiki|wiktionary|mediawiki)[.]org$/.test(siteState.hostname);
     siteState.wikia = /[.]wikia[.]com$/i.test(siteState.hostname);
     siteState.isLocal = siteState.hostname.startsWith("localhost");
     siteState.commons = siteState.wikimedia && siteState.hostname !== "commons.wikimedia.org" ? "commons.wikimedia.org" : null;

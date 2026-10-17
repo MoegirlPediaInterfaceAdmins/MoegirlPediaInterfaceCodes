@@ -152,6 +152,13 @@
   同一渲染分支）。
 - **论据**：类型标注应与运行时真实形态一致，否则每个使用点都要 `assume` 掩盖。
 
+### A9. wikimedia 站点判定正则锚定（**开放差异**，2026-10-17 由 CodeQL 意见引入）
+
+- **legacy 行为**：`/(wiki([pm]edia|source|books|news|quote|versity|species|voyage|data)|metawiki|wiktionary|mediawiki)[.]org/.test(hostname)`（单文件版 `4527`）——未锚定，主机名**包含**上述域名即判为 wikimedia 站；`"wikipedia.org.example.com"`、`"notwikimedia.org"` 之类拼接主机名也会命中，并随之启用 commons 图片链与 wikimedia 分支。
+- **重写版行为**：`/(?:^|[.])(?:wiki(?:[pm]edia|source|books|news|quote|versity|species|voyage|data)|metawiki|wiktionary|mediawiki)[.]org$/.test(hostname)`（`src/api/siteinfo.ts`）——前界 `^|[.]` + 尾界 `$`，仅当主机名以合法的域名段结尾（裸域或任意父域下的子域）时命中。
+- **用户可见性**：对所有真实部署站点（`zh.moegirl.org.cn`、`commons.wikimedia.org` 及各 wikimedia 子域）判定结果与 legacy 完全一致；仅当本小工具被部署到拼接了 wikimedia 域名的第三方主机时行为不同（legacy 误判为 wikimedia 站，重写版不判为）。
+- **论据**：`hostname` 取自 `location.hostname`，正常部署下并非攻击者可控，但锚定消除了「站点判定被主机名拼接欺骗」的理论面，且对全部合法主机等价；CodeQL `js/regex/missing-anchor-of-hostname-pattern` 据此关闭。测试覆盖见 `tests/unit/api/siteinfo.test.ts`（后缀拼接、前缀拼接、深层子域三例）。
+
 ## B. 明知故留的 legacy 死分支（`istanbul ignore` 清单）
 
 重写版在以下位置**保留** legacy 结构性不可达的防御分支，逐条配 `// istanbul ignore …`
