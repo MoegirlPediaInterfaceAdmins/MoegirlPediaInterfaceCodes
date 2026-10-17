@@ -22,11 +22,14 @@ $(() => {
         }
 
         const isZh = /^m?zh\.moegirl\.org\.cn$/.test(location.hostname);
-        const api = new mw.Api(), zhAPI = isZh ? api : new mw.ForeignApi("https://mzh.moegirl.org.cn/api.php");
+        const api = new mw.Api();
+        const zhAPI = isZh ? api : new mw.ForeignApi("https://mzh.moegirl.org.cn/api.php");
+        const cmAPI = isZh ? new mw.ForeignApi("https://commons.moegirl.org.cn/api.php") : api;
 
         const BOARD_PAGE = "萌娘百科_talk:讨论版/操作申请";
         const boardUrl = `${isZh ? "" : "https://mzh.moegirl.org.cn"}${mw.util.getUrl(BOARD_PAGE)}`;
         const linkedPageName = isZh ? wgPageName : `cm:${wgPageName}`;
+        const chunkify = (arr, size = 50) => Array.from({ length: Math.ceil(arr.length / size) }, (_, i) => arr.slice(i * size, i * size + size));
 
         const $body = $("body");
         $("#mw-notification-area").appendTo($body);
@@ -34,6 +37,8 @@ $(() => {
         const getRequestTitleSuffix = (userName, now) => ` - ${userName} - ${now.getFullYear()}.${libPrefixNumber(now.getMonth() + 1)}.${libPrefixNumber(now.getDate())}`;
 
         const buildSectionTitle = () => `请求删除页面：[[${linkedPageName}]]${getRequestTitleSuffix(wgUserName, new Date())}`;
+
+        const buildBatchSectionTitle = () => `${wgULS("批量删除请求", "批量刪除請求")}${getRequestTitleSuffix(wgUserName, new Date())}`;
 
         /**
          * 新讨论串的正文
@@ -52,6 +57,108 @@ $(() => {
             }
             lines.push("~~~~");
             return lines.join("\n");
+        };
+
+        /**
+         * 批量提删的正文
+         *
+         * @param {Array<{ title: string, isRedirect: boolean }>} pages 已解析并检测过重定向的页面清单
+         * @param {string} reason 理由
+         * @param {string} detail 详情；为空时整行不输出
+         * @returns {string} 正文 wikitext
+         */
+        const buildBatchWikitext = (pages, reason, detail) => {
+            const lines = [
+                "* '''页面标题'''：",
+                ...pages.map(({ title, isRedirect }) => `** ${isRedirect ? `{{NoRedirectLink|${title}}}` : `[[:${title}]]`}`),
+                `* '''申请理由'''：${reason}`,
+            ];
+            if (detail) {
+                lines.push(`* '''详细原因'''：${detail}`);
+            }
+            lines.push("~~~~");
+            return lines.join("\n");
+        };
+
+        /**
+         * 解析批量提删的页面清单，一行一个页面，忽略空行并去重
+         *
+         * @param {string} text 多行文本框的内容
+         * @throws {OO.ui.Error} 存在仅有前缀或含非法字符的行时
+         * @returns {Array<{ title: string, queryTitle: string, site: "zh" | "commons" }>} 待提交的页面清单
+         */
+        const parseBatchPages = (text) => {
+            const lines = text.split("\n").map((line) => line.trim()).filter((line) => line !== "");
+            const invalidLines = lines.filter((line) => {
+                const stripped = line.replace(/^(?:cm:|zhmoe:)/i, "");
+                return stripped === "" || /[|[\]{}<>]/.test(stripped);
+            });
+            if (invalidLines.length > 0) {
+                throw new OO.ui.Error(`${wgULS("以下页面标题无效（仅有前缀，或含 | [ ] { } < > 等字符）", "以下頁面標題無效（僅有前綴，或含 | [ ] { } < > 等字元）")}：${invalidLines.join("、")}`);
+            }
+            const toBatchPage = (line) => {
+                if (/^zhmoe:/i.test(line)) {
+                    const title = line.substring(6);
+                    return { title, queryTitle: title, site: "zh" };
+                }
+                if (/^cm:/i.test(line)) {
+                    return { title: line, queryTitle: line.substring(3), site: "commons" };
+                }
+                if (isZh) {
+                    return { title: line, queryTitle: line, site: "zh" };
+                }
+                return { title: `cm:${line}`, queryTitle: line, site: "commons" };
+            };
+            const result = [];
+            const seen = new Set();
+            lines.forEach((line) => {
+                const page = toBatchPage(line);
+                if (!seen.has(page.title)) {
+                    seen.add(page.title);
+                    result.push(page);
+                }
+            });
+            return result;
+        };
+
+        /**
+         * 批量查询页面清单中各页面是否为重定向页。
+         *
+         * @param {Array<{ title: string, queryTitle: string, site: "zh" | "commons" }>} pages 已解析的页面清单
+         * @returns {Promise<Array<{ title: string, isRedirect: boolean }>>} 与入参顺序一致
+         */
+        const resolveBatchPages = async (pages) => {
+            const normalizeTitle = (title) => title.replace(/_/g, " ").replace(/\s+/g, " ").trim().replace(/^[a-z]/, (char) => char.toUpperCase());
+            const redirectTitles = new Set();
+            const normalizedTitles = new Map();
+            const titlesBySite = new Map();
+            pages.forEach(({ queryTitle, site }) => {
+                if (!titlesBySite.has(site)) {
+                    titlesBySite.set(site, []);
+                }
+                titlesBySite.get(site).push(queryTitle);
+            });
+            await Promise.all([...titlesBySite].map(async ([site, titles]) => {
+                const siteAPI = site === "commons" ? cmAPI : zhAPI;
+                await Promise.all(chunkify([...new Set(titles)]).map(async (batch) => {
+                    try {
+                        const { query } = await siteAPI.get({
+                            action: "query",
+                            titles: batch.join("|"),
+                            redirects: true,
+                            formatversion: 2,
+                        });
+                        (query?.normalized ?? []).forEach(({ from, to }) => normalizedTitles.set(normalizeTitle(from), normalizeTitle(to)));
+                        (query?.redirects ?? []).forEach(({ from }) => redirectTitles.add(normalizeTitle(from)));
+                    } catch (e) {
+                        console.warn("[RequestDeletion] 批量查询重定向失败", e);
+                    }
+                }));
+            }));
+            return pages.map(({ title, queryTitle }) => {
+                const queryNormalizedTitle = normalizeTitle(queryTitle);
+                return { title, isRedirect: redirectTitles.has(normalizedTitles.get(queryNormalizedTitle) ?? queryNormalizedTitle) };
+            });
         };
 
         const fetchNewSectionAnchor = async (oldid) => {
@@ -93,6 +200,7 @@ $(() => {
                 super(config);
 
                 this.storage = config.data.storage;
+                this.hasAutopatrol = false;
             }
             initialize() {
                 // Parent method
@@ -117,6 +225,15 @@ $(() => {
                 this.enterCheckbox = new OO.ui.CheckboxInputWidget({
                     selected: this.storage.getItem("enterToSubmit"),
                 });
+                this.batchCheckbox = new OO.ui.CheckboxInputWidget();
+                this.pagesText = new OO.ui.MultilineTextInputWidget({
+                    rows: 5,
+                    autosize: true,
+                    maxRows: 15,
+                    placeholder: isZh
+                        ? wgULS("一行一个主站页面，共享站页面请加 cm: 前缀", "一行一個主站頁面，共享站頁面請加 cm: 前綴")
+                        : wgULS("一行一个共享站页面，主站页面请加 zhmoe: 前缀", "一行一個共享站頁面，主站頁面請加 zhmoe: 前綴"),
+                });
 
                 this.reasonsDropdownMenu = this.reasonsDropdown.dropdownWidget.getMenu();
 
@@ -132,16 +249,31 @@ $(() => {
                     label: wgULS("理由详情按回车提交（浏览器级设置）", "緣由詳情按確認鍵提交（瀏覽器級設置）"),
                     align: "inline",
                 });
+                this.batchField = new OO.ui.FieldLayout(this.batchCheckbox, {
+                    label: wgULS("批量提删", "批量提刪"),
+                    align: "inline",
+                });
+                this.pagesField = new OO.ui.FieldLayout(this.pagesText, {
+                    label: wgULS("待删除页面", "待刪除頁面"),
+                    align: "top",
+                });
+
+                this.pagesField.$element.hide();
+                this.batchField.$element.toggle(this.hasAutopatrol);
 
                 this.panelLayout.$element.append(
                     reasonsField.$element,
                     detailsField.$element,
+                    this.batchField.$element,
+                    this.pagesField.$element,
                     enterField.$element,
                 );
 
                 this.reasonsDropdownMenu.connect(this, { toggle: "dropdownToggle" });
                 this.detailsText.connect(this, { enter: "onEnter" });
                 this.enterCheckbox.connect(this, { change: "setStorage" });
+                this.batchCheckbox.connect(this, { change: "onBatchToggle" });
+                this.pagesText.connect(this, { resize: "updateSize" });
 
                 this.$body.append(this.panelLayout.$element);
             }
@@ -150,6 +282,26 @@ $(() => {
                     data: "",
                     label: wgULS("其他（请自行说明理由）", "其他（請自行說明緣由）"),
                 }, ...reasons]);
+            }
+            setHasAutopatrol(has) {
+                this.hasAutopatrol = has;
+                if (this.panelLayout) {
+                    this.batchField.$element.toggle(has);
+                    if (!has) {
+                        this.pagesField.$element.hide();
+                    }
+                    if (this.isOpened()) {
+                        this.updateSize();
+                    }
+                }
+            }
+            onBatchToggle(selected) {
+                if (selected) {
+                    this.pagesField.$element.slideDown("fast", () => this.updateSize());
+                    this.pagesText.focus();
+                } else {
+                    this.pagesField.$element.slideUp("fast", () => this.updateSize());
+                }
             }
             setStorage(selected) {
                 this.storage.setItem("enterToSubmit", selected);
@@ -177,6 +329,12 @@ $(() => {
             getBodyHeight() {
                 return this.panelLayout.$element.outerHeight(true);
             }
+            getSetupProcess(data) {
+                return super.getSetupProcess(data).next(() => {
+                    this.pagesField.$element.hide();
+                    this.batchCheckbox.setSelected(false);
+                }, this);
+            }
             getReadyProcess(data) {
                 return super.getReadyProcess(data).next(() => {
                     this.reasonsDropdown.focus();
@@ -191,11 +349,24 @@ $(() => {
                     return new OO.ui.Process($.when((async () => {
                         const reason = this.reasonsDropdown.getValue();
                         const detail = this.detailsText.getValue();
+                        const isBatch = this.batchCheckbox.isSelected();
+                        const pages = isBatch ? parseBatchPages(this.pagesText.getValue()) : [];
+                        if (isBatch && pages.length === 0) {
+                            throw new OO.ui.Error(wgULS("请至少填写一个页面", "請至少填寫一個頁面"));
+                        }
                         if (!reason && !detail) {
                             throw new OO.ui.Error(wgULS("请填写理由或详情", "請填寫緣由或詳情"));
                         }
                         try {
-                            const anchor = await this.postRequest(buildWikitext(reason || detail, reason ? detail : ""));
+                            const requestReason = reason || detail, requestDetail = reason ? detail : "";
+                            let wikitext, sectionTitle;
+                            if (isBatch) {
+                                wikitext = buildBatchWikitext(await resolveBatchPages(pages), requestReason, requestDetail);
+                                sectionTitle = buildBatchSectionTitle();
+                            } else {
+                                wikitext = buildWikitext(requestReason, requestDetail);
+                            }
+                            const anchor = await this.postRequest(wikitext, sectionTitle);
                             this.close({ action });
                             mw.notify(wgULS("删除请求已发出，3 秒后跳转到讨论串", "刪除請求已發出，3 秒後跳轉到討論串"), {
                                 title: wgULS("提删成功", "提刪成功"),
@@ -219,14 +390,15 @@ $(() => {
              * 往讨论版发一个新话题，并返回该讨论串的锚点。
              *
              * @param {string} wikitext 正文 wikitext
+             * @param {string} [sectionTitle] 讨论串标题；默认为当前页面的单页提删标题
              * @returns {Promise<string>} 讨论串锚点（不含 `#`）；取不到时为空串
              */
-            postRequest = async (wikitext) => {
+            postRequest = async (wikitext, sectionTitle = buildSectionTitle()) => {
                 const res = await zhAPI.postWithToken("csrf", {
                     action: "discussiontoolsedit",
                     paction: "addtopic",
                     page: BOARD_PAGE,
-                    sectiontitle: buildSectionTitle(),
+                    sectiontitle: sectionTitle,
                     wikitext,
                     assertuser: wgUserName,
                     nocontent: "",
@@ -251,11 +423,25 @@ $(() => {
         windowManager.addWindows([rdDialog]);
 
         let loadReason = false;
+        /** @type {Promise<boolean> | null} 当前用户是否持有 autopatrol 权限；同一会话只请求一次 */
+        let autopatrolPromise = null;
 
         $(mw.util.addPortletLink("p-cactions", "#", wgULS("提出删除请求", "提出刪除請求"), "ca-lr-rd", wgULS("向讨论版提出删除请求", "向討論版提出刪除請求"))).on("click", async (e) => {
             e.preventDefault();
             windowManager.openWindow(rdDialog);
             $body.css("overflow", "auto");
+            // 批量提删入口仅对持有 autopatrol 权限的用户可见
+            if (autopatrolPromise === null) {
+                autopatrolPromise = (async () => {
+                    try {
+                        return (await mw.user.getRights()).includes("autopatrol");
+                    } catch (e) {
+                        console.warn("[RequestDeletion] 获取用户权限失败，按无 autopatrol 权限处理", e);
+                        return false;
+                    }
+                })();
+            }
+            rdDialog.setHasAutopatrol(await autopatrolPromise);
             if (loadReason === false) {
                 loadReason = true;
                 const { parse: { text: { "*": html } } } = await api.post({
