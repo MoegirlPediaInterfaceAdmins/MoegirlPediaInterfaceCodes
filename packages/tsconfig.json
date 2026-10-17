@@ -4,6 +4,7 @@
     "compilerOptions": {
         "noEmit": true,
         "allowImportingTsExtensions": true,
+        "jsx": "react",
         "types": [
             "jquery"
         ]

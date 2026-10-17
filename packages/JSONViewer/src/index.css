@@ -1,0 +1,21 @@
+#bearbintools-jsonviewer .json-view {
+    padding: 0.6em 1em;
+    word-break: break-all;
+    line-height: inherit;
+    font-size: inherit;
+}
+
+#bearbintools-jsonviewer .json-view .jv-button {
+    font: inherit;
+}
+
+#bearbintools-jsonviewer .json-view .jv-size,
+#bearbintools-jsonviewer .json-view .jv-button {
+    user-select: none;
+}
+
+@media screen and (width >= 768px) {
+    #bearbintools-jsonviewer .json-view .jv-indent {
+        padding-left: 2em;
+    }
+}

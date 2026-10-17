@@ -61,8 +61,8 @@ const fileSpec = {
  * 规则与各包迁入前独立仓库时期的配置一致，见 packages 下各包的 README）。
  */
 const packageFiles = [
-    "packages/*/src/**/*.ts",
-    "packages/*/tests/**/*.ts",
+    "packages/*/src/**/*.{ts,tsx}",
+    "packages/*/tests/**/*.{ts,tsx}",
 ];
 
 /**
@@ -122,6 +122,11 @@ const config = [
                 wgULS: false,
                 wgUVS: false,
                 moment: false,
+                // JSONViewer 入口把整段逻辑包在 $(() => …) 中（jQuery ready 简写），不能删
+                $: false,
+                jQuery: false,
+                // 由 esbuild define 注入的编译期常量，见 packages/JSONViewer/src/env.d.ts
+                __DEV__: false,
                 // 由 wikEd gadget 在运行时提供（该小工具存在时）
                 wikEdUseWikEd: false,
                 WikEdUpdateFrame: false,
