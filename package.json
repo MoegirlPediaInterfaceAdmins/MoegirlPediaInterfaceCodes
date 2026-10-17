@@ -11,10 +11,11 @@
     },
     "scripts": {
         "test": "run-p --aggregate-output -clx test:*",
-        "test:eslint": "eslint src --cache --cache-strategy content --cache-location .cache/ --color --exit-on-fatal-error --max-warnings 0",
-        "test:stylelint": "stylelint 'src/**/*.css' --cache --cache-strategy content --cache-location .cache/ --color --max-warnings 0",
+        "test:eslint": "eslint src packages --cache --cache-strategy content --cache-location .cache/ --color --exit-on-fatal-error --max-warnings 0",
+        "test:stylelint": "stylelint 'src/**/*.css' 'packages/**/*.scss' --cache --cache-strategy content --cache-location .cache/ --color --max-warnings 0",
         "test:v8r": "node scripts/v8r/index.js",
         "test:mailmap": "node scripts/emailmapChecker/index.js",
+        "test:tsc": "tsc -p tsconfig.json && tsc -p packages/tsconfig.json",
         "lint:scripts": "node scripts/eslint/index.js",
         "lint:commit-message": "node scripts/commitLint/index.js commits",
         "lint:pr-title": "node scripts/commitLint/index.js title",
@@ -25,6 +26,8 @@
         "ci": "rm -rdf node_modules && node scripts/ci/selectRegistry.js && npm ci --registry=\"$(cat .cache/ci-registry)\" --replace-registry-host=always",
         "build": "run-p -l build:*",
         "build:css": "postcss 'src/**/*.css' --base src/ -d dist/ --verbose",
+        "package:build": "node scripts/buildPackages/index.js",
+        "package:test": "node scripts/buildPackages/index.js --check",
         "prebuild:js": "rm -rf dist",
         "build:js": "npx tsc --project tsconfig.production.json",
         "postbuild:js": "node scripts/injection/index.js && node scripts/minification/terser.js"
@@ -45,6 +48,8 @@
         "@types/jquery": "^4.0.1",
         "@types/oojs-ui": "^0.50.0",
         "@types/prismjs": "^1.26.6",
+        "@vitest/coverage-istanbul": "^5.0.3",
+        "acorn": "^8.19.0",
         "autoprefixer": "^10.6.1",
         "browser-pack-flat": "^3.5.0",
         "browserify": "^17.0.1",
@@ -65,8 +70,12 @@
         "postcss-discard-comments": "^9.0.8",
         "postcss-font-variant": "^5.0.0",
         "postcss-logical": "^9.0.2",
+        "postcss-scss": "^4.0.9",
         "postcss-selector-not": "^9.0.0",
         "pretty-bytes": "^7.2.0",
+        "rollup": "^4.64.5",
+        "rollup-plugin-esbuild": "^6.2.1",
+        "sass": "^1.105.1",
         "semver": "^7.8.5",
         "simple-git": "^4.0.2",
         "terser": "^5.51.2",
@@ -88,14 +97,19 @@
         "eslint": "^10.12.0",
         "eslint-plugin-prefer-arrow-functions": "^3.10.2",
         "husky": "^9.1.7",
+        "jquery": "^4.0.0",
+        "jsdom": "^30.1.2",
         "stylelint": "^17.16.0",
         "stylelint-config-standard": "^40.0.0",
         "stylelint-plugin-use-baseline": "^1.4.7",
         "types-mediawiki-response": "^1.1.1",
-        "v8r": "^6.1.0"
+        "v8r": "^6.1.0",
+        "vitest": "^5.0.1"
     },
     "allowScripts": {
         "core-js@2.6.12": true,
-        "es5-ext@0.10.63": true
+        "es5-ext@0.10.63": true,
+        "esbuild": true,
+        "@parcel/watcher": true
     }
 }

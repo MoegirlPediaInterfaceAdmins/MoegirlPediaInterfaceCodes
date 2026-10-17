@@ -12,6 +12,7 @@ const packageJson = await jsonModule.readFile("./package.json");
  */
 const ignores = [
     "**/dist/**",
+    "**/coverage/**",
     "**/.*/**",
     "node_modules",
     // .husky/ 是点目录、会被上一条 `**/.*/**` 整体忽略，而其中的 .mjs 是需要检查的源码，
@@ -56,6 +57,15 @@ const fileSpec = {
 };
 
 /**
+ * packages/ 下浏览器侧小工具包的 TS 源码与测试（typescript 严集，
+ * 规则与各包迁入前独立仓库时期的配置一致，见 packages 下各包的 README）。
+ */
+const packageFiles = [
+    "packages/*/src/**/*.ts",
+    "packages/*/tests/**/*.ts",
+];
+
+/**
  * @type { import("eslint").Linter.Config[] }
  */
 const config = [
@@ -98,6 +108,42 @@ const config = [
         },
     },
     {
+        // packages/ 源码：strict-type-checked + stylistic-type-checked 严集
+        ...configs.typescript,
+        files: [
+            ...packageFiles,
+        ],
+        languageOptions: {
+            ...configs.typescript.languageOptions,
+            globals: {
+                ...configs.browser.languageOptions.globals,
+                mw: false,
+                mediaWiki: false,
+                wgULS: false,
+                wgUVS: false,
+                moment: false,
+                // 由 wikEd gadget 在运行时提供（该小工具存在时）
+                wikEdUseWikEd: false,
+                WikEdUpdateFrame: false,
+                // 仅类型位置的名字：no-undef 无法区分类型位置与值位置，ambient 类型须在此声明；
+                // 值位置的误用仍会被 tsc 检出（TS2693: "only refers to a type"）
+                JQuery: false,
+                HTMLCollectionOf: false,
+                EventListener: false,
+                GlobalEventHandlers: false,
+                MouseEventInit: false,
+            },
+        },
+        rules: {
+            ...configs.typescript.rules,
+            // 上游源码形态按原样保留：no-use-before-define——上游自底向上的辅助函数排序，
+            // const 箭头函数重排会改变模块求值顺序；camelcase——上游（wpTextbox1、wikEdUseWikEd、
+            // last_attr…）与 wiki/DOM 约定标识符 1:1 保留以便上游补丁仍可对照
+            "no-use-before-define": "off",
+            camelcase: "off",
+        },
+    },
+    {
         ...configs.node,
         ...fileSpec.node,
     },
@@ -112,6 +158,15 @@ const config = [
         ...fileSpec.browser,
         rules: {
             // other disabled rules for browser files
+            "promise/prefer-await-to-callbacks": "off",
+        },
+    },
+    {
+        // packages/ 的事件/XHR 流是回调驱动的既有设计，与 src 的 browser 文件同规则关闭
+        files: [
+            ...packageFiles,
+        ],
+        rules: {
             "promise/prefer-await-to-callbacks": "off",
         },
     },

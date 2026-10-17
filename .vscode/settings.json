@@ -196,7 +196,8 @@
         "Group/staff",
         "Group/suppress",
         "Group/sysop",
-        "Group/user"
+        "Group/user",
+        "Package/Navigation_popups"
     ],
     "conventionalCommits.storeScopesGlobally": false,
     "github.copilot.chat.organizationInstructions.enabled": false,
