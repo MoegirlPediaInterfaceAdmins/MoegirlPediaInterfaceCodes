@@ -15,6 +15,8 @@ src/gadgets/libip/Gadget-libip.js linguist-generated=true
 # From packages
 src/gadgets/Navigation_popups/Gadget-popups.css linguist-generated=true
 src/gadgets/Navigation_popups/Gadget-popups.js linguist-generated=true
+src/gadgets/JSONViewer/Gadget-JSONViewer.css linguist-generated=true
+src/gadgets/JSONViewer/Gadget-JSONViewer.js linguist-generated=true
 
 # From generateCommitsHistory
 src/global/zh/GHIAHistory.json linguist-generated=true

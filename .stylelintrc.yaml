@@ -9,6 +9,7 @@ reportNeedlessDisables: true
 ignoreFiles:
   - dist/**/*.css
   - src/gadgets/Navigation_popups/Gadget-popups.css
+  - src/gadgets/JSONViewer/Gadget-JSONViewer.css
   - src/gadgets/prism-core/Gadget-prism-line-numbers.css
   - src/gadgets/prism-plugin-match-braces/Gadget-prism-plugin-match-braces.css
   - src/gadgets/prism-plugin-previewers/Gadget-prism-plugin-previewers.css

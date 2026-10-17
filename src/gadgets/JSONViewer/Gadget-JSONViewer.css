@@ -1,13 +1,12 @@
 /**
- * 本文件由 JSONViewer 仓库构建生成，请勿直接修改
- * 仓库地址：https://github.com/MoegirlPediaInterfaceAdmins/JSONViewer
+ * 本文件由 packages/JSONViewer 构建生成，请勿直接修改
+ * 仓库地址：https://github.com/MoegirlPediaInterfaceAdmins/MoegirlPediaInterfaceCodes
  */
 /* node_modules/react18-json-view/src/style.css */
 .json-view {
   display: block;
   color: #4d4d4d;
   text-align: left;
-
   --json-property: #009033;
   --json-index: #676dff;
   --json-number: #676dff;
@@ -15,35 +14,27 @@
   --json-boolean: #dc155e;
   --json-null: #dc155e;
 }
-
 .json-view .json-view--property {
   color: var(--json-property);
 }
-
 .json-view .json-view--index {
   color: var(--json-index);
 }
-
 .json-view .json-view--number {
   color: var(--json-number);
 }
-
 .json-view .json-view--string {
   color: var(--json-string);
 }
-
 .json-view .json-view--boolean {
   color: var(--json-boolean);
 }
-
 .json-view .json-view--null {
   color: var(--json-null);
 }
-
 .json-view .jv-indent {
   padding-left: 1em;
 }
-
 .json-view .jv-chevron {
   display: inline-block;
   vertical-align: -20%;
@@ -52,11 +43,9 @@
   width: 1em;
   height: 1em;
 }
-
 :is(.json-view .jv-chevron:hover, .json-view .jv-size:hover + .jv-chevron) {
   opacity: .8;
 }
-
 .json-view .jv-size {
   cursor: pointer;
   opacity: .4;
@@ -66,7 +55,6 @@
   vertical-align: -5%;
   line-height: 1;
 }
-
 .json-view :is(.json-view--copy, .json-view--edit),
 .json-view .json-view--link svg {
   display: none;
@@ -75,29 +63,25 @@
   margin-left: .25em;
   cursor: pointer;
 }
-
 .json-view .json-view--input {
   width: 120px;
   margin-left: .25em;
   border-radius: 4px;
-  border: 1px solid currentcolor;
+  border: 1px solid currentColor;
   padding: 0 4px;
   font-size: 87.5%;
   line-height: 1.25;
   background: transparent;
 }
-
 .json-view .json-view--deleting {
   outline: 1px solid #da0000;
   background-color: #da000011;
   text-decoration-line: line-through;
 }
-
 :is(.json-view:hover, .json-view--pair:hover) > :is(.json-view--copy, .json-view--edit),
 :is(.json-view:hover, .json-view--pair:hover) > .json-view--link svg {
   display: inline-block;
 }
-
 .json-view .jv-button {
   background: transparent;
   outline: none;
@@ -105,22 +89,17 @@
   cursor: pointer;
   color: inherit;
 }
-
 .json-view .cursor-pointer {
   cursor: pointer;
 }
-
 .json-view svg {
   vertical-align: -10%;
 }
-
 .jv-size-chevron ~ svg {
   vertical-align: -16%;
 }
-
 .json-view_a11y {
   color: #545454;
-
   --json-property: #aa5d00;
   --json-index: #007299;
   --json-number: #007299;
@@ -128,10 +107,8 @@
   --json-boolean: #d91e18;
   --json-null: #d91e18;
 }
-
 .json-view_github {
   color: #005cc5;
-
   --json-property: #005cc5;
   --json-index: #005cc5;
   --json-number: #005cc5;
@@ -139,21 +116,17 @@
   --json-boolean: #005cc5;
   --json-null: #005cc5;
 }
-
 .json-view_vscode {
   color: #005cc5;
-
   --json-property: #0451a5;
-  --json-index: #00f;
-  --json-number: #00f;
+  --json-index: #0000ff;
+  --json-number: #0000ff;
   --json-string: #a31515;
-  --json-boolean: #00f;
-  --json-null: #00f;
+  --json-boolean: #0000ff;
+  --json-null: #0000ff;
 }
-
 .json-view_atom {
   color: #383a42;
-
   --json-property: #e45649;
   --json-index: #986801;
   --json-number: #986801;
@@ -161,10 +134,8 @@
   --json-boolean: #0184bc;
   --json-null: #0184bc;
 }
-
 .json-view_winter-is-coming {
   color: #0431fa;
-
   --json-property: #3a9685;
   --json-index: #ae408b;
   --json-number: #ae408b;
@@ -172,10 +143,8 @@
   --json-boolean: #0184bc;
   --json-null: #0184bc;
 }
-
 .json-view_vitesse {
   color: #393a34;
-
   --json-property: #998418;
   --json-index: #2f798a;
   --json-number: #2f798a;
@@ -187,7 +156,6 @@
 /* node_modules/react18-json-view/src/dark.css */
 :is(.dark .json-view, .dark.json-view) {
   color: #d1d1d1;
-
   --json-property: #009033;
   --json-index: #5d75f2;
   --json-number: #5d75f2;
@@ -195,10 +163,8 @@
   --json-boolean: #e4407b;
   --json-null: #e4407b;
 }
-
 :is(.dark .json-view_a11y, .dark.json-view_a11y) {
   color: #d1d1d1;
-
   --json-property: #ffd700;
   --json-index: #00e0e0;
   --json-number: #00e0e0;
@@ -206,10 +172,8 @@
   --json-boolean: #ffa07a;
   --json-null: #ffa07a;
 }
-
 :is(.dark .json-view_github, .dark.json-view_github) {
   color: #79b8ff;
-
   --json-property: #79b8ff;
   --json-index: #79b8ff;
   --json-number: #79b8ff;
@@ -217,10 +181,8 @@
   --json-boolean: #79b8ff;
   --json-null: #79b8ff;
 }
-
 :is(.dark .json-view_vscode, .dark.json-view_vscode) {
   color: orchid;
-
   --json-property: #9cdcfe;
   --json-index: #b5cea8;
   --json-number: #b5cea8;
@@ -228,10 +190,8 @@
   --json-boolean: #569cd6;
   --json-null: #569cd6;
 }
-
 :is(.dark .json-view_atom, .dark.json-view_atom) {
   color: #abb2bf;
-
   --json-property: #e06c75;
   --json-index: #d19a66;
   --json-number: #d19a66;
@@ -239,10 +199,8 @@
   --json-boolean: #56b6c2;
   --json-null: #56b6c2;
 }
-
 :is(.dark .json-view_winter-is-coming, .dark.json-view_winter-is-coming) {
   color: #a7dbf7;
-
   --json-property: #91dacd;
   --json-index: #8dec95;
   --json-number: #8dec95;
@@ -250,10 +208,8 @@
   --json-boolean: #f29fd8;
   --json-null: #f29fd8;
 }
-
 :is(.dark .json-view_vitesse, .dark.json-view_vitesse) {
   color: #dbd7caee;
-
   --json-property: #b8a965;
   --json-index: #4c9a91;
   --json-number: #4c9a91;
@@ -262,24 +218,20 @@
   --json-null: #cb7676;
 }
 
-/* src/index.css */
+/* packages/JSONViewer/src/index.css */
 #bearbintools-jsonviewer .json-view {
   padding: .6em 1em;
   word-break: break-all;
   line-height: inherit;
   font-size: inherit;
 }
-
 #bearbintools-jsonviewer .json-view .jv-button {
   font: inherit;
 }
-
 #bearbintools-jsonviewer .json-view .jv-size,
 #bearbintools-jsonviewer .json-view .jv-button {
-  -webkit-user-select: none;
-          user-select: none;
+  user-select: none;
 }
-
 @media screen and (width >= 768px) {
   #bearbintools-jsonviewer .json-view .jv-indent {
     padding-left: 2em;
