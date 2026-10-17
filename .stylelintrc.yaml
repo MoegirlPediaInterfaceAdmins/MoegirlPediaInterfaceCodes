@@ -8,6 +8,7 @@ reportNeedlessDisables: true
 
 ignoreFiles:
   - dist/**/*.css
+  - src/gadgets/Navigation_popups/Gadget-popups.css
   - src/gadgets/prism-core/Gadget-prism-line-numbers.css
   - src/gadgets/prism-plugin-match-braces/Gadget-prism-plugin-match-braces.css
   - src/gadgets/prism-plugin-previewers/Gadget-prism-plugin-previewers.css
@@ -49,3 +50,17 @@ rules:
           - /^(?:auto|text|none|all)$/
         resize:
           - /^(?:none|both|horizontal|vertical|block|inline)$/
+
+overrides:
+  - files:
+      - packages/**/*.scss
+    customSyntax: postcss-scss
+    rules:
+      at-rule-no-unknown:
+        - true
+        - ignoreAtRules:
+            - use
+            - mixin
+            - include
+            - content
+      no-invalid-double-slash-comments: null

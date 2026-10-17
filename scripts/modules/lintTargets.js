@@ -6,6 +6,10 @@
  */
 export const nodeLintTargets = [
     "scripts/**/*",
+    // packages/ 内的构建脚本与 Node 侧配置文件
+    "packages/*/scripts/**/*",
+    "packages/*/rollup.config.js",
+    "packages/*/vitest.config.ts",
     "*.{js,mjs,cjs}",
     ".husky/*.mjs",
 ];

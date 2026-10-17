@@ -1,0 +1,27 @@
+Navigation popups（萌娘百科版）
+Copyright © 2025–2026 萌娘百科界面管理员组（MoegirlPediaInterfaceAdmins）及贡献者
+
+本仓库的源码衍生自英文维基百科站内小工具：
+
+  MediaWiki:Gadget-popups.js
+  https://en.wikipedia.org/wiki/MediaWiki:Gadget-popups.js
+  （迁移基线 oldid=1322962085）
+
+  MediaWiki:Gadget-navpop.css
+  https://en.wikipedia.org/wiki/MediaWiki:Gadget-navpop.css
+  （迁移基线 oldid=825269631）
+
+上述页面及其全部历史贡献者按 CC BY-SA 4.0 授权本仓库使用，
+完整贡献者名单见各页面编辑历史：
+
+  https://en.wikipedia.org/w/index.php?title=MediaWiki:Gadget-popups.js&action=history
+  https://en.wikipedia.org/w/index.php?title=MediaWiki:Gadget-navpop.css&action=history
+
+萌百版在其基础上做了大量本地化定制（简繁翻译内置、moment 时间格式化、
+中文站点适配、Moeskin/vector-2022 容器适配、暗色模式适配等）。
+按 MoegirlPediaInterfaceCodes 仓库历史，萌百侧贡献者包括：
+AnnAngela、Kelly Hsueh、Saoutax、亚衣琴、星海
+（完整历史见
+https://github.com/MoegirlPediaInterfaceAdmins/MoegirlPediaInterfaceCodes/commits/master/src/gadgets/Navigation_popups/）。
+
+本仓库全部内容以 CC BY-SA 4.0 授权（见 LICENSE）。

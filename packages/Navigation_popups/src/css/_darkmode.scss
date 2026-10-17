@@ -1,0 +1,134 @@
+// 暗色模式适配（萌百本地定制，上游无此部分——上游同步时勿被上游覆盖）。
+//
+// 三种暗色形态经包装 mixin 合并为三个变体：
+//   1. Vector 2022 夜间模式：html.skin-theme-clientpref-night（用户手动切换）
+//   2. Moeskin 暗色：html.dark（萌百自有皮肤）
+//   3. Vector 2022 跟随系统：html.skin-theme-clientpref-os + prefers-color-scheme
+// 16 组规则经 @content 注入，展开后的选择器与原手写 CSS 逐选择器一致
+// （`html.skin-theme-clientpref-night X, html.dark X` 为同一合并规则组）。
+@mixin dark-mode-variants {
+    @media screen {
+        html.skin-theme-clientpref-night,
+        html.dark {
+            @content;
+        }
+    }
+
+    @media screen and (prefers-color-scheme: dark) {
+        html.skin-theme-clientpref-os {
+            @content;
+        }
+    }
+}
+
+// main.scss 末尾整体引入（保持暗色规则在产物中位于平铺部分之后，与原文件顺序一致；
+// 暗色选择器均带 html.<class> 前缀、特异性高于对应平铺规则，顺序本身不影响层叠结果）。
+@mixin dark-mode-rules {
+    @include dark-mode-variants {
+        ins.popupDiff {
+            background: rgb(0 220 160 / 22%);
+        }
+    }
+
+    @include dark-mode-variants {
+        del.popupDiff {
+            background: rgb(255 90 90 / 22%);
+        }
+    }
+
+    @include dark-mode-variants {
+        #selectionPreview {
+            border-color: #54595d;
+            background-color: #262933;
+        }
+    }
+
+    @include dark-mode-variants {
+        .navpopup {
+            border-color: #54595d;
+            background-color: #202122;
+            box-shadow: 0 3px 8px rgb(0 0 0 / 55%);
+        }
+    }
+
+    @include dark-mode-variants {
+        .navpopup hr {
+            color: #54595d !important;
+            background-color: #54595d !important;
+        }
+    }
+
+    @include dark-mode-variants {
+        .popup_menu {
+            background: #202122;
+            border-color: #54595d;
+        }
+    }
+
+    @include dark-mode-variants {
+        .popup_menu a {
+            color: #b6b9bf;
+        }
+    }
+
+    @include dark-mode-variants {
+        .popup_menu_row {
+            color: #72777d;
+        }
+    }
+
+    @include dark-mode-variants {
+        .popup_drop a,
+        .popup_drop a:visited {
+            color: #9ab7e4;
+        }
+    }
+
+    @include dark-mode-variants {
+        .popup_drop:hover .popup_menu,
+        .popup_drop .popup_menu:hover {
+            background: #202122;
+            color: #b6b9bf;
+        }
+    }
+
+    @include dark-mode-variants {
+        .popup_drop:hover {
+            background: rgb(102 153 255 / 20%);
+            color: #9ab7e4;
+        }
+    }
+
+    @include dark-mode-variants {
+        .popup_menu a:hover {
+            background: #54595d;
+            color: #f8f9fa;
+        }
+    }
+
+    @include dark-mode-variants {
+        .popup_mainlink a {
+            color: #eaecf0;
+        }
+    }
+
+    @include dark-mode-variants {
+        a.popup_change_title_link {
+            color: #6dbe76;
+        }
+    }
+
+    @include dark-mode-variants {
+        .popup_history_row_even {
+            background: #27292d;
+        }
+    }
+
+    @include dark-mode-variants {
+        .popupPreview a.extiw,
+        .popupPreview a.extiw:active,
+        .popupPreview .external {
+            color: #9ab7e4;
+        }
+    }
+}

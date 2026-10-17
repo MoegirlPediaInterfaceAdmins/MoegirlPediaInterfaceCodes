@@ -12,6 +12,7 @@ on:
       - src/**/*.css
       - src/**/definition.yaml
       - src/gadgets/Gadgets-definition-list.yaml
+      - packages/**
       - .github/workflows/postCommit.yaml
       - .vscode/json-schemas/gadget-definition.json
       - .vscode/json-schemas/gadget-definition-per-site.json
@@ -36,6 +37,7 @@ on:
       - src/**/*.css
       - src/**/definition.yaml
       - src/gadgets/Gadgets-definition-list.yaml
+      - packages/**
       - .github/workflows/postCommit.yaml
       - .vscode/json-schemas/gadget-definition.json
       - .vscode/json-schemas/gadget-definition-per-site.json
@@ -123,6 +125,8 @@ jobs:
         run: node scripts/browserify/index.js
       - name: Auto prefetch
         run: node scripts/prefetch/index.js
+      - name: Auto build packages
+        run: npm run package:build
       - name: Gadgets-definition Generator
         run: node scripts/generateGadgetsDefinition/index.js
       - name: Conventional Commits scopes generator
@@ -181,6 +185,14 @@ jobs:
         run: npm run test:stylelint -- --custom-formatter=@csstools/stylelint-formatter-github
       - name: Run v8r
         run: npx v8r
+      - name: Run tsc
+        run: npm run test:tsc
+      # linter_test 检出的是触发修订，不包含 postCommit job 重建产物后的自动提交；
+      # 先在本检出内重建，package:test 的「与磁盘产物一致」对比才有意义
+      - name: Rebuild packages
+        run: npm run package:build
+      - name: Run packages test
+        run: npm run package:test
       - name: Run postcss test
         run: node scripts/postcss/index.js
       - name: Check .mailmap

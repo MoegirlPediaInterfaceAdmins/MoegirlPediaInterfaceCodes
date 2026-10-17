@@ -20,6 +20,15 @@
 
 也不要忘记在 [`src/gadgets/Gadgets-definition-list.yaml`](src/gadgets/Gadgets-definition-list.yaml) 里指定其位置。
 
+## packages/ 目录下的本地构建小工具
+
+部分小工具的源码位于 [`packages/`](packages/) 目录（如 [packages/Navigation_popups](packages/Navigation_popups)），构建产物写入 `src/gadgets/<包名>/` 下的对应文件。对这类小工具：
+
+- 修改请在 `packages/<包名>/` 的源码内进行，**不要手改 `src/gadgets/` 下的产物**；
+- 在仓库根目录执行 `npm run package:build` 重新构建产物（postCommit CI 亦会自动构建并在有差异时提交）；
+- 在仓库根目录执行 `npm run package:test` 运行该包的构建幂等检查、部署链门禁与单元测试；
+- 依赖、lint 与构建配置统一由仓库根目录管理，包内不设独立 package.json；详见各包内的 README。
+
 ## 提交问题
 
 我们建议在[萌娘百科技术实现讨论版](https://zh.moegirl.org.cn/%E8%90%8C%E5%A8%98%E7%99%BE%E7%A7%91_talk:%E8%AE%A8%E8%AE%BA%E7%89%88/%E6%8A%80%E6%9C%AF%E5%AE%9E%E7%8E%B0)讨论相关问题，或是提交 Pull Request 以解决问题。当然也可以通过 issue 讨论。

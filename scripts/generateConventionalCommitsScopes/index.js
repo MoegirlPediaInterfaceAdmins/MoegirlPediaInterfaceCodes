@@ -58,6 +58,15 @@ for (const dirent of dirents) {
     totalScopes.push(...scopes);
 }
 console.info("totalScopes:", totalScopes);
+const packageDirents = await fs.promises.readdir("packages", {
+    withFileTypes: true,
+});
+const packageList = sortWithLowerFirstCharacter(packageDirents.filter((dirent) => dirent.isDirectory()).map(({ name }) => name));
+console.info("[packages]", "list after sorting:", packageList);
+const packageScopes = packageList.map((name) => `Package/${name}`);
+console.info("[packages]", "scopes:", packageScopes);
+totalScopes.push(...packageScopes);
+console.info("totalScopes (with packages):", totalScopes);
 settings["conventionalCommits.scopes"] = totalScopes;
 await jsonModule.writeFile(".vscode/settings.json", settings);
 await createCommit("auto: new conventionalCommits.scopes generated");
