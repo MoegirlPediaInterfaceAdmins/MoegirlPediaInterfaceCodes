@@ -38,6 +38,7 @@
   - [`.stylelintrc.yaml`](.stylelintrc.yaml) 配置 stylelint；
   - [`.postcssrc.yaml`](.postcssrc.yaml) 配置 postcss；
   - [`.browserslistrc`](.browserslistrc) 配置 [autoprefixer](https://github.com/postcss/autoprefixer) 和 [browserify](https://browserify.org/) 所使用的 [browserslist](https://github.com/browserslist/browserslist)，目前暂定锚定为 [`baseline newly available`](https://web.dev/series/baseline-newly-available?hl=zh-cn) 的基础上添加 `last 3 Firefox versions` 和 `Chrome 132`，并排除移动端以适应萌百编辑群体。
+- [`packages`](packages) 保存以 monorepo 形式管理的部分小工具源码（TypeScript），构建产物写入 [`src/gadgets`](src/gadgets)（请勿手改），相关约定见 [CONTRIBUTING.md](CONTRIBUTING.md#packages-目录下的本地构建小工具)；
 - 代码部分：
   - [`src/gadgets`](src/gadgets) 以文件夹形式保存小工具，每一个文件夹都是一个小工具，里面包含以下内容：
     - `definition.yaml` 保存小工具配置，包括依赖项、所需权限等，以 `_` 开头的键值对是其他配置，如小工具所在的章节等；
@@ -60,9 +61,10 @@
 本仓库包含下列脚本：
 
 - `npm run test` 并行执行下列本地检查，任一失败即整体失败：
-  - `npm run test:eslint` 用 [ESLint](https://eslint.org/) 检查 [`src`](src) 下的 JavaScript；
-  - `npm run test:stylelint` 用 [stylelint](https://stylelint.io/) 检查 [`src`](src) 下的 CSS；
+  - `npm run test:eslint` 用 [ESLint](https://eslint.org/) 检查 [`src`](src) 下的 JavaScript 与 [`packages`](packages) 下的 TypeScript；
+  - `npm run test:stylelint` 用 [stylelint](https://stylelint.io/) 检查 [`src`](src) 与 [`packages`](packages) 下的 CSS / SCSS；
   - `npm run test:v8r` 用 [v8r](https://github.com/chrishrb/v8r) 校验各小工具 `definition.yaml` 是否符合 [JSON Schema](.vscode/json-schemas)；
+  - `npm run test:tsc` 用 `tsc` 做类型检查，覆盖根目录 [`tsconfig.json`](tsconfig.json) 与 [`packages/tsconfig.json`](packages/tsconfig.json)（后者包含 [`packages`](packages) 下各包的源码与测试）；
   - `npm run test:mailmap` 检查本地 git 配置中的邮箱是否已登记在 [`.mailmap`](.mailmap)。
 - `npm run lint:scripts` 用 [ESLint](https://eslint.org/) 检查 `npm run test:eslint` 未覆盖的 Node 侧代码（[`scripts`](scripts)、根目录配置文件与 [`.husky`](.husky) 下的 `.mjs`）；检查范围由 [`scripts/modules/lintTargets.js`](scripts/modules/lintTargets.js) 定义，与 [`eslint.config.js`](eslint.config.js) 共用同一份
 - `npm run lint:commit-message` / `npm run lint:pr-title` 用 [commitlint](https://commitlint.js.org/) 校验当前 CI 事件中的提交信息 / PR 标题（规则见 [`commitlint.config.mjs`](commitlint.config.mjs)），供 CI 使用；两者均需在 GitHub Actions 中运行，本地直接执行会因缺少事件载荷而直接退出。本地提交信息检查由 Husky（见下方[「提交前检查」](#提交前检查)）完成
@@ -71,8 +73,10 @@
 - `npm run build` 手动编译全部（CSS+JS）代码
   - `npm run build:css` 手动编译所有 CSS 代码
   - `npm run build:js` 手动编译所有 JS 代码
+- `npm run package:build` 编译 [`packages`](packages) 下的源码包，产物写入 [`src/gadgets`](src/gadgets)（postCommit CI 亦会自动执行并提交）
+- `npm run package:test` 对源码包执行构建幂等检查与单元测试
 
-`npm run test` 是提交前的快速检查，**不等价于 CI 的完整验证**：CI 还会额外执行 `npm run lint:scripts` 与 [`scripts/postcss/index.js`](scripts/postcss/index.js)（PostCSS 警告）；其中 `.mailmap` 检查在本地只校验当前 git 配置的邮箱，而在 CI 会校验本次推送或 PR 中每个 commit 的作者与提交者邮箱。`npm run test` 与 `npm run lint:scripts` 均不做 TypeScript 类型检查。完整的编译流程不在 GitHub Actions 中执行，而是在提交合并后由机器人完成（见下方[「编译流程」](#编译流程)）。
+`npm run test` 是提交前的快速检查，**不等价于 CI 的完整验证**：CI 还会额外执行 `npm run lint:scripts`、`npm run package:test` 与 [`scripts/postcss/index.js`](scripts/postcss/index.js)（PostCSS 警告）；其中 `.mailmap` 检查在本地只校验当前 git 配置的邮箱，而在 CI 会校验本次推送或 PR 中每个 commit 的作者与提交者邮箱。`npm run lint:scripts` 不做 TypeScript 类型检查。完整的编译流程不在 GitHub Actions 中执行，而是在提交合并后由机器人完成（见下方[「编译流程」](#编译流程)）。
 
 ### 提交前检查
 
