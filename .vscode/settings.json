@@ -198,7 +198,8 @@
         "Group/sysop",
         "Group/user",
         "Package/JSONViewer",
-        "Package/Navigation_popups"
+        "Package/Navigation_popups",
+        "Package/UserMessages"
     ],
     "conventionalCommits.storeScopesGlobally": false,
     "github.copilot.chat.organizationInstructions.enabled": false,
