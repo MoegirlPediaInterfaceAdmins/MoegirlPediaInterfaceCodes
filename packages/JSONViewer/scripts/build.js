@@ -1,4 +1,4 @@
-import { build as esbuildBuild } from "esbuild";
+import { build as esbuildBuild, context } from "esbuild";
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -25,25 +25,48 @@ const BANNER = `/**
  */`;
 
 /**
+ * dev 专用内联插件（style-loader 语义）：把每个 CSS 模块编译为向页面注入 `<style>` 的 JS 模块，
+ * 开发调试时单个脚本即携带全部样式，无需另行加载 CSS 产物；注入顺序与模块求值顺序一致，
+ * 也与生产产物中 CSS 的合并顺序相同。生产模式不注册该插件：CSS 单独打包，满足界面库
+ * definition.yaml 需要 js 与 css 两份产物的部署要求。
+ */
+const cssInjectPlugin = {
+    name: "dev-css-inject",
+    setup: (pluginBuild) => {
+        pluginBuild.onLoad({ filter: /\.css$/ }, async (args) => {
+            const css = await fs.promises.readFile(args.path, "utf8");
+            const contents = `const css = ${JSON.stringify(css)};
+const style = document.createElement("style");
+style.textContent = css;
+document.head.append(style);`;
+            return { contents, loader: "js" };
+        });
+    },
+};
+
+/**
  * esbuild 公共构建选项。产物保持未压缩：唯一的压缩发生在界面库部署侧的 terser，
  * 避免同一份代码被压缩两次。format esm 输出裸顶层语句、不带 IIFE 包裹：
  * gadget 经 mw.loader.implement 下发，其函数作用域已经隔离顶层名。
  * CSS 的浏览器前缀与 stylelint 由界面库自身的 postcss 构建与 lint 流程处理
- * （做法同 Navigation_popups），此处只产出 esbuild 的原始输出。
- * __DEV__ 取 false，配合 minifySyntax 使入口中为 safemode 调试写的 mw.loader.using 分支整段消除。
+ * （做法同 Navigation_popups），生产模式只产出 esbuild 的原始输出。
+ * __DEV__ 按构建形态区分：发布构建取 false，配合 minifySyntax 使入口中为 safemode
+ * 调试写的 mw.loader.using 分支整段消除；dev watch 取 true 时保留该分支。
  */
-const buildOptions = () => ({
+const buildOptions = (dev = false) => ({
     entryPoints: [path.join(root, ENTRY)],
     bundle: true,
     format: "esm",
     target: "es2020",
     // classic JSX runtime，与源码中的显式 React import 及 tsconfig 的 "jsx": "react" 对应
     jsx: "transform",
-    outdir: path.join(root, "dist"),
+    outdir: dev ? path.join(root, "dist", "dev") : path.join(root, "dist"),
     // 仅做语法级优化，不压缩空白与标识符，产物保持可读。
     minifySyntax: true,
-    define: { __DEV__: "false" },
-    banner: { js: `${BANNER}\n"use strict";`, css: BANNER },
+    define: { __DEV__: dev ? "true" : "false" },
+    ...dev
+        ? { plugins: [cssInjectPlugin], sourcemap: "inline" }
+        : { banner: { js: `${BANNER}\n"use strict";`, css: BANNER } },
 });
 
 /**
@@ -107,7 +130,13 @@ const write = async () => {
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
     try {
-        if (process.argv.includes("--check-idempotent")) {
+        if (process.argv.includes("--watch")) {
+            // dev 产物：未压缩 + inline sourcemap，CSS 以 <style> 注入打包进单个 JS 文件，
+            // 写入包内 dist/dev/（已被 .gitignore 的 dist 覆盖），不触碰提交进仓库的 src/gadgets/ 产物。
+            const ctx = await context(buildOptions(true));
+            await ctx.watch();
+            console.log(`${ENTRY} -> packages/JSONViewer/dist/dev/（未压缩 + inline sourcemap + CSS 内联），监听改动中，Ctrl+C 退出`);
+        } else if (process.argv.includes("--check-idempotent")) {
             const first = await buildOnce();
             const second = await buildOnce();
             for (const [name, file] of artifacts) {

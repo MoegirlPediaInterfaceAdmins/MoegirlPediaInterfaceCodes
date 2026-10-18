@@ -35,7 +35,7 @@ src/
 ├── index.css           # 本工具自有的布局样式
 └── env.d.ts            # CSS 副作用导入与构建期常量 __DEV__ 的声明
 tests/                  # vitest（jsdom），覆盖 config / theme / source
-scripts/build.js        # esbuild 构建 + 幂等检查
+scripts/build.js        # esbuild 构建（发布 / --watch dev / --check-idempotent 幂等）
 ```
 
 ## 构建
@@ -43,4 +43,5 @@ scripts/build.js        # esbuild 构建 + 幂等检查
 依赖统一由仓库根目录管理，本包不设独立 package.json：
 
 - `npm run package:build` —— 构建产物并写入 `src/gadgets/JSONViewer/`；
-- `npm run package:test` —— 构建幂等检查与单元测试（`--check` 模式）。
+- `npm run package:test` —— 构建幂等检查与单元测试（`--check` 模式）；
+- `node packages/JSONViewer/scripts/build.js --watch` —— dev watch：产出未压缩 + inline sourcemap 的单文件（CSS 以 `<style>` 注入打包进 JS）到 `packages/JSONViewer/dist/dev/`（已被 `.gitignore` 的 `dist` 覆盖），改动即时重建；`__DEV__` 取 true，入口里为 safemode 调试写的 `mw.loader.using` 分支被保留，便于脱离依赖声明单独调试。
