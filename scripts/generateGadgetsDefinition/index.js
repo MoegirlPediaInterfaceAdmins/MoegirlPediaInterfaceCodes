@@ -4,6 +4,7 @@ import fs from "node:fs";
 import path from "node:path";
 import createCommit from "../modules/createCommit.js";
 import yamlModule from "../modules/yamlModule.js";
+import reconcileDefinitionFiles from "./reconcileDefinitionFiles.js";
 
 const gadgetBaseRoot = "src/gadgets";
 
@@ -30,11 +31,10 @@ for (const { gadget, files } of gadgetDirs) {
          */
         const gadgetDefinition = await yamlModule.readFile(path.join(gadgetBaseRoot, gadget, "definition.yaml"));
         const { _section } = gadgetDefinition;
-        const unexistFiles = gadgetDefinition._files.filter((file) => !gadgetFiles.includes(file));
-        const unindexedFiles = files.filter((file) => !gadgetDefinition._files.includes(file));
+        const { unexistFiles, unindexedFiles, definitionFiles } = reconcileDefinitionFiles({ definitionFiles: gadgetDefinition._files, files, gadgetFiles });
         if (unexistFiles.length + unindexedFiles.length > 0) {
             console.info("Found unexist or unindexed files, update definition.yaml and commit:", { unexistFiles, unindexedFiles });
-            gadgetDefinition._files = [...gadgetDefinition._files.filter((file) => gadgetFiles.includes(file)), ...unindexedFiles].filter((fileName) => !fileName.startsWith("_") && fileName !== "jsconfig.json");
+            gadgetDefinition._files = definitionFiles;
             await yamlModule.writeFile(path.join(gadgetBaseRoot, gadget, "definition.yaml"), gadgetDefinition);
             await createCommit(`auto(Gadget-${gadget}): gadget definition updated by generateGadgetsDefinition`);
         }

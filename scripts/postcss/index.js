@@ -1,6 +1,7 @@
 import { exec } from "node:child_process";
-import { debug, warning, startGroup, endGroup } from "@actions/core";
+import { warning, startGroup, endGroup } from "@actions/core";
 import console from "../modules/console.js";
+import parseOutput from "./parseOutput.js";
 
 console.info("Start to run postcss...");
 startGroup("postcss output:");
@@ -20,38 +21,7 @@ const output = await new Promise((res, rej) => {
 });
 endGroup();
 
-/**
- * @type { [string, import("@actions/core").AnnotationProperties][] }
- */
-const annotations = [];
-/**
- * @type { string }
- */
-let lastFileName;
-for (const line of output.split("\n")) {
-    if (line.trim().startsWith("Finished")) {
-        const match = line.match(/Finished (.*?) in/)?.[1];
-        if (match) {
-            lastFileName = match;
-            debug(line, { match });
-        }
-    }
-    if (line.includes("⚠")) {
-        /**
-         * @type { import("@actions/core").AnnotationProperties }
-         */
-        const annotationProperties = {
-            title: "PostCSS Annotation",
-            file: lastFileName,
-            startLine: +line.match(/^(\d+):(\d+)/)?.[1],
-            startColumn: +line.match(/^(\d+):(\d+)/)?.[2],
-        };
-        const fileLink = `https://github.com/${process.env.GITHUB_REPOSITORY}/blob/${process.env.GITHUB_SHA.slice(0, 7)}/${encodeURI(`${lastFileName}#L${annotationProperties.startLine}`)}`;
-        const msg = `${line.replace(/^.*?⚠\s*/, "")} @ ${fileLink}`;
-        annotations.push([msg, annotationProperties]);
-        debug(line, { msg, annotationProperties, fileLink });
-    }
-}
+const annotations = parseOutput(output, process.env.GITHUB_REPOSITORY, process.env.GITHUB_SHA);
 
 if (annotations.length > 0) {
     console.warn("PostCSS has some warnings:");

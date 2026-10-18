@@ -1,8 +1,3 @@
-const githubWebInterfaceCommitter = {
-    committerName: "GitHub",
-    committerEmail: "noreply@github.com",
-};
-
 import artifactClient from "@actions/artifact";
 import { endGroup, exportVariable, startGroup } from "@actions/core";
 import { execFile as execFileCallback } from "node:child_process";
@@ -18,34 +13,10 @@ import mailmap from "../modules/mailmap.js";
 import mkdtmp from "../modules/mkdtmp.js";
 import { debugConsole, debugLoggingEnabled, isInGithubActions, isInMasterBranch, isInMoegirlPediaInterfaceCodes, octokit } from "../modules/octokit.js";
 import yamlModule from "../modules/yamlModule.js";
+import { isFromGithubWebInterface, parseCoAuthor, removeSplitter } from "./attribution.js";
+import countCommitChanges from "./countCommitChanges.js";
+import { parseNumstatPaths, renamePathValidator } from "./pathValidators.js";
 
-/**
- * @param { string } file file path like "src/@types/libBottomRightCorner.d.ts"
- * @returns { boolean }
- */
-const pathValidator = (file) => file.startsWith("src/") && ![
-    "src/@types/",
-].some((blacklist) => file.startsWith(blacklist));
-/**
- * 处理 --numstat -M 的两种重命名写法：`{a => b}`（同目录/部分相同）与 `a => b`（完全不同）。
- * 重命名两侧只要任一侧位于 src/ 就算改动，否则跨目录重命名（如 scripts/x => src/x）会被漏计。
- * @param { string } raw 形如 "src/gadgets/{A.js => B.js}" 或 "scripts/a.js => src/a.js"
- * @returns { boolean }
- */
-const renamePathValidator = (raw) => {
-    if (pathValidator(raw)) {
-        return true;
-    }
-    if (!raw.includes("=>")) {
-        return false;
-    }
-    const braceMatch = /^(.*?)\{(.*?) => (.*?)\}(.*)$/.exec(raw);
-    if (braceMatch) {
-        return pathValidator(braceMatch[1] + braceMatch[2] + braceMatch[4]) || pathValidator(braceMatch[1] + braceMatch[3] + braceMatch[4]);
-    }
-    const [from, to] = raw.split(" => ");
-    return pathValidator(from.trim()) || pathValidator(to.trim());
-};
 const execFile = promisify(execFileCallback);
 
 exportVariable("linguist-generated-generateCommitsHistory", JSON.stringify(["src/global/zh/GHIAHistory.json"]));
@@ -115,7 +86,7 @@ console.info("Signature status distribution:", signatureStatuses);
  * 重复计入合并提交（本仓库实测多算 1160 个文件条目，而真正独有的仅 69 个）。
  * 不能用 -m：会为每个父各输出一份，重复更严重。
  */
-const numstatFiles = async (from, to) => (await git.raw(["diff", "--numstat", "-M", from, to])).split("\n").filter((line) => line.trim().length > 0).map((line) => line.split("\t").pop());
+const numstatFiles = async (from, to) => parseNumstatPaths(await git.raw(["diff", "--numstat", "-M", from, to]));
 const mergeChangedFiles = new Map();
 let mergeCandidates = 0;
 for (const { hash, parents } of rawHistory) {
@@ -169,7 +140,6 @@ const parser = ({ username, changedFiles, hash, date, indent }) => {
         changedFiles,
     });
 };
-const removeSplitter = (str) => str.replace(/ò$/, "").trim();
 if (debugLoggingEnabled) {
     startGroup("Raw history parsing:");
 }
@@ -179,47 +149,15 @@ for (const { hash, _date, authorName, _authorEmail, _signatureKey, _signatureSta
     const committerEmail = removeSplitter(_committerEmail).toLowerCase();
     const signatureKey = removeSplitter(_signatureKey);
     debugConsole.log("Parsing:", { date, hash, authorName, authorEmail, committerName, committerEmail, signatureKey, signatureStatus: _signatureStatus, signatureSigner: _signatureSigner, coAuthors, diff });
-    let changedFiles = 0;
-    let touchedSrc = false;
-    if (Array.isArray(diff?.files)) {
-        debugConsole.log("\tdiff.files:", diff.files);
-        // 计数与入选必须解耦：changedFiles 会被 Gadget-queryContributions 直接求和成
-        // GHIA 编辑数，须保持修复前口径——纯重命名（`0 0 路径`）不计权，否则重命名
-        // 密集提交会显著膨胀该统计；但入选判定用 touchedSrc（含纯重命名），否则纯
-        // 重命名提交会重新被整体丢弃（#1065 实测漏掉 6 个此类提交），以
-        // changedFiles: 0 入库即可两全。
-        // binary 条目没有行数（changes 为 undefined），且 simple-git 的 numstat 解析
-        // 把 before/after 恒置为 0，无法沿用修复前的 before !== after 判定；而会
-        // 出现在 diff 输出里的 binary 文件必然发生过变化，故直接计权。
-        for (const { file, changes, binary } of diff.files) {
-            if (!renamePathValidator(file)) {
-                continue;
-            }
-            touchedSrc = true;
-            if (binary || changes > 0) {
-                changedFiles++;
-            }
-        }
-        debugConsole.log("\tchangedFiles:", changedFiles, "| touchedSrc:", touchedSrc);
-    } else if (mergeChangedFiles.has(hash)) {
-        // 合并提交：仅计入「与所有父提交都不同」的冲突解决产物
-        touchedSrc = true;
-        changedFiles = mergeChangedFiles.get(hash);
-        debugConsole.log("\tchangedFiles (merge, differing from all parents):", changedFiles);
-    } else {
-        debugConsole.log("\tNothing changed by this commit.");
-    }
+    const { changedFiles, touchedSrc } = countCommitChanges(diff, hash, mergeChangedFiles);
     if (!touchedSrc) {
         debugConsole.log("\tNothing in src/ has been changed, skip.");
         continue;
     }
-    // %G? 的 G/U/X/Y/R 均为「签名密码学有效」，其中 Y 表示签名有效但密钥现已过期——
-    // 必须接受，否则会丢掉旧密钥（2024-01-16 前冻结）签名的全部历史提交；
-    // N/E/B 分别表示无签名、无法验证（密钥缺失）、签名损坏，均不可信。
-    const isFromGithubWebInterface = ["G", "U", "X", "Y", "R"].includes(_signatureStatus) && _signatureSigner.endsWith(`<${githubWebInterfaceCommitter.committerEmail}>`) && committerName === githubWebInterfaceCommitter.committerName && committerEmail === githubWebInterfaceCommitter.committerEmail;
-    debugConsole.log("\tisFromGithubWebInterface:", isFromGithubWebInterface);
-    const name = isFromGithubWebInterface ? authorName : committerName;
-    const email = (isFromGithubWebInterface ? authorEmail : committerEmail).toLowerCase();
+    const fromGithubWebInterface = isFromGithubWebInterface({ signatureStatus: _signatureStatus, signatureSigner: _signatureSigner, committerName, committerEmail });
+    debugConsole.log("\tisFromGithubWebInterface:", fromGithubWebInterface);
+    const name = fromGithubWebInterface ? authorName : committerName;
+    const email = (fromGithubWebInterface ? authorEmail : committerEmail).toLowerCase();
     debugConsole.log("\tname:", name);
     debugConsole.log("\temail:", email);
     const username = `${Reflect.has(mailmap, email) ? "U:" : "GH:"}${name}`;
@@ -227,11 +165,9 @@ for (const { hash, _date, authorName, _authorEmail, _signatureKey, _signatureSta
     parser({ username, changedFiles, hash, date, indent: 1 });
     for (const coAuthorInfo of coAuthors.split(/\r*\n/).filter(({ length }) => length > 0)) {
         debugConsole.log("\tFound co-author:", coAuthorInfo);
-        const [coAuthorName, ..._coAuthorEmail] = coAuthorInfo.replace(/^Co-authored-by: /i, "").split(" <");
-        const coAuthorEmail = _coAuthorEmail.join(" <").replace(/>$/, "").toLowerCase();
+        const { name: coAuthorName, email: coAuthorEmail, username: coAuthorUsername } = parseCoAuthor(coAuthorInfo);
         debugConsole.log("\t\tcoAuthorName:", coAuthorName);
         debugConsole.log("\t\tcoAuthorEmail:", coAuthorEmail);
-        const coAuthorUsername = Reflect.has(mailmap, coAuthorEmail) ? `U:${mailmap[coAuthorEmail]}` : `GH:${coAuthorName}`;
         debugConsole.log("\t\tcoAuthorUsername:", coAuthorUsername);
         parser({ username: coAuthorUsername, changedFiles, hash, date, indent: 2 });
     }

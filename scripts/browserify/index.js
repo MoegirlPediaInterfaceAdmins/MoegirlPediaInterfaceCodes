@@ -6,6 +6,7 @@ import console, { dump } from "../modules/console.js";
 import createCommit from "../modules/createCommit.js";
 import exec from "../modules/exec.js";
 import { buildGeneratedFileHeader, writeGadgetArtifact } from "../modules/gadgetArtifact.js";
+import buildInputCode from "./buildInputCode.js";
 import minifyStream from "../modules/minify-stream.js";
 import { mkdlocaltmp } from "../modules/mkdtmp.js";
 import modulePath from "../modules/modulePath.js";
@@ -29,20 +30,14 @@ console.info("npm ls:", ["", ...Object.entries(localPackageVersions).map(([name,
 const fileList = [];
 for (const browserifyTarget of browserifyTargets) {
     console.info("target:", browserifyTarget);
-    const { module, entry, gadget: { name, fileName }, exportValues, removePlugins, prependCode, namespaceImport } = browserifyTarget;
+    const { module, gadget: { name, fileName }, removePlugins, prependCode } = browserifyTarget;
     const file = path.join("src/gadgets", name, fileName);
     fileList.push(file);
     await fs.promises.rm(inputPath, {
         recursive: true,
         force: true,
     });
-    const hasExports = Array.isArray(exportValues) && exportValues.length > 0;
-    const exportReference = namespaceImport ? "* as m" : hasExports ? `{ ${exportValues.join(", ")} }` : "m";
-    const importReference = namespaceImport ? "m" : hasExports ? `{ ${exportValues.join(", ")} }` : "m";
-    await fs.promises.writeFile(inputPath, [
-        `import ${exportReference} from "${module}";`,
-        `global["${entry}"] = ${importReference};`,
-    ].join("\n"));
+    await fs.promises.writeFile(inputPath, buildInputCode(browserifyTarget));
     const codes = await new Promise((res, rej) => {
         console.info(`[${module}]`, "start generating...");
         const plugins = new Set([

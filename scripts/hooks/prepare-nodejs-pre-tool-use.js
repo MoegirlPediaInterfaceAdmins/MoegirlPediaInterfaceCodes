@@ -1,34 +1,15 @@
 import { access, mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
+import createOutput from "./createOutput.js";
 
 const scriptDir = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = process.argv[2] || path.resolve(scriptDir, "../..");
 const packageJsonPath = path.join(repoRoot, "package.json");
-const hookEventName = "PreToolUse";
 
 const emit = (output, exitCode = 0) => {
     process.stdout.write(`${JSON.stringify(output)}\n`);
     process.exit(exitCode);
-};
-
-const createOutput = ({ continueFlag, stopReason, additionalContext, systemMessage }) => {
-    const output = {
-        "continue": continueFlag,
-        hookSpecificOutput: {
-            hookEventName,
-            additionalContext,
-        },
-    };
-    if (continueFlag === false) {
-        output.stopReason = stopReason || "No reason provided";
-    }
-
-    if (systemMessage) {
-        output.systemMessage = systemMessage;
-    }
-
-    return output;
 };
 
 const readPackageJson = async () => JSON.parse(await readFile(packageJsonPath, "utf8"));

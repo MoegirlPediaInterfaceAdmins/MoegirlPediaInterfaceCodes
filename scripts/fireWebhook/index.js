@@ -6,29 +6,21 @@ import generateHMACSignature from "../modules/generateHMACSignature.js";
 import git from "../modules/git.js";
 import { isInGithubActions, isInMasterBranch, workflowLink } from "../modules/octokit.js";
 import readWorkflowEvent from "../modules/workflowEvent.js";
+import summarizeNeeds from "./summarizeNeeds.js";
 exitIf(!isInGithubActions, "Not running in github actions, exit.");
 exitIf(!isInMasterBranch, "Not running in non-master branch, exit.");
 if (!process.env.ANN_SERVER_SECRET_API_KEY) {
     console.info("Api key not found, exit.");
     process.exit(0);
 }
-const exitResult = ["skipped", "cancelled"];
+const summary = summarizeNeeds(JSON.parse(process.env.needs));
+exitIf(summary.exitResult !== null, `Job has been ${summary.exitResult}, exit.`);
 const data = {
-    success: true,
+    success: summary.success,
     workflowRunPage: workflowLink,
 };
-const NEEDS = JSON.parse(process.env.needs);
-for (const [job, { result }] of Object.entries(NEEDS)) {
-    console.info("Job", job, ":", result);
-    exitIf(exitResult.includes(result), `Job has been ${result}, exit.`);
-    if (result === "failure") {
-        data.success = false;
-        if (!Array.isArray(data.failedJobs)) {
-            data.failedJobs = [];
-        }
-        data.failedJobs.push(job);
-        continue;
-    }
+if (summary.failedJobs.length > 0) {
+    data.failedJobs = summary.failedJobs;
 }
 console.info("data.success:", data.success);
 if (data.success) {
