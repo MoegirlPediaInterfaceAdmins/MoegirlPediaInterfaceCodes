@@ -8,9 +8,13 @@ src/*.json linguist-generated=false
 src/**/*.yaml linguist-generated=false
 src/*.yaml linguist-generated=false
 
+# >>> managed by scripts/postCommit/linguist-generated.js >>>
 # From browserify
 src/gadgets/libHashwasm/Gadget-libHashwasm.js linguist-generated=true
 src/gadgets/libip/Gadget-libip.js linguist-generated=true
+
+# From generateCommitsHistory
+src/global/zh/GHIAHistory.json linguist-generated=true
 
 # From packages
 src/gadgets/JSONViewer/Gadget-JSONViewer.css linguist-generated=true
@@ -20,26 +24,23 @@ src/gadgets/Navigation_popups/Gadget-popups.js linguist-generated=true
 src/gadgets/UserMessages/Gadget-UserMessages.js linguist-generated=true
 src/gadgets/UserMessages/Gadget-UserMessages.json linguist-generated=true
 
-# From generateCommitsHistory
-src/global/zh/GHIAHistory.json linguist-generated=true
-
 # From prefetch
 src/gadgets/libJSON5/Gadget-libJSON5.js linguist-generated=true
 src/gadgets/localforage/Gadget-localforage.js linguist-generated=true
 src/gadgets/prism-core/Gadget-prism-core.js linguist-generated=true
-src/gadgets/prism-core/Gadget-prism-line-numbers.js linguist-generated=true
 src/gadgets/prism-core/Gadget-prism-line-numbers.css linguist-generated=true
+src/gadgets/prism-core/Gadget-prism-line-numbers.js linguist-generated=true
 src/gadgets/prism-language-bash/Gadget-prism-language-bash.js linguist-generated=true
 src/gadgets/prism-language-c/Gadget-prism-language-c.js linguist-generated=true
 src/gadgets/prism-language-clike/Gadget-prism-language-clike.js linguist-generated=true
 src/gadgets/prism-language-coffeescript/Gadget-prism-language-coffeescript.js linguist-generated=true
 src/gadgets/prism-language-cpp/Gadget-prism-language-cpp.js linguist-generated=true
 src/gadgets/prism-language-csharp/Gadget-prism-language-csharp.js linguist-generated=true
-src/gadgets/prism-language-css/Gadget-prism-language-css.js linguist-generated=true
 src/gadgets/prism-language-css/Gadget-prism-language-css-extras.js linguist-generated=true
+src/gadgets/prism-language-css/Gadget-prism-language-css.js linguist-generated=true
 src/gadgets/prism-language-java/Gadget-prism-language-java.js linguist-generated=true
-src/gadgets/prism-language-javascript/Gadget-prism-language-javascript.js linguist-generated=true
 src/gadgets/prism-language-javascript/Gadget-prism-language-javascript-extras.js linguist-generated=true
+src/gadgets/prism-language-javascript/Gadget-prism-language-javascript.js linguist-generated=true
 src/gadgets/prism-language-json/Gadget-prism-language-json.js linguist-generated=true
 src/gadgets/prism-language-json/Gadget-prism-language-json5.js linguist-generated=true
 src/gadgets/prism-language-latex/Gadget-prism-language-latex.js linguist-generated=true
@@ -47,8 +48,8 @@ src/gadgets/prism-language-lua/Gadget-prism-language-lua.js linguist-generated=t
 src/gadgets/prism-language-markup/Gadget-prism-language-markup.js linguist-generated=true
 src/gadgets/prism-language-perl/Gadget-prism-language-perl.js linguist-generated=true
 src/gadgets/prism-language-php/Gadget-prism-language-markup-templating.js linguist-generated=true
-src/gadgets/prism-language-php/Gadget-prism-language-php.js linguist-generated=true
 src/gadgets/prism-language-php/Gadget-prism-language-php-extras.js linguist-generated=true
+src/gadgets/prism-language-php/Gadget-prism-language-php.js linguist-generated=true
 src/gadgets/prism-language-python/Gadget-prism-language-python.js linguist-generated=true
 src/gadgets/prism-language-regex/Gadget-prism-language-regex.js linguist-generated=true
 src/gadgets/prism-language-ruby/Gadget-prism-language-ruby.js linguist-generated=true
@@ -56,8 +57,9 @@ src/gadgets/prism-language-typescript/Gadget-prism-language-typescript.js lingui
 src/gadgets/prism-language-yaml/Gadget-prism-language-yaml.js linguist-generated=true
 src/gadgets/prism-plugin-javadoclike/Gadget-prism-plugin-javadoclike.js linguist-generated=true
 src/gadgets/prism-plugin-jsdoc/Gadget-prism-plugin-jsdoc.js linguist-generated=true
-src/gadgets/prism-plugin-match-braces/Gadget-prism-plugin-match-braces.js linguist-generated=true
 src/gadgets/prism-plugin-match-braces/Gadget-prism-plugin-match-braces.css linguist-generated=true
+src/gadgets/prism-plugin-match-braces/Gadget-prism-plugin-match-braces.js linguist-generated=true
 src/gadgets/prism-plugin-phpdoc/Gadget-prism-plugin-phpdoc.js linguist-generated=true
-src/gadgets/prism-plugin-previewers/Gadget-prism-plugin-previewers.js linguist-generated=true
 src/gadgets/prism-plugin-previewers/Gadget-prism-plugin-previewers.css linguist-generated=true
+src/gadgets/prism-plugin-previewers/Gadget-prism-plugin-previewers.js linguist-generated=true
+# <<< managed <<<
