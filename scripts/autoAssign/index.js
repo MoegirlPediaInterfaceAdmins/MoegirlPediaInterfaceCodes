@@ -1,29 +1,17 @@
-import console from "../modules/console.js";
+import console, { dump } from "../modules/console.js";
 console.info("Initialization done.");
+import exitIf from "../modules/exitIf.js";
 import yamlModule from "../modules/yamlModule.js";
 import { isInGithubActions, octokit } from "../modules/octokit.js";
-import { startGroup, endGroup } from "@actions/core";
 import readWorkflowEvent from "../modules/workflowEvent.js";
 
-if (!isInGithubActions) {
-    console.info("Not in github actions, exit.");
-    process.exit(0);
-}
+exitIf(!isInGithubActions, "Not in github actions, exit.");
 const event = await readWorkflowEvent();
 const { action, number } = event;
-if (action !== "opened") {
-    console.info("The pull request is not opened, exit.");
-    process.exit(0);
-}
-
-if (typeof number !== "number") {
-    console.info("The number of the pull request is not `number`, exit.");
-    process.exit(0);
-}
+exitIf(action !== "opened", "The pull request is not opened, exit.");
+exitIf(typeof number !== "number", "The number of the pull request is not `number`, exit.");
 const config = await yamlModule.readFile(".github/auto_assign.yaml");
-startGroup("config:");
-console.info(config);
-endGroup();
+dump("config:", config);
 const { addReviewers, reviewers, addAssignees, assignees } = config;
 if (addReviewers) {
     if (Array.isArray(reviewers) && reviewers.length > 0) {

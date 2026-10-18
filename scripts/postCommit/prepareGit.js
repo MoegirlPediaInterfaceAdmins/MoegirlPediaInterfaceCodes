@@ -1,12 +1,10 @@
 import console from "../modules/console.js";
+import exitIf from "../modules/exitIf.js";
 import git from "../modules/git.js";
 import { isInGithubActions } from "../modules/octokit.js";
 console.info("Initialization done.");
 
-if (!isInGithubActions) {
-    console.info("Not running in github actions, exit.");
-    process.exit(0);
-}
+exitIf(!isInGithubActions, "Not running in github actions, exit.");
 console.info("Running in github actions, preparing git...");
 const name = "github-actions[bot]";
 const email = "41898282+github-actions[bot]@users.noreply.github.com";

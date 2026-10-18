@@ -1,9 +1,9 @@
-import { execFile, spawn } from "node:child_process";
+import { execFile } from "node:child_process";
 import { promisify } from "node:util";
+import spawnAsync, { commandForPlatform } from "../modules/spawnAsync.js";
 
 const execFileAsync = promisify(execFile);
 const packageLockFile = "package-lock.json";
-const npmCommand = process.platform === "win32" ? "npm.cmd" : "npm";
 const [hookName, rewriteType] = process.argv.slice(2);
 
 const revParse = async (revision) => {
@@ -26,24 +26,6 @@ const packageLockChanged = async (fromRevision, toRevision) => {
     return result.stdout.trim() !== "";
 };
 
-const runNpmCi = async () => await new Promise((resolve, reject) => {
-    const childProcess = spawn(npmCommand, ["run", "ci"], {
-        stdio: "inherit",
-    });
-    childProcess.on("error", reject);
-    childProcess.on("exit", (exitCode, signal) => {
-        if (exitCode === 0) {
-            resolve();
-            return;
-        }
-        if (typeof exitCode === "number") {
-            reject(Object.assign(new Error(`npm run ci exited with code ${exitCode}.`), { exitCode }));
-            return;
-        }
-        reject(new Error(`npm run ci exited unexpectedly${signal ? ` with signal ${signal}` : "."}`));
-    });
-});
-
 const shouldCheckPackageLock = !!hookName && (hookName !== "post-rewrite" || rewriteType === "rebase");
 if (shouldCheckPackageLock) {
     const previousRevision = await revParse("ORIG_HEAD");
@@ -52,7 +34,7 @@ if (shouldCheckPackageLock) {
     if (shouldRunCi) {
         console.info(`[git hook] Detected ${packageLockFile} change after ${hookName}; running npm run ci.`);
         try {
-            await runNpmCi();
+            await spawnAsync(commandForPlatform("npm"), ["run", "ci"]);
         } catch (error) {
             process.exitCode = error.exitCode ?? 1;
             throw error;

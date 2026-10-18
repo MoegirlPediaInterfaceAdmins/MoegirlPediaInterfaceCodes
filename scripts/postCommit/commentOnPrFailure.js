@@ -1,13 +1,11 @@
-import console from "../modules/console.js";
+import console, { dump } from "../modules/console.js";
 console.info("Initialization done.");
+import exitIf from "../modules/exitIf.js";
 import { startGroup, endGroup } from "@actions/core";
 import { isInGithubActions, octokit, octokitBaseOptions, workflowLink } from "../modules/octokit.js";
 import readWorkflowEvent from "../modules/workflowEvent.js";
 
-if (!isInGithubActions) {
-    console.info("Not running in github actions, exit.");
-    process.exit(0);
-}
+exitIf(!isInGithubActions, "Not running in github actions, exit.");
 
 const owner = octokitBaseOptions.owner;
 const repo = octokitBaseOptions.repo;
@@ -16,13 +14,8 @@ const runNumber = process.env.GITHUB_RUN_NUMBER;
 const runLink = workflowLink;
 const failedJobNames = ["postCommit", "linter_test"].filter((jobName) => JSON.parse(process.env.NEEDS || "{}")?.[jobName]?.result === "failure");
 
-if (failedJobNames.length === 0) {
-    console.info("No failed jobs found in needs, exit.");
-    process.exit(0);
-}
-startGroup("Failed jobs:");
-console.info(failedJobNames);
-endGroup();
+exitIf(failedJobNames.length === 0, "No failed jobs found in needs, exit.");
+dump("Failed jobs:", failedJobNames);
 
 const event = await readWorkflowEvent();
 let pullNumber = typeof event?.pull_request?.number === "number" ? event.pull_request.number : null;
@@ -39,10 +32,7 @@ if (typeof pullNumber !== "number" && process.env.GITHUB_EVENT_NAME === "push") 
         ?? associatedPullRequests[0]?.number
         ?? null;
 }
-if (typeof pullNumber !== "number") {
-    console.info("No associated pull request found, skip commenting.");
-    process.exit(0);
-}
+exitIf(typeof pullNumber !== "number", "No associated pull request found, skip commenting.");
 console.info("Associated pull request number:", pullNumber);
 
 const getLogTail = async (jobId, maxLines = 200) => {

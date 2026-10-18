@@ -1,21 +1,13 @@
-import console from "../modules/console.js";
+import console, { dump } from "../modules/console.js";
 console.info("Initialization done.");
+import exitIf from "../modules/exitIf.js";
 import yamlModule from "../modules/yamlModule.js";
-import { startGroup, endGroup, setOutput } from "@actions/core";
+import { setOutput } from "@actions/core";
 import { isInGithubActions, isPullRequest, isInMasterBranch, octokit } from "../modules/octokit.js";
 import readWorkflowEvent from "../modules/workflowEvent.js";
-if (!isInGithubActions) {
-    console.info("Not running in github actions, exit.");
-    process.exit(0);
-}
-if (isPullRequest) {
-    console.info("Running in a PR, exit.");
-    process.exit(0);
-}
-if (!isInMasterBranch) {
-    console.info("Not running in master branch, exit.");
-    process.exit(0);
-}
+exitIf(!isInGithubActions, "Not running in github actions, exit.");
+exitIf(isPullRequest, "Running in a PR, exit.");
+exitIf(!isInMasterBranch, "Not running in master branch, exit.");
 /**
  * @typedef { { property: string, operator: "equal" | "startsWith", value: string } } condition
  */
@@ -23,15 +15,9 @@ if (!isInMasterBranch) {
  * @type { { skipConditions: { name: string, conditions: condition[] }[]} }
  */
 const { skipConditions } = await yamlModule.readFile("scripts/skip/config.yaml");
-if (skipConditions.length === 0) {
-    console.info("No skip condition, exit.");
-    process.exit();
-}
+exitIf(skipConditions.length === 0, "No skip condition, exit.");
 const { head_commit } = await readWorkflowEvent();
-if (!head_commit) {
-    console.info("No head commit, exit.");
-    process.exit(0);
-}
+exitIf(!head_commit, "No head commit, exit.");
 const workflows = await octokit.rest.actions.listWorkflowRuns({
     workflow_id: "postCommit.yaml",
     status: "queued",
@@ -40,10 +26,7 @@ const workflows = await octokit.rest.actions.listWorkflowRuns({
     per_page: 100,
 });
 const { data: { workflow_runs } } = workflows;
-if (workflow_runs.length === 0) {
-    console.info("No queued workflow, exit.");
-    process.exit(0);
-}
+exitIf(workflow_runs.length === 0, "No queued workflow, exit.");
 workflow_runs.sort(({ created_at: a }, { created_at: b }) => new Date(a) - new Date(b));
 /**
  * @param {any} object
@@ -82,9 +65,7 @@ for (const skipCondition of skipConditions) {
         console.info("No matched runs, skip.");
         continue;
     }
-    startGroup("Found matched runs:");
-    console.info(JSON.stringify(matchedRuns, null, 4));
-    endGroup();
+    dump("Found matched runs:", JSON.stringify(matchedRuns, null, 4));
     console.info('Set output as "true" and exit.');
     setOutput("skip", "true");
     process.exit(0);

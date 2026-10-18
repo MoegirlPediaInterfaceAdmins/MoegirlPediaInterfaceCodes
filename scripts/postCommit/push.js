@@ -1,18 +1,12 @@
-import { endGroup, startGroup } from "@actions/core";
-import console from "../modules/console.js";
+import console, { dump } from "../modules/console.js";
+import exitIf from "../modules/exitIf.js";
 import upstream from "../modules/getUpstream.js";
 import git from "../modules/git.js";
 import { isInGithubActions, octokit } from "../modules/octokit.js";
 import readWorkflowEvent from "../modules/workflowEvent.js";
 console.info("Initialization done.");
-if (!isInGithubActions) {
-    console.info("Not running in github actions, exit.");
-    process.exit(0);
-}
-if (!upstream) {
-    console.info("Running in github actions, but HEAD does not point to a branch, exit.");
-    process.exit(0);
-}
+exitIf(!isInGithubActions, "Not running in github actions, exit.");
+exitIf(!upstream, "Running in github actions, but HEAD does not point to a branch, exit.");
 const GITHUB_EVENT = await readWorkflowEvent();
 const { before, after } = GITHUB_EVENT;
 const isBeforeExists = before && after && (await git.branch(["--contains", before]).catch(() => ({ current: "" }))).current.length > 0;
@@ -23,15 +17,10 @@ if (isBeforeExists) {
 }
 console.info("final commits:", commits);
 const changedFiles = before && after ? (await git.raw(["diff-tree", "-c", "-r", "--no-commit-id", "--name-only", ...commits])).trim() : "";
-startGroup("changedFiles:");
-console.info(changedFiles);
-endGroup();
+dump("changedFiles:", changedFiles);
 console.info("Running in github actions, start to check unpushed commits...");
 const unpushedCommits = (await git.raw(["cherry", "-v", upstream])).trim();
-if (unpushedCommits.length === 0) {
-    console.info("No unpushed commit.");
-    process.exit(0);
-}
+exitIf(unpushedCommits.length === 0, "No unpushed commit.");
 console.info("Found unpushed commits:", unpushedCommits.split("\n"));
 console.info("Pulling new commits...");
 console.info("Successfully pulled the commits:", await git.pull(undefined, undefined, ["--rebase"]));

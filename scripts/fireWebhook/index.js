@@ -1,17 +1,13 @@
 import { endGroup, startGroup } from "@actions/core";
 import console from "../modules/console.js";
+import exitIf from "../modules/exitIf.js";
+import assertResponseOk from "../modules/assertResponseOk.js";
 import generateHMACSignature from "../modules/generateHMACSignature.js";
 import git from "../modules/git.js";
 import { isInGithubActions, isInMasterBranch, workflowLink } from "../modules/octokit.js";
 import readWorkflowEvent from "../modules/workflowEvent.js";
-if (!isInGithubActions) {
-    console.info("Not running in github actions, exit.");
-    process.exit(0);
-}
-if (!isInMasterBranch) {
-    console.info("Not running in non-master branch, exit.");
-    process.exit(0);
-}
+exitIf(!isInGithubActions, "Not running in github actions, exit.");
+exitIf(!isInMasterBranch, "Not running in non-master branch, exit.");
 if (!process.env.ANN_SERVER_SECRET_API_KEY) {
     console.info("Api key not found, exit.");
     process.exit(0);
@@ -24,10 +20,7 @@ const data = {
 const NEEDS = JSON.parse(process.env.needs);
 for (const [job, { result }] of Object.entries(NEEDS)) {
     console.info("Job", job, ":", result);
-    if (exitResult.includes(result)) {
-        console.info(`Job has been ${result}, exit.`);
-        process.exit(0);
-    }
+    exitIf(exitResult.includes(result), `Job has been ${result}, exit.`);
     if (result === "failure") {
         data.success = false;
         if (!Array.isArray(data.failedJobs)) {
@@ -67,9 +60,7 @@ for (let retryTime = 0; retryTime < 10; retryTime++) {
             method: "POST",
             body,
         });
-        if (!response.ok) {
-            throw new Error(`Failed to fire webhook: ${response.status} ${response.statusText}`, { cause: await response.text() });
-        }
+        await assertResponseOk(response, "Failed to fire webhook");
         const result = await response.json();
         console.info(`Attempt #${retryTime} success, result:`, result);
         console.info("Done.");

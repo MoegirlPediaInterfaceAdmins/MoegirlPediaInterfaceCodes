@@ -11,6 +11,7 @@ import path from "node:path";
 import { promisify } from "node:util";
 import console from "../modules/console.js";
 import createCommit from "../modules/createCommit.js";
+import exitIf from "../modules/exitIf.js";
 import git from "../modules/git.js";
 import jsonModule from "../modules/jsonModule.js";
 import mailmap from "../modules/mailmap.js";
@@ -49,14 +50,8 @@ const execFile = promisify(execFileCallback);
 
 exportVariable("linguist-generated-generateCommitsHistory", JSON.stringify(["src/global/zh/GHIAHistory.json"]));
 
-if (!isInMoegirlPediaInterfaceCodes) {
-    console.info("Not running in MoegirlPediaInterfaceAdmins/MoegirlPediaInterfaceCodes, exit.");
-    process.exit(0);
-}
-if (!isInMasterBranch) {
-    console.info("Not running in master branch, exit.");
-    process.exit(0);
-}
+exitIf(!isInMoegirlPediaInterfaceCodes, "Not running in MoegirlPediaInterfaceAdmins/MoegirlPediaInterfaceCodes, exit.");
+exitIf(!isInMasterBranch, "Not running in master branch, exit.");
 console.info("Initialization done.");
 const tempPath = await mkdtmp();
 const rawHistoryPath = path.join(tempPath, "rawHistory.json");

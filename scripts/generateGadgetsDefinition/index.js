@@ -1,8 +1,7 @@
-import console from "../modules/console.js";
+import console, { dump } from "../modules/console.js";
 console.info("Initialization done.");
 import fs from "node:fs";
 import path from "node:path";
-import { startGroup, endGroup } from "@actions/core";
 import createCommit from "../modules/createCommit.js";
 import yamlModule from "../modules/yamlModule.js";
 
@@ -12,9 +11,7 @@ const gadgetBaseRoot = "src/gadgets";
  * @type { { name: string, gadgets: string[] }[] }
  */
 const gadgetsDefinitionList = await yamlModule.readFile(path.join(gadgetBaseRoot, "Gadgets-definition-list.yaml"));
-startGroup("gadgetsDefinitionList:");
-console.info(gadgetsDefinitionList);
-endGroup();
+dump("gadgetsDefinitionList:", gadgetsDefinitionList);
 const gadgetDirents = await fs.promises.readdir(gadgetBaseRoot, { withFileTypes: true });
 const gadgetDirs = await Promise.all(gadgetDirents.filter((dirent) => dirent.isDirectory()).map(async ({ name: gadget }) => ({ gadget, files: (await fs.promises.readdir(path.join(gadgetBaseRoot, gadget))).filter((file) => [".js", ".css", ".json"].includes(path.extname(path.join(gadgetBaseRoot, gadget, file)))) })));
 const gadgets = gadgetDirs.map(({ gadget }) => gadget);
@@ -78,9 +75,7 @@ for (let i = 0; i < gadgetsDefinitionList.length; i++) {
         return false;
     });
 }
-startGroup("gadgetsDefinitionList final:");
-console.info(gadgetsDefinitionList);
-endGroup();
+dump("gadgetsDefinitionList final:", gadgetsDefinitionList);
 await yamlModule.writeFile(path.join(gadgetBaseRoot, "Gadgets-definition-list.yaml"), gadgetsDefinitionList);
 await createCommit("auto: new Gadgets-definition-list.yaml generated");
 console.info("Done.");

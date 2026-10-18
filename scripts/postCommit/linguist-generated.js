@@ -1,7 +1,7 @@
-import { endGroup, startGroup, warning } from "@actions/core";
+import { warning } from "@actions/core";
 import fs from "node:fs";
 import path from "node:path";
-import console from "../modules/console.js";
+import console, { dump } from "../modules/console.js";
 import createCommit from "../modules/createCommit.js";
 import yamlModule from "../modules/yamlModule.js";
 console.info("Initialization done.");
@@ -24,13 +24,9 @@ const managedBlockPattern = /(?<=^|\n)# >>> managed by scripts\/postCommit\/ling
 const oldGitattributes = await fs.promises.readFile(gitattributesPath, {
     encoding: "utf-8",
 });
-startGroup("old .gitattributes:");
-console.info(oldGitattributes);
-endGroup();
+dump("old .gitattributes:", oldGitattributes);
 const originalGitattributes = oldGitattributes.replace(managedBlockPattern, "").trim();
-startGroup("original .gitattributes:");
-console.info(originalGitattributes);
-endGroup();
+dump("original .gitattributes:", originalGitattributes);
 const compareByCodePoint = (a, b) => a > b ? 1 : a < b ? -1 : 0;
 // 段顺序按环境变量名、段内路径各自做码点排序，使生成结果与 runner 环境块的枚举顺序
 // 以及来源脚本的目录枚举顺序（如 buildPackages 的 readdir）都无关，
@@ -64,57 +60,39 @@ for (const [index, stringValue] of generatedEnvEntries) {
 if (managedLines.length > 0) {
     managedLines.pop();
 }
-startGroup("new .gitattributes:");
-console.info(managedLines);
-endGroup();
+dump("new .gitattributes:", managedLines);
 const finalGitattributes = [originalGitattributes, "", managedFenceStart, ...managedLines, managedFenceEnd];
-startGroup("final .gitattributes:");
-console.info(finalGitattributes);
-endGroup();
+dump("final .gitattributes:", finalGitattributes);
 await fs.promises.writeFile(gitattributesPath, `${finalGitattributes.join("\n").trim()}\n`, {
     encoding: "utf-8",
 });
 await createCommit("auto: new .gitattributes generated");
 
 const stylelintrcPath = ".stylelintrc.yaml";
-startGroup("cssFiles:");
-console.info(cssFiles);
-endGroup();
+dump("cssFiles:", cssFiles);
 const stylelintrc = await yamlModule.readFile(stylelintrcPath);
-startGroup("old .stylelintrc:");
-console.info(stylelintrc);
-endGroup();
+dump("old .stylelintrc:", stylelintrc);
 stylelintrc.ignoreFiles = cssFiles;
-startGroup("new .stylelintrc:");
-console.info(stylelintrc);
-endGroup();
+dump("new .stylelintrc:", stylelintrc);
 await yamlModule.writeFile(stylelintrcPath, stylelintrc);
 await createCommit("auto: new .stylelintrc.yaml generated");
 
 const codeqlConfigPath = ".github/codeql-config.yaml";
 const oldCodeQLConfig = await yamlModule.readFile(codeqlConfigPath);
-startGroup("old codeql-config.yaml");
-console.info(oldCodeQLConfig);
-endGroup();
+dump("old codeql-config.yaml", oldCodeQLConfig);
 const codeQLConfigPathsIgnore = oldCodeQLConfig["paths-ignore"];
-startGroup("old `paths-ignore`:");
-console.info(codeQLConfigPathsIgnore);
-endGroup();
+dump("old `paths-ignore`:", codeQLConfigPathsIgnore);
 for (const folder of foldersForCodeQL) {
     if (!codeQLConfigPathsIgnore.includes(folder)) {
         codeQLConfigPathsIgnore.push(folder);
     }
 }
-startGroup("new `paths-ignore`:");
-console.info(codeQLConfigPathsIgnore);
-endGroup();
+dump("new `paths-ignore`:", codeQLConfigPathsIgnore);
 const finalCodeQLConfig = {
     ...oldCodeQLConfig,
     "paths-ignore": codeQLConfigPathsIgnore,
 };
-startGroup("final codeql-config.yaml:");
-console.info(finalCodeQLConfig);
-endGroup();
+dump("final codeql-config.yaml:", finalCodeQLConfig);
 await yamlModule.writeFile(codeqlConfigPath, finalCodeQLConfig);
 await createCommit("auto: new .github/codeql-config.yaml generated");
 

@@ -1,4 +1,4 @@
-import console from "../modules/console.js";
+import console, { dump } from "../modules/console.js";
 console.info("Initialization done.");
 import readDir from "../modules/readDir.js";
 import yamlModule from "../modules/yamlModule.js";
@@ -7,7 +7,6 @@ import path from "node:path";
 import fetchNPMPackageInfo from "../modules/fetchNPMPackageInfo.js";
 import semver from "semver";
 import { createIssue, octokitBaseOptions } from "../modules/octokit.js";
-import { startGroup, endGroup } from "@actions/core";
 const { owner, repo } = octokitBaseOptions;
 
 const labels = ["ci:detectHardcodedOutdatedNPMPackages"];
@@ -15,9 +14,7 @@ const labels = ["ci:detectHardcodedOutdatedNPMPackages"];
 const { whitelist } = await yamlModule.readFile("scripts/detectHardcodedOutdatedNPMPackages/whitelist.yaml");
 console.info("whitelist:", whitelist);
 const scripts = (await readDir("src")).filter((n) => n.endsWith(".js"));
-startGroup("scripts:");
-console.info(JSON.stringify(scripts, null, 4));
-endGroup();
+dump("scripts:", JSON.stringify(scripts, null, 4));
 for (const src of scripts) {
     // await libCachedCode.injectCachedCode("https://npm.elemecdn.com/wikiplus-core@4.0.11/dist/Main.js", "script");
     const content = await fs.promises.readFile(src, { encoding: "utf-8" });
