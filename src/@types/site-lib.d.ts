@@ -1,14 +1,14 @@
 declare function wgUXS(
     wg: string,
     hans: string,
-    hant?: string,
-    cn?: string,
-    tw?: string,
-    hk?: string,
-    sg?: string,
-    zh?: string,
-    mo?: string,
-    my?: string,
+    hant?: string | null,
+    cn?: string | null,
+    tw?: string | null,
+    hk?: string | null,
+    sg?: string | null,
+    zh?: string | null,
+    mo?: string | null,
+    my?: string | null,
 ): string;
 
 declare const wgULS: typeof wgUXS extends (wg: string, ...rest: infer Rest) => infer ReturnType ? (...args: Rest) => ReturnType : never;

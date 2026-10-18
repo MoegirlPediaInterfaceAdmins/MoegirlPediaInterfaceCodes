@@ -6,13 +6,15 @@
         "allowImportingTsExtensions": true,
         "jsx": "react",
         "types": [
-            "jquery"
+            "jquery",
+            "oojs-ui"
         ]
     },
     "include": [
         "*/src",
         "*/tests",
         "*/vitest.config.ts",
+        "../src/@types/site-lib.d.ts",
         "../node_modules/moment/moment.d.ts",
         "../node_modules/types-mediawiki"
     ]
