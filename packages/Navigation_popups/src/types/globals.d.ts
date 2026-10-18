@@ -3,8 +3,9 @@
 // tightened as the typing effort proceeds. This file is a global script
 // declaration file on purpose (no imports/exports), so the declarations below
 // land in the global scope.
-declare const wgULS: (cn: string, tw: string, ...variants: (string | null)[]) => string;
-declare const wgUVS: (cn: string, tw: string, ...variants: (string | null)[]) => string;
+//
+// wgULS / wgUVS are shared with the root program and declared in
+// src/@types/site-lib.d.ts — do not redeclare them here.
 declare const wikEdUseWikEd: boolean;
 declare const WikEdUpdateFrame: () => void;
 // moment.js is site-provided at runtime; typings come from the moment package

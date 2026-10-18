@@ -119,6 +119,8 @@ const config = [
                 ...configs.browser.languageOptions.globals,
                 mw: false,
                 mediaWiki: false,
+                // OOUI 由 ResourceLoader 注入，packages 下的小工具同样使用
+                OO: false,
                 wgULS: false,
                 wgUVS: false,
                 moment: false,
@@ -146,6 +148,20 @@ const config = [
             // last_attr…）与 wiki/DOM 约定标识符 1:1 保留以便上游补丁仍可对照
             "no-use-before-define": "off",
             camelcase: "off",
+        },
+    },
+    {
+        // packages/UserMessages 与 jQuery Promise / OOUI 打交道的固有写法：整包统一关闭。
+        files: [
+            "packages/UserMessages/src/**/*.ts",
+        ],
+        rules: {
+            // postWithToken 以 (code, result) 多参 reject，await 只能拿到第一个参数
+            "promise/prefer-await-to-then": "off",
+            // 同上：catch 回调的首参是错误码（string），不是 Error
+            "@typescript-eslint/use-unknown-in-catch-callback-variable": "off",
+            // openWindow 的 R 由调用点显式指定（close() 的载荷在 OOUI 里无类型）
+            "@typescript-eslint/no-unnecessary-type-parameters": "off",
         },
     },
     {
