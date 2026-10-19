@@ -197,6 +197,7 @@
         "Group/suppress",
         "Group/sysop",
         "Group/user",
+        "Package/HotCat",
         "Package/JSONViewer",
         "Package/Navigation_popups",
         "Package/UserMessages"
