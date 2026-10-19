@@ -4,6 +4,7 @@ import path from "node:path";
 import console from "../modules/console.js";
 import createCommit from "../modules/createCommit.js";
 import spawnAsync, { commandForPlatform } from "../modules/spawnAsync.js";
+import yamlModule from "../modules/yamlModule.js";
 console.info("Initialization done.");
 
 /**
@@ -27,9 +28,12 @@ if (packageNames.length === 0) {
     throw new Error("No package found under packages/");
 }
 
+const { excluded = [] } = await yamlModule.readFile("scripts/buildPackages/exclusions.yaml").catch(() => ({}));
+
 /**
  * 产物清单约定：src/gadgets/<包名>/ 下以 Gadget- 开头的文件即该包的构建产物，
  * 用于 linguist 登记与 auto commit 范围判断，新增包无需在本脚本登记任何配置。
+ * 例外在 exclusions.yaml 的 excluded 中列出。
  *
  * @type {string[]}
  */
@@ -63,7 +67,8 @@ for (const name of packageNames) {
     artifactFiles.push(
         ...gadgetFiles
             .filter((fileName) => fileName.startsWith("Gadget-"))
-            .map((fileName) => path.posix.join("src", "gadgets", name, fileName)),
+            .map((fileName) => path.posix.join("src", "gadgets", name, fileName))
+            .filter((srcPath) => !excluded.includes(srcPath)),
     );
     if (!checkOnly) {
         await createCommit(`auto(Gadget-${name}): rebuild artifacts from packages/${name}`);

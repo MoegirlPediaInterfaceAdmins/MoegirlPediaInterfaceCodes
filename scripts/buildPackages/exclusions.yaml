@@ -1,0 +1,3 @@
+# 不登记进 linguist-generated 的产物路径
+excluded:
+  - src/gadgets/UserMessages/Gadget-UserMessages.json
