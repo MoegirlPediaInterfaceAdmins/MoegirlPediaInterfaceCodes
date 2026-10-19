@@ -17,6 +17,7 @@ src/gadgets/libip/Gadget-libip.js linguist-generated=true
 src/global/zh/GHIAHistory.json linguist-generated=true
 
 # From packages
+src/gadgets/HotCat/Gadget-HotCat.js linguist-generated=true
 src/gadgets/JSONViewer/Gadget-JSONViewer.css linguist-generated=true
 src/gadgets/JSONViewer/Gadget-JSONViewer.js linguist-generated=true
 src/gadgets/Navigation_popups/Gadget-popups.css linguist-generated=true

@@ -135,6 +135,9 @@ const config = [
                 // 仅类型位置的名字：no-undef 无法区分类型位置与值位置，ambient 类型须在此声明；
                 // 值位置的误用仍会被 tsc 检出（TS2693: "only refers to a type"）
                 JQuery: false,
+                HTMLElementTagNameMap: false,
+                // ext.gadget.libOOUIDialog 提供的站点全局
+                oouiDialog: false,
                 HTMLCollectionOf: false,
                 EventListener: false,
                 GlobalEventHandlers: false,
@@ -162,6 +165,32 @@ const config = [
             "@typescript-eslint/use-unknown-in-catch-callback-variable": "off",
             // openWindow 的 R 由调用点显式指定（close() 的载荷在 OOUI 里无类型）
             "@typescript-eslint/no-unnecessary-type-parameters": "off",
+        },
+    },
+    {
+        // packages/HotCat 测试目录：断言后收窄与 vitest spyOn 的既有形态。
+        files: [
+            "packages/HotCat/tests/**/*.ts",
+        ],
+        rules: {
+            "@typescript-eslint/no-non-null-assertion": "off",
+            "@typescript-eslint/unbound-method": "off",
+        },
+    },
+    {
+        // packages/HotCat 为 legacy 逐句移植，以下规则的现代化改写会改变行为
+        // 或与原文形态冲突，逐条理由见 packages/HotCat/docs/semantic-notes.md §A。
+        files: [
+            "packages/HotCat/src/**/*.ts",
+        ],
+        rules: {
+            "@typescript-eslint/prefer-nullish-coalescing": "off",
+            "@typescript-eslint/prefer-for-of": "off",
+            "@typescript-eslint/prefer-optional-chain": "off",
+            "@typescript-eslint/prefer-string-starts-ends-with": "off",
+            "no-redeclare": "off",
+            "@typescript-eslint/no-this-alias": "off",
+            "@typescript-eslint/no-deprecated": "off",
         },
     },
     {
