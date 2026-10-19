@@ -19,7 +19,7 @@ export const buildGeneratedFileHeader = (sourcePath, options) => {
 
 /**
  * 写入 Gadget 产物：与磁盘既有内容一致时不写也不登记，返回 false；
- * 有变化时写入，且产物为 .js 时向所在目录的 .eslintrc.yaml 登记 ignorePatterns。
+ * 有变化时写入，且产物为 .js 时向所在目录的 .eslint-exemptions.yaml 登记 ignorePatterns。
  * @param {string} file 产物路径
  * @param {string} code 完整文件内容
  * @returns {Promise<boolean>} 内容是否有变化
@@ -35,14 +35,14 @@ export const writeGadgetArtifact = async (file, code) => {
     });
     await fs.promises.writeFile(file, code);
     if (path.extname(file) === ".js") {
-        const eslintrcName = path.join(folder, ".eslintrc.yaml");
-        const eslintrc = await yamlModule.readFile(eslintrcName).catch(() => ({}));
-        if (!Array.isArray(eslintrc.ignorePatterns)) {
-            eslintrc.ignorePatterns = [];
+        const exemptionsName = path.join(folder, ".eslint-exemptions.yaml");
+        const exemptions = await yamlModule.readFile(exemptionsName).catch(() => ({}));
+        if (!Array.isArray(exemptions.ignorePatterns)) {
+            exemptions.ignorePatterns = [];
         }
-        if (!eslintrc.ignorePatterns.includes(filename)) {
-            eslintrc.ignorePatterns.push(filename);
-            await yamlModule.writeFile(eslintrcName, eslintrc);
+        if (!exemptions.ignorePatterns.includes(filename)) {
+            exemptions.ignorePatterns.push(filename);
+            await yamlModule.writeFile(exemptionsName, exemptions);
         }
     }
     return true;

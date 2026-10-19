@@ -20,12 +20,14 @@ const ignores = [
     "!.husky/*.mjs",
 ];
 
-const srcESlintrcFiles = (await readDir("./src")).filter((n) => path.basename(n) === ".eslintrc.yaml");
-for (const srcESlintrcFile of srcESlintrcFiles) {
-    const dir = path.dirname(srcESlintrcFile);
-    const srcESlintrc = await yamlModule.readFile(srcESlintrcFile);
-    if (Array.isArray(srcESlintrc.ignorePatterns)) {
-        for (const ignorePattern of srcESlintrc.ignorePatterns) {
+// 各目录的 .eslint-exemptions.yaml 声明该目录需豁免 lint 的文件；ESLint 引擎不识别
+// 这个文件名，由这里遍历读取并合并进全局 ignores
+const srcExemptionFiles = (await readDir("./src")).filter((n) => path.basename(n) === ".eslint-exemptions.yaml");
+for (const srcExemptionFile of srcExemptionFiles) {
+    const dir = path.dirname(srcExemptionFile);
+    const srcExemptions = await yamlModule.readFile(srcExemptionFile);
+    if (Array.isArray(srcExemptions.ignorePatterns)) {
+        for (const ignorePattern of srcExemptions.ignorePatterns) {
             ignores.push(path.posix.join(dir.replaceAll("\\", "/"), ignorePattern));
         }
     }

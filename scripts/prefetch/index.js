@@ -124,7 +124,7 @@ for (const prefetchTarget of prefetchTargets) {
         console.info(`[${name}]`, "Nothing changed, continue.");
         continue;
     }
-    console.info(`[${name}]`, "wrote the code file and eslintrc successfully.");
+    console.info(`[${name}]`, "wrote the code file and .eslint-exemptions.yaml successfully.");
     if (type === "npm") {
         const packageInfo = await fetchNPMPackageInfo(moduleName);
         if (Object.hasOwn(packageInfo["dist-tags"], version)) {

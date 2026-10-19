@@ -4,7 +4,7 @@ import path from "node:path";
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import { buildGeneratedFileHeader, writeGadgetArtifact } from "../../modules/gadgetArtifact.js";
 
-// gadgetArtifact 经 yamlModule 读写 .eslintrc.yaml；mock 成可断言的假实现，
+// gadgetArtifact 经 yamlModule 读写 .eslint-exemptions.yaml；mock 成可断言的假实现，
 // 既隔离真实 YAML 读写，也保证本测试不向仓库工作区写任何文件。
 // 用 vi.hoisted 提升句柄，vi.mock 工厂（会被提升执行）才能引用这些 vi.fn。
 const yamlMocks = vi.hoisted(() => ({
@@ -34,7 +34,7 @@ beforeEach(() => {
     // 拦截真实写盘：spy 默认会透传原实现，必须显式替换为空实现
     vi.spyOn(fs.promises, "writeFile").mockResolvedValue(undefined);
     vi.spyOn(fs.promises, "mkdir").mockResolvedValue(undefined);
-    // 默认模拟「.eslintrc.yaml 不存在」，实现会回退到 {}
+    // 默认模拟「.eslint-exemptions.yaml 不存在」，实现会回退到 {}
     yamlMocks.readFile.mockRejectedValue(Object.assign(new Error("ENOENT"), { code: "ENOENT" }));
     yamlMocks.writeFile.mockResolvedValue(undefined);
 });
@@ -83,7 +83,7 @@ describe("buildGeneratedFileHeader", () => {
 });
 
 describe("writeGadgetArtifact", () => {
-    it("新内容 .js 产物：建目录、写入全文，并向 .eslintrc.yaml 登记文件名", async () => {
+    it("新内容 .js 产物：建目录、写入全文，并向 .eslint-exemptions.yaml 登记文件名", async () => {
         const file = path.join(artifactBase, "G", "G.js");
         const code = "/* code */\n";
 
@@ -91,12 +91,12 @@ describe("writeGadgetArtifact", () => {
 
         expect(fs.promises.mkdir).toHaveBeenCalledWith(path.dirname(file), { recursive: true });
         expect(fs.promises.writeFile).toHaveBeenCalledWith(file, code);
-        const eslintrcName = path.join(path.dirname(file), ".eslintrc.yaml");
-        expect(yamlMocks.readFile).toHaveBeenCalledWith(eslintrcName);
-        expect(yamlMocks.writeFile).toHaveBeenCalledWith(eslintrcName, { ignorePatterns: ["G.js"] });
+        const exemptionsName = path.join(path.dirname(file), ".eslint-exemptions.yaml");
+        expect(yamlMocks.readFile).toHaveBeenCalledWith(exemptionsName);
+        expect(yamlMocks.writeFile).toHaveBeenCalledWith(exemptionsName, { ignorePatterns: ["G.js"] });
     });
 
-    it("eslintrc 已登记该文件名时不重复写 eslintrc，产物仍正常写入", async () => {
+    it("豁免清单已登记该文件名时不重复写豁免清单，产物仍正常写入", async () => {
         yamlMocks.readFile.mockResolvedValueOnce({ ignorePatterns: ["G.js"] });
         const file = path.join(artifactBase, "G", "G.js");
         const code = "/* code */\n";
@@ -107,19 +107,19 @@ describe("writeGadgetArtifact", () => {
         expect(yamlMocks.writeFile).not.toHaveBeenCalled();
     });
 
-    it("eslintrc 的 ignorePatterns 非数组时先归一化为数组再登记", async () => {
+    it("豁免清单的 ignorePatterns 非数组时先归一化为数组再登记", async () => {
         yamlMocks.readFile.mockResolvedValueOnce({ ignorePatterns: "G.js" });
         const file = path.join(artifactBase, "G", "G.js");
 
         await writeGadgetArtifact(file, "code");
 
         expect(yamlMocks.writeFile).toHaveBeenCalledWith(
-            path.join(path.dirname(file), ".eslintrc.yaml"),
+            path.join(path.dirname(file), ".eslint-exemptions.yaml"),
             { ignorePatterns: ["G.js"] },
         );
     });
 
-    it("非 .js 产物只写入，不读写 .eslintrc.yaml", async () => {
+    it("非 .js 产物只写入，不读写 .eslint-exemptions.yaml", async () => {
         const file = path.join(artifactBase, "G", "G.css");
 
         await expect(writeGadgetArtifact(file, "body {}")).resolves.toBe(true);
@@ -130,7 +130,7 @@ describe("writeGadgetArtifact", () => {
         expect(yamlMocks.writeFile).not.toHaveBeenCalled();
     });
 
-    it("磁盘内容一致时返回 false 且不产生任何写操作或 eslintrc 登记", async () => {
+    it("磁盘内容一致时返回 false 且不产生任何写操作或豁免清单登记", async () => {
         const file = path.join(artifactBase, "G", "G.js");
         const code = "/* unchanged */\n";
         vi.spyOn(fs.promises, "readFile").mockResolvedValue(code);

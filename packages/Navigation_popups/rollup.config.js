@@ -14,7 +14,7 @@ const root = fileURLToPath(new URL(".", import.meta.url));
 // is needed and the entry module has no imports/exports left to keep.
 // No eslint directives ride in the banner: the artifact is not linted
 // anywhere — the repo lint ignores it (src/gadgets/Navigation_popups/
-// .eslintrc.yaml) and the build does not lint it either; it ships exactly
+// .eslint-exemptions.yaml) and the build does not lint it either; it ships exactly
 // as rollup/esbuild print it, and nothing downstream lints it.
 const banner = `/**
  * 本文件由 packages/Navigation_popups 构建生成，请勿直接修改
