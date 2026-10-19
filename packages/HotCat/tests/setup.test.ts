@@ -103,24 +103,6 @@ describe("getState / setState", () => {
         expect(getState()).toBe("Foo|K\nBar");
     });
 
-    it("JSON 内容模型读取 mediawikiCategories", () => {
-        resetSite({ wgPageContentModel: "Tabular.JsonConfig" });
-        document.body.innerHTML = CATLINKS_HTML;
-        state.pageText = JSON.stringify({ mediawikiCategories: [{ name: "Foo", sort: "K" }, { name: "Bar" }] });
-        setup();
-        expect(getState()).toBe("Foo|K\nBar");
-    });
-
-    it("JSON 解析失败时返回 null", () => {
-        resetSite({ wgPageContentModel: "Tabular.JsonConfig" });
-        const error = vi.spyOn(console, "error").mockImplementation(() => undefined);
-        document.body.innerHTML = CATLINKS_HTML;
-        state.pageText = "not json";
-        setup();
-        expect(getState()).toBeNull();
-        error.mockRestore();
-    });
-
     it("空页面上 setState 用给定分类重建编辑器", () => {
         document.body.innerHTML = "<div id=\"catlinks\"><div id=\"mw-normal-catlinks\"><a href=\"/wiki/Category:X\">X</a></div></div>";
         state.pageText = "";
@@ -149,16 +131,6 @@ describe("createCommitForm", () => {
         expect(container.getAttribute("action")).toContain("TestPage");
         expect((container.elements.namedItem("model") as HTMLInputElement).value).toBe("wikitext");
         expect((container.elements.namedItem("format") as HTMLInputElement).value).toBe("text/x-wiki");
-    });
-
-    it("JSON 内容模型使用 application/json", () => {
-        resetSite({ wgPageContentModel: "Map.JsonConfig" });
-        document.body.innerHTML = CATLINKS_HTML;
-        state.pageText = "";
-        setup();
-        createCommitForm();
-        const container = document.getElementById("hotcatCommitForm") as HTMLFormElement;
-        expect((container.elements.namedItem("format") as HTMLInputElement).value).toBe("application/json");
     });
 
     it("重复调用不会重复插入表单", () => {

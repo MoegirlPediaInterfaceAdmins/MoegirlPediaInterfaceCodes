@@ -1,8 +1,8 @@
 import { HC } from "../../src/config/hotcat.ts";
 import { applyLocalization } from "../../src/config/i18n.ts";
 import { site, state } from "../../src/runtime.ts";
-import { changeCategoryJson, changeCategoryWikitext } from "../../src/wikitext/change.ts";
-import { findCategoryJson, findCategoryWikitext } from "../../src/wikitext/find.ts";
+import { changeCategory } from "../../src/wikitext/change.ts";
+import { findCategoryWikitext } from "../../src/wikitext/find.ts";
 import { autoLocalize, initLocalization, wikiTextBlank, wikiTextBlankOrBidi, wikiTextBlankRE } from "../../src/wikitext/patterns.ts";
 import { listCategorys } from "../../src/wikitext/list.ts";
 import { capitalize, escapeRE, param, replaceShortcuts, substitute, title, wikiPagePath } from "../../src/util/text.ts";
@@ -28,9 +28,7 @@ export {
     applyLocalization,
     site,
     state,
-    changeCategoryJson,
-    changeCategoryWikitext,
-    findCategoryJson,
+    changeCategory,
     findCategoryWikitext,
     autoLocalize,
     initLocalization,

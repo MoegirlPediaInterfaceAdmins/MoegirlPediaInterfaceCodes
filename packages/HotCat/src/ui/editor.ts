@@ -2,36 +2,18 @@ import { HC } from "../config/hotcat.ts";
 import { site, state } from "../runtime.ts";
 import { make, hasClass, forceRedraw } from "../util/dom.ts";
 import { capitalize, replaceShortcuts, wikiPagePath } from "../util/text.ts";
-import { evtKeys, evtKill, BS, DEL, DOWN, ESC, IME, PGDOWN, PGUP, RET, SPACE, TAB, UP } from "../util/events.ts";
+import { evtKeys, evtKill, DOWN, ESC, PGDOWN, PGUP, UP } from "../util/events.ts";
 import { wikiTextBlankRE } from "../wikitext/patterns.ts";
-import { filterAndSortTitles, suggestionConfigs, suggestionEngines, type SuggestionEngine } from "../api/suggestions.ts";
-import { ajaxGetJson } from "../api/http.ts";
+import { filterAndSortTitles, suggestionConfigs } from "../api/suggestions.ts";
 import { initiateEdit, resolveMulti } from "../api/page.ts";
 import { performChanges } from "../api/summary.ts";
 import { checkMultiInput, makeActive, setMultiInput, showDab } from "./multi.ts";
 import { alertError } from "./dialogs.ts";
+import { getSelectionRange, setSelectionRange } from "./editor/selection.ts";
+import { position, scrollOffset, viewport } from "../util/layout.ts";
+import { buildForm } from "./editor/form.ts";
+import { fireSuggestionRequests, type SuggestionCallback } from "./editor/suggest.ts";
 import type { TitleList } from "../types.ts";
-
-/** 建议请求的批次状态。 */
-interface SuggestionCallback {
-    allTitles: TitleList | null;
-    callsMade: number;
-    nofCalls: number;
-    noCompletion: boolean;
-    engineName: string;
-    exists?: boolean;
-    normalized?: string;
-    dontCache?: boolean;
-    cancelled?: boolean;
-}
-
-/** 允许按名字读取 clientWidth / scrollLeft 等布局量的视图 */
-type MeasuredElement = Record<string, number>;
-
-const readMetric = (element: Element | null, name: string): number => {
-    const metrics = element as unknown as MeasuredElement | null;
-    return metrics ? metrics[name] || 0 : 0;
-};
 
 class CategoryEditor {
     static UNCHANGED = 0;
@@ -252,187 +234,7 @@ class CategoryEditor {
 
     /** 构造内联表单。 */
     makeForm(): HTMLFormElement {
-        const form = make("form");
-        form.method = "POST";
-        form.onsubmit = this.accept.bind(this);
-        this.form = form;
-        const self = this;
-        const text = make("input");
-        text.type = "text";
-        text.size = HC.editbox_width;
-        if (!state.noSuggestions) {
-            text.onkeyup = (evt) => {
-                const key = evt.keyCode || 0;
-                if (self.ime && self.lastKey === IME && !self.usesComposition && (key === TAB || key === RET || key === ESC || key === SPACE)) {
-                    self.ime = false;
-                }
-                if (self.ime) {
-                    return true;
-                }
-                if (key === UP || key === DOWN || key === PGUP || key === PGDOWN) {
-                    if (self.keyCount === 0) {
-                        return self.processKey(evt);
-                    }
-                } else {
-                    if (key === ESC && self.lastKey !== IME) {
-                        if (!self.resetKeySelection()) {
-                            self.cancel();
-                            return;
-                        }
-                    }
-                    self.invokeSuggestions(key === BS || key === DEL || key === ESC);
-                }
-                return true;
-            };
-            text.onkeydown = (evt) => {
-                const key = evt.keyCode || 0;
-                self.lastKey = key;
-                self.keyCount = 0;
-                if (!self.ime && key === IME && !self.usesComposition) {
-                    self.ime = true;
-                } else if (self.ime && key !== IME && !(key >= 16 && key <= 20 || key >= 91 && key <= 93 || key === 144)) {
-                    self.ime = false;
-                }
-                if (self.ime) {
-                    return true;
-                }
-                if (key === RET) {
-                    return self.accept(evt);
-                }
-                return key === ESC ? evtKill(evt) : true;
-            };
-            text.onkeypress = (evt) => {
-                self.keyCount = (self.keyCount || 0) + 1;
-                return self.processKey(evt);
-            };
-            $(text).on("focus", () => {
-                makeActive(self);
-            });
-            $(text).on("blur", this.saveView.bind(this));
-            try {
-                $(text).on("compositionstart", () => {
-                    self.lastKey = IME;
-                    self.usesComposition = true;
-                    self.ime = true;
-                });
-                $(text).on("compositionend", () => {
-                    self.lastKey = IME;
-                    self.usesComposition = true;
-                    self.ime = false;
-                });
-                $(text).on("textInput", () => {
-                    self.ime = false;
-                    self.invokeSuggestions(false);
-                });
-            } catch {
-                // 不支持时忽略
-            }
-            $(text).on("blur", () => {
-                self.usesComposition = false;
-                self.ime = false;
-            });
-        }
-        this.text = text;
-        this.icon = make("img");
-        this.icon.width = 20;
-        let list: HTMLSelectElement | null = null;
-        if (!state.noSuggestions) {
-            list = make("select");
-            list.onclick = () => {
-                if (self.highlightSuggestion(0)) {
-                    self.textchange(false, true);
-                }
-            };
-            list.ondblclick = (e) => {
-                if (self.highlightSuggestion(0)) {
-                    self.accept(e);
-                }
-            };
-            list.onchange = () => {
-                self.highlightSuggestion(0);
-                self.text.focus();
-            };
-            list.onkeyup = (evt) => {
-                if (evt.keyCode === ESC) {
-                    self.resetKeySelection();
-                    self.text.focus();
-                    window.setTimeout(() => {
-                        self.textchange(true);
-                    }, HC.suggest_delay);
-                } else if (evt.keyCode === RET) {
-                    self.accept(evt);
-                }
-            };
-            if (!HC.fixed_search) {
-                const engineSelector = make("select");
-                for (const key in suggestionConfigs) {
-                    if (suggestionConfigs[key].show) {
-                        const opt = make("option");
-                        opt.value = key;
-                        if (key === this.engine) {
-                            opt.selected = true;
-                        }
-                        opt.appendChild(make(suggestionConfigs[key].name, true));
-                        engineSelector.appendChild(opt);
-                    }
-                }
-                engineSelector.onchange = () => {
-                    self.engine = self.engineSelector?.options[self.engineSelector.selectedIndex].value ?? self.engine;
-                    self.text.focus();
-                    self.textchange(true, true);
-                };
-                this.engineSelector = engineSelector;
-            }
-        }
-        this.list = list;
-        const button_label = (id: string, defaultText: string): string => {
-            let label: Node | null = null;
-            if (state.onUpload && window.UFUI !== undefined && window.UIElements !== undefined && window.UFUI.getLabel instanceof Function) {
-                try {
-                    label = window.UFUI.getLabel(id, true);
-                    while (label && label.nodeType !== 3) {
-                        label = label.firstChild;
-                    }
-                } catch {
-                    label = null;
-                }
-            }
-            if (!label || !(label as Text).data) {
-                return defaultText;
-            }
-            return (label as Text).data;
-        };
-        const OK = make("input");
-        OK.type = "button";
-        OK.value = button_label("wpOkUploadLbl", HC.messages.ok);
-        OK.onclick = this.accept.bind(this);
-        this.ok = OK;
-        const cancel = make("input");
-        cancel.type = "button";
-        cancel.value = button_label("wpCancelUploadLbl", HC.messages.cancel);
-        cancel.onclick = this.cancel.bind(this);
-        this.cancelButton = cancel;
-        const span = make("span");
-        span.className = "hotcatinput";
-        span.style.position = "relative";
-        span.appendChild(text);
-        span.appendChild(make("\u00A0", true));
-        span.style.whiteSpace = "nowrap";
-        if (list) {
-            span.appendChild(list);
-        }
-        if (this.engineSelector) {
-            span.appendChild(this.engineSelector);
-        }
-        if (!state.noSuggestions) {
-            span.appendChild(this.icon);
-        }
-        span.appendChild(OK);
-        span.appendChild(cancel);
-        form.appendChild(span);
-        form.style.display = "none";
-        this.span.appendChild(form);
-        return form;
+        return buildForm(this);
     }
 
     display(evt: Event): boolean {
@@ -513,7 +315,7 @@ class CategoryEditor {
             return;
         }
         this.inactivate();
-        this.requireForm().style.display = "none";
+        this.form!.style.display = "none";
         if (this.catLink) {
             this.catLink.style.display = "";
         }
@@ -536,12 +338,8 @@ class CategoryEditor {
             }
         } else {
             if (!state.onUpload) {
-                try {
-                    if (this.catLink) {
-                        this.catLink.style.backgroundColor = HC.bg_changed;
-                    }
-                } catch {
-                    // 忽略样式写入失败
+                if (this.catLink) {
+                    this.catLink.style.backgroundColor = HC.bg_changed;
                 }
             }
         }
@@ -669,7 +467,7 @@ class CategoryEditor {
         this.lastSavedExists = this.currentExists;
         this.lastSavedHidden = this.currentHidden;
         this.inactivate();
-        this.requireForm().style.display = "none";
+        this.form!.style.display = "none";
         catLink.title = this.currentKey || "";
         catLink.style.display = "";
         if (this.isAddCategory) {
@@ -693,11 +491,7 @@ class CategoryEditor {
             this.normalLinks.appendChild(span);
             this.undoLink = span;
             if (!state.onUpload) {
-                try {
-                    catLink.style.backgroundColor = HC.bg_changed;
-                } catch {
-                    // 忽略样式写入失败
-                }
+                catLink.style.backgroundColor = HC.bg_changed;
             }
         }
         if (this.upDownLinks) {
@@ -759,11 +553,7 @@ class CategoryEditor {
             if (catLink) {
                 catLink.title = "";
                 catLink.style.cssText += "; text-decoration : line-through !important;";
-                try {
-                    catLink.style.backgroundColor = HC.bg_changed;
-                } catch {
-                    // 忽略样式写入失败
-                }
+                catLink.style.backgroundColor = HC.bg_changed;
             }
             this.originalState = this.state;
             this.state = CategoryEditor.DELETED;
@@ -802,12 +592,8 @@ class CategoryEditor {
                 this.catLink.style.backgroundColor = "transparent";
             }
         } else {
-            try {
-                if (this.catLink) {
-                    this.catLink.style.backgroundColor = HC.bg_changed;
-                }
-            } catch {
-                // 忽略样式写入失败
+            if (this.catLink) {
+                this.catLink.style.backgroundColor = HC.bg_changed;
             }
         }
         this.normalLinks.style.display = "";
@@ -845,59 +631,6 @@ class CategoryEditor {
             this.text.setSelectionRange(cursorPos, cursorPos);
         }
     }
-
-    makeCall = (url: string, callbackObj: SuggestionCallback, engine: SuggestionEngine, queryKey: string, cleanKey: string): void => {
-        const cb = callbackObj;
-        const e = engine;
-        const v = queryKey;
-        const z = cleanKey;
-        ajaxGetJson<unknown>(url, {
-            success: (json) => {
-                const titles = e.handler(json, z);
-                if (titles && titles.length) {
-                    if (cb.allTitles === null) {
-                        cb.allTitles = titles;
-                    } else {
-                        cb.allTitles = cb.allTitles.concat(titles);
-                    }
-                    if (titles.exists) {
-                        cb.exists = true;
-                    }
-                    if (titles.normalized) {
-                        cb.normalized = titles.normalized;
-                    }
-                }
-            },
-            error: (req) => {
-                if (!req) {
-                    state.noSuggestions = true;
-                }
-                cb.dontCache = true;
-            },
-            complete: () => {
-                cb.callsMade++;
-                if (cb.callsMade === cb.nofCalls) {
-                    const allTitles = cb.allTitles ?? [];
-                    if (cb.exists) {
-                        allTitles.exists = true;
-                    }
-                    if (cb.normalized) {
-                        allTitles.normalized = cb.normalized;
-                    }
-                    if (!cb.dontCache && !suggestionConfigs[cb.engineName].cache[z]) {
-                        suggestionConfigs[cb.engineName].cache[z] = allTitles;
-                    }
-                    this.text.readOnly = false;
-                    if (!cb.cancelled) {
-                        this.showSuggestions(allTitles, cb.noCompletion, v, cb.engineName);
-                    }
-                    if (cb === this.callbackObj) {
-                        this.callbackObj = null;
-                    }
-                }
-            },
-        });
-    };
 
     textchange(_dont_autocomplete?: boolean, force?: boolean): void {
         makeActive(this);
@@ -962,13 +695,8 @@ class CategoryEditor {
     }
 
     makeCalls(engines: string[], cb: SuggestionCallback, v: string, cleanKey: string): void {
-        for (let j = 0; j < engines.length; j++) {
-            const engine = suggestionEngines[engines[j]];
-            const url = `${site.conf.wgScriptPath}${engine.uri.replace(/\$1/g, encodeURIComponent(cleanKey))}`;
-            this.makeCall(url, cb, engine, v, cleanKey);
-        }
+        fireSuggestionRequests(this, engines, cb, v, cleanKey);
     }
-
     showSuggestions(titles: TitleList | null, dontAutocomplete?: boolean, queryKey?: string | null, engineName?: string | null): void {
         this.text.readOnly = false;
         this.dab = null;
@@ -1093,33 +821,6 @@ class CategoryEditor {
         if (nofItems < HC.listSize) {
             maxListHeight = listh / nofItems * HC.listSize;
         }
-        const viewport = (what: string): number => {
-            const s = `client${what}`;
-            if (window.opera) {
-                return readMetric(document.body, s);
-            }
-            return readMetric(document.documentElement, s) || readMetric(document.body, s);
-        };
-        const scroll_offset = (what: string): number => {
-            const s = `scroll${what}`;
-            let result = readMetric(document.documentElement, s) || readMetric(document.body, s);
-            if (state.is_rtl && what === "Left") {
-                if (result < 0) {
-                    result = -result;
-                }
-                if (!site.isWebkit) {
-                    result = scroll_offset("Width") - viewport("Width") - result;
-                }
-            }
-            return result;
-        };
-        const position = (node: HTMLElement): { x: number; y: number } => {
-            const box = node.getBoundingClientRect();
-            return {
-                x: Math.round(box.left + scroll_offset("Left")),
-                y: Math.round(box.top + scroll_offset("Top")),
-            };
-        };
         const textPos = position(this.text);
         const nl = 0;
         const textBoxWidth = this.text.offsetWidth || this.text.clientWidth;
@@ -1166,7 +867,7 @@ class CategoryEditor {
             list.style.width = `${textBoxWidth}px`;
             return;
         }
-        const scroll = scroll_offset("Left");
+        const scroll = scrollOffset("Left");
         const view_w = viewport("Width");
         let w = list.offsetWidth;
         const l_pos = position(list);
@@ -1222,26 +923,12 @@ class CategoryEditor {
     }
 
     setSelection(from: number, to: number): void {
-        if (!this.text.value) {
-            return;
-        }
-        this.text.setSelectionRange(from, to);
+        setSelectionRange(this, from, to);
     }
 
     getSelection(): { start: number; end: number } {
-        if (!this.text.value) {
-            return {
-                start: 0,
-                end: 0,
-            };
-        }
-        const from = this.text.selectionStart ?? 0;
-        return {
-            start: from,
-            end: this.text.selectionEnd ?? from,
-        };
+        return getSelectionRange(this);
     }
-
     saveView(): void {
         this.lastSelection = this.getSelection();
     }
@@ -1333,14 +1020,6 @@ class CategoryEditor {
             return result;
         }
         return false;
-    }
-
-    /** 取表单（display() 时创建）。 */
-    private requireForm(): HTMLFormElement {
-        if (!this.form) {
-            throw new Error("HotCat: form accessed before creation");
-        }
-        return this.form;
     }
 }
 

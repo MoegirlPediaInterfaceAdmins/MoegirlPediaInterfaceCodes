@@ -1,75 +1,12 @@
 import { HC } from "../config/hotcat.ts";
-import { site, state } from "../runtime.ts";
+import { state } from "../runtime.ts";
 import { substitute } from "../util/text.ts";
 import { findCatsRE, replaceByBlanks } from "./patterns.ts";
-import { findCategoryWikitext, prefixedCategoryName } from "./find.ts";
-import type { ChangeResult, JsonContent, WikitextMatchList } from "../types.ts";
-
-const changeCategory = (_wikitext: string, toRemove: string | null | undefined, toAdd: string | null | undefined, key: string | null | undefined, is_hidden: boolean): ChangeResult => {
-    if (HC.jsonContentModels.includes(site.conf.wgPageContentModel)) {
-        return changeCategoryJson(_wikitext, toRemove, toAdd, key);
-    }
-    return changeCategoryWikitext(_wikitext, toRemove, toAdd, key, is_hidden);
-};
-
-/** JSON 内容模型。 */
-const changeCategoryJson = (jsontext: string, toRemove: string | null | undefined, toAdd: string | null | undefined, key: string | null | undefined): ChangeResult => {
-    try {
-        const jsonData = JSON.parse(jsontext) as JsonContent;
-        if (!jsonData.mediawikiCategories) {
-            jsonData.mediawikiCategories = [];
-        }
-
-        const summary: string[] = [];
-
-        if (toRemove) {
-            const initialLength = jsonData.mediawikiCategories.length;
-            const normalizedToRemoveName = prefixedCategoryName(toRemove);
-            jsonData.mediawikiCategories = jsonData.mediawikiCategories.filter((cat) => prefixedCategoryName(cat.name) !== normalizedToRemoveName);
-
-            if (jsonData.mediawikiCategories.length < initialLength) {
-                summary.push(HC.messages.cat_removed.replace(/\$1/g, toRemove));
-            }
-        }
-
-        if (toAdd) {
-            const normalizedToAddName = prefixedCategoryName(toAdd);
-            const exists = jsonData.mediawikiCategories.some((cat) => prefixedCategoryName(cat.name) === normalizedToAddName);
-
-            if (!exists) {
-                jsonData.mediawikiCategories.push({
-                    name: toAdd,
-                    sort: key || "",
-                });
-                summary.push(HC.messages.cat_added.replace(/\$1/g, toAdd));
-            } else if (key) {
-                for (let i = 0; i < jsonData.mediawikiCategories.length; i++) {
-                    const cat = jsonData.mediawikiCategories[i];
-                    if (prefixedCategoryName(cat.name) === normalizedToAddName && (!cat.sort || cat.sort !== key)) {
-                        cat.sort = key;
-                        summary.push(HC.messages.cat_keychange.replace(/\$1/g, toAdd).replace(/\$2/g, key));
-                        break;
-                    }
-                }
-            }
-        }
-
-        return {
-            text: JSON.stringify(jsonData, null, 2),
-            summary: summary,
-            error: null,
-        };
-    } catch (e) {
-        return {
-            text: jsontext,
-            summary: [],
-            error: `Failed to modify JSON categories: ${e instanceof Error ? e.message : String(e)}`,
-        };
-    }
-};
+import { findCategoryWikitext } from "./find.ts";
+import type { ChangeResult, WikitextMatchList } from "../types.ts";
 
 /** wikitext 内容模型。 */
-const changeCategoryWikitext = (_wikitext: string, toRemove: string | null | undefined, toAdd: string | null | undefined, _key: string | null | undefined, is_hidden: boolean): ChangeResult => {
+const changeCategory = (_wikitext: string, toRemove: string | null | undefined, toAdd: string | null | undefined, _key: string | null | undefined): ChangeResult => {
     let key = _key;
     let wikitext = _wikitext;
     const find_insertionpoint = (text: string): { idx: number; onCat: boolean } => {
@@ -207,13 +144,6 @@ const changeCategoryWikitext = (_wikitext: string, toRemove: string | null | und
         } else {
             summary.push(HC.messages.cat_added.replace(/\$1/g, toAdd));
         }
-        if (HC.uncat_regexp && !is_hidden) {
-            const txt = wikitext.replace(HC.uncat_regexp, "");
-            if (txt.length !== wikitext.length) {
-                wikitext = txt;
-                summary.push(HC.messages.uncat_removed);
-            }
-        }
     }
     return {
         text: wikitext,
@@ -222,4 +152,4 @@ const changeCategoryWikitext = (_wikitext: string, toRemove: string | null | und
     };
 };
 
-export { changeCategory, changeCategoryJson, changeCategoryWikitext };
+export { changeCategory };

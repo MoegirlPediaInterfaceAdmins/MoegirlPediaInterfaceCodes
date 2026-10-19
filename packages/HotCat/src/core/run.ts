@@ -4,32 +4,6 @@ import { param } from "../util/text.ts";
 import { initialize } from "./initialize.ts";
 import { getPage, setState, setup, setupUpload } from "../ui/setup.ts";
 
-/** 页面是否提供编辑入口（老皮肤看顶栏链接，其余看 ca-edit） */
-const can_edit = (): boolean => {
-    switch (site.skin) {
-        case "cologneblue":
-        case "standard":
-        case "nostalgia": {
-            let container = site.skin === "cologneblue" ? document.getElementById("quickbar") : null;
-            if (!container) {
-                container = document.getElementById("topbar");
-            }
-            if (!container) {
-                return false;
-            }
-            const lks = container.getElementsByTagName("a");
-            for (let i = 0; i < lks.length; i++) {
-                if (param("title", lks[i].href) === site.conf.wgPageName && param("action", lks[i].href) === "edit") {
-                    return true;
-                }
-            }
-            return false;
-        }
-        default:
-            return document.getElementById("ca-edit") !== null;
-    }
-};
-
 /** 启动逻辑。 */
 const reallyRun = (): void => {
     initialize();
@@ -41,7 +15,7 @@ const reallyRun = (): void => {
             }
         });
     } else {
-        if (!site.conf.wgIsArticle || site.conf.wgAction !== "view" || param("diff") !== null || param("oldid") !== null || !can_edit() || HC.disable()) {
+        if (!site.conf.wgIsArticle || site.conf.wgAction !== "view" || param("diff") !== null || param("oldid") !== null || !mw.config.get("wgIsProbablyEditable") || HC.disable()) {
             return;
         }
         if (!HC.isSupportedContentModel()) {
@@ -63,4 +37,4 @@ const run = (): void => {
     reallyRun();
 };
 
-export { can_edit, reallyRun, run };
+export { reallyRun, run };

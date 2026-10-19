@@ -61,6 +61,16 @@
 9. **`CommitForm` 具名控件建模**
    - `wpDiff` / `wpSave` 建模为可选，与 legacy 的 `if (action)` 守卫一致（隐藏表单里本来就没有 `wpSave`，该分支恒为空操作）。
 
+10. **内容模型白名单精简（2026-10-19，经维护者确认）**
+    - `wikitextContentModels` 移除 `proofread-index` / `proofread-page`：萌百未安装 ProofreadPage 扩展（实测 `siprop=extensions`），两种内容模型不可达。
+11. **移除 `{{Uncategorized}}` 清理（2026-10-19，经维护者确认）**
+    - 删除 `HC.uncat_regexp`、`HC.messages.uncat_removed` 与 `changeCategoryWikitext` 的清理块；随之删除 `changeCategory*` 的 `is_hidden` 参数（其唯一用途就是门控该清理）。
+    - 行为变更：对页面源码中字面包含 `{{Uncategorized}}` 的页面，新增分类时不再剥离该模板。萌百不存在 `Template:Uncategorized`，legacy 的该分支对本站实际不可达。
+
+> 拆分说明：`ui/editor.ts` 中的表单构建、建议请求、选区操作与下拉定位已拆到
+> `ui/editor/{form,suggest,selection}.ts` 与 `util/layout.ts`，
+> `CategoryEditor` 方法保留同名委托，公开方法面与调用时序不变。
+
 ## C. 保留的 legacy 怪癖（勿修）
 
 - `if (this.lastInput.indexOf(queryKey))`：`indexOf` 返回 0 时为假值，实际语义是「不以 queryKey 开头才 return」；改写成 `startsWith` 会反转行为。
@@ -72,7 +82,7 @@
 
 ## D. 验证记录
 
-- `node .cache/hotcat-differential/differential.mjs`（脚本不入库）：**1406/1406 项一致**（定向语料 506 项 + 伪随机语料 900 项）。
-- `node packages/HotCat/scripts/build.js --check-idempotent`：通过（96,557 bytes）。
-- `node packages/HotCat/scripts/terser-check.js`：acorn es2020 解析通过；tsc es2020 emit 103,808 bytes → terser 66,674 bytes（输出丢弃）。
-- `npx vitest run --root packages/HotCat --coverage`：158 个用例通过；语句 77.30% / 分支 62.01%。
+- `node .cache/hotcat-differential/differential.mjs`（脚本不入库）：**1336/1336 项一致**（定向语料 + 伪随机语料；JSON 分支与 `{{Uncategorized}}` 语料已随 §B.11/13 移除）。
+- `node packages/HotCat/scripts/build.js --check-idempotent`：通过（91,120 bytes）。
+- `node packages/HotCat/scripts/terser-check.js`：acorn es2020 解析通过；tsc es2020 emit 97,627 bytes → terser 63,252 bytes（输出丢弃）。
+- `npx vitest run --root packages/HotCat --coverage`：146 个用例通过。

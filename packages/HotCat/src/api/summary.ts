@@ -82,7 +82,7 @@ const performChanges = (failure: FailureHandler, singleEditor?: CategoryEditor):
     for (i = 0; i < toEdit.length; i++) {
         edit = toEdit[i];
         if (edit.state === CategoryEditor.CHANGED) {
-            result = changeCategory(result.text, edit.originalCategory, edit.currentCategory, edit.currentKey, edit.currentHidden);
+            result = changeCategory(result.text, edit.originalCategory, edit.currentCategory, edit.currentKey);
             if (!result.error) {
                 changes++;
                 if (!edit.originalCategory || !edit.originalCategory.length) {
@@ -97,7 +97,7 @@ const performChanges = (failure: FailureHandler, singleEditor?: CategoryEditor):
                 error = result.error;
             }
         } else if (edit.state === CategoryEditor.DELETED && edit.originalCategory && edit.originalCategory.length) {
-            result = changeCategory(result.text, edit.originalCategory, null, null, false);
+            result = changeCategory(result.text, edit.originalCategory, null, null);
             if (!result.error) {
                 changes++;
                 deleted.push(edit.originalCategory);

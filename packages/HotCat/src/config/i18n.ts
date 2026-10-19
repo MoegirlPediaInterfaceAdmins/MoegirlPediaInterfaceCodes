@@ -1,66 +1,52 @@
 import { HC } from "./hotcat.ts";
 import { site } from "../runtime.ts";
-import type { HotCatMessages, HotCatTooltips } from "./messages.ts";
+import type { HotCat } from "./hotcat.ts";
 
-interface HotCatLocalization {
-    messages: HotCatMessages;
-    categories: string;
-    redir_category: string;
-    tooltips: HotCatTooltips;
-    multi_tooltip: string;
-    engine_names: Record<string, string>;
-    disambig_category: string;
-    blacklist: RegExp;
-}
-
-const local: HotCatLocalization = {
+const hant: Pick<HotCat, "messages" | "categories" | "disambig_category" | "redir_category" | "tooltips" | "engine_names" | "multi_tooltip"> = {
     messages: {
-        cat_removed: "移除[[分类:$1]]",
-        template_removed: "移除{{[[分类:$1]]}}",
-        cat_added: "添加[[分类:$1]]",
-        cat_keychange: "为[[分类:$1]]设定新索引：“$2”",
-        cat_notFound: "分类“$1”未找到",
-        cat_exists: "分类“$1”已存在，不执行添加操作",
-        cat_resolved: "（已处理[[分类:$1]]的重定向）",
-        uncat_removed: "", // 萌百没有 Template:Uncategorized
+        cat_removed: "移除[[分類:$1]]",
+        template_removed: "移除{{[[分類:$1]]}}",
+        cat_added: "添加[[分類:$1]]",
+        cat_keychange: "為[[分類:$1]]設定新索引：“$2”",
+        cat_notFound: "分類“$1”未找到",
+        cat_exists: "分類“$1”已存在，不執行添加操作",
+        cat_resolved: "（已處理[[分類:$1]]的重定向）",
         separator: "; ",
         prefix: "",
         using: "——[[Help:HotCat小工具|HotCat]]",
-        multi_change: "$1个分类",
-        commit: "保存",
-        ok: "确定",
+        multi_change: "$1個分類",
+        commit: "儲存",
+        ok: "確定",
         cancel: "取消",
-        multi_error: "无法连接到萌百服务器，因此您的分类更改无法保存，由此引发的不便我们深表歉意。",
+        multi_error: "無法連接到萌百伺服器，因此您的分類變更無法保存，由此引發的不便我們深表歉意。",
         short_catchange: null,
     },
-    categories: "分类",
-    redir_category: "分类重定向",
+    categories: "分類",
+    disambig_category: "消歧義頁",
+    redir_category: "分類重定向",
     tooltips: {
         change: "修改",
         remove: "移除",
-        add: "新增一个分类",
-        restore: "回退更改",
-        undo: "回退更改",
-        down: "打开以便修改并显示子分类",
-        up: "打开以便修改并显示父分类",
+        add: "新增一個分類",
+        restore: "回退變更",
+        undo: "回退變更",
+        down: "打開以便修改並顯示子分類",
+        up: "打開以便修改並顯示父分類",
     },
-    multi_tooltip: "修改多个分类",
     engine_names: {
-        searchindex: "搜索索引",
-        pagelist: "页面列表",
-        combined: "合并搜索",
-        subcat: "子分类",
-        parentcat: "父分类",
+        searchindex: "搜尋索引",
+        pagelist: "頁面列表",
+        combined: "合併搜尋",
+        subcat: "子分類",
+        parentcat: "父分類",
     },
-    disambig_category: "消歧义页",
-    blacklist: /(?:不可|已)索引页面|(?:调用重复模板参数|有(?:过多高开销解析器函数调用|忽略显示标题|模板循环|脚本错误|投票|参考文献错误)|含有(?:略过模板参数|受损文件链接)|展开模板后长度超过上限|扩展深度超出限制|使用无效自封闭HTML标签|受到保护无法编辑|即将删除)的页面|有错误的Scribunto模块|隐藏分类|页面的节点数超出限制|需要帮助/i,
+    multi_tooltip: "修改多個分類",
 };
 
-/** 在 `$.ready` 后应用中文覆盖。 */
+/** 對 zh-hant 系變體應用繁體覆蓋；簡體直接使用 HC 預設值。 */
 const applyLocalization = (): void => {
-    if (site.conf.wgUserLanguage !== "en") {
-        // 浅合并
-        $.extend(HC, local, true);
+    if (/^zh-(hant|hk|mo|tw)/i.test(site.conf.wgUserLanguage)) {
+        $.extend(HC, hant, true);
     }
 };
 
