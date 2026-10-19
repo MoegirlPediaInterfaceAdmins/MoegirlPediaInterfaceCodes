@@ -59,9 +59,8 @@ describe("transformFetchedCode", () => {
         expect(transformFetchedCode("x\n///   <reference types=\"t\" />\ny", [])).toBe("x\ny");
     });
 
-    it("前面无换行的首行引用不在 (?<=\\n) 匹配范围内", () => {
-        const data = "/// <reference path=\"a.d.ts\" />\nexport {};";
-        expect(transformFetchedCode(data, [])).toBe(data);
+    it("输入开头的首行引用（前面无换行）同样被剥离", () => {
+        expect(transformFetchedCode("/// <reference path=\"a.d.ts\" />\nexport {};", [])).toBe("export {};");
     });
 
     it("removeCode 片段全部出现都被删除", () => {

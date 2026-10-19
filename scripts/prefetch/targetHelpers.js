@@ -26,4 +26,4 @@ export const buildJsDelivrUrl = (moduleName, version, distFilePath) => {
  * @param {string[]} removeCode 要整段删除的代码片段列表
  * @returns {string}
  */
-export const transformFetchedCode = (data, removeCode) => removeCode.reduce((p, c) => p.replaceAll(c, ""), data.replace(/(?<=\n)\/\/\/ *<reference [^\n]+\n?/ig, ""));
+export const transformFetchedCode = (data, removeCode) => removeCode.reduce((p, c) => p.replaceAll(c, ""), data.replace(/(?<=\n|^)\/\/\/ *<reference [^\n]+\n?/ig, ""));

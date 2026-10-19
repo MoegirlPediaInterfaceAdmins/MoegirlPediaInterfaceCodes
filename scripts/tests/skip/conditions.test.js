@@ -38,8 +38,8 @@ describe("checkCondition", () => {
         expect(checkCondition({ message: "fix: y" }, { property: "message", operator: "startsWith", value: "feat" })).toBe(false);
     });
 
-    it("未知 operator 不做比较，视为满足", () => {
-        expect(checkCondition(head_commit, { property: "type", operator: "contains", value: "x" })).toBe(true);
+    it("未知 operator 按不满足处理（fail-safe，CI 多跑好过漏跑）", () => {
+        expect(checkCondition(head_commit, { property: "type", operator: "contains", value: "x" })).toBe(false);
     });
 });
 

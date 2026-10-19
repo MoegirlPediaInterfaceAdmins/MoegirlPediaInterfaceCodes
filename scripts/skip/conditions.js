@@ -8,8 +8,11 @@ import console from "../modules/console.js";
 export const getPropertyFromCamelCase = (object, camelCaseName) => camelCaseName.split(".").reduce((obj, name) => obj[name], object);
 
 /**
- * 校验单个条件（equal / startsWith）。不满足时返回 false 并打印原因；
- * 满足时返回 true（原内联实现返回 undefined，靠 truthiness 判断，此处显式返回 true，行为等价）。
+ * 校验单个条件（equal / startsWith）。不满足时返回 false 并打印原因；满足时返回 true。
+ * 注意：显式返回 true 是对原内联实现的修复而非等价提取——原实现匹配成功时返回 undefined，
+ * reduce 的 `!previousResult ? previousResult : ...` 会让首个满足的条件把累加值短路为
+ * undefined，被调用方 `!result` 误判为不满足，skip 条件因此从未生效过。
+ * 未知 operator（配置拼错等）按不满足处理：CI 多跑一次好过漏跑（fail-safe）。
  * @param {any} head_commit
  * @param {{ property: string; operator: "equal" | "startsWith"; value: string; }} condition
  * @returns {boolean}
@@ -27,6 +30,9 @@ export const checkCondition = (head_commit, { property, operator, value }) => {
             console.info("Condition not met, exit.");
             return false;
         }
+    } else {
+        console.info("Unknown operator, treat the condition as not met:", operator);
+        return false;
     }
     return true;
 };

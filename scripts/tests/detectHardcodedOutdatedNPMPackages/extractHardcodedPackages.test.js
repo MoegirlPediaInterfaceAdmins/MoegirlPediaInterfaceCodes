@@ -44,9 +44,14 @@ describe("extractHardcodedPackages", () => {
         expect(extractHardcodedPackages(content)).toEqual(["opencc-js@1.0.5"]);
     });
 
-    it("版本后紧跟收尾引号时引号一并捕获（[^/]* 直到下一个斜杠）", () => {
+    it("版本后紧跟收尾引号时引号不进入捕获（否则下游 semver.compare 解析失败）", () => {
         const content = "\"https://npm.elemecdn.com/opencc-js@1.0.5\"";
-        expect(extractHardcodedPackages(content)).toEqual(["opencc-js@1.0.5\""]);
+        expect(extractHardcodedPackages(content)).toEqual(["opencc-js@1.0.5"]);
+    });
+
+    it("单引号包裹的 URL 同样不把引号捕获进版本", () => {
+        const content = "'https://npm.elemecdn.com/opencc-js@1.0.5'";
+        expect(extractHardcodedPackages(content)).toEqual(["opencc-js@1.0.5"]);
     });
 
     it("latest 等非数字版本不匹配返回 null", () => {
