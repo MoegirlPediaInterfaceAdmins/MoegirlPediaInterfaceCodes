@@ -10,7 +10,7 @@ import type { CategoryEditor } from "../editor.ts";
 const buildForm = (editor: CategoryEditor): HTMLFormElement => {
     const form = make("form");
     form.method = "POST";
-    form.onsubmit = editor.accept.bind(this);
+    form.onsubmit = editor.accept.bind(editor);
     editor.form = form;
     const text = make("input");
     text.type = "text";
@@ -160,12 +160,12 @@ const buildForm = (editor: CategoryEditor): HTMLFormElement => {
     const OK = make("input");
     OK.type = "button";
     OK.value = button_label("wpOkUploadLbl", HC.messages.ok);
-    OK.onclick = editor.accept.bind(this);
+    OK.onclick = editor.accept.bind(editor);
     editor.ok = OK;
     const cancel = make("input");
     cancel.type = "button";
     cancel.value = button_label("wpCancelUploadLbl", HC.messages.cancel);
-    cancel.onclick = editor.cancel.bind(this);
+    cancel.onclick = editor.cancel.bind(editor);
     editor.cancelButton = cancel;
     const span = make("span");
     span.className = "hotcatinput";

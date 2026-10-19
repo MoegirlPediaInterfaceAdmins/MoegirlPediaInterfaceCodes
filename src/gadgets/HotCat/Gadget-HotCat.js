@@ -784,7 +784,7 @@ var readMetric = (element, name) => {
 // packages/HotCat/src/ui/editor/form.ts
 var buildForm = (editor) => {
   let form2 = make("form");
-  form2.method = "POST", form2.onsubmit = editor.accept.bind(void 0), editor.form = form2;
+  form2.method = "POST", form2.onsubmit = editor.accept.bind(editor), editor.form = form2;
   let text = make("input");
   if (text.type = "text", text.size = HC.editbox_width, !state.noSuggestions) {
     text.onkeyup = (evt) => {
@@ -857,9 +857,9 @@ var buildForm = (editor) => {
       }
     return !label2 || !label2.data ? defaultText : label2.data;
   }, OK = make("input");
-  OK.type = "button", OK.value = button_label("wpOkUploadLbl", HC.messages.ok), OK.onclick = editor.accept.bind(void 0), editor.ok = OK;
+  OK.type = "button", OK.value = button_label("wpOkUploadLbl", HC.messages.ok), OK.onclick = editor.accept.bind(editor), editor.ok = OK;
   let cancel = make("input");
-  cancel.type = "button", cancel.value = button_label("wpCancelUploadLbl", HC.messages.cancel), cancel.onclick = editor.cancel.bind(void 0), editor.cancelButton = cancel;
+  cancel.type = "button", cancel.value = button_label("wpCancelUploadLbl", HC.messages.cancel), cancel.onclick = editor.cancel.bind(editor), editor.cancelButton = cancel;
   let span = make("span");
   return span.className = "hotcatinput", span.style.position = "relative", span.appendChild(text), span.appendChild(make(" ", !0)), span.style.whiteSpace = "nowrap", list && span.appendChild(list), editor.engineSelector && span.appendChild(editor.engineSelector), state.noSuggestions || span.appendChild(editor.icon), span.appendChild(OK), span.appendChild(cancel), form2.appendChild(span), form2.style.display = "none", editor.span.appendChild(form2), form2;
 };

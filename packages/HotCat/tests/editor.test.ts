@@ -71,6 +71,25 @@ describe("展开表单", () => {
         expect(editor.engineSelector?.value).toBe("pagelist");
     });
 
+    it("确定/取消按钮与表单提交的处理器绑定到编辑器实例（拆分回归）", () => {
+        const { editor } = makeEditor();
+        editor.display(new MouseEvent("click"));
+        // buildForm 是模块级函数：处理器必须绑定到 editor 而不是模块 this
+        const invoke = (handler: unknown, type: string): void => {
+            const bound = handler as (this: unknown, ev: Event) => void;
+            Reflect.apply(bound, undefined, [new Event(type)]);
+        };
+        expect(() => {
+            invoke(editor.ok.onclick, "click");
+        }).not.toThrow();
+        expect(() => {
+            invoke(editor.cancelButton.onclick, "click");
+        }).not.toThrow();
+        expect(() => {
+            invoke(editor.form?.onsubmit ?? null, "submit");
+        }).not.toThrow();
+    });
+
     it("display 会把普通链接收起并记录初始状态", () => {
         const { editor } = makeEditor();
         editor.display(new MouseEvent("click"));
