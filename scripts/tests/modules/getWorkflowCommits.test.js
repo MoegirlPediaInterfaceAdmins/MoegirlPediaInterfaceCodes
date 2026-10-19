@@ -1,7 +1,12 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 // octokit.js 是「import 即读 yaml 并初始化」的雷模块；factory 里用 getter 动态读取 env，
-// 让被测模块在调用时按 GITHUB_EVENT_NAME / GITHUB_ACTIONS 感知运行环境，与真实 octokit.js 的派生逻辑一致
+// 让被测模块在调用时按 GITHUB_EVENT_NAME / GITHUB_ACTIONS 感知运行环境，与真实 octokit.js 的派生逻辑一致。
+// 为什么用 getter 而不是重载模块：真实模块的这些导出是 import 时求值一次的常量，但实测 vitest 5
+// 的 vi.resetModules() 不重跑 mock factory（mock 实例缓存在 mock registry，与模块图独立），
+// 「每场景重新 import」在 mock 体系下不可行。getter 的求值时机差异（访问时 vs import 时）
+// 仅在「被测代码于运行中修改这些 env」时才会显现，而被测代码不存在此行为，
+// 各用例内 env 保持稳定，故行为与「以该 env 启动的真实进程」等价。
 const { listCommitsFn, paginateFn } = vi.hoisted(() => ({ listCommitsFn: vi.fn(), paginateFn: vi.fn() }));
 
 vi.mock("../../modules/octokit.js", () => ({

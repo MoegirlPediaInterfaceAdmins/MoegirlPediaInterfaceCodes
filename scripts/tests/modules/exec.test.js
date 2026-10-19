@@ -7,16 +7,16 @@ describe("exec", () => {
     });
 
     it("stdout 两侧的空格与尾部换行被一并 trim", async () => {
-        await expect(exec("printf '  padded  \\n'")).resolves.toBe("padded");
+        await expect(exec(`"${process.execPath}" -e "process.stdout.write('  padded  \\n')"`)).resolves.toBe("padded");
     });
 
     it("命令写入 stderr 但退出码为 0 时仍 resolve（stderr 不参与成功判定）", async () => {
-        await expect(exec(`${process.execPath} -e "process.stderr.write('warning')"`)).resolves.toBe("");
+        await expect(exec(`"${process.execPath}" -e "process.stderr.write('warning')"`)).resolves.toBe("");
     });
 
     it("非零退出码时 reject，携带 error 与 trim 后的 stdout / stderr", async () => {
         let reason;
-        await exec(`${process.execPath} -e "console.log('out'); console.error('err'); process.exit(3)"`).catch((rejection) => {
+        await exec(`"${process.execPath}" -e "console.log('out'); console.error('err'); process.exit(3)"`).catch((rejection) => {
             reason = rejection;
         });
         expect(reason.error).toBeInstanceOf(Error);
@@ -25,7 +25,8 @@ describe("exec", () => {
         expect(reason.stderr).toBe("err");
     });
 
-    it("命令不存在时同样 reject（shell 以 127 退出）", async () => {
+    // 127 是 POSIX shell「命令不存在」的退出码；cmd.exe 返回其他值，故仅 POSIX 断言
+    it.skipIf(process.platform === "win32")("命令不存在时同样 reject（shell 以 127 退出）", async () => {
         let reason;
         await exec("definitely-not-a-command-xyz").catch((rejection) => {
             reason = rejection;

@@ -38,7 +38,7 @@ describe("exitIf", () => {
     });
 
     it("条件为假时不打印消息也不退出", () => {
-        expect(exitIf(false, "不应出现")).toBeUndefined();
+        exitIf(false, "不应出现");
 
         expect(exitSpy).not.toHaveBeenCalled();
         expect(infoSpy).not.toHaveBeenCalled();

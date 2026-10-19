@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 // debugLog 在模块求值时对 env 做一次性快照，顶层静态 import 会在 env 设定前就固化，
 // 因此全部用例通过 vi.resetModules() + 动态 import 获取新模块实例
@@ -8,6 +8,13 @@ const importDebugLog = () => import("../../modules/debugLog.js");
 const ISO_PREFIX = /^\[\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}\+00:00\]$/;
 
 describe("debugLog", () => {
+    beforeEach(() => {
+        // 实现是「任一变量为字符串 "true" 即启用」；先把两个开关都压到关闭基线，
+        // 防止宿主继承的值（如 Actions debug 模式重跑会设 ACTIONS_RUNNER_DEBUG）让用例结论翻转
+        vi.stubEnv("DEBUG_MODE", "");
+        vi.stubEnv("ACTIONS_RUNNER_DEBUG", "");
+    });
+
     afterEach(() => {
         vi.restoreAllMocks();
         vi.unstubAllEnvs();

@@ -46,7 +46,8 @@ describe("spawnAsync", () => {
         expect(reason.message).toBe(`${process.execPath} ${args.join(" ")} exited with code 7`);
     });
 
-    it("被信号终止（close 回调 code 为 null）时 exitCode 兜底为 1，消息改为 unexpected + 信号名", async () => {
+    // SIGTERM 语义是 POSIX 专属（Windows 的 cmd 无对应信号行为），仅 POSIX 断言
+    it.skipIf(process.platform === "win32")("被信号终止（close 回调 code 为 null）时 exitCode 兜底为 1，消息改为 unexpected + 信号名", async () => {
         const args = ["-e", "process.kill(process.pid, 'SIGTERM')"];
         let reason;
         await spawnAsync(process.execPath, args).catch((rejection) => {

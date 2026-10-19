@@ -4,7 +4,10 @@ import { join } from "node:path";
 import { afterAll, afterEach, describe, expect, it, vi } from "vitest";
 
 // octokit.js 是「import 即读 yaml 并初始化」的雷模块；factory 用 getter 按 GITHUB_ACTIONS env
-// 动态派生 isInGithubActions，与真实实现一致，各用例通过 stubEnv 切换运行环境
+// 动态派生 isInGithubActions，与真实实现一致，各用例通过 stubEnv 切换运行环境。
+// getter 的取舍说明见 getWorkflowCommits.test.js：vitest 5 的 resetModules 不重跑 mock factory，
+// 「每场景重新 import」不可行；getter 与真实「import 时定格」的差异仅在运行中改 env 才显现，
+// 被测代码不存在此行为，各用例内 env 稳定，行为与「以该 env 启动的真实进程」等价
 vi.mock("../../modules/octokit.js", () => ({
     get isInGithubActions() {
         return process.env.GITHUB_ACTIONS === "true";

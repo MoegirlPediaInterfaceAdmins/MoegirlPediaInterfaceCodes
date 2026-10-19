@@ -1,7 +1,7 @@
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import { buildGeneratedFileHeader, writeGadgetArtifact } from "../../modules/gadgetArtifact.js";
 
 // gadgetArtifact 经 yamlModule 读写 .eslintrc.yaml；mock 成可断言的假实现，
@@ -18,8 +18,17 @@ vi.mock("../../modules/yamlModule.js", () => ({
     writeFile: yamlMocks.writeFile,
 }));
 
-// 产物路径落点在写盘全被拦截的前提下仅用于构造参数，指向 os.tmpdir() 下必然不存在的路径
-const artifactBase = path.join(os.tmpdir(), "gadgetArtifact-test-not-exist");
+// 产物路径落点在写盘全被拦截的前提下仅用于构造参数；每次运行用 mkdtemp 唯一目录，
+// 防止上次运行残留的同名产物让「有变更」用例被误判为内容一致
+let artifactBase;
+
+beforeAll(async () => {
+    artifactBase = await fs.promises.mkdtemp(path.join(os.tmpdir(), "gadgetArtifact-test-"));
+});
+
+afterAll(async () => {
+    await fs.promises.rm(artifactBase, { recursive: true, force: true });
+});
 
 beforeEach(() => {
     // 拦截真实写盘：spy 默认会透传原实现，必须显式替换为空实现
