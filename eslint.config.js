@@ -179,7 +179,7 @@ const config = [
     },
     {
         // packages/HotCat 为 legacy 逐句移植，以下规则的现代化改写会改变行为
-        // 或与原文形态冲突，逐条理由见 packages/HotCat/docs/semantic-notes.md §A。
+        // 或与原文形态冲突。
         files: [
             "packages/HotCat/src/**/*.ts",
         ],

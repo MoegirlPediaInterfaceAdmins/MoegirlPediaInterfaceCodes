@@ -18,7 +18,7 @@ HotCat V2.46。
 - 文档：<https://commons.wikimedia.org/wiki/Help:Gadget-HotCat>
 - 主要作者列表：<https://commons.wikimedia.org/wiki/Help:Gadget-HotCat/Version_history>
 - 许可证：**Quadruple licensed GFDL, GPL, LGPL and Creative Commons Attribution 3.0 (CC-BY-3.0)**。
-- 行为基准 = 迁移前的单文件版 `src/gadgets/HotCat/Gadget-HotCat.js` @ commit `79559658`（3198 行）。验收原则是**逐句等价**，偏差逐条登记在 [docs/semantic-notes.md](./docs/semantic-notes.md)。
+- 行为基准 = 迁移前的单文件版 `src/gadgets/HotCat/Gadget-HotCat.js` @ commit `79559658`（3198 行）。
 
 ## 目录结构与包划分
 
@@ -65,7 +65,6 @@ tests/                    # vitest（jsdom + 真 jQuery）
 scripts/
 ├── build.js              # esbuild 构建 + 产物门禁 + 幂等检查
 └── terser-check.js       # 部署链等价门禁（acorn es2020 + tsc es2020 emit + 仓库 terser 配置）
-docs/semantic-notes.md    # 与 legacy 的有意偏差、保留的怪癖、eslint 规则豁免理由
 ```
 
 ## 构建
@@ -102,12 +101,3 @@ node packages/HotCat/scripts/terser-check.js  # 部署链等价门禁
 | `tests/multi.test.ts` | 保存按钮的创建与启用、激活切换、消歧义菜单、批量提交 |
 
 覆盖率（istanbul）只统计可独立测的源码（入口 `index.ts`/`run.ts` 与纯类型文件不在口径内），当前约 77% 语句 / 62% 分支；DOM 生命周期分支主要由差分验证兜底，因此不设 100% 阈值门禁（做法同 `packages/UserMessages`）。
-
-## 与 legacy 的差异
-
-除 `docs/semantic-notes.md` 登记的有意偏差外，源码保持 legacy 的语句顺序、判断顺序与正则；以下「怪癖」被**刻意保留**，不要顺手修：
-
-- `if (this.lastInput.indexOf(queryKey))`（`indexOf` 返回 0 时是假值，等价于「不以 queryKey 开头才返回」的取反写法）；
-- 删除分类后正文可能留下一个换行；
-- `setState` 传入的索引不带 `|` 时会被当作 `originalKey === null`；
-- 单条改动使用完整摘要文案，多条改动才走 `-`/`+`/`±` 短摘要。
