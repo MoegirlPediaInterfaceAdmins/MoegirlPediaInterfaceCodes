@@ -9,7 +9,6 @@
  *     removeCode: [ "// eslint-disable-next-line no-redeclare" ]
  *     jsdelivrUrl: "https://cdn.jsdelivr.net/npm/prismjs@1/components/prism-core.js"
  */
-/// <reference lib="WebWorker"/>
 
 var _self = (typeof window !== 'undefined')
 	? window   // if in browser

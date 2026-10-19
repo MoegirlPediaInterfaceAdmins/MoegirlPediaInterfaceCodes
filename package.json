@@ -16,6 +16,7 @@
         "test:v8r": "node scripts/v8r/index.js",
         "test:mailmap": "node scripts/emailmapChecker/index.js",
         "test:tsc": "tsc -p tsconfig.json && tsc -p packages/tsconfig.json",
+        "test:unit": "vitest run --config scripts/vitest.config.js",
         "lint:scripts": "node scripts/eslint/index.js",
         "lint:commit-message": "node scripts/commitLint/index.js commits",
         "lint:pr-title": "node scripts/commitLint/index.js title",

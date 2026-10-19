@@ -7,6 +7,7 @@ import path from "node:path";
 import fetchNPMPackageInfo from "../modules/fetchNPMPackageInfo.js";
 import semver from "semver";
 import { createIssue, octokitBaseOptions } from "../modules/octokit.js";
+import extractHardcodedPackages from "./extractHardcodedPackages.js";
 const { owner, repo } = octokitBaseOptions;
 
 const labels = ["ci:detectHardcodedOutdatedNPMPackages"];
@@ -18,11 +19,10 @@ dump("scripts:", JSON.stringify(scripts, null, 4));
 for (const src of scripts) {
     // await libCachedCode.injectCachedCode("https://npm.elemecdn.com/wikiplus-core@4.0.11/dist/Main.js", "script");
     const content = await fs.promises.readFile(src, { encoding: "utf-8" });
-    const matches = content.match(/(?<=npm\.elemecdn\.com\/)[^@/]+@v?\d+(?:\.\d+)*[^/]*/g);
-    if (!Array.isArray(matches)) {
+    const packages = extractHardcodedPackages(content);
+    if (packages === null) {
         continue;
     }
-    const packages = [...new Set(matches)];
     console.info("Found", packages.length, "package(s) in", path.relative("src", src), ":", packages);
     const outdatedPackages = [];
     for (const match of packages) {

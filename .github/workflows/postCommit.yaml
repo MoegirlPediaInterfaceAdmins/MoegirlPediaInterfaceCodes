@@ -145,6 +145,11 @@ jobs:
       - skipCI
       - postCommit
     if: always() && needs.skipCI.result == 'success' && needs.skipCI.outputs.skip != 'true'
+    # 本 job 会执行 PR 中的测试文件（test:unit 与 package:test）：
+    # 用只读权限覆盖 workflow 级的写权限集，把测试代码可拿到的 token 上限收窄为只读
+    #（外部 fork PR 的 token 本就被平台强制只读且不注入 secrets，此覆盖同时覆盖同仓库分支场景）。
+    permissions:
+      contents: read
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -187,6 +192,8 @@ jobs:
         run: npx v8r
       - name: Run tsc
         run: npm run test:tsc
+      - name: Run unit test
+        run: npm run test:unit
       # linter_test 检出的是触发修订，不包含 postCommit job 重建产物后的自动提交；
       # 先在本检出内重建，package:test 的「与磁盘产物一致」对比才有意义
       - name: Rebuild packages

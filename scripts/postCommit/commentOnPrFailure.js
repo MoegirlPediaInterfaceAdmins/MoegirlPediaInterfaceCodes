@@ -4,6 +4,7 @@ import exitIf from "../modules/exitIf.js";
 import { startGroup, endGroup } from "@actions/core";
 import { isInGithubActions, octokit, octokitBaseOptions, workflowLink } from "../modules/octokit.js";
 import readWorkflowEvent from "../modules/workflowEvent.js";
+import buildSection from "./buildSection.js";
 
 exitIf(!isInGithubActions, "Not running in github actions, exit.");
 
@@ -51,30 +52,6 @@ const getLogTail = async (jobId, maxLines = 200) => {
         console.warn("[getLogTail]", "Failed to get the job log:", error);
         return "";
     }
-};
-
-const buildSection = (jobName, failedSteps, logTail) => {
-    const lines = [
-        `### ${jobName} 失败`,
-        "",
-        "失败步骤：",
-        "",
-        ...failedSteps.length > 0 ? failedSteps : ["- （无法获取失败步骤）"],
-        "",
-    ];
-    if (logTail.length > 0) {
-        lines.push(
-            "<details>",
-            "<summary>报错日志（末尾 200 行）</summary>",
-            "",
-            "```text",
-            logTail,
-            "```",
-            "",
-            "</details>",
-        );
-    }
-    return lines.join("\n");
 };
 
 startGroup("Collecting failure details:");

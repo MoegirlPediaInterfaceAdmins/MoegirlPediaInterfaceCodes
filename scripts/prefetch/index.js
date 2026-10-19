@@ -10,6 +10,8 @@ import { buildGeneratedFileHeader, writeGadgetArtifact } from "../modules/gadget
 import modulePath from "../modules/modulePath.js";
 import { createIssue, octokit } from "../modules/octokit.js";
 import yamlModule from "../modules/yamlModule.js";
+import parseSha256Sums from "./parseSha256Sums.js";
+import { buildJsDelivrUrl, isValidRepoFormat, transformFetchedCode } from "./targetHelpers.js";
 console.info("Initialization done.");
 
 const labels = ["ci:prefetch"];
@@ -42,9 +44,7 @@ for (const prefetchTarget of prefetchTargets) {
     console.info(`[${name}]`, "Start to fetch...");
     const data = await (async () => {
         if (type === "npm") {
-            const packageName = `${moduleName}${typeof version === "string" ? `@${version}` : ""}`;
-            const filePath = path.posix.join("npm", packageName, distFilePath);
-            const url = new URL(filePath, "https://cdn.jsdelivr.net/");
+            const url = buildJsDelivrUrl(moduleName, version, distFilePath);
             console.info(`[${name}]`, `url: ${url}`);
             prefetchTarget.jsdelivrUrl = url;
             const response = await fetch(url, {
@@ -66,7 +66,7 @@ for (const prefetchTarget of prefetchTargets) {
             // （见 scripts/modules/octokit.js），格式错误的 repo 会静默查询错误仓库并报出难排查的
             // 404，因此先校验「恰好两段非空、以单斜杠分隔」再调用；getLatestRelease 只返回最新的
             // 正式 release，草稿与 prerelease 天然被排除
-            if (!/^[^/\s]+\/[^/\s]+$/.test(repo)) {
+            if (!isValidRepoFormat(repo)) {
                 throw new Error(`[${name}] Invalid \`repo\` value: ${JSON.stringify(repo)}, expected "owner/repository"`);
             }
             const [owner, repository] = repo.split("/");
@@ -98,13 +98,7 @@ for (const prefetchTarget of prefetchTargets) {
             // 对原始字节取哈希后再解码为文本，避免文本解码往返造成哈希不一致
             const buffer = Buffer.from(await assetResponse.arrayBuffer());
             const sha256 = createHash("sha256").update(buffer).digest("hex");
-            // GNU sha256sum 行格式固定为「64 位哈希 + 两字符分隔符 + 文件名」，text 模式分隔符为
-            // 两个空格、binary 模式（sha256sum -b）为空格加星号；文件名可含空格，须整段取到行尾，
-            // 不能按空白拆分，否则二进制标记与含空格的文件名都会匹配失败
-            const expectedSha256 = (await sumsResponse.text()).trim().split(/\r?\n/)
-                .map((line) => /^([0-9a-f]{64}) (?: |\*)(.+)$/.exec(line))
-                .filter(Boolean)
-                .find(([, , fileName]) => fileName === asset)?.[1];
+            const expectedSha256 = parseSha256Sums(await sumsResponse.text(), asset);
             if (!expectedSha256) {
                 throw new Error(`[${name}] No sha256 record for \`${asset}\` in sha256sums.txt of release ${release.tag_name}`);
             }
@@ -120,7 +114,7 @@ for (const prefetchTarget of prefetchTargets) {
     }
     console.info(`[${name}]`, "Successfully fetched.");
     const code = buildGeneratedFileHeader(modulePath(import.meta), prefetchTarget);
-    code.push(removeCode.reduce((p, c) => p.replaceAll(c, ""), data.replace(/(?<=\n)\/\/\/ *<reference [^\n]+\n?/ig, "")));
+    code.push(transformFetchedCode(data, removeCode));
     if (typeof appendCode === "string") {
         code.push(appendCode);
     }
