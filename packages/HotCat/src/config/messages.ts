@@ -6,7 +6,6 @@ interface HotCatMessages {
     cat_notFound: string;
     cat_exists: string;
     cat_resolved: string;
-    uncat_removed: string;
     separator: string;
     prefix: string;
     using: string;

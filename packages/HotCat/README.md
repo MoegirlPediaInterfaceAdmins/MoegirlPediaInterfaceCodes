@@ -18,7 +18,7 @@ HotCat V2.46。
 - 文档：<https://commons.wikimedia.org/wiki/Help:Gadget-HotCat>
 - 主要作者列表：<https://commons.wikimedia.org/wiki/Help:Gadget-HotCat/Version_history>
 - 许可证：**Quadruple licensed GFDL, GPL, LGPL and Creative Commons Attribution 3.0 (CC-BY-3.0)**。
-- 行为基准 = 迁移前的单文件版 `src/gadgets/HotCat/Gadget-HotCat.js` @ commit `79559658`（3198 行）。验收原则是**逐句等价**，偏差逐条登记在 [docs/semantic-notes.md](./docs/semantic-notes.md)。
+- 行为基准 = 迁移前的单文件版 `src/gadgets/HotCat/Gadget-HotCat.js` @ commit `79559658`（3198 行）。
 
 ## 目录结构与包划分
 
@@ -40,8 +40,8 @@ src/
 │   └── events.ts         # keyCode 常量、evtKeys / evtKill
 ├── wikitext/
 │   ├── patterns.ts       # 空白/命名空间正则、autoLocalize、initLocalization、findCatsRE
-│   ├── find.ts           # find_category（wikitext + JSON 内容模型）
-│   ├── change.ts         # change_category（增/删/改索引；JSON 分支）
+│   ├── find.ts           # find_category（wikitext 内容模型）
+│   ├── change.ts         # change_category（增/删/改索引）
 │   └── list.ts           # list_categorys
 ├── api/
 │   ├── http.ts           # jQuery JSON 请求的类型化包装
@@ -49,7 +49,11 @@ src/
 │   ├── suggestions.ts    # 建议引擎、方案表、filterAndSortTitles
 │   └── summary.ts        # multiChangeMsg / currentTimestamp / performChanges
 ├── ui/
-│   ├── editor.ts         # CategoryEditor（五态状态机 + 内联表单 + 建议下拉）
+│   ├── editor.ts         # CategoryEditor（五态状态机 + 建议显示，薄协调层）
+│   └── editor/           # 编辑器内部模块
+│       ├── form.ts       # 内联表单 DOM 构建
+│       ├── suggest.ts    # 建议请求发出与批次状态
+│       └── selection.ts  # 输入框选区操作
 │   ├── multi.ts          # 保存按钮、激活切换、消歧义、批量提交
 │   ├── setup.ts          # 分类栏解析、上传页集成、隐藏表单、getState/setState/closeForm
 │   └── dialogs.ts        # oouiDialog.alert 统一封装
@@ -61,7 +65,6 @@ tests/                    # vitest（jsdom + 真 jQuery）
 scripts/
 ├── build.js              # esbuild 构建 + 产物门禁 + 幂等检查
 └── terser-check.js       # 部署链等价门禁（acorn es2020 + tsc es2020 emit + 仓库 terser 配置）
-docs/semantic-notes.md    # 与 legacy 的有意偏差、保留的怪癖、eslint 规则豁免理由
 ```
 
 ## 构建
@@ -83,11 +86,11 @@ node packages/HotCat/scripts/terser-check.js  # 部署链等价门禁
 
 ## 测试范围
 
-`npm test` 中的 `test:tsc` 会检查本包源码与测试；`npm run package:test` 会运行本包的构建幂等、terser 门禁与 vitest（158 个用例）：
+`npm test` 中的 `test:tsc` 会检查本包源码与测试；`npm run package:test` 会运行本包的构建幂等、terser 门禁与 vitest（146 个用例）：
 
 | 文件 | 覆盖对象 |
 | --- | --- |
-| `tests/wikitext.test.ts` | 分类增删改（含插入点、跨语言链接、`{{Uncategorized}}`、隐藏分类、模板分类）、JSON 内容模型、`find_category`（once/批量、注释/nowiki、中文别名）、`list_categorys` |
+| `tests/wikitext.test.ts` | 分类增删改（含插入点、跨语言链接、隐藏分类、模板分类）、`find_category`（once/批量、注释/nowiki、中文别名） |
 | `tests/text.test.ts` | `substitute` / `replaceShortcuts` / `capitalize` / `escapeRE` / `param` / `title` / `wikiPagePath` / `evtKeys` / `evtKill` |
 | `tests/config.test.ts` | HC 默认值、`disable()` / `isSupportedContentModel()`、中文覆盖、`addShortcuts`、`initialize` 的 window 覆盖与 changeTag 兼容段 |
 | `tests/suggestions.test.ts` | 五个建议引擎的解析、`filterAndSortTitles`（黑名单/前缀优先/去重/排除当前页） |
@@ -98,12 +101,3 @@ node packages/HotCat/scripts/terser-check.js  # 部署链等价门禁
 | `tests/multi.test.ts` | 保存按钮的创建与启用、激活切换、消歧义菜单、批量提交 |
 
 覆盖率（istanbul）只统计可独立测的源码（入口 `index.ts`/`run.ts` 与纯类型文件不在口径内），当前约 77% 语句 / 62% 分支；DOM 生命周期分支主要由差分验证兜底，因此不设 100% 阈值门禁（做法同 `packages/UserMessages`）。
-
-## 与 legacy 的差异
-
-除 `docs/semantic-notes.md` 登记的有意偏差外，源码保持 legacy 的语句顺序、判断顺序与正则；以下「怪癖」被**刻意保留**，不要顺手修：
-
-- `if (this.lastInput.indexOf(queryKey))`（`indexOf` 返回 0 时是假值，等价于「不以 queryKey 开头才返回」的取反写法）；
-- 删除分类后正文可能留下一个换行；
-- `setState` 传入的索引不带 `|` 时会被当作 `originalKey === null`；
-- 单条改动使用完整摘要文案，多条改动才走 `-`/`+`/`±` 短摘要。

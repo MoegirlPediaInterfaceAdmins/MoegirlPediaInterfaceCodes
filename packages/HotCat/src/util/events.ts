@@ -17,22 +17,10 @@ const evtKeys = (e: ModifierKeys): number => {
     return code;
 };
 
-/** IE 事件回退面 */
-interface LegacyEvent {
-    preventDefault?: () => void;
-    stopPropagation?: () => void;
-    cancelBubble?: boolean;
-}
-
 /** 阻止默认行为与冒泡，并返回 false 供 DOM0 处理器直接 return */
 const evtKill = (e: Event): boolean => {
-    const legacy = e as LegacyEvent;
-    if (legacy.preventDefault) {
-        legacy.preventDefault();
-        legacy.stopPropagation?.();
-    } else {
-        legacy.cancelBubble = true;
-    }
+    e.preventDefault();
+    e.stopPropagation();
     return false;
 };
 

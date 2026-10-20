@@ -63,11 +63,8 @@ const suggestionEngines: Record<string, SuggestionEngine> = {
             const queryResult = json as ApiResponse | null;
             if (queryResult && queryResult.query && queryResult.query.pages && !queryResult.query.pages[-1]) {
                 for (const p in queryResult.query.pages) {
-                    const page = queryResult.query.pages[p];
-                    if (!page) {
-                        continue;
-                    }
-                    const title = (page.title || "").substring((page.title || "").indexOf(":") + 1);
+                    const page = queryResult.query.pages[p]!;
+                    const title = page.title.substring(page.title.indexOf(":") + 1);
                     const titles: TitleList = [title];
                     titles.exists = true;
                     if (queryKey !== title) {
@@ -99,8 +96,8 @@ const suggestionEngines: Record<string, SuggestionEngine> = {
             const queryResult = json as ApiResponse | null;
             if (queryResult && queryResult.query && queryResult.query.pages) {
                 for (const p in queryResult.query.pages) {
-                    const page = queryResult.query.pages[p];
-                    if (page?.categories) {
+                    const page = queryResult.query.pages[p]!;
+                    if (page.categories) {
                         const titles = page.categories.map((category) => category.title) as TitleList;
                         for (let i = 0; i < titles.length; i++) {
                             titles[i] = titles[i].substring(titles[i].indexOf(":") + 1);

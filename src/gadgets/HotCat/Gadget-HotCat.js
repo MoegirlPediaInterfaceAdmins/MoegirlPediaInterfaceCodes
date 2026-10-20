@@ -48,27 +48,26 @@ var site = {
 // packages/HotCat/src/config/hotcat.ts
 var HC = {
   messages: {
-    cat_removed: "removed [[Category:$1]]",
-    template_removed: "removed {{[[Category:$1]]}}",
-    cat_added: "added [[Category:$1]]",
-    cat_keychange: 'new key for [[Category:$1]]: "$2"',
-    cat_notFound: 'Category "$1" not found',
-    cat_exists: 'Category "$1" already exists; not added.',
-    cat_resolved: " (redirect [[Category:$1]] resolved)",
-    uncat_removed: "removed {{uncategorized}}",
+    cat_removed: "移除[[分类:$1]]",
+    template_removed: "移除{{[[分类:$1]]}}",
+    cat_added: "添加[[分类:$1]]",
+    cat_keychange: "为[[分类:$1]]设定新索引：“$2”",
+    cat_notFound: "分类“$1”未找到",
+    cat_exists: "分类“$1”已存在，不执行添加操作",
+    cat_resolved: "（已处理[[分类:$1]]的重定向）",
     separator: "; ",
     prefix: "",
-    using: " using [[Help:Gadget-HotCat|HotCat]]",
-    multi_change: "$1 categories",
-    commit: "Save",
-    ok: "OK",
-    cancel: "Cancel",
-    multi_error: "Could not retrieve the page text from the server. Therefore, your category changes cannot be saved. We apologize for the inconvenience.",
+    using: "——[[Help:HotCat小工具|HotCat]]",
+    multi_change: "$1个分类",
+    commit: "保存",
+    ok: "确定",
+    cancel: "取消",
+    multi_error: "无法连接到萌百服务器，因此您的分类更改无法保存，由此引发的不便我们深表歉意。",
     short_catchange: null
   },
-  categories: "Categories",
-  disambig_category: "Disambiguation",
-  redir_category: "Category redirects",
+  categories: "分类",
+  disambig_category: "消歧义页",
+  redir_category: "分类重定向",
   links: {
     change: "(±)",
     remove: "(−)",
@@ -81,37 +80,35 @@ var HC = {
   changeTag: "HotCat",
   automationChangeTag: "Automation tool",
   tooltips: {
-    change: "Modify",
-    remove: "Remove",
-    add: "Add a new category",
-    restore: "Undo changes",
-    undo: "Undo changes",
-    down: "Open for modifying and display subcategories",
-    up: "Open for modifying and display parent categories"
+    change: "修改",
+    remove: "移除",
+    add: "新增一个分类",
+    restore: "回退更改",
+    undo: "回退更改",
+    down: "打开以便修改并显示子分类",
+    up: "打开以便修改并显示父分类"
   },
   addmulti: "<span>+<sup>+</sup></span>",
-  multi_tooltip: "Modify several categories",
-  isSupportedContentModel: () => HC.wikitextContentModels.includes(site.conf.wgPageContentModel) || HC.jsonContentModels.includes(site.conf.wgPageContentModel),
+  multi_tooltip: "修改多个分类",
+  isSupportedContentModel: () => HC.wikitextContentModels.includes(site.conf.wgPageContentModel),
   disable: () => {
     let ns = site.conf.wgNamespaceNumber, nsIds = site.conf.wgNamespaceIds;
     return ns < 0 || ns === nsIds.template || ns === nsIds.module || ns === nsIds.mediawiki || ns === nsIds.file && !site.conf.wgArticleId || ns === nsIds.creator || ns === nsIds.timedtext || ns === nsIds.institution || ns === nsIds.user && /\.(js|css|json)$/.test(site.conf.wgTitle);
   },
-  uncat_regexp: /\{\{\s*[Uu]ncategorized\s*[^}]*\}\}\s*(<!--.*?-->\s*)?/g,
-  wikitextContentModels: ["wikitext", "proofread-index", "proofread-page"],
-  jsonContentModels: ["Tabular.JsonConfig", "Map.JsonConfig", "Chart.JsonConfig"],
+  wikitextContentModels: ["wikitext"],
   existsYes: "https://storage.moegirl.org.cn/moegirl/commons/b/be/P_yes.svg",
   existsNo: "https://storage.moegirl.org.cn/moegirl/commons/4/42/P_no.svg",
   template_categories: {},
   engine_names: {
-    searchindex: "Search index",
-    pagelist: "Page list",
-    combined: "Combined search",
-    subcat: "Subcategories",
-    parentcat: "Parent categories"
+    searchindex: "搜索索引",
+    pagelist: "页面列表",
+    combined: "合并搜索",
+    subcat: "子分类",
+    parentcat: "父分类"
   },
   capitalizePageNames: null,
   upload_disabled: !1,
-  blacklist: null,
+  blacklist: /(?:不可|已)索引页面|(?:调用重复模板参数|有(?:过多高开销解析器函数调用|忽略显示标题|模板循环|脚本错误|投票|参考文献错误)|含有(?:略过模板参数|受损文件链接)|展开模板后长度超过上限|扩展深度超出限制|使用无效自封闭HTML标签|受到保护无法编辑|即将删除)的页面|有错误的Scribunto模块|隐藏分类|页面的节点数超出限制|需要帮助/i,
   bg_changed: "#FCA",
   no_autocommit: !0,
   del_needs_diff: !0,
@@ -128,17 +125,15 @@ var HC = {
     if (!map)
       return;
     let hotCat = window.HotCat;
-    if (hotCat) {
-      hotCat.shortcuts || (hotCat.shortcuts = {});
-      for (let rawKey in map) {
-        if (!Object.prototype.hasOwnProperty.bind(map)(rawKey))
-          continue;
-        let rawValue = map[rawKey];
-        if (typeof rawValue != "string")
-          continue;
-        let k = rawKey.replace(/^\s+|\s+$/g, ""), v = rawValue.replace(/^\s+|\s+$/g, "");
-        !k.length || !v.length || (hotCat.shortcuts[k] = v);
-      }
+    hotCat.shortcuts || (hotCat.shortcuts = {});
+    for (let rawKey in map) {
+      if (!Object.prototype.hasOwnProperty.bind(map)(rawKey))
+        continue;
+      let rawValue = map[rawKey];
+      if (typeof rawValue != "string")
+        continue;
+      let k = rawKey.replace(/^\s+|\s+$/g, ""), v = rawValue.replace(/^\s+|\s+$/g, "");
+      !k.length || !v.length || (hotCat.shortcuts[k] = v);
     }
   },
   // 本地化阶段写入
@@ -148,50 +143,47 @@ var HC = {
 };
 
 // packages/HotCat/src/config/i18n.ts
-var local = {
+var hant = {
   messages: {
-    cat_removed: "移除[[分类:$1]]",
-    template_removed: "移除{{[[分类:$1]]}}",
-    cat_added: "添加[[分类:$1]]",
-    cat_keychange: "为[[分类:$1]]设定新索引：“$2”",
-    cat_notFound: "分类“$1”未找到",
-    cat_exists: "分类“$1”已存在，不执行添加操作",
-    cat_resolved: "（已处理[[分类:$1]]的重定向）",
-    uncat_removed: "",
-    // 萌百没有 Template:Uncategorized
+    cat_removed: "移除[[分類:$1]]",
+    template_removed: "移除{{[[分類:$1]]}}",
+    cat_added: "添加[[分類:$1]]",
+    cat_keychange: "為[[分類:$1]]設定新索引：“$2”",
+    cat_notFound: "分類“$1”未找到",
+    cat_exists: "分類“$1”已存在，不執行添加操作",
+    cat_resolved: "（已處理[[分類:$1]]的重定向）",
     separator: "; ",
     prefix: "",
     using: "——[[Help:HotCat小工具|HotCat]]",
-    multi_change: "$1个分类",
-    commit: "保存",
-    ok: "确定",
+    multi_change: "$1個分類",
+    commit: "儲存",
+    ok: "確定",
     cancel: "取消",
-    multi_error: "无法连接到萌百服务器，因此您的分类更改无法保存，由此引发的不便我们深表歉意。",
+    multi_error: "無法連接到萌百伺服器，因此您的分類變更無法保存，由此引發的不便我們深表歉意。",
     short_catchange: null
   },
-  categories: "分类",
-  redir_category: "分类重定向",
+  categories: "分類",
+  disambig_category: "消歧義頁",
+  redir_category: "分類重定向",
   tooltips: {
     change: "修改",
     remove: "移除",
-    add: "新增一个分类",
-    restore: "回退更改",
-    undo: "回退更改",
-    down: "打开以便修改并显示子分类",
-    up: "打开以便修改并显示父分类"
+    add: "新增一個分類",
+    restore: "回退變更",
+    undo: "回退變更",
+    down: "打開以便修改並顯示子分類",
+    up: "打開以便修改並顯示父分類"
   },
-  multi_tooltip: "修改多个分类",
   engine_names: {
-    searchindex: "搜索索引",
-    pagelist: "页面列表",
-    combined: "合并搜索",
-    subcat: "子分类",
-    parentcat: "父分类"
+    searchindex: "搜尋索引",
+    pagelist: "頁面列表",
+    combined: "合併搜尋",
+    subcat: "子分類",
+    parentcat: "父分類"
   },
-  disambig_category: "消歧义页",
-  blacklist: /(?:不可|已)索引页面|(?:调用重复模板参数|有(?:过多高开销解析器函数调用|忽略显示标题|模板循环|脚本错误|投票|参考文献错误)|含有(?:略过模板参数|受损文件链接)|展开模板后长度超过上限|扩展深度超出限制|使用无效自封闭HTML标签|受到保护无法编辑|即将删除)的页面|有错误的Scribunto模块|隐藏分类|页面的节点数超出限制|需要帮助/i
+  multi_tooltip: "修改多個分類"
 }, applyLocalization = () => {
-  site.conf.wgUserLanguage !== "en" && $.extend(HC, local, !0);
+  /^zh-(hant|hk|mo|tw)/i.test(site.conf.wgUserLanguage) && $.extend(HC, hant, !0);
 };
 
 // packages/HotCat/src/wikitext/patterns.ts
@@ -210,7 +202,7 @@ var wikiTextBlank = "[\\t _\\xA0\\u1680\\u180E\\u2000-\\u200A\\u2028\\u2029\\u20
   let canonical = formattedNamespaces[`${namespaceNumber}`].toLowerCase(), regexp = createRegexpStr(canonical);
   fallback && canonical !== fallback && (regexp += `|${createRegexpStr(fallback)}`);
   for (let cat_name in namespaceIds)
-    typeof cat_name == "string" && cat_name.toLowerCase() !== canonical && cat_name.toLowerCase() !== fallback && namespaceIds[cat_name] === namespaceNumber && (regexp += `|${createRegexpStr(cat_name)}`);
+    cat_name.toLowerCase() !== canonical && cat_name.toLowerCase() !== fallback && namespaceIds[cat_name] === namespaceNumber && (regexp += `|${createRegexpStr(cat_name)}`);
   return regexp;
 }, findCatsRE, initLocalization = () => {
   let formattedNamespaces = site.conf.wgFormattedNamespaces;
@@ -232,16 +224,13 @@ var hasClass = (elem, name) => ` ${elem.className} `.includes(` ${name} `), find
 var evtKeys = (e) => {
   let code = 0;
   return e.ctrlKey && (code |= 1, e.shiftKey && (code |= 2)), code;
-}, evtKill = (e) => {
-  let legacy = e;
-  return legacy.preventDefault ? (legacy.preventDefault(), legacy.stopPropagation?.()) : legacy.cancelBubble = !0, !1;
-};
+}, evtKill = (e) => (e.preventDefault(), e.stopPropagation(), !1);
 
 // packages/HotCat/src/util/text.ts
 var param = (name, uri) => {
   let target = uri || location.href, m = new RegExp(`[&?]${name}=([^&#]*)`).exec(target);
-  return m && m.length > 1 ? decodeURIComponent(m[1]) : null;
-}, title = (href) => href ? href.indexOf(site.expandedScriptPrefix) === 0 ? param("title", href) : href.indexOf(site.expandedArticlePrefix) === 0 ? decodeURIComponent(href.slice(site.expandedArticlePrefix.length)) : null : null, capitalize = (str) => !str || !str.length ? str : str.slice(0, 1).toUpperCase() + str.slice(1), wikiPagePath = (pageName) => site.conf.wgArticlePath.replace("$1", encodeURIComponent(pageName).replace(/%3A/g, ":").replace(/%2F/g, "/")), escapeRE = (str) => str.replace(/([\\^$.?*+()[\]])/g, "\\$1"), substituteFactory = (_options) => {
+  return m ? decodeURIComponent(m[1]) : null;
+}, title = (href) => href ? href.indexOf(site.expandedScriptPrefix) === 0 ? param("title", href) : href.indexOf(site.expandedArticlePrefix) === 0 ? decodeURIComponent(href.slice(site.expandedArticlePrefix.length)) : null : null, capitalize = (str) => str.slice(0, 1).toUpperCase() + str.slice(1), wikiPagePath = (pageName) => site.conf.wgArticlePath.replace("$1", encodeURIComponent(pageName).replace(/%3A/g, ":").replace(/%2F/g, "/")), escapeRE = (str) => str.replace(/([\\^$.?*+()[\]])/g, "\\$1"), substituteFactory = (_options) => {
   let options = _options || {}, lead = options.indicator || "$", indicator = escapeRE(lead), lbrace = escapeRE(options.lbrace || "{"), rbrace = escapeRE(options.rbrace || "}"), re = new RegExp(`(?:${indicator}(${indicator}))|(?:${indicator}(\\d+))|(?:${indicator}(?:${lbrace}([^${lbrace}${rbrace}]+)${rbrace}))|(?:${indicator}(?!(?:[${indicator}${lbrace}]|\\d))(\\S+?)\\b)`, "g");
   return (str, map) => map ? str.replace(re, (match, prefix, idx, key, alpha) => {
     if (prefix === lead)
@@ -259,37 +248,6 @@ var param = (name, uri) => {
 };
 
 // packages/HotCat/src/wikitext/find.ts
-var prefixedCategoryName = (name) => {
-  let title2 = mw.Title.newFromText(`category:${name}`);
-  if (!title2)
-    throw new TypeError(`Invalid category title: ${name}`);
-  return title2.getPrefixedText();
-};
-function findCategoryJson(jsontext, category, once) {
-  let jsonData;
-  try {
-    jsonData = JSON.parse(jsontext);
-  } catch (err) {
-    return console.error("Invalid JSON in find_category_json:", err), once ? null : [];
-  }
-  if (!Array.isArray(jsonData.mediawikiCategories))
-    return once ? null : [];
-  let matches = [], targetCategoryName = prefixedCategoryName(category);
-  for (let i = 0; i < jsonData.mediawikiCategories.length; i++) {
-    let catObj = jsonData.mediawikiCategories[i];
-    if (prefixedCategoryName(catObj.name) === targetCategoryName) {
-      let match = [
-        "",
-        "",
-        catObj.sort || ""
-      ];
-      if (once)
-        return { match };
-      matches.push({ match });
-    }
-  }
-  return once ? null : matches;
-}
 function findCategoryWikitext(wikitext, category, once) {
   let cat_regex;
   if (HC.template_categories[category])
@@ -305,11 +263,7 @@ function findCategoryWikitext(wikitext, category, once) {
     result.push({
       match: curr_match
     });
-  return result.re = cat_regex, result;
-}
-function findCategory(text, category, once) {
-  let isJson = HC.jsonContentModels.includes(site.conf.wgPageContentModel);
-  return once ? isJson ? findCategoryJson(text, category, !0) : findCategoryWikitext(text, category, !0) : isJson ? findCategoryJson(text, category) : findCategoryWikitext(text, category);
+  return Object.assign(result, { re: cat_regex });
 }
 
 // packages/HotCat/src/wikitext/list.ts
@@ -365,10 +319,7 @@ var suggestionEngines = {
       let queryResult = json;
       if (queryResult && queryResult.query && queryResult.query.pages && !queryResult.query.pages[-1])
         for (let p in queryResult.query.pages) {
-          let page = queryResult.query.pages[p];
-          if (!page)
-            continue;
-          let title2 = (page.title || "").substring((page.title || "").indexOf(":") + 1), titles = [title2];
+          let page = queryResult.query.pages[p], title2 = page.title.substring(page.title.indexOf(":") + 1), titles = [title2];
           return titles.exists = !0, queryKey !== title2 && (titles.normalized = title2), titles;
         }
       return null;
@@ -394,7 +345,7 @@ var suggestionEngines = {
       if (queryResult && queryResult.query && queryResult.query.pages)
         for (let p in queryResult.query.pages) {
           let page = queryResult.query.pages[p];
-          if (page?.categories) {
+          if (page.categories) {
             let titles = page.categories.map((category) => category.title);
             for (let i = 0; i < titles.length; i++)
               titles[i] = titles[i].substring(titles[i].indexOf(":") + 1);
@@ -516,7 +467,7 @@ var setPage = (json) => {
     fail(`${request.status} ${request.statusText}`);
   }
 }, resolveOne = (page, toResolve) => {
-  let cats = page.categories, lks = page.links, is_hidden = !!(page.categoryinfo && typeof page.categoryinfo.hidden == "string"), is_missing = typeof page.missing == "string", pageTitle = page.title || "", pageTitleWithoutNs = pageTitle.substring(pageTitle.indexOf(":") + 1), is_dab = !1, is_redir = typeof page.redirect == "string", i;
+  let cats = page.categories, lks = page.links, is_hidden = !!(page.categoryinfo && typeof page.categoryinfo.hidden == "string"), is_missing = typeof page.missing == "string", pageTitle = page.title, pageTitleWithoutNs = pageTitle.substring(pageTitle.indexOf(":") + 1), is_dab = !1, is_redir = typeof page.redirect == "string", i;
   for (i = 0; i < toResolve.length; i++)
     i && toResolve[i].dabInputCleaned !== pageTitleWithoutNs || (toResolve[i].currentHidden = is_hidden, toResolve[i].inputExists = !is_missing, toResolve[i].icon.src = is_missing ? HC.existsNo : HC.existsYes);
   if (is_missing)
@@ -556,10 +507,8 @@ var setPage = (json) => {
   }
 }, resolveRedirects = (toResolve, params) => {
   if (!(!params || !params.query || !params.query.pages))
-    for (let p in params.query.pages) {
-      let page = params.query.pages[p];
-      page && resolveOne(page, toResolve);
-    }
+    for (let p in params.query.pages)
+      resolveOne(params.query.pages[p], toResolve);
 }, resolveMulti = async (toResolve, callback) => {
   let i;
   for (i = 0; i < toResolve.length; i++)
@@ -568,13 +517,13 @@ var setPage = (json) => {
     callback(toResolve);
     return;
   }
-  let args2 = `action=query&prop=info%7Clinks%7Ccategories%7Ccategoryinfo&plnamespace=14&pllimit=${toResolve.length * 10}&cllimit=${toResolve.length * 10}&format=json&titles=`;
+  let args = `action=query&prop=info%7Clinks%7Ccategories%7Ccategoryinfo&plnamespace=14&pllimit=${toResolve.length * 10}&cllimit=${toResolve.length * 10}&format=json&titles=`;
   for (i = 0; i < toResolve.length; i++) {
     let v = toResolve[i].dabInput;
-    v = replaceShortcuts(v, HC.shortcuts), toResolve[i].dabInputCleaned = v, args2 += encodeURIComponent(`Category:${v}`), i + 1 < toResolve.length && (args2 += "%7C");
+    v = replaceShortcuts(v, HC.shortcuts), toResolve[i].dabInputCleaned = v, args += encodeURIComponent(`Category:${v}`), i + 1 < toResolve.length && (args += "%7C");
   }
   try {
-    let json = await getJson(`${site.conf.wgScriptPath}/api.php?${args2}`);
+    let json = await getJson(`${site.conf.wgScriptPath}/api.php?${args}`);
     resolveRedirects(toResolve, json), callback(toResolve);
   } catch (req) {
     req || (state.noSuggestions = !0), callback(toResolve);
@@ -582,44 +531,7 @@ var setPage = (json) => {
 };
 
 // packages/HotCat/src/wikitext/change.ts
-var changeCategory = (_wikitext, toRemove, toAdd, key, is_hidden) => HC.jsonContentModels.includes(site.conf.wgPageContentModel) ? changeCategoryJson(_wikitext, toRemove, toAdd, key) : changeCategoryWikitext(_wikitext, toRemove, toAdd, key, is_hidden), changeCategoryJson = (jsontext, toRemove, toAdd, key) => {
-  try {
-    let jsonData = JSON.parse(jsontext);
-    jsonData.mediawikiCategories || (jsonData.mediawikiCategories = []);
-    let summary = [];
-    if (toRemove) {
-      let initialLength = jsonData.mediawikiCategories.length, normalizedToRemoveName = prefixedCategoryName(toRemove);
-      jsonData.mediawikiCategories = jsonData.mediawikiCategories.filter((cat) => prefixedCategoryName(cat.name) !== normalizedToRemoveName), jsonData.mediawikiCategories.length < initialLength && summary.push(HC.messages.cat_removed.replace(/\$1/g, toRemove));
-    }
-    if (toAdd) {
-      let normalizedToAddName = prefixedCategoryName(toAdd);
-      if (!jsonData.mediawikiCategories.some((cat) => prefixedCategoryName(cat.name) === normalizedToAddName))
-        jsonData.mediawikiCategories.push({
-          name: toAdd,
-          sort: key || ""
-        }), summary.push(HC.messages.cat_added.replace(/\$1/g, toAdd));
-      else if (key)
-        for (let i = 0; i < jsonData.mediawikiCategories.length; i++) {
-          let cat = jsonData.mediawikiCategories[i];
-          if (prefixedCategoryName(cat.name) === normalizedToAddName && (!cat.sort || cat.sort !== key)) {
-            cat.sort = key, summary.push(HC.messages.cat_keychange.replace(/\$1/g, toAdd).replace(/\$2/g, key));
-            break;
-          }
-        }
-    }
-    return {
-      text: JSON.stringify(jsonData, null, 2),
-      summary,
-      error: null
-    };
-  } catch (e) {
-    return {
-      text: jsontext,
-      summary: [],
-      error: `Failed to modify JSON categories: ${e instanceof Error ? e.message : String(e)}`
-    };
-  }
-}, changeCategoryWikitext = (_wikitext, toRemove, toAdd, _key, is_hidden) => {
+var changeCategory = (_wikitext, toRemove, toAdd, _key) => {
   let key = _key, wikitext = _wikitext, find_insertionpoint = (text) => {
     let copiedtext = text.replace(/<!--(\s|\S)*?-->/g, replaceByBlanks).replace(/<nowiki>(\s|\S)*?<\/nowiki>/g, replaceByBlanks), index = -1;
     for (findCatsRE.lastIndex = 0; findCatsRE.exec(copiedtext) !== null; )
@@ -644,7 +556,7 @@ var changeCategory = (_wikitext, toRemove, toAdd, key, is_hidden) => HC.jsonCont
         error: HC.messages.cat_notFound.replace(/\$1/g, toRemove)
       };
     let before = wikitext.substring(0, matches[0].match.index), after = wikitext.substring(matches[0].match.index + matches[0].match[0].length);
-    matches.length > 1 && matches.re && (matches.re.lastIndex = 0, after = after.replace(matches.re, "")), toAdd && key === null && (key = matches[0].match[2]);
+    matches.length > 1 && (matches.re.lastIndex = 0, after = after.replace(matches.re, "")), toAdd && key === null && (key = matches[0].match[2]);
     let i = before.length - 1;
     for (; i >= 0 && before.charAt(i) !== `
 ` && before.charAt(i).search(/\s/) >= 0; )
@@ -689,10 +601,6 @@ ${suffix}` : wikitext += suffix;
       k.length && (k = k.substring(1)), summary.push(substitute(HC.messages.cat_keychange, { 1: toAdd, 2: k }));
     } else
       summary.push(HC.messages.cat_added.replace(/\$1/g, toAdd));
-    if (HC.uncat_regexp && !is_hidden) {
-      let txt = wikitext.replace(HC.uncat_regexp, "");
-      txt.length !== wikitext.length && (wikitext = txt, summary.push(HC.messages.uncat_removed));
-    }
   }
   return {
     text: wikitext,
@@ -703,13 +611,13 @@ ${suffix}` : wikitext += suffix;
 
 // packages/HotCat/src/api/summary.ts
 var requireCommitForm = () => {
-  let form2 = state.commitForm;
-  if (!form2)
+  let form = state.commitForm;
+  if (!form)
     throw new Error("HotCat: commit form is not initialized");
-  return form2;
+  return form;
 }, multiChangeMsg = (count) => {
-  let msg = HC.messages.multi_change;
-  return typeof msg != "string" && msg.length && (msg = mw.language.convertPlural(count, msg)), substitute(typeof msg == "string" ? msg : msg[msg.length - 1], { 1: `${count}` });
+  let raw = HC.messages.multi_change, msg = typeof raw == "string" ? raw : mw.language.convertPlural(count, raw);
+  return substitute(msg, { 1: `${count}` });
 }, currentTimestamp = () => {
   let now = /* @__PURE__ */ new Date(), ts = `${now.getUTCFullYear()}`, two = (s) => s.substring(s.length - 2);
   return ts += two(`0${now.getUTCMonth() + 1}`) + two(`0${now.getUTCDate()}`) + two(`00${now.getUTCHours()}`) + two(`00${now.getUTCMinutes()}`) + two(`00${now.getUTCSeconds()}`), ts;
@@ -721,17 +629,17 @@ var requireCommitForm = () => {
   }
   HC.messages.cat_keychange.includes("$2") || (HC.messages.cat_keychange += '"$2"'), HC.messages.short_catchange || (HC.messages.short_catchange = `[[${HC.category_canonical}:$1]]`);
   let commitForm = requireCommitForm(), action, selfEditConflict = !!((state.lastRevId !== null && state.lastRevId !== site.conf.wgCurRevisionId || state.pageTextRevId !== null && state.pageTextRevId !== site.conf.wgCurRevisionId) && state.conflictingUser && state.conflictingUser === site.conf.wgUserName);
-  singleEditor && !singleEditor.noCommit && !HC.no_autocommit && state.editToken && !selfEditConflict ? (commitForm.wpEditToken.value = state.editToken, action = commitForm.wpDiff, action && (action.name = action.value = "wpSave", commitForm.wpChangeTags.value += `,${HC.automationChangeTag}`)) : (action = commitForm.wpSave, action && (action.name = action.value = "wpDiff"));
+  singleEditor && !singleEditor.noCommit && !HC.no_autocommit && state.editToken && !selfEditConflict && (commitForm.wpEditToken.value = state.editToken, action = commitForm.wpDiff, action.name = action.value = "wpSave", commitForm.wpChangeTags.value += `,${HC.automationChangeTag}`);
   let result = {
     text: pageText,
     summary: [],
     error: null
   }, changed = [], added = [], deleted = [], toEdit = singleEditor ? [singleEditor] : state.editors, changes = 0, error = null, edit, i;
   for (i = 0; i < toEdit.length; i++)
-    edit = toEdit[i], edit.state === CategoryEditor.CHANGED ? (result = changeCategory(result.text, edit.originalCategory, edit.currentCategory, edit.currentKey, edit.currentHidden), result.error ? error === null && (error = result.error) : (changes++, !edit.originalCategory || !edit.originalCategory.length ? added.push(edit.currentCategory) : changed.push({
+    edit = toEdit[i], edit.state === CategoryEditor.CHANGED ? (result = changeCategory(result.text, edit.originalCategory, edit.currentCategory, edit.currentKey), result.error ? error === null && (error = result.error) : (changes++, !edit.originalCategory || !edit.originalCategory.length ? added.push(edit.currentCategory) : changed.push({
       from: edit.originalCategory,
       to: edit.currentCategory
-    }))) : edit.state === CategoryEditor.DELETED && edit.originalCategory && edit.originalCategory.length && (result = changeCategory(result.text, edit.originalCategory, null, null, !1), result.error ? error === null && (error = result.error) : (changes++, deleted.push(edit.originalCategory)));
+    }))) : edit.state === CategoryEditor.DELETED && edit.originalCategory && edit.originalCategory.length && (result = changeCategory(result.text, edit.originalCategory, null, null), result.error ? error === null && (error = result.error) : (changes++, deleted.push(edit.originalCategory)));
   if (error !== null && (action = commitForm.wpSave, action && (action.name = action.value = "wpDiff")), commitForm.wpMinoredit.checked = state.minorEdits, commitForm.wpWatchthis.checked = !site.conf.wgArticleId && state.watchCreate || state.watchEdit || state.pageWatched, commitForm.wpWatchthis.checked && !state.pageWatched && (!site.conf.wgArticleId && state.watchCreate ? commitForm.wpWatchlistExpiry.value = state.watchCreateExpiry : commitForm.wpWatchlistExpiry.value = state.watchDefaultExpiry), site.conf.wgArticleId || singleEditor) {
     if (action && action.value === "wpSave" ? HC.changeTag && (commitForm.wpChangeTags.value = `${HC.changeTag},${HC.automationChangeTag}`, HC.messages.using = "", HC.messages.prefix = "") : commitForm.wpAutoSummary.value = HC.changeTag, changes === 1)
       result.summary.length && (commitForm.wpSummary.value = HC.messages.prefix + result.summary.join(HC.messages.separator) + HC.messages.using), commitForm.wpMinoredit.checked = HC.single_minor || state.minorEdits;
@@ -829,11 +737,139 @@ var makeActive = (which) => {
   state.commitButton.disabled = !hasChanges;
 };
 
+// packages/HotCat/src/ui/editor/selection.ts
+var setSelectionRange = (editor, from, to) => {
+  editor.text.value && editor.text.setSelectionRange(from, to);
+}, getSelectionRange = (editor) => {
+  if (!editor.text.value)
+    return {
+      start: 0,
+      end: 0
+    };
+  let from = editor.text.selectionStart ?? 0;
+  return {
+    start: from,
+    end: editor.text.selectionEnd ?? from
+  };
+};
+
+// packages/HotCat/src/util/layout.ts
+var readMetric = (element, name) => element[name] || 0, viewport = (what) => {
+  let s = `client${what}`;
+  return readMetric(document.documentElement, s) || readMetric(document.body, s);
+}, scrollOffset = (what) => {
+  let s = `scroll${what}`, result = readMetric(document.documentElement, s) || readMetric(document.body, s);
+  return state.is_rtl && what === "Left" && (result < 0 && (result = -result), site.isWebkit || (result = scrollOffset("Width") - viewport("Width") - result)), result;
+}, position = (node) => {
+  let box = node.getBoundingClientRect();
+  return {
+    x: Math.round(box.left + scrollOffset("Left")),
+    y: Math.round(box.top + scrollOffset("Top"))
+  };
+};
+
+// packages/HotCat/src/ui/editor/form.ts
+var buildForm = (editor) => {
+  let form = make("form");
+  form.method = "POST", form.onsubmit = editor.accept.bind(editor), editor.form = form;
+  let text = make("input");
+  text.type = "text", text.size = HC.editbox_width, state.noSuggestions || (text.onkeyup = (evt) => {
+    let key = evt.keyCode || 0;
+    if (editor.ime && editor.lastKey === 229 && !editor.usesComposition && (key === 9 || key === 13 || key === 27 || key === 32) && (editor.ime = !1), editor.ime)
+      return !0;
+    if (key === 38 || key === 40 || key === 33 || key === 34) {
+      if (editor.keyCount === 0)
+        return editor.processKey(evt);
+    } else {
+      if (key === 27 && editor.lastKey !== 229 && !editor.resetKeySelection()) {
+        editor.cancel();
+        return;
+      }
+      editor.invokeSuggestions(key === 8 || key === 46 || key === 27);
+    }
+    return !0;
+  }, text.onkeydown = (evt) => {
+    let key = evt.keyCode || 0;
+    return editor.lastKey = key, editor.keyCount = 0, !editor.ime && key === 229 && !editor.usesComposition ? editor.ime = !0 : editor.ime && key !== 229 && !(key >= 16 && key <= 20 || key >= 91 && key <= 93 || key === 144) && (editor.ime = !1), editor.ime ? !0 : key === 13 ? editor.accept(evt) : key === 27 ? evtKill(evt) : !0;
+  }, text.onkeypress = (evt) => (editor.keyCount = (editor.keyCount || 0) + 1, editor.processKey(evt)), $(text).on("focus", () => {
+    makeActive(editor);
+  }), $(text).on("blur", editor.saveView.bind(editor)), $(text).on("compositionstart", () => {
+    editor.lastKey = 229, editor.usesComposition = !0, editor.ime = !0;
+  }), $(text).on("compositionend", () => {
+    editor.lastKey = 229, editor.usesComposition = !0, editor.ime = !1;
+  }), $(text).on("textInput", () => {
+    editor.ime = !1, editor.invokeSuggestions(!1);
+  }), $(text).on("blur", () => {
+    editor.usesComposition = !1, editor.ime = !1;
+  })), editor.text = text, editor.icon = make("img"), editor.icon.width = 20;
+  let list = null;
+  if (!state.noSuggestions && (list = make("select"), list.onclick = () => {
+    editor.highlightSuggestion(0) && editor.textchange(!1, !0);
+  }, list.ondblclick = (e) => {
+    editor.highlightSuggestion(0) && editor.accept(e);
+  }, list.onchange = () => {
+    editor.highlightSuggestion(0), editor.text.focus();
+  }, list.onkeyup = (evt) => {
+    evt.keyCode === 27 ? (editor.resetKeySelection(), editor.text.focus(), window.setTimeout(() => {
+      editor.textchange(!0);
+    }, HC.suggest_delay)) : evt.keyCode === 13 && editor.accept(evt);
+  }, !HC.fixed_search)) {
+    let engineSelector = make("select");
+    for (let key in suggestionConfigs)
+      if (suggestionConfigs[key].show) {
+        let opt = make("option");
+        opt.value = key, key === editor.engine && (opt.selected = !0), opt.appendChild(make(suggestionConfigs[key].name, !0)), engineSelector.appendChild(opt);
+      }
+    engineSelector.onchange = () => {
+      editor.engine = editor.engineSelector?.options[editor.engineSelector.selectedIndex].value ?? editor.engine, editor.text.focus(), editor.textchange(!0, !0);
+    }, editor.engineSelector = engineSelector;
+  }
+  editor.list = list;
+  let button_label = (id, defaultText) => {
+    let label = null;
+    if (state.onUpload && window.UFUI !== void 0 && window.UIElements !== void 0 && window.UFUI.getLabel instanceof Function)
+      try {
+        for (label = window.UFUI.getLabel(id, !0); label && label.nodeType !== 3; )
+          label = label.firstChild;
+      } catch {
+        label = null;
+      }
+    return !label || !label.data ? defaultText : label.data;
+  }, OK = make("input");
+  OK.type = "button", OK.value = button_label("wpOkUploadLbl", HC.messages.ok), OK.onclick = editor.accept.bind(editor), editor.ok = OK;
+  let cancel = make("input");
+  cancel.type = "button", cancel.value = button_label("wpCancelUploadLbl", HC.messages.cancel), cancel.onclick = editor.cancel.bind(editor), editor.cancelButton = cancel;
+  let span = make("span");
+  return span.className = "hotcatinput", span.style.position = "relative", span.appendChild(text), span.appendChild(make(" ", !0)), span.style.whiteSpace = "nowrap", list && span.appendChild(list), editor.engineSelector && span.appendChild(editor.engineSelector), state.noSuggestions || span.appendChild(editor.icon), span.appendChild(OK), span.appendChild(cancel), form.appendChild(span), form.style.display = "none", editor.span.appendChild(form), form;
+};
+
+// packages/HotCat/src/ui/editor/suggest.ts
+var fireSuggestionRequests = (editor, engines, cb, v, cleanKey) => {
+  let makeCall = (url, engine) => {
+    ajaxGetJson(url, {
+      success: (json) => {
+        let titles = engine.handler(json, cleanKey);
+        titles && titles.length && (cb.allTitles === null ? cb.allTitles = titles : cb.allTitles = cb.allTitles.concat(titles), titles.exists && (cb.exists = !0), titles.normalized && (cb.normalized = titles.normalized));
+      },
+      error: (req) => {
+        req || (state.noSuggestions = !0), cb.dontCache = !0;
+      },
+      complete: () => {
+        if (cb.callsMade++, cb.callsMade === cb.nofCalls) {
+          let allTitles = cb.allTitles ?? [];
+          cb.exists && (allTitles.exists = !0), cb.normalized && (allTitles.normalized = cb.normalized), !cb.dontCache && !suggestionConfigs[cb.engineName].cache[cleanKey] && (suggestionConfigs[cb.engineName].cache[cleanKey] = allTitles), editor.text.readOnly = !1, cb.cancelled || editor.showSuggestions(allTitles, cb.noCompletion, v, cb.engineName), cb === editor.callbackObj && (editor.callbackObj = null);
+        }
+      }
+    });
+  };
+  for (let j = 0; j < engines.length; j++) {
+    let engine = suggestionEngines[engines[j]], url = `${site.conf.wgScriptPath}${engine.uri.replace(/\$1/g, encodeURIComponent(cleanKey))}`;
+    makeCall(url, engine);
+  }
+};
+
 // packages/HotCat/src/ui/editor.ts
-var readMetric = (element, name) => {
-  let metrics = element;
-  return metrics && metrics[name] || 0;
-}, _CategoryEditor = class _CategoryEditor {
+var _CategoryEditor = class _CategoryEditor {
   /**
    * @param line 分类栏容器
    * @param _span 已有分类的 span；为空表示创建「+」入口
@@ -890,24 +926,6 @@ var readMetric = (element, name) => {
     __publicField(this, "dabInputCleaned");
     __publicField(this, "engineName", null);
     __publicField(this, "lastQuery", null);
-    __publicField(this, "makeCall", (url, callbackObj, engine, queryKey, cleanKey) => {
-      let cb = callbackObj, e = engine, v = queryKey, z = cleanKey;
-      ajaxGetJson(url, {
-        success: (json) => {
-          let titles = e.handler(json, z);
-          titles && titles.length && (cb.allTitles === null ? cb.allTitles = titles : cb.allTitles = cb.allTitles.concat(titles), titles.exists && (cb.exists = !0), titles.normalized && (cb.normalized = titles.normalized));
-        },
-        error: (req) => {
-          req || (state.noSuggestions = !0), cb.dontCache = !0;
-        },
-        complete: () => {
-          if (cb.callsMade++, cb.callsMade === cb.nofCalls) {
-            let allTitles = cb.allTitles ?? [];
-            cb.exists && (allTitles.exists = !0), cb.normalized && (allTitles.normalized = cb.normalized), !cb.dontCache && !suggestionConfigs[cb.engineName].cache[z] && (suggestionConfigs[cb.engineName].cache[z] = allTitles), this.text.readOnly = !1, cb.cancelled || this.showSuggestions(allTitles, cb.noCompletion, v, cb.engineName), cb === this.callbackObj && (this.callbackObj = null);
-          }
-        }
-      });
-    });
     let span = _span, after = _after;
     if (span)
       state.is_rtl && (span.dir = "rtl"), this.isAddCategory = !1, this.catLink = span.firstChild, this.originalCategory = Array.isArray(after) ? after[0] : typeof after == "string" ? after : "", this.originalKey = typeof key == "string" && key.length > 1 ? key.substring(1) : null, this.originalExists = !hasClass(this.catLink, "new"), this.makeLinkSpan(), !this.originalExists && this.upDownLinks && (this.upDownLinks.style.display = "none"), span.appendChild(this.linkSpan);
@@ -935,85 +953,7 @@ var readMetric = (element, name) => {
   }
   /** 构造内联表单。 */
   makeForm() {
-    let form2 = make("form");
-    form2.method = "POST", form2.onsubmit = this.accept.bind(this), this.form = form2;
-    let self = this, text = make("input");
-    if (text.type = "text", text.size = HC.editbox_width, !state.noSuggestions) {
-      text.onkeyup = (evt) => {
-        let key = evt.keyCode || 0;
-        if (self.ime && self.lastKey === 229 && !self.usesComposition && (key === 9 || key === 13 || key === 27 || key === 32) && (self.ime = !1), self.ime)
-          return !0;
-        if (key === 38 || key === 40 || key === 33 || key === 34) {
-          if (self.keyCount === 0)
-            return self.processKey(evt);
-        } else {
-          if (key === 27 && self.lastKey !== 229 && !self.resetKeySelection()) {
-            self.cancel();
-            return;
-          }
-          self.invokeSuggestions(key === 8 || key === 46 || key === 27);
-        }
-        return !0;
-      }, text.onkeydown = (evt) => {
-        let key = evt.keyCode || 0;
-        return self.lastKey = key, self.keyCount = 0, !self.ime && key === 229 && !self.usesComposition ? self.ime = !0 : self.ime && key !== 229 && !(key >= 16 && key <= 20 || key >= 91 && key <= 93 || key === 144) && (self.ime = !1), self.ime ? !0 : key === 13 ? self.accept(evt) : key === 27 ? evtKill(evt) : !0;
-      }, text.onkeypress = (evt) => (self.keyCount = (self.keyCount || 0) + 1, self.processKey(evt)), $(text).on("focus", () => {
-        makeActive(self);
-      }), $(text).on("blur", this.saveView.bind(this));
-      try {
-        $(text).on("compositionstart", () => {
-          self.lastKey = 229, self.usesComposition = !0, self.ime = !0;
-        }), $(text).on("compositionend", () => {
-          self.lastKey = 229, self.usesComposition = !0, self.ime = !1;
-        }), $(text).on("textInput", () => {
-          self.ime = !1, self.invokeSuggestions(!1);
-        });
-      } catch {
-      }
-      $(text).on("blur", () => {
-        self.usesComposition = !1, self.ime = !1;
-      });
-    }
-    this.text = text, this.icon = make("img"), this.icon.width = 20;
-    let list = null;
-    if (!state.noSuggestions && (list = make("select"), list.onclick = () => {
-      self.highlightSuggestion(0) && self.textchange(!1, !0);
-    }, list.ondblclick = (e) => {
-      self.highlightSuggestion(0) && self.accept(e);
-    }, list.onchange = () => {
-      self.highlightSuggestion(0), self.text.focus();
-    }, list.onkeyup = (evt) => {
-      evt.keyCode === 27 ? (self.resetKeySelection(), self.text.focus(), window.setTimeout(() => {
-        self.textchange(!0);
-      }, HC.suggest_delay)) : evt.keyCode === 13 && self.accept(evt);
-    }, !HC.fixed_search)) {
-      let engineSelector = make("select");
-      for (let key in suggestionConfigs)
-        if (suggestionConfigs[key].show) {
-          let opt = make("option");
-          opt.value = key, key === this.engine && (opt.selected = !0), opt.appendChild(make(suggestionConfigs[key].name, !0)), engineSelector.appendChild(opt);
-        }
-      engineSelector.onchange = () => {
-        self.engine = self.engineSelector?.options[self.engineSelector.selectedIndex].value ?? self.engine, self.text.focus(), self.textchange(!0, !0);
-      }, this.engineSelector = engineSelector;
-    }
-    this.list = list;
-    let button_label = (id, defaultText) => {
-      let label2 = null;
-      if (state.onUpload && window.UFUI !== void 0 && window.UIElements !== void 0 && window.UFUI.getLabel instanceof Function)
-        try {
-          for (label2 = window.UFUI.getLabel(id, !0); label2 && label2.nodeType !== 3; )
-            label2 = label2.firstChild;
-        } catch {
-          label2 = null;
-        }
-      return !label2 || !label2.data ? defaultText : label2.data;
-    }, OK = make("input");
-    OK.type = "button", OK.value = button_label("wpOkUploadLbl", HC.messages.ok), OK.onclick = this.accept.bind(this), this.ok = OK;
-    let cancel = make("input");
-    cancel.type = "button", cancel.value = button_label("wpCancelUploadLbl", HC.messages.cancel), cancel.onclick = this.cancel.bind(this), this.cancelButton = cancel;
-    let span = make("span");
-    return span.className = "hotcatinput", span.style.position = "relative", span.appendChild(text), span.appendChild(make(" ", !0)), span.style.whiteSpace = "nowrap", list && span.appendChild(list), this.engineSelector && span.appendChild(this.engineSelector), state.noSuggestions || span.appendChild(this.icon), span.appendChild(OK), span.appendChild(cancel), form2.appendChild(span), form2.style.display = "none", this.span.appendChild(form2), form2;
+    return buildForm(this);
   }
   display(evt) {
     if (this.isAddCategory && !state.onUpload && new _CategoryEditor(this.line, null, this.span, !0), !state.commitButton && !state.onUpload) {
@@ -1023,11 +963,11 @@ var readMetric = (element, name) => {
           break;
         }
     }
-    let form2 = this.form ?? this.makeForm();
+    let form = this.form ?? this.makeForm();
     this.list && (this.list.style.display = "none"), this.engineSelector && (this.engineSelector.style.display = "none"), this.currentCategory = this.lastSavedCategory, this.currentExists = this.lastSavedExists, this.currentHidden = this.lastSavedHidden, this.currentKey = this.lastSavedKey, this.icon.src = this.currentExists ? HC.existsYes : HC.existsNo, this.text.value = this.currentCategory + (this.currentKey !== null ? `|${this.currentKey}` : ""), this.originalState = this.state, this.lastInput = this.currentCategory, this.inputExists = this.currentExists, this.state = this.state === _CategoryEditor.UNCHANGED ? _CategoryEditor.OPEN : _CategoryEditor.CHANGE_PENDING, this.lastSelection = {
       start: this.currentCategory.length,
       end: this.currentCategory.length
-    }, this.showsList = !1, this.catLink && (this.catLink.style.display = "none"), this.linkSpan.style.display = "none", form2.style.display = "inline", this.ok.disabled = !1;
+    }, this.showsList = !1, this.catLink && (this.catLink.style.display = "none"), this.linkSpan.style.display = "none", form.style.display = "inline", this.ok.disabled = !1;
     let result = evtKill(evt);
     return this.text.focus(), this.text.readOnly = !1, checkMultiInput(), result;
   }
@@ -1049,14 +989,7 @@ var readMetric = (element, name) => {
       this.removeEditor();
       return;
     }
-    if (this.inactivate(), this.requireForm().style.display = "none", this.catLink && (this.catLink.style.display = ""), this.linkSpan.style.display = "", this.state = this.originalState ?? this.state, this.currentCategory = this.lastSavedCategory, this.currentKey = this.lastSavedKey, this.currentExists = this.lastSavedExists, this.currentHidden = this.lastSavedHidden, this.catLink && (this.currentKey && this.currentKey.length ? this.catLink.title = this.currentKey : this.catLink.title = ""), this.state === _CategoryEditor.UNCHANGED)
-      this.catLink && (this.catLink.style.backgroundColor = "transparent");
-    else if (!state.onUpload)
-      try {
-        this.catLink && (this.catLink.style.backgroundColor = HC.bg_changed);
-      } catch {
-      }
-    checkMultiInput(), forceRedraw();
+    this.inactivate(), this.form.style.display = "none", this.catLink && (this.catLink.style.display = ""), this.linkSpan.style.display = "", this.state = this.originalState ?? this.state, this.currentCategory = this.lastSavedCategory, this.currentKey = this.lastSavedKey, this.currentExists = this.lastSavedExists, this.currentHidden = this.lastSavedHidden, this.catLink && (this.currentKey && this.currentKey.length ? this.catLink.title = this.currentKey : this.catLink.title = ""), this.state === _CategoryEditor.UNCHANGED ? this.catLink && (this.catLink.style.backgroundColor = "transparent") : state.onUpload || this.catLink && (this.catLink.style.backgroundColor = HC.bg_changed), checkMultiInput(), forceRedraw();
   }
   removeEditor() {
     if (!state.newDOM) {
@@ -1105,13 +1038,9 @@ var readMetric = (element, name) => {
   /** 收起表单并保存当前值。 */
   close() {
     let catLink = this.catLink ?? this.createHiddenCatLink();
-    if (catLink.removeChild(catLink.firstChild), catLink.appendChild(make(this.currentCategory, !0)), catLink.href = wikiPagePath(`${HC.category_canonical}:${this.currentCategory}`), catLink.className = this.currentExists ? "" : "new", this.lastSavedCategory = this.currentCategory, this.lastSavedKey = this.currentKey, this.lastSavedExists = this.currentExists, this.lastSavedHidden = this.currentHidden, this.inactivate(), this.requireForm().style.display = "none", catLink.title = this.currentKey || "", catLink.style.display = "", this.isAddCategory && (state.onUpload && new _CategoryEditor(this.line, null, this.span, !0), this.isAddCategory = !1, this.linkSpan.parentNode?.removeChild(this.linkSpan), this.makeLinkSpan(), this.span.appendChild(this.linkSpan)), !this.undoLink) {
+    if (catLink.removeChild(catLink.firstChild), catLink.appendChild(make(this.currentCategory, !0)), catLink.href = wikiPagePath(`${HC.category_canonical}:${this.currentCategory}`), catLink.className = this.currentExists ? "" : "new", this.lastSavedCategory = this.currentCategory, this.lastSavedKey = this.currentKey, this.lastSavedExists = this.currentExists, this.lastSavedHidden = this.currentHidden, this.inactivate(), this.form.style.display = "none", catLink.title = this.currentKey || "", catLink.style.display = "", this.isAddCategory && (state.onUpload && new _CategoryEditor(this.line, null, this.span, !0), this.isAddCategory = !1, this.linkSpan.parentNode?.removeChild(this.linkSpan), this.makeLinkSpan(), this.span.appendChild(this.linkSpan)), !this.undoLink) {
       let span = make("span"), lk = make("a");
-      if (lk.href = "#catlinks", lk.onclick = this.rollback.bind(this), lk.appendChild(make(HC.links.undo, !0)), lk.title = HC.tooltips.undo, span.appendChild(make(" ", !0)), span.appendChild(lk), this.normalLinks.appendChild(span), this.undoLink = span, !state.onUpload)
-        try {
-          catLink.style.backgroundColor = HC.bg_changed;
-        } catch {
-        }
+      lk.href = "#catlinks", lk.onclick = this.rollback.bind(this), lk.appendChild(make(HC.links.undo, !0)), lk.title = HC.tooltips.undo, span.appendChild(make(" ", !0)), span.appendChild(lk), this.normalLinks.appendChild(span), this.undoLink = span, state.onUpload || (catLink.style.backgroundColor = HC.bg_changed);
     }
     this.upDownLinks && (this.upDownLinks.style.display = this.lastSavedExists ? "" : "none"), this.linkSpan.style.display = "", this.state = _CategoryEditor.CHANGED, checkMultiInput(), forceRedraw();
   }
@@ -1151,14 +1080,7 @@ var readMetric = (element, name) => {
     }
     if (state.commitButton) {
       let catLink = this.catLink;
-      if (catLink) {
-        catLink.title = "", catLink.style.cssText += "; text-decoration : line-through !important;";
-        try {
-          catLink.style.backgroundColor = HC.bg_changed;
-        } catch {
-        }
-      }
-      this.originalState = this.state, this.state = _CategoryEditor.DELETED, this.normalLinks.style.display = "none";
+      catLink && (catLink.title = "", catLink.style.cssText += "; text-decoration : line-through !important;", catLink.style.backgroundColor = HC.bg_changed), this.originalState = this.state, this.state = _CategoryEditor.DELETED, this.normalLinks.style.display = "none";
       let undelLink = this.undelLink;
       undelLink && (undelLink.style.display = ""), checkMultiInput();
     } else if (state.onUpload)
@@ -1174,14 +1096,7 @@ var readMetric = (element, name) => {
     }
   }
   restore(evt) {
-    if (this.catLink && (this.catLink.title = this.currentKey || "", this.catLink.style.textDecoration = ""), this.state = this.originalState ?? this.state, this.state === _CategoryEditor.UNCHANGED)
-      this.catLink && (this.catLink.style.backgroundColor = "transparent");
-    else
-      try {
-        this.catLink && (this.catLink.style.backgroundColor = HC.bg_changed);
-      } catch {
-      }
-    this.normalLinks.style.display = "";
+    this.catLink && (this.catLink.title = this.currentKey || "", this.catLink.style.textDecoration = ""), this.state = this.originalState ?? this.state, this.state === _CategoryEditor.UNCHANGED ? this.catLink && (this.catLink.style.backgroundColor = "transparent") : this.catLink && (this.catLink.style.backgroundColor = HC.bg_changed), this.normalLinks.style.display = "";
     let undelLink = this.undelLink;
     return undelLink && (undelLink.style.display = "none"), checkMultiInput(), evtKill(evt);
   }
@@ -1191,7 +1106,7 @@ var readMetric = (element, name) => {
         this.engineSelector.options[i].selected = this.engineSelector.options[i].value === engineName;
   }
   sanitizeInput() {
-    let v = this.text.value || "";
+    let v = this.text.value;
     if (v = v.replace(/^(\s|_)+/, ""), new RegExp(`^(${HC.category_regexp}):`).test(v) && (v = v.substring(v.indexOf(":") + 1).replace(/^(\s|_)+/, "")), v = v.replace(/\u200E$/, ""), HC.capitalizePageNames && (v = capitalize(v)), this.text.value !== v) {
       let cursorPos = this.text.selectionStart ?? 0;
       this.text.value = v, this.text.setSelectionRange(cursorPos, cursorPos);
@@ -1231,10 +1146,7 @@ var readMetric = (element, name) => {
     }, this.makeCalls(engines, this.callbackObj, v, cleanKey);
   }
   makeCalls(engines, cb, v, cleanKey) {
-    for (let j = 0; j < engines.length; j++) {
-      let engine = suggestionEngines[engines[j]], url = `${site.conf.wgScriptPath}${engine.uri.replace(/\$1/g, encodeURIComponent(cleanKey))}`;
-      this.makeCall(url, cb, engine, v, cleanKey);
-    }
+    fireSuggestionRequests(this, engines, cb, v, cleanKey);
   }
   showSuggestions(titles, dontAutocomplete, queryKey, engineName) {
     this.text.readOnly = !1, this.dab = null, this.showsList = !1;
@@ -1281,24 +1193,12 @@ var readMetric = (element, name) => {
     list.style.display === "none" ? (list.style.top = `${this.text.offsetTop}px`, list.style.setProperty(anchor, "-10000px"), list.style.display = "", listh = list.offsetHeight, list.style.display = "none") : listh = list.offsetHeight;
     let maxListHeight = listh;
     nofItems < HC.listSize && (maxListHeight = listh / nofItems * HC.listSize);
-    let viewport = (what) => {
-      let s = `client${what}`;
-      return window.opera ? readMetric(document.body, s) : readMetric(document.documentElement, s) || readMetric(document.body, s);
-    }, scroll_offset = (what) => {
-      let s = `scroll${what}`, result = readMetric(document.documentElement, s) || readMetric(document.body, s);
-      return state.is_rtl && what === "Left" && (result < 0 && (result = -result), site.isWebkit || (result = scroll_offset("Width") - viewport("Width") - result)), result;
-    }, position = (node) => {
-      let box = node.getBoundingClientRect();
-      return {
-        x: Math.round(box.left + scroll_offset("Left")),
-        y: Math.round(box.top + scroll_offset("Top"))
-      };
-    }, textPos = position(this.text), nl = 0, textBoxWidth = this.text.offsetWidth || this.text.clientWidth, engineSelector = this.engineName ? this.engineSelector : void 0, nt, offset = 0;
+    let textPos = position(this.text), nl = 0, textBoxWidth = this.text.offsetWidth || this.text.clientWidth, engineSelector = this.engineName ? this.engineSelector : void 0, nt, offset = 0;
     if (engineSelector && (engineSelector.style.zIndex = "5", engineSelector.style.position = "absolute", engineSelector.style.width = `${textBoxWidth}px`, engineSelector.style.display === "none" ? (engineSelector.style.setProperty(anchor, "-10000px"), engineSelector.style.top = "0", engineSelector.style.display = "", offset = engineSelector.offsetHeight, engineSelector.style.display = "none") : offset = engineSelector.offsetHeight, engineSelector.style.setProperty(anchor, `${nl}px`)), textPos.y < maxListHeight + offset + 1 ? (nt = this.text.offsetHeight + offset + 1, engineSelector && (engineSelector.style.top = `${this.text.offsetHeight}px`)) : (nt = -listh - offset - 1, engineSelector && (engineSelector.style.top = `${-(offset + 1)}px`)), list.style.top = `${nt}px`, list.style.width = "", list.style.setProperty(anchor, `${nl}px`), this.engineName && (this.selectEngine(this.engineName), engineSelector && (engineSelector.style.display = "")), list.style.display = "block", list.offsetWidth < textBoxWidth) {
       list.style.width = `${textBoxWidth}px`;
       return;
     }
-    let scroll = scroll_offset("Left"), view_w = viewport("Width"), w = list.offsetWidth, left = position(list).x, right = left + w;
+    let scroll = scrollOffset("Left"), view_w = viewport("Width"), w = list.offsetWidth, left = position(list).x, right = left + w;
     if (left < scroll || right > scroll + view_w) {
       w > view_w && (w = view_w, list.style.width = `${w}px`, state.is_rtl ? left = right - w : right = left + w);
       let relative_offset = 0;
@@ -1319,19 +1219,10 @@ var readMetric = (element, name) => {
     return this.text.focus(), this.text.value = newVal + key, this.setSelection(actVal.length, newVal.length), !0;
   }
   setSelection(from, to) {
-    this.text.value && this.text.setSelectionRange(from, to);
+    setSelectionRange(this, from, to);
   }
   getSelection() {
-    if (!this.text.value)
-      return {
-        start: 0,
-        end: 0
-      };
-    let from = this.text.selectionStart ?? 0;
-    return {
-      start: from,
-      end: this.text.selectionEnd ?? from
-    };
+    return getSelectionRange(this);
   }
   saveView() {
     this.lastSelection = this.getSelection();
@@ -1391,12 +1282,6 @@ var readMetric = (element, name) => {
     }
     return !1;
   }
-  /** 取表单（display() 时创建）。 */
-  requireForm() {
-    if (!this.form)
-      throw new Error("HotCat: form accessed before creation");
-    return this.form;
-  }
 };
 __publicField(_CategoryEditor, "UNCHANGED", 0), __publicField(_CategoryEditor, "OPEN", 1), __publicField(_CategoryEditor, "CHANGE_PENDING", 2), __publicField(_CategoryEditor, "CHANGED", 3), __publicField(_CategoryEditor, "DELETED", 4);
 var CategoryEditor = _CategoryEditor;
@@ -1453,27 +1338,24 @@ var getCatLine = () => site.skin === "moeskin" ? document.getElementById("catlin
     if (!hiddenCats && (footer = findByClass(document, "div", "printfooter"), !footer))
       return;
     state.catLine = make("div"), state.catLine.id = "mw-normal-catlinks", state.catLine.style.textAlign = state.is_rtl ? "right" : "left";
-    let label2 = make("a");
-    label2.href = site.conf.wgArticlePath.replace("$1", "Special:Categories"), label2.title = HC.categories, label2.appendChild(make(HC.categories, !0)), state.catLine.appendChild(label2), state.catLine.appendChild(make(":", !0));
+    let label = make("a");
+    label.href = site.conf.wgArticlePath.replace("$1", "Special:Categories"), label.title = HC.categories, label.appendChild(make(HC.categories, !0)), state.catLine.appendChild(label), state.catLine.appendChild(make(":", !0));
     let container = hiddenCats ? hiddenCats.parentNode : getCatLine();
     container || (container = make("div"), container.id = "catlinks", footer?.parentNode?.insertBefore(container, footer.nextSibling)), container.className = "catlinks noprint", container.style.display = "", hiddenCats ? container.insertBefore(state.catLine, hiddenCats) : container.appendChild(state.catLine);
   }
   state.is_rtl && (state.catLine.dir = "rtl");
-  let catLine2 = state.catLine, chkCats = [], inpIndex = {}, lastSpan = createEditors(catLine2, !1, !!hiddenCats, chkCats, inpIndex), catList = catLine2.getElementsByTagName("ul")[0];
-  if (new CategoryEditor(state.newDOM && catList ? catList : catLine2, null, null, lastSpan !== null, !1), !state.onUpload) {
+  let catLine = state.catLine, chkCats = [], inpIndex = {}, lastSpan = createEditors(catLine, !1, !!hiddenCats, chkCats, inpIndex), catList = catLine.getElementsByTagName("ul")[0];
+  if (new CategoryEditor(state.newDOM && catList ? catList : catLine, null, null, lastSpan !== null, !1), !state.onUpload) {
     state.pageText !== null && hiddenCats && (state.is_rtl && (hiddenCats.dir = "rtl"), createEditors(hiddenCats, !0, !0, chkCats, inpIndex));
     let enableMulti = make("span");
-    enableMulti.className = "noprint", state.is_rtl && (enableMulti.dir = "rtl"), catLine2.insertBefore(enableMulti, catLine2.firstChild?.nextSibling ?? null), enableMulti.appendChild(make(" ", !0)), state.multiSpan = make("span"), enableMulti.appendChild(state.multiSpan), state.multiSpan.innerHTML = `(<a>${HC.addmulti}</a>)`;
+    enableMulti.className = "noprint", state.is_rtl && (enableMulti.dir = "rtl"), catLine.insertBefore(enableMulti, catLine.firstChild?.nextSibling ?? null), enableMulti.appendChild(make(" ", !0)), state.multiSpan = make("span"), enableMulti.appendChild(state.multiSpan), state.multiSpan.innerHTML = `(<a>${HC.addmulti}</a>)`;
     let lk = state.multiSpan.getElementsByTagName("a")[0];
     lk.onclick = (evt) => (setMultiInput(), checkMultiInput(), evtKill(evt)), lk.title = HC.multi_tooltip, lk.style.cursor = "pointer";
   }
-  state.cleanedText = null, typeof additionalWork == "function" && additionalWork(), mw.hook("hotcat.ready").fire(), $("body").trigger("hotcatSetupCompleted");
+  state.cleanedText = null, additionalWork?.(), mw.hook("hotcat.ready").fire(), $("body").trigger("hotcatSetupCompleted");
 }, setupUpload = () => {
   state.onUpload = !0;
   let ip = document.getElementById("mw-htmlform-description") || document.getElementById("wpDestFile");
-  if (!ip)
-    for (ip = document.getElementById("wpDestFile"); ip && ip.nodeName.toLowerCase() !== "table"; )
-      ip = ip.parentNode;
   if (!ip)
     return;
   let reupload = document.getElementById("wpForReUpload"), destFile = document.getElementById("wpDestFile");
@@ -1494,12 +1376,7 @@ var getCatLine = () => site.skin === "moeskin" ? document.getElementById("catlin
     let newRow = table.insertRow(-1);
     newRow.appendChild(labelCell), newRow.appendChild(lineCell), form.onsubmit = /* @__PURE__ */ ((oldSubmit) => (...args) => {
       let do_submit = !0;
-      if (oldSubmit)
-        if (typeof oldSubmit == "string") {
-          let evaluated = eval(oldSubmit);
-          do_submit = !!evaluated;
-        } else typeof oldSubmit == "function" && (do_submit = oldSubmit.bind(form)(...args));
-      if (!do_submit)
+      if (oldSubmit && (do_submit = oldSubmit.bind(form)(...args)), !do_submit)
         return !1;
       closeForm();
       let eb = document.getElementById("wpUploadDescription") || document.getElementById("wpDesc"), addedOne = !1;
@@ -1508,7 +1385,7 @@ var getCatLine = () => site.skin === "moeskin" ? document.getElementById("catlin
         if (!t)
           continue;
         let key = state.editors[i].currentKey, new_cat = `[[${HC.category_canonical}:${t}${key ? `|${key}` : ""}]]`, cleanedText = eb.value.replace(/<!--(\s|\S)*?-->/g, "").replace(/<nowiki>(\s|\S)*?<\/nowiki>/g, "");
-        findCategory(cleanedText, t, !0) || (eb.value += `
+        findCategoryWikitext(cleanedText, t, !0) || (eb.value += `
 ${new_cat}`, addedOne = !0);
       }
       return addedOne && (eb.value = eb.value.replace(/\{\{subst:unc\}\}/g, "")), !0;
@@ -1517,9 +1394,7 @@ ${new_cat}`, addedOne = !0);
 }, createCommitForm = () => {
   if (state.commitForm)
     return;
-  let format;
-  HC.jsonContentModels.includes(site.conf.wgPageContentModel) ? format = "application/json" : format = "text/x-wiki";
-  let formContainer = make("div");
+  let format = "text/x-wiki", formContainer = make("div");
   formContainer.style.display = "none", document.body.appendChild(formContainer), formContainer.innerHTML = `<form id="hotcatCommitForm" method="post" enctype="multipart/form-data" action="${site.conf.wgScript}?title=${encodeURIComponent(site.conf.wgPageName)}&action=submit"><input type="hidden" name="wpTextbox1"><input type="hidden" name="model" value="${site.conf.wgPageContentModel}"><input type="hidden" name="format" value="${format}"><input type="hidden" name="wpSummary" value=""><input type="checkbox" name="wpMinoredit" value="1"><input type="checkbox" name="wpWatchthis" value="1"><input type="hidden" name="wpWatchlistExpiry" value=""><input type="hidden" name="wpAutoSummary" value="d41d8cd98f00b204e9800998ecf8427e"><input type="hidden" name="wpEdittime"><input type="hidden" name="wpStarttime"><input type="hidden" name="wpDiff" value="wpDiff"><input type="hidden" name="oldid" value="0"><input type="hidden" name="wpIgnoreBlankSummary" value="1"><input type="submit" name="hcCommit" value="hcCommit"><input type="hidden" name="wpEditToken"><input type="hidden" name="wpUltimateParam" value="1"><input type="hidden" name="wpChangeTags"><input type="hidden" value="ℳ𝒲♥𝓊𝓃𝒾𝒸ℴ𝒹ℯ" name="wpUnicodeCheck"></form>`, state.commitForm = document.getElementById("hotcatCommitForm");
 }, getPage = () => {
   if (site.conf.wgArticleId) {
@@ -1536,11 +1411,8 @@ ${new_cat}`, addedOne = !0);
   }
 }, setState = (value) => {
   let cats = value.split(`
-`);
-  if (!cats.length)
-    return null;
-  let catLine2 = state.catLine;
-  if (state.initialized && state.editors.length === 1 && state.editors[0].isAddCategory && catLine2) {
+`), catLine = state.catLine;
+  if (state.initialized && state.editors.length === 1 && state.editors[0].isAddCategory && catLine) {
     let newSpans = [], before = state.editors[0].span, i;
     for (i = 0; i < cats.length; i++) {
       if (!cats[i].length)
@@ -1548,31 +1420,21 @@ ${new_cat}`, addedOne = !0);
       let parts = cats[i].split("|"), key = parts.length > 1 ? parts[1] : null, cat = parts[0], lk = make("a");
       lk.href = wikiPagePath(`${HC.category_canonical}:${cat}`), lk.appendChild(make(cat, !0)), lk.title = cat;
       let span = make("span");
-      span.appendChild(lk), i || catLine2.insertBefore(make(" ", !0), before), catLine2.insertBefore(span, before), i + 1 < cats.length && catLine2.insertBefore(make(" | ", !0), before), newSpans.push({
+      span.appendChild(lk), i || catLine.insertBefore(make(" ", !0), before), catLine.insertBefore(span, before), i + 1 < cats.length && catLine.insertBefore(make(" | ", !0), before), newSpans.push({
         element: span,
         title: cat,
         key
       });
     }
     for (before.parentNode?.insertBefore(make(" | ", !0), before), i = 0; i < newSpans.length; i++)
-      new CategoryEditor(catLine2, newSpans[i].element, newSpans[i].title, newSpans[i].key);
+      new CategoryEditor(catLine, newSpans[i].element, newSpans[i].title, newSpans[i].key);
   }
   return null;
-}, getState = () => HC.jsonContentModels.includes(site.conf.wgPageContentModel) ? getStateJson() : getStateWikitext(), getStateJson = () => {
-  try {
-    let jsonData = JSON.parse(state.pageText ?? "");
-    if (jsonData.mediawikiCategories)
-      return jsonData.mediawikiCategories.map((cat) => cat.name + (cat.sort ? `|${cat.sort}` : "")).join(`
-`);
-  } catch (e) {
-    console.error("[getStateJson]Error parsing JSON:", e);
-  }
-  return null;
-}, getStateWikitext = () => {
+}, getState = () => getStateWikitext(), getStateWikitext = () => {
   let result = null;
   for (let i = 0; i < state.editors.length; i++) {
     let text = state.editors[i].currentCategory, key = state.editors[i].currentKey;
-    text && text.length && (key !== null && (text += `|${key}`), result === null ? result = text : result += `
+    text.length && (key !== null && (text += `|${key}`), result === null ? result = text : result += `
 ${text}`);
   }
   return result;
@@ -1624,38 +1486,17 @@ var toBool = (value) => !!value, toText = (value, fallback) => typeof value == "
   for (let key in HC.engine_names)
     Reflect.has(suggestionConfigs, key) && HC.engine_names[key] && (suggestionConfigs[key].name = HC.engine_names[key]);
   let isRtl = hasClass(document.body, "rtl");
-  if (!isRtl) {
-    let view = document.defaultView;
-    isRtl = view ? view.getComputedStyle(document.body, null).getPropertyValue("direction") === "rtl" : document.body.style.direction === "rtl";
-  }
-  state.is_rtl = isRtl;
+  isRtl || (isRtl = document.defaultView.getComputedStyle(document.body, null).getPropertyValue("direction") === "rtl"), state.is_rtl = isRtl;
 };
 
 // packages/HotCat/src/core/run.ts
-var can_edit = () => {
-  switch (site.skin) {
-    case "cologneblue":
-    case "standard":
-    case "nostalgia": {
-      let container = site.skin === "cologneblue" ? document.getElementById("quickbar") : null;
-      if (container || (container = document.getElementById("topbar")), !container)
-        return !1;
-      let lks = container.getElementsByTagName("a");
-      for (let i = 0; i < lks.length; i++)
-        if (param("title", lks[i].href) === site.conf.wgPageName && param("action", lks[i].href) === "edit")
-          return !0;
-      return !1;
-    }
-    default:
-      return document.getElementById("ca-edit") !== null;
-  }
-}, reallyRun = () => {
+var reallyRun = () => {
   if (initialize(), !HC.upload_disabled && site.conf.wgNamespaceNumber === -1 && site.conf.wgCanonicalSpecialPageName === "Upload" && site.conf.wgUserName)
     setupUpload(), setup(() => {
       window.UploadForm && window.UploadForm.previous_hotcat_state && (window.UploadForm.previous_hotcat_state = setState(window.UploadForm.previous_hotcat_state));
     });
   else {
-    if (!site.conf.wgIsArticle || site.conf.wgAction !== "view" || param("diff") !== null || param("oldid") !== null || !can_edit() || HC.disable())
+    if (!site.conf.wgIsArticle || site.conf.wgAction !== "view" || param("diff") !== null || param("oldid") !== null || !mw.config.get("wgIsProbablyEditable") || HC.disable())
       return;
     if (!HC.isSupportedContentModel()) {
       let issueURL = new URL("https://github.com/MoegirlPediaInterfaceAdmins/MoegirlPediaInterfaceCodes/issues/new?template=BLANK_ISSUE");

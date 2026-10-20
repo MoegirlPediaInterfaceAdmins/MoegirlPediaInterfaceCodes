@@ -36,16 +36,14 @@ describe("HC 默认值", () => {
         expect(HC.automationChangeTag).toBe("Automation tool");
         expect(HC.existsYes).toContain("P_yes.svg");
         expect(HC.existsNo).toContain("P_no.svg");
-        expect(HC.uncat_regexp).toBeInstanceOf(RegExp);
-        expect(HC.wikitextContentModels).toContain("wikitext");
-        expect(HC.jsonContentModels).toContain("Tabular.JsonConfig");
+        expect(HC.wikitextContentModels).toEqual(["wikitext"]);
     });
 
     it("isSupportedContentModel 按当前页面的 contentModel 判定", () => {
         site.conf.wgPageContentModel = "wikitext";
         expect(HC.isSupportedContentModel()).toBe(true);
         site.conf.wgPageContentModel = "Map.JsonConfig";
-        expect(HC.isSupportedContentModel()).toBe(true);
+        expect(HC.isSupportedContentModel()).toBe(false);
         site.conf.wgPageContentModel = "css";
         expect(HC.isSupportedContentModel()).toBe(false);
     });
@@ -76,7 +74,7 @@ describe("HC 默认值", () => {
 });
 
 describe("简体中文覆盖层", () => {
-    it("替换完整文案块", () => {
+    it("默认值即为简体中文文案", () => {
         expect(HC.messages.cat_added).toBe("添加[[分类:$1]]");
         expect(HC.messages.commit).toBe("保存");
         expect(HC.categories).toBe("分类");
@@ -90,11 +88,14 @@ describe("简体中文覆盖层", () => {
         expect(HC.existsYes).toContain("P_yes.svg");
     });
 
-    it("英文界面不应用覆盖", () => {
-        const english = HC.messages.cat_added;
-        site.conf.wgUserLanguage = "en";
+    it("繁体变体应用繁体覆盖（覆盖为单向合并，简体默认值无需覆盖）", () => {
+        site.conf.wgUserLanguage = "zh-hans";
         applyLocalization();
-        expect(HC.messages.cat_added).toBe(english);
+        expect(HC.messages.commit).toBe("保存");
+        site.conf.wgUserLanguage = "zh-hant";
+        applyLocalization();
+        expect(HC.categories).toBe("分類");
+        expect(HC.messages.commit).toBe("儲存");
     });
 });
 

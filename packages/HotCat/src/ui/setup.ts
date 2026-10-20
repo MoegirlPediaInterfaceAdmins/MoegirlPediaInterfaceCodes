@@ -4,7 +4,7 @@ import { make, findByClass } from "../util/dom.ts";
 import { evtKill } from "../util/events.ts";
 import { title, wikiPagePath } from "../util/text.ts";
 import { wikiTextBlankRE } from "../wikitext/patterns.ts";
-import { findCategory } from "../wikitext/find.ts";
+import { findCategoryWikitext } from "../wikitext/find.ts";
 import { listCategorys } from "../wikitext/list.ts";
 import { CategoryEditor } from "./editor.ts";
 import { checkMultiInput, setMultiInput } from "./multi.ts";
@@ -198,9 +198,7 @@ const setup = (additionalWork?: () => void): void => {
         lk.style.cursor = "pointer";
     }
     state.cleanedText = null;
-    if (typeof additionalWork === "function") {
-        additionalWork();
-    }
+    additionalWork?.();
     mw.hook("hotcat.ready").fire();
     $("body").trigger("hotcatSetupCompleted");
 };
@@ -208,13 +206,7 @@ const setup = (additionalWork?: () => void): void => {
 /** 上传页装配。 */
 const setupUpload = (): void => {
     state.onUpload = true;
-    let ip: HTMLElement | null = document.getElementById("mw-htmlform-description") || document.getElementById("wpDestFile");
-    if (!ip) {
-        ip = document.getElementById("wpDestFile");
-        while (ip && ip.nodeName.toLowerCase() !== "table") {
-            ip = ip.parentNode as HTMLElement | null;
-        }
-    }
+    const ip = document.getElementById("mw-htmlform-description") || document.getElementById("wpDestFile");
     if (!ip) {
         return;
     }
@@ -257,16 +249,10 @@ const setupUpload = (): void => {
         const newRow = table.insertRow(-1);
         newRow.appendChild(labelCell);
         newRow.appendChild(lineCell);
-        form.onsubmit = ((oldSubmit) => (...args: unknown[]) => {
+        form.onsubmit = ((oldSubmit: ((...args: unknown[]) => boolean) | null) => (...args: unknown[]): boolean => {
             let do_submit = true;
             if (oldSubmit) {
-                if (typeof oldSubmit === "string") {
-                    // onsubmit 可能是字符串
-                    const evaluated: unknown = eval(oldSubmit);
-                    do_submit = Boolean(evaluated);
-                } else if (typeof oldSubmit === "function") {
-                    do_submit = oldSubmit.bind(form)(...args);
-                }
+                do_submit = oldSubmit.bind(form)(...args);
             }
             if (!do_submit) {
                 return false;
@@ -282,7 +268,7 @@ const setupUpload = (): void => {
                 const key = state.editors[i].currentKey;
                 const new_cat = `[[${HC.category_canonical}:${t}${key ? `|${key}` : ""}]]`;
                 const cleanedText = eb.value.replace(/<!--(\s|\S)*?-->/g, "").replace(/<nowiki>(\s|\S)*?<\/nowiki>/g, "");
-                if (!findCategory(cleanedText, t, true)) {
+                if (!findCategoryWikitext(cleanedText, t, true)) {
                     eb.value += `\n${new_cat}`;
                     addedOne = true;
                 }
@@ -291,7 +277,7 @@ const setupUpload = (): void => {
                 eb.value = eb.value.replace(/\{\{subst:unc\}\}/g, "");
             }
             return true;
-        })(form.onsubmit as unknown as string | ((...args: unknown[]) => boolean) | null);
+        })(form.onsubmit as unknown as ((...args: unknown[]) => boolean) | null);
     }
 };
 
@@ -300,12 +286,7 @@ const createCommitForm = (): void => {
     if (state.commitForm) {
         return;
     }
-    let format;
-    if (HC.jsonContentModels.includes(site.conf.wgPageContentModel)) {
-        format = "application/json";
-    } else {
-        format = "text/x-wiki";
-    }
+    const format = "text/x-wiki";
     const formContainer = make("div");
     formContainer.style.display = "none";
     document.body.appendChild(formContainer);
@@ -337,9 +318,6 @@ const getPage = (): void => {
 /** 用逐行文本替换当前编辑器集合。 */
 const setState = (value: string): null => {
     const cats = value.split("\n");
-    if (!cats.length) {
-        return null;
-    }
     const catLine = state.catLine;
     if (state.initialized && state.editors.length === 1 && state.editors[0].isAddCategory && catLine) {
         const newSpans: { element: HTMLElement; title: string; key: string | null }[] = [];
@@ -380,31 +358,14 @@ const setState = (value: string): null => {
 };
 
 /** 当前编辑器集合的逐行快照。 */
-const getState = (): string | null => {
-    if (HC.jsonContentModels.includes(site.conf.wgPageContentModel)) {
-        return getStateJson();
-    }
-    return getStateWikitext();
-};
-
-const getStateJson = (): string | null => {
-    try {
-        const jsonData = JSON.parse(state.pageText ?? "") as { mediawikiCategories?: { name: string; sort?: string }[] };
-        if (jsonData.mediawikiCategories) {
-            return jsonData.mediawikiCategories.map((cat) => cat.name + (cat.sort ? `|${cat.sort}` : "")).join("\n");
-        }
-    } catch (e) {
-        console.error("[getStateJson]Error parsing JSON:", e);
-    }
-    return null;
-};
+const getState = (): string | null => getStateWikitext();
 
 const getStateWikitext = (): string | null => {
     let result: string | null = null;
     for (let i = 0; i < state.editors.length; i++) {
         let text = state.editors[i].currentCategory;
         const key = state.editors[i].currentKey;
-        if (text && text.length) {
+        if (text.length) {
             if (key !== null) {
                 text += `|${key}`;
             }

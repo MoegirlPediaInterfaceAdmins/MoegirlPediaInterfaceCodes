@@ -76,7 +76,7 @@ describe("setPage", () => {
 
     it("新页面按 -1 取 pages", () => {
         site.conf.wgArticleId = 0;
-        setPage({ query: { pages: { "-1": { revisions: [{ slots: { main: { "*": "" } } }] } } } });
+        setPage({ query: { pages: { "-1": { title: "TestPage", revisions: [{ slots: { main: { "*": "" } } }] } } } });
         expect(state.pageText).toBe("");
     });
 

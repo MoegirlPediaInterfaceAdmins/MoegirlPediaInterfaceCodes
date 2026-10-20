@@ -34,7 +34,7 @@ const autoLocalize = (namespaceNumber: number, _fallback: string): string => {
         regexp += `|${createRegexpStr(fallback)}`;
     }
     for (const cat_name in namespaceIds) {
-        if (typeof cat_name === "string" && cat_name.toLowerCase() !== canonical && cat_name.toLowerCase() !== fallback && namespaceIds[cat_name] === namespaceNumber) {
+        if (cat_name.toLowerCase() !== canonical && cat_name.toLowerCase() !== fallback && namespaceIds[cat_name] === namespaceNumber) {
             regexp += `|${createRegexpStr(cat_name)}`;
         }
     }

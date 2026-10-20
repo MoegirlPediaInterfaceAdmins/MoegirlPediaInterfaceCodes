@@ -35,7 +35,7 @@ interface ApiRevision {
 
 /** action=query 的 pages 项 */
 interface ApiPage {
-    title?: string;
+    title: string;
     /** 页面不存在时为空串 */
     missing?: string;
     redirect?: string;
@@ -122,17 +122,7 @@ interface WikitextMatchEntry {
 }
 
 interface WikitextMatchList extends Array<WikitextMatchEntry> {
-    re?: RegExp;
-}
-
-/** JSON 内容模型的分类项（mediawikiCategories） */
-interface JsonContentCategory {
-    name: string;
-    sort?: string;
-}
-
-interface JsonContent {
-    mediawikiCategories?: JsonContentCategory[];
+    re: RegExp;
 }
 
 /** `change_category` 的返回值 */
@@ -159,8 +149,7 @@ interface CommitForm {
     wpEditToken: HTMLInputElement;
     /** 表单中没有 wpSave 控件 */
     wpSave?: HTMLInputElement;
-    /** 可能不存在 */
-    wpDiff?: HTMLInputElement;
+    wpDiff: HTMLInputElement;
     oldid: HTMLInputElement;
     hcCommit: HTMLInputElement;
     click(): void;
@@ -173,4 +162,4 @@ interface StateCategory {
     key: string | null;
 }
 
-export type { SiteConfig, ApiRevision, ApiPage, ApiQuery, ApiResponse, OpenSearchResponse, TitleList, CategoryMatch, CategoryMatchEntry, OnceMatch, CategoryMatchList, WikitextMatchEntry, WikitextMatchList, JsonContentCategory, JsonContent, ChangeResult, FailureHandler, CommitForm, StateCategory };
+export type { SiteConfig, ApiRevision, ApiPage, ApiQuery, ApiResponse, OpenSearchResponse, TitleList, CategoryMatch, CategoryMatchEntry, OnceMatch, CategoryMatchList, WikitextMatchEntry, WikitextMatchList, ChangeResult, FailureHandler, CommitForm, StateCategory };

@@ -109,7 +109,6 @@ export const resetSite = (overrides: Partial<SiteConfig> = {}): void => {
     HC.capitalizePageNames = null;
     HC.shortcuts = null;
     HC.template_categories = {};
-    HC.blacklist = null;
     HC.capitalizePageNames = true;
     HC.listSize = 5;
     HC.suggestions = "combined";

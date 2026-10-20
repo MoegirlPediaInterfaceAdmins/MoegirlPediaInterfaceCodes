@@ -105,7 +105,7 @@ const resolveOne = (page: ApiPage, toResolve: CategoryEditor[]): void => {
     const lks = page.links;
     const is_hidden = Boolean(page.categoryinfo && typeof page.categoryinfo.hidden === "string");
     const is_missing = typeof page.missing === "string";
-    const pageTitle = page.title || "";
+    const pageTitle = page.title;
     const pageTitleWithoutNs = pageTitle.substring(pageTitle.indexOf(":") + 1);
     let is_dab = false;
     let is_redir = typeof page.redirect === "string";
@@ -175,10 +175,7 @@ const resolveRedirects = (toResolve: CategoryEditor[], params: ApiResponse | nul
         return;
     }
     for (const p in params.query.pages) {
-        const page = params.query.pages[p];
-        if (page) {
-            resolveOne(page, toResolve);
-        }
+        resolveOne(params.query.pages[p]!, toResolve);
     }
 };
 
