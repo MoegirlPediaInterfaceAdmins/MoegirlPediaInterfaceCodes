@@ -481,6 +481,22 @@ describe("Title.fromURL", () => {
         expect(Title.fromURL(`https://${SITEBASE}/A&B`).value).toBe("A&B");
     });
 
+    it("显示名链接「真实标题 | 别名」（issue #1140：%7C 解码后截到首个 | 之前，尾空白一并剥离）", () => {
+        const t = Title.fromURL(`${TITLEBASE}User:MoeMoe1628090_%7C_李晨语`);
+        expect(t.value).toBe("User:MoeMoe1628090");
+        expect(t.userName()?.value).toBe("MoeMoe1628090");
+    });
+
+    it("贡献页 target 携带「用户名 | 昵称」：同样截到首个 | 之前", () => {
+        expect(Title.fromURL(`${TITLEBASE}Special%3AContributions&target=MoeMoe1628090_%7C_李晨语`).value).toBe("User:MoeMoe1628090");
+    });
+
+    it("标题干净而锚点含 |：仅锚点段被截断，标题不受影响", () => {
+        const t = Title.fromURL(`${TITLEBASE}Foo#A%7CB`);
+        expect(t.value).toBe("Foo");
+        expect(t.anchor).toBe("A");
+    });
+
     it("非本站链接：value 置 null", () => {
         expect(Title.fromURL("https://example.com/wiki/Foo").value).toBeNull();
     });

@@ -184,8 +184,15 @@ export class Title extends Stringwrapper {
     decodeNasties(txt: string | Stringwrapper): string | Stringwrapper {
         try {
             let ret = decodeURI(this.decodeEscapes(txt));
-            ret = ret.replace(/[_ ]*$/, "");
-            return ret;
+            // 萌百显示名系统会产出「真实标题 | 显示别名」的链接（| 以 %7C 编码
+            // 进 title= 或路径段）。MW 标题字符集不含 |，截到首个 | 之前即为
+            // 真实标题；标题干净而锚点含 | 时仅锚点段受截断，可接受（issue #1140）
+            const pipe = ret.indexOf("|");
+            if (pipe >= 0) {
+                ret = ret.substring(0, pipe);
+            }
+            // 尾部空白剥离须在截断之后：「名␣|␣别名」截断后残留尾空白
+            return ret.replace(/[_ ]*$/, "");
         } catch {
             return txt;
         }

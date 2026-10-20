@@ -867,8 +867,11 @@ const _Title = class _Title extends Stringwrapper {
   decodeNasties(txt) {
     try {
       let ret = decodeURI(this.decodeEscapes(txt));
-      ret = ret.replace(/[_ ]*$/, "");
-      return ret;
+      const pipe = ret.indexOf("|");
+      if (pipe >= 0) {
+        ret = ret.substring(0, pipe);
+      }
+      return ret.replace(/[_ ]*$/, "");
     } catch {
       return txt;
     }
@@ -1684,7 +1687,7 @@ const getJsObj = (json) => {
   try {
     const json_ret = JSON.parse(json);
     if (json_ret.warnings) {
-      for (const warning of json_ret.warnings) {
+      for (const warning of Object.values(json_ret.warnings)) {
         if (warning["*"]) {
           log(warning["*"]);
         } else {
@@ -4505,7 +4508,7 @@ const loadAPIPreview = (queryType, article, navpop) => {
       if (assume$2(wiki.re.ipUser).test(String(username))) {
         url += `list=blocks&bkprop=range|restrictions&bkip=${usernameart}`;
       } else {
-        url += `list=users|usercontribs&usprop=blockinfo|groups|editcount|registration|gender&ususers=${usernameart}&meta=globaluserinfo&guiprop=groups|unattached&guiuser=${usernameart}&uclimit=1&ucprop=timestamp&ucuser=${usernameart}`;
+        url += `list=users|usercontribs&usprop=blockinfo|groups|editcount|registration|gender&ususers=${usernameart}&uclimit=1&ucprop=timestamp&ucuser=${usernameart}`;
       }
       htmlGenerator = APIuserInfoPreviewHTML;
       break;
@@ -4534,7 +4537,7 @@ const loadAPIPreview = (queryType, article, navpop) => {
       } else {
         url += `titles=${article.removeAnchor().urlString()}`;
       }
-      url += "&prop=revisions|pageprops|info|images|categories&meta=wikibase&rvslots=main&rvprop=ids|timestamp|flags|comment|user|content&cllimit=max&imlimit=max";
+      url += "&prop=revisions|pageprops|info|images|categories&rvslots=main&rvprop=ids|timestamp|flags|comment|user|content&cllimit=max&imlimit=max";
       htmlGenerator = APIrevisionPreviewHTML;
       break;
   }
@@ -4776,6 +4779,10 @@ const showAPIPreview = (queryType, html, id, navpop, download) => {
       target = "popupUserData";
       break;
     case "revision":
+      if (typeof html === "string" && html) {
+        setPopupTipsAndHTML(html, target, id);
+        return;
+      }
       if (download) {
         insertPreview(download);
       }

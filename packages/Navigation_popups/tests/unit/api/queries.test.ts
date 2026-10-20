@@ -215,11 +215,11 @@ describe("loadAPIPreview · URL 装配", () => {
         expect(g.mock.calls[0]?.[0]).toBe(`${PREFIX(f)}list=categorymembers&cmtitle=Category:Cats`);
     });
 
-    it("userinfo 非 IP：users|usercontribs|globaluserinfo 组合串（照搬勿修：ususers/guiuser/ucuser 三处重复传名）", async () => {
+    it("userinfo 非 IP：users|usercontribs 组合串（萌百未部署 CentralAuth，globaluserinfo 参数已移除）", async () => {
         const f = await fresh();
         const g = spyCache(f);
         f.queries.loadAPIPreview("userinfo", new f.title.Title("User:Example"), navpopWith(f));
-        expect(g.mock.calls[0]?.[0]).toBe(`${PREFIX(f)}list=users|usercontribs&usprop=blockinfo|groups|editcount|registration|gender&ususers=Example&meta=globaluserinfo&guiprop=groups|unattached&guiuser=Example&uclimit=1&ucprop=timestamp&ucuser=Example`);
+        expect(g.mock.calls[0]?.[0]).toBe(`${PREFIX(f)}list=users|usercontribs&usprop=blockinfo|groups|editcount|registration|gender&ususers=Example&uclimit=1&ucprop=timestamp&ucuser=Example`);
     });
 
     it("userinfo IP：list=blocks 分支", async () => {
@@ -257,20 +257,20 @@ describe("loadAPIPreview · URL 装配", () => {
         expect(g.mock.calls[0]?.[0]).toBe(`${PREFIX(f)}list=backlinks&bltitle=Foo`);
     });
 
-    it("revision 带 oldid：revids 分支", async () => {
+    it("revision 带 oldid：revids 分支（萌百未部署 Wikibase，meta=wikibase 已移除）", async () => {
         const f = await fresh();
         const g = spyCache(f);
         const article = new f.title.Title("Foo");
         article.oldid = "123";
         f.queries.loadAPIPreview("revision", article, navpopWith(f));
-        expect(g.mock.calls[0]?.[0]).toBe(`${PREFIX(f)}revids=123&prop=revisions|pageprops|info|images|categories&meta=wikibase&rvslots=main&rvprop=ids|timestamp|flags|comment|user|content&cllimit=max&imlimit=max`);
+        expect(g.mock.calls[0]?.[0]).toBe(`${PREFIX(f)}revids=123&prop=revisions|pageprops|info|images|categories&rvslots=main&rvprop=ids|timestamp|flags|comment|user|content&cllimit=max&imlimit=max`);
     });
 
     it("revision 无 oldid：titles 取 removeAnchor 后的串", async () => {
         const f = await fresh();
         const g = spyCache(f);
         f.queries.loadAPIPreview("revision", new f.title.Title("Foo#Anchor"), navpopWith(f));
-        expect(g.mock.calls[0]?.[0]).toBe(`${PREFIX(f)}titles=Foo&prop=revisions|pageprops|info|images|categories&meta=wikibase&rvslots=main&rvprop=ids|timestamp|flags|comment|user|content&cllimit=max&imlimit=max`);
+        expect(g.mock.calls[0]?.[0]).toBe(`${PREFIX(f)}titles=Foo&prop=revisions|pageprops|info|images|categories&rvslots=main&rvprop=ids|timestamp|flags|comment|user|content&cllimit=max&imlimit=max`);
     });
 
     it("未知 queryType：默认 htmlGenerator 走 alert，html 落默认槽", async () => {
@@ -631,6 +631,17 @@ describe("APIrevisionPreviewHTML", () => {
         const f = await fresh();
         expect(f.queries.APIrevisionPreviewHTML(new f.title.Title("Foo"), downloadWith(f, { query: { pages: { 1: null } } }))).toBe("Revision preview failed :(");
     });
+
+    it("响应带 warnings 对象（issue #1140：萌百缺 Wikibase 的报警形态）时正常提取正文", async () => {
+        const f = await fresh();
+        const d = downloadWith(f, {
+            batchcomplete: true,
+            warnings: { query: { warnings: "Unrecognized value for parameter \"meta\": wikibase" } },
+            query: { pages: { 1: { revisions: [{ timestamp: "2026-01-02T03:04:05Z", slots: { main: { content: "WIKI", contentmodel: "wikitext" } } }] } } },
+        });
+        expect(f.queries.APIrevisionPreviewHTML(new f.title.Title("Foo"), d)).toBeUndefined();
+        expect(d.data).toBe("WIKI");
+    });
 });
 
 describe("APIbacklinksPreviewHTML", () => {
@@ -888,9 +899,17 @@ describe("showAPIPreview", () => {
         const navpop = navpopWith(f, 1);
         f.queries.showAPIPreview("history", null, 1, navpop);
         expect(document.getElementById("popupPreview1")?.innerHTML).toBe("");
-        f.queries.showAPIPreview("revision", "r", 1, navpop);
+        f.queries.showAPIPreview("revision", undefined, 1, navpop);
         expect(document.getElementById("popupPreview1")?.innerHTML).toBe("");
         expect(document.getElementById("popupPostPreview1")?.innerHTML).toBe("");
+    });
+
+    it("revision 生成器返回失败文案：写 popupPreview 槽提示，不再把原始响应当 wikitext 渲染", async () => {
+        const f = await fresh();
+        slotDivs(1, ["popupPreview"]);
+        const navpop = navpopWith(f, 1);
+        f.queries.showAPIPreview("revision", "Revision preview failed :(", 1, navpop);
+        expect(document.getElementById("popupPreview1")?.innerHTML).toBe("Revision preview failed :(");
     });
 
     it("revision 带 download：转 insertPreview，正文预览写 popupPreview 槽（legacy :353-357）", async () => {
@@ -903,7 +922,7 @@ describe("showAPIPreview", () => {
         navpop.originalArticle = new f.title.Title("Foo");
         const d = downloadWith(f, "Hello world");
         d.owner = navpop;
-        f.queries.showAPIPreview("revision", "IGNORED", 1, navpop, d);
+        f.queries.showAPIPreview("revision", undefined, 1, navpop, d);
         expect(document.getElementById("popupPreview1")?.innerHTML).toContain("Hello world");
     });
 });

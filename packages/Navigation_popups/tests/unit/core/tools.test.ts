@@ -74,6 +74,19 @@ describe("tools 域", () => {
             expect(logSpy).toHaveBeenCalledWith("plain");
         });
 
+        it("warnings 为对象（MW 实际形态，键=模块名，formatversion=2 值字段）时逐值 log 且正常返回解析结果", () => {
+            // issue #1140：萌百缺 Wikibase 时 revision 查询必带的 warning 形态；
+            // legacy 以 for...of 遍历对象抛 TypeError，有效响应被整体当作解析失败
+            const ret = tools.getJsObj('{"batchcomplete":true,"warnings":{"query":{"warnings":"Unrecognized value for parameter \\"meta\\": wikibase"}},"query":{"pages":{"1":{"title":"Foo"}}}}') as { query?: unknown };
+            expect(ret.query).toEqual({ pages: { 1: { title: "Foo" } } });
+            expect(logSpy).toHaveBeenCalledWith('Unrecognized value for parameter "meta": wikibase');
+        });
+
+        it("warnings 对象的 formatversion=1 形态（值为 * 字段）逐值 log", () => {
+            tools.getJsObj('{"warnings":{"main":{"*":"Unrecognized parameters: foo."}}}');
+            expect(logSpy).toHaveBeenCalledWith("Unrecognized parameters: foo.");
+        });
+
         it("error 对象 errlog 出 code: info", () => {
             const ret = tools.getJsObj('{"error":{"code":"badvalue","info":"oops"}}') as { error: unknown };
             expect(ret.error).toEqual({ code: "badvalue", info: "oops" });

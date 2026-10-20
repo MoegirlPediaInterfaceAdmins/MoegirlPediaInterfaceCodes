@@ -269,7 +269,7 @@ describe("端到端：条目预览（阶段 2 验收）", () => {
         expect(navpop.hookIds).toEqual({});
         // 唯一请求 = revision 查询（无 oldid → titles 分支）；正文无文件链 → 无图查询
         expect(sent).toHaveLength(1);
-        expect(sent[0].url).toBe(`${API_PREFIX}titles=Foo&prop=revisions|pageprops|info|images|categories&meta=wikibase&rvslots=main&rvprop=ids|timestamp|flags|comment|user|content&cllimit=max&imlimit=max`);
+        expect(sent[0].url).toBe(`${API_PREFIX}titles=Foo&prop=revisions|pageprops|info|images|categories&rvslots=main&rvprop=ids|timestamp|flags|comment|user|content&cllimit=max&imlimit=max`);
         // wiki2html 产物落 popupPreview 槽：段落包裹、粗体、内链 href 走 insta 基址
         const preview = slot("popupPreview");
         expect(preview).toContain("<p>");

@@ -101,7 +101,11 @@ export const loadAPIPreview = (queryType: string, article: Title, navpop: Navpop
             if (assume(wiki.re.ipUser).test(String(username))) {
                 url += `list=blocks&bkprop=range|restrictions&bkip=${usernameart}`;
             } else {
-                url += `list=users|usercontribs&usprop=blockinfo|groups|editcount|registration|gender&ususers=${usernameart}&meta=globaluserinfo&guiprop=groups|unattached&guiuser=${usernameart}&uclimit=1&ucprop=timestamp&ucuser=${usernameart}`;
+                // 萌百未部署 CentralAuth，meta=globaluserinfo 与 gui* 参数会招致
+                // unrecognized warning（响应带 warnings 后曾整体解析失败，见
+                // getJsObj 注释）——已移除；globaluserinfo 的读取逻辑保留，
+                // 站点将来接入 CentralAuth 时把参数加回即可
+                url += `list=users|usercontribs&usprop=blockinfo|groups|editcount|registration|gender&ususers=${usernameart}&uclimit=1&ucprop=timestamp&ucuser=${usernameart}`;
             }
             htmlGenerator = APIuserInfoPreviewHTML;
             break;
@@ -130,7 +134,10 @@ export const loadAPIPreview = (queryType: string, article: Title, navpop: Navpop
             } else {
                 url += `titles=${article.removeAnchor().urlString()}`;
             }
-            url += "&prop=revisions|pageprops|info|images|categories&meta=wikibase&rvslots=main&rvprop=ids|timestamp|flags|comment|user|content&cllimit=max&imlimit=max";
+            // meta=wikibase 由 Wikibase 扩展提供，萌百未部署，请求会招致
+            // unrecognized warning——已移除（issue #1140）；pageprops 的
+            // wikibase_item 读取逻辑保留，数据驱动
+            url += "&prop=revisions|pageprops|info|images|categories&rvslots=main&rvprop=ids|timestamp|flags|comment|user|content&cllimit=max&imlimit=max";
             htmlGenerator = APIrevisionPreviewHTML;
             break;
     }
@@ -381,6 +388,13 @@ export const showAPIPreview = (
             target = "popupUserData";
             break;
         case "revision":
+            // 生成器带返回值即提取失败（如 CSS/JS 页面拿不到 wikitext 正文）：
+            // 显示失败提示并终止，避免 insertPreview 把未提取的原始响应
+            // 当 wikitext 渲染进弹窗（issue #1140 的 JSON 原文直出形态）
+            if (typeof html === "string" && html) {
+                setPopupTipsAndHTML(html, target, id);
+                return;
+            }
             if (download) {
                 insertPreview(download);
             }
