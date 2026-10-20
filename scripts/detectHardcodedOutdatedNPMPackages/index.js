@@ -38,7 +38,9 @@ for (const src of scripts) {
          */
         const latestVersion = packageInfo["dist-tags"].latest;
         console.info(pkg, "latestVersion:", latestVersion);
-        if (semver.compare(latestVersion, version) !== 1) {
+        // 抽取正则允许 @3、@3.2 这类不完整版本（semver.compare 对其抛 Invalid Version，
+        // 会让整个扫描终止），coerce 补全为 3.0.0 / 3.2.0 后再比较；报告里仍保留原始写法
+        if (semver.compare(latestVersion, semver.coerce(version)) !== 1) {
             console.info("latestVersion is not greater than local version, continue.");
             continue;
         }
