@@ -15,10 +15,11 @@ const gadgetBaseRoot = "src/gadgets";
 const gadgetsDefinitionList = await yamlModule.readFile(path.join(gadgetBaseRoot, "Gadgets-definition-list.yaml"));
 dump("gadgetsDefinitionList:", gadgetsDefinitionList);
 const gadgetDirents = await fs.promises.readdir(gadgetBaseRoot, { withFileTypes: true });
-// gadget 名显式排序：跨环境 readdir 顺序不定，排序保证 Gadgets-definition-list.yaml
-// 各 section 的 gadgets 顺序稳定，避免交叉重新生成时出现纯排序 diff
+// gadget 名与其内文件均显式排序：跨环境 readdir 顺序不定，排序既保证 Gadgets-definition-list.yaml
+// 各 section 的 gadgets 顺序稳定，也保证未登记文件按稳定顺序追加进 definition.yaml，
+// 避免交叉重新生成时出现纯排序 diff
 const gadgetNames = sortWithLowerFirstCharacter(gadgetDirents.filter((dirent) => dirent.isDirectory()).map(({ name }) => name));
-const gadgetDirs = await Promise.all(gadgetNames.map(async (gadget) => ({ gadget, files: (await fs.promises.readdir(path.join(gadgetBaseRoot, gadget))).filter((file) => [".js", ".css", ".json"].includes(path.extname(path.join(gadgetBaseRoot, gadget, file)))) })));
+const gadgetDirs = await Promise.all(gadgetNames.map(async (gadget) => ({ gadget, files: sortWithLowerFirstCharacter((await fs.promises.readdir(path.join(gadgetBaseRoot, gadget))).filter((file) => [".js", ".css", ".json"].includes(path.extname(path.join(gadgetBaseRoot, gadget, file))))) })));
 const gadgets = gadgetDirs.map(({ gadget }) => gadget);
 const gadgetFiles = gadgetDirs.flatMap(({ files: _files }) => _files);
 const duplicatedGadgetFiles = gadgetFiles.filter((file, index) => gadgetFiles.lastIndexOf(file) !== index);

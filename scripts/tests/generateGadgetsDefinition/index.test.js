@@ -78,4 +78,23 @@ describe("generateGadgetsDefinition", () => {
         );
         expect(createCommitMock.fn).toHaveBeenCalledOnce();
     });
+
+    it("gadget 内文件列表显式排序，未登记文件按稳定顺序追加进 definition.yaml", async () => {
+        // 目录内文件逆序返回，模拟跨环境 readdir 顺序差异；definition 已登记主文件，
+        // 两个未登记文件应按排序顺序追加，而不是照 readdir 顺序
+        fsState.dirs = {
+            "src/gadgets": [{ name: "A-gadget", isDirectory: () => true }],
+            "src/gadgets/A-gadget": ["zeta.css", "main.js", "Gadget-A-gadget.js"],
+        };
+        yamlState.files = {
+            "src/gadgets/Gadgets-definition-list.yaml": [{ name: "S", gadgets: [] }],
+            "src/gadgets/A-gadget/definition.yaml": { _section: "S", _files: ["Gadget-A-gadget.js"] },
+        };
+        const rejection = await importScript();
+        expect(rejection).toBeNull();
+        expect(yamlState.writeFile).toHaveBeenCalledWith(
+            "src/gadgets/A-gadget/definition.yaml",
+            { _section: "S", _files: ["Gadget-A-gadget.js", "main.js", "zeta.css"] },
+        );
+    });
 });
