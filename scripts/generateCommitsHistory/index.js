@@ -130,6 +130,12 @@ const parser = ({ username, changedFiles, hash, date, indent }) => {
         debugConsole.info(`${"\t".repeat(indent + 1)}This commit came from a bot (${username}), skip.`);
         return;
     }
+    // 主作者与 co-author 可能把同一人解析到同一用户名（别名邮箱都命中 mailmap，
+    // 或同名且均未入 mailmap），按 username+hash 去重，同一提交对同一人只计一次
+    if (Array.isArray(history[username]) && history[username].some(({ commit }) => commit === hash)) {
+        debugConsole.info(`${"\t".repeat(indent + 1)}${username} already attributed for commit ${hash}, skip.`);
+        return;
+    }
     debugConsole.info(`${"\t".repeat(indent + 1)}${username} changed ${changedFiles} file(s) in commit ${hash} at ${date}.`);
     if (!Array.isArray(history[username])) {
         history[username] = [];
