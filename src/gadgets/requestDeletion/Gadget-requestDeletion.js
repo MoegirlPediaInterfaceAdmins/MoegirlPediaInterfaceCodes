@@ -38,7 +38,7 @@ $(() => {
 
         const buildSectionTitle = () => `请求删除页面：[[${linkedPageName}]]${getRequestTitleSuffix(wgUserName, new Date())}`;
 
-        const buildBatchSectionTitle = () => `${wgULS("批量删除请求", "批量刪除請求")}${getRequestTitleSuffix(wgUserName, new Date())}`;
+        const buildBatchSectionTitle = () => `批量删除请求${getRequestTitleSuffix(wgUserName, new Date())}`;
 
         /**
          * 新讨论串的正文
