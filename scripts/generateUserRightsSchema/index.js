@@ -11,12 +11,15 @@ console.info("Initialization done.");
 exitIf(!upstream, "HEAD does not point to a branch, exit.");
 
 console.info("Start to download the user rights...");
-const response = await fetch("https://zh.moegirl.org.cn/api.php?action=query&meta=siteinfo&siprop=usergroups&format=json", {
+// 数据源是自建聚合接口 moegirlpedia.annangela.cn：返回结构与 api.php 的
+// siprop=usergroups 完全一致（含 query 包裹），仅顶层额外附带 fetchedAt 抓取时间
+const response = await fetch("https://moegirlpedia.annangela.cn/usergroups?site=zh", {
     method: "GET",
 }).catch((error) => ({ ok: false, isError: true, error }));
 if (!response.ok) {
     console.error(`Failed to fetch user rights: ${response.isError ? errorToString(response.error) : `${response.status} ${response.statusText} ${await response.text()}`}`);
-    process.exit(0);
+    // 抓取失败必须以非零退出码结束，否则 CI 无法感知，过期 schema 会被静默沿用
+    process.exit(1);
 }
 const data = await response.json();
 dump("User right api:", data);

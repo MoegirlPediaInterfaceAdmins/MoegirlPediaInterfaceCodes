@@ -31,6 +31,8 @@ for (const { parentPath, name } of files) {
         console.info(`\t\tSuccessfully minified, size reduced from ${prettyBytes(Buffer.byteLength(code, "utf-8"), { binary: true })} to ${prettyBytes(Buffer.byteLength(result.code, "utf-8"), { binary: true })}.`);
     } catch (error) {
         console.error(`\t\tError minifying file ${filePath}:`, error);
+        // 单文件失败不能让整体构建显示成功：标记非零退出码，但继续压缩剩余文件
+        process.exitCode = 1;
     }
 }
 console.info("JavaScript minification completed.");
