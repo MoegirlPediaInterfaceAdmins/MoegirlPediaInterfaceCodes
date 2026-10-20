@@ -72,9 +72,13 @@ describe("generateUserRightsSchema", () => {
     });
 
     it("抓取成功时合并去重权限写入 schema 并提交", async () => {
+        // 响应形状对齐自建聚合接口：顶层无 query 包裹，usergroups 各项与 api.php 的 siprop=usergroups 一致
         vi.stubGlobal("fetch", vi.fn(() => Promise.resolve({
             ok: true,
-            json: () => ({ query: { usergroups: [{ rights: ["read", "edit"] }, { rights: ["edit", "move"] }] } }),
+            json: () => ({
+                fetchedAt: "2026-10-20T11:18:55.538+08:00",
+                usergroups: [{ rights: ["read", "edit"] }, { rights: ["edit", "move"] }],
+            }),
         })));
         expect(await importScript()).toBeNull();
         expect(exitSpy).not.toHaveBeenCalled();
