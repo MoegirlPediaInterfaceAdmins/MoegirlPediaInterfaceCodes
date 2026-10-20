@@ -13,13 +13,18 @@ export default (cmd) => new Promise((res, rej) => {
             res(stdout.trim());
         } else {
             // reject Error 而非裸对象：调用方 catch 后可直接拿到 message/stack，
-            // 退出码挂在 exitCode 上，不必下钻 error.code 两层才能取到
-            rej(Object.assign(new Error(`${cmd} exited with code ${error.code}`), {
-                error,
-                stdout: stdout.trim(),
-                stderr: stderr.trim(),
-                exitCode: error.code,
-            }));
+            // 退出码挂在 exitCode 上，不必下钻 error.code 两层才能取到；
+            // 被信号终止时 error.code 为 null，约定与 spawnAsync 一致：
+            // 消息带信号名、exitCode 兜底为数字 1
+            rej(Object.assign(
+                typeof error.code === "number" ? new Error(`${cmd} exited with code ${error.code}`) : new Error(`${cmd} exited unexpectedly${error.signal ? ` with signal ${error.signal}` : ""}`),
+                {
+                    error,
+                    stdout: stdout.trim(),
+                    stderr: stderr.trim(),
+                    exitCode: error.code ?? 1,
+                },
+            ));
         }
     });
 });

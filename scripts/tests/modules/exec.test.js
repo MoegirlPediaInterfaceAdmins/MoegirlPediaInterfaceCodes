@@ -41,4 +41,19 @@ describe("exec", () => {
         expect(reason.error.code).toBe(127);
         expect(reason.stderr).not.toBe("");
     });
+
+    // kill -9 $$ 让 shell 自身被 SIGKILL 终止：此时 error.code 为 null、signal 有值，
+    // 约定与 spawnAsync 一致——消息带信号名，exitCode 兜底为数字 1 而非 null
+    it.skipIf(process.platform === "win32")("子进程被信号终止时 reject 的 exitCode 兜底为 1，消息带信号名", async () => {
+        const command = "kill -9 $$";
+        let reason;
+        await exec(command).catch((rejection) => {
+            reason = rejection;
+        });
+        expect(reason).toBeInstanceOf(Error);
+        expect(reason.message).toBe(`${command} exited unexpectedly with signal SIGKILL`);
+        expect(reason.exitCode).toBe(1);
+        expect(reason.error.code).toBeNull();
+        expect(reason.error.signal).toBe("SIGKILL");
+    });
 });
