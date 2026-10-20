@@ -12,7 +12,7 @@ exitIf(!upstream, "HEAD does not point to a branch, exit.");
 
 console.info("Start to download the user rights...");
 // 数据源是自建聚合接口 moegirlpedia.annangela.cn：返回结构与 api.php 的
-// siprop=usergroups 一致，但顶层没有 query 包裹，并附带 fetchedAt 抓取时间
+// siprop=usergroups 完全一致（含 query 包裹），仅顶层额外附带 fetchedAt 抓取时间
 const response = await fetch("https://moegirlpedia.annangela.cn/usergroups?site=zh", {
     method: "GET",
 }).catch((error) => ({ ok: false, isError: true, error }));
@@ -25,7 +25,7 @@ const data = await response.json();
 dump("User right api:", data);
 console.info("\tDone.");
 const userRightsSet = new Set();
-for (const { rights } of data.usergroups) {
+for (const { rights } of data.query.usergroups) {
     for (const right of rights) {
         userRightsSet.add(right);
     }
