@@ -132,8 +132,7 @@ const initialize = (): void => {
     }
     let isRtl = hasClass(document.body, "rtl");
     if (!isRtl) {
-        const view = document.defaultView;
-        isRtl = view ? view.getComputedStyle(document.body, null).getPropertyValue("direction") === "rtl" : document.body.style.direction === "rtl";
+        isRtl = document.defaultView!.getComputedStyle(document.body, null).getPropertyValue("direction") === "rtl";
     }
     state.is_rtl = isRtl;
 };

@@ -122,7 +122,7 @@ interface WikitextMatchEntry {
 }
 
 interface WikitextMatchList extends Array<WikitextMatchEntry> {
-    re?: RegExp;
+    re: RegExp;
 }
 
 /** `change_category` 的返回值 */
@@ -149,8 +149,7 @@ interface CommitForm {
     wpEditToken: HTMLInputElement;
     /** 表单中没有 wpSave 控件 */
     wpSave?: HTMLInputElement;
-    /** 可能不存在 */
-    wpDiff?: HTMLInputElement;
+    wpDiff: HTMLInputElement;
     oldid: HTMLInputElement;
     hcCommit: HTMLInputElement;
     click(): void;

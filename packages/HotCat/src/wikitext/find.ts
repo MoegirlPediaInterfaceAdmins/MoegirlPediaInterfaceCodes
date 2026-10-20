@@ -1,7 +1,7 @@
 import { HC } from "../config/hotcat.ts";
 import { escapeRE } from "../util/text.ts";
 import { wikiTextBlank, wikiTextBlankOrBidi, wikiTextBlankRE, replaceByBlanks } from "./patterns.ts";
-import type { WikitextMatchList } from "../types.ts";
+import type { WikitextMatchEntry, WikitextMatchList } from "../types.ts";
 
 function findCategoryWikitext(wikitext: string, category: string, once: true): RegExpExecArray | null;
 function findCategoryWikitext(wikitext: string, category: string, once?: false): WikitextMatchList;
@@ -18,15 +18,14 @@ function findCategoryWikitext(wikitext: string, category: string, once?: boolean
         return cat_regex.exec(wikitext);
     }
     const copiedtext = wikitext.replace(/<!--(\s|\S)*?-->/g, replaceByBlanks).replace(/<nowiki>(\s|\S)*?<\/nowiki>/g, replaceByBlanks);
-    const result: WikitextMatchList = [];
+    const result: WikitextMatchEntry[] = [];
     let curr_match: RegExpExecArray | null;
     while ((curr_match = cat_regex.exec(copiedtext)) !== null) {
         result.push({
             match: curr_match,
         });
     }
-    result.re = cat_regex;
-    return result;
+    return Object.assign(result, { re: cat_regex });
 }
 
 export { findCategoryWikitext };

@@ -3,17 +3,11 @@ import { site, state } from "../runtime.ts";
 /** 允许按名字读取 clientWidth / scrollLeft 等布局量的视图 */
 type MeasuredElement = Record<string, number>;
 
-const readMetric = (element: Element | null, name: string): number => {
-    const metrics = element as unknown as MeasuredElement | null;
-    return metrics ? metrics[name] || 0 : 0;
-};
+const readMetric = (element: Element, name: string): number => (element as unknown as MeasuredElement)[name] || 0;
 
 /** 视口尺寸（clientWidth / clientHeight）。 */
 const viewport = (what: string): number => {
     const s = `client${what}`;
-    if (window.opera) {
-        return readMetric(document.body, s);
-    }
     return readMetric(document.documentElement, s) || readMetric(document.body, s);
 };
 

@@ -56,10 +56,8 @@ const changeCategory = (_wikitext: string, toRemove: string | null | undefined, 
         let before = wikitext.substring(0, matches[0].match.index);
         let after = wikitext.substring(matches[0].match.index + matches[0].match[0].length);
         if (matches.length > 1) {
-            if (matches.re) {
-                matches.re.lastIndex = 0;
-                after = after.replace(matches.re, "");
-            }
+            matches.re.lastIndex = 0;
+            after = after.replace(matches.re, "");
         }
         if (toAdd) {
             if (key === null) {

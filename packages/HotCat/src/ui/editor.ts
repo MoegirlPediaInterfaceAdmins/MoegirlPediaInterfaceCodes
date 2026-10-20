@@ -615,7 +615,7 @@ class CategoryEditor {
     }
 
     sanitizeInput(): void {
-        let v = this.text.value || "";
+        let v = this.text.value;
         v = v.replace(/^(\s|_)+/, "");
         const re = new RegExp(`^(${HC.category_regexp}):`);
         if (re.test(v)) {

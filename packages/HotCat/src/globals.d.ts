@@ -38,8 +38,6 @@ declare global {
         UFUI?: UFUIGlobal;
         UIElements?: unknown;
         UploadForm?: UploadFormGlobal;
-        /** Opera 专用 */
-        opera?: unknown;
     }
 
     /** OOUI 对话框封装 */

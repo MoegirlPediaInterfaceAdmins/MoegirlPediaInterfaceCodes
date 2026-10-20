@@ -6,10 +6,7 @@ const param = (name: string, uri?: string): string | null => {
     const target = uri || location.href;
     const re = new RegExp(`[&?]${name}=([^&#]*)`);
     const m = re.exec(target);
-    if (m && m.length > 1) {
-        return decodeURIComponent(m[1]);
-    }
-    return null;
+    return m ? decodeURIComponent(m[1]) : null;
 };
 
 /** 把站内链接还原为页面名；不属于本站的链接返回 null */
@@ -29,12 +26,7 @@ const title = (href: string | null | undefined): string | null => {
     return null;
 };
 
-const capitalize = (str: string): string => {
-    if (!str || !str.length) {
-        return str;
-    }
-    return str.slice(0, 1).toUpperCase() + str.slice(1);
-};
+const capitalize = (str: string): string => str.slice(0, 1).toUpperCase() + str.slice(1);
 
 /** 页面名 → 站内路径（保留冒号与斜杠，其余百分号编码） */
 const wikiPagePath = (pageName: string): string => site.conf.wgArticlePath.replace("$1", encodeURIComponent(pageName).replace(/%3A/g, ":").replace(/%2F/g, "/"));

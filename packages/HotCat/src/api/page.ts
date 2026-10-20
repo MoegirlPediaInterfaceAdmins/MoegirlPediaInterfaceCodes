@@ -175,10 +175,7 @@ const resolveRedirects = (toResolve: CategoryEditor[], params: ApiResponse | nul
         return;
     }
     for (const p in params.query.pages) {
-        const page = params.query.pages[p];
-        if (page) {
-            resolveOne(page, toResolve);
-        }
+        resolveOne(params.query.pages[p]!, toResolve);
     }
 };
 

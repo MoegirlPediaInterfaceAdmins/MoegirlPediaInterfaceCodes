@@ -64,24 +64,20 @@ const buildForm = (editor: CategoryEditor): HTMLFormElement => {
             makeActive(editor);
         });
         $(text).on("blur", editor.saveView.bind(editor));
-        try {
-            $(text).on("compositionstart", () => {
-                editor.lastKey = IME;
-                editor.usesComposition = true;
-                editor.ime = true;
-            });
-            $(text).on("compositionend", () => {
-                editor.lastKey = IME;
-                editor.usesComposition = true;
-                editor.ime = false;
-            });
-            $(text).on("textInput", () => {
-                editor.ime = false;
-                editor.invokeSuggestions(false);
-            });
-        } catch {
-            // 不支持时忽略
-        }
+        $(text).on("compositionstart", () => {
+            editor.lastKey = IME;
+            editor.usesComposition = true;
+            editor.ime = true;
+        });
+        $(text).on("compositionend", () => {
+            editor.lastKey = IME;
+            editor.usesComposition = true;
+            editor.ime = false;
+        });
+        $(text).on("textInput", () => {
+            editor.ime = false;
+            editor.invokeSuggestions(false);
+        });
         $(text).on("blur", () => {
             editor.usesComposition = false;
             editor.ime = false;

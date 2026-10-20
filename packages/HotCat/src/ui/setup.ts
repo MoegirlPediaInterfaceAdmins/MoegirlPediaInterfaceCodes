@@ -198,9 +198,7 @@ const setup = (additionalWork?: () => void): void => {
         lk.style.cursor = "pointer";
     }
     state.cleanedText = null;
-    if (typeof additionalWork === "function") {
-        additionalWork();
-    }
+    additionalWork?.();
     mw.hook("hotcat.ready").fire();
     $("body").trigger("hotcatSetupCompleted");
 };
@@ -208,13 +206,7 @@ const setup = (additionalWork?: () => void): void => {
 /** 上传页装配。 */
 const setupUpload = (): void => {
     state.onUpload = true;
-    let ip: HTMLElement | null = document.getElementById("mw-htmlform-description") || document.getElementById("wpDestFile");
-    if (!ip) {
-        ip = document.getElementById("wpDestFile");
-        while (ip && ip.nodeName.toLowerCase() !== "table") {
-            ip = ip.parentNode as HTMLElement | null;
-        }
-    }
+    const ip = document.getElementById("mw-htmlform-description") || document.getElementById("wpDestFile");
     if (!ip) {
         return;
     }
@@ -257,16 +249,10 @@ const setupUpload = (): void => {
         const newRow = table.insertRow(-1);
         newRow.appendChild(labelCell);
         newRow.appendChild(lineCell);
-        form.onsubmit = ((oldSubmit) => (...args: unknown[]) => {
+        form.onsubmit = ((oldSubmit: ((...args: unknown[]) => boolean) | null) => (...args: unknown[]): boolean => {
             let do_submit = true;
             if (oldSubmit) {
-                if (typeof oldSubmit === "string") {
-                    // onsubmit 可能是字符串
-                    const evaluated: unknown = eval(oldSubmit);
-                    do_submit = Boolean(evaluated);
-                } else if (typeof oldSubmit === "function") {
-                    do_submit = oldSubmit.bind(form)(...args);
-                }
+                do_submit = oldSubmit.bind(form)(...args);
             }
             if (!do_submit) {
                 return false;
@@ -291,7 +277,7 @@ const setupUpload = (): void => {
                 eb.value = eb.value.replace(/\{\{subst:unc\}\}/g, "");
             }
             return true;
-        })(form.onsubmit as unknown as string | ((...args: unknown[]) => boolean) | null);
+        })(form.onsubmit as unknown as ((...args: unknown[]) => boolean) | null);
     }
 };
 
@@ -332,9 +318,6 @@ const getPage = (): void => {
 /** 用逐行文本替换当前编辑器集合。 */
 const setState = (value: string): null => {
     const cats = value.split("\n");
-    if (!cats.length) {
-        return null;
-    }
     const catLine = state.catLine;
     if (state.initialized && state.editors.length === 1 && state.editors[0].isAddCategory && catLine) {
         const newSpans: { element: HTMLElement; title: string; key: string | null }[] = [];
@@ -382,7 +365,7 @@ const getStateWikitext = (): string | null => {
     for (let i = 0; i < state.editors.length; i++) {
         let text = state.editors[i].currentCategory;
         const key = state.editors[i].currentKey;
-        if (text && text.length) {
+        if (text.length) {
             if (key !== null) {
                 text += `|${key}`;
             }

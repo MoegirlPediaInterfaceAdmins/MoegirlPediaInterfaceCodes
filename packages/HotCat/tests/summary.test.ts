@@ -90,8 +90,8 @@ describe("performChanges：单编辑器", () => {
         performChanges(vi.fn(), editor);
 
         expect(form.wpChangeTags.value).toBe("HotCat,Automation tool");
-        expect(form.wpDiff!.name).toBe("wpSave");
-        expect(form.wpDiff!.value).toBe("wpSave");
+        expect(form.wpDiff.name).toBe("wpSave");
+        expect(form.wpDiff.value).toBe("wpSave");
         expect(form.wpSummary.value).toBe("移除[[分类:Foo]]; 添加[[分类:Bar]]");
         // 被清空后影响全局：用例结束前复原
         HC.messages.using = "——[[Help:HotCat小工具|HotCat]]";
@@ -110,8 +110,8 @@ describe("performChanges：单编辑器", () => {
 
         performChanges(vi.fn(), editor);
 
-        expect(form.wpDiff!.name).toBe("wpDiff");
-        expect(form.wpDiff!.value).toBe("wpDiff");
+        expect(form.wpDiff.name).toBe("wpDiff");
+        expect(form.wpDiff.value).toBe("wpDiff");
     });
 
     it("源码未取到时回调错误且不提交", () => {
@@ -168,7 +168,7 @@ describe("performChanges：多编辑器", () => {
 
         performChanges(vi.fn());
 
-        expect(form.wpDiff!.name).toBe("wpDiff");
+        expect(form.wpDiff.name).toBe("wpDiff");
         expect(form.wpTextbox1.value).toBe("text\n[[Category:Foo]]");
     });
 });

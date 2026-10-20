@@ -134,10 +134,7 @@ const HC: HotCat = {
         if (!map) {
             return;
         }
-        const hotCat = window.HotCat;
-        if (!hotCat) {
-            return;
-        }
+        const hotCat = window.HotCat!;
         hotCat.shortcuts ||= {};
         for (const rawKey in map) {
             if (!Object.prototype.hasOwnProperty.bind(map)(rawKey)) {

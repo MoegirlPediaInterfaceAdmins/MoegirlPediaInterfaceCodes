@@ -16,11 +16,9 @@ const requireCommitForm = (): CommitForm => {
 
 /** 多分类改动时把模板文案转成复数形式（中文只有一种形态） */
 const multiChangeMsg = (count: number): string => {
-    let msg: string | string[] = HC.messages.multi_change;
-    if (typeof msg !== "string" && msg.length) {
-        msg = mw.language.convertPlural(count, msg);
-    }
-    return substitute(typeof msg === "string" ? msg : msg[msg.length - 1], { 1: `${count}` });
+    const raw = HC.messages.multi_change;
+    const msg = typeof raw === "string" ? raw : mw.language.convertPlural(count, raw);
+    return substitute(msg, { 1: `${count}` });
 };
 
 /** UTC `YYYYMMDDHHmmss` */
@@ -56,15 +54,8 @@ const performChanges = (failure: FailureHandler, singleEditor?: CategoryEditor):
     if (singleEditor && !singleEditor.noCommit && !HC.no_autocommit && state.editToken && !selfEditConflict) {
         commitForm.wpEditToken.value = state.editToken;
         action = commitForm.wpDiff;
-        if (action) {
-            action.name = action.value = "wpSave";
-            commitForm.wpChangeTags.value += `,${HC.automationChangeTag}`;
-        }
-    } else {
-        action = commitForm.wpSave;
-        if (action) {
-            action.name = action.value = "wpDiff";
-        }
+        action.name = action.value = "wpSave";
+        commitForm.wpChangeTags.value += `,${HC.automationChangeTag}`;
     }
     let result: ChangeResult = {
         text: pageText,
