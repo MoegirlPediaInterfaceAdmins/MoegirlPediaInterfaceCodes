@@ -79,7 +79,7 @@
         "react": "npm:@preact/compat@^18.3.2",
         "react-dom": "npm:@preact/compat@^18.3.2",
         "react18-json-view": "^0.2.10",
-        "rollup": "^4.64.5",
+        "rollup": "^4.64.9",
         "rollup-plugin-esbuild": "^6.2.1",
         "sass": "^1.105.1",
         "semver": "^7.8.5",
