@@ -491,10 +491,22 @@ describe("Title.fromURL", () => {
         expect(Title.fromURL(`${TITLEBASE}Special%3AContributions&target=MoeMoe1628090_%7C_李晨语`).value).toBe("User:MoeMoe1628090");
     });
 
-    it("标题干净而锚点含 |：仅锚点段被截断，标题不受影响", () => {
+    it("标题干净而锚点含 |：锚点段完整保留，标题不受影响", () => {
         const t = Title.fromURL(`${TITLEBASE}Foo#A%7CB`);
         expect(t.value).toBe("Foo");
-        expect(t.anchor).toBe("A");
+        expect(t.anchor).toBe("A|B");
+    });
+
+    it("显示名链接携带锚点：仅标题段截断别名，锚点保留", () => {
+        const t = Title.fromURL(`${TITLEBASE}User:MoeMoe1628090_%7C_李晨语#Section`);
+        expect(t.value).toBe("User:MoeMoe1628090");
+        expect(t.anchor).toBe("Section");
+    });
+
+    it("Safari 双重编码的显示名链接：回退路径同样截断别名（与主路径一致）", () => {
+        wiki.flag.isSafari = true;
+        const t = Title.fromURL(`${TITLEBASE}User:MoeMoe1628090_%257C_李晨语`);
+        expect(t.value).toBe("User:MoeMoe1628090");
     });
 
     it("非本站链接：value 置 null", () => {

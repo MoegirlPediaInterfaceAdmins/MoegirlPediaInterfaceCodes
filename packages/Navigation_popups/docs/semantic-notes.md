@@ -180,12 +180,12 @@
 - **用户可见性**：提取失败场景从「JSON 原文直出」变为「明确的失败提示」；成功路径与 missing 页路径无变化。
 - **论据**：失败文案是 htmlGenerator 的既有约定（其余 queryType 均直接入槽），revision 分支此前独弃之；A10/A11 修复后本条覆盖的剩余场景是非 wikitext 内容模型页。测试覆盖见 `tests/unit/api/queries.test.ts`（失败文案入槽 + `undefined` 不触槽）。
 
-### A13. `decodeNasties` 截断显示名链接的管道符后缀（**开放差异**，2026-10-20 issue #1140）
+### A13. 显示名链接的管道符后缀截断（**开放差异**，2026-10-20 issue #1140；同日按 Sourcery 评审意见收紧为仅标题段）
 
 - **legacy 行为**：URL 解码后原样返回标题——萌百显示名系统（服务端扩展，用户页 H1 渲染为「用户名 | 昵称」）在讨论串等动态视图产出的链接把「真实标题 | 显示别名」整串编码进 `title=`（`|` 为 `%7C`），解码后 popups 把整串当标题：弹窗标题污染、`ususers`/`titles` 查询无效用户名与不存在页面、编辑导航链指向非法标题（如 `User_talk:名_%7C_昵称&action=edit`）。
-- **重写版行为**：解码产物含 `|` 时截到首个 `|` 之前，尾部空白剥离移到截断之后（`src/title/title.ts` 的 `decodeNasties`）——「名␣|␣别名」截断后残留的尾空白一并剥掉。MW 标题字符集不含 `|`，从 URL 进入的含 `|` 标题均为显示名拼接产物。
-- **用户可见性**：悬停显示名链接时弹窗标题、用户信息查询、编辑等导航链全部还原为真实标题；代价是标题干净而**锚点**含 `|` 的链接锚点段被截断（仅损失锚点定位，预览仍从头渲染；显示名链接不携带锚点，此场景罕见）。
-- **论据**：显示名链接的 `%7C` 在 query 解析时不会被服务端拆分（与多值参数的字面 `|` 不同），必须客户端截断；`userName()` 的 `split("/")[0]` 不处理 `|`，故截断放在 URL 解码的统一出口 `decodeNasties`（fromURL 的 main/contribs/email/backlinks 分支共用）。`fromWikiText` 走 `myDecodeURI` 不受影响，wikitext 内链的管道符在 parenSplit 阶段已拆。测试覆盖见 `tests/unit/title/title.test.ts`（title= 显示名、Contributions target 显示名、锚点含 `|` 三例）。
+- **重写版行为**：模块级 `stripDisplayAlias`（`src/title/title.ts`）在 URL 解码后统一套用于 fromURL 的 main（含 Safari 回退路径）/contribs/email/backlinks 分支——解码产物含 `|` 时截到首个 `|` 之前，仅作用于 `#` 之前的**标题段**（锚点段的 `|` 属章节文本，原样保留），截断后的尾空白随截断剥离。MW 标题字符集不含 `|`，URL 解码产物含 `|` 的标题即显示名拼接产物。
+- **用户可见性**：悬停显示名链接时弹窗标题、用户信息查询、编辑等导航链全部还原为真实标题；标题干净而锚点含 `|` 的链接不再受影响（初版在 `decodeNasties` 内截断整串曾误伤锚点段，按评审意见收紧后消除）。剩余取舍：字面 `%7C` 标题（href 为 `%257C`）经 `decodeEscapes` + `decodeURI` 两步解码后与显示名同形，客户端无法区分——取显示名（现实高频）舍 `%7C` 字面标题（MW 上趋近零频率）。
+- **论据**：显示名链接的 `%7C` 在 query 解析时不会被服务端拆分（与多值参数的字面 `|` 不同），必须客户端截断；`userName()` 的 `split("/")[0]` 不处理 `|`，故截断放在 URL 解码后的统一出口并覆盖全部 fromURL 分支（Safari 回退路径不经 `decodeNasties`，初版曾遗漏，按评审意见补齐）。`fromWikiText` 走 `myDecodeURI` 不受影响，wikitext 内链的管道符在 parenSplit 阶段已拆。测试覆盖见 `tests/unit/title/title.test.ts`（title= 显示名、显示名+锚点共存、Contributions target 显示名、锚点含 `|` 完整保留、Safari 双重编码显示名）。
 
 ## B. 明知故留的 legacy 死分支（`istanbul ignore` 清单）
 

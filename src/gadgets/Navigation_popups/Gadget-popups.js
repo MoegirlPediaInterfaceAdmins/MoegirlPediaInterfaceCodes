@@ -788,6 +788,17 @@ const wiki = {
   },
   getOption: (name) => titleOptionDefaults[name]
 };
+const stripDisplayAlias = (decoded) => {
+  const s = decoded.toString();
+  const hash = s.indexOf("#");
+  const title = hash < 0 ? s : s.substring(0, hash);
+  const pipe = title.indexOf("|");
+  if (pipe < 0) {
+    return decoded;
+  }
+  const stripped = title.substring(0, pipe).replace(/[_ ]*$/, "");
+  return hash < 0 ? stripped : stripped + s.substring(hash);
+};
 const assume$3 = (value) => value;
 const parenSplit = (str, re) => str.split(re);
 class Stringwrapper {
@@ -867,11 +878,8 @@ const _Title = class _Title extends Stringwrapper {
   decodeNasties(txt) {
     try {
       let ret = decodeURI(this.decodeEscapes(txt));
-      const pipe = ret.indexOf("|");
-      if (pipe >= 0) {
-        ret = ret.substring(0, pipe);
-      }
-      return ret.replace(/[_ ]*$/, "");
+      ret = ret.replace(/[_ ]*$/, "");
+      return ret;
     } catch {
       return txt;
     }
@@ -1052,17 +1060,17 @@ const _Title = class _Title extends Stringwrapper {
         contribs[3] = contribs[3].split("+").join(" ");
       }
       const u = new _Title(contribs[3]);
-      this.setUtf(this.decodeNasties(`${mw.config.get("wgFormattedNamespaces")[nsState.userId]}:${u.stripNamespace()}`));
+      this.setUtf(stripDisplayAlias(this.decodeNasties(`${mw.config.get("wgFormattedNamespaces")[nsState.userId]}:${u.stripNamespace()}`)));
       return this;
     }
     const email = assume$3(wiki.re.email).exec(h);
     if (email) {
-      this.setUtf(this.decodeNasties(`${mw.config.get("wgFormattedNamespaces")[nsState.userId]}:${new _Title(email[3]).stripNamespace()}`));
+      this.setUtf(stripDisplayAlias(this.decodeNasties(`${mw.config.get("wgFormattedNamespaces")[nsState.userId]}:${new _Title(email[3]).stripNamespace()}`)));
       return this;
     }
     const backlinks = assume$3(wiki.re.backlinks).exec(h);
     if (backlinks) {
-      this.setUtf(this.decodeNasties(new _Title(backlinks[3])));
+      this.setUtf(stripDisplayAlias(this.decodeNasties(new _Title(backlinks[3]))));
       return this;
     }
     const specialdiff = assume$3(wiki.re.specialdiff).exec(h);
@@ -1080,7 +1088,7 @@ const _Title = class _Title extends Stringwrapper {
       }
       const extracted = m[2] + (m[3] ? `#${m[3]}` : "");
       {
-        this.setUtf(this.decodeNasties(extracted));
+        this.setUtf(stripDisplayAlias(this.decodeNasties(extracted)));
       }
     }
     return this;

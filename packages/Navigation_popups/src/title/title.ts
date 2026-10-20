@@ -94,6 +94,24 @@ export const wiki: TitleWikiState = {
     getOption: (name: string): unknown => titleOptionDefaults[name],
 };
 
+// 萌百显示名链接「真实标题 | 显示别名」的截断（issue #1140）：MW 标题字符集
+// 不含 |，URL 解码产物含 | 即显示名拼接产物，截到首个 | 之前还原真实标题。
+// 仅作用于 # 之前的标题段——锚点段的 | 属章节文本，原样保留；「名␣|␣别名」
+// 截断后的尾空白一并剥离。已知取舍：字面 %7C 标题（href 为 %257C）经
+// decodeEscapes + decodeURI 两步解码后与显示名同形，客户端无法区分，取显示名
+// （现实高频）舍 %7C 字面标题（MW 上趋近零频率）
+const stripDisplayAlias = (decoded: string | Stringwrapper): string | Stringwrapper => {
+    const s = decoded.toString();
+    const hash = s.indexOf("#");
+    const title = hash < 0 ? s : s.substring(0, hash);
+    const pipe = title.indexOf("|");
+    if (pipe < 0) {
+        return decoded;
+    }
+    const stripped = title.substring(0, pipe).replace(/[_ ]*$/, "");
+    return hash < 0 ? stripped : stripped + s.substring(hash);
+};
+
 // 与 legacy tools.ts 的 assume 同义的恒等断言：调用方担保装配层已填充（运行
 // 时不变量，类型层承载不了）；未装配时与 legacy 未初始化一样在原处崩溃，
 // 不做兜底（不过度防御）。
@@ -184,15 +202,8 @@ export class Title extends Stringwrapper {
     decodeNasties(txt: string | Stringwrapper): string | Stringwrapper {
         try {
             let ret = decodeURI(this.decodeEscapes(txt));
-            // 萌百显示名系统会产出「真实标题 | 显示别名」的链接（| 以 %7C 编码
-            // 进 title= 或路径段）。MW 标题字符集不含 |，截到首个 | 之前即为
-            // 真实标题；标题干净而锚点含 | 时仅锚点段受截断，可接受（issue #1140）
-            const pipe = ret.indexOf("|");
-            if (pipe >= 0) {
-                ret = ret.substring(0, pipe);
-            }
-            // 尾部空白剥离须在截断之后：「名␣|␣别名」截断后残留尾空白
-            return ret.replace(/[_ ]*$/, "");
+            ret = ret.replace(/[_ ]*$/, "");
+            return ret;
         } catch {
             return txt;
         }
@@ -390,17 +401,17 @@ export class Title extends Stringwrapper {
                 contribs[3] = contribs[3].split("+").join(" ");
             }
             const u = new Title(contribs[3]);
-            this.setUtf(this.decodeNasties(`${mw.config.get("wgFormattedNamespaces")[nsState.userId]}:${u.stripNamespace()}`));
+            this.setUtf(stripDisplayAlias(this.decodeNasties(`${mw.config.get("wgFormattedNamespaces")[nsState.userId]}:${u.stripNamespace()}`)));
             return this;
         }
         const email = assume(wiki.re.email).exec(h);
         if (email) {
-            this.setUtf(this.decodeNasties(`${mw.config.get("wgFormattedNamespaces")[nsState.userId]}:${new Title(email[3]).stripNamespace()}`));
+            this.setUtf(stripDisplayAlias(this.decodeNasties(`${mw.config.get("wgFormattedNamespaces")[nsState.userId]}:${new Title(email[3]).stripNamespace()}`)));
             return this;
         }
         const backlinks = assume(wiki.re.backlinks).exec(h);
         if (backlinks) {
-            this.setUtf(this.decodeNasties(new Title(backlinks[3])));
+            this.setUtf(stripDisplayAlias(this.decodeNasties(new Title(backlinks[3]))));
             return this;
         }
         const specialdiff = assume(wiki.re.specialdiff).exec(h);
@@ -419,9 +430,9 @@ export class Title extends Stringwrapper {
             const extracted = m[2] + (m[3] ? `#${m[3]}` : "");
             if (wiki.flag.isSafari && /%25[0-9A-Fa-f]{2}/.test(extracted)) {
                 // eslint-disable-next-line @typescript-eslint/no-deprecated -- unescape is required for the Safari %25 path
-                this.setUtf(decodeURIComponent(unescape(extracted)));
+                this.setUtf(stripDisplayAlias(decodeURIComponent(unescape(extracted))));
             } else {
-                this.setUtf(this.decodeNasties(extracted));
+                this.setUtf(stripDisplayAlias(this.decodeNasties(extracted)));
             }
         }
         return this;
