@@ -91,8 +91,12 @@ const createIssue = async (issueTitle, issueBody, labels, replyBody) => {
     }
     console.info("[createIssue]", "Running in the master branch, searching current opened issue with labels:", labels);
     // paginate 拉全量 open issue：只取第一页（默认 30 条）时，旧 issue 超出一页后查重
-    // 看不到，会重复创建。owner/repo 已由构造器里的 request hook 注入，paginate 无需显式传入
+    // 看不到，会重复创建。owner/repo 必须显式传入：paginate 内部先经 endpoint 归一化，
+    // {owner}/{repo} 占位符在那一步就被替换成空值，构造器里补全占位符的 request 钩子
+    // 收到的是已展开的 URL、无事可补（普通 rest 调用进钩子时占位符还在，可被补全），
+    // 不传则请求打到 /repos///issues 直接 404，与 getWorkflowCommits 的处理一致
     const issues = await octokit.paginate(octokit.rest.issues.listForRepo, {
+        ...octokitBaseOptions,
         labels: labels.join(","),
         per_page: 100,
     });
