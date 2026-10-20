@@ -35,11 +35,17 @@ export default (opts) => {
     const stream = duplexify();
 
     const writer = concatStream({ encoding: "string" }, (source) => {
-        const result = uglify.minify(source, opts);
-        if (result.error) {
-            stream.emit("error", result.error);
-        } else {
-            stream.setReadable(new ReadableFromString(result.code));
+        // concat 回调在流上下文中同步执行，uglify 抛出的异常（内部缺陷、病态输入的
+        // RangeError 等）若不在此捕获会成为未捕获异常，必须转为流的 error 事件
+        try {
+            const result = uglify.minify(source, opts);
+            if (result.error) {
+                stream.emit("error", result.error);
+            } else {
+                stream.setReadable(new ReadableFromString(result.code));
+            }
+        } catch (error) {
+            stream.emit("error", error);
         }
     });
 
