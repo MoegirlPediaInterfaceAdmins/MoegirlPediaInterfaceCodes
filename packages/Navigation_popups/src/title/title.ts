@@ -14,10 +14,6 @@ import { nsState } from "./namespaces.ts";
 export interface TitleWikiState {
     /** toUrl 前缀（legacy pg.wiki.titlebase：protocol//sitebase + wgScript + "?title="） */
     titlebase: string;
-    flag: {
-        /** fromURL 的 Safari %25 双重解码路径开关（legacy pg.flag.isSafari） */
-        isSafari: boolean;
-    };
     misc: {
         /** myDecodeURI 的后置映射表（legacy setMisc 的 decodeExtras） */
         decodeExtras: { from: string; to: string }[] | null;
@@ -69,9 +65,6 @@ const titleOptionDefaults: Record<string, boolean> = {
 
 export const wiki: TitleWikiState = {
     titlebase: "",
-    flag: {
-        isSafari: false,
-    },
     misc: {
         decodeExtras: null,
     },
@@ -428,12 +421,7 @@ export class Title extends Stringwrapper {
                 m[2] = m[2].split("+").join("_");
             }
             const extracted = m[2] + (m[3] ? `#${m[3]}` : "");
-            if (wiki.flag.isSafari && /%25[0-9A-Fa-f]{2}/.test(extracted)) {
-                // eslint-disable-next-line @typescript-eslint/no-deprecated -- unescape is required for the Safari %25 path
-                this.setUtf(stripDisplayAlias(decodeURIComponent(unescape(extracted))));
-            } else {
-                this.setUtf(stripDisplayAlias(this.decodeNasties(extracted)));
-            }
+            this.setUtf(stripDisplayAlias(this.decodeNasties(extracted)));
         }
         return this;
     }

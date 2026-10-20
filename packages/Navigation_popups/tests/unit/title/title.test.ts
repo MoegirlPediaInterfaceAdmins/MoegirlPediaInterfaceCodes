@@ -503,8 +503,7 @@ describe("Title.fromURL", () => {
         expect(t.anchor).toBe("Section");
     });
 
-    it("Safari 双重编码的显示名链接：回退路径同样截断别名（与主路径一致）", () => {
-        wiki.flag.isSafari = true;
+    it("双重编码的显示名链接（%257C）：主路径两层解码后同样截断别名", () => {
         const t = Title.fromURL(`${TITLEBASE}User:MoeMoe1628090_%257C_李晨语`);
         expect(t.value).toBe("User:MoeMoe1628090");
     });
@@ -533,17 +532,7 @@ describe("Title.fromURL", () => {
         expect(Title.fromURL(`https://${SITEBASE}/Special:Diff/12345/67890`).value).toBe("Special:Diff");
     });
 
-    it("Safari 且标题含 %25xx：先 unescape 再 decodeURIComponent", () => {
-        wiki.flag.isSafari = true;
-        expect(Title.fromURL(`${TITLEBASE}A%2541`).value).toBe("AA");
-    });
-
-    it("Safari 但标题不含 %25xx：走 decodeNasties", () => {
-        wiki.flag.isSafari = true;
-        expect(Title.fromURL(`${TITLEBASE}A%41`).value).toBe("AA");
-    });
-
-    it("非 Safari 且标题含 %25xx：走 decodeNasties", () => {
+    it("标题含 %25xx：decodeEscapes 与 decodeURI 各解一层", () => {
         expect(Title.fromURL(`${TITLEBASE}A%2541`).value).toBe("AA");
     });
 

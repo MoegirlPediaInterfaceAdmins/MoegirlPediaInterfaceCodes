@@ -764,9 +764,6 @@ const titleOptionDefaults = {
 };
 const wiki = {
   titlebase: "",
-  flag: {
-    isSafari: false
-  },
   misc: {
     decodeExtras: null
   },
@@ -1087,9 +1084,7 @@ const _Title = class _Title extends Stringwrapper {
         m[2] = m[2].split("+").join("_");
       }
       const extracted = m[2] + (m[3] ? `#${m[3]}` : "");
-      {
-        this.setUtf(stripDisplayAlias(this.decodeNasties(extracted)));
-      }
+      this.setUtf(stripDisplayAlias(this.decodeNasties(extracted)));
     }
     return this;
   }
