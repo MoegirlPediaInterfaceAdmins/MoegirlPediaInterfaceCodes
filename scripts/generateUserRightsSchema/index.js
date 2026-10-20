@@ -16,7 +16,8 @@ const response = await fetch("https://zh.moegirl.org.cn/api.php?action=query&met
 }).catch((error) => ({ ok: false, isError: true, error }));
 if (!response.ok) {
     console.error(`Failed to fetch user rights: ${response.isError ? errorToString(response.error) : `${response.status} ${response.statusText} ${await response.text()}`}`);
-    process.exit(0);
+    // 抓取失败必须以非零退出码结束，否则 CI 无法感知，过期 schema 会被静默沿用
+    process.exit(1);
 }
 const data = await response.json();
 dump("User right api:", data);
