@@ -14,11 +14,16 @@ describe("exec", () => {
         await expect(exec(`"${process.execPath}" -e "process.stderr.write('warning')"`)).resolves.toBe("");
     });
 
-    it("非零退出码时 reject，携带 error 与 trim 后的 stdout / stderr", async () => {
+    it("非零退出码时 reject 带 exitCode 的 Error，并携带 error 与 trim 后的 stdout / stderr", async () => {
+        const command = `"${process.execPath}" -e "console.log('out'); console.error('err'); process.exit(3)"`;
         let reason;
-        await exec(`"${process.execPath}" -e "console.log('out'); console.error('err'); process.exit(3)"`).catch((rejection) => {
+        await exec(command).catch((rejection) => {
             reason = rejection;
         });
+        // 与 spawnAsync 的约定对齐：reject Error（有 message/stack），退出码挂在 exitCode 上
+        expect(reason).toBeInstanceOf(Error);
+        expect(reason.message).toBe(`${command} exited with code 3`);
+        expect(reason.exitCode).toBe(3);
         expect(reason.error).toBeInstanceOf(Error);
         expect(reason.error.code).toBe(3);
         expect(reason.stdout).toBe("out");
@@ -31,6 +36,8 @@ describe("exec", () => {
         await exec("definitely-not-a-command-xyz").catch((rejection) => {
             reason = rejection;
         });
+        expect(reason).toBeInstanceOf(Error);
+        expect(reason.exitCode).toBe(127);
         expect(reason.error.code).toBe(127);
         expect(reason.stderr).not.toBe("");
     });
