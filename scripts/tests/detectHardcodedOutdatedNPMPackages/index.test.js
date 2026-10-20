@@ -70,4 +70,14 @@ describe("detectHardcodedOutdatedNPMPackages", () => {
         expect(rejection).toBeNull();
         expect(octokitMocks.createIssue).not.toHaveBeenCalled();
     });
+
+    it("完整预发布版本原样参与比较：@5.0.0-beta 对 latest 5.0.0 视为过时并建 issue", async () => {
+        // coerce 会把 5.0.0-beta 剥成 5.0.0，与 latest 相等而漏报；完整版本必须不经补全直接比较
+        fsState.source = "const url = \"https://npm.elemecdn.com/wikiplus-core@5.0.0-beta/dist/Main.js\";\n";
+        const rejection = await importScript();
+        expect(rejection).toBeNull();
+        expect(octokitMocks.createIssue).toHaveBeenCalledOnce();
+        const replyBody = octokitMocks.createIssue.mock.calls[0][3];
+        expect(replyBody).toContain("wikiplus-core): 5.0.0-beta -> 5.0.0");
+    });
 });
