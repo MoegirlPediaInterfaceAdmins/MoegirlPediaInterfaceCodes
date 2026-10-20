@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import toLocalTimeZoneStrings, { ISO, normal, mySQL, onlyDate, dateAndHour, cdnLog, onlyTime, mailer, onlyMonthAndDay } from "../../modules/toLocalTimeZoneStrings.js";
 
 // vitest 配置已固定 TZ=UTC：本地分量即 UTC 分量，偏移段恒为 +00:00
@@ -53,5 +53,35 @@ describe("toLocalTimeZoneStrings", () => {
 
     it("默认导出包含全部九个格式化函数", () => {
         expect(Object.keys(toLocalTimeZoneStrings).sort()).toEqual(["ISO", "normal", "mySQL", "onlyDate", "dateAndHour", "cdnLog", "onlyTime", "mailer", "onlyMonthAndDay"].sort());
+    });
+
+    // 负/半时区场景：TZ 已被 vitest 固定为 UTC，时间分量不受影响，mock getTimezoneOffset
+    // 即可单独驱动偏移段；西半球贡献者本地运行时即此场景
+    it("ISO 与 onlyTime 在负整数时区（UTC-5）输出 -05:00，而非 +-5:00 这类畸形串", () => {
+        const offsetSpy = vi.spyOn(Date.prototype, "getTimezoneOffset").mockReturnValue(300);
+        try {
+            expect(ISO(full)).toMatch(/-05:00$/u);
+            expect(onlyTime(full)).toMatch(/-05:00$/u);
+        } finally {
+            offsetSpy.mockRestore();
+        }
+    });
+
+    it("ISO 在半时区（UTC-3:30）输出 -03:30", () => {
+        const offsetSpy = vi.spyOn(Date.prototype, "getTimezoneOffset").mockReturnValue(210);
+        try {
+            expect(ISO(full)).toMatch(/-03:30$/u);
+        } finally {
+            offsetSpy.mockRestore();
+        }
+    });
+
+    it("ISO 在正整数时区（UTC+8）输出 +08:00", () => {
+        const offsetSpy = vi.spyOn(Date.prototype, "getTimezoneOffset").mockReturnValue(-480);
+        try {
+            expect(ISO(full)).toMatch(/\+08:00$/u);
+        } finally {
+            offsetSpy.mockRestore();
+        }
     });
 });

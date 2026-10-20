@@ -1,3 +1,5 @@
+# conditions 组内为 AND、组间为 OR（见 index.js）。dependabot 启用分组更新后有三种
+# 提交前缀（见 .github/dependabot.yaml 的 prefix: npm / gha），故拆三组分别豁免
 skipConditions:
   - name: dependabot
     conditions:
@@ -10,3 +12,25 @@ skipConditions:
       - property: message
         operator: startsWith
         value: "npm(deps): bump"
+  - name: dependabot-dev
+    conditions:
+      - property: author.name
+        operator: equal
+        value: dependabot[bot]
+      - property: author.email
+        operator: equal
+        value: 49699333+dependabot[bot]@users.noreply.github.com
+      - property: message
+        operator: startsWith
+        value: "npm(deps-dev): bump"
+  - name: dependabot-gha
+    conditions:
+      - property: author.name
+        operator: equal
+        value: dependabot[bot]
+      - property: author.email
+        operator: equal
+        value: 49699333+dependabot[bot]@users.noreply.github.com
+      - property: message
+        operator: startsWith
+        value: "gha(deps): bump"
