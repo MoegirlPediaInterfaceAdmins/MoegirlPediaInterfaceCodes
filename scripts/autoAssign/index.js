@@ -7,8 +7,11 @@ import readWorkflowEvent from "../modules/workflowEvent.js";
 
 exitIf(!isInGithubActions, "Not in github actions, exit.");
 const event = await readWorkflowEvent();
-const { action, number } = event;
-exitIf(action !== "opened", "The pull request is not opened, exit.");
+const { action, number, pull_request: { draft } = {} } = event;
+// draft PR 创建时即以 opened 触发，但 GitHub 拒绝对 draft PR 请求评审（422），
+// 必须等 ready_for_review 再指派；draft 守卫因此放在 action 判断之前，两种触发都会被拦截
+exitIf(draft === true, "The pull request is a draft, exit.");
+exitIf(action !== "opened" && action !== "ready_for_review", "The pull request action is not `opened` or `ready_for_review`, exit.");
 exitIf(typeof number !== "number", "The number of the pull request is not `number`, exit.");
 const config = await yamlModule.readFile(".github/auto_assign.yaml");
 dump("config:", config);
