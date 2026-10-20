@@ -90,9 +90,12 @@ const createIssue = async (issueTitle, issueBody, labels, replyBody) => {
         return;
     }
     console.info("[createIssue]", "Running in the master branch, searching current opened issue with labels:", labels);
-    const issues = (await octokit.rest.issues.listForRepo({
+    // paginate 拉全量 open issue：只取第一页（默认 30 条）时，旧 issue 超出一页后查重
+    // 看不到，会重复创建。owner/repo 已由构造器里的 request hook 注入，paginate 无需显式传入
+    const issues = await octokit.paginate(octokit.rest.issues.listForRepo, {
         labels: labels.join(","),
-    })).data;
+        per_page: 100,
+    });
     startGroup("[createIssue]", "Current opened issue:");
     console.info(issues);
     endGroup();
@@ -108,7 +111,7 @@ const createIssue = async (issueTitle, issueBody, labels, replyBody) => {
             continue;
         }
         if (typeof issue_number !== "number") {
-            console.info("[createIssue]", "Issue is relative, reuse it:", issue_number);
+            console.info("[createIssue]", "Issue is relative, reuse it:", number);
             issue_number = number;
             continue;
         }
