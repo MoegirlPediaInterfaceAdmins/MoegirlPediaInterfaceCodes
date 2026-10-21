@@ -231,8 +231,8 @@ $(() => {
                     autosize: true,
                     maxRows: 15,
                     placeholder: isZh
-                        ? wgULS("一行一个主站页面，共享站页面请加 cm: 前缀", "一行一個主站頁面，共享站頁面請加 cm: 前綴")
-                        : wgULS("一行一个共享站页面，主站页面请加 zhmoe: 前缀", "一行一個共享站頁面，主站頁面請加 zhmoe: 前綴"),
+                        ? wgULS("一行一个主站页面，不需要添加[[ ]]，不自动包含当前页面；\n共享站页面请加 cm: 前缀", "一行一個主站頁面，不需要添加[[ ]]，不自動包含當前頁面；\n共享站頁面請加 cm: 前綴")
+                        : wgULS("一行一个共享站页面，不需要添加[[ ]]，不自动包含当前页面；\n主站页面请加 zhmoe: 前缀", "一行一個共享站頁面，不需要添加[[ ]]，不自動包含當前頁面；\n主站頁面請加 zhmoe: 前綴"),
                 });
 
                 this.reasonsDropdownMenu = this.reasonsDropdown.dropdownWidget.getMenu();
