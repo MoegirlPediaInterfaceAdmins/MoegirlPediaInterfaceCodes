@@ -589,13 +589,22 @@ describe("APIrevisionPreviewHTML", () => {
         expect(d.wikibaseRepo).toBe("https://www.wikidata.org/w/wiki/$1");
     });
 
-    it("非 wikitext 内容模型：data 与 lastModified 保持原样", async () => {
+    it("非 wikitext 内容模型：源码截断转义后以 <pre> 返回，data 与 lastModified 保持原样", async () => {
         const f = await fresh();
         const raw = JSON.stringify({ query: { pages: { 1: { revisions: [{ timestamp: "2026-01-02T03:04:05Z", slots: { main: { content: "body{}", contentmodel: "css" } } }] } } } });
         const d = downloadWith(f, raw);
-        expect(f.queries.APIrevisionPreviewHTML(new f.title.Title("Foo"), d)).toBeUndefined();
+        expect(f.queries.APIrevisionPreviewHTML(new f.title.Title("Foo"), d)).toBe("<pre>body{}</pre>");
         expect(d.data).toBe(raw);
         expect(d.lastModified).toBeNull();
+    });
+
+    it("非 wikitext 内容模型超限：按行数与字符数双重截断，HTML 实体转义", async () => {
+        const f = await fresh();
+        const content = `${"a<b\n".repeat(10)}tail`;
+        const d = downloadWith(f, { query: { pages: { 1: { revisions: [{ slots: { main: { content, contentmodel: "javascript" } } }] } } } });
+        // 行数上限 popupMaxPreviewSentences 默认 5：取前 5 行（join 用 4 个换行连接）；
+        // 字符上限 popupMaxPreviewCharacters 默认 600 未触及；"<" 经 entify 转义
+        expect(f.queries.APIrevisionPreviewHTML(new f.title.Title("Foo"), d)).toBe(`<pre>${"a&lt;b\n".repeat(4)}a&lt;b</pre>`);
     });
 
     it("query.pages 缺失或空：返回失败文案", async () => {

@@ -4808,10 +4808,14 @@ const APIrevisionPreviewHTML = (_article, download) => {
       download.owner = null;
       return;
     }
-    const content = page.revisions?.[0]?.slots?.main?.contentmodel === "wikitext" ? page.revisions[0].slots.main.content : null;
+    const slot = page.revisions?.[0]?.slots?.main;
+    const content = slot?.contentmodel === "wikitext" ? slot.content : null;
     if (typeof content === "string") {
       download.data = content;
       download.lastModified = new Date(assume$2(page.revisions)[0].timestamp ?? "");
+    } else if (typeof slot?.content === "string") {
+      const truncated = slot.content.split("\n").slice(0, +getValueOf("popupMaxPreviewSentences")).join("\n").slice(0, +getValueOf("popupMaxPreviewCharacters"));
+      return `<pre>${entify(truncated)}</pre>`;
     }
     if (page.pageprops?.wikibase_item) {
       download.wikibaseItem = page.pageprops.wikibase_item;

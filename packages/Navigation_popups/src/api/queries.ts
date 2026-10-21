@@ -420,10 +420,19 @@ export const APIrevisionPreviewHTML = (
             download.owner = null;
             return;
         }
-        const content = page.revisions?.[0]?.slots?.main?.contentmodel === "wikitext" ? page.revisions[0].slots.main.content : null;
+        const slot = page.revisions?.[0]?.slots?.main;
+        const content = slot?.contentmodel === "wikitext" ? slot.content : null;
         if (typeof content === "string") {
             download.data = content;
             download.lastModified = new Date(assume(page.revisions)[0].timestamp ?? "");
+        } else if (typeof slot?.content === "string") {
+            // 非 wikitext 内容模型（CSS/JS/JSON 等页面）：源码本身即预览，按行数
+            // （借 popupMaxPreviewSentences）与字符数双重截断、entify 转义后包进
+            // <pre> 返回——经 showAPIPreview 的 revision 分支直接入槽，不进入
+            // wikitext 渲染管线（否则原始 JSON 响应会被当 wikitext 直出弹窗，
+            // issue #1140 / gui-ying233 评审意见）
+            const truncated = slot.content.split("\n").slice(0, +(getValueOf("popupMaxPreviewSentences") as string | number)).join("\n").slice(0, +(getValueOf("popupMaxPreviewCharacters") as string | number));
+            return `<pre>${entify(truncated)}</pre>`;
         }
         if (page.pageprops?.wikibase_item) {
             download.wikibaseItem = page.pageprops.wikibase_item;

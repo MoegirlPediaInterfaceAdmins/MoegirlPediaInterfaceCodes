@@ -173,12 +173,12 @@
 - **用户可见性**：萌百站上消除每条预览查询必带的 unrecognized warning（含 `main` 模块的 `Unrecognized parameters: guiprop, guiuser.`）；wikibase 链接与全局组/LOCKED/HIDDEN 展示在萌百本就无数据来源（pageprops 不含 `wikibase_item`、无 globaluserinfo 响应），用户可见输出不变。
 - **论据**：实测（2026-10-20，GET/POST 一致）萌百 API 对上述参数全部报 warning；warning 本身不破坏数据，但与 A10 修复前的 `getJsObj` 组合曾使全部预览失效。参数移除后 `q.wikibase` 恒 undefined，`wikibaseRepo` 落空字符串，pageinfo 侧 `!wikibaseItem || !wikibaseRepo` 跳过——与现状等价。测试覆盖见 `tests/unit/api/queries.test.ts`（userinfo/revision 两 URL 断言）。
 
-### A12. `showAPIPreview` 的 revision 分支显示生成器失败文案（**开放差异**，2026-10-20 issue #1140）
+### A12. `showAPIPreview` 的 revision 分支承载生成器返回值（**开放差异**，2026-10-20 issue #1140；2026-10-21 按 gui-ying233 评审意见补齐非 wikitext 源码预览）
 
-- **legacy 行为**：`case "revision"` 忽略 htmlGenerator 的返回值，直接 `insertPreview(download)`——提取失败（如 CSS/JS 页面 `contentmodel` 非 wikitext、`download.data` 未被替换为正文）时，把原始 JSON 响应当 wikitext 渲染进弹窗。
-- **重写版行为**：返回值为非空字符串（失败文案，如 `"Revision preview failed :("`）时写入 `popupPreview` 槽并终止，不进入 `insertPreview`（`src/api/queries.ts`）；`undefined`（成功或 missing 页）路径不变。
-- **用户可见性**：提取失败场景从「JSON 原文直出」变为「明确的失败提示」；成功路径与 missing 页路径无变化。
-- **论据**：失败文案是 htmlGenerator 的既有约定（其余 queryType 均直接入槽），revision 分支此前独弃之；A10/A11 修复后本条覆盖的剩余场景是非 wikitext 内容模型页。测试覆盖见 `tests/unit/api/queries.test.ts`（失败文案入槽 + `undefined` 不触槽）。
+- **legacy 行为**：`case "revision"` 忽略 htmlGenerator 的返回值，直接 `insertPreview(download)`——提取失败或非 wikitext 内容模型（`download.data` 未被替换为 wikitext 正文）时，把原始 JSON 响应当 wikitext 渲染进弹窗。
+- **重写版行为**：返回值为非空字符串时写入 `popupPreview` 槽并终止，不进入 `insertPreview`（`src/api/queries.ts`）；`undefined`（wikitext 成功或 missing 页）路径不变。返回值承载两类内容：提取失败文案（`"Revision preview failed :("`），以及**非 wikitext 内容模型的源码预览**——`APIrevisionPreviewHTML` 在 slots 确有源码但 contentmodel 非 wikitext 时，按行数（借 `popupMaxPreviewSentences`，默认 5）与字符数（`popupMaxPreviewCharacters`，默认 600）双重截断、`entify` 转义后包进 `<pre>` 返回，源码直接展示而非 JSON 直出。
+- **用户可见性**：提取失败场景从「JSON 原文直出」变为「明确的失败提示」；CSS/JS/JSON 页面从「JSON 原文直出」变为「截断的源码预览」（初版 A12 曾误称失败提示覆盖非 wikitext 场景——失败文案只在响应解析失败时返回，contentmodel 不匹配走的是成功返回 `undefined` 的路径，JSON 依旧直出，经 gui-ying233 评审指出后补齐）；wikitext 成功路径与 missing 页路径无变化。
+- **论据**：失败文案是 htmlGenerator 的既有约定（其余 queryType 均直接入槽），revision 分支此前独弃之；非 wikitext 源码若交给 wikitext 渲染管线（previewmaker 的 killTemplates/wiki2html）只会产出无意义输出，`<pre>` 直出是源码页面的自然形态。测试覆盖见 `tests/unit/api/queries.test.ts`（失败文案入槽、`undefined` 不触槽、非 wikitext `<pre>` 输出、行数截断与实体转义）。
 
 ### A13. 显示名链接的管道符后缀截断（**开放差异**，2026-10-20 issue #1140；同日按 Sourcery 评审意见收紧为仅标题段）
 
