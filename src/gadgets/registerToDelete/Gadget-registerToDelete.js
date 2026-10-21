@@ -67,7 +67,7 @@ $(() => {
                 this.reasonsDropdownMenu = this.reasonsDropdown.dropdownWidget.getMenu();
 
                 const reasonsField = new OO.ui.FieldLayout(this.reasonsDropdown, {
-                    label: wgULS("挂删理由", "掛删緣由"),
+                    label: wgULS("挂删理由", "掛删理由"),
                     align: "top",
                 });
                 const detailsField = new OO.ui.FieldLayout(this.detailsText, {
@@ -79,7 +79,7 @@ $(() => {
                     align: "inline",
                 });
                 const enterField = new OO.ui.FieldLayout(this.enterCheckbox, {
-                    label: wgULS("理由详情按回车提交（浏览器级设置）", "緣由詳情按確認鍵提交（瀏覽器級設置）"),
+                    label: wgULS("理由详情按回车提交（浏览器级设置）", "理由詳情按確認鍵提交（瀏覽器級設置）"),
                     align: "inline",
                 });
 
