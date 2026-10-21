@@ -4821,6 +4821,9 @@ const APIrevisionPreviewHTML = (_article, download) => {
       download.wikibaseItem = page.pageprops.wikibase_item;
       download.wikibaseRepo = `${q.wikibase?.repo?.url?.base ?? ""}${q.wikibase?.repo?.url?.articlepath ?? ""}`;
     }
+    if (typeof content !== "string" && typeof slot?.content !== "string") {
+      return popupString("revdel");
+    }
   } catch {
     return "Revision preview failed :(";
   }

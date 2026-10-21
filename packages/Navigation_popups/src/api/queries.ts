@@ -438,6 +438,12 @@ export const APIrevisionPreviewHTML = (
             download.wikibaseItem = page.pageprops.wikibase_item;
             download.wikibaseRepo = `${q.wikibase?.repo?.url?.base ?? ""}${q.wikibase?.repo?.url?.articlepath ?? ""}`;
         }
+        if (typeof content !== "string" && typeof slot?.content !== "string") {
+            // 修订条目存在但正文不可用（RevDel 隐藏、权限不足拿不到 content）或无
+            // 修订条目：返回 revdel 提示，防止落穿返回 undefined 后 insertPreview
+            // 把原始 JSON 当 wikitext 直出弹窗（issue #1140 / Copilot 评审意见）
+            return popupString("revdel");
+        }
     } catch {
         // istanbul ignore next -- try 体内只有 getJsObj（内吞 JSON.parse 异常并返回哨兵 1，
         // tools.ts:25-44）与贯穿可选链的属性访问；download.data 契约恒为 string，任意

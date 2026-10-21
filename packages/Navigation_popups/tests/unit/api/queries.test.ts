@@ -628,12 +628,22 @@ describe("APIrevisionPreviewHTML", () => {
         expect((d.lastModified as Date).getTime()).toBeNaN();
     });
 
-    it("pageprops.wikibase_item 无 wikibase 段：repo 拼接两处 ?? \"\" 兜底为空串", async () => {
+    it("pageprops.wikibase_item 无 wikibase 段：repo 拼接两处 ?? \"\" 兜底为空串；无修订条目返回 revdel 提示", async () => {
         const f = await fresh();
         const d = downloadWith(f, { query: { pages: { 1: { pageprops: { wikibase_item: "Q42" }, revisions: [] } } } });
-        expect(f.queries.APIrevisionPreviewHTML(new f.title.Title("Foo"), d)).toBeUndefined();
+        expect(f.queries.APIrevisionPreviewHTML(new f.title.Title("Foo"), d)).toBe("历史版本被隐藏");
         expect(d.wikibaseItem).toBe("Q42");
         expect(d.wikibaseRepo).toBe("");
+    });
+
+    it("修订条目存在但正文不可用（RevDel 隐藏 / 无 slots）：返回 revdel 提示，不落穿", async () => {
+        const f = await fresh();
+        // 修订在、contentmodel 在，但 content 缺失（正文被隐藏的形态）
+        const d1 = downloadWith(f, { query: { pages: { 1: { revisions: [{ revid: 1, slots: { main: { contentmodel: "wikitext" } } }] } } } });
+        expect(f.queries.APIrevisionPreviewHTML(new f.title.Title("Foo"), d1)).toBe("历史版本被隐藏");
+        // 修订条目连 slots 都没有
+        const d2 = downloadWith(f, { query: { pages: { 1: { revisions: [{ revid: 1 }] } } } });
+        expect(f.queries.APIrevisionPreviewHTML(new f.title.Title("Foo"), d2)).toBe("历史版本被隐藏");
     });
 
     it("pages 命中 null 页：anyChild 返回 null，失败文案", async () => {
