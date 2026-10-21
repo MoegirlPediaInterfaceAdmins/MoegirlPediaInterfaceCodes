@@ -250,7 +250,7 @@ $(() => {
                     align: "inline",
                 });
                 this.batchField = new OO.ui.FieldLayout(this.batchCheckbox, {
-                    label: wgULS("批量提删", "批量提刪"),
+                    label: wgULS("批量提删", "批次提刪"),
                     align: "inline",
                 });
                 this.pagesField = new OO.ui.FieldLayout(this.pagesText, {
