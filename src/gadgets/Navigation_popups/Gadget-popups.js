@@ -764,9 +764,6 @@ const titleOptionDefaults = {
 };
 const wiki = {
   titlebase: "",
-  flag: {
-    isSafari: false
-  },
   misc: {
     decodeExtras: null
   },
@@ -787,6 +784,17 @@ const wiki = {
     diff: null
   },
   getOption: (name) => titleOptionDefaults[name]
+};
+const stripDisplayAlias = (decoded) => {
+  const s = decoded.toString();
+  const hash = s.indexOf("#");
+  const title = hash < 0 ? s : s.substring(0, hash);
+  const pipe = title.indexOf("|");
+  if (pipe < 0) {
+    return decoded;
+  }
+  const stripped = title.substring(0, pipe).replace(/[_ ]*$/, "");
+  return hash < 0 ? stripped : stripped + s.substring(hash);
 };
 const assume$3 = (value) => value;
 const parenSplit = (str, re) => str.split(re);
@@ -1049,17 +1057,17 @@ const _Title = class _Title extends Stringwrapper {
         contribs[3] = contribs[3].split("+").join(" ");
       }
       const u = new _Title(contribs[3]);
-      this.setUtf(this.decodeNasties(`${mw.config.get("wgFormattedNamespaces")[nsState.userId]}:${u.stripNamespace()}`));
+      this.setUtf(stripDisplayAlias(this.decodeNasties(`${mw.config.get("wgFormattedNamespaces")[nsState.userId]}:${u.stripNamespace()}`)));
       return this;
     }
     const email = assume$3(wiki.re.email).exec(h);
     if (email) {
-      this.setUtf(this.decodeNasties(`${mw.config.get("wgFormattedNamespaces")[nsState.userId]}:${new _Title(email[3]).stripNamespace()}`));
+      this.setUtf(stripDisplayAlias(this.decodeNasties(`${mw.config.get("wgFormattedNamespaces")[nsState.userId]}:${new _Title(email[3]).stripNamespace()}`)));
       return this;
     }
     const backlinks = assume$3(wiki.re.backlinks).exec(h);
     if (backlinks) {
-      this.setUtf(this.decodeNasties(new _Title(backlinks[3])));
+      this.setUtf(stripDisplayAlias(this.decodeNasties(new _Title(backlinks[3]))));
       return this;
     }
     const specialdiff = assume$3(wiki.re.specialdiff).exec(h);
@@ -1076,9 +1084,7 @@ const _Title = class _Title extends Stringwrapper {
         m[2] = m[2].split("+").join("_");
       }
       const extracted = m[2] + (m[3] ? `#${m[3]}` : "");
-      {
-        this.setUtf(this.decodeNasties(extracted));
-      }
+      this.setUtf(stripDisplayAlias(this.decodeNasties(extracted)));
     }
     return this;
   }
@@ -1684,7 +1690,7 @@ const getJsObj = (json) => {
   try {
     const json_ret = JSON.parse(json);
     if (json_ret.warnings) {
-      for (const warning of json_ret.warnings) {
+      for (const warning of Object.values(json_ret.warnings)) {
         if (warning["*"]) {
           log(warning["*"]);
         } else {
@@ -4505,7 +4511,7 @@ const loadAPIPreview = (queryType, article, navpop) => {
       if (assume$2(wiki.re.ipUser).test(String(username))) {
         url += `list=blocks&bkprop=range|restrictions&bkip=${usernameart}`;
       } else {
-        url += `list=users|usercontribs&usprop=blockinfo|groups|editcount|registration|gender&ususers=${usernameart}&meta=globaluserinfo&guiprop=groups|unattached&guiuser=${usernameart}&uclimit=1&ucprop=timestamp&ucuser=${usernameart}`;
+        url += `list=users|usercontribs&usprop=blockinfo|groups|editcount|registration|gender&ususers=${usernameart}&uclimit=1&ucprop=timestamp&ucuser=${usernameart}`;
       }
       htmlGenerator = APIuserInfoPreviewHTML;
       break;
@@ -4534,7 +4540,7 @@ const loadAPIPreview = (queryType, article, navpop) => {
       } else {
         url += `titles=${article.removeAnchor().urlString()}`;
       }
-      url += "&prop=revisions|pageprops|info|images|categories&meta=wikibase&rvslots=main&rvprop=ids|timestamp|flags|comment|user|content&cllimit=max&imlimit=max";
+      url += "&prop=revisions|pageprops|info|images|categories&rvslots=main&rvprop=ids|timestamp|flags|comment|user|content&cllimit=max&imlimit=max";
       htmlGenerator = APIrevisionPreviewHTML;
       break;
   }
@@ -4776,6 +4782,10 @@ const showAPIPreview = (queryType, html, id, navpop, download) => {
       target = "popupUserData";
       break;
     case "revision":
+      if (typeof html === "string" && html) {
+        setPopupTipsAndHTML(html, target, id);
+        return;
+      }
       if (download) {
         insertPreview(download);
       }
@@ -4798,14 +4808,21 @@ const APIrevisionPreviewHTML = (_article, download) => {
       download.owner = null;
       return;
     }
-    const content = page.revisions?.[0]?.slots?.main?.contentmodel === "wikitext" ? page.revisions[0].slots.main.content : null;
+    const slot = page.revisions?.[0]?.slots?.main;
+    const content = slot?.contentmodel === "wikitext" ? slot.content : null;
     if (typeof content === "string") {
       download.data = content;
       download.lastModified = new Date(assume$2(page.revisions)[0].timestamp ?? "");
+    } else if (typeof slot?.content === "string") {
+      const truncated = slot.content.split("\n").slice(0, +getValueOf("popupMaxPreviewSentences")).join("\n").slice(0, +getValueOf("popupMaxPreviewCharacters"));
+      return `<pre>${entify(truncated)}</pre>`;
     }
     if (page.pageprops?.wikibase_item) {
       download.wikibaseItem = page.pageprops.wikibase_item;
       download.wikibaseRepo = `${q.wikibase?.repo?.url?.base ?? ""}${q.wikibase?.repo?.url?.articlepath ?? ""}`;
+    }
+    if (typeof content !== "string" && typeof slot?.content !== "string") {
+      return popupString("revdel");
     }
   } catch {
     return "Revision preview failed :(";

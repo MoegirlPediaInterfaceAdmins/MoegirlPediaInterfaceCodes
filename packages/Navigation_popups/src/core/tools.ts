@@ -24,9 +24,16 @@ export const nonGlobalRegex = (re: RegExp): RegExp => {
 // 解析失败返回哨兵值 1，调用方以 truthy/falsy 区分（legacy 原样）
 export const getJsObj = (json: string): object | 1 => {
     try {
-        const json_ret = JSON.parse(json) as { warnings?: { "*": string; warnings: string }[]; error?: { code: string; info: string } } & object;
+        const json_ret = JSON.parse(json) as {
+            // MW 实际返回对象（键=模块名，值为 formatversion=1 的 {"*":…} 或
+            // formatversion=2 的 {warnings:…}）；legacy 误按数组 for...of 遍历
+            // 对象会抛 TypeError，使带 warning 的有效响应整体被当作解析失败
+            // （issue #1140：萌百缺 Wikibase 时预览查询必带 warning）
+            warnings?: { "*"?: string; warnings?: string }[] | Record<string, { "*"?: string; warnings?: string }>;
+            error?: { code: string; info: string };
+        } & object;
         if (json_ret.warnings) {
-            for (const warning of json_ret.warnings) {
+            for (const warning of Object.values(json_ret.warnings)) {
                 if (warning["*"]) {
                     log(warning["*"]);
                 } else {

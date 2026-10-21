@@ -101,7 +101,11 @@ export const loadAPIPreview = (queryType: string, article: Title, navpop: Navpop
             if (assume(wiki.re.ipUser).test(String(username))) {
                 url += `list=blocks&bkprop=range|restrictions&bkip=${usernameart}`;
             } else {
-                url += `list=users|usercontribs&usprop=blockinfo|groups|editcount|registration|gender&ususers=${usernameart}&meta=globaluserinfo&guiprop=groups|unattached&guiuser=${usernameart}&uclimit=1&ucprop=timestamp&ucuser=${usernameart}`;
+                // 萌百未部署 CentralAuth，meta=globaluserinfo 与 gui* 参数会招致
+                // unrecognized warning（响应带 warnings 后曾整体解析失败，见
+                // getJsObj 注释）——已移除；globaluserinfo 的读取逻辑保留，
+                // 站点将来接入 CentralAuth 时把参数加回即可
+                url += `list=users|usercontribs&usprop=blockinfo|groups|editcount|registration|gender&ususers=${usernameart}&uclimit=1&ucprop=timestamp&ucuser=${usernameart}`;
             }
             htmlGenerator = APIuserInfoPreviewHTML;
             break;
@@ -130,7 +134,10 @@ export const loadAPIPreview = (queryType: string, article: Title, navpop: Navpop
             } else {
                 url += `titles=${article.removeAnchor().urlString()}`;
             }
-            url += "&prop=revisions|pageprops|info|images|categories&meta=wikibase&rvslots=main&rvprop=ids|timestamp|flags|comment|user|content&cllimit=max&imlimit=max";
+            // meta=wikibase 由 Wikibase 扩展提供，萌百未部署，请求会招致
+            // unrecognized warning——已移除（issue #1140）；pageprops 的
+            // wikibase_item 读取逻辑保留，数据驱动
+            url += "&prop=revisions|pageprops|info|images|categories&rvslots=main&rvprop=ids|timestamp|flags|comment|user|content&cllimit=max&imlimit=max";
             htmlGenerator = APIrevisionPreviewHTML;
             break;
     }
@@ -381,6 +388,13 @@ export const showAPIPreview = (
             target = "popupUserData";
             break;
         case "revision":
+            // 生成器带返回值即提取失败（如 CSS/JS 页面拿不到 wikitext 正文）：
+            // 显示失败提示并终止，避免 insertPreview 把未提取的原始响应
+            // 当 wikitext 渲染进弹窗（issue #1140 的 JSON 原文直出形态）
+            if (typeof html === "string" && html) {
+                setPopupTipsAndHTML(html, target, id);
+                return;
+            }
             if (download) {
                 insertPreview(download);
             }
@@ -406,14 +420,29 @@ export const APIrevisionPreviewHTML = (
             download.owner = null;
             return;
         }
-        const content = page.revisions?.[0]?.slots?.main?.contentmodel === "wikitext" ? page.revisions[0].slots.main.content : null;
+        const slot = page.revisions?.[0]?.slots?.main;
+        const content = slot?.contentmodel === "wikitext" ? slot.content : null;
         if (typeof content === "string") {
             download.data = content;
             download.lastModified = new Date(assume(page.revisions)[0].timestamp ?? "");
+        } else if (typeof slot?.content === "string") {
+            // 非 wikitext 内容模型（CSS/JS/JSON 等页面）：源码本身即预览，按行数
+            // （借 popupMaxPreviewSentences）与字符数双重截断、entify 转义后包进
+            // <pre> 返回——经 showAPIPreview 的 revision 分支直接入槽，不进入
+            // wikitext 渲染管线（否则原始 JSON 响应会被当 wikitext 直出弹窗，
+            // issue #1140 / gui-ying233 评审意见）
+            const truncated = slot.content.split("\n").slice(0, +(getValueOf("popupMaxPreviewSentences") as string | number)).join("\n").slice(0, +(getValueOf("popupMaxPreviewCharacters") as string | number));
+            return `<pre>${entify(truncated)}</pre>`;
         }
         if (page.pageprops?.wikibase_item) {
             download.wikibaseItem = page.pageprops.wikibase_item;
             download.wikibaseRepo = `${q.wikibase?.repo?.url?.base ?? ""}${q.wikibase?.repo?.url?.articlepath ?? ""}`;
+        }
+        if (typeof content !== "string" && typeof slot?.content !== "string") {
+            // 修订条目存在但正文不可用（RevDel 隐藏、权限不足拿不到 content）或无
+            // 修订条目：返回 revdel 提示，防止落穿返回 undefined 后 insertPreview
+            // 把原始 JSON 当 wikitext 直出弹窗（issue #1140 / Copilot 评审意见）
+            return popupString("revdel");
         }
     } catch {
         // istanbul ignore next -- try 体内只有 getJsObj（内吞 JSON.parse 异常并返回哨兵 1，

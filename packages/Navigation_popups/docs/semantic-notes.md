@@ -159,6 +159,41 @@
 - **用户可见性**：对所有真实部署站点（`zh.moegirl.org.cn`、`commons.wikimedia.org` 及各 wikimedia 子域）判定结果与 legacy 完全一致；仅当本小工具被部署到拼接了 wikimedia 域名的第三方主机时行为不同（legacy 误判为 wikimedia 站，重写版不判为）。
 - **论据**：`hostname` 取自 `location.hostname`，正常部署下并非攻击者可控，但锚定消除了「站点判定被主机名拼接欺骗」的理论面，且对全部合法主机等价；CodeQL `js/regex/missing-anchor-of-hostname-pattern` 据此关闭。测试覆盖见 `tests/unit/api/siteinfo.test.ts`（后缀拼接、前缀拼接、深层子域三例）。
 
+### A10. `getJsObj` 的 warnings 遍历按对象形态兼容（**开放差异**，2026-10-20 issue #1140）
+
+- **legacy 行为**：`for (const warning of json_ret.warnings)` 把 `warnings` 当数组遍历。MediaWiki 实际返回对象（键=模块名，值为 formatversion=1 的 `{"*":…}` 或 formatversion=2 的 `{warnings:…}`），`for...of` 遍历对象抛 `TypeError`，被 `catch` 吞掉后返回哨兵值 1——带 warning 的**有效响应**整体被当作解析失败。维基百科部署了全部相关扩展、正常响应不带 warning，故上游从不触发。
+- **重写版行为**：`for (const warning of Object.values(json_ret.warnings))`（`src/core/tools.ts`）——对象与数组两种形态统一取值遍历；逐条 log 的 if/else 形态照搬 legacy（缺 `*` 字段时回退 log 其 `warnings` 字段）。
+- **用户可见性**：无 warning 时行为不变；有 warning 时从「预览直出 JSON 原文 / 用户信息区空白」变为正常渲染（正文数据本身不受 warning 影响）。
+- **论据**：issue #1140 实测萌百对预览查询必带 warning（缺 Wikibase/CentralAuth，见 A11），本条与 A11 组合消除「JSON 原文当 wikitext 渲染」的失效形态；即使未来站点补装扩展，本条也无副作用。测试覆盖见 `tests/unit/core/tools.test.ts`（对象 v1/v2 两形态 + 数组回归）。
+
+### A11. 预览查询移除萌百未部署扩展的参数（**开放差异**，2026-10-20 issue #1140）
+
+- **legacy 行为**：revision 查询拼 `&meta=wikibase`，userinfo 查询拼 `&meta=globaluserinfo&guiprop=groups|unattached&guiuser=…`（维基媒体站的 Wikibase / CentralAuth 扩展模块）。
+- **重写版行为**：两处参数移除（`src/api/queries.ts`）。`APIrevisionPreviewHTML` 对 `query.wikibase.repo` 的拼接与 userinfo 对 `globaluserinfo` 的读取逻辑**保留**（可选链数据驱动：无数据即跳过，pageinfo 的 wikibase 链接在 `wikibaseItem` 缺失时不显示），站点将来接入对应扩展时把参数加回即可。
+- **用户可见性**：萌百站上消除每条预览查询必带的 unrecognized warning（含 `main` 模块的 `Unrecognized parameters: guiprop, guiuser.`）；wikibase 链接与全局组/LOCKED/HIDDEN 展示在萌百本就无数据来源（pageprops 不含 `wikibase_item`、无 globaluserinfo 响应），用户可见输出不变。
+- **论据**：实测（2026-10-20，GET/POST 一致）萌百 API 对上述参数全部报 warning；warning 本身不破坏数据，但与 A10 修复前的 `getJsObj` 组合曾使全部预览失效。参数移除后 `q.wikibase` 恒 undefined，`wikibaseRepo` 落空字符串，pageinfo 侧 `!wikibaseItem || !wikibaseRepo` 跳过——与现状等价。测试覆盖见 `tests/unit/api/queries.test.ts`（userinfo/revision 两 URL 断言）。
+
+### A12. `showAPIPreview` 的 revision 分支承载生成器返回值（**开放差异**，2026-10-20 issue #1140；2026-10-21 按 gui-ying233 评审意见补齐非 wikitext 源码预览）
+
+- **legacy 行为**：`case "revision"` 忽略 htmlGenerator 的返回值，直接 `insertPreview(download)`——提取失败或非 wikitext 内容模型（`download.data` 未被替换为 wikitext 正文）时，把原始 JSON 响应当 wikitext 渲染进弹窗。
+- **重写版行为**：返回值为非空字符串时写入 `popupPreview` 槽并终止，不进入 `insertPreview`（`src/api/queries.ts`）；`undefined`（wikitext 成功或 missing 页）路径不变。返回值承载三类内容：提取失败文案（`"Revision preview failed :("`）、**非 wikitext 内容模型的源码预览**（`APIrevisionPreviewHTML` 在 slots 确有源码但 contentmodel 非 wikitext 时，按行数（借 `popupMaxPreviewSentences`，默认 5）与字符数（`popupMaxPreviewCharacters`，默认 600）双重截断、`entify` 转义后包进 `<pre>` 返回），以及**正文不可用提示**（修订条目存在但 content 缺失——RevDel 隐藏、权限不足——或无修订条目时返回 `popupString("revdel")`，2026-10-21 按 Copilot 评审意见补齐——此前该场景落穿返回 `undefined`，JSON 依旧直出）。
+- **用户可见性**：提取失败场景从「JSON 原文直出」变为「明确的失败提示」；CSS/JS/JSON 页面从「JSON 原文直出」变为「截断的源码预览」；正文被隐藏的修订从「JSON 原文直出」变为「历史版本被隐藏」提示（初版 A12 曾误称失败提示覆盖非 wikitext 场景——失败文案只在响应解析失败时返回，contentmodel 不匹配走的是成功返回 `undefined` 的路径，JSON 依旧直出，经 gui-ying233 评审指出后补齐）；wikitext 成功路径与 missing 页路径无变化。
+- **论据**：失败文案是 htmlGenerator 的既有约定（其余 queryType 均直接入槽），revision 分支此前独弃之；非 wikitext 源码若交给 wikitext 渲染管线（previewmaker 的 killTemplates/wiki2html）只会产出无意义输出，`<pre>` 直出是源码页面的自然形态；正文不可用的兜底放在 wikibase_item 提取之后，保证 pageprops 副作用不受影响。测试覆盖见 `tests/unit/api/queries.test.ts`（失败文案入槽、`undefined` 不触槽、非 wikitext `<pre>` 输出、行数截断与实体转义、RevDel/无 slots/无修订条目返回 revdel）。
+
+### A13. 显示名链接的管道符后缀截断（**开放差异**，2026-10-20 issue #1140；同日按 Sourcery 评审意见收紧为仅标题段）
+
+- **legacy 行为**：URL 解码后原样返回标题——萌百显示名系统（服务端扩展，用户页 H1 渲染为「用户名 | 昵称」）在讨论串等动态视图产出的链接把「真实标题 | 显示别名」整串编码进 `title=`（`|` 为 `%7C`），解码后 popups 把整串当标题：弹窗标题污染、`ususers`/`titles` 查询无效用户名与不存在页面、编辑导航链指向非法标题（如 `User_talk:名_%7C_昵称&action=edit`）。
+- **重写版行为**：模块级 `stripDisplayAlias`（`src/title/title.ts`）在 URL 解码后统一套用于 fromURL 的 main（含 Safari 回退路径）/contribs/email/backlinks 分支——解码产物含 `|` 时截到首个 `|` 之前，仅作用于 `#` 之前的**标题段**（锚点段的 `|` 属章节文本，原样保留），截断后的尾空白随截断剥离。MW 标题字符集不含 `|`，URL 解码产物含 `|` 的标题即显示名拼接产物。
+- **用户可见性**：悬停显示名链接时弹窗标题、用户信息查询、编辑等导航链全部还原为真实标题；标题干净而锚点含 `|` 的链接不再受影响（初版在 `decodeNasties` 内截断整串曾误伤锚点段，按评审意见收紧后消除）。剩余取舍：字面 `%7C` 标题（href 为 `%257C`）经 `decodeEscapes` + `decodeURI` 两步解码后与显示名同形，客户端无法区分——取显示名（现实高频）舍 `%7C` 字面标题（MW 上趋近零频率）。
+- **论据**：显示名链接的 `%7C` 在 query 解析时不会被服务端拆分（与多值参数的字面 `|` 不同），必须客户端截断；`userName()` 的 `split("/")[0]` 不处理 `|`，故截断放在 URL 解码后的统一出口并覆盖全部 fromURL 分支（Safari 回退路径曾按评审意见补齐，翌日随 A14 整体删除）。`fromWikiText` 走 `myDecodeURI` 不受影响，wikitext 内链的管道符在 parenSplit 阶段已拆。测试覆盖见 `tests/unit/title/title.test.ts`（title= 显示名、显示名+锚点共存、双重编码显示名、Contributions target 显示名、锚点含 `|` 完整保留）。
+
+### A14. Safari `%25` 双重解码路径与 `flag.isSafari` 状态整体删除（**开放差异**，2026-10-21 issue #1140 跟进清理）
+
+- **legacy 行为**：`fromURL` 的 main 分支在 `pg.flag.isSafari` 真值且标题段匹配 `/%25[0-9A-Fa-f]{2}/` 时走 `decodeURIComponent(unescape(extracted))`（`unescape` 为 Annex B 废弃 API），修补旧 Safari 引擎「把 href 里 UTF-8 字符串中的 `%` 再编码成 `%25`」的缺陷（英文维基 Gadget-popups.js/sandbox 讨论页记载）。
+- **重写版行为**：该分支与 `TitleWikiState.flag`（`isSafari` 为其唯一字段）整体删除（`src/title/title.ts`），fromURL 统一走 `decodeNasties` 主路径。
+- **用户可见性**：无——`wiki.flag.isSafari` 在 `src/` 内从未有装配赋值点（无 UA 检测），生产恒为 `false`，该分支仅测试直设可达，删除不改变任何生产行为。
+- **论据**：三重验证支持删除。其一，修补的引擎缺陷已消亡——现代浏览器（含 Safari）的 `a.href` 按 DOM 标准返回字面属性值、不做百分号解码，即使补上装配也不会以「修复真实问题」的方式触发。其二，分支无独立价值——设计场景（`%25E4%25B8%2583` 双重编码）下主路径 `decodeEscapes` + `decodeURI` 同样正确解出原文（实测一致）；正常单层编码的非 ASCII 标题（`%E4%B8%83`）走该路径反而产出乱码（`unescape` 的 Latin-1 语义逐字节变字符，实测），装配后只剩误伤能力。其三，维护负资产——`unescape` 需 eslint-disable 压制，状态声明误导阅读者以为 Safari 兼容在工作，三个测试用例中两个的断言值在两条路径下同值、掩盖真实差异。若未来需恢复旧 Safari 兼容，以本条目与 legacy 基准（commit 02c8dec）为准复原。测试覆盖见 `tests/unit/title/title.test.ts`（`A%2541` 双层解码、`%257C` 双重编码显示名截断均改由主路径用例承载）。
+
 ## B. 明知故留的 legacy 死分支（`istanbul ignore` 清单）
 
 重写版在以下位置**保留** legacy 结构性不可达的防御分支，逐条配 `// istanbul ignore …`
