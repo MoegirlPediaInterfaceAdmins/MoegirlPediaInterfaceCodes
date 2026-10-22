@@ -214,7 +214,7 @@ $(() => {
                 this.reasonsDropdown = new OO.ui.DropdownInputWidget({
                     options: [{
                         data: "",
-                        label: wgULS("其他（请自行说明理由）", "其他（請自行說明緣由）"),
+                        label: wgULS("其他（请自行说明理由）", "其他（請自行說明理由）"),
                     }, {
                         data: "",
                         disabled: true,
@@ -238,7 +238,7 @@ $(() => {
                 this.reasonsDropdownMenu = this.reasonsDropdown.dropdownWidget.getMenu();
 
                 const reasonsField = new OO.ui.FieldLayout(this.reasonsDropdown, {
-                    label: wgULS("删除理由", "刪除緣由"),
+                    label: wgULS("删除理由", "刪除理由"),
                     align: "top",
                 });
                 const detailsField = new OO.ui.FieldLayout(this.detailsText, {
@@ -246,7 +246,7 @@ $(() => {
                     align: "top",
                 });
                 const enterField = new OO.ui.FieldLayout(this.enterCheckbox, {
-                    label: wgULS("理由详情按回车提交（浏览器级设置）", "緣由詳情按確認鍵提交（瀏覽器級設置）"),
+                    label: wgULS("理由详情按回车提交（浏览器级设置）", "理由詳情按確認鍵提交（瀏覽器級設置）"),
                     align: "inline",
                 });
                 this.batchField = new OO.ui.FieldLayout(this.batchCheckbox, {
@@ -280,7 +280,7 @@ $(() => {
             updateReasons(reasons) {
                 this.reasonsDropdown.setOptions([{
                     data: "",
-                    label: wgULS("其他（请自行说明理由）", "其他（請自行說明緣由）"),
+                    label: wgULS("其他（请自行说明理由）", "其他（請自行說明理由）"),
                 }, ...reasons]);
             }
             setHasAutopatrol(has) {
@@ -355,7 +355,7 @@ $(() => {
                             throw new OO.ui.Error(wgULS("请至少填写一个页面", "請至少填寫一個頁面"));
                         }
                         if (!reason && !detail) {
-                            throw new OO.ui.Error(wgULS("请填写理由或详情", "請填寫緣由或詳情"));
+                            throw new OO.ui.Error(wgULS("请填写理由或详情", "請填寫理由或詳情"));
                         }
                         try {
                             const requestReason = reason || detail, requestDetail = reason ? detail : "";

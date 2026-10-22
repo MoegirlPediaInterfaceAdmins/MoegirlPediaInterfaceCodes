@@ -344,7 +344,7 @@
                             flags.push(wgULS("（无）", "（無）"));
                         }
                         info += flags.join("、");
-                        info += `\n    ${wgULS("理由", "緣由")}：${blockInfo.reason}`;
+                        info += `\n    ${wgULS("理由", "理由")}：${blockInfo.reason}`;
                         blockCache[blockInfo.user] = {
                             timestamp: now,
                             isBlocked: true,
