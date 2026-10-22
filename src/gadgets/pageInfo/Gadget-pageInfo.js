@@ -79,7 +79,23 @@
             $container = $("<li>", {
                 "class": "page-info-container vector-tab-noicon mw-list-item",
             });
-            $container.appendTo("#p-views .vector-menu-content-list");
+            if (skin === "vector-2022") {
+                // Vector 2022 在 <640px（min-width-breakpoint-tablet）时整体隐藏 #p-views
+                // （PageToolbar.less 的 .vector-page-toolbar-container .mw-portlet-views { display: none }），
+                // 此时改挂到任何宽度都可见的命名空间 tab 列表，跨过断点时在两处列表间搬运容器（issue #1133）。
+                // 只有 vector-2022 保证存在 #p-associated-pages，其他皮肤不得套用此搬迁逻辑，
+                // 否则窄屏首载时容器会因目标缺失而无处挂载（appendTo 空集合不报错、静默无效）
+                const $viewsList = $("#p-views .vector-menu-content-list");
+                const $associatedPagesList = $("#p-associated-pages .vector-menu-content-list");
+                const tabletViewport = window.matchMedia("(min-width: 640px)");
+                const placeContainer = () => {
+                    $container.appendTo(tabletViewport.matches ? $viewsList : $associatedPagesList);
+                };
+                placeContainer();
+                tabletViewport.addEventListener("change", placeContainer);
+            } else {
+                $container.appendTo("#p-views .vector-menu-content-list");
+            }
             break;
         }
     }
