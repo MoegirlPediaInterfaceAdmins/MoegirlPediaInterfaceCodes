@@ -8,6 +8,7 @@
 body.heimu_toggle_on .heimu,
 body.heimu_toggle_on .heimu rt {
     --heimu-toggle-text-color--rgb: 44 62 80;
+
     color: rgb(var(--heimu-toggle-text-color--rgb) / 80%);
     background-color: rgb(var(--heimu-color--rgb) / 13%);
 }
