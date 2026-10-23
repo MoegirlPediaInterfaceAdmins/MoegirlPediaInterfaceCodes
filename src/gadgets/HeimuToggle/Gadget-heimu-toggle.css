@@ -7,7 +7,7 @@
 
 body.heimu_toggle_on .heimu,
 body.heimu_toggle_on .heimu rt {
-    --heimu-toggle-text-color--rgb: 44, 62, 80;
+    --heimu-toggle-text-color--rgb: 44 62 80;
     color: rgb(var(--heimu-toggle-text-color--rgb) / 80%);
     background-color: rgb(var(--heimu-color--rgb) / 13%);
 }
@@ -15,7 +15,7 @@ body.heimu_toggle_on .heimu rt {
 @media screen and (prefers-color-scheme: dark) {
     html.skin-theme-clientpref-os body.heimu_toggle_on .heimu,
     html.skin-theme-clientpref-os body.heimu_toggle_on .heimu rt {
-        --heimu-toggle-text-color--rgb: 196, 199, 201;
+        --heimu-toggle-text-color--rgb: 196 199 201;
     }
 }
 
@@ -24,7 +24,7 @@ body.heimu_toggle_on .heimu rt {
     html.skin-theme-clientpref-night body.heimu_toggle_on .heimu rt,
     html.dark body.heimu_toggle_on .heimu,
     html.dark body.heimu_toggle_on .heimu rt {
-        --heimu-toggle-text-color--rgb: 196, 199, 201;
+        --heimu-toggle-text-color--rgb: 196 199 201;
     }
 }
 
