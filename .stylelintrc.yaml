@@ -19,8 +19,9 @@ plugins:
 
 rules:
   custom-property-pattern:
-    - '^([a-z][a-z0-9]*)(-{1,2}[a-z0-9]+)*$'
-    - message: 'Custom property name must be kebab-case, with single or double hyphens allowed.'
+    - ^([a-z][a-z0-9]*)(-{1,2}[a-z0-9]+)*$
+    - message: Custom property name must be kebab-case, with single or double hyphens
+        allowed.
   selector-id-pattern: null
   selector-class-pattern: null
   no-descending-specificity: null
