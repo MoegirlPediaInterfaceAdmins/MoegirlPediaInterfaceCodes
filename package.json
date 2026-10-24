@@ -117,5 +117,8 @@
         "es5-ext@0.10.63": true,
         "esbuild": true,
         "@parcel/watcher": true
+    },
+    "overrides": {
+        "vue": "~3.5.42"
     }
 }
