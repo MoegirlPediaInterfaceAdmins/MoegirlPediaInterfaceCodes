@@ -16,8 +16,9 @@ const ignores = [
     "**/.*/**",
     "node_modules",
     // .husky/ 是点目录、会被上一条 `**/.*/**` 整体忽略，而其中的 .mjs 是需要检查的源码，
-    // 需显式反忽略才能被 lint。
-    "!.husky/*.mjs",
+    // 需显式反忽略才能被 lint。negation 必须写成整个目录（!.husky/**）才能撤销 `**/.*/**`
+    // 的匹配——只否定目录内文件（!.husky/*.mjs）不会生效
+    "!.husky/**",
 ];
 
 // 各目录的 .eslint-exemptions.yaml 声明该目录需豁免 lint 的文件；ESLint 引擎不识别
@@ -71,10 +72,16 @@ const packageFiles = [
  * @type { import("eslint").Linter.Config[] }
  */
 const config = [
+    // 只有仅含 ignores 的配置对象才作为全局忽略生效；此前这份 ignores 只挂在 base 块上，
+    // 因混入其他键退化为仅作用于该块的排他规则，coverage/dist/点目录从未被全局排除——
+    // 本地先跑 package:test 生成 packages/*/coverage 再 lint 就会扫到 istanbul 产物。
+    // 依赖其中的 !.husky/*.mjs 反忽略把 .husky 源码重新纳入后续块的匹配范围
+    {
+        ignores,
+    },
     // base
     {
         ...configs.base,
-        ignores,
     },
     {
         ...configs.browser,
