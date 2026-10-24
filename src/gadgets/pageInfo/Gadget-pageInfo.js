@@ -54,7 +54,31 @@
     const wgRestrictionCreate = mw.config.get("wgRestrictionCreate");
     const { wgRestrictionEdit, wgRestrictionMove, wgPageName, wgUserName, wgScriptPath, skin } = mw.config.get(["wgRestrictionEdit", "wgRestrictionMove", "wgPageName", "wgUserName", "wgScriptPath", "skin"]);
 
-    if (!wgRestrictionCreate && wgRestrictionEdit.length === 0 && wgRestrictionMove.length === 0) {
+    const protectLevels = new Set();
+    if (Array.isArray(wgRestrictionEdit) && wgRestrictionEdit.length > 0) {
+        wgRestrictionEdit.forEach((level) => protectLevels.add(`protect-level-${level}`));
+        protectLevels.add("edit");
+    }
+    if (Array.isArray(wgRestrictionMove) && wgRestrictionMove.length > 0) {
+        wgRestrictionMove.forEach((level) => protectLevels.add(`protect-level-${level}`));
+        protectLevels.add("move");
+    }
+    if (Array.isArray(wgRestrictionCreate) && wgRestrictionCreate.length > 0) {
+        wgRestrictionCreate.forEach((level) => protectLevels.add(`protect-level-${level}`));
+        protectLevels.add("create");
+    }
+    // 有无保护记录统一由 protectLevels 表达，不可裸取 wgRestrictionEdit.length：
+    // 不存在的页面（红链等）MW 只设置 wgRestrictionCreate，其余键未设置，
+    // mw.config.get 数组形式对未设置的键返回 null，裸取 .length 会抛 TypeError
+    const hasProtectionRecord = protectLevels.size > 0;
+    // 补充入口（issue #1148）：命名空间保护（MediaWiki:、Widget: 等经 $wgNamespaceProtection 限定）
+    // 不产生页面保护记录，仅看 protectLevels 会漏掉。wgIsProbablyEditable 与皮肤"编辑/查看源代码"
+    // 标签同源（OutputPage 赋值处注释 "Same test as SkinTemplate"），基于 quickUserCan：
+    // - 不含级联保护与 hook 拦截（TitleBlacklist 类），此类页面依旧不显示，与旧行为一致；
+    // - 匿名用户无 edit 权限，该值对匿名全站恒 false，须以登录态门控，否则匿名到处见锁
+    const notEditable = !!wgUserName && mw.config.get("wgIsProbablyEditable") === false;
+
+    if (!hasProtectionRecord && !notEditable) {
         return;
     }
 
@@ -101,21 +125,20 @@
     }
 
     const { talkPage, basePageName } = libGetPageNames();
-    const protectLevels = new Set();
-    if (Array.isArray(wgRestrictionEdit) && wgRestrictionEdit.length > 0) {
-        wgRestrictionEdit.forEach((level) => protectLevels.add(`protect-level-${level}`));
-        protectLevels.add("edit");
-    }
-    if (Array.isArray(wgRestrictionMove) && wgRestrictionMove.length > 0) {
-        wgRestrictionMove.forEach((level) => protectLevels.add(`protect-level-${level}`));
-        protectLevels.add("move");
-    }
-    if (Array.isArray(wgRestrictionCreate) && wgRestrictionCreate.length > 0) {
-        wgRestrictionCreate.forEach((level) => protectLevels.add(`protect-level-${level}`));
-        protectLevels.add("create");
-    }
-    if (protectLevels.size > 0) {
-        const isDark = document.documentElement.classList.contains("skin-theme-clientpref-night") || document.documentElement.classList.contains("dark");
+    const isDark = document.documentElement.classList.contains("skin-theme-clientpref-night") || document.documentElement.classList.contains("dark");
+    const $protectionInfoContainer = $("<a>", {
+        "class": "page-info-protection annotation",
+    });
+    $protectionInfoContainer.appendTo($container);
+    $("<img>", {
+        src: `/resources/lib/ooui/themes/wikimediaui/images/icons/${isDark ? "lock-invert.svg" : "lock.svg"}`,
+        alt: "",
+        "aria-hidden": "true",
+    }).appendTo($protectionInfoContainer);
+    const $protectionInfoContent = $("<div>", {
+        "class": "annotation-content",
+    });
+    if (hasProtectionRecord) {
         const api = new mw.Api();
         await api.loadMessagesIfMissing(Array.from(protectLevels));
         const intestactionsPromise = api.post({
@@ -125,18 +148,6 @@
             formatversion: "2",
             intestactions: "edit|move|create",
             intestactionsdetail: "boolean",
-        });
-        const $protectionInfoContainer = $("<a>", {
-            "class": "page-info-protection annotation",
-        });
-        $protectionInfoContainer.appendTo($container);
-        $("<img>", {
-            src: `/resources/lib/ooui/themes/wikimediaui/images/icons/${isDark ? "lock-invert.svg" : "lock.svg"}`,
-            alt: "",
-            "aria-hidden": "true",
-        }).appendTo($protectionInfoContainer);
-        const $protectionInfoContent = $("<div>", {
-            "class": "annotation-content",
         });
         $protectionInfoContent.append($("<b>").text(wgULS("页面受到以下保护：", "頁面受到以下保護：")));
         const $editRequestList = appendRestrictionSection($protectionInfoContent, "edit", wgRestrictionEdit);
@@ -193,5 +204,30 @@
                 $createRequestList?.remove();
             }
         }
+    } else {
+        // 无保护记录但当前登录用户不可编辑（命名空间保护等）。此时 intestactions 的 edit
+        // 也必然无权限（精确检查只会更严于 quickUserCan），不发起查询；
+        // "点此查看原因"指向编辑界面，由 MediaWiki 在该处展示无权编辑的具体原因，
+        // 按需求在当前标签页打开（不设 target）
+        const viewReasonUrl = new URL(`${wgScriptPath}/index.php`, location.origin);
+        viewReasonUrl.searchParams.set("title", wgPageName);
+        viewReasonUrl.searchParams.set("action", "edit");
+        $protectionInfoContent.append($("<b>").text(wgULS("此页面因故无法编辑，", "此頁面因故無法編輯，")), $("<a>", {
+            href: viewReasonUrl.href,
+            text: wgULS("点此查看原因", "點此查看原因"),
+        }));
+        if (talkPage) {
+            const now = new Date();
+            const requestTitleSuffix = getRequestTitleSuffix(wgUserName, now);
+            appendRequestLink($("<ul>").appendTo($protectionInfoContent), {
+                title: talkPage,
+                preload: getEditRequestPreload(wgPageName, basePageName),
+                preloadTitle: `编辑请求${requestTitleSuffix}`,
+                scriptPath: wgScriptPath,
+                text: "提出编辑请求",
+            });
+        }
+        $protectionInfoContent.appendTo($protectionInfoContainer);
+        $protectionInfoContainer.trigger("mouseout");
     }
 })();
