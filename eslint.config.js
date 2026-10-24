@@ -105,7 +105,6 @@ const config = [
                 libGetPageNames: false,
                 libPrefixNumber: false,
                 wgGetEditRequestPreload: false,
-                libip: false,
             },
         },
     },

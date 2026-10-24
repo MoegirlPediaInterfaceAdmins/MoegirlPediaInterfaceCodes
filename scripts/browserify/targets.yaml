@@ -22,9 +22,3 @@
     - sha384
     - sha512
     - sm3
-
-- module: ip
-  entry: libip
-  gadget:
-    name: libip
-    fileName: Gadget-libip.js

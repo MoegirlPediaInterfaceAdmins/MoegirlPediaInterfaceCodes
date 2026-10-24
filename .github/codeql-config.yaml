@@ -6,7 +6,6 @@ paths-ignore:
   - src/gadgets/libHashwasm
   - src/gadgets/libJSON5
   - src/gadgets/libUtil
-  - src/gadgets/libip
   - src/gadgets/localforage
   - src/gadgets/noteTA
   - src/gadgets/patrolCount

@@ -132,7 +132,6 @@
     - localforage
     - jQueryLazyload
     - libHashwasm
-    - libip
     - libJSON5
     - libCachedCode
     - libDiscussionUtil
