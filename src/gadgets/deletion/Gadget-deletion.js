@@ -19,11 +19,14 @@ $(() => (async () => {
     const CONTENT_BATCH_SIZE = 500;
     const FLAG_CALL = /\{\{\s*(?:(?:模板|样板|t|模板|template)\s*:\s*)?即将删除\s*(?:\|([^{}]*))?\}\}/i;
     const ARG_SEPARATOR = /\|(?![^[]*\]\])/u;
+    // MediaWiki 与 HTML5 一致，也接受 --!> 作为注释结束符；两种结束符都要剥掉，
+    // 否则藏在 <!--…--!> 注释里的挂删模板会被误提取为有效挂删（CodeQL #212）
+    const HTML_COMMENT = /<!--[\s\S]*?(?:-->|--!>)/g;
 
     const extractFlag = (wikitext) => {
         const args = new Map();
         let index = 1;
-        for (const part of (FLAG_CALL.exec(wikitext.replace(/<!--[\s\S]*?-->/g, ""))?.[1] ?? "").split(ARG_SEPARATOR)) {
+        for (const part of (FLAG_CALL.exec(wikitext.replace(HTML_COMMENT, ""))?.[1] ?? "").split(ARG_SEPARATOR)) {
             const [key, ...value] = part.split("=");
             if (value.length) {
                 args.set(key.trim(), value.join("=").trim());
