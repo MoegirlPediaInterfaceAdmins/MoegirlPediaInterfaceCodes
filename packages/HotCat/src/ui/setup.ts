@@ -69,14 +69,14 @@ const createEditors = (_line: HTMLElement, is_hidden: boolean, has_hidden: boole
         cats = line.getElementsByTagName("span");
     }
     const copyCats: Element[] = [];
-    // 键名来自页面分类链接（页面内容可控），用 null 原型避免误触 Object.prototype 上的继承属性（CodeQL #227）
-    const idxCopys = Object.create(null) as Record<string, number>;
+    // 键名来自页面分类链接（页面内容可控），用 Map 存放使写入不经过属性名，避免触达对象原型（CodeQL #227）
+    const idxCopys = new Map<string, number>();
     let sTitle;
     for (i = 0; i < cats.length; i++) {
         copyCats[i] = cats[i];
         sTitle = getTitle(copyCats[i]);
         if (sTitle) {
-            idxCopys[sTitle] = i;
+            idxCopys.set(sTitle, i);
         }
     }
     const inpageCats = listCategorys();
@@ -85,8 +85,8 @@ const createEditors = (_line: HTMLElement, is_hidden: boolean, has_hidden: boole
         if (HC.capitalizePageNames) {
             normalized = normalized.charAt(0).toUpperCase() + normalized.substring(1);
         }
-        if (Reflect.has(idxCopys, normalized)) {
-            new CategoryEditor(line, copyCats[idxCopys[normalized]] as HTMLElement, inpageCats[i].match[2], inpageCats[i].match[3], is_hidden);
+        if (idxCopys.has(normalized)) {
+            new CategoryEditor(line, copyCats[idxCopys.get(normalized)!] as HTMLElement, inpageCats[i].match[2], inpageCats[i].match[3], is_hidden);
             if (is_hidden && Reflect.has(inpIndex, normalized)) {
                 chkCats.splice(chkCats.indexOf(`${HC.category_canonical}:${normalized}`), 1);
                 Reflect.deleteProperty(inpIndex, normalized);
@@ -109,8 +109,8 @@ const createEditors = (_line: HTMLElement, is_hidden: boolean, has_hidden: boole
             for (i = 0; i < converted.length; i++) {
                 const sTitle = converted[i].to.replace(`${HC.category_canonical}:`, "");
                 const sOrginal = inpIndex[converted[i].from.replace(`${HC.category_canonical}:`, "")];
-                if (Reflect.has(idxCopys, sTitle)) {
-                    new CategoryEditor(line, copyCats[idxCopys[sTitle]] as HTMLElement, [inpageCats[sOrginal].match[2], sTitle], inpageCats[sOrginal].match[3], is_hidden);
+                if (idxCopys.has(sTitle)) {
+                    new CategoryEditor(line, copyCats[idxCopys.get(sTitle)!] as HTMLElement, [inpageCats[sOrginal].match[2], sTitle], inpageCats[sOrginal].match[3], is_hidden);
                 } else {
                     console.log(sTitle);
                 }

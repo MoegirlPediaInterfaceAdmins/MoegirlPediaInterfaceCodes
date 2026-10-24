@@ -1308,13 +1308,13 @@ var getCatLine = () => site.skin === "moeskin" ? document.getElementById("catlin
 }, createEditors = (_line, is_hidden, has_hidden, chkCats, inpIndex) => {
   let line = _line, i, cats = line.getElementsByTagName("li");
   cats.length ? (state.newDOM = !0, line = cats[0].parentNode) : cats = line.getElementsByTagName("span");
-  let copyCats = [], idxCopys = /* @__PURE__ */ Object.create(null), sTitle;
+  let copyCats = [], idxCopys = /* @__PURE__ */ new Map(), sTitle;
   for (i = 0; i < cats.length; i++)
-    copyCats[i] = cats[i], sTitle = getTitle(copyCats[i]), sTitle && (idxCopys[sTitle] = i);
+    copyCats[i] = cats[i], sTitle = getTitle(copyCats[i]), sTitle && idxCopys.set(sTitle, i);
   let inpageCats = listCategorys();
   for (i = 0; i < inpageCats.length; i++) {
     let normalized = inpageCats[i].match[2].replace(wikiTextBlankRE, " ");
-    HC.capitalizePageNames && (normalized = normalized.charAt(0).toUpperCase() + normalized.substring(1)), Reflect.has(idxCopys, normalized) ? (new CategoryEditor(line, copyCats[idxCopys[normalized]], inpageCats[i].match[2], inpageCats[i].match[3], is_hidden), is_hidden && Reflect.has(inpIndex, normalized) && (chkCats.splice(chkCats.indexOf(`${HC.category_canonical}:${normalized}`), 1), Reflect.deleteProperty(inpIndex, normalized))) : is_hidden || (chkCats.push(`${HC.category_canonical}:${normalized}`), inpIndex[normalized] = i);
+    HC.capitalizePageNames && (normalized = normalized.charAt(0).toUpperCase() + normalized.substring(1)), idxCopys.has(normalized) ? (new CategoryEditor(line, copyCats[idxCopys.get(normalized)], inpageCats[i].match[2], inpageCats[i].match[3], is_hidden), is_hidden && Reflect.has(inpIndex, normalized) && (chkCats.splice(chkCats.indexOf(`${HC.category_canonical}:${normalized}`), 1), Reflect.deleteProperty(inpIndex, normalized))) : is_hidden || (chkCats.push(`${HC.category_canonical}:${normalized}`), inpIndex[normalized] = i);
   }
   if (chkCats.length && (!is_hidden && !has_hidden || is_hidden)) {
     let arg_titles = chkCats.join("|");
@@ -1322,7 +1322,7 @@ var getCatLine = () => site.skin === "moeskin" ? document.getElementById("catlin
       let converted = json.query && json.query.converted;
       for ((!converted || converted.length < chkCats.length) && console.log(arg_titles), converted || (converted = []), i = 0; i < converted.length; i++) {
         let sTitle2 = converted[i].to.replace(`${HC.category_canonical}:`, ""), sOrginal = inpIndex[converted[i].from.replace(`${HC.category_canonical}:`, "")];
-        Reflect.has(idxCopys, sTitle2) ? new CategoryEditor(line, copyCats[idxCopys[sTitle2]], [inpageCats[sOrginal].match[2], sTitle2], inpageCats[sOrginal].match[3], is_hidden) : console.log(sTitle2);
+        idxCopys.has(sTitle2) ? new CategoryEditor(line, copyCats[idxCopys.get(sTitle2)], [inpageCats[sOrginal].match[2], sTitle2], inpageCats[sOrginal].match[3], is_hidden) : console.log(sTitle2);
       }
     });
   }
