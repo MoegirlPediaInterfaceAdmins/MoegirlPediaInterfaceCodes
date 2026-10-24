@@ -140,7 +140,15 @@
     });
     if (hasProtectionRecord) {
         const api = new mw.Api();
-        await api.loadMessagesIfMissing(Array.from(protectLevels));
+        try {
+            await api.loadMessagesIfMissing(Array.from(protectLevels));
+        } catch (error) {
+            // 容器构建已提前到本分支之前（旧版在消息加载成功后才创建容器），
+            // 失败时须显式移除锁图标，恢复旧版干净降级
+            console.warn("[Gadget-pageInfo] Failed to load protection level messages", error);
+            $protectionInfoContainer.remove();
+            return;
+        }
         const intestactionsPromise = api.post({
             action: "query",
             prop: "info",
