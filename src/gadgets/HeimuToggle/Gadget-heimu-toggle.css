@@ -7,8 +7,26 @@
 
 body.heimu_toggle_on .heimu,
 body.heimu_toggle_on .heimu rt {
-    color: rgb(44 62 80 / 80%);
-    background-color: rgb(37 37 37 / 13%);
+    --heimu-toggle-text-color--rgb: 44 62 80;
+
+    color: rgb(var(--heimu-toggle-text-color--rgb) / 80%);
+    background-color: rgb(var(--heimu-color--rgb) / 13%);
+}
+
+@media screen and (prefers-color-scheme: dark) {
+    html.skin-theme-clientpref-os body.heimu_toggle_on .heimu,
+    html.skin-theme-clientpref-os body.heimu_toggle_on .heimu rt {
+        --heimu-toggle-text-color--rgb: 196 199 201;
+    }
+}
+
+@media screen {
+    html.skin-theme-clientpref-night body.heimu_toggle_on .heimu,
+    html.skin-theme-clientpref-night body.heimu_toggle_on .heimu rt,
+    html.dark body.heimu_toggle_on .heimu,
+    html.dark body.heimu_toggle_on .heimu rt {
+        --heimu-toggle-text-color--rgb: 196 199 201;
+    }
 }
 
 body.heimu_toggle_on .heimu:hover,
@@ -20,22 +38,22 @@ body.heimu_toggle_on span.heimu a,
 body.heimu_toggle_on a span.heimu,
 body.heimu_toggle_on span.heimu a.mw-disambig,
 body.heimu_toggle_on span.heimu a.mw-redirect {
-    color: #0645AD;
+    color: var(--theme-link-color, var(--color-progressive, #36C));
 }
 
 body.heimu_toggle_on span.heimu a:visited,
 body.heimu_toggle_on a:visited span.heimu {
-    color: #0B0080;
+    color: var(--theme-link-color--visited, var(--color-visited, #6A60B0));
 }
 
 body.heimu_toggle_on span.heimu a.new,
 body.heimu_toggle_on a.new span.heimu {
-    color: #BA0000;
+    color: var(--theme-danger-color, var(--color-destructive, #D73333));
 }
 
 body.heimu_toggle_on span.heimu a.new:visited,
 body.heimu_toggle_on a.new:visited span.heimu {
-    color: #A55858;
+    color: var(--color-destructive--visited, #A55858);
 }
 
 body.heimu_toggle_on span.heimu a.extiw,

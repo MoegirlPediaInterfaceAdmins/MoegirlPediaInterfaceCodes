@@ -647,7 +647,8 @@
 /* 黑幕模板配合CSS */
 .heimu,
 .heimu rt {
-    --heimu-color: #252525;
+    --heimu-color--rgb: 37 37 37;
+    --heimu-color: rgb(var(--heimu-color--rgb));
     --heimu-text-color: #fff;
     --heimu-link-color: #add8e6;
     --heimu-visited-link-color: #c5cae9;
