@@ -3,7 +3,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { HC } from "../src/config/hotcat.ts";
 import { state } from "../src/runtime.ts";
 import { CategoryEditor } from "../src/ui/editor.ts";
-import { closeForm, createCommitForm, getState, setState, setup } from "../src/ui/setup.ts";
+import { closeForm, createCommitForm, getState, setState, setup, setupUpload } from "../src/ui/setup.ts";
 import { CATLINKS_HTML, hydrateNamedControls, resetSite } from "./helpers/site.ts";
 
 /** 让 setup 里的 converted-titles 请求立即返回空转换表 */
@@ -179,6 +179,22 @@ describe("closeForm", () => {
         editor.state = CategoryEditor.CHANGE_PENDING;
         closeForm();
         expect(editor.state).toBe(CategoryEditor.UNCHANGED);
+    });
+});
+
+describe("setupUpload", () => {
+    it("提交时剥离以 --!> 结束的 HTML 注释，注释里的分类不算已存在", () => {
+        document.body.innerHTML = "<div id=\"catlinks\"><div id=\"mw-normal-catlinks\"><span><a href=\"/wiki/Category:Foo\">Foo</a></span></div></div><form id=\"mw-upload-form\"><table id=\"mw-htmlform-description\"><tr><td><textarea id=\"wpUploadDescription\"></textarea></td></tr></table></form>";
+        state.pageText = "[[Category:Foo]]";
+        setup();
+        setupUpload();
+        const textarea = document.getElementById("wpUploadDescription") as HTMLTextAreaElement;
+        // MediaWiki 渲染时会把 <!--…--!> 整体当注释剥掉，其中的分类不生效
+        textarea.value = "<!--[[Category:Foo]]--!>";
+        const form = document.getElementById("mw-upload-form") as HTMLFormElement;
+        const handler = form.onsubmit as unknown as (this: HTMLFormElement, evt: Event) => boolean;
+        Reflect.apply(handler, form, [new Event("submit")]);
+        expect(textarea.value).toBe("<!--[[Category:Foo]]--!>\n[[Category:Foo]]");
     });
 });
 

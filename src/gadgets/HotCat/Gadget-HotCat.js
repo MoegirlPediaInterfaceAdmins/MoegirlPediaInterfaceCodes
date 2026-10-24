@@ -1308,7 +1308,7 @@ var getCatLine = () => site.skin === "moeskin" ? document.getElementById("catlin
 }, createEditors = (_line, is_hidden, has_hidden, chkCats, inpIndex) => {
   let line = _line, i, cats = line.getElementsByTagName("li");
   cats.length ? (state.newDOM = !0, line = cats[0].parentNode) : cats = line.getElementsByTagName("span");
-  let copyCats = [], idxCopys = {}, sTitle;
+  let copyCats = [], idxCopys = /* @__PURE__ */ Object.create(null), sTitle;
   for (i = 0; i < cats.length; i++)
     copyCats[i] = cats[i], sTitle = getTitle(copyCats[i]), sTitle && (idxCopys[sTitle] = i);
   let inpageCats = listCategorys();
@@ -1384,7 +1384,7 @@ var getCatLine = () => site.skin === "moeskin" ? document.getElementById("catlin
         let t = state.editors[i].currentCategory;
         if (!t)
           continue;
-        let key = state.editors[i].currentKey, new_cat = `[[${HC.category_canonical}:${t}${key ? `|${key}` : ""}]]`, cleanedText = eb.value.replace(/<!--(\s|\S)*?-->/g, "").replace(/<nowiki>(\s|\S)*?<\/nowiki>/g, "");
+        let key = state.editors[i].currentKey, new_cat = `[[${HC.category_canonical}:${t}${key ? `|${key}` : ""}]]`, cleanedText = eb.value.replace(/<!--(\s|\S)*?(?:-->|--!>)/g, "").replace(/<nowiki>(\s|\S)*?<\/nowiki>/g, "");
         findCategoryWikitext(cleanedText, t, !0) || (eb.value += `
 ${new_cat}`, addedOne = !0);
       }

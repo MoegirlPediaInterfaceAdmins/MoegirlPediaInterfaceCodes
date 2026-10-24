@@ -69,7 +69,8 @@ const createEditors = (_line: HTMLElement, is_hidden: boolean, has_hidden: boole
         cats = line.getElementsByTagName("span");
     }
     const copyCats: Element[] = [];
-    const idxCopys: Record<string, number> = {};
+    // 键名来自页面分类链接（页面内容可控），用 null 原型避免误触 Object.prototype 上的继承属性（CodeQL #227）
+    const idxCopys = Object.create(null) as Record<string, number>;
     let sTitle;
     for (i = 0; i < cats.length; i++) {
         copyCats[i] = cats[i];
@@ -267,7 +268,9 @@ const setupUpload = (): void => {
                 }
                 const key = state.editors[i].currentKey;
                 const new_cat = `[[${HC.category_canonical}:${t}${key ? `|${key}` : ""}]]`;
-                const cleanedText = eb.value.replace(/<!--(\s|\S)*?-->/g, "").replace(/<nowiki>(\s|\S)*?<\/nowiki>/g, "");
+                // MediaWiki 与 HTML5 一致，也接受 --!> 作为注释结束符；两种都要剥掉，
+                // 否则注释里的分类会被误判为已存在而漏写
+                const cleanedText = eb.value.replace(/<!--(\s|\S)*?(?:-->|--!>)/g, "").replace(/<nowiki>(\s|\S)*?<\/nowiki>/g, "");
                 if (!findCategoryWikitext(cleanedText, t, true)) {
                     eb.value += `\n${new_cat}`;
                     addedOne = true;
