@@ -19,14 +19,26 @@ $(() => (async () => {
     const CONTENT_BATCH_SIZE = 500;
     const FLAG_CALL = /\{\{\s*(?:(?:模板|样板|t|模板|template)\s*:\s*)?即将删除\s*(?:\|([^{}]*))?\}\}/i;
     const ARG_SEPARATOR = /\|(?![^[]*\]\])/u;
-    // MediaWiki 与 HTML5 一致，也接受 --!> 作为注释结束符；两种结束符都要剥掉，
-    // 否则藏在 <!--…--!> 注释里的挂删模板会被误提取为有效挂删（CodeQL #212）
-    const HTML_COMMENT = /<!--[\s\S]*?(?:-->|--!>)/g;
+    // MediaWiki 解析 wikitext 的注释规则：<!-- 开始、第一个 --> 结束、未闭合则吞到文末；
+    // --!>、<!--> 等 HTML5 提前闭合只作用于最终 HTML 渲染层，不影响模板语法是否生效
+    // （Preprocessor_Hash.php 与 Parsoid 的词法都只向后搜索 -->）
+    const HTML_COMMENT = /<!--[\s\S]*?(?:-->|$)/g;
+    // 单遍替换会在删除接缝处重新拼出完整注释（<!<!-- A -->-- B --> 删掉中间后剩 <!-- B -->），
+    // 循环到结果不再变化，否则藏在注释里的挂删模板会被误提取为有效挂删（CodeQL #212、#234）
+    const stripHtmlComments = (wikitext) => {
+        let out = wikitext;
+        let prev;
+        do {
+            prev = out;
+            out = out.replace(HTML_COMMENT, "");
+        } while (out !== prev);
+        return out;
+    };
 
     const extractFlag = (wikitext) => {
         const args = new Map();
         let index = 1;
-        for (const part of (FLAG_CALL.exec(wikitext.replace(HTML_COMMENT, ""))?.[1] ?? "").split(ARG_SEPARATOR)) {
+        for (const part of (FLAG_CALL.exec(stripHtmlComments(wikitext))?.[1] ?? "").split(ARG_SEPARATOR)) {
             const [key, ...value] = part.split("=");
             if (value.length) {
                 args.set(key.trim(), value.join("=").trim());
