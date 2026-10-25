@@ -247,6 +247,15 @@ var param = (name, uri) => {
   return HC.capitalizePageNames ? capitalize(s) : s;
 };
 
+// packages/HotCat/src/wikitext/strip.ts
+var htmlCommentRE = /<!--[\s\S]*?(?:-->|$)/g, nowikiRE = /<nowiki>[\s\S]*?<\/nowiki>/g, stripCommentsAndNowiki = (text) => {
+  let out = text, prev;
+  do
+    prev = out, out = out.replace(htmlCommentRE, "").replace(nowikiRE, "");
+  while (out !== prev);
+  return out;
+};
+
 // packages/HotCat/src/wikitext/find.ts
 function findCategoryWikitext(wikitext, category, once) {
   let cat_regex;
@@ -270,7 +279,7 @@ function findCategoryWikitext(wikitext, category, once) {
 var listCategorys = () => {
   if (state.pageText === null)
     return [];
-  state.cleanedText === null && (state.cleanedText = state.pageText.replace(/<!--(\s|\S)*?-->/g, "").replace(/<nowiki>(\s|\S)*?<\/nowiki>/g, ""));
+  state.cleanedText === null && (state.cleanedText = stripCommentsAndNowiki(state.pageText));
   let cat_regex = new RegExp(`\\[\\[${wikiTextBlankOrBidi}(${HC.category_regexp})${wikiTextBlankOrBidi}:${wikiTextBlankOrBidi}([^\\[\\]]+?)${wikiTextBlankOrBidi}(\\|.*?)?\\]\\]`, "g"), result = [], curr_match;
   for (; (curr_match = cat_regex.exec(state.cleanedText)) !== null; )
     result.push({
@@ -1384,7 +1393,7 @@ var getCatLine = () => site.skin === "moeskin" ? document.getElementById("catlin
         let t = state.editors[i].currentCategory;
         if (!t)
           continue;
-        let key = state.editors[i].currentKey, new_cat = `[[${HC.category_canonical}:${t}${key ? `|${key}` : ""}]]`, cleanedText = eb.value.replace(/<!--(\s|\S)*?(?:-->|--!>)/g, "").replace(/<nowiki>(\s|\S)*?<\/nowiki>/g, "");
+        let key = state.editors[i].currentKey, new_cat = `[[${HC.category_canonical}:${t}${key ? `|${key}` : ""}]]`, cleanedText = stripCommentsAndNowiki(eb.value);
         findCategoryWikitext(cleanedText, t, !0) || (eb.value += `
 ${new_cat}`, addedOne = !0);
       }

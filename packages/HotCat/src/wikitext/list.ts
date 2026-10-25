@@ -1,6 +1,7 @@
 import { HC } from "../config/hotcat.ts";
 import { state } from "../runtime.ts";
 import { wikiTextBlankOrBidi } from "./patterns.ts";
+import { stripCommentsAndNowiki } from "./strip.ts";
 import type { WikitextMatchEntry } from "../types.ts";
 
 interface CategoryList extends Array<WikitextMatchEntry> {
@@ -12,7 +13,7 @@ const listCategorys = (): CategoryList => {
         return [];
     }
     if (state.cleanedText === null) {
-        state.cleanedText = state.pageText.replace(/<!--(\s|\S)*?-->/g, "").replace(/<nowiki>(\s|\S)*?<\/nowiki>/g, "");
+        state.cleanedText = stripCommentsAndNowiki(state.pageText);
     }
     const cat_regex = new RegExp(`\\[\\[${wikiTextBlankOrBidi}(${HC.category_regexp})${wikiTextBlankOrBidi}:${wikiTextBlankOrBidi}([^\\[\\]]+?)${wikiTextBlankOrBidi}(\\|.*?)?\\]\\]`, "g");
 

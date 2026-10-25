@@ -146,6 +146,12 @@ describe("listCategorys", () => {
         expect(listCategorys().map((entry) => entry.match[2])).toEqual(["Foo"]);
     });
 
+    it("未闭合注释吞到文末，--!> 不结束注释", () => {
+        state.pageText = "[[Category:Foo]]<!-- [[Category:Hidden]] --!> [[Category:Also]]";
+        state.cleanedText = null;
+        expect(listCategorys().map((entry) => entry.match[2])).toEqual(["Foo"]);
+    });
+
     it("pageText 为 null 时返回空表", () => {
         state.pageText = null;
         expect(listCategorys()).toEqual([]);

@@ -4,6 +4,7 @@ import { make, findByClass } from "../util/dom.ts";
 import { evtKill } from "../util/events.ts";
 import { title, wikiPagePath } from "../util/text.ts";
 import { wikiTextBlankRE } from "../wikitext/patterns.ts";
+import { stripCommentsAndNowiki } from "../wikitext/strip.ts";
 import { findCategoryWikitext } from "../wikitext/find.ts";
 import { listCategorys } from "../wikitext/list.ts";
 import { CategoryEditor } from "./editor.ts";
@@ -268,9 +269,8 @@ const setupUpload = (): void => {
                 }
                 const key = state.editors[i].currentKey;
                 const new_cat = `[[${HC.category_canonical}:${t}${key ? `|${key}` : ""}]]`;
-                // MediaWiki 与 HTML5 一致，也接受 --!> 作为注释结束符；两种都要剥掉，
-                // 否则注释里的分类会被误判为已存在而漏写
-                const cleanedText = eb.value.replace(/<!--(\s|\S)*?(?:-->|--!>)/g, "").replace(/<nowiki>(\s|\S)*?<\/nowiki>/g, "");
+                // 剥注释与 nowiki 后再判断分类是否已存在，否则注释里的分类会被误判为已存在而漏写
+                const cleanedText = stripCommentsAndNowiki(eb.value);
                 if (!findCategoryWikitext(cleanedText, t, true)) {
                     eb.value += `\n${new_cat}`;
                     addedOne = true;
