@@ -254,7 +254,7 @@ var htmlCommentRE = /<!--[\s\S]*?(?:-->|$)/g, nowikiRE = /<nowiki>[\s\S]*?<\/now
     prev = out, out = out.replace(htmlCommentRE, "").replace(nowikiRE, "");
   while (out !== prev);
   return out;
-};
+}, blankCommentsAndNowiki = (text) => text.replace(htmlCommentRE, replaceByBlanks).replace(nowikiRE, replaceByBlanks);
 
 // packages/HotCat/src/wikitext/find.ts
 function findCategoryWikitext(wikitext, category, once) {
@@ -267,7 +267,7 @@ function findCategoryWikitext(wikitext, category, once) {
   }
   if (once)
     return cat_regex.exec(wikitext);
-  let copiedtext = wikitext.replace(/<!--(\s|\S)*?-->/g, replaceByBlanks).replace(/<nowiki>(\s|\S)*?<\/nowiki>/g, replaceByBlanks), result = [], curr_match;
+  let copiedtext = blankCommentsAndNowiki(wikitext), result = [], curr_match;
   for (; (curr_match = cat_regex.exec(copiedtext)) !== null; )
     result.push({
       match: curr_match
@@ -542,7 +542,7 @@ var setPage = (json) => {
 // packages/HotCat/src/wikitext/change.ts
 var changeCategory = (_wikitext, toRemove, toAdd, _key) => {
   let key = _key, wikitext = _wikitext, find_insertionpoint = (text) => {
-    let copiedtext = text.replace(/<!--(\s|\S)*?-->/g, replaceByBlanks).replace(/<nowiki>(\s|\S)*?<\/nowiki>/g, replaceByBlanks), index = -1;
+    let copiedtext = blankCommentsAndNowiki(text), index = -1;
     for (findCatsRE.lastIndex = 0; findCatsRE.exec(copiedtext) !== null; )
       index = findCatsRE.lastIndex;
     if (index < 0) {

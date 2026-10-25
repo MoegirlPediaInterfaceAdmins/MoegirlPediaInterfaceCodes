@@ -1,3 +1,5 @@
+import { replaceByBlanks } from "./patterns.ts";
+
 /**
  * HTML 注释：MediaWiki 解析 wikitext 的规则是 <!-- 开始、第一个 --> 结束、未闭合则吞到文末。
  * --!>、<!--> 等 HTML5 的提前闭合只作用于最终 HTML 渲染层，不影响模板与链接语法是否生效
@@ -21,4 +23,11 @@ const stripCommentsAndNowiki = (text: string): string => {
     return out;
 };
 
-export { stripCommentsAndNowiki };
+/**
+ * 用等长空白覆盖 HTML 注释与 nowiki（而非删除），其余文本下标保持不变，
+ * 供需要按下标回切原文的调用方使用。
+ * 空白隔开了注释前后的字符，接缝处不可能重新拼出完整的注释或标签，单遍即可，无需循环。
+ */
+const blankCommentsAndNowiki = (text: string): string => text.replace(htmlCommentRE, replaceByBlanks).replace(nowikiRE, replaceByBlanks);
+
+export { stripCommentsAndNowiki, blankCommentsAndNowiki };

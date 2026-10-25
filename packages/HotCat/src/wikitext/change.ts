@@ -1,7 +1,8 @@
 import { HC } from "../config/hotcat.ts";
 import { state } from "../runtime.ts";
 import { substitute } from "../util/text.ts";
-import { findCatsRE, replaceByBlanks } from "./patterns.ts";
+import { findCatsRE } from "./patterns.ts";
+import { blankCommentsAndNowiki } from "./strip.ts";
 import { findCategoryWikitext } from "./find.ts";
 import type { ChangeResult, WikitextMatchList } from "../types.ts";
 
@@ -10,7 +11,7 @@ const changeCategory = (_wikitext: string, toRemove: string | null | undefined, 
     let key = _key;
     let wikitext = _wikitext;
     const find_insertionpoint = (text: string): { idx: number; onCat: boolean } => {
-        const copiedtext = text.replace(/<!--(\s|\S)*?-->/g, replaceByBlanks).replace(/<nowiki>(\s|\S)*?<\/nowiki>/g, replaceByBlanks);
+        const copiedtext = blankCommentsAndNowiki(text);
         let index = -1;
         findCatsRE.lastIndex = 0;
         while (findCatsRE.exec(copiedtext) !== null) {

@@ -45,6 +45,10 @@ describe("changeCategoryWikitext：新增", () => {
         const commented = "<!-- [[Category:Foo]] -->\n<nowiki>[[Category:Foo]]</nowiki>";
         expect(changeCategory(commented, null, "Foo", null).error).toBeNull();
     });
+
+    it("未闭合注释里的分类不算已存在", () => {
+        expect(changeCategory("<!-- [[Category:Foo]]", null, "Foo", null).error).toBeNull();
+    });
 });
 
 describe("changeCategoryWikitext：删除", () => {
@@ -122,6 +126,10 @@ describe("findCategory", () => {
         const text = "<!-- [[Category:Foo]] -->\n<nowiki>[[Category:Foo]]</nowiki>";
         expect(findCategoryWikitext(text, "Foo")).toHaveLength(0);
         expect(findCategoryWikitext(text, "Foo", true)).not.toBeNull();
+    });
+
+    it("未闭合注释里的分类不匹配（批量模式）", () => {
+        expect(findCategoryWikitext("text <!-- [[Category:Foo]]", "Foo")).toHaveLength(0);
     });
 
     it("识别中文命名空间别名", () => {

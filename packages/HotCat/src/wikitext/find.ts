@@ -1,6 +1,7 @@
 import { HC } from "../config/hotcat.ts";
 import { escapeRE } from "../util/text.ts";
-import { wikiTextBlank, wikiTextBlankOrBidi, wikiTextBlankRE, replaceByBlanks } from "./patterns.ts";
+import { wikiTextBlank, wikiTextBlankOrBidi, wikiTextBlankRE } from "./patterns.ts";
+import { blankCommentsAndNowiki } from "./strip.ts";
 import type { WikitextMatchEntry, WikitextMatchList } from "../types.ts";
 
 function findCategoryWikitext(wikitext: string, category: string, once: true): RegExpExecArray | null;
@@ -17,7 +18,7 @@ function findCategoryWikitext(wikitext: string, category: string, once?: boolean
     if (once) {
         return cat_regex.exec(wikitext);
     }
-    const copiedtext = wikitext.replace(/<!--(\s|\S)*?-->/g, replaceByBlanks).replace(/<nowiki>(\s|\S)*?<\/nowiki>/g, replaceByBlanks);
+    const copiedtext = blankCommentsAndNowiki(wikitext);
     const result: WikitextMatchEntry[] = [];
     let curr_match: RegExpExecArray | null;
     while ((curr_match = cat_regex.exec(copiedtext)) !== null) {
