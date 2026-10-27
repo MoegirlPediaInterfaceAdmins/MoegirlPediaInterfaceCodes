@@ -13,38 +13,18 @@
         $container.append($("<br>"), document.createTextNode(`${mw.msg(action)}：${levels.map((level) => mw.msg(`protect-level-${level}`)).join("、")}`), $requestList);
         return $requestList;
     };
-    const buildRequestUrl = ({ title, preload, preloadTitle, preloadParams, scriptPath }) => {
-        const requestURL = new URL(`${scriptPath}/index.php`, location.origin);
-        requestURL.searchParams.set("action", "edit");
-        requestURL.searchParams.set("preload", preload);
-        requestURL.searchParams.set("preloadtitle", preloadTitle);
-        requestURL.searchParams.set("dtpreload", "1");
-        requestURL.searchParams.set("section", "new");
-        requestURL.searchParams.set("title", title);
-        if (Array.isArray(preloadParams)) {
-            preloadParams.forEach((param) => requestURL.searchParams.append("preloadparams[]", param));
-        }
-        return requestURL.href;
-    };
-    const appendRequestLink = ($list, { title, preload, preloadTitle, preloadParams, scriptPath, text }) => {
+    const appendRequestLink = ($list, { type, text }) => {
         $("<li>").append($("<a>", {
-            href: buildRequestUrl({
-                title,
-                preload,
-                preloadTitle,
-                preloadParams,
-                scriptPath,
-            }),
-            target: "_blank",
-            "class": "external",
+            href: "#",
             css: {
                 marginLeft: "1em",
             },
             text,
+        }).on("click", (e) => {
+            e.preventDefault();
+            window.libQuickRequest.open(type);
         })).appendTo($list);
     };
-    const getRequestTitleSuffix = (userName, now) => ` - ${userName} - ${now.getFullYear()}.${libPrefixNumber(now.getMonth() + 1)}.${libPrefixNumber(now.getDate())}`;
-    const getEditRequestPreload = (pageName, basePageName) => wgGetEditRequestPreload(pageName, basePageName);
 
     await $.ready;
 
@@ -124,7 +104,7 @@
         }
     }
 
-    const { talkPage, basePageName } = libGetPageNames();
+    const { talkPage } = libGetPageNames();
     const isDark = document.documentElement.classList.contains("skin-theme-clientpref-night") || document.documentElement.classList.contains("dark");
     const $protectionInfoContainer = $("<a>", {
         "class": "page-info-protection annotation",
@@ -173,15 +153,12 @@
             console.warn("[Gadget-pageInfo] Failed to query intestactions", error);
             actions = {};
         }
-        if (wgUserName) {
-            const now = new Date();
-            const requestTitleSuffix = getRequestTitleSuffix(wgUserName, now);
+        // QuickRequest 以 rights: [edit] 过滤加载，个别登录用户可能没有它——挂载守卫，
+        // 没有入口时不出链接，避免点击无效
+        if (wgUserName && window.libQuickRequest) {
             if (actions.edit === false && talkPage && $editRequestList) {
                 appendRequestLink($editRequestList, {
-                    title: talkPage,
-                    preload: getEditRequestPreload(wgPageName, basePageName),
-                    preloadTitle: `编辑请求${requestTitleSuffix}`,
-                    scriptPath: wgScriptPath,
+                    type: "edit",
                     text: "提出编辑请求",
                 });
             } else {
@@ -189,11 +166,7 @@
             }
             if (actions.move === false && $moveRequestList) {
                 appendRequestLink($moveRequestList, {
-                    title: "萌娘百科讨论:讨论版/操作申请",
-                    preload: "Template:移动请求预载",
-                    preloadTitle: `移动请求${requestTitleSuffix}`,
-                    preloadParams: [wgPageName],
-                    scriptPath: wgScriptPath,
+                    type: "move",
                     text: "提出移动请求",
                 });
             } else {
@@ -201,11 +174,7 @@
             }
             if (actions.create === false && $createRequestList) {
                 appendRequestLink($createRequestList, {
-                    title: "萌娘百科讨论:讨论版/操作申请",
-                    preload: "Template:创建请求预载",
-                    preloadTitle: `创建请求${requestTitleSuffix}`,
-                    preloadParams: [wgPageName],
-                    scriptPath: wgScriptPath,
+                    type: "create",
                     text: "提出创建请求",
                 });
             } else {
@@ -224,14 +193,9 @@
             href: viewReasonUrl.href,
             text: wgULS("点此查看原因", "點此查看原因"),
         }));
-        if (talkPage) {
-            const now = new Date();
-            const requestTitleSuffix = getRequestTitleSuffix(wgUserName, now);
+        if (talkPage && window.libQuickRequest) {
             appendRequestLink($("<ul>").appendTo($protectionInfoContent), {
-                title: talkPage,
-                preload: getEditRequestPreload(wgPageName, basePageName),
-                preloadTitle: `编辑请求${requestTitleSuffix}`,
-                scriptPath: wgScriptPath,
+                type: "edit",
                 text: "提出编辑请求",
             });
         }
