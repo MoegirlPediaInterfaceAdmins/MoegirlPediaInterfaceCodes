@@ -91,5 +91,3 @@ window.libGetPageNames = () => {
     }
     return result;
 };
-
-window.wgGetEditRequestPreload = (pageName = mw.config.get("wgPageName"), basePageName = window.libGetPageNames().basePageName) => basePageName !== false && /^MediaWiki:Conversiontable\/zh-[a-z]+$/.test(pageName) ? `Template:编辑请求/${basePageName}` : "Template:编辑请求/comment";
