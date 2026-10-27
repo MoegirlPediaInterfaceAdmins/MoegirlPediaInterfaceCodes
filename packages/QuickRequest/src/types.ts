@@ -96,7 +96,9 @@ interface RequestTypeDefinition {
 
 /**
  * 用户侧全局自定义配置（window.QuickRequest）。
- * types 的条目结构与配置页 JSON 一致，按 id 覆盖预置条目或追加新条目。
+ * types 的条目结构与配置页 JSON 一致，按 id 覆盖预置条目——仅能覆盖既有 id：
+ * 类型的行为定义（目标版面、章节标题、确认项）在代码注册表中，新增类型需随阶段 2-5
+ * 的里程碑实现，纯配置追加新 id 无法被 open() 打开。
  */
 interface QuickRequestGlobalConfig {
     types?: Record<string, unknown>;
@@ -139,8 +141,8 @@ interface PreviewDialogData {
     submittedText: string;
     /** 发帖目标页面 */
     targetPage: string;
-    /** 新话题的章节标题 */
-    sectionTitle: string;
+    /** 章节标题的惰性生成：在提交时调用，日期取提交时刻（预览停留跨午夜不会带前一天的日期发出） */
+    getSectionTitle: () => string;
     /** 编辑摘要；空串表示不传，由服务端自动生成 */
     editSummary: string;
     /** 提交前确认项的惰性提供者；缺省表示该类型无需确认 */
@@ -171,8 +173,8 @@ interface PreviewDialogCloseResult {
     anchor?: string;
 }
 
-/** 发送结果。失败不抛错，以便「重试」。 */
-type SendResult = { ok: true; newrevid: number | undefined } | { ok: false; code: string; detail: string };
+/** 发送结果。失败不抛错，以便「重试」；ambiguous 表示传输层失败——请求可能已提交，重试可能重复发帖。 */
+type SendResult = { ok: true; newrevid: number | undefined } | { ok: false; code: string; detail: string; ambiguous: boolean };
 
 export type {
     ConfigResult,

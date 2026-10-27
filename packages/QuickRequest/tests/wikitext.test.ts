@@ -30,6 +30,27 @@ describe("buildTemplateWikitext", () => {
     });
 });
 
+describe("值中的顶层管道转义", () => {
+    it("深度 0 的字面管道被转义为 {{!}}，不拆散本层参数", () => {
+        expect(buildTemplateWikitext(editType, { original: "A|new=B", "new": "", reason: "" })).toBe("{{Template:编辑请求|original=A{{!}}new=B}}");
+    });
+
+    it("嵌套模板与内链里的管道保持原样", () => {
+        expect(buildTemplateWikitext(editType, { original: "{{模板|参数}} 和 [[目标页|显示文字]]", "new": "", reason: "" }))
+            .toBe("{{Template:编辑请求|original={{模板|参数}} 和 [[目标页|显示文字]]}}");
+    });
+
+    it("粘贴的表格源码：顶层管道全部转义，嵌套结构保留", () => {
+        expect(buildTemplateWikitext(editType, { original: "{| class=\"wikitable\"\n|-\n| a {{注|b}}\n|}", "new": "", reason: "" }))
+            .toBe("{{Template:编辑请求|original={{{!}} class=\"wikitable\"\n{{!}}-\n{{!}} a {{注|b}}\n{{!}}}}}");
+    });
+
+    it("顶层与嵌套混合时只转义深度 0 的管道", () => {
+        expect(buildTemplateWikitext(editType, { original: "前|[[a|b]]|后", "new": "", reason: "" }))
+            .toBe("{{Template:编辑请求|original=前{{!}}[[a|b]]{{!}}后}}");
+    });
+});
+
 describe("toSubst", () => {
     it("只改写字符串开头的模板调用", () => {
         expect(toSubst("{{T|1=a}}")).toBe("{{subst:T|1=a}}");

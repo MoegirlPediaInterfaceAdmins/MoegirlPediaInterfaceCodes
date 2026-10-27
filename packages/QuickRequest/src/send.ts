@@ -55,23 +55,26 @@ const postTopic = (params: SendParams): JQuery.Promise<SendResult> => {
         }))
         .catch((code: string, result?: ApiRejectPayload | null) => {
             console.warn("[QuickRequest] 发送失败", code, result);
-            return { ok: false as const, code, detail: describeSendError(code, result) };
+            // code "http" 是传输层失败(网络中断、超时):响应没回到客户端,服务端可能已提交。
+            // addtopic 非幂等,自动重试可能重复发帖——标记 ambiguous,由上层换警示文案
+            return { ok: false as const, code, detail: describeSendError(code, result), ambiguous: code === "http" };
         });
 };
 
 /**
- * 读取指定修订里最后一个章节的锚点。
+ * 读取指定修订里新话题的章节锚点。
  *
- * 新章节的标题由各类型定义的 sectionTitle 给出，但锚点（HTML id）经 sanitize 后可能
- * 与标题不同，只能保存后回读：prop=sections 按文档顺序列出目录，而新话题追加在页尾，
- * 故最后一项就是刚发出的那一节。传 oldid 而非 page，是为了把解析固定在刚保存的修订上，
- * 避免期间有人编辑导致目录位移。
+ * prop=sections 按文档顺序列出目录;最后一个章节未必是新话题——用户粘贴的内容或
+ * 后续阶段的模板正文可能自带标题,故先按章节标题文本(line)匹配,匹配不到再退回
+ * 最后一项(新话题追加在页尾,正文无标题时最后一项即它)。传 oldid 而非 page,
+ * 是为了把解析固定在刚保存的修订上,避免期间有人编辑导致目录位移。
  *
- * 取不到时返回空串（例如章节被合并进上一节），由调用方退化为不带锚点的跳转。
+ * 取不到时返回空串(例如章节被合并进上一节),由调用方退化为不带锚点的跳转。
  * @param revid 刚保存的修订 ID
+ * @param sectionTitle 新话题的章节标题
  * @returns 章节锚点；取不到时为空字符串
  */
-const fetchLastSectionAnchor = async (revid: number | undefined): Promise<string> => {
+const fetchLastSectionAnchor = async (revid: number | undefined, sectionTitle: string): Promise<string> => {
     if (!revid) {
         return "";
     }
@@ -83,7 +86,8 @@ const fetchLastSectionAnchor = async (revid: number | undefined): Promise<string
             formatversion: 2,
         }) as Partial<ApiParseResponse>;
         const sections = res.parse?.sections ?? [];
-        return sections.at(-1)?.anchor ?? "";
+        const matched = sections.filter((section) => section.line === sectionTitle).at(-1) ?? sections.at(-1);
+        return matched?.anchor ?? "";
     } catch (error) {
         console.warn("[QuickRequest] 读取新章节锚点失败", error);
         return "";
