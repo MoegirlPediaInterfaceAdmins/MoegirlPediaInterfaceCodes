@@ -1,4 +1,4 @@
-import { getSettledConfig, prefetchConfig } from "./config.ts";
+import { prefetchConfig } from "./config.ts";
 import { CONFIG_PAGE, DIALOG_SIZE, REDIRECT_DELAY } from "./constants.ts";
 import { mountEntries } from "./entries.ts";
 import { MainDialog } from "./mainDialog.ts";
@@ -73,11 +73,6 @@ const open = (type: RequestTypeId, preset?: Record<string, string>): void => {
     }
 
     const configPromise = prefetchConfig();
-    const settled = getSettledConfig();
-    if (settled && !settled.ok) {
-        void showError(wgULS("无法加载请求配置", "無法載入請求設定"), describeConfigFailure(settled.message));
-        return;
-    }
 
     const mainDialog = new MainDialog({ size: DIALOG_SIZE });
     const data: MainDialogData = {

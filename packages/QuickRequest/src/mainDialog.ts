@@ -147,7 +147,7 @@ class MainDialog extends OO.ui.ProcessDialog {
                     previewHtml,
                     submittedText: submission.submittedText,
                     targetPage: submission.targetPage,
-                    sectionTitle: submission.sectionTitle,
+                    getSectionTitle: submission.getSectionTitle,
                     editSummary: submission.editSummary,
                     ...this.definition.warnings === undefined
                         ? {}
@@ -255,8 +255,8 @@ class MainDialog extends OO.ui.ProcessDialog {
         return {
             targetPage,
             submittedText: buildSubmitText(raw),
-            // 章节标题在此刻生成：日期应取提交时刻而非打开对话框的时刻
-            sectionTitle: this.definition.sectionTitle({ ...this.context, now: new Date() }),
+            // 章节标题惰性生成：日期取提交时刻，预览停留跨午夜也不会带前一天的日期发出
+            getSectionTitle: (): string => this.definition.sectionTitle({ ...this.context, now: new Date() }),
             editSummary: this.summaryInput.getValue().trim(),
         };
     }
