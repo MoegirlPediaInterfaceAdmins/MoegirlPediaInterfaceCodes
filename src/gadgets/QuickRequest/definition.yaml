@@ -8,14 +8,11 @@ supportsUrlLoad: false
 
 skins: []
 
-actions:
-  - edit
-  - view
+actions: []
 
 categories: []
 
-namespaces:
-  - 5
+namespaces: []
 
 contentModels: []
 
@@ -29,13 +26,18 @@ rights:
 peers: []
 
 dependencies:
-  - ext.gadget.libOOUIDialog
   - ext.gadget.site-lib
+  - mediawiki.api
+  - mediawiki.util
+  - mediawiki.widgets
+  - mediawiki.widgets.UserInputWidget
+  - oojs-ui
 
 _sites:
   - zh
 
-_section: system
+_section: user
 
 _files:
-  - Gadget-editRequestWarning.js
+  - Gadget-QuickRequest.js
+  - Gadget-QuickRequest.json
