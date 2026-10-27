@@ -63,7 +63,6 @@
         "Gadget/draftInfo",
         "Gadget/edit",
         "Gadget/editCount",
-        "Gadget/editRequestWarning",
         "Gadget/editTopSection",
         "Gadget/enable-nest-highlight",
         "Gadget/extiw",
@@ -147,6 +146,7 @@
         "Gadget/queryContributions",
         "Gadget/queryWhatlinkshere",
         "Gadget/quickMoveThread",
+        "Gadget/QuickRequest",
         "Gadget/quickSave",
         "Gadget/ReferenceTooltips",
         "Gadget/registerToDelete",
@@ -198,6 +198,7 @@
         "Package/HotCat",
         "Package/JSONViewer",
         "Package/Navigation_popups",
+        "Package/QuickRequest",
         "Package/UserMessages"
     ],
     "conventionalCommits.storeScopesGlobally": false,
