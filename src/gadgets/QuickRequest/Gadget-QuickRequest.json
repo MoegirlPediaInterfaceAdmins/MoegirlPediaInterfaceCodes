@@ -1,0 +1,105 @@
+{
+    "types": {
+        "edit": {
+            "template": "Template:编辑请求",
+            "requireAnyOf": [
+                "original",
+                "new"
+            ],
+            "parameters": [
+                {
+                    "key": "original",
+                    "label": "需要删除/修改的旧内容",
+                    "type": "multiline"
+                },
+                {
+                    "key": "new",
+                    "label": "需要新增/修改后的内容",
+                    "type": "multiline"
+                },
+                {
+                    "key": "reason",
+                    "label": "修改原因",
+                    "type": "text"
+                }
+            ]
+        },
+        "editConversiontable": {
+            "template": "Template:编辑请求/Conversiontable",
+            "parameters": [
+                {
+                    "key": "original1",
+                    "label": "「与错误转换相关的」旧内容",
+                    "type": "multiline"
+                },
+                {
+                    "key": "new1",
+                    "label": "「与错误转换相关的」新内容",
+                    "type": "multiline"
+                },
+                {
+                    "key": "original2",
+                    "label": "「地区译名不转换」旧内容",
+                    "type": "multiline"
+                },
+                {
+                    "key": "new2",
+                    "label": "「地区译名不转换」新内容",
+                    "type": "multiline"
+                },
+                {
+                    "key": "other",
+                    "label": "其他需求",
+                    "type": "multiline"
+                },
+                {
+                    "key": "reason",
+                    "label": "修改原因",
+                    "type": "text"
+                }
+            ]
+        },
+        "move": {
+            "template": "Template:移动请求",
+            "parameters": [
+                {
+                    "key": "original",
+                    "label": "移动前标题",
+                    "type": "text",
+                    "required": true,
+                    "auto": "currentPage"
+                },
+                {
+                    "key": "new",
+                    "label": "移动后标题",
+                    "type": "page",
+                    "required": true
+                },
+                {
+                    "key": "reason",
+                    "label": "移动原因",
+                    "type": "multiline",
+                    "required": true
+                }
+            ]
+        },
+        "create": {
+            "template": "Template:创建请求",
+            "parameters": [
+                {
+                    "key": "new",
+                    "label": "申请创建的标题",
+                    "type": "page",
+                    "required": true,
+                    "auto": "currentPage"
+                },
+                {
+                    "key": "reason",
+                    "label": "申请原因",
+                    "type": "multiline",
+                    "required": true
+                }
+            ]
+        }
+    }
+}

@@ -1,0 +1,265 @@
+import { parseWikitext } from "./api.ts";
+import { findTypeConfig, isGroupSatisfied } from "./config.ts";
+import { CONFIG_PAGE, DIALOG_SIZE, MAX_MAIN_BODY_HEIGHT } from "./constants.ts";
+import { toErrorMessage } from "./errors.ts";
+import { createParamField, readValues, validateFields } from "./fields.ts";
+import type { ParamField } from "./fields.ts";
+import { buildSubmitText, buildTemplateWikitext } from "./wikitext.ts";
+import { showError } from "./messageDialog.ts";
+import type {
+    ConfigResult,
+    MainDialogData,
+    PreviewDialogData,
+    PreviewSubmission,
+    QuickRequestContext,
+    RequestTypeDefinition,
+    TypeConfig,
+    Warning,
+} from "./types.ts";
+
+/**
+ * 主对话框：按请求类型展示参数表单与编辑摘要，然后进入预览。
+ *
+ * 类型配置（站内 JSON 页）在打开时才可用，因此 initialize 只搭出「加载中 / 表单」
+ * 两个容器，真正的表单在 getSetupProcess 里等预取落定后再构建。
+ */
+class MainDialog extends OO.ui.ProcessDialog {
+    /**
+     * 必须逐项写全：OO.inheritClass 用 Object.create 继承静态成员，
+     * { ...OO.ui.ProcessDialog.static } 展开结果是空对象。
+     */
+    static override static: OO.ui.ProcessDialog.Static = {
+        ...OO.ui.ProcessDialog.static,
+        name: "quickrequest-main",
+        title: wgULS("快速申请", "快速申請"),
+        size: DIALOG_SIZE,
+        tagName: "div",
+        escapable: true,
+        actions: [
+            { action: "preview", label: wgULS("预览", "預覽"), flags: ["primary", "progressive"] },
+            // 没有 action 名：OO.ui.Dialog 会自动关闭对话框
+            { label: wgULS("取消", "取消"), flags: ["safe"] },
+        ],
+    };
+
+    private definition!: RequestTypeDefinition;
+    private context!: QuickRequestContext;
+    private onPreview: ((data: PreviewDialogData) => void) | undefined;
+    private typeConfig: TypeConfig | null = null;
+    private paramFields: ParamField[] = [];
+
+    private loadingPanel!: OO.ui.PanelLayout;
+    private formPanel!: OO.ui.PanelLayout;
+    private paramFieldset!: OO.ui.FieldsetLayout;
+    private groupHint!: OO.ui.LabelWidget;
+    private summaryInput!: OO.ui.TextInputWidget;
+
+    /**
+     * 搭出「加载中」与「表单」两个容器，不碰配置（此时类型条目还未知）。
+     * @returns 本实例
+     */
+    public override initialize(): this {
+        super.initialize();
+
+        this.loadingPanel = new OO.ui.PanelLayout({ padded: true, expanded: false });
+        this.loadingPanel.$element.append(
+            new OO.ui.ProgressBarWidget({ progress: false }).$element,
+            $("<p>").text(wgULS("正在加载请求配置…", "正在載入請求設定…")),
+        );
+
+        this.formPanel = new OO.ui.PanelLayout({ padded: true, expanded: false, scrollable: true });
+
+        this.$body.append(this.loadingPanel.$element, this.formPanel.$element);
+        return this;
+    }
+
+    /**
+     * 等配置预取落定后把加载态换成表单。
+     * 放在 setup 阶段是为了让随后的 updateSize() 按真实表单测量高度。
+     * @param data 打开数据
+     * @returns 设置流程
+     */
+    public override getSetupProcess(data?: OO.ui.Dialog.SetupDataMap & Record<string, unknown>): OO.ui.Process {
+        return super.getSetupProcess(data).next(
+            (async () => {
+                const { definition, context, configPromise, onPreview } = data as unknown as MainDialogData;
+                this.definition = definition;
+                this.context = context;
+                this.onPreview = onPreview;
+                this.getActions().setAbilities({ preview: false });
+
+                // configPromise 承诺不 reject，catch 只是兜底；步骤内绝不能抛，
+                // 一旦 reject，OOUI 会显示它内置的英文错误界面
+                const result = await configPromise.catch((error: unknown): ConfigResult => ({ ok: false, message: toErrorMessage(error) }));
+                if (!result.ok) {
+                    this.close({ action: "configError", message: result.message });
+                    return;
+                }
+
+                const typeConfig = findTypeConfig(result.config, definition.id);
+                if (!typeConfig) {
+                    this.close({ action: "configError", message: wgULS(`${CONFIG_PAGE} 缺少 ${definition.id} 类型条目`, `${CONFIG_PAGE} 缺少 ${definition.id} 類型條目`) });
+                    return;
+                }
+
+                // 表单构建失败与配置无关，单独归因，免得被报成「配置页读取失败」
+                try {
+                    this.buildForm(typeConfig);
+                } catch (error) {
+                    this.close({ action: "formError", message: toErrorMessage(error) });
+                    return;
+                }
+                this.loadingPanel.$element.detach();
+            }) as unknown as OO.ui.Process.Step<this>,
+            this,
+        );
+    }
+
+    /**
+     * 处理底部动作：仅拦截 preview，其余交给父类。
+     * 不手动 pushPending：OOUI 的 executeAction 已在整个流程（含其中的 await）外挂了一层 pending。
+     * @param action 动作名
+     * @returns 动作流程
+     */
+    public override getActionProcess(action?: string): OO.ui.Process {
+        if (action !== "preview") {
+            return super.getActionProcess(action);
+        }
+        return new OO.ui.Process(
+            (async () => {
+                const submission = this.collectSubmission();
+                if (!submission) {
+                    return;
+                }
+
+                let previewHtml: string;
+                try {
+                    // title 传发帖目标页：{{ARTICLEPAGENAME}} 等页面上下文相关魔法字
+                    // 必须按目标页解析，预览才与真实保存结果一致
+                    previewHtml = await parseWikitext(submission.submittedText, submission.targetPage);
+                } catch (error) {
+                    void showError(wgULS("预览失败", "預覽失敗"), wgULS(`无法渲染预览：${toErrorMessage(error)}`, `無法產生預覽：${toErrorMessage(error)}`));
+                    return;
+                }
+
+                const data: PreviewDialogData = {
+                    title: wgULS(`预览：${this.definition.label}`, `預覽：${this.definition.label}`),
+                    previewHtml,
+                    submittedText: submission.submittedText,
+                    targetPage: submission.targetPage,
+                    sectionTitle: submission.sectionTitle,
+                    editSummary: submission.editSummary,
+                    ...this.definition.warnings === undefined
+                        ? {}
+                        : { getWarnings: (): Promise<Warning[]> => this.definition.warnings?.(this.context) ?? Promise.resolve([]) },
+                };
+                this.onPreview?.(data);
+            }) as unknown as OO.ui.Process.Step<this>,
+            this,
+        );
+    }
+
+    /**
+     * 内容区最大高度，超出则滚动。
+     * @returns 高度（px）
+     */
+    public override getBodyHeight(): number {
+        return Math.min(super.getBodyHeight(), MAX_MAIN_BODY_HEIGHT);
+    }
+
+    /**
+     * 构建表单。仅在配置就绪后调用一次。
+     * @param typeConfig 类型配置
+     */
+    private buildForm(typeConfig: TypeConfig): void {
+        this.typeConfig = typeConfig;
+        const fieldset = new OO.ui.FieldsetLayout({ label: this.definition.label });
+
+        const targetPage = this.definition.resolveTarget(this.context);
+        if (targetPage !== false) {
+            fieldset.addItems([
+                new OO.ui.FieldLayout(new OO.ui.LabelWidget({ label: targetPage.replace(/_/g, " ") }), {
+                    label: wgULS("发帖目标", "發帖目標"),
+                    align: "top",
+                }),
+            ]);
+        }
+
+        // auto: currentPage 的字段以当前页面名作为初始值（取代旧的 preloadparams[]/$1 预填）
+        this.paramFields = (typeConfig.parameters ?? []).map((param) =>
+            createParamField(param.auto === "currentPage" ? { ...param, "default": this.context.pageName } : param, this.$overlay, () => { this.onFormChanged(); }),
+        );
+        this.paramFieldset = new OO.ui.FieldsetLayout();
+        this.paramFieldset.addItems(this.paramFields.map(({ layout }) => layout));
+        fieldset.addItems([this.paramFieldset]);
+
+        // 组约束不指向单个控件，以整组提示呈现
+        const groupLabels = (typeConfig.requireAnyOf ?? [])
+            .map((key) => typeConfig.parameters?.find((param) => param.key === key)?.label ?? key);
+        this.groupHint = new OO.ui.LabelWidget({
+            label: wgULS(`「${groupLabels.join("」「")}」至少填写一项`, `「${groupLabels.join("」「")}」至少填寫一項`),
+        });
+        this.groupHint.$element.css("color", "#d33");
+        fieldset.addItems([this.groupHint]);
+        this.groupHint.toggle(false);
+
+        this.summaryInput = new OO.ui.TextInputWidget({ value: this.definition.defaultSummary ?? "", placeholder: wgULS("留空则自动生成", "留空則自動生成") });
+        fieldset.addItems([new OO.ui.FieldLayout(this.summaryInput, { label: wgULS("编辑摘要", "編輯摘要"), align: "top" })]);
+
+        this.formPanel.$element.append(fieldset.$element);
+        this.onFormChanged();
+    }
+
+    /** 重算「预览」按钮的可用性，并刷新字段级校验提示与组约束提示。 */
+    private onFormChanged(): void {
+        if (!this.typeConfig) {
+            return;
+        }
+        const firstInvalid = validateFields(this.paramFields);
+        const groupSatisfied = isGroupSatisfied(this.typeConfig, readValues(this.paramFields));
+        this.groupHint.toggle(!groupSatisfied);
+        this.getActions().setAbilities({ preview: firstInvalid === null && groupSatisfied });
+    }
+
+    /**
+     * 汇总当前表单，产出待预览/提交的内容。校验不过时返回 null 并给出提示。
+     * @returns 待预览/提交的内容
+     */
+    private collectSubmission(): PreviewSubmission | null {
+        if (!this.typeConfig) {
+            return null;
+        }
+        const firstInvalid = validateFields(this.paramFields);
+        if (firstInvalid) {
+            firstInvalid.widget.focus();
+            return null;
+        }
+        if (!isGroupSatisfied(this.typeConfig, readValues(this.paramFields))) {
+            void showError(wgULS("内容不完整", "內容不完整"), wgULS("请至少填写组内的一项内容。", "請至少填寫組內的一項內容。"));
+            return null;
+        }
+
+        const values = readValues(this.paramFields);
+        const raw = buildTemplateWikitext(this.typeConfig, values);
+        if (raw === `{{${this.typeConfig.template}}}`) {
+            void showError(wgULS("内容为空", "內容為空"), wgULS("待发送的内容不能为空。", "待傳送的內容不能為空。"));
+            return null;
+        }
+
+        const targetPage = this.definition.resolveTarget(this.context);
+        if (targetPage === false) {
+            void showError(wgULS("无法发起请求", "無法發起請求"), wgULS("当前页面没有对应的讨论页。", "目前頁面沒有對應的討論頁。"));
+            return null;
+        }
+
+        return {
+            targetPage,
+            submittedText: buildSubmitText(raw),
+            // 章节标题在此刻生成：日期应取提交时刻而非打开对话框的时刻
+            sectionTitle: this.definition.sectionTitle({ ...this.context, now: new Date() }),
+            editSummary: this.summaryInput.getValue().trim(),
+        };
+    }
+}
+
+export { MainDialog };

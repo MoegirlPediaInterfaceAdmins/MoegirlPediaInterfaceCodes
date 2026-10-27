@@ -111,7 +111,6 @@ const config = [
                 libRequestAnimationFrame: false,
                 libGetPageNames: false,
                 libPrefixNumber: false,
-                wgGetEditRequestPreload: false,
             },
         },
     },
@@ -132,6 +131,9 @@ const config = [
                 wgULS: false,
                 wgUVS: false,
                 moment: false,
+                // site-lib 提供的站点全局（QuickRequest 依赖 libGetPageNames / libPrefixNumber）
+                libGetPageNames: false,
+                libPrefixNumber: false,
                 // JSONViewer 入口把整段逻辑包在 $(() => …) 中（jQuery ready 简写），不能删
                 $: false,
                 jQuery: false,
@@ -165,6 +167,20 @@ const config = [
         // packages/UserMessages 与 jQuery Promise / OOUI 打交道的固有写法：整包统一关闭。
         files: [
             "packages/UserMessages/src/**/*.ts",
+        ],
+        rules: {
+            // postWithToken 以 (code, result) 多参 reject，await 只能拿到第一个参数
+            "promise/prefer-await-to-then": "off",
+            // 同上：catch 回调的首参是错误码（string），不是 Error
+            "@typescript-eslint/use-unknown-in-catch-callback-variable": "off",
+            // openWindow 的 R 由调用点显式指定（close() 的载荷在 OOUI 里无类型）
+            "@typescript-eslint/no-unnecessary-type-parameters": "off",
+        },
+    },
+    {
+        // packages/QuickRequest 与 jQuery Promise / OOUI 打交道的固有写法：与 UserMessages 相同的三条。
+        files: [
+            "packages/QuickRequest/src/**/*.ts",
         ],
         rules: {
             // postWithToken 以 (code, result) 多参 reject，await 只能拿到第一个参数
