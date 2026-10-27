@@ -27,21 +27,28 @@ var toErrorMessage = (error) => error instanceof Error ? error.message : String(
 };
 
 // packages/QuickRequest/src/api.ts
-var apiInstance = null, getApi = () => (apiInstance ?? (apiInstance = new mw.Api()), apiInstance), fetchPageContent = async (title) => (await getApi().post({
+var apiInstance = null, getApi = () => (apiInstance ?? (apiInstance = new mw.Api({ ajax: { timeout: 3e4 } })), apiInstance), fetchPageContent = async (title) => (await getApi().post({
   action: "query",
   titles: title,
   prop: "revisions",
   rvprop: "content",
   formatversion: 2
 })).query?.pages?.[0]?.revisions?.[0]?.content ?? "", fetchPageCategories = async (title) => {
-  let res = await getApi().post({
-    action: "query",
-    titles: title,
-    prop: "categories",
-    cllimit: "max",
-    formatversion: 2
-  });
-  return new Set(res.query?.pages?.[0]?.categories?.map((category) => category.title) ?? []);
+  let categories = /* @__PURE__ */ new Set(), next = {};
+  do {
+    let res = await getApi().post({
+      action: "query",
+      titles: title,
+      prop: "categories",
+      cllimit: "max",
+      formatversion: 2,
+      ...next
+    });
+    for (let category of res.query?.pages?.[0]?.categories ?? [])
+      categories.add(category.title);
+    next = res.continue ?? {};
+  } while (Object.keys(next).length > 0);
+  return categories;
 }, parseWikitext = async (wikitext, title) => (await getApi().post({
   action: "parse",
   title,
@@ -54,7 +61,7 @@ var apiInstance = null, getApi = () => (apiInstance ?? (apiInstance = new mw.Api
 })).parse?.text ?? "";
 
 // packages/QuickRequest/src/config.ts
-var PARAM_TYPES = /* @__PURE__ */ new Set(["page", "user", "text", "multiline"]), isParamType = (value) => typeof value == "string" && PARAM_TYPES.has(value), compact = (items) => items.filter((item) => item !== null), prefetch = null, settled = null, isNonEmptyString = (value) => typeof value == "string" && value.trim() !== "", toRequestParam = (raw) => {
+var PARAM_TYPES = /* @__PURE__ */ new Set(["page", "user", "text", "multiline"]), isParamType = (value) => typeof value == "string" && PARAM_TYPES.has(value), compact = (items) => items.filter((item) => item !== null), prefetch = null, isNonEmptyString = (value) => typeof value == "string" && value.trim() !== "", toRequestParam = (raw) => {
   if (typeof raw != "object" || raw === null)
     return null;
   let { key, label, type, required, auto, default: defaultValue } = raw;
@@ -99,8 +106,8 @@ var PARAM_TYPES = /* @__PURE__ */ new Set(["page", "user", "text", "multiline"])
   } catch (error) {
     result = { ok: !1, message: toErrorMessage(error) };
   }
-  return settled = result, result;
-})()), prefetch), getSettledConfig = () => settled, isGroupSatisfied = (typeConfig, values) => {
+  return result.ok || (prefetch = null), result;
+})()), prefetch), isGroupSatisfied = (typeConfig, values) => {
   let keys = typeConfig.requireAnyOf;
   return keys === void 0 || keys.length === 0 ? !0 : keys.some((key) => (values[key] ?? "").trim() !== "");
 }, findTypeConfig = (config, id) => config.types[id];
@@ -142,10 +149,29 @@ var createParamWidget = (param, $overlay) => {
 };
 
 // packages/QuickRequest/src/wikitext.ts
-var buildTemplateWikitext = (typeConfig, values) => {
+var escapeTopLevelPipes = (value) => {
+  let depth = 0, out = "", index = 0;
+  for (; index < value.length; ) {
+    let two = value.slice(index, index + 2);
+    if (two === "{{" || two === "[[") {
+      depth += 1, out += two, index += 2;
+      continue;
+    }
+    if (depth > 0 && (two === "}}" || two === "]]")) {
+      depth -= 1, out += two, index += 2;
+      continue;
+    }
+    if (value[index] === "|" && depth === 0) {
+      out += "{{!}}", index += 1;
+      continue;
+    }
+    out += value[index], index += 1;
+  }
+  return out;
+}, buildTemplateWikitext = (typeConfig, values) => {
   let params = (typeConfig.parameters ?? []).map(({ key }) => {
     let value = values[key];
-    return value ? `|${key}=${value}` : "";
+    return value ? `|${key}=${escapeTopLevelPipes(value)}` : "";
   }).join("");
   return `{{${typeConfig.template}${params}}}`;
 }, toSubst = (wikitext) => wikitext.replace(/^\{\{/, "{{subst:"), buildSubmitText = (wikitext) => toSubst(wikitext);
@@ -178,7 +204,13 @@ var showMessage = (spec, actions) => new Promise((resolve) => {
 ]) === "retry" ? "retry" : "close", confirmContinue = async (title, message) => await showMessage({ title, message }, [
   { action: "close", label: wgULS("返回修改", "返回修改"), flags: ["safe"] },
   { action: "continue", label: wgULS("继续提交", "繼續提交"), flags: ["primary", "progressive"] }
-]) === "continue" ? "continue" : "close";
+]) === "continue" ? "continue" : "close", confirmAmbiguousRetry = async (title, message) => await showMessage({
+  title,
+  message: `${message}${wgULS("网络异常，请求可能已经发出：请先到目标版面确认是否已存在你的请求，再决定是否重新提交。", "網路異常，請求可能已經發出：請先到目標版面確認是否已存在你的請求，再決定是否重新提交。")}`
+}, [
+  { action: "close", label: wgULS("关闭", "關閉"), flags: ["safe", "primary"] },
+  { action: "retry", label: wgULS("仍要重试", "仍要重試") }
+]) === "retry" ? "retry" : "close";
 
 // packages/QuickRequest/src/mainDialog.ts
 var MainDialog = class extends OO.ui.ProcessDialog {
@@ -261,7 +293,7 @@ var MainDialog = class extends OO.ui.ProcessDialog {
           previewHtml,
           submittedText: submission.submittedText,
           targetPage: submission.targetPage,
-          sectionTitle: submission.sectionTitle,
+          getSectionTitle: submission.getSectionTitle,
           editSummary: submission.editSummary,
           ...this.definition.warnings === void 0 ? {} : { getWarnings: () => this.definition.warnings?.(this.context) ?? Promise.resolve([]) }
         };
@@ -325,8 +357,8 @@ var MainDialog = class extends OO.ui.ProcessDialog {
     return targetPage === !1 ? (showError(wgULS("无法发起请求", "無法發起請求"), wgULS("当前页面没有对应的讨论页。", "目前頁面沒有對應的討論頁。")), null) : {
       targetPage,
       submittedText: buildSubmitText(raw),
-      // 章节标题在此刻生成：日期应取提交时刻而非打开对话框的时刻
-      sectionTitle: this.definition.sectionTitle({ ...this.context, now: /* @__PURE__ */ new Date() }),
+      // 章节标题惰性生成：日期取提交时刻，预览停留跨午夜也不会带前一天的日期发出
+      getSectionTitle: () => this.definition.sectionTitle({ ...this.context, now: /* @__PURE__ */ new Date() }),
       editSummary: this.summaryInput.getValue().trim()
     };
   }
@@ -367,17 +399,18 @@ var postTopic = (params) => {
   }).then((res) => ({
     ok: !0,
     newrevid: res?.discussiontoolsedit?.newrevid
-  })).catch((code, result) => (console.warn("[QuickRequest] 发送失败", code, result), { ok: !1, code, detail: describeSendError(code, result) }));
-}, fetchLastSectionAnchor = async (revid) => {
+  })).catch((code, result) => (console.warn("[QuickRequest] 发送失败", code, result), { ok: !1, code, detail: describeSendError(code, result), ambiguous: code === "http" }));
+}, fetchLastSectionAnchor = async (revid, sectionTitle) => {
   if (!revid)
     return "";
   try {
-    return ((await getApi().post({
+    let sections = (await getApi().post({
       action: "parse",
       oldid: revid,
       prop: "sections",
       formatversion: 2
-    })).parse?.sections ?? []).at(-1)?.anchor ?? "";
+    })).parse?.sections ?? [];
+    return (sections.filter((section) => section.line === sectionTitle).at(-1) ?? sections.at(-1))?.anchor ?? "";
   } catch (error) {
     return console.warn("[QuickRequest] 读取新章节锚点失败", error), "";
   }
@@ -397,7 +430,7 @@ var postTopic = (params) => {
 var PreviewDialog = class extends OO.ui.ProcessDialog {
   constructor() {
     super(...arguments);
-    __publicField(this, "sendParams", null);
+    __publicField(this, "payload", null);
     __publicField(this, "getWarnings");
     __publicField(this, "sending", !1);
     __publicField(this, "htmlPanel");
@@ -437,12 +470,7 @@ var PreviewDialog = class extends OO.ui.ProcessDialog {
   getSetupProcess(data) {
     return super.getSetupProcess(data).next(() => {
       let payload = data;
-      this.htmlPanel.$element.html(payload.previewHtml), this.wikitextInput.setValue(payload.submittedText), this.wikitextToggle.setValue(!1), this.wikitextLayout.toggle(!1), this.getActions().setAbilities({ send: !0 }), this.sendParams = {
-        page: payload.targetPage,
-        sectionTitle: payload.sectionTitle,
-        wikitext: payload.submittedText,
-        summary: payload.editSummary
-      }, this.getWarnings = payload.getWarnings;
+      this.htmlPanel.$element.html(payload.previewHtml), this.wikitextInput.setValue(payload.submittedText), this.wikitextToggle.setValue(!1), this.wikitextLayout.toggle(!1), this.getActions().setAbilities({ send: !0 }), this.payload = payload, this.getWarnings = payload.getWarnings;
     }, this);
   }
   /**
@@ -466,8 +494,8 @@ var PreviewDialog = class extends OO.ui.ProcessDialog {
       this.close({ action: "back" });
     }, this) : action !== "send" ? super.getActionProcess(action) : new OO.ui.Process(
       (async () => {
-        let params = this.sendParams;
-        if (!(this.sending || !params)) {
+        let payload = this.payload;
+        if (!(this.sending || !payload)) {
           this.setSending(!0);
           try {
             let warnings = this.getWarnings === void 0 ? [] : await this.getWarnings();
@@ -477,13 +505,18 @@ var PreviewDialog = class extends OO.ui.ProcessDialog {
                 return;
               }
             for (; ; ) {
-              let result = await postTopic(params);
+              let params = {
+                page: payload.targetPage,
+                sectionTitle: payload.getSectionTitle(),
+                wikitext: payload.submittedText,
+                summary: payload.editSummary
+              }, result = await postTopic(params);
               if (result.ok) {
-                let anchor = await fetchLastSectionAnchor(result.newrevid);
+                let anchor = await fetchLastSectionAnchor(result.newrevid, params.sectionTitle);
                 this.close({ action: "sent", anchor });
                 return;
               }
-              if (await confirmRetry(wgULS("发送失败", "傳送失敗"), result.detail) !== "retry") {
+              if ((result.ambiguous ? await confirmAmbiguousRetry(wgULS("发送结果未知", "發送結果未知"), result.detail) : await confirmRetry(wgULS("发送失败", "傳送失敗"), result.detail)) !== "retry") {
                 this.setSending(!1);
                 return;
               }
@@ -620,12 +653,7 @@ var describeConfigFailure = (reason) => wgULS(`${CONFIG_PAGE} 读取或解析失
     showError(wgULS("无法发起请求", "無法發起請求"), wgULS("当前页面没有对应的讨论页。", "目前頁面沒有對應的討論頁。"));
     return;
   }
-  let configPromise = prefetchConfig(), settled2 = getSettledConfig();
-  if (settled2 && !settled2.ok) {
-    showError(wgULS("无法加载请求配置", "無法載入請求設定"), describeConfigFailure(settled2.message));
-    return;
-  }
-  let mainDialog = new MainDialog({ size: DIALOG_SIZE });
+  let configPromise = prefetchConfig(), mainDialog = new MainDialog({ size: DIALOG_SIZE });
   openWindow(mainDialog, {
     definition,
     context,

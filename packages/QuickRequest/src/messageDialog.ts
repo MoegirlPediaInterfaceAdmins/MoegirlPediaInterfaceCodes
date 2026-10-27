@@ -63,4 +63,23 @@ const confirmContinue = async (title: string, message: string | JQuery): Promise
     return action === "continue" ? "continue" : "close";
 };
 
-export { confirmContinue, confirmRetry, showError };
+/**
+ * 传输层失败（发送结果未知）时的「关闭 / 仍要重试」对话框。
+ * addtopic 非幂等，请求可能已经提交——重试可能重复发帖，故正文警示先行、
+ * 把「关闭」设为主按钮，由用户确认后再自行决定是否重试。
+ * @param title 标题
+ * @param message 正文
+ * @returns 用户的选择
+ */
+const confirmAmbiguousRetry = async (title: string, message: string): Promise<"retry" | "close"> => {
+    const action = await showMessage({
+        title,
+        message: `${message}${wgULS("网络异常，请求可能已经发出：请先到目标版面确认是否已存在你的请求，再决定是否重新提交。", "網路異常，請求可能已經發出：請先到目標版面確認是否已存在你的請求，再決定是否重新提交。")}`,
+    }, [
+        { action: "close", label: wgULS("关闭", "關閉"), flags: ["safe", "primary"] },
+        { action: "retry", label: wgULS("仍要重试", "仍要重試") },
+    ]);
+    return action === "retry" ? "retry" : "close";
+};
+
+export { confirmAmbiguousRetry, confirmContinue, confirmRetry, showError };

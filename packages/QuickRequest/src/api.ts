@@ -1,5 +1,8 @@
 import type { ApiParseResponse, ApiQueryResponse } from "types-mediawiki-response";
 
+/** 单个请求的超时上限（ms）。jQuery $.ajax 默认无超时——慢响应会让对话框无限等待，超时后按失败路径恢复界面。 */
+const REQUEST_TIMEOUT = 30000;
+
 /** mw.Api 单例。惰性创建：QuickRequest 与 site-js 一样全站加载，模块求值时不应构造 Api 实例。 */
 let apiInstance: mw.Api | null = null;
 
@@ -8,7 +11,7 @@ let apiInstance: mw.Api | null = null;
  * @returns API 实例
  */
 const getApi = (): mw.Api => {
-    apiInstance ??= new mw.Api();
+    apiInstance ??= new mw.Api({ ajax: { timeout: REQUEST_TIMEOUT } });
     return apiInstance;
 };
 
@@ -31,26 +34,38 @@ const fetchPageContent = async (title: string): Promise<string> => {
 /**
  * 读取页面的分类（方针修改提醒用）。
  * 页面不存在时 prop=categories 返回空数组，与「无分类」同样处理。
+ * 分类可能超过单批上限（500，隐藏分类也计数），方针分类若在后批而只取首批会漏判，
+ * 故跟随 continue（clcontinue）循环取完。
  * @param title 页面名
  * @returns 分类页名集合（形如 Category:萌娘百科方针）
  */
 const fetchPageCategories = async (title: string): Promise<Set<string>> => {
-    const res = await getApi().post({
-        action: "query",
-        titles: title,
-        prop: "categories",
-        cllimit: "max",
-        formatversion: 2,
-    }) as Partial<ApiQueryResponse> & {
-        query?: {
-            pages?: ({
-                categories?: {
-                    title: string;
-                }[];
-            } & Record<string, unknown>)[];
-        };
-    };
-    return new Set(res.query?.pages?.[0]?.categories?.map((category) => category.title) ?? []);
+    const categories = new Set<string>();
+    let next: Record<string, string> = {};
+    do {
+        const res = await getApi().post({
+            action: "query",
+            titles: title,
+            prop: "categories",
+            cllimit: "max",
+            formatversion: 2,
+            ...next,
+        }) as (Partial<ApiQueryResponse> & {
+            query?: {
+                pages?: ({
+                    categories?: {
+                        title: string;
+                    }[];
+                } & Record<string, unknown>)[];
+            };
+            "continue"?: Record<string, string>;
+        });
+        for (const category of res.query?.pages?.[0]?.categories ?? []) {
+            categories.add(category.title);
+        }
+        next = res.continue ?? {};
+    } while (Object.keys(next).length > 0);
+    return categories;
 };
 
 /**

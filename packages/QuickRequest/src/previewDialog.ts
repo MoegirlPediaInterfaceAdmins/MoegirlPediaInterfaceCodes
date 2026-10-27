@@ -1,6 +1,6 @@
 import { DIALOG_SIZE, MAX_PREVIEW_BODY_HEIGHT } from "./constants.ts";
 import { toErrorMessage } from "./errors.ts";
-import { confirmContinue, confirmRetry, showError } from "./messageDialog.ts";
+import { confirmAmbiguousRetry, confirmContinue, confirmRetry, showError } from "./messageDialog.ts";
 import { fetchLastSectionAnchor, postTopic } from "./send.ts";
 import type { SendParams } from "./send.ts";
 import type { PreviewDialogData, Warning } from "./types.ts";
@@ -26,7 +26,7 @@ class PreviewDialog extends OO.ui.ProcessDialog {
         ],
     };
 
-    private sendParams: SendParams | null = null;
+    private payload: PreviewDialogData | null = null;
     private getWarnings: (() => Promise<Warning[]>) | undefined;
     private sending = false;
 
@@ -90,12 +90,7 @@ class PreviewDialog extends OO.ui.ProcessDialog {
             this.wikitextToggle.setValue(false);
             this.wikitextLayout.toggle(false);
             this.getActions().setAbilities({ send: true });
-            this.sendParams = {
-                page: payload.targetPage,
-                sectionTitle: payload.sectionTitle,
-                wikitext: payload.submittedText,
-                summary: payload.editSummary,
-            };
+            this.payload = payload;
             this.getWarnings = payload.getWarnings;
         }, this);
     }
@@ -128,8 +123,8 @@ class PreviewDialog extends OO.ui.ProcessDialog {
         }
         return new OO.ui.Process(
             (async () => {
-                const params = this.sendParams;
-                if (this.sending || !params) {
+                const payload = this.payload;
+                if (this.sending || !payload) {
                     return;
                 }
                 this.setSending(true);
@@ -143,15 +138,26 @@ class PreviewDialog extends OO.ui.ProcessDialog {
                         }
                     }
                     for (;;) {
+                        // 发送参数在此刻构造：章节标题（含日期）取提交时刻
+                        const params: SendParams = {
+                            page: payload.targetPage,
+                            sectionTitle: payload.getSectionTitle(),
+                            wikitext: payload.submittedText,
+                            summary: payload.editSummary,
+                        };
                         const result = await postTopic(params);
                         if (result.ok) {
                             // 锚点必须在关框前回读：用户看到的是连续的「提交中…」，而不是框已关闭却在干等
-                            const anchor = await fetchLastSectionAnchor(result.newrevid);
+                            const anchor = await fetchLastSectionAnchor(result.newrevid, params.sectionTitle);
                             // 对话框即将关闭，无需恢复按钮状态
                             this.close({ action: "sent", anchor });
                             return;
                         }
-                        if (await confirmRetry(wgULS("发送失败", "傳送失敗"), result.detail) !== "retry") {
+                        // 传输层失败结果未知（请求可能已提交），换警示文案、不默认引导重试
+                        const choice = result.ambiguous
+                            ? await confirmAmbiguousRetry(wgULS("发送结果未知", "發送結果未知"), result.detail)
+                            : await confirmRetry(wgULS("发送失败", "傳送失敗"), result.detail);
+                        if (choice !== "retry") {
                             this.setSending(false);
                             return;
                         }
