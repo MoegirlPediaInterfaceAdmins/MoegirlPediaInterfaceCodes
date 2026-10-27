@@ -20,11 +20,8 @@ const isParamType = (value: unknown): value is ParamType => typeof value === "st
  */
 const compact = <T>(items: (T | null)[]): T[] => items.filter((item): item is T => item !== null);
 
-/** 模块级预取 promise（幂等）。 */
+/** 模块级预取 promise；失败后置空，下一次 open 重新拉取。 */
 let prefetch: Promise<ConfigResult> | null = null;
-
-/** 预取结果快照，未落定时为 null。 */
-let settled: ConfigResult | null = null;
 
 /**
  * 判断是否为非空字符串。
@@ -137,9 +134,9 @@ const parseConfig = (raw: string, overrides?: Record<string, unknown>): ConfigRe
 const readWindowOverrides = (): Record<string, unknown> | undefined => window.QuickRequest?.types;
 
 /**
- * 启动配置预取。幂等，首次 open 时调用——QuickRequest 随 site-js 一样全站加载，
- * 不能在模块求值时预取，否则每个页面视图都会多一次 API 请求。
- * 永不 reject：失败会被转成 { ok: false } 结果。
+ * 启动配置预取。成功结果幂等（一次页面视图只拉一次）；失败不驻留——临时故障后
+ * 下一次 open 会重新拉取，无需刷新页面恢复。
+ * 永不 reject：失败会被转成 { ok: false } 结果，由主对话框的 configError 路径呈现。
  * @returns 配置结果
  */
 const prefetchConfig = (): Promise<ConfigResult> => {
@@ -150,17 +147,13 @@ const prefetchConfig = (): Promise<ConfigResult> => {
         } catch (error) {
             result = { ok: false, message: toErrorMessage(error) };
         }
-        settled = result;
+        if (!result.ok) {
+            prefetch = null;
+        }
         return result;
     })();
     return prefetch;
 };
-
-/**
- * 取预取结果快照，供入口在打开对话框前做同步判断。
- * @returns 已落定的结果；尚未落定时为 null
- */
-const getSettledConfig = (): ConfigResult | null => settled;
 
 /**
  * 判断组约束是否满足：requireAnyOf 所列键中至少一项非空。无约束时恒为真。
@@ -184,4 +177,4 @@ const isGroupSatisfied = (typeConfig: TypeConfig, values: Record<string, string>
  */
 const findTypeConfig = (config: QuickRequestConfig, id: string): TypeConfig | undefined => config.types[id];
 
-export { findTypeConfig, getSettledConfig, isGroupSatisfied, parseConfig, prefetchConfig };
+export { findTypeConfig, isGroupSatisfied, parseConfig, prefetchConfig };
