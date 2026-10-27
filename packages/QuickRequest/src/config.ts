@@ -1,0 +1,187 @@
+import { CONFIG_PAGE } from "./constants.ts";
+import { toErrorMessage } from "./errors.ts";
+import { fetchPageContent } from "./api.ts";
+import type { ConfigResult, ParamType, QuickRequestConfig, RequestParam, TypeConfig } from "./types.ts";
+
+/** 合法的控件类型集合。 */
+const PARAM_TYPES = new Set<string>(["page", "user", "text", "multiline"]);
+
+/**
+ * 判断是否为合法的控件类型。
+ * @param value 待判断的值
+ * @returns 是否合法
+ */
+const isParamType = (value: unknown): value is ParamType => typeof value === "string" && PARAM_TYPES.has(value);
+
+/**
+ * 滤掉校验未通过的条目。
+ * @param items 待过滤的条目
+ * @returns 合法条目
+ */
+const compact = <T>(items: (T | null)[]): T[] => items.filter((item): item is T => item !== null);
+
+/** 模块级预取 promise（幂等）。 */
+let prefetch: Promise<ConfigResult> | null = null;
+
+/** 预取结果快照，未落定时为 null。 */
+let settled: ConfigResult | null = null;
+
+/**
+ * 判断是否为非空字符串。
+ * @param value 待判断的值
+ * @returns 是否非空
+ */
+const isNonEmptyString = (value: unknown): value is string => typeof value === "string" && value.trim() !== "";
+
+/**
+ * 校验单个参数定义，非法则返回 null。
+ * @param raw 原始条目
+ * @returns 参数定义；非法时为 null
+ */
+const toRequestParam = (raw: unknown): RequestParam | null => {
+    if (typeof raw !== "object" || raw === null) {
+        return null;
+    }
+    const { key, label, type, required, auto, "default": defaultValue } = raw as Record<string, unknown>;
+    if (!isNonEmptyString(key) || !isNonEmptyString(label)) {
+        return null;
+    }
+    const param: RequestParam = { key, label };
+    if (isParamType(type)) {
+        param.type = type;
+    }
+    if (typeof required === "boolean") {
+        param.required = required;
+    }
+    if (auto === "currentPage") {
+        param.auto = auto;
+    }
+    if (typeof defaultValue === "string") {
+        param.default = defaultValue;
+    }
+    return param;
+};
+
+/**
+ * 校验单个类型条目，非法则返回 null。
+ * requireAnyOf 只保留真实存在于 parameters 的键，过滤后为空则丢弃该约束——
+ * 引用不存在键的组约束没有可满足的路径，留在配置里只会让表单永远无法提交。
+ * @param raw 原始条目
+ * @returns 类型配置；非法时为 null
+ */
+const toTypeConfig = (raw: unknown): TypeConfig | null => {
+    if (typeof raw !== "object" || raw === null) {
+        return null;
+    }
+    const { template, parameters, requireAnyOf } = raw as Record<string, unknown>;
+    if (!isNonEmptyString(template)) {
+        return null;
+    }
+    const config: TypeConfig = { template };
+    if (Array.isArray(parameters)) {
+        config.parameters = compact(parameters.map(toRequestParam));
+    }
+    if (Array.isArray(requireAnyOf)) {
+        const keys = new Set((config.parameters ?? []).map(({ key }) => key));
+        const valid = requireAnyOf.filter((key): key is string => typeof key === "string" && keys.has(key));
+        if (valid.length > 0) {
+            config.requireAnyOf = valid;
+        }
+    }
+    return config;
+};
+
+/**
+ * 解析并校验配置内容；overrides 是 window.QuickRequest.types 的语义（同 id 覆盖、新 id 追加、非法条目丢弃）。
+ * 全部类型条目非法时视为失败。
+ * @param raw 配置页的原始文本
+ * @param overrides 覆盖条目
+ * @returns 配置结果
+ */
+const parseConfig = (raw: string, overrides?: Record<string, unknown>): ConfigResult => {
+    if (raw.trim() === "") {
+        return { ok: false, message: wgULS(`页面 ${CONFIG_PAGE} 不存在或内容为空`, `頁面 ${CONFIG_PAGE} 不存在或內容為空`) };
+    }
+
+    let parsed: unknown;
+    try {
+        parsed = JSON.parse(raw);
+    } catch (error) {
+        return { ok: false, message: wgULS(`JSON 解析失败：${toErrorMessage(error)}`, `JSON 解析失敗：${toErrorMessage(error)}`) };
+    }
+
+    const types = (parsed as { types?: unknown } | null)?.types;
+    if (typeof types !== "object" || types === null) {
+        return { ok: false, message: wgULS(`${CONFIG_PAGE} 缺少 types 对象`, `${CONFIG_PAGE} 缺少 types 物件`) };
+    }
+
+    const merged: Record<string, TypeConfig> = {};
+    let validCount = 0;
+    for (const [id, entry] of [...Object.entries(types), ...Object.entries(overrides ?? {})]) {
+        const config = toTypeConfig(entry);
+        if (config) {
+            merged[id] = config;
+            validCount += 1;
+        }
+    }
+    if (validCount === 0) {
+        return { ok: false, message: wgULS(`${CONFIG_PAGE} 的类型列表为空或格式不正确`, `${CONFIG_PAGE} 的類型列表為空或格式不正確`) };
+    }
+    return { ok: true, config: { types: merged } };
+};
+
+/**
+ * 读取并校验 window.QuickRequest.types，非法条目静默丢弃。
+ * @returns 覆盖条目
+ */
+const readWindowOverrides = (): Record<string, unknown> | undefined => window.QuickRequest?.types;
+
+/**
+ * 启动配置预取。幂等，首次 open 时调用——QuickRequest 随 site-js 一样全站加载，
+ * 不能在模块求值时预取，否则每个页面视图都会多一次 API 请求。
+ * 永不 reject：失败会被转成 { ok: false } 结果。
+ * @returns 配置结果
+ */
+const prefetchConfig = (): Promise<ConfigResult> => {
+    prefetch ??= (async () => {
+        let result: ConfigResult;
+        try {
+            result = parseConfig(await fetchPageContent(CONFIG_PAGE), readWindowOverrides());
+        } catch (error) {
+            result = { ok: false, message: toErrorMessage(error) };
+        }
+        settled = result;
+        return result;
+    })();
+    return prefetch;
+};
+
+/**
+ * 取预取结果快照，供入口在打开对话框前做同步判断。
+ * @returns 已落定的结果；尚未落定时为 null
+ */
+const getSettledConfig = (): ConfigResult | null => settled;
+
+/**
+ * 判断组约束是否满足：requireAnyOf 所列键中至少一项非空。无约束时恒为真。
+ * @param typeConfig 类型配置
+ * @param values 参数名 → 值
+ * @returns 是否满足
+ */
+const isGroupSatisfied = (typeConfig: TypeConfig, values: Record<string, string>): boolean => {
+    const keys = typeConfig.requireAnyOf;
+    if (keys === undefined || keys.length === 0) {
+        return true;
+    }
+    return keys.some((key) => (values[key] ?? "").trim() !== "");
+};
+
+/**
+ * 按 id 查找类型配置。
+ * @param config 配置
+ * @param id 请求类型 id
+ * @returns 类型配置
+ */
+const findTypeConfig = (config: QuickRequestConfig, id: string): TypeConfig | undefined => config.types[id];
+
+export { findTypeConfig, getSettledConfig, isGroupSatisfied, parseConfig, prefetchConfig };
