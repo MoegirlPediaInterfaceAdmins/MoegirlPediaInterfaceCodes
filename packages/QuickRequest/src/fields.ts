@@ -40,16 +40,21 @@ const createParamWidget = (param: RequestParam, $overlay: JQuery): OO.ui.TextInp
  */
 const createParamField = (param: RequestParam, $overlay: JQuery, onChange: () => void): ParamField => {
     const widget = createParamWidget(param, $overlay);
-    // auto 字段的值由当前页面名派生（请求对象就是本页），只读——
-    // 允许改动会造出「在本页发关于别的页的请求」的错位内容
-    if (param.auto === "currentPage") {
+    // 只读字段有两类：auto: currentPage 的值由当前页面名派生（请求对象就是本页，
+    // 允许改动会造出「在本页发关于别的页的请求」的错位内容）；readOnly 由配置声明
+    // （如封禁申诉入口预填的封禁信息，模板存档要求其不被改动）
+    if (param.readOnly === true || param.auto === "currentPage") {
         widget.setReadOnly(true);
     }
     widget.on("change", onChange);
     return {
         param,
         widget,
-        layout: new OO.ui.FieldLayout(widget, { label: param.label, align: "top" }),
+        layout: new OO.ui.FieldLayout(widget, {
+            label: param.label,
+            align: "top",
+            ...param.hint === undefined ? {} : { help: param.hint, helpInline: true },
+        }),
         flagged: false,
     };
 };

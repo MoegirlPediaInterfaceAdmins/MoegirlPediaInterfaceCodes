@@ -76,6 +76,22 @@ describe("固定参数（fixedParams）", () => {
     });
 });
 
+describe("封禁信息（banAppeal）", () => {
+    const banAppealSpec: TemplateSpec = {
+        template: "Template:BlockedUserHelp/request",
+        parameters: [
+            { key: "1", label: "封禁信息", type: "multiline", readOnly: true },
+            { key: "reason", label: "求助理由", type: "multiline" },
+        ],
+    };
+
+    it("封禁信息里的内链管道保持原样，多行文本不拆散参数", () => {
+        const blockInfo = "该用户已被封禁，执行封禁的人员是[[U:示例管理员|示例管理员]]。封禁原因是：''理由''。\n* 封禁开始时间：2026年10月23日 (五) 21:37\n* 封禁期满时间：无限期\n* 封禁编号：#13390";
+        expect(buildTemplateWikitext(banAppealSpec, { 1: blockInfo, reason: "" }))
+            .toBe(`{{Template:BlockedUserHelp/request|1=${blockInfo}}}`);
+    });
+});
+
 describe("toSubst", () => {
     it("只改写字符串开头的模板调用", () => {
         expect(toSubst("{{T|1=a}}")).toBe("{{subst:T|1=a}}");

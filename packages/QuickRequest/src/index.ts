@@ -47,13 +47,11 @@ const openPreview = (data: PreviewDialogData, mainDialog: MainDialog): void => {
 
 /**
  * 打开指定类型的请求对话框。
- * preset 供删除请求等入口预填（阶段 4 起）；阶段 1 的四类请求均由用户当场填写。
+ * preset 供入口预填参数：封禁申诉入口用它预填封禁信息，删除请求（阶段 4）用它预填页面名等。
  * @param type 请求类型 id；edit 在转换表页面上自动落到 editConversiontable
  * @param preset 预填值
  */
 const open = (type: RequestTypeId, preset?: Record<string, string>): void => {
-    void preset;
-
     const definition = resolveRequestType(type, mw.config.get("wgPageName"));
     if (!definition) {
         console.warn("[QuickRequest] 未知的请求类型", type);
@@ -78,6 +76,7 @@ const open = (type: RequestTypeId, preset?: Record<string, string>): void => {
     const data: MainDialogData = {
         definition,
         context,
+        ...preset === undefined ? {} : { preset },
         configPromise,
         onPreview: (previewData): void => {
             openPreview(previewData, mainDialog);

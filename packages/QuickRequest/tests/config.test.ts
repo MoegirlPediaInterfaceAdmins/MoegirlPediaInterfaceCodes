@@ -121,6 +121,30 @@ describe("parseConfig", () => {
             expect(result.config.types.edit.parameters?.[1].auto).toBeUndefined();
         }
     });
+
+    it("readOnly 只接受布尔值，hint 只接受非空字符串，非法取值丢弃", () => {
+        const result = parseConfig(JSON.stringify({
+            types: {
+                banAppeal: {
+                    template: "Template:BlockedUserHelp/request",
+                    parameters: [
+                        { key: "1", label: "封禁信息", type: "multiline", readOnly: true },
+                        { key: "reason", label: "求助理由", hint: "提示文字" },
+                        { key: "bad1", label: "甲", readOnly: "yes" },
+                        { key: "bad2", label: "乙", hint: "  " },
+                    ],
+                },
+            },
+        }));
+        expect(result.ok).toBe(true);
+        if (result.ok) {
+            const params = result.config.types.banAppeal.parameters ?? [];
+            expect(params[0]?.readOnly).toBe(true);
+            expect(params[1]?.hint).toBe("提示文字");
+            expect(params[2]?.readOnly).toBeUndefined();
+            expect(params[3]?.hint).toBeUndefined();
+        }
+    });
 });
 
 describe("parseConfig 变体（variants）", () => {

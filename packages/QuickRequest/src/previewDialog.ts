@@ -141,7 +141,12 @@ class PreviewDialog extends OO.ui.ProcessDialog {
                     const sectionTitle = append ? "" : payload.getSectionTitle?.() ?? "";
                     for (;;) {
                         const result = append
-                            ? await appendTopic({ page: payload.targetPage, wikitext: payload.submittedText, summary: payload.editSummary })
+                            ? await appendTopic({
+                                page: payload.targetPage,
+                                wikitext: payload.submittedText,
+                                summary: payload.editSummary,
+                                ...payload.allowCreate === undefined ? {} : { allowCreate: payload.allowCreate },
+                            })
                             : await postTopic({
                                 page: payload.targetPage,
                                 sectionTitle,
