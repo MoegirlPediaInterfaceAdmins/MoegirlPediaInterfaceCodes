@@ -26,8 +26,11 @@ rights:
 peers: []
 
 dependencies:
+  - ext.gadget.LocalObjectStorage
   - ext.gadget.site-lib
   - mediawiki.api
+  - mediawiki.ForeignApi
+  - mediawiki.user
   - mediawiki.util
   - mediawiki.widgets
   - mediawiki.widgets.UserInputWidget
@@ -35,6 +38,7 @@ dependencies:
 
 _sites:
   - zh
+  - commons
 
 _section: system
 

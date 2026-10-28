@@ -15,6 +15,8 @@ interface SendParams {
     wikitext: string;
     /** 编辑摘要；空串表示不传该参数，由服务端自动生成 */
     summary: string;
+    /** 发帖所用 API（目标站）；缺省当前站 */
+    api?: mw.Api;
 }
 
 /** 追加发帖（append 模式）的参数；章节标题由模板正文自带，无 sectionTitle。 */
@@ -27,6 +29,8 @@ interface AppendParams {
     summary: string;
     /** 允许创建不存在的目标页（banAppeal：本人讨论页可能不存在），缺省带 nocreate */
     allowCreate?: boolean;
+    /** 发帖所用 API（目标站）；缺省当前站 */
+    api?: mw.Api;
 }
 
 /*
@@ -48,7 +52,7 @@ interface AppendParams {
 const postTopic = (params: SendParams): JQuery.Promise<SendResult> => {
     // summary 为空时不传该参数：addtopic 缺省由服务端按章节标题自动生成摘要
     const summary = params.summary === "" ? {} : { summary: params.summary };
-    return getApi().postWithToken("csrf", {
+    return (params.api ?? getApi()).postWithToken("csrf", {
         action: "discussiontoolsedit",
         paction: "addtopic",
         formatversion: 2,
@@ -91,7 +95,7 @@ const postTopic = (params: SendParams): JQuery.Promise<SendResult> => {
  */
 const appendTopic = (params: AppendParams): JQuery.Promise<SendResult> => {
     const summary = params.summary === "" ? {} : { summary: params.summary };
-    return getApi().postWithToken("csrf", {
+    return (params.api ?? getApi()).postWithToken("csrf", {
         action: "edit",
         formatversion: 2,
         title: params.page,
@@ -126,14 +130,15 @@ const appendTopic = (params: AppendParams): JQuery.Promise<SendResult> => {
  * 取不到时返回空串(例如章节被合并进上一节),由调用方退化为不带锚点的跳转。
  * @param revid 刚保存的修订 ID
  * @param sectionTitle 新话题的章节标题；append 模式省略
+ * @param api 回读所用 API（目标站）；缺省当前站
  * @returns 章节锚点；取不到时为空字符串
  */
-const fetchLastSectionAnchor = async (revid: number | undefined, sectionTitle?: string): Promise<string> => {
+const fetchLastSectionAnchor = async (revid: number | undefined, sectionTitle?: string, api: mw.Api = getApi()): Promise<string> => {
     if (!revid) {
         return "";
     }
     try {
-        const res = await getApi().post({
+        const res = await api.post({
             action: "parse",
             oldid: revid,
             prop: "sections",
@@ -154,10 +159,11 @@ const fetchLastSectionAnchor = async (revid: number | undefined, sectionTitle?: 
  * 目标页面新话题的 URL。锚点为空时只给页面本身。
  * @param page 目标页面名
  * @param anchor 章节锚点
+ * @param base 目标站的站点基址；目标即当前站时为空串（共享站发起的请求目标在主站，须带基址）
  * @returns URL
  */
-const newSectionUrl = (page: string, anchor: string): string => {
-    const url = mw.util.getUrl(page);
+const newSectionUrl = (page: string, anchor: string, base = ""): string => {
+    const url = `${base}${mw.util.getUrl(page)}`;
     return anchor === "" ? url : `${url}#${encodeURIComponent(anchor)}`;
 };
 
@@ -166,12 +172,14 @@ const newSectionUrl = (page: string, anchor: string): string => {
  *
  * 已经身处目标页面时不能直接 location.assign：只有 hash 不同属同文档导航，页面不会重新加载，
  * 而新话题并不在现有 DOM 里，浏览器只会静默地不滚动。故先写入 hash 再 reload，让新文档按锚点定位。
+ * （目标在别的站点时不存在同文档场景，直接 assign 绝对地址。）
  * @param page 目标页面名
  * @param anchor 章节锚点；为空时跳到页面顶部
+ * @param base 目标站的站点基址；目标即当前站时为空串
  */
-const gotoNewSection = (page: string, anchor: string): void => {
-    const url = newSectionUrl(page, anchor);
-    if ((mw.config.get("wgPageName") as string | undefined) === page.replace(/ /g, "_")) {
+const gotoNewSection = (page: string, anchor: string, base = ""): void => {
+    const url = newSectionUrl(page, anchor, base);
+    if (base === "" && (mw.config.get("wgPageName") as string | undefined) === page.replace(/ /g, "_")) {
         location.hash = new URL(url, location.href).hash;
         location.reload();
         return;

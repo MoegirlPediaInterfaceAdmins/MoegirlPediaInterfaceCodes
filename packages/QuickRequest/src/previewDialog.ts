@@ -146,16 +146,18 @@ class PreviewDialog extends OO.ui.ProcessDialog {
                                 wikitext: payload.submittedText,
                                 summary: payload.editSummary,
                                 ...payload.allowCreate === undefined ? {} : { allowCreate: payload.allowCreate },
+                                api: payload.api,
                             })
                             : await postTopic({
                                 page: payload.targetPage,
                                 sectionTitle,
                                 wikitext: payload.submittedText,
                                 summary: payload.editSummary,
+                                api: payload.api,
                             });
                         if (result.ok) {
                             // 锚点必须在关框前回读：用户看到的是连续的「正在提交…」，而不是框已关闭却在干等
-                            const anchor = await fetchLastSectionAnchor(result.newrevid, append ? undefined : sectionTitle);
+                            const anchor = await fetchLastSectionAnchor(result.newrevid, append ? undefined : sectionTitle, payload.api);
                             // 对话框即将关闭，无需恢复按钮状态
                             this.close({ action: "sent", anchor });
                             return;

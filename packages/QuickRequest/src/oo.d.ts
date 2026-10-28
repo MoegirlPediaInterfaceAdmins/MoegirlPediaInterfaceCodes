@@ -51,3 +51,31 @@ declare namespace OO.ui {
         $body: JQuery;
     }
 }
+
+/**
+ * ext.gadget.LocalObjectStorage 的全局类（@types 未收录）。
+ * getItem 返回 JSON 反序列化后的原值（存什么类型返回什么类型），缺失时为 null。
+ */
+declare class LocalObjectStorage {
+    /**
+     * @param name 存储命名空间（localStorage 键前缀）
+     */
+    constructor(name: string);
+
+    /**
+     * @param key 存储键
+     * @param fallback 缺失时的返回值，缺省 null
+     */
+    getItem(key: string, fallback?: unknown): unknown;
+
+    /**
+     * @param key 存储键
+     * @param value 任意可 JSON 序列化的值
+     */
+    setItem(key: string, value: unknown): void;
+
+    /**
+     * @param key 存储键
+     */
+    removeItem(key: string): void;
+}
