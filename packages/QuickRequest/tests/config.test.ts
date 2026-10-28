@@ -146,6 +146,92 @@ describe("parseConfig 覆盖合并（window.QuickRequest.types 的语义）", ()
     });
 });
 
+describe("parseConfig 变体（variants）", () => {
+    const variantConfig = JSON.stringify({
+        types: {
+            userGroup: {
+                variants: [
+                    {
+                        id: "patroller",
+                        label: "维护姬申请",
+                        template: "Template:权限申请/维护姬申请",
+                        parameters: [{ key: "1", label: "申请理由", type: "multiline", required: true }],
+                    },
+                    {
+                        id: "checkuser",
+                        label: "用户查核员申请",
+                        template: "Template:权限申请/查核监督申请",
+                        fixedParams: { 用户组: "用户查核员", 时长: 12 },
+                        requireAnyOf: ["1", "ghost"],
+                        parameters: [{ key: "1", label: "申请理由", type: "multiline", required: true }],
+                    },
+                    { id: "patroller", label: "重复 id", template: "T" },
+                    { id: "broken", label: "缺模板", parameters: [] },
+                    "not-an-object",
+                ],
+            },
+        },
+    });
+
+    it("合法变体保留，非法变体丢弃；类型级 template 可省略", () => {
+        const result = parseConfig(variantConfig);
+        expect(result.ok).toBe(true);
+        if (result.ok) {
+            const variants = result.config.types.userGroup.variants;
+            expect(variants).toHaveLength(2);
+            expect(variants?.[0]).toMatchObject({ id: "patroller", template: "Template:权限申请/维护姬申请" });
+        }
+    });
+
+    it("重复 id 的变体只保留首个", () => {
+        const result = parseConfig(variantConfig);
+        expect(result.ok).toBe(true);
+        if (result.ok) {
+            expect(result.config.types.userGroup.variants?.every((variant, index, all) =>
+                all.findIndex((other) => other.id === variant.id) === index)).toBe(true);
+        }
+    });
+
+    it("变体的 fixedParams 只保留字符串值，requireAnyOf 按变体自身参数过滤", () => {
+        const result = parseConfig(variantConfig);
+        expect(result.ok).toBe(true);
+        if (result.ok) {
+            const checkuser = result.config.types.userGroup.variants?.[1];
+            expect(checkuser?.fixedParams).toEqual({ 用户组: "用户查核员" });
+            expect(checkuser?.requireAnyOf).toEqual(["1"]);
+        }
+    });
+
+    it("类型级 template 与 variants 并存时两者都保留", () => {
+        const result = parseConfig(JSON.stringify({
+            types: {
+                userGroup: {
+                    template: "Template:兜底",
+                    variants: [{ id: "x", label: "某申请", template: "T" }],
+                },
+            },
+        }));
+        expect(result.ok).toBe(true);
+        if (result.ok) {
+            expect(result.config.types.userGroup.template).toBe("Template:兜底");
+            expect(result.config.types.userGroup.variants).toHaveLength(1);
+        }
+    });
+
+    it("变体全非法且无类型级 template 时整条丢弃", () => {
+        const result = parseConfig(JSON.stringify({
+            types: {
+                edit: { template: "Template:编辑请求", parameters: [] },
+                userGroup: { variants: [{ id: "x", label: "缺模板" }] },
+            },
+        }));
+        expect(result.ok).toBe(true);
+        if (result.ok) {
+            expect(result.config.types.userGroup).toBeUndefined();
+        }
+    });
+});
+
 describe("isGroupSatisfied", () => {
     it("无约束时恒为真", () => {
         expect(isGroupSatisfied({ template: "T" }, {})).toBe(true);

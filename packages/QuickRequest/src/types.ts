@@ -20,18 +20,48 @@ interface RequestParam {
     "default"?: string;
 }
 
-/** 单个请求类型的内容配置（配置 JSON 里 types 下的一个条目）。 */
-interface TypeConfig {
-    /** 可传参的基模板页名，如 Template:编辑请求 */
+/**
+ * 模板调用拼装的输入：类型条目或其变体都满足此结构。
+ */
+interface TemplateSpec {
+    /** 可传参的基模板页名 */
     template: string;
     /** 参数定义，可为空 */
+    parameters?: RequestParam[];
+    /** 固定参数：每次调用都带上、不在表单中展示（如 用户组=机器用户） */
+    fixedParams?: Record<string, string>;
+}
+
+/** 单个申请类型变体（配置 JSON 里 variants 数组的一项，userGroup 用）。 */
+interface TypeVariant extends TemplateSpec {
+    /** 变体 id，类型内唯一 */
+    id: string;
+    /** 变体下拉框显示名，如「维护姬申请」 */
+    label: string;
+    /** 组约束：所列参数键至少填写一项，按变体自身参数过滤 */
+    requireAnyOf?: string[];
+}
+
+/** 单个请求类型的内容配置（配置 JSON 里 types 下的一个条目）。 */
+interface TypeConfig {
+    /**
+     * 可传参的基模板页名，如 Template:编辑请求。
+     * 带 variants 的类型（userGroup）可省略——模板由各变体自带，此字段不再使用。
+     */
+    template?: string;
+    /** 参数定义，可为空；带 variants 的类型不使用 */
     parameters?: RequestParam[];
     /**
      * 组约束：所列参数键至少填写一项。
      * edit 的 original / new 用它表达「仅删除 / 仅新增 / 修改」三态——
      * Template:编辑请求 仅在两字段全空时报错，二者各自都不是必填项。
+     * 带 variants 的类型不使用（约束挂在变体上）。
      */
     requireAnyOf?: string[];
+    /** 同型多模板变体（userGroup 的各申请类型）；存在时表单顶部出现变体下拉 */
+    variants?: TypeVariant[];
+    /** 固定参数：每次调用都带上、不在表单中展示（与变体的 fixedParams 同语义） */
+    fixedParams?: Record<string, string>;
 }
 
 /** 站内配置页的结构。 */
@@ -86,8 +116,17 @@ interface RequestTypeDefinition {
     availability: (ctx: QuickRequestContext) => boolean;
     /** 发帖目标页面；当前页面没有讨论页等场景返回 false */
     resolveTarget: (ctx: QuickRequestContext) => string | false;
-    /** 新话题的章节标题，保持现有格式「<请求名> - <用户> - <YYYY.MM.DD>」以兼容版面存档流程 */
-    sectionTitle: (ctx: QuickRequestContext) => string;
+    /**
+     * 新话题的章节标题，保持「<请求名> - <用户> - <YYYY.MM.DD>」格式以兼容版面存档流程。
+     * postMode 为 append 的类型不发 sectiontitle（标题由模板正文在存盘替换时生成），省略此字段。
+     */
+    sectionTitle?: (ctx: QuickRequestContext) => string;
+    /**
+     * 发帖方式：addtopic（缺省，DT 新话题，带 sectiontitle）或
+     * append（action=edit 追加正文——正文以 `== 标题 ==` 开头，标题由模板生成，
+     * 加 topic 标题会造成重复；userGroup 等申请类模板属此类）。
+     */
+    postMode?: "addtopic" | "append";
     /** 默认编辑摘要；空串表示不传 summary 参数，由服务端自动生成 */
     defaultSummary?: string;
     /** 提交前确认项；返回空数组表示直接提交 */
@@ -141,8 +180,13 @@ interface PreviewDialogData {
     submittedText: string;
     /** 发帖目标页面 */
     targetPage: string;
-    /** 章节标题的惰性生成：在提交时调用，日期取提交时刻（预览停留跨午夜不会带前一天的日期发出） */
-    getSectionTitle: () => string;
+    /**
+     * 章节标题的惰性生成：在提交时调用，日期取提交时刻（预览停留跨午夜不会带前一天的日期发出）。
+     * postMode 为 append 时无此字段——标题由模板正文在存盘替换时生成。
+     */
+    getSectionTitle?: () => string;
+    /** 发帖方式，缺省 addtopic；语义见 RequestTypeDefinition.postMode */
+    postMode?: "addtopic" | "append";
     /** 编辑摘要；空串表示不传，由服务端自动生成 */
     editSummary: string;
     /** 提交前确认项的惰性提供者；缺省表示该类型无需确认 */
@@ -153,7 +197,6 @@ interface PreviewDialogData {
  * 主对话框在渲染预览之前能产出的部分。
  */
 type PreviewSubmission = Omit<PreviewDialogData, "title" | "previewHtml" | "getWarnings">;
-
 /**
  * 主对话框的关闭结果。
  * 「取消」按钮没有 action 名，由 OOUI 基类 close() 关闭且不带数据，故只列出两条会带 message 的失败路径：
@@ -192,6 +235,8 @@ export type {
     RequestTypeDefinition,
     RequestTypeId,
     SendResult,
+    TemplateSpec,
     TypeConfig,
+    TypeVariant,
     Warning,
 };

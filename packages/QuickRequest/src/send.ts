@@ -17,9 +17,19 @@ interface SendParams {
     summary: string;
 }
 
+/** 追加发帖（append 模式）的参数；章节标题由模板正文自带，无 sectionTitle。 */
+interface AppendParams {
+    /** 发帖目标页面（含命名空间） */
+    page: string;
+    /** 最终提交正文，已含 subst 改写（由 buildSubmitText 生成） */
+    wikitext: string;
+    /** 编辑摘要；空串表示不传该参数，由服务端自动生成 */
+    summary: string;
+}
+
 /*
- * 发送域：提交新话题（postTopic），以及发送成功后把用户带到新话题所需的锚点回读
- * （fetchLastSectionAnchor）与跳转（newSectionUrl / gotoNewSection）。
+ * 发送域：提交新话题（postTopic）、追加自带标题的正文（appendTopic），
+ * 以及发送成功后把用户带到新话题所需的锚点回读（fetchLastSectionAnchor）与跳转（newSectionUrl / gotoNewSection）。
  */
 /**
  * 向目标页面追加一个新话题。
@@ -62,6 +72,44 @@ const postTopic = (params: SendParams): JQuery.Promise<SendResult> => {
 };
 
 /**
+ * 向目标页面追加一段自带章节标题的正文（userGroup 等申请类模板）。
+ *
+ * 这些模板的正文以 `== X申请 - User:{{subst:REVISIONUSER}} ==` 开头，标题在存盘替换时
+ * 生成——addtopic 会再叠一层 sectiontitle 标题造成重复，故走 action=edit + appendtext：
+ * 只追加正文，与现行入口 `section=new&nosummary=1`（隐藏标题框，MediaWiki 因此不写标题行）的
+ * 保存结果一致。首尾各补一个换行与页尾内容分隔。
+ * nocreate：版面页不存在时直接失败，避免凭空建出版面页。
+ * summary 为空时不传该参数，由服务端自动生成。
+ *
+ * 失败处理与 postTopic 相同（.then/.catch 而非 try/catch 的原因见其注释）；
+ * append 同样非幂等，传输层失败后的重试可能重复发帖，同样标记 ambiguous。
+ * @param params 发送参数
+ * @returns 发送结果
+ */
+const appendTopic = (params: AppendParams): JQuery.Promise<SendResult> => {
+    const summary = params.summary === "" ? {} : { summary: params.summary };
+    return getApi().postWithToken("csrf", {
+        action: "edit",
+        formatversion: 2,
+        title: params.page,
+        appendtext: `\n${params.wikitext}\n`,
+        nocreate: true,
+        assertuser: (mw.config.get("wgUserName") as string | null | undefined) ?? "",
+        watchlist: "nochange",
+        tags: CHANGE_TAG,
+        ...summary,
+    })
+        .then((res: unknown) => ({
+            ok: true as const,
+            newrevid: (res as { edit?: { newrevid?: number } } | undefined)?.edit?.newrevid,
+        }))
+        .catch((code: string, result?: ApiRejectPayload | null) => {
+            console.warn("[QuickRequest] 发送失败", code, result);
+            return { ok: false as const, code, detail: describeSendError(code, result), ambiguous: code === "http" };
+        });
+};
+
+/**
  * 读取指定修订里新话题的章节锚点。
  *
  * prop=sections 按文档顺序列出目录;最后一个章节未必是新话题——用户粘贴的内容或
@@ -69,12 +117,15 @@ const postTopic = (params: SendParams): JQuery.Promise<SendResult> => {
  * 最后一项(新话题追加在页尾,正文无标题时最后一项即它)。传 oldid 而非 page,
  * 是为了把解析固定在刚保存的修订上,避免期间有人编辑导致目录位移。
  *
+ * append 模式传 undefined 直接取最后一项——正文自带的标题含存盘时才替换的
+ * 魔法字（{{subst:REVISIONUSER}} 等），客户端拼不出准确文本，而追加必在页尾。
+ *
  * 取不到时返回空串(例如章节被合并进上一节),由调用方退化为不带锚点的跳转。
  * @param revid 刚保存的修订 ID
- * @param sectionTitle 新话题的章节标题
+ * @param sectionTitle 新话题的章节标题；append 模式省略
  * @returns 章节锚点；取不到时为空字符串
  */
-const fetchLastSectionAnchor = async (revid: number | undefined, sectionTitle: string): Promise<string> => {
+const fetchLastSectionAnchor = async (revid: number | undefined, sectionTitle?: string): Promise<string> => {
     if (!revid) {
         return "";
     }
@@ -86,7 +137,9 @@ const fetchLastSectionAnchor = async (revid: number | undefined, sectionTitle: s
             formatversion: 2,
         }) as Partial<ApiParseResponse>;
         const sections = res.parse?.sections ?? [];
-        const matched = sections.filter((section) => section.line === sectionTitle).at(-1) ?? sections.at(-1);
+        const matched = sectionTitle === undefined
+            ? sections.at(-1)
+            : sections.filter((section) => section.line === sectionTitle).at(-1) ?? sections.at(-1);
         return matched?.anchor ?? "";
     } catch (error) {
         console.warn("[QuickRequest] 读取新章节锚点失败", error);
@@ -123,4 +176,4 @@ const gotoNewSection = (page: string, anchor: string): void => {
     location.assign(url);
 };
 
-export { fetchLastSectionAnchor, gotoNewSection, newSectionUrl, type SendParams, postTopic };
+export { type AppendParams, fetchLastSectionAnchor, gotoNewSection, newSectionUrl, postTopic, appendTopic, type SendParams };
