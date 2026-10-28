@@ -6,6 +6,7 @@ import { createParamField, readValues, validateFields } from "./fields.ts";
 import type { ParamField } from "./fields.ts";
 import { buildSubmitText, buildTemplateWikitext } from "./wikitext.ts";
 import { showError } from "./messageDialog.ts";
+import { setPreference } from "./storage.ts";
 import type {
     ConfigResult,
     MainDialogData,
@@ -19,8 +20,10 @@ import type {
     Warning,
 } from "./types.ts";
 
-/** 当前生效的模板规格：无变体类型是类型条目本身，有变体类型是选中的变体。 */
-type ActiveSpec = TemplateSpec & Pick<TypeConfig, "requireAnyOf">;
+/** 当前生效的表单规格：参数与组约束（配置模板类型与程序化类型共用）。 */
+type ActiveSpec = Pick<TemplateSpec, "parameters"> & Pick<TypeConfig, "requireAnyOf">;
+/** 配置模板类型的生效规格（含模板调用拼装所需字段）；程序化类型无此形态。 */
+type TemplateActiveSpec = ActiveSpec & TemplateSpec;
 
 /**
  * 主对话框：按请求类型展示参数表单与编辑摘要，然后进入预览。
@@ -52,9 +55,14 @@ class MainDialog extends OO.ui.ProcessDialog {
     private onPreview: ((data: PreviewDialogData) => void) | undefined;
     /** 入口预填值（封禁申诉的封禁信息等）；无预填的类型为 undefined */
     private preset: Record<string, string> | undefined;
+    /** 预览解析所用 API 与目标站基址（delete 在共享站发起时指向主站） */
+    private api!: mw.Api;
+    private targetBase = "";
     private typeConfig: TypeConfig | null = null;
-    /** 当前生效的模板规格：无变体类型即类型条目，有变体类型为选中的变体 */
+    /** 当前生效的表单规格（参数与组约束） */
     private activeSpec: ActiveSpec | null = null;
+    /** 配置模板类型的模板规格；程序化类型（delete）为 null */
+    private templateSpec: TemplateActiveSpec | null = null;
     private variantInput: OO.ui.DropdownInputWidget | null = null;
     private paramFields: ParamField[] = [];
 
@@ -74,7 +82,7 @@ class MainDialog extends OO.ui.ProcessDialog {
         this.loadingPanel = new OO.ui.PanelLayout({ padded: true, expanded: false });
         this.loadingPanel.$element.append(
             new OO.ui.ProgressBarWidget({ progress: false }).$element,
-            $("<p>").text(wgULS("正在加载请求配置…", "正在載入請求組態…")),
+            $("<p>").text(wgULS("正在加载…", "正在載入…")),
         );
 
         this.formPanel = new OO.ui.PanelLayout({ padded: true, expanded: false, scrollable: true });
@@ -92,13 +100,35 @@ class MainDialog extends OO.ui.ProcessDialog {
     public override getSetupProcess(data?: OO.ui.Dialog.SetupDataMap & Record<string, unknown>): OO.ui.Process {
         return super.getSetupProcess(data).next(
             (async () => {
-                const { definition, context, configPromise, onPreview, preset } = data as unknown as MainDialogData;
+                const { definition, context, configPromise, onPreview, preset, api, targetBase } = data as unknown as MainDialogData;
                 this.definition = definition;
                 this.context = context;
                 this.onPreview = onPreview;
                 this.preset = preset;
+                this.api = api;
+                this.targetBase = targetBase;
                 this.getActions().setAbilities({ preview: false });
 
+                // 程序化表单类型（delete）不经配置页：字段（含动态下拉选项与权限显隐）现取现建
+                const programmatic = definition.programmaticForm;
+                if (programmatic) {
+                    try {
+                        const parameters = await programmatic.buildParams(context);
+                        this.buildForm({ parameters, ...programmatic.requireAnyOf === undefined ? {} : { requireAnyOf: programmatic.requireAnyOf } }, null);
+                    } catch (error) {
+                        this.close({ action: "formError", message: toErrorMessage(error) });
+                        return;
+                    }
+                    this.loadingPanel.$element.detach();
+                    return;
+                }
+
+                // 以下为配置页类型。index 的约定：非程序化类型必带 configPromise；
+                // 缺失说明调用方违约，按表单构建失败呈现（同时完成类型收窄）
+                if (!configPromise) {
+                    this.close({ action: "formError", message: wgULS("缺少配置预取", "缺少組態預取") });
+                    return;
+                }
                 // configPromise 承诺不 reject，catch 只是兜底；步骤内绝不能抛，
                 // 一旦 reject，OOUI 会显示它内置的英文错误界面
                 const result = await configPromise.catch((error: unknown): ConfigResult => ({ ok: false, message: toErrorMessage(error) }));
@@ -115,7 +145,7 @@ class MainDialog extends OO.ui.ProcessDialog {
 
                 // 表单构建失败与配置无关，单独归因，免得被报成「配置页读取失败」
                 try {
-                    this.buildForm(typeConfig);
+                    this.buildForm(null, typeConfig);
                 } catch (error) {
                     this.close({ action: "formError", message: toErrorMessage(error) });
                     return;
@@ -138,7 +168,7 @@ class MainDialog extends OO.ui.ProcessDialog {
         }
         return new OO.ui.Process(
             (async () => {
-                const submission = this.collectSubmission();
+                const submission = await this.collectSubmission();
                 if (!submission) {
                     return;
                 }
@@ -146,8 +176,9 @@ class MainDialog extends OO.ui.ProcessDialog {
                 let previewHtml: string;
                 try {
                     // title 传发帖目标页：{{ARTICLEPAGENAME}} 等页面上下文相关魔法字
-                    // 必须按目标页解析，预览才与真实保存结果一致
-                    previewHtml = await parseWikitext(submission.submittedText, submission.targetPage);
+                    // 必须按目标页解析，预览才与真实保存结果一致；API 也按目标站取
+                    // （delete 在共享站发起时经 ForeignApi 到主站解析）
+                    previewHtml = await parseWikitext(submission.submittedText, submission.targetPage, this.api);
                 } catch (error) {
                     void showError(wgULS("预览失败", "預覽失敗"), wgULS(`无法渲染预览：${toErrorMessage(error)}`, `無法產生預覽：${toErrorMessage(error)}`));
                     return;
@@ -161,6 +192,8 @@ class MainDialog extends OO.ui.ProcessDialog {
                     ...submission.getSectionTitle === undefined ? {} : { getSectionTitle: submission.getSectionTitle },
                     ...submission.postMode === undefined ? {} : { postMode: submission.postMode },
                     editSummary: submission.editSummary,
+                    api: this.api,
+                    targetBase: this.targetBase,
                     ...this.definition.warnings === undefined
                         ? {}
                         : { getWarnings: (): Promise<Warning[]> => this.definition.warnings?.(this.context) ?? Promise.resolve([]) },
@@ -180,11 +213,13 @@ class MainDialog extends OO.ui.ProcessDialog {
     }
 
     /**
-     * 构建表单。仅在配置就绪后调用一次。
-     * 变体类型（userGroup）额外渲染「申请类型」下拉，参数区随选中变体整体重建。
-     * @param typeConfig 类型配置
+     * 构建表单。仅在类型内容就绪后调用一次（配置类型在预取落定后，程序化类型在 buildParams 落定后）。
+     * 变体类型（userGroup）额外渲染「申请类型」下拉，参数区随选中变体整体重建；
+     * 程序化类型（delete）无变体与模板，programmaticSpec 即初始规格。
+     * @param programmaticSpec 程序化表单的规格；配置页类型传 null
+     * @param typeConfig 类型配置；程序化类型传 null
      */
-    private buildForm(typeConfig: TypeConfig): void {
+    private buildForm(programmaticSpec: ActiveSpec | null, typeConfig: TypeConfig | null): void {
         this.typeConfig = typeConfig;
         const fieldset = new OO.ui.FieldsetLayout({ label: this.definition.label });
 
@@ -198,8 +233,8 @@ class MainDialog extends OO.ui.ProcessDialog {
             ]);
         }
 
-        const variants = typeConfig.variants ?? [];
-        let initialSpec: ActiveSpec;
+        const variants = typeConfig?.variants ?? [];
+        let initialSpec: ActiveSpec | TemplateActiveSpec;
         if (variants.length > 0) {
             this.variantInput = new OO.ui.DropdownInputWidget({
                 options: variants.map(({ id, label }) => ({ data: id, label })),
@@ -210,10 +245,12 @@ class MainDialog extends OO.ui.ProcessDialog {
             });
             fieldset.addItems([new OO.ui.FieldLayout(this.variantInput, { label: wgULS("申请类型", "申請類型"), align: "top" })]);
             initialSpec = variants[0];
+        } else if (programmaticSpec) {
+            initialSpec = programmaticSpec;
         } else {
             // 校验保证 template 与 variants 至少一项存在，此处判断同时完成类型收窄
-            const template = typeConfig.template;
-            if (!template) {
+            const template = typeConfig?.template;
+            if (!typeConfig || !template) {
                 throw new Error(wgULS("类型配置既无模板也无变体", "類型組態既無模板也無變體"));
             }
             initialSpec = {
@@ -259,14 +296,16 @@ class MainDialog extends OO.ui.ProcessDialog {
     /**
      * 按模板规格重建参数区与组约束提示。初次构建与变体切换共用；
      * 切换变体时已填内容不保留——各变体字段结构不同，保留无意义。
-     * @param spec 生效的模板规格
+     * @param spec 生效的表单规格
      */
     private rebuildParamArea(spec: ActiveSpec): void {
         this.activeSpec = spec;
+        // 配置模板类型才有模板规格；程序化类型（delete）的正文不经 buildTemplateWikitext
+        this.templateSpec = Reflect.has(spec, "template") ? spec as TemplateActiveSpec : null;
         this.paramFieldset.clearItems();
+        // 初始值优先级：入口预填（preset，如封禁申诉入口查好的封禁信息）＞
+        // auto: currentPage（本页名，取代旧的 preloadparams[]/$1 预填）＞ 配置 default
         this.paramFields = (spec.parameters ?? []).map((param) => {
-            // 初始值优先级：入口预填（preset，如封禁申诉入口查好的封禁信息）＞
-            // auto: currentPage（本页名，取代旧的 preloadparams[]/$1 预填）＞ 配置 default
             const presetValue = this.preset?.[param.key];
             const autoValue = param.auto === "currentPage" ? this.context.pageName : undefined;
             const initial = presetValue ?? autoValue ?? param.default;
@@ -274,7 +313,13 @@ class MainDialog extends OO.ui.ProcessDialog {
             return createParamField(
                 effective,
                 this.$overlay,
-                () => { this.onFormChanged(); },
+                () => {
+                    this.persistPreferences();
+                    this.onFormChanged();
+                },
+                () => {
+                    this.onEnterKey();
+                },
             );
         });
         this.paramFieldset.addItems(this.paramFields.map(({ layout }) => layout));
@@ -285,11 +330,44 @@ class MainDialog extends OO.ui.ProcessDialog {
         this.onFormChanged();
     }
 
-    /** 重算「预览」按钮的可用性，并刷新字段级校验提示与组约束提示。 */
+    /** 按 visibleIf 刷新字段可见性；隐藏字段不参与校验，值仍随表单传出。 */
+    private applyFieldVisibility(): void {
+        const values = readValues(this.paramFields);
+        for (const field of this.paramFields) {
+            const rule = field.param.visibleIf;
+            if (rule) {
+                field.hidden = values[rule.param] !== rule.equals;
+                field.layout.toggle(!field.hidden);
+            }
+        }
+    }
+
+    /**
+     * 把带 storageKey 的字段当前值写入持久存储（QuickRequest 键）。
+     * 只在值变化回调里调用——表单初始化不触发 change 事件，旧键回退值不会被误写进新键。
+     */
+    private persistPreferences(): void {
+        for (const { param, read } of this.paramFields) {
+            if (param.storageKey !== undefined) {
+                setPreference(param.storageKey, read());
+            }
+        }
+    }
+
+    /** enterSubmits 字段的回车回调：表单内任一 storageKey 偏好开启时，回车直达「预览」。 */
+    private onEnterKey(): void {
+        const enabled = this.paramFields.some(({ param, read }) => param.storageKey !== undefined && read() === "1");
+        if (enabled) {
+            void this.executeAction("preview");
+        }
+    }
+
+    /** 重算「预览」按钮的可用性，并刷新可见性、字段级校验提示与组约束提示。 */
     private onFormChanged(): void {
         if (!this.activeSpec) {
             return;
         }
+        this.applyFieldVisibility();
         const firstInvalid = validateFields(this.paramFields);
         const groupSatisfied = isGroupSatisfied(this.activeSpec, readValues(this.paramFields));
         this.groupHint.toggle(!groupSatisfied);
@@ -298,29 +376,45 @@ class MainDialog extends OO.ui.ProcessDialog {
 
     /**
      * 汇总当前表单，产出待预览/提交的内容。校验不过时返回 null 并给出提示。
+     * 程序化表单（delete）的正文由 buildBody 异步构建，批量清单的解析校验以抛错表达、在此捕获呈现。
      * @returns 待预览/提交的内容
      */
-    private collectSubmission(): PreviewSubmission | null {
+    private async collectSubmission(): Promise<PreviewSubmission | null> {
         const spec = this.activeSpec;
-        if (!spec || !this.typeConfig) {
+        if (!spec) {
             return null;
         }
         const firstInvalid = validateFields(this.paramFields);
         if (firstInvalid) {
-            firstInvalid.widget.focus();
+            firstInvalid.focus?.();
             return null;
         }
-        if (!isGroupSatisfied(spec, readValues(this.paramFields))) {
+        const values = readValues(this.paramFields);
+        if (!isGroupSatisfied(spec, values)) {
             void showError(wgULS("内容不完整", "內容不完整"), wgULS("请至少填写组内的一项内容。", "請至少填寫組內的一項內容。"));
             return null;
         }
 
-        const values = readValues(this.paramFields);
-        const raw = buildTemplateWikitext(spec, values);
-        // 判空基线：用户参数全空的输出（固定参数仍在）——而不是裸模板调用
-        if (raw === buildTemplateWikitext(spec, {})) {
-            void showError(wgULS("内容为空", "內容為空"), wgULS("待发送的内容不能为空。", "待傳送的內容不能為空。"));
-            return null;
+        const programmatic = this.definition.programmaticForm;
+        let submittedText: string;
+        if (programmatic) {
+            try {
+                submittedText = await programmatic.buildBody(values, this.context);
+            } catch (error) {
+                void showError(wgULS("内容不完整", "內容不完整"), toErrorMessage(error));
+                return null;
+            }
+        } else {
+            if (!this.templateSpec) {
+                return null;
+            }
+            const raw = buildTemplateWikitext(this.templateSpec, values);
+            // 判空基线：用户参数全空的输出（固定参数仍在）——而不是裸模板调用
+            if (raw === buildTemplateWikitext(this.templateSpec, {})) {
+                void showError(wgULS("内容为空", "內容為空"), wgULS("待发送的内容不能为空。", "待傳送的內容不能為空。"));
+                return null;
+            }
+            submittedText = buildSubmitText(raw);
         }
 
         const targetPage = this.definition.resolveTarget(this.context);
@@ -330,12 +424,17 @@ class MainDialog extends OO.ui.ProcessDialog {
         }
 
         const sectionTitle = this.definition.sectionTitle;
+        // 章节标题惰性生成：日期取提交时刻，预览停留跨午夜也不会带前一天的日期发出；
+        // append 模式（标题由模板正文自带）不提供；程序化类型按表单值区分（单页/批量）
+        const getSectionTitle = programmatic !== undefined
+            ? (): string => programmatic.buildSectionTitle(values, { ...this.context, now: new Date() })
+            : sectionTitle !== undefined
+                ? (): string => sectionTitle({ ...this.context, now: new Date() })
+                : undefined;
         return {
             targetPage,
-            submittedText: buildSubmitText(raw),
-            // 章节标题惰性生成：日期取提交时刻，预览停留跨午夜也不会带前一天的日期发出；
-            // append 模式（标题由模板正文自带）不提供
-            ...sectionTitle === undefined ? {} : { getSectionTitle: (): string => sectionTitle({ ...this.context, now: new Date() }) },
+            submittedText,
+            ...getSectionTitle === undefined ? {} : { getSectionTitle },
             ...this.definition.postMode === undefined ? {} : { postMode: this.definition.postMode },
             ...this.definition.allowCreate === undefined ? {} : { allowCreate: this.definition.allowCreate },
             editSummary: this.summaryInput.getValue().trim(),

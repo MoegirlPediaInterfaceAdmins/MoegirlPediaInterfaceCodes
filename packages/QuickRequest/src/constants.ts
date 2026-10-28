@@ -1,5 +1,16 @@
+import type { SiteId } from "./types.ts";
+
 /** 修改请求类型配置请到对应 JSON 文件进行，参数说明参见 README */
 const CONFIG_PAGE = "MediaWiki:Gadget-QuickRequest.json";
+
+/** 各部署站点的 origin：跨站 ForeignApi 与发帖成功后的跳转基址共用。 */
+const SITE_ORIGINS: Record<SiteId, string> = {
+    zh: "https://mzh.moegirl.org.cn",
+    commons: "https://commons.moegirl.org.cn",
+};
+
+/** 讨论版各级版面的页名前缀（操作申请/权限变更等）；删除请求入口在这些页面自身不出现。 */
+const BOARD_PREFIX = "萌娘百科_talk:讨论版";
 
 /** 对话框尺寸。 */
 const DIALOG_SIZE: OO.ui.Window.Size = "large";
@@ -47,6 +58,7 @@ const WARNING_SKIP_GROUPS = ["patroller", "sysop", "techeditor", "interface-admi
 const titleSuffix = (userName: string, now: Date): string => ` - ${userName} - ${now.getFullYear()}.${libPrefixNumber(now.getMonth() + 1)}.${libPrefixNumber(now.getDate())}`;
 
 export {
+    BOARD_PREFIX,
     CHANGE_TAG,
     CONFIG_PAGE,
     CONVERSION_TABLE_PATTERN,
@@ -57,6 +69,7 @@ export {
     POLICY_CATEGORIES,
     REDIRECT_DELAY,
     RIGHTS_BOARD,
+    SITE_ORIGINS,
     WARNING_SKIP_GROUPS,
     titleSuffix,
 };

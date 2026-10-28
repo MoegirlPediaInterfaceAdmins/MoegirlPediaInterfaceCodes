@@ -62,7 +62,6 @@
     - usergroup
     - queryContributions
     - userpageDelete
-    - requestDeletion
     - BatchToolkit
 
 - name: editing
