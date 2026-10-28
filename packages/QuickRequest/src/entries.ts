@@ -1,4 +1,6 @@
+import { fetchBlockInfoText } from "./blockInfo.ts";
 import { RIGHTS_BOARD } from "./constants.ts";
+import { toErrorMessage } from "./errors.ts";
 import { buildContext, REQUEST_TYPES } from "./registry.ts";
 
 /**
@@ -30,10 +32,43 @@ const mountUserGroupEntry = (): void => {
 };
 
 /**
- * QuickRequest 自有入口的挂载器列表（权限变更版「发起权限申请」等）。
- * 封禁申诉（阶段 3）、删除请求（阶段 4）、反破坏举报与用户查核记录（阶段 5）按里程碑在此追加。
+ * 封禁提示屏上的「寻求帮助」入口（阶段 3）。
+ * 提示屏由 MediaWiki:Blockedtext* 系列消息经 Template:BlockedUserHelp 服务端渲染，其中带
+ * <div id="BlockedUserHelp">——div 出现在 DOM 中就是封禁提示屏的可靠信号，不必逐页查询封禁
+ * 状态。封禁详情在点击入口时按现行 Widget:BlockedUserHelp 的同一条查询现查现拼，作为 preset
+ * 预填进对话框的只读「封禁信息」字段。现行 Widget 注入的同名表单与本入口并存，替换需站内
+ * 配合（去掉模板里的 {{#Widget:BlockedUserHelp}}），列入部署前置事项。
  */
-const entryMounters: (() => void)[] = [mountUserGroupEntry];
+const mountBanAppealEntry = (): void => {
+    const $container = $("#BlockedUserHelp");
+    if ($container.length === 0) {
+        return;
+    }
+    const openBanAppeal = async (): Promise<void> => {
+        try {
+            const blockInfo = await fetchBlockInfoText();
+            if (blockInfo === null) {
+                // 提示屏渲染时在封禁中，点击时可能已期满——此时没有可申诉的封禁
+                mw.notify(wgULS("您当前不在封禁中，无需申诉。", "您目前不在封鎖中，無需申訴。"));
+                return;
+            }
+            window.libQuickRequest?.open("banAppeal", { 1: blockInfo });
+        } catch (error) {
+            mw.notify(wgULS(`查询封禁信息失败：${toErrorMessage(error)}`, `查詢封鎖資訊失敗：${toErrorMessage(error)}`), { type: "error" });
+        }
+    };
+    const button = new OO.ui.ButtonWidget({ label: wgULS("寻求帮助", "尋求幫助"), flags: ["primary", "progressive"] });
+    button.on("click", () => {
+        void openBanAppeal();
+    });
+    $container.append(button.$element);
+};
+
+/**
+ * QuickRequest 自有入口的挂载器列表（权限变更版「发起权限申请」、封禁提示屏「寻求帮助」）。
+ * 删除请求（阶段 4）、反破坏举报与用户查核记录（阶段 5）按里程碑在此追加。
+ */
+const entryMounters: (() => void)[] = [mountUserGroupEntry, mountBanAppealEntry];
 
 /**
  * 挂载全部自有入口。index 在模块求值时调用一次。

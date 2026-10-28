@@ -16,6 +16,10 @@ interface RequestParam {
     required?: boolean;
     /** 打开对话框时自动填入当前页面名，缺省不自动填充 */
     auto?: "currentPage";
+    /** 只读：值由入口预填或自动派生，不让用户改动（如封禁申诉的封禁信息），缺省可编辑 */
+    readOnly?: boolean;
+    /** 字段说明，展示为标签旁的帮助图标；缺省不展示 */
+    hint?: string;
     /** 初始值，缺省为空 */
     "default"?: string;
 }
@@ -127,6 +131,12 @@ interface RequestTypeDefinition {
      * 加 topic 标题会造成重复；userGroup 等申请类模板属此类）。
      */
     postMode?: "addtopic" | "append";
+    /**
+     * append 模式下是否允许创建目标页，缺省不允许（nocreate）。
+     * banAppeal 的目标是本人讨论页，新用户可能还没有讨论页——现行 section=new
+     * 流程遇到这种情况会直接建页，allowCreate 与之对齐。
+     */
+    allowCreate?: boolean;
     /** 默认编辑摘要；空串表示不传 summary 参数，由服务端自动生成 */
     defaultSummary?: string;
     /** 提交前确认项；返回空数组表示直接提交 */
@@ -153,6 +163,8 @@ type ConfigResult = { ok: true; config: QuickRequestConfig } | { ok: false; mess
 interface MainDialogData {
     definition: RequestTypeDefinition;
     context: QuickRequestContext;
+    /** 入口预填值（参数键 → 值），如封禁申诉入口预填的封禁信息；无预填时省略 */
+    preset?: Record<string, string>;
     /** 配置的预取 promise（承诺不 reject） */
     configPromise: Promise<ConfigResult>;
     /** 请求打开预览对话框；主对话框保持开启，预览叠加其上 */
@@ -176,6 +188,8 @@ interface PreviewDialogData {
     getSectionTitle?: () => string;
     /** 发帖方式，缺省 addtopic；语义见 RequestTypeDefinition.postMode */
     postMode?: "addtopic" | "append";
+    /** append 模式下是否允许创建目标页；语义见 RequestTypeDefinition.allowCreate */
+    allowCreate?: boolean;
     /** 编辑摘要；空串表示不传，由服务端自动生成 */
     editSummary: string;
     /** 提交前确认项的惰性提供者；缺省表示该类型无需确认 */

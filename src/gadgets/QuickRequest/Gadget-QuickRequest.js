@@ -48,11 +48,11 @@ var apiInstance = null, getApi = () => (apiInstance ?? (apiInstance = new mw.Api
 var PARAM_TYPES = /* @__PURE__ */ new Set(["page", "user", "text", "multiline"]), isParamType = (value) => typeof value == "string" && PARAM_TYPES.has(value), compact = (items) => items.filter((item) => item !== null), prefetch = null, isNonEmptyString = (value) => typeof value == "string" && value.trim() !== "", toRequestParam = (raw) => {
   if (typeof raw != "object" || raw === null)
     return null;
-  let { key, label, type, required, auto, default: defaultValue } = raw;
+  let { key, label, type, required, auto, readOnly, hint, default: defaultValue } = raw;
   if (!isNonEmptyString(key) || !isNonEmptyString(label))
     return null;
   let param = { key, label };
-  return isParamType(type) && (param.type = type), typeof required == "boolean" && (param.required = required), auto === "currentPage" && (param.auto = auto), typeof defaultValue == "string" && (param.default = defaultValue), param;
+  return isParamType(type) && (param.type = type), typeof required == "boolean" && (param.required = required), auto === "currentPage" && (param.auto = auto), typeof readOnly == "boolean" && (param.readOnly = readOnly), isNonEmptyString(hint) && (param.hint = hint), typeof defaultValue == "string" && (param.default = defaultValue), param;
 }, toFixedParams = (raw) => {
   if (typeof raw != "object" || raw === null)
     return;
@@ -123,6 +123,27 @@ var PARAM_TYPES = /* @__PURE__ */ new Set(["page", "user", "text", "multiline"])
   return keys === void 0 || keys.length === 0 ? !0 : keys.some((key) => (values[key] ?? "").trim() !== "");
 }, findTypeConfig = (config, id) => config.types[id];
 
+// packages/QuickRequest/src/blockInfo.ts
+var formatBlockInfo = (user) => {
+  if (user.blockid === void 0 || user.blockedby === void 0)
+    return null;
+  let reason = user.blockreason?.replaceAll(`
+`, "") ?? "", text = `该用户已被封禁，执行封禁的人员是[[U:${user.blockedby}|${user.blockedby}]]。封禁原因是：''${reason === "" ? "未给出原因" : reason}''。
+`;
+  return text += `* 封禁开始时间：${user.blockedtimestampformatted ?? ""}
+`, text += `* 封禁期满时间：${user.blockexpiry === "infinite" ? "无限期" : user.blockexpiryformatted ?? ""}
+`, text += `* 封禁编号：#${user.blockid}`, text;
+}, fetchBlockInfoText = async () => {
+  let userName = mw.config.get("wgUserName") ?? "", res = await getApi().post({
+    action: "query",
+    list: "users",
+    usprop: "blockinfo",
+    ususers: userName,
+    formatversion: 2
+  });
+  return formatBlockInfo(res.query?.users?.[0] ?? {});
+};
+
 // packages/QuickRequest/src/registry.ts
 var policyWarning = (ctx) => {
   if (ctx.userGroups.some((group) => WARNING_SKIP_GROUPS.includes(group)))
@@ -183,12 +204,20 @@ var policyWarning = (ctx) => {
   availability: (ctx) => ctx.userGroups.includes("autoconfirmed"),
   resolveTarget: () => RIGHTS_BOARD,
   postMode: "append"
+}, banAppealDefinition = {
+  id: "banAppeal",
+  label: wgULS("封禁申诉", "封鎖申訴"),
+  availability: () => !0,
+  resolveTarget: (ctx) => `User_talk:${ctx.userName}`,
+  postMode: "append",
+  allowCreate: !0
 }, REQUEST_TYPES = {
   edit: editDefinition,
   editConversiontable: editConversiontableDefinition,
   move: moveDefinition,
   create: createDefinition,
-  userGroup: userGroupDefinition
+  userGroup: userGroupDefinition,
+  banAppeal: banAppealDefinition
 }, resolveRequestType = (id, pageName) => id === "edit" && CONVERSION_TABLE_PATTERN.test(pageName) ? REQUEST_TYPES.editConversiontable : REQUEST_TYPES[id], buildContext = (userName) => ({
   pageName: mw.config.get("wgPageName"),
   talkPage: libGetPageNames().talkPage,
@@ -205,7 +234,26 @@ var mountUserGroupEntry = () => {
   link && $(link).on("click", (event) => {
     event.preventDefault(), window.libQuickRequest?.open("userGroup");
   });
-}, entryMounters = [mountUserGroupEntry], mountEntries = () => {
+}, mountBanAppealEntry = () => {
+  let $container = $("#BlockedUserHelp");
+  if ($container.length === 0)
+    return;
+  let openBanAppeal = async () => {
+    try {
+      let blockInfo = await fetchBlockInfoText();
+      if (blockInfo === null) {
+        mw.notify(wgULS("您当前不在封禁中，无需申诉。", "您目前不在封鎖中，無需申訴。"));
+        return;
+      }
+      window.libQuickRequest?.open("banAppeal", { 1: blockInfo });
+    } catch (error) {
+      mw.notify(wgULS(`查询封禁信息失败：${toErrorMessage(error)}`, `查詢封鎖資訊失敗：${toErrorMessage(error)}`), { type: "error" });
+    }
+  }, button = new OO.ui.ButtonWidget({ label: wgULS("寻求帮助", "尋求幫助"), flags: ["primary", "progressive"] });
+  button.on("click", () => {
+    openBanAppeal();
+  }), $container.append(button.$element);
+}, entryMounters = [mountUserGroupEntry, mountBanAppealEntry], mountEntries = () => {
   for (let mount of entryMounters)
     mount();
 };
@@ -225,10 +273,14 @@ var createParamWidget = (param, $overlay) => {
   }
 }, createParamField = (param, $overlay, onChange) => {
   let widget = createParamWidget(param, $overlay);
-  return param.auto === "currentPage" && widget.setReadOnly(!0), widget.on("change", onChange), {
+  return (param.readOnly === !0 || param.auto === "currentPage") && widget.setReadOnly(!0), widget.on("change", onChange), {
     param,
     widget,
-    layout: new OO.ui.FieldLayout(widget, { label: param.label, align: "top" }),
+    layout: new OO.ui.FieldLayout(widget, {
+      label: param.label,
+      align: "top",
+      ...param.hint === void 0 ? {} : { help: param.hint, helpInline: !0 }
+    }),
     flagged: !1
   };
 }, readValues = (fields) => Object.fromEntries(fields.map(({ param, widget }) => [param.key, widget.getValue()])), validateFields = (fields) => {
@@ -311,6 +363,8 @@ var MainDialog = class extends OO.ui.ProcessDialog {
     __publicField(this, "definition");
     __publicField(this, "context");
     __publicField(this, "onPreview");
+    /** 入口预填值（封禁申诉的封禁信息等）；无预填的类型为 undefined */
+    __publicField(this, "preset");
     __publicField(this, "typeConfig", null);
     /** 当前生效的模板规格：无变体类型即类型条目，有变体类型为选中的变体 */
     __publicField(this, "activeSpec", null);
@@ -341,8 +395,8 @@ var MainDialog = class extends OO.ui.ProcessDialog {
   getSetupProcess(data) {
     return super.getSetupProcess(data).next(
       (async () => {
-        let { definition, context, configPromise, onPreview } = data;
-        this.definition = definition, this.context = context, this.onPreview = onPreview, this.getActions().setAbilities({ preview: !1 });
+        let { definition, context, configPromise, onPreview, preset } = data;
+        this.definition = definition, this.context = context, this.onPreview = onPreview, this.preset = preset, this.getActions().setAbilities({ preview: !1 });
         let result = await configPromise.catch((error) => ({ ok: !1, message: toErrorMessage(error) }));
         if (!result.ok) {
           this.close({ action: "configError", message: result.message });
@@ -457,11 +511,16 @@ var MainDialog = class extends OO.ui.ProcessDialog {
    * @param spec 生效的模板规格
    */
   rebuildParamArea(spec) {
-    this.activeSpec = spec, this.paramFieldset.clearItems(), this.paramFields = (spec.parameters ?? []).map(
-      (param) => createParamField(param.auto === "currentPage" ? { ...param, default: this.context.pageName } : param, this.$overlay, () => {
-        this.onFormChanged();
-      })
-    ), this.paramFieldset.addItems(this.paramFields.map(({ layout }) => layout));
+    this.activeSpec = spec, this.paramFieldset.clearItems(), this.paramFields = (spec.parameters ?? []).map((param) => {
+      let presetValue = this.preset?.[param.key], autoValue = param.auto === "currentPage" ? this.context.pageName : void 0, initial = presetValue ?? autoValue ?? param.default, effective = initial === void 0 ? param : { ...param, default: initial };
+      return createParamField(
+        effective,
+        this.$overlay,
+        () => {
+          this.onFormChanged();
+        }
+      );
+    }), this.paramFieldset.addItems(this.paramFields.map(({ layout }) => layout));
     let groupLabels = (spec.requireAnyOf ?? []).map((key) => spec.parameters?.find((param) => param.key === key)?.label ?? key);
     this.groupHint.setLabel(groupLabels.length > 0 ? wgULS(`「${groupLabels.join("」「")}」至少填写一项`, `「${groupLabels.join("」「")}」至少填寫一項`) : ""), this.onFormChanged();
   }
@@ -499,6 +558,7 @@ var MainDialog = class extends OO.ui.ProcessDialog {
       // append 模式（标题由模板正文自带）不提供
       ...sectionTitle === void 0 ? {} : { getSectionTitle: () => sectionTitle({ ...this.context, now: /* @__PURE__ */ new Date() }) },
       ...this.definition.postMode === void 0 ? {} : { postMode: this.definition.postMode },
+      ...this.definition.allowCreate === void 0 ? {} : { allowCreate: this.definition.allowCreate },
       editSummary: this.summaryInput.getValue().trim()
     };
   }
@@ -549,7 +609,7 @@ var postTopic = (params) => {
     appendtext: `
 ${params.wikitext}
 `,
-    nocreate: !0,
+    ...params.allowCreate === !0 ? {} : { nocreate: !0 },
     assertuser: mw.config.get("wgUserName") ?? "",
     watchlist: "nochange",
     tags: CHANGE_TAG,
@@ -664,7 +724,12 @@ var PreviewDialog = class extends OO.ui.ProcessDialog {
               }
             let append = payload.postMode === "append", sectionTitle = append ? "" : payload.getSectionTitle?.() ?? "";
             for (; ; ) {
-              let result = append ? await appendTopic({ page: payload.targetPage, wikitext: payload.submittedText, summary: payload.editSummary }) : await postTopic({
+              let result = append ? await appendTopic({
+                page: payload.targetPage,
+                wikitext: payload.submittedText,
+                summary: payload.editSummary,
+                ...payload.allowCreate === void 0 ? {} : { allowCreate: payload.allowCreate }
+              }) : await postTopic({
                 page: payload.targetPage,
                 sectionTitle,
                 wikitext: payload.submittedText,
@@ -740,15 +805,16 @@ var describeConfigFailure = (reason) => wgULS(`${CONFIG_PAGE} 读取或解析失
     showError(wgULS("无法发起请求", "無法發起請求"), wgULS("当前页面没有对应的讨论页。", "目前頁面沒有對應的討論頁。"));
     return;
   }
-  let configPromise = prefetchConfig(), mainDialog = new MainDialog({ size: DIALOG_SIZE });
-  openWindow(mainDialog, {
+  let configPromise = prefetchConfig(), mainDialog = new MainDialog({ size: DIALOG_SIZE }), data = {
     definition,
     context,
+    ...preset === void 0 ? {} : { preset },
     configPromise,
     onPreview: (previewData) => {
       openPreview(previewData, mainDialog);
     }
-  }, (result) => {
+  };
+  openWindow(mainDialog, data, (result) => {
     if (result?.action === "configError") {
       showError(wgULS("无法加载请求配置", "無法載入請求組態"), describeConfigFailure(result.message));
       return;
