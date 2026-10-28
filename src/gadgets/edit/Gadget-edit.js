@@ -52,7 +52,7 @@ $(() => {
             const container = $("<div/>", {
                 "class": "editRequest",
             });
-            container.append(wgULS("虽然您无权编辑本页面，但您可以点击右侧按钮在本页的讨论页提出编辑请求，让可以编辑的人代为编辑：", "雖然您無權編輯本頁面，但您可以點擊右側按鈕在本頁的討論頁提出編輯請求，讓可以編輯的人代為編輯："));
+            container.append(wgULS("虽然您无权编辑本页面，但您可以使用按钮在本页的讨论页提出编辑请求，让可以编辑的人代为编辑：", "雖然您無權編輯本頁面，但您可以使用按鈕在本頁的討論頁提出編輯請求，讓可以編輯的人代為編輯："));
             $("<button/>", {
                 "class": "cdx-button cdx-button--action-progressive cdx-button--weight-primary",
             }).text(wgULS("提出编辑请求", "提出編輯請求")).on("click", () => {

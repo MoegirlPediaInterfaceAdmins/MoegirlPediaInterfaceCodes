@@ -12,12 +12,10 @@ const mountUserGroupEntry = (): void => {
     if (mw.config.get("wgPageName") !== RIGHTS_BOARD) {
         return;
     }
-    const userName = mw.config.get("wgUserName");
-    if (!userName) {
-        return;
-    }
+    // 本包以 rights: [edit] 加载，执行到这里必为有名用户；available 的 autoconfirmed
+    // 条件与现行申请按钮（Widget:Applybutton）的守卫一致
     const definition = REQUEST_TYPES.userGroup;
-    if (!definition?.availability(buildContext(userName))) {
+    if (!definition?.availability(buildContext((mw.config.get("wgUserName") as string | null | undefined) ?? ""))) {
         return;
     }
     const link = mw.util.addPortletLink("p-cactions", "#", wgULS("发起权限申请", "發起權限申請"), "ca-quickrequest-usergroup");

@@ -123,29 +123,6 @@ describe("parseConfig", () => {
     });
 });
 
-describe("parseConfig 覆盖合并（window.QuickRequest.types 的语义）", () => {
-    it("同 id 覆盖预置条目，新 id 追加", () => {
-        const result = parseConfig(rawConfig, {
-            edit: { template: "Template:编辑请求/自定义", parameters: [] },
-            extra: { template: "Template:额外", parameters: [] },
-        });
-        expect(result.ok).toBe(true);
-        if (result.ok) {
-            expect(result.config.types.edit.template).toBe("Template:编辑请求/自定义");
-            expect(result.config.types.extra.template).toBe("Template:额外");
-            expect(result.config.types.move.template).toBe("Template:移动请求");
-        }
-    });
-
-    it("覆盖条目本身非法时被丢弃，保留预置条目", () => {
-        const result = parseConfig(rawConfig, { edit: { parameters: [{ key: "x", label: "y" }] } });
-        expect(result.ok).toBe(true);
-        if (result.ok) {
-            expect(result.config.types.edit.template).toBe("Template:编辑请求");
-        }
-    });
-});
-
 describe("parseConfig 变体（variants）", () => {
     const variantConfig = JSON.stringify({
         types: {

@@ -13,6 +13,17 @@
         $container.append($("<br>"), document.createTextNode(`${mw.msg(action)}：${levels.map((level) => mw.msg(`protect-level-${level}`)).join("、")}`), $requestList);
         return $requestList;
     };
+    // QuickRequest 经 mw.loader.using 按需加载，而非静态依赖：pageInfo 对匿名用户也加载，
+    // 而依赖链不受 rights 过滤（站内 lib 类 gadget 以 rights: [hidden] 靠依赖拉起即是此机制），
+    // 静态依赖会把 QuickRequest 及其重依赖拉给全站；登录用户本就由 QuickRequest 自身的
+    // default: true 自动加载，using 对已加载模块立即返回
+    const openQuickRequest = (type) => {
+        mw.loader.using("ext.gadget.QuickRequest").done(() => {
+            window.libQuickRequest.open(type);
+        }).fail(() => {
+            mw.notify(wgULS("无法加载快速申请工具，请刷新页面重试。", "無法載入快速申請工具，請重新整理頁面後重試。"), { type: "error" });
+        });
+    };
     const appendRequestLink = ($list, { type, text }) => {
         $("<li>").append($("<a>", {
             href: "#",
@@ -22,7 +33,7 @@
             text,
         }).on("click", (e) => {
             e.preventDefault();
-            window.libQuickRequest.open(type);
+            openQuickRequest(type);
         })).appendTo($list);
     };
 
@@ -153,9 +164,9 @@
             console.warn("[Gadget-pageInfo] Failed to query intestactions", error);
             actions = {};
         }
-        // QuickRequest 以 rights: [edit] 过滤加载，个别登录用户可能没有它——挂载守卫，
-        // 没有入口时不出链接，避免点击无效
-        if (wgUserName && window.libQuickRequest) {
+        // 匿名用户不出请求链接（无 edit 权，QuickRequest 不会为其加载）；
+        // 登录用户出链接，点击时经 mw.loader.using 按需加载后打开
+        if (wgUserName) {
             if (actions.edit === false && talkPage && $editRequestList) {
                 appendRequestLink($editRequestList, {
                     type: "edit",
@@ -193,7 +204,7 @@
             href: viewReasonUrl.href,
             text: wgULS("点此查看原因", "點此查看原因"),
         }));
-        if (talkPage && window.libQuickRequest) {
+        if (talkPage) {
             appendRequestLink($("<ul>").appendTo($protectionInfoContent), {
                 type: "edit",
                 text: "提出编辑请求",

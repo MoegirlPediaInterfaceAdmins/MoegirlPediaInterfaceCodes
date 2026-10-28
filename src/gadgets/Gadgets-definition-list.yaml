@@ -63,7 +63,6 @@
     - queryContributions
     - userpageDelete
     - requestDeletion
-    - QuickRequest
     - BatchToolkit
 
 - name: editing
@@ -164,4 +163,5 @@
     - prism-language-perl
     - prism-language-python
     - prism-language-ruby
+    - QuickRequest
     - Watermark

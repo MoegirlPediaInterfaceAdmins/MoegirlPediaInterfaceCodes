@@ -25,15 +25,20 @@ const RIGHTS_BOARD = "萌娘百科_talk:讨论版/权限变更";
 /** 转换表页面的页面名形态；此类页面的编辑请求使用 editConversiontable 类型。 */
 const CONVERSION_TABLE_PATTERN = /^MediaWiki:Conversiontable\/zh-[a-z]+$/;
 
-/** 方针 / 指引页面所属分类，编辑请求的方针修改提醒据此判断（比旧实现按讨论页命名空间的近似判断更准确）。 */
-const POLICY_CATEGORIES = ["Category:萌娘百科方针", "Category:萌娘百科指引"];
+/**
+ * 方针 / 指引页面所属分类，编辑请求的方针修改提醒据此判断（比旧实现按讨论页命名空间的近似判断更准确）。
+ * 取 mw.config 的 wgCategories 里的裸分类名（不带 Category: 前缀）；两个方针分类页均未挂
+ * __HIDDENCAT__，成员必为可见分类、必会出现在 wgCategories 中。
+ */
+const POLICY_CATEGORIES = ["萌娘百科方针", "萌娘百科指引"];
 
 /** 方针修改提醒的跳过名单，沿用 editRequestWarning 的既有名单。 */
 const WARNING_SKIP_GROUPS = ["patroller", "sysop", "techeditor", "interface-admin", "staff"];
 
 /**
  * 章节标题的用户与日期后缀。
- * 日期补零与 Gadget-edit / Gadget-pageInfo / Gadget-requestDeletion 的现状一致（libPrefixNumber），
+ * 「 - <用户名> - <YYYY.MM.DD>」是各版面既有的话题标题格式，日期经 libPrefixNumber 补零，
+ * 沿袭自 Gadget-edit / Gadget-requestDeletion 等旧实现（pageInfo 那份重复实现已随本包移除）；
  * 格式变化会影响版面存档与机器人流程。
  * @param userName 用户名
  * @param now 取哪一刻的时间
