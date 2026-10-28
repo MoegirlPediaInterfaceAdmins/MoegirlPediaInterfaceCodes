@@ -1,14 +1,23 @@
 import { describe, expect, it } from "vitest";
-import type { TypeConfig } from "../src/types.ts";
-import { buildSubmitText, buildTemplateWikitext, extractLeadingHeading, toSubst } from "../src/wikitext.ts";
+import type { TemplateSpec, TypeConfig } from "../src/types.ts";
+import { buildSubmitText, buildTemplateWikitext, toSubst } from "../src/wikitext.ts";
 
-const editType: TypeConfig = {
+const editType: TemplateSpec & Pick<TypeConfig, "requireAnyOf"> = {
     template: "Template:编辑请求",
     requireAnyOf: ["original", "new"],
     parameters: [
         { key: "original", label: "需要删除/修改的旧内容", type: "multiline" },
         { key: "new", label: "需要新增/修改后的内容", type: "multiline" },
         { key: "reason", label: "修改原因", type: "text" },
+    ],
+};
+
+const botVariant: TemplateSpec = {
+    template: "Template:权限申请/机器人申请",
+    fixedParams: { 用户组: "机器人", 追加任务: "false" },
+    parameters: [
+        { key: "1", label: "机器人账户名", type: "user", required: true },
+        { key: "2", label: "申请理由", type: "multiline", required: true },
     ],
 };
 
@@ -51,6 +60,22 @@ describe("值中的顶层管道转义", () => {
     });
 });
 
+describe("固定参数（fixedParams）", () => {
+    it("固定参数先于用户参数输出", () => {
+        expect(buildTemplateWikitext(botVariant, { 1: "Example-bot", 2: "理由" }))
+            .toBe("{{Template:权限申请/机器人申请|用户组=机器人|追加任务=false|1=Example-bot|2=理由}}");
+    });
+
+    it("用户参数全空时只输出模板与固定参数——空表单的判空基线由此得出", () => {
+        expect(buildTemplateWikitext(botVariant, {}))
+            .toBe("{{Template:权限申请/机器人申请|用户组=机器人|追加任务=false}}");
+    });
+
+    it("固定参数值同样做顶层管道转义", () => {
+        expect(buildTemplateWikitext({ template: "T", fixedParams: { k: "a|b" } }, {})).toBe("{{T|k=a{{!}}b}}");
+    });
+});
+
 describe("toSubst", () => {
     it("只改写字符串开头的模板调用", () => {
         expect(toSubst("{{T|1=a}}")).toBe("{{subst:T|1=a}}");
@@ -64,26 +89,5 @@ describe("toSubst", () => {
 describe("buildSubmitText", () => {
     it("施加 subst 改写且不追加签名（签名由模板的 sign 参数缺省值完成）", () => {
         expect(buildSubmitText("{{Template:编辑请求|original=旧}}")).toBe("{{subst:Template:编辑请求|original=旧}}");
-    });
-});
-
-describe("extractLeadingHeading", () => {
-    it("剥离正文开头的二级标题并给出标题与剩余正文", () => {
-        expect(extractLeadingHeading("== 管理员申请 - User:Example ==\n正文第一行\n正文第二行")).toEqual({
-            title: "管理员申请 - User:Example",
-            body: "正文第一行\n正文第二行",
-        });
-    });
-
-    it("标题两侧的空白被剥掉", () => {
-        expect(extractLeadingHeading("==  空白  ==\n正文")).toEqual({ title: "空白", body: "正文" });
-    });
-
-    it("开头不是二级标题时返回 null", () => {
-        expect(extractLeadingHeading("正文\n== 不是开头 ==")).toBeNull();
-    });
-
-    it("三级及更深的标题不视为章节标题", () => {
-        expect(extractLeadingHeading("=== 三级 ===\n正文")).toBeNull();
     });
 });

@@ -1,7 +1,7 @@
 import { CONFIG_PAGE } from "./constants.ts";
 import { toErrorMessage } from "./errors.ts";
 import { fetchPageContent } from "./api.ts";
-import type { ConfigResult, ParamType, QuickRequestConfig, RequestParam, TypeConfig } from "./types.ts";
+import type { ConfigResult, ParamType, QuickRequestConfig, RequestParam, TypeConfig, TypeVariant } from "./types.ts";
 
 /** 合法的控件类型集合。 */
 const PARAM_TYPES = new Set<string>(["page", "user", "text", "multiline"]);
@@ -60,7 +60,60 @@ const toRequestParam = (raw: unknown): RequestParam | null => {
 };
 
 /**
+ * 校验固定参数：只保留字符串到字符串的条目，其余静默丢弃。
+ * @param raw 原始取值
+ * @returns 固定参数；无合法条目时为 undefined
+ */
+const toFixedParams = (raw: unknown): Record<string, string> | undefined => {
+    if (typeof raw !== "object" || raw === null) {
+        return undefined;
+    }
+    const fixed: Record<string, string> = {};
+    for (const [key, value] of Object.entries(raw)) {
+        if (typeof value === "string") {
+            fixed[key] = value;
+        }
+    }
+    return Object.keys(fixed).length > 0 ? fixed : undefined;
+};
+
+/**
+ * 校验单个变体条目，非法则返回 null。
+ * requireAnyOf 只保留真实存在于本变体 parameters 的键（与类型级约束同样语义）；
+ * 重复 id 由调用方去重——首个定义生效。
+ * @param raw 原始条目
+ * @returns 变体定义；非法时为 null
+ */
+const toTypeVariant = (raw: unknown): TypeVariant | null => {
+    if (typeof raw !== "object" || raw === null) {
+        return null;
+    }
+    const { id, label, template, parameters, requireAnyOf, fixedParams } = raw as Record<string, unknown>;
+    if (!isNonEmptyString(id) || !isNonEmptyString(label) || !isNonEmptyString(template)) {
+        return null;
+    }
+    const variant: TypeVariant = { id, label, template };
+    if (Array.isArray(parameters)) {
+        variant.parameters = compact(parameters.map(toRequestParam));
+    }
+    if (Array.isArray(requireAnyOf)) {
+        const keys = new Set((variant.parameters ?? []).map(({ key }) => key));
+        const valid = requireAnyOf.filter((key): key is string => typeof key === "string" && keys.has(key));
+        if (valid.length > 0) {
+            variant.requireAnyOf = valid;
+        }
+    }
+    const fixed = toFixedParams(fixedParams);
+    if (fixed !== undefined) {
+        variant.fixedParams = fixed;
+    }
+    return variant;
+};
+
+/**
  * 校验单个类型条目，非法则返回 null。
+ * template 与 variants 至少要有一项：带变体的类型（userGroup）模板由各变体自带，
+ * 类型级 template 可省略；两者皆无（或变体全非法）的条目没有可用内容，整条丢弃。
  * requireAnyOf 只保留真实存在于 parameters 的键，过滤后为空则丢弃该约束——
  * 引用不存在键的组约束没有可满足的路径，留在配置里只会让表单永远无法提交。
  * @param raw 原始条目
@@ -70,11 +123,15 @@ const toTypeConfig = (raw: unknown): TypeConfig | null => {
     if (typeof raw !== "object" || raw === null) {
         return null;
     }
-    const { template, parameters, requireAnyOf } = raw as Record<string, unknown>;
-    if (!isNonEmptyString(template)) {
-        return null;
+    const { template, parameters, requireAnyOf, variants, fixedParams } = raw as Record<string, unknown>;
+    const config: TypeConfig = {};
+    if (isNonEmptyString(template)) {
+        config.template = template;
     }
-    const config: TypeConfig = { template };
+    const fixed = toFixedParams(fixedParams);
+    if (fixed !== undefined) {
+        config.fixedParams = fixed;
+    }
     if (Array.isArray(parameters)) {
         config.parameters = compact(parameters.map(toRequestParam));
     }
@@ -84,6 +141,23 @@ const toTypeConfig = (raw: unknown): TypeConfig | null => {
         if (valid.length > 0) {
             config.requireAnyOf = valid;
         }
+    }
+    if (Array.isArray(variants)) {
+        const seen = new Set<string>();
+        const validVariants: TypeVariant[] = [];
+        for (const entry of variants) {
+            const variant = toTypeVariant(entry);
+            if (variant && !seen.has(variant.id)) {
+                seen.add(variant.id);
+                validVariants.push(variant);
+            }
+        }
+        if (validVariants.length > 0) {
+            config.variants = validVariants;
+        }
+    }
+    if (config.template === undefined && config.variants === undefined) {
+        return null;
     }
     return config;
 };

@@ -100,6 +100,283 @@
                     "required": true
                 }
             ]
+        },
+        "userGroup": {
+            "variants": [
+                {
+                    "id": "patroller",
+                    "label": "维护姬申请",
+                    "template": "Template:权限申请/维护姬申请",
+                    "parameters": [
+                        {
+                            "key": "1",
+                            "label": "申请理由（不必签名）",
+                            "type": "multiline",
+                            "required": true
+                        }
+                    ]
+                },
+                {
+                    "id": "sysop",
+                    "label": "管理员申请",
+                    "template": "Template:权限申请/管理员申请",
+                    "parameters": [
+                        {
+                            "key": "1",
+                            "label": "申请理由（不必签名）",
+                            "type": "multiline",
+                            "required": true
+                        }
+                    ]
+                },
+                {
+                    "id": "checkuser",
+                    "label": "用户查核员申请",
+                    "template": "Template:权限申请/查核监督申请",
+                    "fixedParams": {
+                        "用户组": "用户查核员"
+                    },
+                    "parameters": [
+                        {
+                            "key": "1",
+                            "label": "申请理由（不必签名）",
+                            "type": "multiline",
+                            "required": true
+                        }
+                    ]
+                },
+                {
+                    "id": "oversight",
+                    "label": "监督员申请",
+                    "template": "Template:权限申请/查核监督申请",
+                    "fixedParams": {
+                        "用户组": "监督员"
+                    },
+                    "parameters": [
+                        {
+                            "key": "1",
+                            "label": "申请理由（不必签名）",
+                            "type": "multiline",
+                            "required": true
+                        }
+                    ]
+                },
+                {
+                    "id": "interfaceAdmin",
+                    "label": "界面管理员申请",
+                    "template": "Template:权限申请/界面管理员申请",
+                    "parameters": [
+                        {
+                            "key": "1",
+                            "label": "申请理由（不必签名）",
+                            "type": "multiline",
+                            "required": true
+                        }
+                    ]
+                },
+                {
+                    "id": "bot",
+                    "label": "机器人申请",
+                    "template": "Template:权限申请/机器人申请",
+                    "fixedParams": {
+                        "用户组": "机器人",
+                        "追加任务": "false"
+                    },
+                    "parameters": [
+                        {
+                            "key": "1",
+                            "label": "机器人账户名（不带 User:）",
+                            "type": "user",
+                            "required": true
+                        },
+                        {
+                            "key": "2",
+                            "label": "申请理由（不必签名）",
+                            "type": "multiline",
+                            "required": true
+                        },
+                        {
+                            "key": "3",
+                            "label": "附加申请的用户组（可填维护姬、管理员等，选填）",
+                            "type": "text"
+                        }
+                    ]
+                },
+                {
+                    "id": "botTask",
+                    "label": "机器人追加任务申请",
+                    "template": "Template:权限申请/机器人申请",
+                    "fixedParams": {
+                        "用户组": "机器人"
+                    },
+                    "parameters": [
+                        {
+                            "key": "1",
+                            "label": "机器人账户名（不带 User:）",
+                            "type": "user",
+                            "required": true
+                        },
+                        {
+                            "key": "2",
+                            "label": "追加的任务与理由（不必签名）",
+                            "type": "multiline",
+                            "required": true
+                        },
+                        {
+                            "key": "3",
+                            "label": "附加申请的用户组（可填维护姬、管理员等，选填）",
+                            "type": "text"
+                        }
+                    ]
+                },
+                {
+                    "id": "botUser",
+                    "label": "机器用户申请",
+                    "template": "Template:权限申请/机器人申请",
+                    "fixedParams": {
+                        "用户组": "机器用户",
+                        "追加任务": "false"
+                    },
+                    "parameters": [
+                        {
+                            "key": "1",
+                            "label": "机器用户账户名（不带 User:）",
+                            "type": "user",
+                            "required": true
+                        },
+                        {
+                            "key": "2",
+                            "label": "申请理由与申请时长（不必签名）",
+                            "type": "multiline",
+                            "required": true
+                        }
+                    ]
+                },
+                {
+                    "id": "fileMaintainer",
+                    "label": "文件维护员申请",
+                    "template": "Template:权限申请/文件维护申请",
+                    "parameters": [
+                        {
+                            "key": "time",
+                            "label": "申请时长（如 12小时、1周，选填，缺省 12小时）",
+                            "type": "text"
+                        },
+                        {
+                            "key": "1",
+                            "label": "申请理由（不必签名）",
+                            "type": "multiline",
+                            "required": true
+                        }
+                    ]
+                },
+                {
+                    "id": "goodEditor",
+                    "label": "优质编辑者申请/提名",
+                    "template": "Template:权限申请/通用申请",
+                    "fixedParams": {
+                        "用户组": "优质编辑者"
+                    },
+                    "parameters": [
+                        {
+                            "key": "1",
+                            "label": "用户名（申请填本人，提名填对方；不带 User:）",
+                            "type": "user",
+                            "required": true
+                        },
+                        {
+                            "key": "2",
+                            "label": "申请/提名理由（不必签名）",
+                            "type": "multiline",
+                            "required": true
+                        }
+                    ]
+                },
+                {
+                    "id": "techEditor",
+                    "label": "技术编辑员申请/提名",
+                    "template": "Template:权限申请/通用申请",
+                    "fixedParams": {
+                        "用户组": "技术编辑员"
+                    },
+                    "parameters": [
+                        {
+                            "key": "1",
+                            "label": "被提名者用户名（留空为本人申请；不带 User:）",
+                            "type": "user"
+                        },
+                        {
+                            "key": "2",
+                            "label": "申请/提名理由（不必签名）",
+                            "type": "multiline",
+                            "required": true
+                        }
+                    ]
+                },
+                {
+                    "id": "honorMaintainer",
+                    "label": "荣誉维护人员申请/提名",
+                    "template": "Template:权限申请/通用申请",
+                    "fixedParams": {
+                        "用户组": "荣誉维护人员"
+                    },
+                    "parameters": [
+                        {
+                            "key": "1",
+                            "label": "被提名者用户名（留空为本人申请；不带 User:）",
+                            "type": "user"
+                        },
+                        {
+                            "key": "2",
+                            "label": "申请/提名理由（不必签名）",
+                            "type": "multiline",
+                            "required": true
+                        }
+                    ]
+                },
+                {
+                    "id": "ipbe",
+                    "label": "IP封禁豁免者申请/提名",
+                    "template": "Template:权限申请/通用申请",
+                    "fixedParams": {
+                        "用户组": "IP封禁豁免者"
+                    },
+                    "parameters": [
+                        {
+                            "key": "1",
+                            "label": "被提名者用户名（留空为本人申请；不带 User:）",
+                            "type": "user"
+                        },
+                        {
+                            "key": "2",
+                            "label": "申请/提名理由（不必签名）",
+                            "type": "multiline",
+                            "required": true
+                        }
+                    ]
+                },
+                {
+                    "id": "manualConfirmed",
+                    "label": "手动确认用户申请/提名",
+                    "template": "Template:权限申请/通用申请",
+                    "fixedParams": {
+                        "用户组": "手动确认用户"
+                    },
+                    "parameters": [
+                        {
+                            "key": "1",
+                            "label": "被提名者用户名（留空为本人申请；不带 User:）",
+                            "type": "user"
+                        },
+                        {
+                            "key": "2",
+                            "label": "申请/提名理由（不必签名；申请共享站手动确认用户请注明）",
+                            "type": "multiline",
+                            "required": true
+                        }
+                    ]
+                }
+            ]
         }
     }
 }

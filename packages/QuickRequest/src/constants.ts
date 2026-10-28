@@ -19,6 +19,9 @@ const CHANGE_TAG = "Automation tool|QuickRequest";
 /** 移动 / 创建请求的发帖版面。 */
 const OPERATIONS_BOARD = "萌娘百科_talk:讨论版/操作申请";
 
+/** 用户组申请/提名（userGroup）的发帖版面。 */
+const RIGHTS_BOARD = "萌娘百科_talk:讨论版/权限变更";
+
 /** 转换表页面的页面名形态；此类页面的编辑请求使用 editConversiontable 类型。 */
 const CONVERSION_TABLE_PATTERN = /^MediaWiki:Conversiontable\/zh-[a-z]+$/;
 
@@ -48,6 +51,7 @@ export {
     OPERATIONS_BOARD,
     POLICY_CATEGORIES,
     REDIRECT_DELAY,
+    RIGHTS_BOARD,
     WARNING_SKIP_GROUPS,
     titleSuffix,
 };

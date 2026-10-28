@@ -9,7 +9,7 @@ var __publicField = (obj, key, value) => __defNormalProp(obj, typeof key != "sym
 
 // packages/QuickRequest/src/constants.ts
 var CONFIG_PAGE = "MediaWiki:Gadget-QuickRequest.json", DIALOG_SIZE = "large";
-var CHANGE_TAG = "Automation tool|QuickRequest", OPERATIONS_BOARD = "萌娘百科_talk:讨论版/操作申请", CONVERSION_TABLE_PATTERN = /^MediaWiki:Conversiontable\/zh-[a-z]+$/, POLICY_CATEGORIES = ["Category:萌娘百科方针", "Category:萌娘百科指引"], WARNING_SKIP_GROUPS = ["patroller", "sysop", "techeditor", "interface-admin", "staff"], titleSuffix = (userName, now) => ` - ${userName} - ${now.getFullYear()}.${libPrefixNumber(now.getMonth() + 1)}.${libPrefixNumber(now.getDate())}`;
+var CHANGE_TAG = "Automation tool|QuickRequest", OPERATIONS_BOARD = "萌娘百科_talk:讨论版/操作申请", RIGHTS_BOARD = "萌娘百科_talk:讨论版/权限变更", CONVERSION_TABLE_PATTERN = /^MediaWiki:Conversiontable\/zh-[a-z]+$/, POLICY_CATEGORIES = ["Category:萌娘百科方针", "Category:萌娘百科指引"], WARNING_SKIP_GROUPS = ["patroller", "sysop", "techeditor", "interface-admin", "staff"], titleSuffix = (userName, now) => ` - ${userName} - ${now.getFullYear()}.${libPrefixNumber(now.getMonth() + 1)}.${libPrefixNumber(now.getDate())}`;
 
 // packages/QuickRequest/src/errors.ts
 var toErrorMessage = (error) => error instanceof Error ? error.message : String(error), ERROR_MESSAGES = {
@@ -69,18 +69,45 @@ var PARAM_TYPES = /* @__PURE__ */ new Set(["page", "user", "text", "multiline"])
     return null;
   let param = { key, label };
   return isParamType(type) && (param.type = type), typeof required == "boolean" && (param.required = required), auto === "currentPage" && (param.auto = auto), typeof defaultValue == "string" && (param.default = defaultValue), param;
+}, toFixedParams = (raw) => {
+  if (typeof raw != "object" || raw === null)
+    return;
+  let fixed = {};
+  for (let [key, value] of Object.entries(raw))
+    typeof value == "string" && (fixed[key] = value);
+  return Object.keys(fixed).length > 0 ? fixed : void 0;
+}, toTypeVariant = (raw) => {
+  if (typeof raw != "object" || raw === null)
+    return null;
+  let { id, label, template, parameters, requireAnyOf, fixedParams } = raw;
+  if (!isNonEmptyString(id) || !isNonEmptyString(label) || !isNonEmptyString(template))
+    return null;
+  let variant = { id, label, template };
+  if (Array.isArray(parameters) && (variant.parameters = compact(parameters.map(toRequestParam))), Array.isArray(requireAnyOf)) {
+    let keys = new Set((variant.parameters ?? []).map(({ key }) => key)), valid = requireAnyOf.filter((key) => typeof key == "string" && keys.has(key));
+    valid.length > 0 && (variant.requireAnyOf = valid);
+  }
+  let fixed = toFixedParams(fixedParams);
+  return fixed !== void 0 && (variant.fixedParams = fixed), variant;
 }, toTypeConfig = (raw) => {
   if (typeof raw != "object" || raw === null)
     return null;
-  let { template, parameters, requireAnyOf } = raw;
-  if (!isNonEmptyString(template))
-    return null;
-  let config = { template };
-  if (Array.isArray(parameters) && (config.parameters = compact(parameters.map(toRequestParam))), Array.isArray(requireAnyOf)) {
+  let { template, parameters, requireAnyOf, variants, fixedParams } = raw, config = {};
+  isNonEmptyString(template) && (config.template = template);
+  let fixed = toFixedParams(fixedParams);
+  if (fixed !== void 0 && (config.fixedParams = fixed), Array.isArray(parameters) && (config.parameters = compact(parameters.map(toRequestParam))), Array.isArray(requireAnyOf)) {
     let keys = new Set((config.parameters ?? []).map(({ key }) => key)), valid = requireAnyOf.filter((key) => typeof key == "string" && keys.has(key));
     valid.length > 0 && (config.requireAnyOf = valid);
   }
-  return config;
+  if (Array.isArray(variants)) {
+    let seen = /* @__PURE__ */ new Set(), validVariants = [];
+    for (let entry of variants) {
+      let variant = toTypeVariant(entry);
+      variant && !seen.has(variant.id) && (seen.add(variant.id), validVariants.push(variant));
+    }
+    validVariants.length > 0 && (config.variants = validVariants);
+  }
+  return config.template === void 0 && config.variants === void 0 ? null : config;
 }, parseConfig = (raw, overrides) => {
   if (raw.trim() === "")
     return { ok: !1, message: wgULS(`页面 ${CONFIG_PAGE} 不存在或内容为空`, `頁面 ${CONFIG_PAGE} 不存在或內容為空`) };
@@ -112,8 +139,97 @@ var PARAM_TYPES = /* @__PURE__ */ new Set(["page", "user", "text", "multiline"])
   return keys === void 0 || keys.length === 0 ? !0 : keys.some((key) => (values[key] ?? "").trim() !== "");
 }, findTypeConfig = (config, id) => config.types[id];
 
+// packages/QuickRequest/src/registry.ts
+var policyWarning = async (ctx) => {
+  if (ctx.userGroups.some((group) => WARNING_SKIP_GROUPS.includes(group)))
+    return [];
+  let categories;
+  try {
+    categories = await fetchPageCategories(ctx.pageName);
+  } catch (error) {
+    return console.warn("[QuickRequest] 读取页面分类失败，跳过方针提醒", error), [];
+  }
+  if (!POLICY_CATEGORIES.some((category) => categories.has(category)))
+    return [];
+  let message = $("<div>").append(
+    $("<p>").append(
+      wgULS("进行", "進行"),
+      $("<strong>").text(wgULS("实质性", "實質性")),
+      wgULS("修改时，需要通过", "修改時，需要通過"),
+      $("<a>", {
+        href: "/萌娘百科:提案",
+        text: wgULS("提案", "提案")
+      }).css("font-weight", "bold"),
+      wgULS("或", "或"),
+      $("<a>", {
+        href: "/萌娘百科:快速提案",
+        text: wgULS("快速提案", "快速提案")
+      }).css("font-weight", "bold"),
+      wgULS("流程才可对方针和指引进行改动。", "流程才可對方針和指引進行改動。")
+    ),
+    $("<p>").append(
+      wgULS("在讨论页发起的编辑请求仅可用于修正错别字等", "在討論頁發起的編輯請求僅可用於修正錯別字等"),
+      $("<strong>").text(wgULS("非实质性", "非實質性")),
+      wgULS("修改。", "修改。")
+    )
+  );
+  return [{ title: wgULS("提醒", "提醒"), message }];
+}, editDefinition = {
+  id: "edit",
+  label: wgULS("编辑请求", "編輯請求"),
+  availability: () => !0,
+  resolveTarget: (ctx) => ctx.talkPage,
+  sectionTitle: (ctx) => `编辑请求${titleSuffix(ctx.userName, ctx.now)}`,
+  warnings: policyWarning
+}, editConversiontableDefinition = {
+  ...editDefinition,
+  id: "editConversiontable",
+  label: wgULS("编辑请求（转换表）", "編輯請求（轉換表）")
+}, moveDefinition = {
+  id: "move",
+  label: wgULS("移动请求", "移動請求"),
+  availability: () => !0,
+  resolveTarget: () => OPERATIONS_BOARD,
+  sectionTitle: (ctx) => `移动请求${titleSuffix(ctx.userName, ctx.now)}`
+}, createDefinition = {
+  id: "create",
+  label: wgULS("创建请求", "建立請求"),
+  availability: () => !0,
+  resolveTarget: () => OPERATIONS_BOARD,
+  sectionTitle: (ctx) => `创建请求${titleSuffix(ctx.userName, ctx.now)}`
+}, userGroupDefinition = {
+  id: "userGroup",
+  label: wgULS("权限申请", "權限申請"),
+  // 与现行申请按钮（Widget:Applybutton）的守卫一致：仅自动确认用户可用
+  availability: (ctx) => ctx.userGroups.includes("autoconfirmed"),
+  resolveTarget: () => RIGHTS_BOARD,
+  postMode: "append"
+}, REQUEST_TYPES = {
+  edit: editDefinition,
+  editConversiontable: editConversiontableDefinition,
+  move: moveDefinition,
+  create: createDefinition,
+  userGroup: userGroupDefinition
+}, resolveRequestType = (id, pageName) => id === "edit" && CONVERSION_TABLE_PATTERN.test(pageName) ? REQUEST_TYPES.editConversiontable : REQUEST_TYPES[id], buildContext = (userName) => ({
+  pageName: mw.config.get("wgPageName"),
+  talkPage: libGetPageNames().talkPage,
+  userName,
+  userGroups: mw.config.get("wgUserGroups") ?? [],
+  now: /* @__PURE__ */ new Date()
+});
+
 // packages/QuickRequest/src/entries.ts
-var entryMounters = [], mountEntries = () => {
+var mountUserGroupEntry = () => {
+  if (mw.config.get("wgPageName") !== RIGHTS_BOARD)
+    return;
+  let userName = mw.config.get("wgUserName");
+  if (!userName || !REQUEST_TYPES.userGroup?.availability(buildContext(userName)))
+    return;
+  let link = mw.util.addPortletLink("p-cactions", "#", wgULS("发起权限申请", "發起權限申請"), "ca-quickrequest-usergroup");
+  link && $(link).on("click", (event) => {
+    event.preventDefault(), window.libQuickRequest?.open("userGroup");
+  });
+}, entryMounters = [mountUserGroupEntry], mountEntries = () => {
   for (let mount of entryMounters)
     mount();
 };
@@ -168,12 +284,12 @@ var escapeTopLevelPipes = (value) => {
     out += value[index], index += 1;
   }
   return out;
-}, buildTemplateWikitext = (typeConfig, values) => {
-  let params = (typeConfig.parameters ?? []).map(({ key }) => {
+}, buildTemplateWikitext = (spec, values) => {
+  let fixed = Object.entries(spec.fixedParams ?? {}).map(([key, value]) => `|${key}=${escapeTopLevelPipes(value)}`).join(""), params = (spec.parameters ?? []).map(({ key }) => {
     let value = values[key];
     return value ? `|${key}=${escapeTopLevelPipes(value)}` : "";
   }).join("");
-  return `{{${typeConfig.template}${params}}}`;
+  return `{{${spec.template}${fixed}${params}}}`;
 }, toSubst = (wikitext) => wikitext.replace(/^\{\{/, "{{subst:"), buildSubmitText = (wikitext) => toSubst(wikitext);
 
 // packages/QuickRequest/src/openWindow.ts
@@ -220,6 +336,9 @@ var MainDialog = class extends OO.ui.ProcessDialog {
     __publicField(this, "context");
     __publicField(this, "onPreview");
     __publicField(this, "typeConfig", null);
+    /** 当前生效的模板规格：无变体类型即类型条目，有变体类型为选中的变体 */
+    __publicField(this, "activeSpec", null);
+    __publicField(this, "variantInput", null);
     __publicField(this, "paramFields", []);
     __publicField(this, "loadingPanel");
     __publicField(this, "formPanel");
@@ -293,7 +412,8 @@ var MainDialog = class extends OO.ui.ProcessDialog {
           previewHtml,
           submittedText: submission.submittedText,
           targetPage: submission.targetPage,
-          getSectionTitle: submission.getSectionTitle,
+          ...submission.getSectionTitle === void 0 ? {} : { getSectionTitle: submission.getSectionTitle },
+          ...submission.postMode === void 0 ? {} : { postMode: submission.postMode },
           editSummary: submission.editSummary,
           ...this.definition.warnings === void 0 ? {} : { getWarnings: () => this.definition.warnings?.(this.context) ?? Promise.resolve([]) }
         };
@@ -311,6 +431,7 @@ var MainDialog = class extends OO.ui.ProcessDialog {
   }
   /**
    * 构建表单。仅在配置就绪后调用一次。
+   * 变体类型（userGroup）额外渲染「申请类型」下拉，参数区随选中变体整体重建。
    * @param typeConfig 类型配置
    */
   buildForm(typeConfig) {
@@ -321,21 +442,55 @@ var MainDialog = class extends OO.ui.ProcessDialog {
         label: wgULS("发帖目标", "發帖目標"),
         align: "top"
       })
-    ]), this.paramFields = (typeConfig.parameters ?? []).map(
+    ]);
+    let variants = typeConfig.variants ?? [], initialSpec;
+    if (variants.length > 0)
+      this.variantInput = new OO.ui.DropdownInputWidget({
+        options: variants.map(({ id, label }) => ({ data: id, label })),
+        value: variants[0]?.id
+      }), this.variantInput.on("change", () => {
+        this.rebuildParamArea(this.currentVariant());
+      }), fieldset.addItems([new OO.ui.FieldLayout(this.variantInput, { label: wgULS("申请类型", "申請類型"), align: "top" })]), initialSpec = variants[0];
+    else {
+      let template = typeConfig.template;
+      if (!template)
+        throw new Error(wgULS("类型配置既无模板也无变体", "類型設定既無模板也無變體"));
+      initialSpec = {
+        template,
+        ...typeConfig.parameters === void 0 ? {} : { parameters: typeConfig.parameters },
+        ...typeConfig.requireAnyOf === void 0 ? {} : { requireAnyOf: typeConfig.requireAnyOf },
+        ...typeConfig.fixedParams === void 0 ? {} : { fixedParams: typeConfig.fixedParams }
+      };
+    }
+    this.paramFieldset = new OO.ui.FieldsetLayout(), fieldset.addItems([this.paramFieldset]), this.groupHint = new OO.ui.LabelWidget({ label: "" }), this.groupHint.$element.css("color", "#d33"), fieldset.addItems([this.groupHint]), this.summaryInput = new OO.ui.TextInputWidget({ value: this.definition.defaultSummary ?? "", placeholder: wgULS("留空则自动生成", "留空則自動生成") }), fieldset.addItems([new OO.ui.FieldLayout(this.summaryInput, { label: wgULS("编辑摘要", "編輯摘要"), align: "top" })]), this.formPanel.$element.append(fieldset.$element), this.rebuildParamArea(initialSpec);
+  }
+  /**
+   * 当前选中的变体。仅变体类型调用（variantInput 已存在）。
+   * @returns 选中的变体；下拉值异常时回退首个
+   */
+  currentVariant() {
+    let variants = this.typeConfig?.variants ?? [];
+    return variants.find((variant) => variant.id === this.variantInput?.getValue()) ?? variants[0];
+  }
+  /**
+   * 按模板规格重建参数区与组约束提示。初次构建与变体切换共用；
+   * 切换变体时已填内容不保留——各变体字段结构不同，保留无意义。
+   * @param spec 生效的模板规格
+   */
+  rebuildParamArea(spec) {
+    this.activeSpec = spec, this.paramFieldset.clearItems(), this.paramFields = (spec.parameters ?? []).map(
       (param) => createParamField(param.auto === "currentPage" ? { ...param, default: this.context.pageName } : param, this.$overlay, () => {
         this.onFormChanged();
       })
-    ), this.paramFieldset = new OO.ui.FieldsetLayout(), this.paramFieldset.addItems(this.paramFields.map(({ layout }) => layout)), fieldset.addItems([this.paramFieldset]);
-    let groupLabels = (typeConfig.requireAnyOf ?? []).map((key) => typeConfig.parameters?.find((param) => param.key === key)?.label ?? key);
-    this.groupHint = new OO.ui.LabelWidget({
-      label: wgULS(`「${groupLabels.join("」「")}」至少填写一项`, `「${groupLabels.join("」「")}」至少填寫一項`)
-    }), this.groupHint.$element.css("color", "#d33"), fieldset.addItems([this.groupHint]), this.groupHint.toggle(!1), this.summaryInput = new OO.ui.TextInputWidget({ value: this.definition.defaultSummary ?? "", placeholder: wgULS("留空则自动生成", "留空則自動生成") }), fieldset.addItems([new OO.ui.FieldLayout(this.summaryInput, { label: wgULS("编辑摘要", "編輯摘要"), align: "top" })]), this.formPanel.$element.append(fieldset.$element), this.onFormChanged();
+    ), this.paramFieldset.addItems(this.paramFields.map(({ layout }) => layout));
+    let groupLabels = (spec.requireAnyOf ?? []).map((key) => spec.parameters?.find((param) => param.key === key)?.label ?? key);
+    this.groupHint.setLabel(groupLabels.length > 0 ? wgULS(`「${groupLabels.join("」「")}」至少填写一项`, `「${groupLabels.join("」「")}」至少填寫一項`) : ""), this.onFormChanged();
   }
   /** 重算「预览」按钮的可用性，并刷新字段级校验提示与组约束提示。 */
   onFormChanged() {
-    if (!this.typeConfig)
+    if (!this.activeSpec)
       return;
-    let firstInvalid = validateFields(this.paramFields), groupSatisfied = isGroupSatisfied(this.typeConfig, readValues(this.paramFields));
+    let firstInvalid = validateFields(this.paramFields), groupSatisfied = isGroupSatisfied(this.activeSpec, readValues(this.paramFields));
     this.groupHint.toggle(!groupSatisfied), this.getActions().setAbilities({ preview: firstInvalid === null && groupSatisfied });
   }
   /**
@@ -343,22 +498,28 @@ var MainDialog = class extends OO.ui.ProcessDialog {
    * @returns 待预览/提交的内容
    */
   collectSubmission() {
-    if (!this.typeConfig)
+    let spec = this.activeSpec;
+    if (!spec || !this.typeConfig)
       return null;
     let firstInvalid = validateFields(this.paramFields);
     if (firstInvalid)
       return firstInvalid.widget.focus(), null;
-    if (!isGroupSatisfied(this.typeConfig, readValues(this.paramFields)))
+    if (!isGroupSatisfied(spec, readValues(this.paramFields)))
       return showError(wgULS("内容不完整", "內容不完整"), wgULS("请至少填写组内的一项内容。", "請至少填寫組內的一項內容。")), null;
-    let values = readValues(this.paramFields), raw = buildTemplateWikitext(this.typeConfig, values);
-    if (raw === `{{${this.typeConfig.template}}}`)
+    let values = readValues(this.paramFields), raw = buildTemplateWikitext(spec, values);
+    if (raw === buildTemplateWikitext(spec, {}))
       return showError(wgULS("内容为空", "內容為空"), wgULS("待发送的内容不能为空。", "待傳送的內容不能為空。")), null;
     let targetPage = this.definition.resolveTarget(this.context);
-    return targetPage === !1 ? (showError(wgULS("无法发起请求", "無法發起請求"), wgULS("当前页面没有对应的讨论页。", "目前頁面沒有對應的討論頁。")), null) : {
+    if (targetPage === !1)
+      return showError(wgULS("无法发起请求", "無法發起請求"), wgULS("当前页面没有对应的讨论页。", "目前頁面沒有對應的討論頁。")), null;
+    let sectionTitle = this.definition.sectionTitle;
+    return {
       targetPage,
       submittedText: buildSubmitText(raw),
-      // 章节标题惰性生成：日期取提交时刻，预览停留跨午夜也不会带前一天的日期发出
-      getSectionTitle: () => this.definition.sectionTitle({ ...this.context, now: /* @__PURE__ */ new Date() }),
+      // 章节标题惰性生成：日期取提交时刻，预览停留跨午夜也不会带前一天的日期发出；
+      // append 模式（标题由模板正文自带）不提供
+      ...sectionTitle === void 0 ? {} : { getSectionTitle: () => sectionTitle({ ...this.context, now: /* @__PURE__ */ new Date() }) },
+      ...this.definition.postMode === void 0 ? {} : { postMode: this.definition.postMode },
       editSummary: this.summaryInput.getValue().trim()
     };
   }
@@ -400,6 +561,24 @@ var postTopic = (params) => {
     ok: !0,
     newrevid: res?.discussiontoolsedit?.newrevid
   })).catch((code, result) => (console.warn("[QuickRequest] 发送失败", code, result), { ok: !1, code, detail: describeSendError(code, result), ambiguous: code === "http" }));
+}, appendTopic = (params) => {
+  let summary = params.summary === "" ? {} : { summary: params.summary };
+  return getApi().postWithToken("csrf", {
+    action: "edit",
+    formatversion: 2,
+    title: params.page,
+    appendtext: `
+${params.wikitext}
+`,
+    nocreate: !0,
+    assertuser: mw.config.get("wgUserName") ?? "",
+    watchlist: "nochange",
+    tags: CHANGE_TAG,
+    ...summary
+  }).then((res) => ({
+    ok: !0,
+    newrevid: res?.edit?.newrevid
+  })).catch((code, result) => (console.warn("[QuickRequest] 发送失败", code, result), { ok: !1, code, detail: describeSendError(code, result), ambiguous: code === "http" }));
 }, fetchLastSectionAnchor = async (revid, sectionTitle) => {
   if (!revid)
     return "";
@@ -410,7 +589,7 @@ var postTopic = (params) => {
       prop: "sections",
       formatversion: 2
     })).parse?.sections ?? [];
-    return (sections.filter((section) => section.line === sectionTitle).at(-1) ?? sections.at(-1))?.anchor ?? "";
+    return (sectionTitle === void 0 ? sections.at(-1) : sections.filter((section) => section.line === sectionTitle).at(-1) ?? sections.at(-1))?.anchor ?? "";
   } catch (error) {
     return console.warn("[QuickRequest] 读取新章节锚点失败", error), "";
   }
@@ -504,15 +683,16 @@ var PreviewDialog = class extends OO.ui.ProcessDialog {
                 this.setSending(!1);
                 return;
               }
+            let append = payload.postMode === "append", sectionTitle = append ? "" : payload.getSectionTitle?.() ?? "";
             for (; ; ) {
-              let params = {
+              let result = append ? await appendTopic({ page: payload.targetPage, wikitext: payload.submittedText, summary: payload.editSummary }) : await postTopic({
                 page: payload.targetPage,
-                sectionTitle: payload.getSectionTitle(),
+                sectionTitle,
                 wikitext: payload.submittedText,
                 summary: payload.editSummary
-              }, result = await postTopic(params);
+              });
               if (result.ok) {
-                let anchor = await fetchLastSectionAnchor(result.newrevid, params.sectionTitle);
+                let anchor = await fetchLastSectionAnchor(result.newrevid, append ? void 0 : sectionTitle);
                 this.close({ action: "sent", anchor });
                 return;
               }
@@ -558,77 +738,6 @@ __publicField(PreviewDialog, "static", {
   ]
 });
 
-// packages/QuickRequest/src/registry.ts
-var policyWarning = async (ctx) => {
-  if (ctx.userGroups.some((group) => WARNING_SKIP_GROUPS.includes(group)))
-    return [];
-  let categories;
-  try {
-    categories = await fetchPageCategories(ctx.pageName);
-  } catch (error) {
-    return console.warn("[QuickRequest] 读取页面分类失败，跳过方针提醒", error), [];
-  }
-  if (!POLICY_CATEGORIES.some((category) => categories.has(category)))
-    return [];
-  let message = $("<div>").append(
-    $("<p>").append(
-      wgULS("进行", "進行"),
-      $("<strong>").text(wgULS("实质性", "實質性")),
-      wgULS("修改时，需要通过", "修改時，需要通過"),
-      $("<a>", {
-        href: "/萌娘百科:提案",
-        text: wgULS("提案", "提案")
-      }).css("font-weight", "bold"),
-      wgULS("或", "或"),
-      $("<a>", {
-        href: "/萌娘百科:快速提案",
-        text: wgULS("快速提案", "快速提案")
-      }).css("font-weight", "bold"),
-      wgULS("流程才可对方针和指引进行改动。", "流程才可對方針和指引進行改動。")
-    ),
-    $("<p>").append(
-      wgULS("在讨论页发起的编辑请求仅可用于修正错别字等", "在討論頁發起的編輯請求僅可用於修正錯別字等"),
-      $("<strong>").text(wgULS("非实质性", "非實質性")),
-      wgULS("修改。", "修改。")
-    )
-  );
-  return [{ title: wgULS("提醒", "提醒"), message }];
-}, editDefinition = {
-  id: "edit",
-  label: wgULS("编辑请求", "編輯請求"),
-  availability: () => !0,
-  resolveTarget: (ctx) => ctx.talkPage,
-  sectionTitle: (ctx) => `编辑请求${titleSuffix(ctx.userName, ctx.now)}`,
-  warnings: policyWarning
-}, editConversiontableDefinition = {
-  ...editDefinition,
-  id: "editConversiontable",
-  label: wgULS("编辑请求（转换表）", "編輯請求（轉換表）")
-}, moveDefinition = {
-  id: "move",
-  label: wgULS("移动请求", "移動請求"),
-  availability: () => !0,
-  resolveTarget: () => OPERATIONS_BOARD,
-  sectionTitle: (ctx) => `移动请求${titleSuffix(ctx.userName, ctx.now)}`
-}, createDefinition = {
-  id: "create",
-  label: wgULS("创建请求", "建立請求"),
-  availability: () => !0,
-  resolveTarget: () => OPERATIONS_BOARD,
-  sectionTitle: (ctx) => `创建请求${titleSuffix(ctx.userName, ctx.now)}`
-}, REQUEST_TYPES = {
-  edit: editDefinition,
-  editConversiontable: editConversiontableDefinition,
-  move: moveDefinition,
-  create: createDefinition
-}, resolveRequestType = (id, pageName) => id === "edit" && CONVERSION_TABLE_PATTERN.test(pageName) ? REQUEST_TYPES.editConversiontable : REQUEST_TYPES[id], buildContext = (userName) => ({
-  pageName: mw.config.get("wgPageName"),
-  talkPage: libGetPageNames().talkPage,
-  userName,
-  userGroups: mw.config.get("wgUserGroups") ?? [],
-  now: /* @__PURE__ */ new Date()
-});
-
 // packages/QuickRequest/src/index.ts
 mountEntries();
 var describeConfigFailure = (reason) => wgULS(`${CONFIG_PAGE} 读取或解析失败：${reason}`, `${CONFIG_PAGE} 讀取或解析失敗：${reason}`), openPreview = (data, mainDialog) => {
@@ -649,6 +758,10 @@ var describeConfigFailure = (reason) => wgULS(`${CONFIG_PAGE} 读取或解析失
     return;
   }
   let context = buildContext(userName);
+  if (!definition.availability(context)) {
+    mw.notify(wgULS("您暂不满足发起此请求的条件。", "您暫不滿足發起此請求的條件。"), { type: "warn" });
+    return;
+  }
   if (definition.resolveTarget(context) === !1) {
     showError(wgULS("无法发起请求", "無法發起請求"), wgULS("当前页面没有对应的讨论页。", "目前頁面沒有對應的討論頁。"));
     return;

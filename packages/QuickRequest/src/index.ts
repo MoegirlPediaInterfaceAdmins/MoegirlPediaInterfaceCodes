@@ -67,6 +67,11 @@ const open = (type: RequestTypeId, preset?: Record<string, string>): void => {
     }
 
     const context = buildContext(userName);
+    // 自有入口挂载前已查过 availability，这里是open 层的兜底（如控制台直接调用）
+    if (!definition.availability(context)) {
+        mw.notify(wgULS("您暂不满足发起此请求的条件。", "您暫不滿足發起此請求的條件。"), { type: "warn" });
+        return;
+    }
     if (definition.resolveTarget(context) === false) {
         void showError(wgULS("无法发起请求", "無法發起請求"), wgULS("当前页面没有对应的讨论页。", "目前頁面沒有對應的討論頁。"));
         return;
