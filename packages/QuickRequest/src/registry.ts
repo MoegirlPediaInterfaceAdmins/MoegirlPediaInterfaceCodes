@@ -1,4 +1,3 @@
-import { fetchPageCategories } from "./api.ts";
 import {
     CONVERSION_TABLE_PATTERN,
     OPERATIONS_BOARD,
@@ -12,24 +11,20 @@ import type { QuickRequestContext, RequestTypeDefinition, RequestTypeId, Warning
 /**
  * 方针 / 指引修改提醒（editRequestWarning 的迁移）。
  * 旧实现按讨论页命名空间（namespaces: [5]）近似判断且静态提示；
- * 这里改为查询当前页（基页面）的分类是否属于方针 / 指引，命中且用户不在跳过名单时才提醒。
- * 分类查询失败按「非方针页」处理——提醒是附加确认，不应因此阻断提交流程。
+ * 这里改为检查当前页（基页面）的分类是否属于方针 / 指引，命中且用户不在跳过名单时才提醒。
+ * 分类读 mw.config 的 wgCategories（当前渲染页的可见分类，零请求）：两个方针分类页
+ * 均未挂 __HIDDENCAT__（2026-10 实测），成员必为可见分类、必在其中；入口都在基页上，
+ * 渲染页与 ctx.pageName 一致。
  * @param ctx 打开对话框时收集的上下文
  * @returns 确认项列表；无需提醒时为空数组
  */
-const policyWarning = async (ctx: QuickRequestContext): Promise<Warning[]> => {
+const policyWarning = (ctx: QuickRequestContext): Promise<Warning[]> => {
     if (ctx.userGroups.some((group) => WARNING_SKIP_GROUPS.includes(group))) {
-        return [];
+        return Promise.resolve([]);
     }
-    let categories: Set<string>;
-    try {
-        categories = await fetchPageCategories(ctx.pageName);
-    } catch (error) {
-        console.warn("[QuickRequest] 读取页面分类失败，跳过方针提醒", error);
-        return [];
-    }
-    if (!POLICY_CATEGORIES.some((category) => categories.has(category))) {
-        return [];
+    const categories = mw.config.get("wgCategories");
+    if (!POLICY_CATEGORIES.some((category) => categories.includes(category))) {
+        return Promise.resolve([]);
     }
     const message = $("<div>").append(
         $("<p>").append(
@@ -53,7 +48,7 @@ const policyWarning = async (ctx: QuickRequestContext): Promise<Warning[]> => {
             wgULS("修改。", "修改。"),
         ),
     );
-    return [{ title: wgULS("提醒", "提醒"), message }];
+    return Promise.resolve([{ title: wgULS("提醒", "提醒"), message }]);
 };
 
 /** 编辑请求：发到本页讨论页。editRequestWarning 的提醒随类型迁移至此。 */
