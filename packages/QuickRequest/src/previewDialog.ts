@@ -149,7 +149,7 @@ class PreviewDialog extends OO.ui.ProcessDialog {
                                 summary: payload.editSummary,
                             });
                         if (result.ok) {
-                            // 锚点必须在关框前回读：用户看到的是连续的「提交中…」，而不是框已关闭却在干等
+                            // 锚点必须在关框前回读：用户看到的是连续的「正在提交…」，而不是框已关闭却在干等
                             const anchor = await fetchLastSectionAnchor(result.newrevid, append ? undefined : sectionTitle);
                             // 对话框即将关闭，无需恢复按钮状态
                             this.close({ action: "sent", anchor });
@@ -192,7 +192,7 @@ class PreviewDialog extends OO.ui.ProcessDialog {
         this.getActions()
             .get({ actions: "send" })
             .at(0)
-            ?.setLabel(sending ? wgULS("提交中…", "提交中…") : wgULS("提交请求", "提交請求"));
+            ?.setLabel(sending ? wgULS("正在提交…", "正在提交…") : wgULS("提交请求", "提交請求"));
     }
 }
 

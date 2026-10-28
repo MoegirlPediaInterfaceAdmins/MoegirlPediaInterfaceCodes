@@ -72,7 +72,7 @@ class MainDialog extends OO.ui.ProcessDialog {
         this.loadingPanel = new OO.ui.PanelLayout({ padded: true, expanded: false });
         this.loadingPanel.$element.append(
             new OO.ui.ProgressBarWidget({ progress: false }).$element,
-            $("<p>").text(wgULS("正在加载请求配置…", "正在載入請求設定…")),
+            $("<p>").text(wgULS("正在加载请求配置…", "正在載入請求組態…")),
         );
 
         this.formPanel = new OO.ui.PanelLayout({ padded: true, expanded: false, scrollable: true });
@@ -189,7 +189,7 @@ class MainDialog extends OO.ui.ProcessDialog {
         if (targetPage !== false) {
             fieldset.addItems([
                 new OO.ui.FieldLayout(new OO.ui.LabelWidget({ label: targetPage.replace(/_/g, " ") }), {
-                    label: wgULS("发帖目标", "發帖目標"),
+                    label: wgULS("发至", "發至"),
                     align: "top",
                 }),
             ]);
@@ -211,7 +211,7 @@ class MainDialog extends OO.ui.ProcessDialog {
             // 校验保证 template 与 variants 至少一项存在，此处判断同时完成类型收窄
             const template = typeConfig.template;
             if (!template) {
-                throw new Error(wgULS("类型配置既无模板也无变体", "類型設定既無模板也無變體"));
+                throw new Error(wgULS("类型配置既无模板也无变体", "類型組態既無模板也無變體"));
             }
             initialSpec = {
                 template,
@@ -234,6 +234,14 @@ class MainDialog extends OO.ui.ProcessDialog {
 
         this.formPanel.$element.append(fieldset.$element);
         this.rebuildParamArea(initialSpec);
+
+        // 确认项（方针修改提醒等）在表单出现时即以横幅告知，不等到提交才拦；
+        // 提交前的逐条确认仍保留（previewDialog）。横幅只展示正文，标题（如「提醒」）信息量低不重复
+        void this.definition.warnings?.(this.context).then((warnings) => {
+            for (const warning of warnings) {
+                this.formPanel.$element.prepend(new OO.ui.MessageWidget({ type: "warning", label: warning.message }).$element);
+            }
+        });
     }
 
     /**

@@ -54,20 +54,15 @@ const openPreview = (data: PreviewDialogData, mainDialog: MainDialog): void => {
 const open = (type: RequestTypeId, preset?: Record<string, string>): void => {
     void preset;
 
-    const userName = mw.config.get("wgUserName");
-    if (!userName) {
-        mw.notify(wgULS("请先登录后再使用快速申请小工具。", "請先登入後再使用快速申請小工具。"), { type: "warn" });
-        return;
-    }
-
     const definition = resolveRequestType(type, mw.config.get("wgPageName"));
     if (!definition) {
         console.warn("[QuickRequest] 未知的请求类型", type);
         return;
     }
 
-    const context = buildContext(userName);
-    // 自有入口挂载前已查过 availability，这里是open 层的兜底（如控制台直接调用）
+    // QuickRequest 以 rights: [edit] 加载，能执行到这里必为有名用户，无需再判 wgUserName
+    const context = buildContext((mw.config.get("wgUserName") as string | null | undefined) ?? "");
+    // 自有入口挂载前已查过 availability，这里是 open 层的兜底（如控制台直接调用）
     if (!definition.availability(context)) {
         mw.notify(wgULS("您暂不满足发起此请求的条件。", "您暫不滿足發起此請求的條件。"), { type: "warn" });
         return;
@@ -90,7 +85,7 @@ const open = (type: RequestTypeId, preset?: Record<string, string>): void => {
     };
     openWindow<MainDialogCloseResult>(mainDialog, data, (result) => {
         if (result?.action === "configError") {
-            void showError(wgULS("无法加载请求配置", "無法載入請求設定"), describeConfigFailure(result.message));
+            void showError(wgULS("无法加载请求配置", "無法載入請求組態"), describeConfigFailure(result.message));
             return;
         }
         if (result?.action === "formError") {
@@ -100,5 +95,6 @@ const open = (type: RequestTypeId, preset?: Record<string, string>): void => {
 };
 
 // 全局入口：edit / pageInfo 等调用方（与 site-lib 暴露 window.libGetPageNames 的做法一致）
-// 经此发起请求；调用方须以 ext.gadget.QuickRequest 依赖保证加载顺序
+// 经此发起请求；加载方式见 README「全局入口」——受众相同的入口可用静态依赖，
+// 全站加载的入口（pageInfo）应经 mw.loader.using 按需加载，避免把本包拉给匿名用户
 window.libQuickRequest = { open };

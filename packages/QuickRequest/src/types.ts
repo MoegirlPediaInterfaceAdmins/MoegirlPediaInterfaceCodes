@@ -133,19 +133,8 @@ interface RequestTypeDefinition {
     warnings?: (ctx: QuickRequestContext) => Promise<Warning[]>;
 }
 
-/**
- * 用户侧全局自定义配置（window.QuickRequest）。
- * types 的条目结构与配置页 JSON 一致，按 id 覆盖预置条目——仅能覆盖既有 id：
- * 类型的行为定义（目标版面、章节标题、确认项）在代码注册表中，新增类型需随阶段 2-5
- * 的里程碑实现，纯配置追加新 id 无法被 open() 打开。
- */
-interface QuickRequestGlobalConfig {
-    types?: Record<string, unknown>;
-}
-
 declare global {
     interface Window {
-        QuickRequest?: QuickRequestGlobalConfig;
         /** QuickRequest 暴露的全局入口，edit / pageInfo 等调用方经此发起请求 */
         libQuickRequest?: {
             /** 打开指定类型的请求对话框；preset 供删除请求等入口预填（阶段 4 起） */
@@ -230,7 +219,6 @@ export type {
     PreviewSubmission,
     QuickRequestConfig,
     QuickRequestContext,
-    QuickRequestGlobalConfig,
     RequestParam,
     RequestTypeDefinition,
     RequestTypeId,

@@ -28,7 +28,6 @@ dependencies:
   - mediawiki.api
   - ext.gadget.site-lib
   - ext.gadget.libStandardMessages
-  - ext.gadget.QuickRequest
 
 _sites:
   - zh

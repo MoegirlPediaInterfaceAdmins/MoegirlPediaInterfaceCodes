@@ -163,13 +163,12 @@ const toTypeConfig = (raw: unknown): TypeConfig | null => {
 };
 
 /**
- * 解析并校验配置内容；overrides 是 window.QuickRequest.types 的语义（同 id 覆盖、新 id 追加、非法条目丢弃）。
+ * 解析并校验配置内容；非法条目静默丢弃。
  * 全部类型条目非法时视为失败。
  * @param raw 配置页的原始文本
- * @param overrides 覆盖条目
  * @returns 配置结果
  */
-const parseConfig = (raw: string, overrides?: Record<string, unknown>): ConfigResult => {
+const parseConfig = (raw: string): ConfigResult => {
     if (raw.trim() === "") {
         return { ok: false, message: wgULS(`页面 ${CONFIG_PAGE} 不存在或内容为空`, `頁面 ${CONFIG_PAGE} 不存在或內容為空`) };
     }
@@ -188,7 +187,7 @@ const parseConfig = (raw: string, overrides?: Record<string, unknown>): ConfigRe
 
     const merged: Record<string, TypeConfig> = {};
     let validCount = 0;
-    for (const [id, entry] of [...Object.entries(types), ...Object.entries(overrides ?? {})]) {
+    for (const [id, entry] of Object.entries(types)) {
         const config = toTypeConfig(entry);
         if (config) {
             merged[id] = config;
@@ -202,12 +201,6 @@ const parseConfig = (raw: string, overrides?: Record<string, unknown>): ConfigRe
 };
 
 /**
- * 读取并校验 window.QuickRequest.types，非法条目静默丢弃。
- * @returns 覆盖条目
- */
-const readWindowOverrides = (): Record<string, unknown> | undefined => window.QuickRequest?.types;
-
-/**
  * 启动配置预取。成功结果幂等（一次页面视图只拉一次）；失败不驻留——临时故障后
  * 下一次 open 会重新拉取，无需刷新页面恢复。
  * 永不 reject：失败会被转成 { ok: false } 结果，由主对话框的 configError 路径呈现。
@@ -217,7 +210,7 @@ const prefetchConfig = (): Promise<ConfigResult> => {
     prefetch ??= (async () => {
         let result: ConfigResult;
         try {
-            result = parseConfig(await fetchPageContent(CONFIG_PAGE), readWindowOverrides());
+            result = parseConfig(await fetchPageContent(CONFIG_PAGE));
         } catch (error) {
             result = { ok: false, message: toErrorMessage(error) };
         }

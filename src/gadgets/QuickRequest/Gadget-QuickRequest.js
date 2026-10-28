@@ -9,21 +9,21 @@ var __publicField = (obj, key, value) => __defNormalProp(obj, typeof key != "sym
 
 // packages/QuickRequest/src/constants.ts
 var CONFIG_PAGE = "MediaWiki:Gadget-QuickRequest.json", DIALOG_SIZE = "large";
-var CHANGE_TAG = "Automation tool|QuickRequest", OPERATIONS_BOARD = "萌娘百科_talk:讨论版/操作申请", RIGHTS_BOARD = "萌娘百科_talk:讨论版/权限变更", CONVERSION_TABLE_PATTERN = /^MediaWiki:Conversiontable\/zh-[a-z]+$/, POLICY_CATEGORIES = ["Category:萌娘百科方针", "Category:萌娘百科指引"], WARNING_SKIP_GROUPS = ["patroller", "sysop", "techeditor", "interface-admin", "staff"], titleSuffix = (userName, now) => ` - ${userName} - ${now.getFullYear()}.${libPrefixNumber(now.getMonth() + 1)}.${libPrefixNumber(now.getDate())}`;
+var CHANGE_TAG = "Automation tool|QuickRequest", OPERATIONS_BOARD = "萌娘百科_talk:讨论版/操作申请", RIGHTS_BOARD = "萌娘百科_talk:讨论版/权限变更", CONVERSION_TABLE_PATTERN = /^MediaWiki:Conversiontable\/zh-[a-z]+$/, POLICY_CATEGORIES = ["萌娘百科方针", "萌娘百科指引"], WARNING_SKIP_GROUPS = ["patroller", "sysop", "techeditor", "interface-admin", "staff"], titleSuffix = (userName, now) => ` - ${userName} - ${now.getFullYear()}.${libPrefixNumber(now.getMonth() + 1)}.${libPrefixNumber(now.getDate())}`;
 
 // packages/QuickRequest/src/errors.ts
 var toErrorMessage = (error) => error instanceof Error ? error.message : String(error), ERROR_MESSAGES = {
   badtoken: wgULS("登录令牌已失效，请刷新页面后重试。", "登入權杖已失效，請重新整理頁面後再試。"),
   assertnameduserfailed: wgULS("当前登录状态已失效（可能已在别处退出登录），请刷新页面后重新登录。", "目前登入狀態已失效（可能已在別處登出），請重新整理頁面後重新登入。"),
   ratelimited: wgULS("操作过于频繁，已被限流，请稍后再试。", "操作過於頻繁，已受到頻率限制，請稍後再試。"),
-  permissiondenied: wgULS("权限不足，无法在该页面发帖。", "權限不足，無法在該頁面發帖。"),
+  permissiondenied: wgULS("权限不足，无法编辑该页面。", "權限不足，無法編輯該頁面。"),
   blocked: wgULS("您当前的账号或 IP 已被封禁，无法编辑。", "您目前的帳號或 IP 已被封鎖，無法編輯。"),
-  spamdetected: wgULS("内容被滥用过滤器判定为垃圾信息，已被拒绝。", "內容被濫用過濾器判定為垃圾資訊，已被拒絕。"),
+  spamdetected: wgULS("内容被滥用过滤器判定为垃圾信息，已被拒绝。", "內容被防濫用過濾器判定為垃圾資訊，已被拒絕。"),
   articleexists: wgULS("目标页面已存在，无法新建。", "目標頁面已存在，無法建立。"),
   readonly: wgULS("本站当前处于只读状态，暂时无法编辑。", "本站目前處於唯讀狀態，暫時無法編輯。")
 }, extractInfo = (result) => typeof result != "object" || result === null ? "" : result.error?.info ?? result.errors?.[0]?.info ?? "", describeSendError = (code, result) => {
   let info = extractInfo(result), known = Object.hasOwn(ERROR_MESSAGES, code) ? ERROR_MESSAGES[code] : void 0;
-  return known ? info ? `${known}（${info}）` : known : code.startsWith("abusefilter") ? wgULS(`被滥用过滤器阻止（${code}）${info ? `：${info}` : ""}`, `被濫用過濾器阻止（${code}）${info ? `：${info}` : ""}`) : wgULS(`发送失败（${code}）${info ? `：${info}` : ""}`, `傳送失敗（${code}）${info ? `：${info}` : ""}`);
+  return known ? info ? `${known}（${info}）` : known : code.startsWith("abusefilter") ? wgULS(`被滥用过滤器阻止（${code}）${info ? `：${info}` : ""}`, `被防濫用過濾器阻止（${code}）${info ? `：${info}` : ""}`) : wgULS(`发送失败（${code}）${info ? `：${info}` : ""}`, `傳送失敗（${code}）${info ? `：${info}` : ""}`);
 };
 
 // packages/QuickRequest/src/api.ts
@@ -33,23 +33,7 @@ var apiInstance = null, getApi = () => (apiInstance ?? (apiInstance = new mw.Api
   prop: "revisions",
   rvprop: "content",
   formatversion: 2
-})).query?.pages?.[0]?.revisions?.[0]?.content ?? "", fetchPageCategories = async (title) => {
-  let categories = /* @__PURE__ */ new Set(), next = {};
-  do {
-    let res = await getApi().post({
-      action: "query",
-      titles: title,
-      prop: "categories",
-      cllimit: "max",
-      formatversion: 2,
-      ...next
-    });
-    for (let category of res.query?.pages?.[0]?.categories ?? [])
-      categories.add(category.title);
-    next = res.continue ?? {};
-  } while (Object.keys(next).length > 0);
-  return categories;
-}, parseWikitext = async (wikitext, title) => (await getApi().post({
+})).query?.pages?.[0]?.revisions?.[0]?.content ?? "", parseWikitext = async (wikitext, title) => (await getApi().post({
   action: "parse",
   title,
   text: wikitext,
@@ -108,7 +92,7 @@ var PARAM_TYPES = /* @__PURE__ */ new Set(["page", "user", "text", "multiline"])
     validVariants.length > 0 && (config.variants = validVariants);
   }
   return config.template === void 0 && config.variants === void 0 ? null : config;
-}, parseConfig = (raw, overrides) => {
+}, parseConfig = (raw) => {
   if (raw.trim() === "")
     return { ok: !1, message: wgULS(`页面 ${CONFIG_PAGE} 不存在或内容为空`, `頁面 ${CONFIG_PAGE} 不存在或內容為空`) };
   let parsed;
@@ -121,15 +105,15 @@ var PARAM_TYPES = /* @__PURE__ */ new Set(["page", "user", "text", "multiline"])
   if (typeof types != "object" || types === null)
     return { ok: !1, message: wgULS(`${CONFIG_PAGE} 缺少 types 对象`, `${CONFIG_PAGE} 缺少 types 物件`) };
   let merged = {}, validCount = 0;
-  for (let [id, entry] of [...Object.entries(types), ...Object.entries(overrides ?? {})]) {
+  for (let [id, entry] of Object.entries(types)) {
     let config = toTypeConfig(entry);
     config && (merged[id] = config, validCount += 1);
   }
   return validCount === 0 ? { ok: !1, message: wgULS(`${CONFIG_PAGE} 的类型列表为空或格式不正确`, `${CONFIG_PAGE} 的類型列表為空或格式不正確`) } : { ok: !0, config: { types: merged } };
-}, readWindowOverrides = () => window.QuickRequest?.types, prefetchConfig = () => (prefetch ?? (prefetch = (async () => {
+}, prefetchConfig = () => (prefetch ?? (prefetch = (async () => {
   let result;
   try {
-    result = parseConfig(await fetchPageContent(CONFIG_PAGE), readWindowOverrides());
+    result = parseConfig(await fetchPageContent(CONFIG_PAGE));
   } catch (error) {
     result = { ok: !1, message: toErrorMessage(error) };
   }
@@ -140,17 +124,12 @@ var PARAM_TYPES = /* @__PURE__ */ new Set(["page", "user", "text", "multiline"])
 }, findTypeConfig = (config, id) => config.types[id];
 
 // packages/QuickRequest/src/registry.ts
-var policyWarning = async (ctx) => {
+var policyWarning = (ctx) => {
   if (ctx.userGroups.some((group) => WARNING_SKIP_GROUPS.includes(group)))
-    return [];
-  let categories;
-  try {
-    categories = await fetchPageCategories(ctx.pageName);
-  } catch (error) {
-    return console.warn("[QuickRequest] 读取页面分类失败，跳过方针提醒", error), [];
-  }
-  if (!POLICY_CATEGORIES.some((category) => categories.has(category)))
-    return [];
+    return Promise.resolve([]);
+  let categories = mw.config.get("wgCategories");
+  if (!POLICY_CATEGORIES.some((category) => categories.includes(category)))
+    return Promise.resolve([]);
   let message = $("<div>").append(
     $("<p>").append(
       wgULS("进行", "進行"),
@@ -173,7 +152,7 @@ var policyWarning = async (ctx) => {
       wgULS("修改。", "修改。")
     )
   );
-  return [{ title: wgULS("提醒", "提醒"), message }];
+  return Promise.resolve([{ title: wgULS("提醒", "提醒"), message }]);
 }, editDefinition = {
   id: "edit",
   label: wgULS("编辑请求", "編輯請求"),
@@ -220,10 +199,7 @@ var policyWarning = async (ctx) => {
 
 // packages/QuickRequest/src/entries.ts
 var mountUserGroupEntry = () => {
-  if (mw.config.get("wgPageName") !== RIGHTS_BOARD)
-    return;
-  let userName = mw.config.get("wgUserName");
-  if (!userName || !REQUEST_TYPES.userGroup?.availability(buildContext(userName)))
+  if (mw.config.get("wgPageName") !== RIGHTS_BOARD || !REQUEST_TYPES.userGroup?.availability(buildContext(mw.config.get("wgUserName") ?? "")))
     return;
   let link = mw.util.addPortletLink("p-cactions", "#", wgULS("发起权限申请", "發起權限申請"), "ca-quickrequest-usergroup");
   link && $(link).on("click", (event) => {
@@ -249,7 +225,7 @@ var createParamWidget = (param, $overlay) => {
   }
 }, createParamField = (param, $overlay, onChange) => {
   let widget = createParamWidget(param, $overlay);
-  return widget.on("change", onChange), {
+  return param.auto === "currentPage" && widget.setReadOnly(!0), widget.on("change", onChange), {
     param,
     widget,
     layout: new OO.ui.FieldLayout(widget, { label: param.label, align: "top" }),
@@ -353,7 +329,7 @@ var MainDialog = class extends OO.ui.ProcessDialog {
   initialize() {
     return super.initialize(), this.loadingPanel = new OO.ui.PanelLayout({ padded: !0, expanded: !1 }), this.loadingPanel.$element.append(
       new OO.ui.ProgressBarWidget({ progress: !1 }).$element,
-      $("<p>").text(wgULS("正在加载请求配置…", "正在載入請求設定…"))
+      $("<p>").text(wgULS("正在加载请求配置…", "正在載入請求組態…"))
     ), this.formPanel = new OO.ui.PanelLayout({ padded: !0, expanded: !1, scrollable: !0 }), this.$body.append(this.loadingPanel.$element, this.formPanel.$element), this;
   }
   /**
@@ -439,7 +415,7 @@ var MainDialog = class extends OO.ui.ProcessDialog {
     let fieldset = new OO.ui.FieldsetLayout({ label: this.definition.label }), targetPage = this.definition.resolveTarget(this.context);
     targetPage !== !1 && fieldset.addItems([
       new OO.ui.FieldLayout(new OO.ui.LabelWidget({ label: targetPage.replace(/_/g, " ") }), {
-        label: wgULS("发帖目标", "發帖目標"),
+        label: wgULS("发至", "發至"),
         align: "top"
       })
     ]);
@@ -454,7 +430,7 @@ var MainDialog = class extends OO.ui.ProcessDialog {
     else {
       let template = typeConfig.template;
       if (!template)
-        throw new Error(wgULS("类型配置既无模板也无变体", "類型設定既無模板也無變體"));
+        throw new Error(wgULS("类型配置既无模板也无变体", "類型組態既無模板也無變體"));
       initialSpec = {
         template,
         ...typeConfig.parameters === void 0 ? {} : { parameters: typeConfig.parameters },
@@ -462,7 +438,10 @@ var MainDialog = class extends OO.ui.ProcessDialog {
         ...typeConfig.fixedParams === void 0 ? {} : { fixedParams: typeConfig.fixedParams }
       };
     }
-    this.paramFieldset = new OO.ui.FieldsetLayout(), fieldset.addItems([this.paramFieldset]), this.groupHint = new OO.ui.LabelWidget({ label: "" }), this.groupHint.$element.css("color", "#d33"), fieldset.addItems([this.groupHint]), this.summaryInput = new OO.ui.TextInputWidget({ value: this.definition.defaultSummary ?? "", placeholder: wgULS("留空则自动生成", "留空則自動生成") }), fieldset.addItems([new OO.ui.FieldLayout(this.summaryInput, { label: wgULS("编辑摘要", "編輯摘要"), align: "top" })]), this.formPanel.$element.append(fieldset.$element), this.rebuildParamArea(initialSpec);
+    this.paramFieldset = new OO.ui.FieldsetLayout(), fieldset.addItems([this.paramFieldset]), this.groupHint = new OO.ui.LabelWidget({ label: "" }), this.groupHint.$element.css("color", "#d33"), fieldset.addItems([this.groupHint]), this.summaryInput = new OO.ui.TextInputWidget({ value: this.definition.defaultSummary ?? "", placeholder: wgULS("留空则自动生成", "留空則自動生成") }), fieldset.addItems([new OO.ui.FieldLayout(this.summaryInput, { label: wgULS("编辑摘要", "編輯摘要"), align: "top" })]), this.formPanel.$element.append(fieldset.$element), this.rebuildParamArea(initialSpec), this.definition.warnings?.(this.context).then((warnings) => {
+      for (let warning of warnings)
+        this.formPanel.$element.prepend(new OO.ui.MessageWidget({ type: "warning", label: warning.message }).$element);
+    });
   }
   /**
    * 当前选中的变体。仅变体类型调用（variantInput 已存在）。
@@ -721,7 +700,7 @@ var PreviewDialog = class extends OO.ui.ProcessDialog {
    * @param sending 是否正在提交
    */
   setSending(sending) {
-    this.sending = sending, this.getActions().setAbilities({ send: !sending, back: !sending }), this.getActions().get({ actions: "send" }).at(0)?.setLabel(sending ? wgULS("提交中…", "提交中…") : wgULS("提交请求", "提交請求"));
+    this.sending = sending, this.getActions().setAbilities({ send: !sending, back: !sending }), this.getActions().get({ actions: "send" }).at(0)?.setLabel(sending ? wgULS("正在提交…", "正在提交…") : wgULS("提交请求", "提交請求"));
   }
 };
 /** 见 MainDialog 中关于 static 必须写全的说明。 */
@@ -747,17 +726,12 @@ var describeConfigFailure = (reason) => wgULS(`${CONFIG_PAGE} 读取或解析失
     }, 3e3));
   });
 }, open = (type, preset) => {
-  let userName = mw.config.get("wgUserName");
-  if (!userName) {
-    mw.notify(wgULS("请先登录后再使用快速申请小工具。", "請先登入後再使用快速申請小工具。"), { type: "warn" });
-    return;
-  }
   let definition = resolveRequestType(type, mw.config.get("wgPageName"));
   if (!definition) {
     console.warn("[QuickRequest] 未知的请求类型", type);
     return;
   }
-  let context = buildContext(userName);
+  let context = buildContext(mw.config.get("wgUserName") ?? "");
   if (!definition.availability(context)) {
     mw.notify(wgULS("您暂不满足发起此请求的条件。", "您暫不滿足發起此請求的條件。"), { type: "warn" });
     return;
@@ -776,7 +750,7 @@ var describeConfigFailure = (reason) => wgULS(`${CONFIG_PAGE} 读取或解析失
     }
   }, (result) => {
     if (result?.action === "configError") {
-      showError(wgULS("无法加载请求配置", "無法載入請求設定"), describeConfigFailure(result.message));
+      showError(wgULS("无法加载请求配置", "無法載入請求組態"), describeConfigFailure(result.message));
       return;
     }
     result?.action === "formError" && showError(wgULS("界面构建失败", "介面建構失敗"), wgULS(`无法生成表单：${result.message}`, `無法產生表單：${result.message}`));
