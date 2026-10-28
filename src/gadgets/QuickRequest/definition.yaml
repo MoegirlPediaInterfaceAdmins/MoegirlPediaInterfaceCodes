@@ -36,7 +36,7 @@ dependencies:
 _sites:
   - zh
 
-_section: user
+_section: system
 
 _files:
   - Gadget-QuickRequest.js

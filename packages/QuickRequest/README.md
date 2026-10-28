@@ -10,13 +10,13 @@
 
 ## 功能
 
-- **全局入口**：`window.libQuickRequest.open(type)`——edit / pageInfo 等调用方经此发起请求（与 site-lib 暴露 `window.libGetPageNames` 的做法一致），调用方须以 `ext.gadget.QuickRequest` 依赖保证加载顺序。`open("edit")` 在转换表页面（`MediaWiki:Conversiontable/zh-*`）自动落到 `editConversiontable` 类型。
+- **全局入口**：`window.libQuickRequest.open(type)`——edit / pageInfo 等调用方经此发起请求（与 site-lib 暴露 `window.libGetPageNames` 的做法一致）。加载方式按调用方受众选择：受众与本包一致（`rights: [edit]`）的入口（如 edit）可用静态依赖；对匿名用户也加载的入口（pageInfo）应去掉静态依赖、点击时 `mw.loader.using("ext.gadget.QuickRequest")` 按需加载——依赖链不受 rights 过滤（站内 lib 类 gadget 以 `rights: [hidden]` 靠依赖拉起即是此机制），静态依赖会把本包及其重依赖拉给全站。`open("edit")` 在转换表页面（`MediaWiki:Conversiontable/zh-*`）自动落到 `editConversiontable` 类型。
 - **加载形态**：definition 为 `default: true` + `hidden: true`，与 site-js 相同——默认全站启用、不出现在偏好设置，入口可见性由各类型的 availability 与 `rights: [edit]` 控制。模块求值不发起任何 API 请求，配置页在首次 `open` 时才预取（幂等）。
 - **发送流程**：填参数（必填项即时校验、组约束整组提示）→「预览」查看渲染结果 →「提交请求」。预览是叠在主对话框之上的独立对话框，「返回」只关预览、主框原样保留，可反复修改再次预览；也可展开查看待提交的 wikitext。
 - **预览**：`action=parse` 带 `pst=1`，先做保存前变换（`{{subst:}}`、模板内的 `~~~~`）再解析，与真实保存后的渲染一致；`title` 传发帖目标页，`{{ARTICLEPAGENAME}}` 等页面上下文相关魔法字按目标页解析。
 - **发送**：默认 `action=discussiontoolsedit` + `paction=addtopic`（requestDeletion 已验证），带 `sectiontitle` 与编辑标签 `Automation tool|QuickRequest`（需站内预先定义，部署前置事项）；成功后回读新章节锚点，提示「提交成功，3 秒后跳转」后跳到新话题，已在目标页时用 hash + reload。
 - **用户组申请（阶段 2）**：`open("userGroup")` 打开「权限申请」对话框——顶部「申请类型」下拉切换 14 个变体（维护姬 / 管理员 / 用户查核员 / 监督员 / 界面管理员 / 机器人（含追加任务、机器用户）/ 文件维护员 / 优质编辑者、技术编辑员、荣誉维护人员、IP封禁豁免者、手动确认用户），映射 7 个基模板（`Template:权限申请/*`）。发帖走 **append 模式**（`action=edit` + `appendtext`）：申请族模板的正文以 `== X申请 - User:{{subst:REVISIONUSER}} ==` 开头、标题由模板在存盘替换时生成，addtopic 的 sectiontitle 会再叠一层标题造成重复——append 只追加正文，与现行入口 `section=new&nosummary=1`（隐藏标题框，MediaWiki 因此不写标题行）的保存结果一致。入口为权限变更版（`萌娘百科_talk:讨论版/权限变更`）页面的 p-cactions「发起权限申请」（与页顶模板渲染的现行按钮并存，替换需站内配合，列入部署前置事项）；可用性沿用现行申请按钮的守卫：已登录 + 自动确认用户。站内无辞职模板（辞职历来是自由发帖），本类型只覆盖申请/提名。
-- **提交前确认**：edit 类型带方针修改提醒（editRequestWarning 的迁移）——当前页属于「萌娘百科方针 / 萌娘百科指引」分类且用户不在跳过名单（patroller / sysop / techeditor / interface-admin / staff）时，提交前逐条确认。
+- **提交前确认**：edit 类型带方针修改提醒（editRequestWarning 的迁移）——当前页属于「萌娘百科方针 / 萌娘百科指引」分类（读 `mw.config` 的 `wgCategories`，零请求）且用户不在跳过名单（patroller / sysop / techeditor / interface-admin / staff）时，主对话框打开即以横幅提示，提交前再逐条确认。
 - **失败处理**：登录失效、限流、页面保护、滥用过滤器等给出中文说明，可在同一对话框内「重试」，已填内容不丢。
 - **签名**：不外部追加——各模板以 `sign` 参数的缺省值输出 `——~~~~`。
 
@@ -61,18 +61,6 @@
 
 值为空的参数不会写进模板调用（不产生 `|key=`）；固定参数先于用户参数输出。校验不通过的条目（含变体）会被静默丢弃；整页解析失败或一个合法类型都没有时，点入口会提示配置读取失败。
 
-### 用户级配置（`window.QuickRequest`）
-
-```js
-window.QuickRequest = {
-    // 按 id 覆盖预置类型条目。仅能覆盖既有 id——新增类型需要配套的注册表定义
-    // （目标版面、发帖方式、确认项都在代码里，随阶段 3-5 的里程碑落地），纯配置追加新 id 无法打开
-    types: {
-        edit: { template: "Template:编辑请求", parameters: [] },
-    },
-};
-```
-
 ## 目录结构
 
 ```text
@@ -90,7 +78,7 @@ src/
 ├── openWindow.ts      # 独立 WindowManager 挂载对话框，关闭后清理并回调（嵌套弹窗的前提）
 ├── messageDialog.ts   # 通用消息框、「关闭」错误提示、「关闭/重试」确认、「返回修改/继续提交」确认
 ├── send.ts            # addtopic 发帖与 append 追加发帖（多参 reject 取错误码）、回读新章节锚点、跳转
-├── mainDialog.ts      # 主对话框：发帖目标展示、申请类型下拉（变体）、参数区、组约束提示、编辑摘要、校验与预览请求
+├── mainDialog.ts      # 主对话框：发至展示、申请类型下拉（变体）、参数区、组约束提示、开框确认横幅、编辑摘要、校验与预览请求
 ├── previewDialog.ts   # 预览对话框：渲染 HTML、折叠 wikitext、提交前确认、发送/重试、提交中按钮态
 └── oo.d.ts            # 类型补充：mw.widgets 的两个输入框、OO.ui.ProcessDialog.$body
 tests/

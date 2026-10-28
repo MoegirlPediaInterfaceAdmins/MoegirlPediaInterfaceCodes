@@ -32,43 +32,6 @@ const fetchPageContent = async (title: string): Promise<string> => {
 };
 
 /**
- * 读取页面的分类（方针修改提醒用）。
- * 页面不存在时 prop=categories 返回空数组，与「无分类」同样处理。
- * 分类可能超过单批上限（500，隐藏分类也计数），方针分类若在后批而只取首批会漏判，
- * 故跟随 continue（clcontinue）循环取完。
- * @param title 页面名
- * @returns 分类页名集合（形如 Category:萌娘百科方针）
- */
-const fetchPageCategories = async (title: string): Promise<Set<string>> => {
-    const categories = new Set<string>();
-    let next: Record<string, string> = {};
-    do {
-        const res = await getApi().post({
-            action: "query",
-            titles: title,
-            prop: "categories",
-            cllimit: "max",
-            formatversion: 2,
-            ...next,
-        }) as (Partial<ApiQueryResponse> & {
-            query?: {
-                pages?: ({
-                    categories?: {
-                        title: string;
-                    }[];
-                } & Record<string, unknown>)[];
-            };
-            "continue"?: Record<string, string>;
-        });
-        for (const category of res.query?.pages?.[0]?.categories ?? []) {
-            categories.add(category.title);
-        }
-        next = res.continue ?? {};
-    } while (Object.keys(next).length > 0);
-    return categories;
-};
-
-/**
  * 用 action=parse 渲染 wikitext 为 HTML（预览用）。
  *
  * 正文带 {{subst:}} 与模板内的 ~~~~，而真实页面是「存盘时 PST、浏览时再解析」：
@@ -96,4 +59,4 @@ const parseWikitext = async (wikitext: string, title: string): Promise<string> =
     return res.parse?.text ?? "";
 };
 
-export { fetchPageCategories, fetchPageContent, getApi, parseWikitext };
+export { fetchPageContent, getApi, parseWikitext };
