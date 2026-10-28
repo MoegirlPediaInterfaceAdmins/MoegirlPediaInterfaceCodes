@@ -3,6 +3,7 @@ import {
     CONVERSION_TABLE_PATTERN,
     OPERATIONS_BOARD,
     POLICY_CATEGORIES,
+    RIGHTS_BOARD,
     titleSuffix,
     WARNING_SKIP_GROUPS,
 } from "./constants.ts";
@@ -90,12 +91,31 @@ const createDefinition: RequestTypeDefinition = {
     sectionTitle: (ctx) => `创建请求${titleSuffix(ctx.userName, ctx.now)}`,
 };
 
-/** 阶段 1 的请求类型注册表；userGroup / banAppeal / delete / vandalReport / checkuserRecord / editTech 随阶段 2-5 补齐。 */
+/**
+ * 用户组申请/提名（阶段 2）：发到权限变更版。
+ * 申请族模板（Template:权限申请/*）的正文以 `== X申请 - User:{{subst:REVISIONUSER}} ==`
+ * 开头——章节标题由模板在存盘替换时生成，addtopic 的 sectiontitle 会再叠一层标题造成重复，
+ * 故走 append 追加：不加标题行，与现行入口 `section=new&nosummary=1`（隐藏标题框、
+ * 只追加预载正文）的保存结果一致，也不提供 sectionTitle。
+ * 具体申请类型（维护姬/管理员/机器人/通用等 14 个变体，映射 7 个基模板）在配置页的
+ * variants 里；站内无辞职模板（辞职历来是自由发帖），本类型只覆盖申请/提名。
+ */
+const userGroupDefinition: RequestTypeDefinition = {
+    id: "userGroup",
+    label: wgULS("权限申请", "權限申請"),
+    // 与现行申请按钮（Widget:Applybutton）的守卫一致：仅自动确认用户可用
+    availability: (ctx) => ctx.userGroups.includes("autoconfirmed"),
+    resolveTarget: () => RIGHTS_BOARD,
+    postMode: "append",
+};
+
+/** 阶段 1-2 的请求类型注册表；banAppeal / delete / vandalReport / checkuserRecord / editTech 随阶段 3-5 补齐。 */
 const REQUEST_TYPES: Partial<Record<RequestTypeId, RequestTypeDefinition>> = {
     edit: editDefinition,
     editConversiontable: editConversiontableDefinition,
     move: moveDefinition,
     create: createDefinition,
+    userGroup: userGroupDefinition,
 };
 
 /**

@@ -13,9 +13,14 @@ import type {
     PreviewSubmission,
     QuickRequestContext,
     RequestTypeDefinition,
+    TemplateSpec,
     TypeConfig,
+    TypeVariant,
     Warning,
 } from "./types.ts";
+
+/** 当前生效的模板规格：无变体类型是类型条目本身，有变体类型是选中的变体。 */
+type ActiveSpec = TemplateSpec & Pick<TypeConfig, "requireAnyOf">;
 
 /**
  * 主对话框：按请求类型展示参数表单与编辑摘要，然后进入预览。
@@ -46,6 +51,9 @@ class MainDialog extends OO.ui.ProcessDialog {
     private context!: QuickRequestContext;
     private onPreview: ((data: PreviewDialogData) => void) | undefined;
     private typeConfig: TypeConfig | null = null;
+    /** 当前生效的模板规格：无变体类型即类型条目，有变体类型为选中的变体 */
+    private activeSpec: ActiveSpec | null = null;
+    private variantInput: OO.ui.DropdownInputWidget | null = null;
     private paramFields: ParamField[] = [];
 
     private loadingPanel!: OO.ui.PanelLayout;
@@ -147,7 +155,8 @@ class MainDialog extends OO.ui.ProcessDialog {
                     previewHtml,
                     submittedText: submission.submittedText,
                     targetPage: submission.targetPage,
-                    getSectionTitle: submission.getSectionTitle,
+                    ...submission.getSectionTitle === undefined ? {} : { getSectionTitle: submission.getSectionTitle },
+                    ...submission.postMode === undefined ? {} : { postMode: submission.postMode },
                     editSummary: submission.editSummary,
                     ...this.definition.warnings === undefined
                         ? {}
@@ -169,6 +178,7 @@ class MainDialog extends OO.ui.ProcessDialog {
 
     /**
      * 构建表单。仅在配置就绪后调用一次。
+     * 变体类型（userGroup）额外渲染「申请类型」下拉，参数区随选中变体整体重建。
      * @param typeConfig 类型配置
      */
     private buildForm(typeConfig: TypeConfig): void {
@@ -185,38 +195,83 @@ class MainDialog extends OO.ui.ProcessDialog {
             ]);
         }
 
-        // auto: currentPage 的字段以当前页面名作为初始值（取代旧的 preloadparams[]/$1 预填）
-        this.paramFields = (typeConfig.parameters ?? []).map((param) =>
-            createParamField(param.auto === "currentPage" ? { ...param, "default": this.context.pageName } : param, this.$overlay, () => { this.onFormChanged(); }),
-        );
+        const variants = typeConfig.variants ?? [];
+        let initialSpec: ActiveSpec;
+        if (variants.length > 0) {
+            this.variantInput = new OO.ui.DropdownInputWidget({
+                options: variants.map(({ id, label }) => ({ data: id, label })),
+                value: variants[0]?.id,
+            });
+            this.variantInput.on("change", () => {
+                this.rebuildParamArea(this.currentVariant());
+            });
+            fieldset.addItems([new OO.ui.FieldLayout(this.variantInput, { label: wgULS("申请类型", "申請類型"), align: "top" })]);
+            initialSpec = variants[0];
+        } else {
+            // 校验保证 template 与 variants 至少一项存在，此处判断同时完成类型收窄
+            const template = typeConfig.template;
+            if (!template) {
+                throw new Error(wgULS("类型配置既无模板也无变体", "類型設定既無模板也無變體"));
+            }
+            initialSpec = {
+                template,
+                ...typeConfig.parameters === undefined ? {} : { parameters: typeConfig.parameters },
+                ...typeConfig.requireAnyOf === undefined ? {} : { requireAnyOf: typeConfig.requireAnyOf },
+                ...typeConfig.fixedParams === undefined ? {} : { fixedParams: typeConfig.fixedParams },
+            };
+        }
+
         this.paramFieldset = new OO.ui.FieldsetLayout();
-        this.paramFieldset.addItems(this.paramFields.map(({ layout }) => layout));
         fieldset.addItems([this.paramFieldset]);
 
-        // 组约束不指向单个控件，以整组提示呈现
-        const groupLabels = (typeConfig.requireAnyOf ?? [])
-            .map((key) => typeConfig.parameters?.find((param) => param.key === key)?.label ?? key);
-        this.groupHint = new OO.ui.LabelWidget({
-            label: wgULS(`「${groupLabels.join("」「")}」至少填写一项`, `「${groupLabels.join("」「")}」至少填寫一項`),
-        });
+        // 组约束不指向单个控件，以整组提示呈现（文案随变体重建）
+        this.groupHint = new OO.ui.LabelWidget({ label: "" });
         this.groupHint.$element.css("color", "#d33");
         fieldset.addItems([this.groupHint]);
-        this.groupHint.toggle(false);
 
         this.summaryInput = new OO.ui.TextInputWidget({ value: this.definition.defaultSummary ?? "", placeholder: wgULS("留空则自动生成", "留空則自動生成") });
         fieldset.addItems([new OO.ui.FieldLayout(this.summaryInput, { label: wgULS("编辑摘要", "編輯摘要"), align: "top" })]);
 
         this.formPanel.$element.append(fieldset.$element);
+        this.rebuildParamArea(initialSpec);
+    }
+
+    /**
+     * 当前选中的变体。仅变体类型调用（variantInput 已存在）。
+     * @returns 选中的变体；下拉值异常时回退首个
+     */
+    private currentVariant(): TypeVariant {
+        const variants = this.typeConfig?.variants ?? [];
+        return variants.find((variant) => variant.id === this.variantInput?.getValue()) ?? variants[0];
+    }
+
+    /**
+     * 按模板规格重建参数区与组约束提示。初次构建与变体切换共用；
+     * 切换变体时已填内容不保留——各变体字段结构不同，保留无意义。
+     * @param spec 生效的模板规格
+     */
+    private rebuildParamArea(spec: ActiveSpec): void {
+        this.activeSpec = spec;
+        this.paramFieldset.clearItems();
+        // auto: currentPage 的字段以当前页面名作为初始值（取代旧的 preloadparams[]/$1 预填）
+        this.paramFields = (spec.parameters ?? []).map((param) =>
+            createParamField(param.auto === "currentPage" ? { ...param, "default": this.context.pageName } : param, this.$overlay, () => { this.onFormChanged(); }),
+        );
+        this.paramFieldset.addItems(this.paramFields.map(({ layout }) => layout));
+
+        const groupLabels = (spec.requireAnyOf ?? [])
+            .map((key) => spec.parameters?.find((param) => param.key === key)?.label ?? key);
+        this.groupHint.setLabel(groupLabels.length > 0 ? wgULS(`「${groupLabels.join("」「")}」至少填写一项`, `「${groupLabels.join("」「")}」至少填寫一項`) : "");
         this.onFormChanged();
     }
 
     /** 重算「预览」按钮的可用性，并刷新字段级校验提示与组约束提示。 */
     private onFormChanged(): void {
-        if (!this.typeConfig) {
+        if (!this.activeSpec) {
             return;
         }
         const firstInvalid = validateFields(this.paramFields);
-        const groupSatisfied = isGroupSatisfied(this.typeConfig, readValues(this.paramFields));
+        const groupSatisfied = isGroupSatisfied(this.activeSpec, readValues(this.paramFields));
         this.groupHint.toggle(!groupSatisfied);
         this.getActions().setAbilities({ preview: firstInvalid === null && groupSatisfied });
     }
@@ -226,7 +281,8 @@ class MainDialog extends OO.ui.ProcessDialog {
      * @returns 待预览/提交的内容
      */
     private collectSubmission(): PreviewSubmission | null {
-        if (!this.typeConfig) {
+        const spec = this.activeSpec;
+        if (!spec || !this.typeConfig) {
             return null;
         }
         const firstInvalid = validateFields(this.paramFields);
@@ -234,14 +290,15 @@ class MainDialog extends OO.ui.ProcessDialog {
             firstInvalid.widget.focus();
             return null;
         }
-        if (!isGroupSatisfied(this.typeConfig, readValues(this.paramFields))) {
+        if (!isGroupSatisfied(spec, readValues(this.paramFields))) {
             void showError(wgULS("内容不完整", "內容不完整"), wgULS("请至少填写组内的一项内容。", "請至少填寫組內的一項內容。"));
             return null;
         }
 
         const values = readValues(this.paramFields);
-        const raw = buildTemplateWikitext(this.typeConfig, values);
-        if (raw === `{{${this.typeConfig.template}}}`) {
+        const raw = buildTemplateWikitext(spec, values);
+        // 判空基线：用户参数全空的输出（固定参数仍在）——而不是裸模板调用
+        if (raw === buildTemplateWikitext(spec, {})) {
             void showError(wgULS("内容为空", "內容為空"), wgULS("待发送的内容不能为空。", "待傳送的內容不能為空。"));
             return null;
         }
@@ -252,11 +309,14 @@ class MainDialog extends OO.ui.ProcessDialog {
             return null;
         }
 
+        const sectionTitle = this.definition.sectionTitle;
         return {
             targetPage,
             submittedText: buildSubmitText(raw),
-            // 章节标题惰性生成：日期取提交时刻，预览停留跨午夜也不会带前一天的日期发出
-            getSectionTitle: (): string => this.definition.sectionTitle({ ...this.context, now: new Date() }),
+            // 章节标题惰性生成：日期取提交时刻，预览停留跨午夜也不会带前一天的日期发出；
+            // append 模式（标题由模板正文自带）不提供
+            ...sectionTitle === undefined ? {} : { getSectionTitle: (): string => sectionTitle({ ...this.context, now: new Date() }) },
+            ...this.definition.postMode === undefined ? {} : { postMode: this.definition.postMode },
             editSummary: this.summaryInput.getValue().trim(),
         };
     }
