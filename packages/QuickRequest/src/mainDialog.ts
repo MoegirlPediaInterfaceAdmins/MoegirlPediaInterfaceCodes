@@ -50,6 +50,8 @@ class MainDialog extends OO.ui.ProcessDialog {
     private definition!: RequestTypeDefinition;
     private context!: QuickRequestContext;
     private onPreview: ((data: PreviewDialogData) => void) | undefined;
+    /** 入口预填值（封禁申诉的封禁信息等）；无预填的类型为 undefined */
+    private preset: Record<string, string> | undefined;
     private typeConfig: TypeConfig | null = null;
     /** 当前生效的模板规格：无变体类型即类型条目，有变体类型为选中的变体 */
     private activeSpec: ActiveSpec | null = null;
@@ -90,10 +92,11 @@ class MainDialog extends OO.ui.ProcessDialog {
     public override getSetupProcess(data?: OO.ui.Dialog.SetupDataMap & Record<string, unknown>): OO.ui.Process {
         return super.getSetupProcess(data).next(
             (async () => {
-                const { definition, context, configPromise, onPreview } = data as unknown as MainDialogData;
+                const { definition, context, configPromise, onPreview, preset } = data as unknown as MainDialogData;
                 this.definition = definition;
                 this.context = context;
                 this.onPreview = onPreview;
+                this.preset = preset;
                 this.getActions().setAbilities({ preview: false });
 
                 // configPromise 承诺不 reject，catch 只是兜底；步骤内绝不能抛，
@@ -261,10 +264,19 @@ class MainDialog extends OO.ui.ProcessDialog {
     private rebuildParamArea(spec: ActiveSpec): void {
         this.activeSpec = spec;
         this.paramFieldset.clearItems();
-        // auto: currentPage 的字段以当前页面名作为初始值（取代旧的 preloadparams[]/$1 预填）
-        this.paramFields = (spec.parameters ?? []).map((param) =>
-            createParamField(param.auto === "currentPage" ? { ...param, "default": this.context.pageName } : param, this.$overlay, () => { this.onFormChanged(); }),
-        );
+        this.paramFields = (spec.parameters ?? []).map((param) => {
+            // 初始值优先级：入口预填（preset，如封禁申诉入口查好的封禁信息）＞
+            // auto: currentPage（本页名，取代旧的 preloadparams[]/$1 预填）＞ 配置 default
+            const presetValue = this.preset?.[param.key];
+            const autoValue = param.auto === "currentPage" ? this.context.pageName : undefined;
+            const initial = presetValue ?? autoValue ?? param.default;
+            const effective = initial === undefined ? param : { ...param, "default": initial };
+            return createParamField(
+                effective,
+                this.$overlay,
+                () => { this.onFormChanged(); },
+            );
+        });
         this.paramFieldset.addItems(this.paramFields.map(({ layout }) => layout));
 
         const groupLabels = (spec.requireAnyOf ?? [])
@@ -325,6 +337,7 @@ class MainDialog extends OO.ui.ProcessDialog {
             // append 模式（标题由模板正文自带）不提供
             ...sectionTitle === undefined ? {} : { getSectionTitle: (): string => sectionTitle({ ...this.context, now: new Date() }) },
             ...this.definition.postMode === undefined ? {} : { postMode: this.definition.postMode },
+            ...this.definition.allowCreate === undefined ? {} : { allowCreate: this.definition.allowCreate },
             editSummary: this.summaryInput.getValue().trim(),
         };
     }

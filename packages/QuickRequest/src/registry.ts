@@ -104,13 +104,31 @@ const userGroupDefinition: RequestTypeDefinition = {
     postMode: "append",
 };
 
-/** 阶段 1-2 的请求类型注册表；banAppeal / delete / vandalReport / checkuserRecord / editTech 随阶段 3-5 补齐。 */
+/**
+ * 封禁申诉（阶段 3）：发到本人讨论页。
+ * Template:BlockedUserHelp/request 的正文以 `== 用户被封禁而寻求帮助 ==` 开头——章节标题
+ * 由模板在存盘替换时生成，与权限申请族相同，走 append 追加、不提供 sectionTitle（见 §2 的
+ * 标题机制说明）。封禁信息由入口查询 blockinfo 后经 preset 预填（blockInfo.ts）。
+ * availability 恒真：入口只在封禁提示屏（#BlockedUserHelp div 由服务端渲染）挂载，
+ * 封禁状态在点击入口时复核，这里没有可同步判断的条件。
+ */
+const banAppealDefinition: RequestTypeDefinition = {
+    id: "banAppeal",
+    label: wgULS("封禁申诉", "封鎖申訴"),
+    availability: () => true,
+    resolveTarget: (ctx) => `User_talk:${ctx.userName}`,
+    postMode: "append",
+    allowCreate: true,
+};
+
+/** 阶段 1-3 的请求类型注册表；delete / vandalReport / checkuserRecord / editTech 随阶段 4-5 补齐。 */
 const REQUEST_TYPES: Partial<Record<RequestTypeId, RequestTypeDefinition>> = {
     edit: editDefinition,
     editConversiontable: editConversiontableDefinition,
     move: moveDefinition,
     create: createDefinition,
     userGroup: userGroupDefinition,
+    banAppeal: banAppealDefinition,
 };
 
 /**
