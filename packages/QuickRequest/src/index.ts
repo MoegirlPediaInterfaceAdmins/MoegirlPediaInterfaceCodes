@@ -1,5 +1,6 @@
+import { getApiForSite, isCurrentHost } from "./api.ts";
 import { prefetchConfig } from "./config.ts";
-import { CONFIG_PAGE, DIALOG_SIZE, REDIRECT_DELAY } from "./constants.ts";
+import { CONFIG_PAGE, DIALOG_SIZE, REDIRECT_DELAY, SITE_ORIGINS } from "./constants.ts";
 import { mountEntries } from "./entries.ts";
 import { MainDialog } from "./mainDialog.ts";
 import { showError } from "./messageDialog.ts";
@@ -37,9 +38,10 @@ const openPreview = (data: PreviewDialogData, mainDialog: MainDialog): void => {
         if (result?.action === "sent") {
             mainDialog.close();
             mw.notify(wgULS("提交成功，3 秒后跳转", "提交成功，3 秒後跳轉"), { type: "success" });
-            // 提示先露个脸，再离场：这一步是刻意延迟的，故此刻页面还能看见通知
+            // 提示先露个脸，再离场：这一步是刻意延迟的，故此刻页面还能看见通知；
+            // 共享站发起的请求目标在主站，跳转 URL 需带站点基址
             window.setTimeout(() => {
-                gotoNewSection(data.targetPage, result.anchor ?? "");
+                gotoNewSection(data.targetPage, result.anchor ?? "", data.targetBase);
             }, REDIRECT_DELAY);
         }
     });
@@ -70,14 +72,17 @@ const open = (type: RequestTypeId, preset?: Record<string, string>): void => {
         return;
     }
 
-    const configPromise = prefetchConfig();
-
+    // 目标站与对应 API/基址：delete 在共享站发起时目标为主站（经 ForeignApi），
+    // 其余类型目标即当前站；程序化表单类型不经配置页，配置只对模板类型预取
+    const site = definition.site ?? "zh";
     const mainDialog = new MainDialog({ size: DIALOG_SIZE });
     const data: MainDialogData = {
         definition,
         context,
         ...preset === undefined ? {} : { preset },
-        configPromise,
+        ...definition.programmaticForm === undefined ? { configPromise: prefetchConfig() } : {},
+        api: getApiForSite(site),
+        targetBase: isCurrentHost(site) ? "" : SITE_ORIGINS[site],
         onPreview: (previewData): void => {
             openPreview(previewData, mainDialog);
         },

@@ -8,8 +8,28 @@ var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { en
 var __publicField = (obj, key, value) => __defNormalProp(obj, typeof key != "symbol" ? key + "" : key, value);
 
 // packages/QuickRequest/src/constants.ts
-var CONFIG_PAGE = "MediaWiki:Gadget-QuickRequest.json", DIALOG_SIZE = "large";
-var CHANGE_TAG = "Automation tool|QuickRequest", OPERATIONS_BOARD = "萌娘百科_talk:讨论版/操作申请", RIGHTS_BOARD = "萌娘百科_talk:讨论版/权限变更", CONVERSION_TABLE_PATTERN = /^MediaWiki:Conversiontable\/zh-[a-z]+$/, POLICY_CATEGORIES = ["萌娘百科方针", "萌娘百科指引"], WARNING_SKIP_GROUPS = ["patroller", "sysop", "techeditor", "interface-admin", "staff"], titleSuffix = (userName, now) => ` - ${userName} - ${now.getFullYear()}.${libPrefixNumber(now.getMonth() + 1)}.${libPrefixNumber(now.getDate())}`;
+var CONFIG_PAGE = "MediaWiki:Gadget-QuickRequest.json", SITE_ORIGINS = {
+  zh: "https://mzh.moegirl.org.cn",
+  commons: "https://commons.moegirl.org.cn"
+}, BOARD_PREFIX = "萌娘百科_talk:讨论版", DIALOG_SIZE = "large", MAX_MAIN_BODY_HEIGHT = 520, MAX_PREVIEW_BODY_HEIGHT = 560, REDIRECT_DELAY = 3e3, CHANGE_TAG = "Automation tool|QuickRequest", OPERATIONS_BOARD = "萌娘百科_talk:讨论版/操作申请", RIGHTS_BOARD = "萌娘百科_talk:讨论版/权限变更", CONVERSION_TABLE_PATTERN = /^MediaWiki:Conversiontable\/zh-[a-z]+$/, POLICY_CATEGORIES = ["萌娘百科方针", "萌娘百科指引"], WARNING_SKIP_GROUPS = ["patroller", "sysop", "techeditor", "interface-admin", "staff"], titleSuffix = (userName, now) => ` - ${userName} - ${now.getFullYear()}.${libPrefixNumber(now.getMonth() + 1)}.${libPrefixNumber(now.getDate())}`;
+
+// packages/QuickRequest/src/api.ts
+var REQUEST_TIMEOUT = 3e4, apiInstance = null, getApi = () => (apiInstance ?? (apiInstance = new mw.Api({ ajax: { timeout: REQUEST_TIMEOUT } })), apiInstance), foreignApis = {}, isZhHost = () => /^m?zh\.moegirl\.org\.cn$/.test(location.hostname), isCurrentHost = (site) => site === "zh" ? isZhHost() : !isZhHost(), getApiForSite = (site) => isCurrentHost(site) ? getApi() : (foreignApis[site] ?? (foreignApis[site] = new mw.ForeignApi(`${SITE_ORIGINS[site]}/api.php`, { ajax: { timeout: REQUEST_TIMEOUT } })), foreignApis[site]), fetchPageContent = async (title) => (await getApi().post({
+  action: "query",
+  titles: title,
+  prop: "revisions",
+  rvprop: "content",
+  formatversion: 2
+})).query?.pages?.[0]?.revisions?.[0]?.content ?? "", parseWikitext = async (wikitext, title, api = getApi()) => (await api.post({
+  action: "parse",
+  title,
+  text: wikitext,
+  contentmodel: "wikitext",
+  pst: !0,
+  disablelimitreport: !0,
+  formatversion: 2,
+  wrapoutputclass: "mw-parser-output"
+})).parse?.text ?? "";
 
 // packages/QuickRequest/src/errors.ts
 var toErrorMessage = (error) => error instanceof Error ? error.message : String(error), ERROR_MESSAGES = {
@@ -25,24 +45,6 @@ var toErrorMessage = (error) => error instanceof Error ? error.message : String(
   let info = extractInfo(result), known = Object.hasOwn(ERROR_MESSAGES, code) ? ERROR_MESSAGES[code] : void 0;
   return known ? info ? `${known}（${info}）` : known : code.startsWith("abusefilter") ? wgULS(`被滥用过滤器阻止（${code}）${info ? `：${info}` : ""}`, `被防濫用過濾器阻止（${code}）${info ? `：${info}` : ""}`) : wgULS(`发送失败（${code}）${info ? `：${info}` : ""}`, `傳送失敗（${code}）${info ? `：${info}` : ""}`);
 };
-
-// packages/QuickRequest/src/api.ts
-var apiInstance = null, getApi = () => (apiInstance ?? (apiInstance = new mw.Api({ ajax: { timeout: 3e4 } })), apiInstance), fetchPageContent = async (title) => (await getApi().post({
-  action: "query",
-  titles: title,
-  prop: "revisions",
-  rvprop: "content",
-  formatversion: 2
-})).query?.pages?.[0]?.revisions?.[0]?.content ?? "", parseWikitext = async (wikitext, title) => (await getApi().post({
-  action: "parse",
-  title,
-  text: wikitext,
-  contentmodel: "wikitext",
-  pst: !0,
-  disablelimitreport: !0,
-  formatversion: 2,
-  wrapoutputclass: "mw-parser-output"
-})).parse?.text ?? "";
 
 // packages/QuickRequest/src/config.ts
 var PARAM_TYPES = /* @__PURE__ */ new Set(["page", "user", "text", "multiline"]), isParamType = (value) => typeof value == "string" && PARAM_TYPES.has(value), compact = (items) => items.filter((item) => item !== null), prefetch = null, isNonEmptyString = (value) => typeof value == "string" && value.trim() !== "", toRequestParam = (raw) => {
@@ -144,6 +146,158 @@ var formatBlockInfo = (user) => {
   return formatBlockInfo(res.query?.users?.[0] ?? {});
 };
 
+// packages/QuickRequest/src/storage.ts
+var storage = null, getStorage = () => (storage ?? (storage = new LocalObjectStorage("AnnTools-QuickRequest")), storage), getPreference = (key, legacy) => {
+  let value = getStorage().getItem(key);
+  if (typeof value == "string")
+    return value;
+  if (legacy !== void 0) {
+    let legacyValue = new LocalObjectStorage(legacy.name).getItem(legacy.key);
+    if (legacyValue != null)
+      return typeof legacyValue == "string" ? legacyValue : JSON.stringify(legacyValue);
+  }
+  return null;
+}, setPreference = (key, value) => {
+  getStorage().setItem(key, value);
+};
+
+// packages/QuickRequest/src/deleteContent.ts
+var currentSite = () => isZhHost() ? "zh" : "commons", linkedPageNameFor = (pageName, site) => site === "zh" ? pageName : `cm:${pageName}`, buildSingleBody = (linkedPageName, isRedirect, reason, detail) => {
+  let lines = [
+    `* '''页面标题'''：${isRedirect ? `{{NoRedirectLink|${linkedPageName}}}` : `[[:${linkedPageName}]]`}`,
+    `* '''申请理由'''：${reason}`
+  ];
+  return detail !== "" && lines.push(`* '''详细原因'''：${detail}`), lines.push("~~~~"), lines.join(`
+`);
+}, buildBatchBody = (pages, reason, detail) => {
+  let lines = [
+    "* '''页面标题'''：",
+    ...pages.map(({ title, isRedirect }) => `** ${isRedirect ? `{{NoRedirectLink|${title}}}` : `[[:${title}]]`}`),
+    `* '''申请理由'''：${reason}`
+  ];
+  return detail !== "" && lines.push(`* '''详细原因'''：${detail}`), lines.push("~~~~"), lines.join(`
+`);
+}, parseBatchPages = (text, site) => {
+  let lines = text.split(`
+`).map((line) => line.trim()).filter((line) => line !== ""), invalidLines = lines.filter((line) => {
+    let stripped = line.replace(/^(?:cm:|zhmoe:)/i, "");
+    return stripped === "" || /[|[\]{}<>]/.test(stripped);
+  });
+  if (invalidLines.length > 0)
+    throw new Error(wgULS(
+      `以下页面标题无效（仅有前缀，或含 | [ ] { } < > 等字符）：${invalidLines.join("、")}`,
+      `以下頁面標題無效（僅有前綴，或含 | [ ] { } < > 等字元）：${invalidLines.join("、")}`
+    ));
+  let toBatchPage = (line) => {
+    if (/^zhmoe:/i.test(line)) {
+      let title = line.substring(6);
+      return { title, queryTitle: title, site: "zh" };
+    }
+    return /^cm:/i.test(line) ? { title: line, queryTitle: line.substring(3), site: "commons" } : site === "zh" ? { title: line, queryTitle: line, site: "zh" } : { title: `cm:${line}`, queryTitle: line, site: "commons" };
+  }, result = [], seen = /* @__PURE__ */ new Set();
+  for (let line of lines) {
+    let page = toBatchPage(line);
+    seen.has(page.title) || (seen.add(page.title), result.push(page));
+  }
+  return result;
+}, normalizeBatchTitle = (title) => title.replace(/_/g, " ").replace(/\s+/g, " ").trim().replace(/^[a-z]/, (char) => char.toUpperCase()), applyRedirectInfo = (pages, normalizedTitles, redirectTitles) => pages.map(({ title, queryTitle }) => {
+  let normalized = normalizeBatchTitle(queryTitle);
+  return { title, isRedirect: redirectTitles.has(normalizedTitles.get(normalized) ?? normalized) };
+}), resolveBatchPages = async (pages) => {
+  let normalizedTitles = /* @__PURE__ */ new Map(), redirectTitles = /* @__PURE__ */ new Set(), titlesBySite = /* @__PURE__ */ new Map();
+  for (let { queryTitle, site } of pages) {
+    let list = titlesBySite.get(site) ?? [];
+    list.push(queryTitle), titlesBySite.set(site, list);
+  }
+  return await Promise.all([...titlesBySite].map(async ([site, titles]) => {
+    let unique = [...new Set(titles)], batches = Array.from({ length: Math.ceil(unique.length / 50) }, (_, index) => unique.slice(index * 50, index * 50 + 50));
+    await Promise.all(batches.map(async (batch) => {
+      try {
+        let res = await getApiForSite(site).post({
+          action: "query",
+          titles: batch.join("|"),
+          redirects: !0,
+          formatversion: 2
+        });
+        for (let { from, to } of res.query?.normalized ?? [])
+          normalizedTitles.set(normalizeBatchTitle(from), to);
+        for (let { from } of res.query?.redirects ?? [])
+          redirectTitles.add(normalizeBatchTitle(from));
+      } catch (error) {
+        console.warn("[QuickRequest] 批量查询重定向失败", error);
+      }
+    }));
+  })), applyRedirectInfo(pages, normalizedTitles, redirectTitles);
+}, buildDeleteSectionTitle = (values, ctx, site) => {
+  let suffix = titleSuffix(ctx.userName, ctx.now);
+  return values.batch === "1" ? `批量删除请求${suffix}` : `请求删除页面：[[${linkedPageNameFor(ctx.pageName, site)}]]${suffix}`;
+}, buildDeleteBody = async (values, ctx) => {
+  let reason = values.reason, detail = values.detail, requestReason = reason !== "" ? reason : detail, requestDetail = reason !== "" ? detail : "", site = currentSite();
+  if (values.batch === "1") {
+    let pages = parseBatchPages(values.pages, site);
+    if (pages.length === 0)
+      throw new Error(wgULS("请至少填写一个页面", "請至少填寫一個頁面"));
+    return buildBatchBody(await resolveBatchPages(pages), requestReason, requestDetail);
+  }
+  return buildSingleBody(linkedPageNameFor(ctx.pageName, site), ctx.isRedirect, requestReason, requestDetail);
+}, autopatrolPromise = null, checkAutopatrol = () => (autopatrolPromise ?? (autopatrolPromise = new Promise((resolve) => {
+  mw.user.getRights().then((rights) => {
+    resolve(rights.includes("autopatrol"));
+  }).catch((error) => {
+    console.warn("[QuickRequest] 获取用户权限失败，按无 autopatrol 权限处理", error), resolve(!1);
+  });
+})), autopatrolPromise), fetchReasonOptions = async () => {
+  try {
+    let wgNamespaceNumber = mw.config.get("wgNamespaceNumber"), wgNamespaceIds = mw.config.get("wgNamespaceIds"), page = wgNamespaceNumber === wgNamespaceIds.file ? "MediaWiki:Filedelete-reason-dropdown" : "MediaWiki:Deletereason-dropdown", res = await getApi().post({
+      action: "parse",
+      page,
+      prop: "text",
+      formatversion: 2
+    }), $container = $("<div>").html(res.parse?.text ?? ""), options = [], pushOption = (element) => {
+      let text = element.innerText.trim();
+      options.push({ data: text, label: text });
+    };
+    return $container.children(".mw-parser-output").children("ul").children("li").each((_, element) => {
+      let $element = $(element);
+      $element.children("ul").length > 0 ? (options.push({ optgroup: $element.clone().find("*").remove().end().text().trim() }), $element.children("ul").children("li").each((__, child) => {
+        pushOption(child);
+      })) : pushOption(element);
+    }), options;
+  } catch (error) {
+    return console.warn("[QuickRequest] 理由下拉加载失败", error), [];
+  }
+}, readEnterPreference = () => {
+  let value = getPreference("enterToSubmit", { name: "AnnTools-requestDeletion", key: "enterToSubmit" });
+  return value !== null && value !== "" && value !== "false" ? "1" : "";
+}, buildDeleteParams = async () => {
+  let [options, hasAutopatrol] = await Promise.all([fetchReasonOptions(), checkAutopatrol()]), site = currentSite(), params = [
+    {
+      key: "reason",
+      label: wgULS("删除理由", "刪除理由"),
+      type: "dropdown",
+      options: [{ data: "", label: wgULS("其他（请自行说明理由）", "其他（請自行說明理由）") }, ...options]
+    },
+    { key: "detail", label: wgULS("详情", "詳情"), type: "text", enterSubmits: !0 }
+  ];
+  return hasAutopatrol && (params.push({ key: "batch", label: wgULS("批量提删", "批次提刪"), type: "checkbox" }), params.push({
+    key: "pages",
+    label: wgULS("待删除页面", "待刪除頁面"),
+    type: "multiline",
+    placeholder: site === "zh" ? wgULS(`一行一个主站页面，不需要添加[[ ]]，不自动包含当前页面；
+共享站页面请加 cm: 前缀`, `一行一個主站頁面，不需要添加[[ ]]，不自動包含當前頁面；
+共享站頁面請加 cm: 前綴`) : wgULS(`一行一个共享站页面，不需要添加[[ ]]，不自动包含当前页面；
+主站页面请加 zhmoe: 前缀`, `一行一個共享站頁面，不需要添加[[ ]]，不自動包含當前頁面；
+主站頁面請加 zhmoe: 前綴`),
+    visibleIf: { param: "batch", equals: "1" }
+  })), params.push({
+    key: "enterToSubmit",
+    label: wgULS("理由详情按回车提交（浏览器级设置）", "理由詳情按確認鍵提交（瀏覽器級設置）"),
+    type: "checkbox",
+    default: readEnterPreference(),
+    storageKey: "enterToSubmit"
+  }), params;
+};
+
 // packages/QuickRequest/src/registry.ts
 var policyWarning = (ctx) => {
   if (ctx.userGroups.some((group) => WARNING_SKIP_GROUPS.includes(group)))
@@ -211,19 +365,33 @@ var policyWarning = (ctx) => {
   resolveTarget: (ctx) => `User_talk:${ctx.userName}`,
   postMode: "append",
   allowCreate: !0
+}, deleteDefinition = {
+  id: "delete",
+  label: wgULS("请求删除", "請求刪除"),
+  availability: () => !0,
+  resolveTarget: () => OPERATIONS_BOARD,
+  site: "zh",
+  programmaticForm: {
+    buildParams: buildDeleteParams,
+    requireAnyOf: ["reason", "detail"],
+    buildBody: buildDeleteBody,
+    buildSectionTitle: (values, ctx) => buildDeleteSectionTitle(values, ctx, isZhHost() ? "zh" : "commons")
+  }
 }, REQUEST_TYPES = {
   edit: editDefinition,
   editConversiontable: editConversiontableDefinition,
   move: moveDefinition,
   create: createDefinition,
   userGroup: userGroupDefinition,
-  banAppeal: banAppealDefinition
+  banAppeal: banAppealDefinition,
+  delete: deleteDefinition
 }, resolveRequestType = (id, pageName) => id === "edit" && CONVERSION_TABLE_PATTERN.test(pageName) ? REQUEST_TYPES.editConversiontable : REQUEST_TYPES[id], buildContext = (userName) => ({
   pageName: mw.config.get("wgPageName"),
   talkPage: libGetPageNames().talkPage,
   userName,
   userGroups: mw.config.get("wgUserGroups") ?? [],
-  now: /* @__PURE__ */ new Date()
+  now: /* @__PURE__ */ new Date(),
+  isRedirect: mw.config.get("wgIsRedirect")
 });
 
 // packages/QuickRequest/src/entries.ts
@@ -253,41 +421,61 @@ var mountUserGroupEntry = () => {
   button.on("click", () => {
     openBanAppeal();
   }), $container.append(button.$element);
-}, entryMounters = [mountUserGroupEntry, mountBanAppealEntry], mountEntries = () => {
+}, mountDeleteEntry = () => {
+  let { wgArticleId, wgPageName, wgNamespaceNumber, wgUserGroups } = mw.config.get(["wgArticleId", "wgPageName", "wgNamespaceNumber", "wgUserGroups"]), debug = (new URL(location.href).searchParams.get("AnnTools-debug") ?? "").split("|").includes("requestDeletion"), groups = wgUserGroups ?? [];
+  if (wgArticleId === 0 || wgNamespaceNumber < 0 || wgPageName.startsWith(BOARD_PREFIX) || $(".will2Be2Deleted").length > 0 || (groups.includes("patroller") || groups.includes("sysop")) && !debug)
+    return;
+  let link = mw.util.addPortletLink("p-cactions", "#", wgULS("提出删除请求", "提出刪除請求"), "ca-quickrequest-delete", wgULS("向讨论版提出删除请求", "向討論版提出刪除請求"));
+  link && $(link).on("click", (event) => {
+    event.preventDefault(), window.libQuickRequest?.open("delete");
+  });
+}, entryMounters = [mountUserGroupEntry, mountBanAppealEntry, mountDeleteEntry], mountEntries = () => {
   for (let mount of entryMounters)
     mount();
 };
 
 // packages/QuickRequest/src/fields.ts
 var createParamWidget = (param, $overlay) => {
-  let value = param.default ?? "";
+  let value = param.default ?? "", placeholder = param.placeholder === void 0 ? {} : { placeholder: param.placeholder };
   switch (param.type ?? "text") {
     case "page":
       return new mw.widgets.TitleInputWidget({ value, suggestions: !0, $overlay });
     case "user":
       return new mw.widgets.UserInputWidget({ value, $overlay });
     case "multiline":
-      return new OO.ui.MultilineTextInputWidget({ value, rows: 4, autosize: !0, maxRows: 12 });
+      return new OO.ui.MultilineTextInputWidget({ value, rows: 4, autosize: !0, maxRows: 12, ...placeholder });
+    case "dropdown":
+      return new OO.ui.DropdownInputWidget({ options: param.options ?? [], $overlay });
+    case "checkbox":
+      return new OO.ui.CheckboxInputWidget({ selected: value === "1" });
     default:
-      return new OO.ui.TextInputWidget({ value });
+      return new OO.ui.TextInputWidget({ value, ...placeholder });
   }
-}, createParamField = (param, $overlay, onChange) => {
+}, createParamField = (param, $overlay, onChange, onEnter) => {
   let widget = createParamWidget(param, $overlay);
-  return (param.readOnly === !0 || param.auto === "currentPage") && widget.setReadOnly(!0), widget.on("change", onChange), {
+  return widget instanceof OO.ui.TextInputWidget && (param.readOnly === !0 || param.auto === "currentPage") && widget.setReadOnly(!0), widget.on("change", onChange), onEnter !== void 0 && param.enterSubmits === !0 && widget instanceof OO.ui.TextInputWidget && widget.on("enter", onEnter), {
     param,
     widget,
+    read: () => widget instanceof OO.ui.CheckboxInputWidget ? widget.isSelected() ? "1" : "" : widget.getValue(),
+    flagValidity: widget instanceof OO.ui.TextInputWidget ? (valid) => {
+      widget.setValidityFlag(valid);
+    } : void 0,
+    focus: widget instanceof OO.ui.TextInputWidget ? () => {
+      widget.focus();
+    } : void 0,
     layout: new OO.ui.FieldLayout(widget, {
       label: param.label,
-      align: "top",
+      align: param.type === "checkbox" ? "inline" : "top",
       ...param.hint === void 0 ? {} : { help: param.hint, helpInline: !0 }
     }),
-    flagged: !1
+    flagged: !1,
+    hidden: !1
   };
-}, readValues = (fields) => Object.fromEntries(fields.map(({ param, widget }) => [param.key, widget.getValue()])), validateFields = (fields) => {
+}, readValues = (fields) => Object.fromEntries(fields.map(({ param, read }) => [param.key, read()])), validateFields = (fields) => {
   let firstInvalid = null;
   for (let field of fields) {
-    let invalid = (field.param.required ?? !1) && field.widget.getValue().trim() === "";
-    invalid !== field.flagged && (field.flagged = invalid, field.widget.setValidityFlag(!invalid), field.layout.setErrors(invalid ? [wgULS(`${field.param.label}不能为空`, `${field.param.label}不能為空`)] : [])), invalid && !firstInvalid && (firstInvalid = field);
+    let invalid = !field.hidden && (field.param.required ?? !1) && field.read().trim() === "";
+    invalid !== field.flagged && (field.flagged = invalid, field.flagValidity?.(!invalid), field.layout.setErrors(invalid ? [wgULS(`${field.param.label}不能为空`, `${field.param.label}不能為空`)] : [])), invalid && !firstInvalid && (firstInvalid = field);
   }
   return firstInvalid;
 };
@@ -365,9 +553,14 @@ var MainDialog = class extends OO.ui.ProcessDialog {
     __publicField(this, "onPreview");
     /** 入口预填值（封禁申诉的封禁信息等）；无预填的类型为 undefined */
     __publicField(this, "preset");
+    /** 预览解析所用 API 与目标站基址（delete 在共享站发起时指向主站） */
+    __publicField(this, "api");
+    __publicField(this, "targetBase", "");
     __publicField(this, "typeConfig", null);
-    /** 当前生效的模板规格：无变体类型即类型条目，有变体类型为选中的变体 */
+    /** 当前生效的表单规格（参数与组约束） */
     __publicField(this, "activeSpec", null);
+    /** 配置模板类型的模板规格；程序化类型（delete）为 null */
+    __publicField(this, "templateSpec", null);
     __publicField(this, "variantInput", null);
     __publicField(this, "paramFields", []);
     __publicField(this, "loadingPanel");
@@ -383,7 +576,7 @@ var MainDialog = class extends OO.ui.ProcessDialog {
   initialize() {
     return super.initialize(), this.loadingPanel = new OO.ui.PanelLayout({ padded: !0, expanded: !1 }), this.loadingPanel.$element.append(
       new OO.ui.ProgressBarWidget({ progress: !1 }).$element,
-      $("<p>").text(wgULS("正在加载请求配置…", "正在載入請求組態…"))
+      $("<p>").text(wgULS("正在加载…", "正在載入…"))
     ), this.formPanel = new OO.ui.PanelLayout({ padded: !0, expanded: !1, scrollable: !0 }), this.$body.append(this.loadingPanel.$element, this.formPanel.$element), this;
   }
   /**
@@ -395,8 +588,24 @@ var MainDialog = class extends OO.ui.ProcessDialog {
   getSetupProcess(data) {
     return super.getSetupProcess(data).next(
       (async () => {
-        let { definition, context, configPromise, onPreview, preset } = data;
-        this.definition = definition, this.context = context, this.onPreview = onPreview, this.preset = preset, this.getActions().setAbilities({ preview: !1 });
+        let { definition, context, configPromise, onPreview, preset, api, targetBase } = data;
+        this.definition = definition, this.context = context, this.onPreview = onPreview, this.preset = preset, this.api = api, this.targetBase = targetBase, this.getActions().setAbilities({ preview: !1 });
+        let programmatic = definition.programmaticForm;
+        if (programmatic) {
+          try {
+            let parameters = await programmatic.buildParams(context);
+            this.buildForm({ parameters, ...programmatic.requireAnyOf === void 0 ? {} : { requireAnyOf: programmatic.requireAnyOf } }, null);
+          } catch (error) {
+            this.close({ action: "formError", message: toErrorMessage(error) });
+            return;
+          }
+          this.loadingPanel.$element.detach();
+          return;
+        }
+        if (!configPromise) {
+          this.close({ action: "formError", message: wgULS("缺少配置预取", "缺少組態預取") });
+          return;
+        }
         let result = await configPromise.catch((error) => ({ ok: !1, message: toErrorMessage(error) }));
         if (!result.ok) {
           this.close({ action: "configError", message: result.message });
@@ -408,7 +617,7 @@ var MainDialog = class extends OO.ui.ProcessDialog {
           return;
         }
         try {
-          this.buildForm(typeConfig);
+          this.buildForm(null, typeConfig);
         } catch (error) {
           this.close({ action: "formError", message: toErrorMessage(error) });
           return;
@@ -427,12 +636,12 @@ var MainDialog = class extends OO.ui.ProcessDialog {
   getActionProcess(action) {
     return action !== "preview" ? super.getActionProcess(action) : new OO.ui.Process(
       (async () => {
-        let submission = this.collectSubmission();
+        let submission = await this.collectSubmission();
         if (!submission)
           return;
         let previewHtml;
         try {
-          previewHtml = await parseWikitext(submission.submittedText, submission.targetPage);
+          previewHtml = await parseWikitext(submission.submittedText, submission.targetPage, this.api);
         } catch (error) {
           showError(wgULS("预览失败", "預覽失敗"), wgULS(`无法渲染预览：${toErrorMessage(error)}`, `無法產生預覽：${toErrorMessage(error)}`));
           return;
@@ -445,6 +654,8 @@ var MainDialog = class extends OO.ui.ProcessDialog {
           ...submission.getSectionTitle === void 0 ? {} : { getSectionTitle: submission.getSectionTitle },
           ...submission.postMode === void 0 ? {} : { postMode: submission.postMode },
           editSummary: submission.editSummary,
+          api: this.api,
+          targetBase: this.targetBase,
           ...this.definition.warnings === void 0 ? {} : { getWarnings: () => this.definition.warnings?.(this.context) ?? Promise.resolve([]) }
         };
         this.onPreview?.(data);
@@ -457,14 +668,16 @@ var MainDialog = class extends OO.ui.ProcessDialog {
    * @returns 高度（px）
    */
   getBodyHeight() {
-    return Math.min(super.getBodyHeight(), 520);
+    return Math.min(super.getBodyHeight(), MAX_MAIN_BODY_HEIGHT);
   }
   /**
-   * 构建表单。仅在配置就绪后调用一次。
-   * 变体类型（userGroup）额外渲染「申请类型」下拉，参数区随选中变体整体重建。
-   * @param typeConfig 类型配置
+   * 构建表单。仅在类型内容就绪后调用一次（配置类型在预取落定后，程序化类型在 buildParams 落定后）。
+   * 变体类型（userGroup）额外渲染「申请类型」下拉，参数区随选中变体整体重建；
+   * 程序化类型（delete）无变体与模板，programmaticSpec 即初始规格。
+   * @param programmaticSpec 程序化表单的规格；配置页类型传 null
+   * @param typeConfig 类型配置；程序化类型传 null
    */
-  buildForm(typeConfig) {
+  buildForm(programmaticSpec, typeConfig) {
     this.typeConfig = typeConfig;
     let fieldset = new OO.ui.FieldsetLayout({ label: this.definition.label }), targetPage = this.definition.resolveTarget(this.context);
     targetPage !== !1 && fieldset.addItems([
@@ -473,7 +686,7 @@ var MainDialog = class extends OO.ui.ProcessDialog {
         align: "top"
       })
     ]);
-    let variants = typeConfig.variants ?? [], initialSpec;
+    let variants = typeConfig?.variants ?? [], initialSpec;
     if (variants.length > 0)
       this.variantInput = new OO.ui.DropdownInputWidget({
         options: variants.map(({ id, label }) => ({ data: id, label })),
@@ -481,9 +694,11 @@ var MainDialog = class extends OO.ui.ProcessDialog {
       }), this.variantInput.on("change", () => {
         this.rebuildParamArea(this.currentVariant());
       }), fieldset.addItems([new OO.ui.FieldLayout(this.variantInput, { label: wgULS("申请类型", "申請類型"), align: "top" })]), initialSpec = variants[0];
+    else if (programmaticSpec)
+      initialSpec = programmaticSpec;
     else {
-      let template = typeConfig.template;
-      if (!template)
+      let template = typeConfig?.template;
+      if (!typeConfig || !template)
         throw new Error(wgULS("类型配置既无模板也无变体", "類型組態既無模板也無變體"));
       initialSpec = {
         template,
@@ -508,55 +723,91 @@ var MainDialog = class extends OO.ui.ProcessDialog {
   /**
    * 按模板规格重建参数区与组约束提示。初次构建与变体切换共用；
    * 切换变体时已填内容不保留——各变体字段结构不同，保留无意义。
-   * @param spec 生效的模板规格
+   * @param spec 生效的表单规格
    */
   rebuildParamArea(spec) {
-    this.activeSpec = spec, this.paramFieldset.clearItems(), this.paramFields = (spec.parameters ?? []).map((param) => {
+    this.activeSpec = spec, this.templateSpec = Reflect.has(spec, "template") ? spec : null, this.paramFieldset.clearItems(), this.paramFields = (spec.parameters ?? []).map((param) => {
       let presetValue = this.preset?.[param.key], autoValue = param.auto === "currentPage" ? this.context.pageName : void 0, initial = presetValue ?? autoValue ?? param.default, effective = initial === void 0 ? param : { ...param, default: initial };
       return createParamField(
         effective,
         this.$overlay,
         () => {
-          this.onFormChanged();
+          this.persistPreferences(), this.onFormChanged();
+        },
+        () => {
+          this.onEnterKey();
         }
       );
     }), this.paramFieldset.addItems(this.paramFields.map(({ layout }) => layout));
     let groupLabels = (spec.requireAnyOf ?? []).map((key) => spec.parameters?.find((param) => param.key === key)?.label ?? key);
     this.groupHint.setLabel(groupLabels.length > 0 ? wgULS(`「${groupLabels.join("」「")}」至少填写一项`, `「${groupLabels.join("」「")}」至少填寫一項`) : ""), this.onFormChanged();
   }
-  /** 重算「预览」按钮的可用性，并刷新字段级校验提示与组约束提示。 */
+  /** 按 visibleIf 刷新字段可见性；隐藏字段不参与校验，值仍随表单传出。 */
+  applyFieldVisibility() {
+    let values = readValues(this.paramFields);
+    for (let field of this.paramFields) {
+      let rule = field.param.visibleIf;
+      rule && (field.hidden = values[rule.param] !== rule.equals, field.layout.toggle(!field.hidden));
+    }
+  }
+  /**
+   * 把带 storageKey 的字段当前值写入持久存储（QuickRequest 键）。
+   * 只在值变化回调里调用——表单初始化不触发 change 事件，旧键回退值不会被误写进新键。
+   */
+  persistPreferences() {
+    for (let { param, read } of this.paramFields)
+      param.storageKey !== void 0 && setPreference(param.storageKey, read());
+  }
+  /** enterSubmits 字段的回车回调：表单内任一 storageKey 偏好开启时，回车直达「预览」。 */
+  onEnterKey() {
+    this.paramFields.some(({ param, read }) => param.storageKey !== void 0 && read() === "1") && this.executeAction("preview");
+  }
+  /** 重算「预览」按钮的可用性，并刷新可见性、字段级校验提示与组约束提示。 */
   onFormChanged() {
     if (!this.activeSpec)
       return;
+    this.applyFieldVisibility();
     let firstInvalid = validateFields(this.paramFields), groupSatisfied = isGroupSatisfied(this.activeSpec, readValues(this.paramFields));
     this.groupHint.toggle(!groupSatisfied), this.getActions().setAbilities({ preview: firstInvalid === null && groupSatisfied });
   }
   /**
    * 汇总当前表单，产出待预览/提交的内容。校验不过时返回 null 并给出提示。
+   * 程序化表单（delete）的正文由 buildBody 异步构建，批量清单的解析校验以抛错表达、在此捕获呈现。
    * @returns 待预览/提交的内容
    */
-  collectSubmission() {
+  async collectSubmission() {
     let spec = this.activeSpec;
-    if (!spec || !this.typeConfig)
+    if (!spec)
       return null;
     let firstInvalid = validateFields(this.paramFields);
     if (firstInvalid)
-      return firstInvalid.widget.focus(), null;
-    if (!isGroupSatisfied(spec, readValues(this.paramFields)))
+      return firstInvalid.focus?.(), null;
+    let values = readValues(this.paramFields);
+    if (!isGroupSatisfied(spec, values))
       return showError(wgULS("内容不完整", "內容不完整"), wgULS("请至少填写组内的一项内容。", "請至少填寫組內的一項內容。")), null;
-    let values = readValues(this.paramFields), raw = buildTemplateWikitext(spec, values);
-    if (raw === buildTemplateWikitext(spec, {}))
-      return showError(wgULS("内容为空", "內容為空"), wgULS("待发送的内容不能为空。", "待傳送的內容不能為空。")), null;
+    let programmatic = this.definition.programmaticForm, submittedText;
+    if (programmatic)
+      try {
+        submittedText = await programmatic.buildBody(values, this.context);
+      } catch (error) {
+        return showError(wgULS("内容不完整", "內容不完整"), toErrorMessage(error)), null;
+      }
+    else {
+      if (!this.templateSpec)
+        return null;
+      let raw = buildTemplateWikitext(this.templateSpec, values);
+      if (raw === buildTemplateWikitext(this.templateSpec, {}))
+        return showError(wgULS("内容为空", "內容為空"), wgULS("待发送的内容不能为空。", "待傳送的內容不能為空。")), null;
+      submittedText = buildSubmitText(raw);
+    }
     let targetPage = this.definition.resolveTarget(this.context);
     if (targetPage === !1)
       return showError(wgULS("无法发起请求", "無法發起請求"), wgULS("当前页面没有对应的讨论页。", "目前頁面沒有對應的討論頁。")), null;
-    let sectionTitle = this.definition.sectionTitle;
+    let sectionTitle = this.definition.sectionTitle, getSectionTitle = programmatic !== void 0 ? () => programmatic.buildSectionTitle(values, { ...this.context, now: /* @__PURE__ */ new Date() }) : sectionTitle !== void 0 ? () => sectionTitle({ ...this.context, now: /* @__PURE__ */ new Date() }) : void 0;
     return {
       targetPage,
-      submittedText: buildSubmitText(raw),
-      // 章节标题惰性生成：日期取提交时刻，预览停留跨午夜也不会带前一天的日期发出；
-      // append 模式（标题由模板正文自带）不提供
-      ...sectionTitle === void 0 ? {} : { getSectionTitle: () => sectionTitle({ ...this.context, now: /* @__PURE__ */ new Date() }) },
+      submittedText,
+      ...getSectionTitle === void 0 ? {} : { getSectionTitle },
       ...this.definition.postMode === void 0 ? {} : { postMode: this.definition.postMode },
       ...this.definition.allowCreate === void 0 ? {} : { allowCreate: this.definition.allowCreate },
       editSummary: this.summaryInput.getValue().trim()
@@ -584,7 +835,7 @@ __publicField(MainDialog, "static", {
 // packages/QuickRequest/src/send.ts
 var postTopic = (params) => {
   let summary = params.summary === "" ? {} : { summary: params.summary };
-  return getApi().postWithToken("csrf", {
+  return (params.api ?? getApi()).postWithToken("csrf", {
     action: "discussiontoolsedit",
     paction: "addtopic",
     formatversion: 2,
@@ -602,7 +853,7 @@ var postTopic = (params) => {
   })).catch((code, result) => (console.warn("[QuickRequest] 发送失败", code, result), { ok: !1, code, detail: describeSendError(code, result), ambiguous: code === "http" }));
 }, appendTopic = (params) => {
   let summary = params.summary === "" ? {} : { summary: params.summary };
-  return getApi().postWithToken("csrf", {
+  return (params.api ?? getApi()).postWithToken("csrf", {
     action: "edit",
     formatversion: 2,
     title: params.page,
@@ -618,11 +869,11 @@ ${params.wikitext}
     ok: !0,
     newrevid: res?.edit?.newrevid
   })).catch((code, result) => (console.warn("[QuickRequest] 发送失败", code, result), { ok: !1, code, detail: describeSendError(code, result), ambiguous: code === "http" }));
-}, fetchLastSectionAnchor = async (revid, sectionTitle) => {
+}, fetchLastSectionAnchor = async (revid, sectionTitle, api = getApi()) => {
   if (!revid)
     return "";
   try {
-    let sections = (await getApi().post({
+    let sections = (await api.post({
       action: "parse",
       oldid: revid,
       prop: "sections",
@@ -632,12 +883,12 @@ ${params.wikitext}
   } catch (error) {
     return console.warn("[QuickRequest] 读取新章节锚点失败", error), "";
   }
-}, newSectionUrl = (page, anchor) => {
-  let url = mw.util.getUrl(page);
+}, newSectionUrl = (page, anchor, base = "") => {
+  let url = `${base}${mw.util.getUrl(page)}`;
   return anchor === "" ? url : `${url}#${encodeURIComponent(anchor)}`;
-}, gotoNewSection = (page, anchor) => {
-  let url = newSectionUrl(page, anchor);
-  if (mw.config.get("wgPageName") === page.replace(/ /g, "_")) {
+}, gotoNewSection = (page, anchor, base = "") => {
+  let url = newSectionUrl(page, anchor, base);
+  if (base === "" && mw.config.get("wgPageName") === page.replace(/ /g, "_")) {
     location.hash = new URL(url, location.href).hash, location.reload();
     return;
   }
@@ -728,15 +979,17 @@ var PreviewDialog = class extends OO.ui.ProcessDialog {
                 page: payload.targetPage,
                 wikitext: payload.submittedText,
                 summary: payload.editSummary,
-                ...payload.allowCreate === void 0 ? {} : { allowCreate: payload.allowCreate }
+                ...payload.allowCreate === void 0 ? {} : { allowCreate: payload.allowCreate },
+                api: payload.api
               }) : await postTopic({
                 page: payload.targetPage,
                 sectionTitle,
                 wikitext: payload.submittedText,
-                summary: payload.editSummary
+                summary: payload.editSummary,
+                api: payload.api
               });
               if (result.ok) {
-                let anchor = await fetchLastSectionAnchor(result.newrevid, append ? void 0 : sectionTitle);
+                let anchor = await fetchLastSectionAnchor(result.newrevid, append ? void 0 : sectionTitle, payload.api);
                 this.close({ action: "sent", anchor });
                 return;
               }
@@ -758,7 +1011,7 @@ var PreviewDialog = class extends OO.ui.ProcessDialog {
    * @returns 高度（px）
    */
   getBodyHeight() {
-    return Math.min(super.getBodyHeight(), 560);
+    return Math.min(super.getBodyHeight(), MAX_PREVIEW_BODY_HEIGHT);
   }
   /**
    * 提交中禁用两个按钮并改文案，防止重复投递。
@@ -787,8 +1040,8 @@ mountEntries();
 var describeConfigFailure = (reason) => wgULS(`${CONFIG_PAGE} 读取或解析失败：${reason}`, `${CONFIG_PAGE} 讀取或解析失敗：${reason}`), openPreview = (data, mainDialog) => {
   openWindow(new PreviewDialog({ size: DIALOG_SIZE }), data, (result) => {
     result?.action === "sent" && (mainDialog.close(), mw.notify(wgULS("提交成功，3 秒后跳转", "提交成功，3 秒後跳轉"), { type: "success" }), window.setTimeout(() => {
-      gotoNewSection(data.targetPage, result.anchor ?? "");
-    }, 3e3));
+      gotoNewSection(data.targetPage, result.anchor ?? "", data.targetBase);
+    }, REDIRECT_DELAY));
   });
 }, open = (type, preset) => {
   let definition = resolveRequestType(type, mw.config.get("wgPageName"));
@@ -805,11 +1058,13 @@ var describeConfigFailure = (reason) => wgULS(`${CONFIG_PAGE} 读取或解析失
     showError(wgULS("无法发起请求", "無法發起請求"), wgULS("当前页面没有对应的讨论页。", "目前頁面沒有對應的討論頁。"));
     return;
   }
-  let configPromise = prefetchConfig(), mainDialog = new MainDialog({ size: DIALOG_SIZE }), data = {
+  let site = definition.site ?? "zh", mainDialog = new MainDialog({ size: DIALOG_SIZE }), data = {
     definition,
     context,
     ...preset === void 0 ? {} : { preset },
-    configPromise,
+    ...definition.programmaticForm === void 0 ? { configPromise: prefetchConfig() } : {},
+    api: getApiForSite(site),
+    targetBase: isCurrentHost(site) ? "" : SITE_ORIGINS[site],
     onPreview: (previewData) => {
       openPreview(previewData, mainDialog);
     }

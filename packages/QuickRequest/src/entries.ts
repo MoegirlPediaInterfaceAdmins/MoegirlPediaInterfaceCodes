@@ -1,5 +1,5 @@
 import { fetchBlockInfoText } from "./blockInfo.ts";
-import { RIGHTS_BOARD } from "./constants.ts";
+import { BOARD_PREFIX, RIGHTS_BOARD } from "./constants.ts";
 import { toErrorMessage } from "./errors.ts";
 import { buildContext, REQUEST_TYPES } from "./registry.ts";
 
@@ -65,10 +65,39 @@ const mountBanAppealEntry = (): void => {
 };
 
 /**
- * QuickRequest 自有入口的挂载器列表（权限变更版「发起权限申请」、封禁提示屏「寻求帮助」）。
- * 删除请求（阶段 4）、反破坏举报与用户查核记录（阶段 5）按里程碑在此追加。
+ * 「提出删除请求」入口（阶段 4，沿用旧 Gadget-requestDeletion 的挂载与全部守卫）。
+ * 挂在 p-cactions，zh 站与共享站相同；守卫：页面已存在（wgArticleId 非 0）且非特殊命名空间，
+ * 讨论版各级版面自身、已挂 {{will2Be2Deleted}} 的页面不显示；巡查员/管理员默认不显示，
+ * ?AnnTools-debug=requestDeletion（竖线分隔多值）调试开关保留。
  */
-const entryMounters: (() => void)[] = [mountUserGroupEntry, mountBanAppealEntry];
+const mountDeleteEntry = (): void => {
+    const { wgArticleId, wgPageName, wgNamespaceNumber, wgUserGroups } = mw.config.get(["wgArticleId", "wgPageName", "wgNamespaceNumber", "wgUserGroups"]);
+    const debug = (new URL(location.href).searchParams.get("AnnTools-debug") ?? "").split("|").includes("requestDeletion");
+    const groups = wgUserGroups ?? [];
+    if (
+        wgArticleId === 0
+        || wgNamespaceNumber < 0
+        || wgPageName.startsWith(BOARD_PREFIX)
+        || $(".will2Be2Deleted").length > 0
+        || (groups.includes("patroller") || groups.includes("sysop")) && !debug
+    ) {
+        return;
+    }
+    const link = mw.util.addPortletLink("p-cactions", "#", wgULS("提出删除请求", "提出刪除請求"), "ca-quickrequest-delete", wgULS("向讨论版提出删除请求", "向討論版提出刪除請求"));
+    if (!link) {
+        return;
+    }
+    $(link).on("click", (event) => {
+        event.preventDefault();
+        window.libQuickRequest?.open("delete");
+    });
+};
+
+/**
+ * QuickRequest 自有入口的挂载器列表（权限变更版「发起权限申请」、封禁提示屏「寻求帮助」、
+ * 「提出删除请求」）。反破坏举报与用户查核记录（阶段 5）按里程碑在此追加。
+ */
+const entryMounters: (() => void)[] = [mountUserGroupEntry, mountBanAppealEntry, mountDeleteEntry];
 
 /**
  * 挂载全部自有入口。index 在模块求值时调用一次。

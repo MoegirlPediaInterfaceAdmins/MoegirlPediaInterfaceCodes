@@ -1,4 +1,6 @@
 import type { ApiParseResponse, ApiQueryResponse } from "types-mediawiki-response";
+import { SITE_ORIGINS } from "./constants.ts";
+import type { SiteId } from "./types.ts";
 
 /** 单个请求的超时上限（ms）。jQuery $.ajax 默认无超时——慢响应会让对话框无限等待，超时后按失败路径恢复界面。 */
 const REQUEST_TIMEOUT = 30000;
@@ -13,6 +15,35 @@ let apiInstance: mw.Api | null = null;
 const getApi = (): mw.Api => {
     apiInstance ??= new mw.Api({ ajax: { timeout: REQUEST_TIMEOUT } });
     return apiInstance;
+};
+
+/** 各目标站的 ForeignApi 单例（仅当前站与目标站不同的组合会创建）。 */
+const foreignApis: Partial<Record<SiteId, mw.ForeignApi>> = {};
+
+/**
+ * 当前是否在主站（zh）上。QuickRequest 只部署 zh 与 commons（definition 的 _sites），
+ * 二者以此判定互为「跨站」。
+ */
+const isZhHost = (): boolean => /^m?zh\.moegirl\.org\.cn$/.test(location.hostname);
+
+/**
+ * 目标站是否就是当前站。
+ * @param site 目标站
+ */
+const isCurrentHost = (site: SiteId): boolean => site === "zh" ? isZhHost() : !isZhHost();
+
+/**
+ * 取目标站的 API：目标即当前站时为本地 mw.Api，否则为到目标站的 mw.ForeignApi（单例）。
+ * 预览解析、发帖、锚点回读按类型的目标站取用（delete 在共享站发起时目标为主站）。
+ * @param site 目标站
+ * @returns API 实例
+ */
+const getApiForSite = (site: SiteId): mw.Api => {
+    if (isCurrentHost(site)) {
+        return getApi();
+    }
+    foreignApis[site] ??= new mw.ForeignApi(`${SITE_ORIGINS[site]}/api.php`, { ajax: { timeout: REQUEST_TIMEOUT } });
+    return foreignApis[site];
 };
 
 /**
@@ -43,10 +74,11 @@ const fetchPageContent = async (title: string): Promise<string> => {
  * 结果不同的内容，PST 也拿不到正确的页面上下文。
  * @param wikitext 待渲染的 wikitext
  * @param title 正文所属页面，给解析器提供页面上下文
+ * @param api 解析所用 API（目标站；缺省当前站）
  * @returns 渲染出的 HTML
  */
-const parseWikitext = async (wikitext: string, title: string): Promise<string> => {
-    const res = await getApi().post({
+const parseWikitext = async (wikitext: string, title: string, api: mw.Api = getApi()): Promise<string> => {
+    const res = await api.post({
         action: "parse",
         title,
         text: wikitext,
@@ -59,4 +91,4 @@ const parseWikitext = async (wikitext: string, title: string): Promise<string> =
     return res.parse?.text ?? "";
 };
 
-export { fetchPageContent, getApi, parseWikitext };
+export { fetchPageContent, getApi, getApiForSite, isCurrentHost, isZhHost, parseWikitext };

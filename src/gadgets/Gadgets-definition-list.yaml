@@ -62,7 +62,6 @@
     - usergroup
     - queryContributions
     - userpageDelete
-    - requestDeletion
 
 - name: editing
   gadgets:

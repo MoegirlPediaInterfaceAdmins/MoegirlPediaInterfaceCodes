@@ -1,3 +1,4 @@
+import { isZhHost } from "./api.ts";
 import {
     CONVERSION_TABLE_PATTERN,
     OPERATIONS_BOARD,
@@ -6,6 +7,7 @@ import {
     titleSuffix,
     WARNING_SKIP_GROUPS,
 } from "./constants.ts";
+import { buildDeleteBody, buildDeleteParams, buildDeleteSectionTitle } from "./deleteContent.ts";
 import type { QuickRequestContext, RequestTypeDefinition, RequestTypeId, Warning } from "./types.ts";
 
 /**
@@ -121,7 +123,28 @@ const banAppealDefinition: RequestTypeDefinition = {
     allowCreate: true,
 };
 
-/** 阶段 1-3 的请求类型注册表；delete / vandalReport / checkuserRecord / editTech 随阶段 4-5 补齐。 */
+/**
+ * 删除请求（阶段 4，requestDeletion 并入）：发到操作申请版，共享站发起时目标站为主站
+ * （site: "zh"——预览、发帖、锚点回读与跳转全部经 mw.ForeignApi / 站点基址指向主站）。
+ * 正文为手工拼装的纯文本（非模板调用），走程序化表单：字段（理由下拉/详情/批量）与
+ * 正文/标题构建在 deleteContent.ts，拼装格式与旧 Gadget-requestDeletion 逐字一致。
+ * 入口沿用旧工具的 p-cactions「提出删除请求」与全部守卫（见 entries.ts）。
+ */
+const deleteDefinition: RequestTypeDefinition = {
+    id: "delete",
+    label: wgULS("请求删除", "請求刪除"),
+    availability: () => true,
+    resolveTarget: () => OPERATIONS_BOARD,
+    site: "zh",
+    programmaticForm: {
+        buildParams: buildDeleteParams,
+        requireAnyOf: ["reason", "detail"],
+        buildBody: buildDeleteBody,
+        buildSectionTitle: (values, ctx) => buildDeleteSectionTitle(values, ctx, isZhHost() ? "zh" : "commons"),
+    },
+};
+
+/** 阶段 1-4 的请求类型注册表；vandalReport / checkuserRecord / editTech 随阶段 5 补齐。 */
 const REQUEST_TYPES: Partial<Record<RequestTypeId, RequestTypeDefinition>> = {
     edit: editDefinition,
     editConversiontable: editConversiontableDefinition,
@@ -129,6 +152,7 @@ const REQUEST_TYPES: Partial<Record<RequestTypeId, RequestTypeDefinition>> = {
     create: createDefinition,
     userGroup: userGroupDefinition,
     banAppeal: banAppealDefinition,
+    "delete": deleteDefinition,
 };
 
 /**
@@ -156,6 +180,7 @@ const buildContext = (userName: string): QuickRequestContext => ({
     userName,
     userGroups: mw.config.get("wgUserGroups") ?? [],
     now: new Date(),
+    isRedirect: mw.config.get("wgIsRedirect"),
 });
 
 export { buildContext, REQUEST_TYPES, resolveRequestType };
