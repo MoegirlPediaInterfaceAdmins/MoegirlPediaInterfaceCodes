@@ -25,6 +25,8 @@ interface AppendParams {
     wikitext: string;
     /** 编辑摘要；空串表示不传该参数，由服务端自动生成 */
     summary: string;
+    /** 允许创建不存在的目标页（banAppeal：本人讨论页可能不存在），缺省带 nocreate */
+    allowCreate?: boolean;
 }
 
 /*
@@ -78,7 +80,8 @@ const postTopic = (params: SendParams): JQuery.Promise<SendResult> => {
  * 生成——addtopic 会再叠一层 sectiontitle 标题造成重复，故走 action=edit + appendtext：
  * 只追加正文，与现行入口 `section=new&nosummary=1`（隐藏标题框，MediaWiki 因此不写标题行）的
  * 保存结果一致。首尾各补一个换行与页尾内容分隔。
- * nocreate：版面页不存在时直接失败，避免凭空建出版面页。
+ * nocreate 缺省生效：目标页不存在时直接失败，避免凭空建页（版面页不可能不存在）；
+ * banAppeal 例外——本人讨论页可能不存在，现行 section=new 会直接建页，allowCreate 与之对齐。
  * summary 为空时不传该参数，由服务端自动生成。
  *
  * 失败处理与 postTopic 相同（.then/.catch 而非 try/catch 的原因见其注释）；
@@ -93,7 +96,7 @@ const appendTopic = (params: AppendParams): JQuery.Promise<SendResult> => {
         formatversion: 2,
         title: params.page,
         appendtext: `\n${params.wikitext}\n`,
-        nocreate: true,
+        ...params.allowCreate === true ? {} : { nocreate: true },
         assertuser: (mw.config.get("wgUserName") as string | null | undefined) ?? "",
         watchlist: "nochange",
         tags: CHANGE_TAG,

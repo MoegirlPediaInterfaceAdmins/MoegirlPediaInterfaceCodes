@@ -101,6 +101,23 @@
                 }
             ]
         },
+        "banAppeal": {
+            "template": "Template:BlockedUserHelp/request",
+            "parameters": [
+                {
+                    "key": "1",
+                    "label": "封禁信息（自动填写，请勿修改）",
+                    "type": "multiline",
+                    "readOnly": true
+                },
+                {
+                    "key": "reason",
+                    "label": "求助理由",
+                    "type": "multiline",
+                    "hint": "如果您是被防滥用过滤器封禁的，请只填写类似「希望检查缘由」的文字，以免再次被防滥用过滤器阻止编辑。"
+                }
+            ]
+        },
         "userGroup": {
             "variants": [
                 {
