@@ -1,8 +1,15 @@
 /**
  * 参数控件类型。
- * page / user 分别用标题、用户名联想输入框，multiline 用多行文本框，其余为单行文本框。
+ * page / user 分别用标题、用户名联想输入框，multiline 用多行文本框，其余为单行文本框；
+ * dropdown 用下拉框（选项经 options 提供，delete 的理由下拉用），checkbox 用复选框（值为 "1"/""）。
  */
-type ParamType = "page" | "user" | "text" | "multiline";
+type ParamType = "page" | "user" | "text" | "multiline" | "dropdown" | "checkbox";
+
+/** 下拉选项；optgroup 形态渲染为分组标题。 */
+type DropdownOption = { data: string; label: string } | { optgroup: string };
+
+/** 发帖目标站点 id。 */
+type SiteId = "zh" | "commons";
 
 /** 请求参数定义（对应配置 JSON 里的 parameters 数组项）。 */
 interface RequestParam {
@@ -20,6 +27,16 @@ interface RequestParam {
     readOnly?: boolean;
     /** 字段说明，展示为标签旁的帮助图标；缺省不展示 */
     hint?: string;
+    /** dropdown 的选项（动态来源在程序化表单的 buildParams 里现取；配置页类型暂不提供） */
+    options?: DropdownOption[];
+    /** 占位提示文本（text / multiline），缺省不展示 */
+    placeholder?: string;
+    /** 字段可见性：所引用参数的值等于 equals 时显示，否则隐藏（隐藏不参与校验，值仍传给 buildBody） */
+    visibleIf?: { param: string; equals: string };
+    /** 值持久化到 LocalObjectStorage（QuickRequest 键）而不进入正文；用于「按回车提交」等偏好 */
+    storageKey?: string;
+    /** 在此字段按回车即触发「预览」（表单内任一 storageKey 偏好开启时才生效） */
+    enterSubmits?: boolean;
     /** 初始值，缺省为空 */
     "default"?: string;
 }
@@ -109,6 +126,23 @@ interface QuickRequestContext {
     userGroups: string[];
     /** 打开时刻；章节标题里的日期取自此刻 */
     now: Date;
+    /** 当前页是否为重定向页（删除请求正文据此选择 NoRedirectLink） */
+    isRedirect: boolean;
+}
+
+/**
+ * 程序化表单：delete 这类不走配置页模板的类型由代码提供字段与正文。
+ * 正文为手工拼装的非模板文本（可含 ~~~~ 签名），预览/发送与模板类型共用同一流程。
+ */
+interface ProgrammaticForm {
+    /** 构建参数定义；可异步（动态下拉选项拉取、权限判断决定字段是否提供） */
+    buildParams: (ctx: QuickRequestContext) => Promise<RequestParam[]>;
+    /** 组约束，语义同 TypeConfig.requireAnyOf（delete 的 reason/detail 至少一项） */
+    requireAnyOf?: string[];
+    /** 由表单值构建正文；类型特有校验（批量清单解析等）以抛错表达，由主对话框呈现 */
+    buildBody: (values: Record<string, string>, ctx: QuickRequestContext) => Promise<string>;
+    /** 章节标题；按表单值区分（delete 的单页/批量标题不同），日期取调用时刻 */
+    buildSectionTitle: (values: Record<string, string>, ctx: QuickRequestContext) => string;
 }
 
 /** 注册表中的请求类型定义：行为逻辑写在代码里，内容配置存放在站内配置页。 */
@@ -141,6 +175,13 @@ interface RequestTypeDefinition {
     defaultSummary?: string;
     /** 提交前确认项；返回空数组表示直接提交 */
     warnings?: (ctx: QuickRequestContext) => Promise<Warning[]>;
+    /**
+     * 发帖目标站点，缺省按当前站。与当前站不同时，预览解析与发帖经 mw.ForeignApi
+     * 在目标站执行（delete 在共享站发起时目标为主站 zh）。
+     */
+    site?: SiteId;
+    /** 程序化表单（delete 用）：不走路由配置页模板的字段与正文由代码提供 */
+    programmaticForm?: ProgrammaticForm;
 }
 
 declare global {
@@ -165,8 +206,12 @@ interface MainDialogData {
     context: QuickRequestContext;
     /** 入口预填值（参数键 → 值），如封禁申诉入口预填的封禁信息；无预填时省略 */
     preset?: Record<string, string>;
-    /** 配置的预取 promise（承诺不 reject） */
-    configPromise: Promise<ConfigResult>;
+    /** 配置的预取 promise（承诺不 reject）；程序化表单类型不经配置页，省略 */
+    configPromise?: Promise<ConfigResult>;
+    /** 预览解析所用 API（目标站 API；delete 在共享站发起时为到主站的 ForeignApi） */
+    api: mw.Api;
+    /** 发帖目标站的站点基址；目标即当前站时为空串（跳转 URL 用） */
+    targetBase: string;
     /** 请求打开预览对话框；主对话框保持开启，预览叠加其上 */
     onPreview: (data: PreviewDialogData) => void;
 }
@@ -190,6 +235,10 @@ interface PreviewDialogData {
     postMode?: "addtopic" | "append";
     /** append 模式下是否允许创建目标页；语义见 RequestTypeDefinition.allowCreate */
     allowCreate?: boolean;
+    /** 发帖所用 API（目标站 API；delete 在共享站发起时为到主站的 ForeignApi） */
+    api: mw.Api;
+    /** 发帖目标站的站点基址；目标即当前站时为空串（成功后跳转 URL 用） */
+    targetBase: string;
     /** 编辑摘要；空串表示不传，由服务端自动生成 */
     editSummary: string;
     /** 提交前确认项的惰性提供者；缺省表示该类型无需确认 */
@@ -198,8 +247,9 @@ interface PreviewDialogData {
 
 /**
  * 主对话框在渲染预览之前能产出的部分。
+ * api 与 targetBase 由主对话框按目标站补齐（描述的是发送路径，不属于表单产物）。
  */
-type PreviewSubmission = Omit<PreviewDialogData, "title" | "previewHtml" | "getWarnings">;
+type PreviewSubmission = Omit<PreviewDialogData, "title" | "previewHtml" | "getWarnings" | "api" | "targetBase">;
 /**
  * 主对话框的关闭结果。
  * 「取消」按钮没有 action 名，由 OOUI 基类 close() 关闭且不带数据，故只列出两条会带 message 的失败路径：
@@ -224,6 +274,7 @@ type SendResult = { ok: true; newrevid: number | undefined } | { ok: false; code
 
 export type {
     ConfigResult,
+    DropdownOption,
     MainDialogCloseResult,
     MainDialogData,
     MainDialogResult,
@@ -231,12 +282,14 @@ export type {
     PreviewDialogCloseResult,
     PreviewDialogData,
     PreviewSubmission,
+    ProgrammaticForm,
     QuickRequestConfig,
     QuickRequestContext,
     RequestParam,
     RequestTypeDefinition,
     RequestTypeId,
     SendResult,
+    SiteId,
     TemplateSpec,
     TypeConfig,
     TypeVariant,

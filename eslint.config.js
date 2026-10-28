@@ -134,6 +134,8 @@ const config = [
                 // site-lib 提供的站点全局（QuickRequest 依赖 libGetPageNames / libPrefixNumber）
                 libGetPageNames: false,
                 libPrefixNumber: false,
+                // ext.gadget.LocalObjectStorage 暴露的全局类（QuickRequest 的持久偏好用）
+                LocalObjectStorage: false,
                 // JSONViewer 入口把整段逻辑包在 $(() => …) 中（jQuery ready 简写），不能删
                 $: false,
                 jQuery: false,
