@@ -1,8 +1,7 @@
 import { DIALOG_SIZE, MAX_PREVIEW_BODY_HEIGHT } from "./constants.ts";
 import { toErrorMessage } from "./errors.ts";
 import { confirmAmbiguousRetry, confirmContinue, confirmRetry, showError } from "./messageDialog.ts";
-import { fetchLastSectionAnchor, postTopic } from "./send.ts";
-import type { SendParams } from "./send.ts";
+import { fetchLastSectionAnchor, appendTopic, postTopic } from "./send.ts";
 import type { PreviewDialogData, Warning } from "./types.ts";
 
 /**
@@ -137,18 +136,21 @@ class PreviewDialog extends OO.ui.ProcessDialog {
                             return;
                         }
                     }
+                    // append 模式正文自带章节标题；addtopic 的标题（含日期）在此刻生成，日期取提交时刻
+                    const append = payload.postMode === "append";
+                    const sectionTitle = append ? "" : payload.getSectionTitle?.() ?? "";
                     for (;;) {
-                        // 发送参数在此刻构造：章节标题（含日期）取提交时刻
-                        const params: SendParams = {
-                            page: payload.targetPage,
-                            sectionTitle: payload.getSectionTitle(),
-                            wikitext: payload.submittedText,
-                            summary: payload.editSummary,
-                        };
-                        const result = await postTopic(params);
+                        const result = append
+                            ? await appendTopic({ page: payload.targetPage, wikitext: payload.submittedText, summary: payload.editSummary })
+                            : await postTopic({
+                                page: payload.targetPage,
+                                sectionTitle,
+                                wikitext: payload.submittedText,
+                                summary: payload.editSummary,
+                            });
                         if (result.ok) {
                             // 锚点必须在关框前回读：用户看到的是连续的「提交中…」，而不是框已关闭却在干等
-                            const anchor = await fetchLastSectionAnchor(result.newrevid, params.sectionTitle);
+                            const anchor = await fetchLastSectionAnchor(result.newrevid, append ? undefined : sectionTitle);
                             // 对话框即将关闭，无需恢复按钮状态
                             this.close({ action: "sent", anchor });
                             return;
