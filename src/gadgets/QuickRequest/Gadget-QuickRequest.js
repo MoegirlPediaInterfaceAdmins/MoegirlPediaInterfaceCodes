@@ -11,7 +11,7 @@ var __publicField = (obj, key, value) => __defNormalProp(obj, typeof key != "sym
 var CONFIG_PAGE = "MediaWiki:Gadget-QuickRequest.json", SITE_ORIGINS = {
   zh: "https://mzh.moegirl.org.cn",
   commons: "https://commons.moegirl.org.cn"
-}, BOARD_PREFIX = "萌娘百科_talk:讨论版", DIALOG_SIZE = "large", MAX_MAIN_BODY_HEIGHT = 520, MAX_PREVIEW_BODY_HEIGHT = 560, REDIRECT_DELAY = 3e3, CHANGE_TAG = "Automation tool|QuickRequest", OPERATIONS_BOARD = "萌娘百科_talk:讨论版/操作申请", RIGHTS_BOARD = "萌娘百科_talk:讨论版/权限变更", CONVERSION_TABLE_PATTERN = /^MediaWiki:Conversiontable\/zh-[a-z]+$/, POLICY_CATEGORIES = ["萌娘百科方针", "萌娘百科指引"], WARNING_SKIP_GROUPS = ["patroller", "sysop", "techeditor", "interface-admin", "staff"], titleSuffix = (userName, now) => ` - ${userName} - ${now.getFullYear()}.${libPrefixNumber(now.getMonth() + 1)}.${libPrefixNumber(now.getDate())}`;
+}, BOARD_PREFIX = "萌娘百科_talk:讨论版", DIALOG_SIZE = "large", MAX_MAIN_BODY_HEIGHT = 520, MAX_PREVIEW_BODY_HEIGHT = 560, REDIRECT_DELAY = 3e3, CHANGE_TAG = "Automation tool|QuickRequest", OPERATIONS_BOARD = "萌娘百科_talk:讨论版/操作申请", RIGHTS_BOARD = "萌娘百科_talk:讨论版/权限变更", VANDAL_BOARD = "萌娘百科_talk:长期破坏者", CHECKUSER_RECORD_PAGE = "萌娘百科:用户查核记录", CHECKUSER_RECORD_TALK = "萌娘百科_talk:用户查核记录", CONVERSION_TABLE_PATTERN = /^MediaWiki:Conversiontable\/zh-[a-z]+$/, POLICY_CATEGORIES = ["萌娘百科方针", "萌娘百科指引"], WARNING_SKIP_GROUPS = ["patroller", "sysop", "techeditor", "interface-admin", "staff"], titleSuffix = (userName, now) => ` - ${userName} - ${now.getFullYear()}.${libPrefixNumber(now.getMonth() + 1)}.${libPrefixNumber(now.getDate())}`;
 
 // packages/QuickRequest/src/api.ts
 var REQUEST_TIMEOUT = 3e4, apiInstance = null, getApi = () => (apiInstance ?? (apiInstance = new mw.Api({ ajax: { timeout: REQUEST_TIMEOUT } })), apiInstance), foreignApis = {}, isZhHost = () => /^m?zh\.moegirl\.org\.cn$/.test(location.hostname), isCurrentHost = (site) => site === "zh" ? isZhHost() : !isZhHost(), getApiForSite = (site) => isCurrentHost(site) ? getApi() : (foreignApis[site] ?? (foreignApis[site] = new mw.ForeignApi(`${SITE_ORIGINS[site]}/api.php`, { ajax: { timeout: REQUEST_TIMEOUT } })), foreignApis[site]), fetchPageContent = async (title) => (await getApi().post({
@@ -78,8 +78,8 @@ var PARAM_TYPES = /* @__PURE__ */ new Set(["page", "user", "text", "multiline"])
 }, toTypeConfig = (raw) => {
   if (typeof raw != "object" || raw === null)
     return null;
-  let { template, parameters, requireAnyOf, variants, fixedParams } = raw, config = {};
-  isNonEmptyString(template) && (config.template = template);
+  let { template, parameters, requireAnyOf, variants, fixedParams, targetPage } = raw, config = {};
+  isNonEmptyString(template) && (config.template = template), isNonEmptyString(targetPage) && (config.targetPage = targetPage);
   let fixed = toFixedParams(fixedParams);
   if (fixed !== void 0 && (config.fixedParams = fixed), Array.isArray(parameters) && (config.parameters = compact(parameters.map(toRequestParam))), Array.isArray(requireAnyOf)) {
     let keys = new Set((config.parameters ?? []).map(({ key }) => key)), valid = requireAnyOf.filter((key) => typeof key == "string" && keys.has(key));
@@ -385,6 +385,22 @@ var policyWarning = (ctx) => {
     buildBody: buildDeleteBody,
     buildSectionTitle: (values, ctx) => buildDeleteSectionTitle(values, ctx, isZhHost() ? "zh" : "commons")
   }
+}, vandalReportDefinition = {
+  id: "vandalReport",
+  label: wgULS("反破坏举报申请", "反破壞舉報申請"),
+  availability: (ctx) => ctx.userGroups.includes("patroller") || ctx.userGroups.includes("sysop"),
+  resolveTarget: () => VANDAL_BOARD,
+  postMode: "append"
+}, checkuserRecordDefinition = {
+  id: "checkuserRecord",
+  label: wgULS("新增查核记录", "新增查核記錄"),
+  availability: (ctx) => ctx.userGroups.includes("checkuser"),
+  resolveTarget: () => CHECKUSER_RECORD_TALK,
+  postMode: "append"
+}, editTechDefinition = {
+  ...editDefinition,
+  id: "editTech",
+  label: wgULS("技术编辑请求", "技術編輯請求")
 }, REQUEST_TYPES = {
   edit: editDefinition,
   editConversiontable: editConversiontableDefinition,
@@ -392,7 +408,10 @@ var policyWarning = (ctx) => {
   create: createDefinition,
   userGroup: userGroupDefinition,
   banAppeal: banAppealDefinition,
-  delete: deleteDefinition
+  delete: deleteDefinition,
+  vandalReport: vandalReportDefinition,
+  checkuserRecord: checkuserRecordDefinition,
+  editTech: editTechDefinition
 }, resolveRequestType = (id, pageName) => id === "edit" && CONVERSION_TABLE_PATTERN.test(pageName) ? REQUEST_TYPES.editConversiontable : REQUEST_TYPES[id], buildContext = (userName) => ({
   pageName: mw.config.get("wgPageName"),
   talkPage: libGetPageNames().talkPage,
@@ -437,7 +456,23 @@ var mountUserGroupEntry = () => {
   link && $(link).on("click", (event) => {
     event.preventDefault(), window.libQuickRequest?.open("delete");
   });
-}, entryMounters = [mountUserGroupEntry, mountBanAppealEntry, mountDeleteEntry], mountEntries = () => {
+}, mountVandalReportEntry = () => {
+  let { wgNamespaceNumber, wgRelevantUserName } = mw.config.get(["wgNamespaceNumber", "wgRelevantUserName"]);
+  if (wgNamespaceNumber !== 2 && wgNamespaceNumber !== 3 || !REQUEST_TYPES.vandalReport?.availability(buildContext(mw.config.get("wgUserName") ?? "")))
+    return;
+  let link = mw.util.addPortletLink("p-cactions", "#", wgULS("反破坏举报申请", "反破壞舉報申請"), "ca-quickrequest-vandal-report", wgULS("提请将此用户列入破坏者列表", "提請將此使用者列入破壞者列表"));
+  link && $(link).on("click", (event) => {
+    event.preventDefault(), window.libQuickRequest?.open("vandalReport", typeof wgRelevantUserName == "string" ? { 1: wgRelevantUserName } : void 0);
+  });
+}, mountCheckuserRecordEntry = () => {
+  let { wgPageName } = mw.config.get(["wgPageName"]);
+  if (wgPageName !== CHECKUSER_RECORD_PAGE && wgPageName !== CHECKUSER_RECORD_TALK || !REQUEST_TYPES.checkuserRecord?.availability(buildContext(mw.config.get("wgUserName") ?? "")))
+    return;
+  let link = mw.util.addPortletLink("p-cactions", "#", wgULS("新增查核记录", "新增查核記錄"), "ca-quickrequest-checkuser-record", wgULS("在用户查核记录版面发起新增记录请求", "在用戶查核記錄版面發起新增記錄請求"));
+  link && $(link).on("click", (event) => {
+    event.preventDefault(), window.libQuickRequest?.open("checkuserRecord");
+  });
+}, entryMounters = [mountUserGroupEntry, mountBanAppealEntry, mountDeleteEntry, mountVandalReportEntry, mountCheckuserRecordEntry], mountEntries = () => {
   for (let mount of entryMounters)
     mount();
 };
@@ -670,7 +705,7 @@ var MainDialog = class extends OO.ui.ProcessDialog {
    */
   buildForm(programmaticSpec, typeConfig) {
     this.typeConfig = typeConfig;
-    let fieldset = new OO.ui.FieldsetLayout({ label: this.definition.label }), targetPage = this.definition.resolveTarget(this.context);
+    let fieldset = new OO.ui.FieldsetLayout({ label: this.definition.label }), targetPage = this.resolveTargetPage();
     targetPage !== !1 && fieldset.addItems([
       new OO.ui.FieldLayout(new OO.ui.LabelWidget({ label: targetPage.replace(/_/g, " ") }), {
         label: wgULS("发至", "發至"),
@@ -710,6 +745,14 @@ var MainDialog = class extends OO.ui.ProcessDialog {
   currentVariant() {
     let variants = this.typeConfig?.variants ?? [];
     return variants.find((variant) => variant.id === this.variantInput?.getValue()) ?? variants[0];
+  }
+  /**
+   * 发帖目标页：配置页的 targetPage 优先（vandalReport 的版面在其模板 doc 标注
+   * 「目前是」，须可配置），缺省回退注册表 resolveTarget。
+   * @returns 目标页名；当前页面没有讨论页等场景为 false
+   */
+  resolveTargetPage() {
+    return this.typeConfig?.targetPage ?? this.definition.resolveTarget(this.context);
   }
   /**
    * 按模板规格重建参数区与组约束提示。初次构建与变体切换共用；
@@ -803,7 +846,7 @@ var MainDialog = class extends OO.ui.ProcessDialog {
         return showError(wgULS("内容为空", "內容為空"), wgULS("待发送的内容不能为空。", "待傳送的內容不能為空。")), null;
       submittedText = buildSubmitText(raw);
     }
-    let targetPage = this.definition.resolveTarget(this.context);
+    let targetPage = this.resolveTargetPage();
     if (targetPage === !1)
       return showError(wgULS("无法发起请求", "無法發起請求"), wgULS("当前页面没有对应的讨论页。", "目前頁面沒有對應的討論頁。")), null;
     let sectionTitle = this.definition.sectionTitle, getSectionTitle = programmatic !== void 0 ? () => programmatic.buildSectionTitle(values, { ...this.context, now: /* @__PURE__ */ new Date() }) : sectionTitle !== void 0 ? () => sectionTitle({ ...this.context, now: /* @__PURE__ */ new Date() }) : void 0;

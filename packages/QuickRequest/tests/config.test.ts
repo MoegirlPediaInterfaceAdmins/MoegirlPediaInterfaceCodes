@@ -164,6 +164,37 @@ describe("parseConfig", () => {
             expect(result.config.types.move.parameters?.[1].hidden).toBeUndefined();
         }
     });
+
+    it("targetPage 只接受非空字符串（配置级目标页，vandalReport 的版面用）", () => {
+        const result = parseConfig(JSON.stringify({
+            types: {
+                vandalReport: {
+                    template: "Template:编辑请求/反破坏举报申请",
+                    targetPage: "萌娘百科_talk:长期破坏者",
+                    parameters: [{ key: "1", label: "被举报者用户名", type: "user" }],
+                },
+                move: {
+                    template: "Template:移动请求",
+                    targetPage: "  ",
+                },
+            },
+        }));
+        expect(result.ok).toBe(true);
+        if (result.ok) {
+            expect(result.config.types.vandalReport.targetPage).toBe("萌娘百科_talk:长期破坏者");
+            expect(result.config.types.move.targetPage).toBeUndefined();
+        }
+    });
+
+    it("targetPage 不替代 template/variants 的存在性要求", () => {
+        const result = parseConfig(JSON.stringify({
+            types: {
+                orphan: { targetPage: "萌娘百科_talk:长期破坏者" },
+            },
+        }));
+        // 唯一条目因无 template/variants 被丢弃，类型列表为空 → 判为失败
+        expect(result.ok).toBe(false);
+    });
 });
 
 describe("parseConfig 变体（variants）", () => {

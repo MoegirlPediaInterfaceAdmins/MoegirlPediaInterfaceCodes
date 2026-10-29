@@ -132,10 +132,13 @@ const toTypeConfig = (raw: unknown): TypeConfig | null => {
     if (typeof raw !== "object" || raw === null) {
         return null;
     }
-    const { template, parameters, requireAnyOf, variants, fixedParams } = raw as Record<string, unknown>;
+    const { template, parameters, requireAnyOf, variants, fixedParams, targetPage } = raw as Record<string, unknown>;
     const config: TypeConfig = {};
     if (isNonEmptyString(template)) {
         config.template = template;
+    }
+    if (isNonEmptyString(targetPage)) {
+        config.targetPage = targetPage;
     }
     const fixed = toFixedParams(fixedParams);
     if (fixed !== undefined) {

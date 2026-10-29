@@ -1,5 +1,5 @@
 import { fetchBlockInfoText } from "./blockInfo.ts";
-import { BOARD_PREFIX, RIGHTS_BOARD } from "./constants.ts";
+import { BOARD_PREFIX, CHECKUSER_RECORD_PAGE, CHECKUSER_RECORD_TALK, RIGHTS_BOARD } from "./constants.ts";
 import { toErrorMessage } from "./errors.ts";
 import { buildContext, REQUEST_TYPES } from "./registry.ts";
 
@@ -94,10 +94,59 @@ const mountDeleteEntry = (): void => {
 };
 
 /**
- * QuickRequest 自有入口的挂载器列表（权限变更版「发起权限申请」、封禁提示屏「寻求帮助」、
- * 「提出删除请求」）。反破坏举报与用户查核记录（阶段 5）按里程碑在此追加。
+ * 「反破坏举报申请」入口（阶段 5）：挂在用户页与用户讨论页的 p-cactions。
+ * 可见性为巡查员/管理员（Abuse 认定按反破坏方针在维护组内讨论，提请属巡查/维护动作）；
+ * 被举报者按页面的相关用户（wgRelevantUserName——用户子页面亦指向页面主人）预填为
+ * 位置参数 1，可改填（如举报相关分身）。实际发帖版面以配置页 targetPage 为准。
  */
-const entryMounters: (() => void)[] = [mountUserGroupEntry, mountBanAppealEntry, mountDeleteEntry];
+const mountVandalReportEntry = (): void => {
+    const { wgNamespaceNumber, wgRelevantUserName } = mw.config.get(["wgNamespaceNumber", "wgRelevantUserName"]);
+    if (wgNamespaceNumber !== 2 && wgNamespaceNumber !== 3) {
+        return;
+    }
+    const definition = REQUEST_TYPES.vandalReport;
+    if (!definition?.availability(buildContext((mw.config.get("wgUserName") as string | null | undefined) ?? ""))) {
+        return;
+    }
+    const link = mw.util.addPortletLink("p-cactions", "#", wgULS("反破坏举报申请", "反破壞舉報申請"), "ca-quickrequest-vandal-report", wgULS("提请将此用户列入破坏者列表", "提請將此使用者列入破壞者列表"));
+    if (!link) {
+        return;
+    }
+    $(link).on("click", (event) => {
+        event.preventDefault();
+        window.libQuickRequest?.open("vandalReport", typeof wgRelevantUserName === "string" ? { 1: wgRelevantUserName } : undefined);
+    });
+};
+
+/**
+ * 「新增查核记录」入口（阶段 5）：挂在用户查核记录页及其讨论页的 p-cactions，
+ * 仅查核员可见（记录由执行查核的查核员发起增补，经讨论页的编辑请求落盘）。
+ * 目标页固定为讨论页（resolveTarget），与挂载页面无关——在记录页上点击同样发到讨论页。
+ */
+const mountCheckuserRecordEntry = (): void => {
+    const { wgPageName } = mw.config.get(["wgPageName"]);
+    if (wgPageName !== CHECKUSER_RECORD_PAGE && wgPageName !== CHECKUSER_RECORD_TALK) {
+        return;
+    }
+    const definition = REQUEST_TYPES.checkuserRecord;
+    if (!definition?.availability(buildContext((mw.config.get("wgUserName") as string | null | undefined) ?? ""))) {
+        return;
+    }
+    const link = mw.util.addPortletLink("p-cactions", "#", wgULS("新增查核记录", "新增查核記錄"), "ca-quickrequest-checkuser-record", wgULS("在用户查核记录版面发起新增记录请求", "在用戶查核記錄版面發起新增記錄請求"));
+    if (!link) {
+        return;
+    }
+    $(link).on("click", (event) => {
+        event.preventDefault();
+        window.libQuickRequest?.open("checkuserRecord");
+    });
+};
+
+/**
+ * QuickRequest 自有入口的挂载器列表（权限变更版「发起权限申请」、封禁提示屏「寻求帮助」、
+ * 「提出删除请求」、用户页「反破坏举报申请」、查核记录页「新增查核记录」）。
+ */
+const entryMounters: (() => void)[] = [mountUserGroupEntry, mountBanAppealEntry, mountDeleteEntry, mountVandalReportEntry, mountCheckuserRecordEntry];
 
 /**
  * 挂载全部自有入口。index 在模块求值时调用一次。

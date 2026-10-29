@@ -68,6 +68,11 @@
     // - 不含级联保护与 hook 拦截（TitleBlacklist 类），此类页面依旧不显示，与旧行为一致；
     // - 匿名用户无 edit 权限，该值对匿名全站恒 false，须以登录态门控，否则匿名到处见锁
     const notEditable = !!wgUserName && mw.config.get("wgIsProbablyEditable") === false;
+    // 技术编辑请求（Template:编辑请求/技术，QuickRequest 阶段 5）的适用页面：模板命名空间，
+    // 或 JS/CSS/JSON 等技术内容模型（真实用例均在模板 CSS 子页/MediaWiki 技术页的讨论页）。
+    // 这类页面在普通编辑请求之外追加「提出技术编辑请求」入口
+    const techContentModels = new Set(["css", "sanitized-css", "javascript", "json"]);
+    const isTechPage = mw.config.get("wgNamespaceNumber") === 10 || techContentModels.has(mw.config.get("wgPageContentModel"));
 
     if (!hasProtectionRecord && !notEditable) {
         return;
@@ -172,6 +177,12 @@
                     type: "edit",
                     text: "提出编辑请求",
                 });
+                if (isTechPage) {
+                    appendRequestLink($editRequestList, {
+                        type: "editTech",
+                        text: "提出技术编辑请求",
+                    });
+                }
             } else {
                 $editRequestList?.remove();
             }
@@ -205,10 +216,17 @@
             text: wgULS("点此查看原因", "點此查看原因"),
         }));
         if (talkPage) {
-            appendRequestLink($("<ul>").appendTo($protectionInfoContent), {
+            const $requestList = $("<ul>").appendTo($protectionInfoContent);
+            appendRequestLink($requestList, {
                 type: "edit",
                 text: "提出编辑请求",
             });
+            if (isTechPage) {
+                appendRequestLink($requestList, {
+                    type: "editTech",
+                    text: "提出技术编辑请求",
+                });
+            }
         }
         $protectionInfoContent.appendTo($protectionInfoContainer);
         $protectionInfoContainer.trigger("mouseout");

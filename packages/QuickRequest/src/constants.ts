@@ -33,6 +33,16 @@ const OPERATIONS_BOARD = "萌娘百科_talk:讨论版/操作申请";
 /** 用户组申请/提名（userGroup）的发帖版面。 */
 const RIGHTS_BOARD = "萌娘百科_talk:讨论版/权限变更";
 
+/**
+ * 反破坏举报申请（vandalReport）的发帖版面。模板 doc 标注「目前是」——版面可能迁移，
+ * 实际目标以配置页的 targetPage 优先（见 TypeConfig），此值仅作配置缺省时的回退。
+ */
+const VANDAL_BOARD = "萌娘百科_talk:长期破坏者";
+
+/** 用户查核记录页与其讨论页；新增查核记录发到讨论页（记录页自身受 patrolleredit 保护）。 */
+const CHECKUSER_RECORD_PAGE = "萌娘百科:用户查核记录";
+const CHECKUSER_RECORD_TALK = "萌娘百科_talk:用户查核记录";
+
 /** 转换表页面的页面名形态；此类页面的编辑请求使用 editConversiontable 类型。 */
 const CONVERSION_TABLE_PATTERN = /^MediaWiki:Conversiontable\/zh-[a-z]+$/;
 
@@ -60,6 +70,8 @@ const titleSuffix = (userName: string, now: Date): string => ` - ${userName} - $
 export {
     BOARD_PREFIX,
     CHANGE_TAG,
+    CHECKUSER_RECORD_PAGE,
+    CHECKUSER_RECORD_TALK,
     CONFIG_PAGE,
     CONVERSION_TABLE_PATTERN,
     DIALOG_SIZE,
@@ -70,6 +82,7 @@ export {
     REDIRECT_DELAY,
     RIGHTS_BOARD,
     SITE_ORIGINS,
+    VANDAL_BOARD,
     WARNING_SKIP_GROUPS,
     titleSuffix,
 };
