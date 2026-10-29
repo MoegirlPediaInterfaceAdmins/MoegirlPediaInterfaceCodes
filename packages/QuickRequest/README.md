@@ -51,12 +51,13 @@
 | `types.<id>.parameters[].label` | 是 | 界面上显示的字段名 |
 | `types.<id>.parameters[].type` | 否 | `page`（标题联想）/ `user`（用户名联想）/ `multiline`（多行）/ `text`（单行，缺省） |
 | `types.<id>.parameters[].required` | 否 | 是否必填，缺省 `false` |
-| `types.<id>.parameters[].auto` | 否 | `currentPage`：打开时自动填入当前页面名（取代旧的 `preloadparams[]`/`$1` 预填） |
-| `types.<id>.parameters[].readOnly` | 否 | 只读：值由入口预填或自动派生，不让用户改动（如封禁申诉的封禁信息），缺省 `false` |
+| `types.<id>.parameters[].auto` | 否 | `currentPage`：打开时自动填入当前页面名（取代旧的 `preloadparams[]`/`$1` 预填）；只预填、不意味着只读（move 的 `new` 预填后仍可改） |
+| `types.<id>.parameters[].readOnly` | 否 | 只读：不让用户改动（如封禁申诉的封禁信息、move 隐藏的 `original`），缺省 `false`；须显式声明，与 `auto` 无绑定 |
+| `types.<id>.parameters[].hidden` | 否 | 隐藏：字段不在表单渲染，值仍按预填/自动派生规则并入提交（move 的 `original`——对齐原生移动不显示源页面名），缺省 `false` |
 | `types.<id>.parameters[].hint` | 否 | 字段说明，展示为标签旁的帮助图标；缺省不展示 |
 | `types.<id>.parameters[].default` | 否 | 初始值，缺省为空；入口预填（preset）的优先级高于它（也高于 `auto`） |
 | `types.<id>.requireAnyOf` | 否 | 组约束：所列键至少填一项。edit 的 `original`/`new` 用它表达「仅删除 / 仅新增 / 修改」三态（模板仅在全空时报错）；只保留真实存在的键 |
-| `types.<id>.fixedParams` | 否 | 固定参数：每次调用都带上、不在表单中展示（值同样做顶层管道转义） |
+| `types.<id>.fixedParams` | 否 | 固定参数：每次调用都带上、不在表单中展示（值原样输出，不做管道转义——预览为强制步骤，含管道的输入若拆参在预览可见，用户自行修正；客户端改写反而会破坏 nowiki / pre 等合法输入） |
 | `types.<id>.variants[]` | 否 | 同型多模板变体（userGroup 用）：存在时表单顶部出现「申请类型」下拉，类型级 `template`/`parameters`/`requireAnyOf` 不再使用 |
 | `types.<id>.variants[].id` | 是 | 变体 id，类型内唯一（重复 id 只保留首个） |
 | `types.<id>.variants[].label` | 是 | 变体下拉框显示名 |
@@ -80,7 +81,7 @@ src/
 ├── deleteContent.ts   # 删除请求：批量清单解析/重定向检测/正文与标题拼装、理由下拉解析、表单字段构建（程序化表单）
 ├── storage.ts         # 持久偏好（LocalObjectStorage，QuickRequest 键；读取回退旧 requestDeletion 键）
 ├── config.ts          # 配置页 JSON 的校验/合并/预取（幂等）、组约束判断、按 id 取类型条目
-├── wikitext.ts        # 拼模板调用（固定参数 + 用户参数，顶层管道转义）、subst 改写（预览与发送共用的唯一变换点）
+├── wikitext.ts        # 拼模板调用（固定参数 + 用户参数，值原样不做转义）、subst 改写（预览与发送共用的唯一变换点）
 ├── fields.ts          # 参数控件工厂（page/user/multiline/text）、取值、必填校验（仅在有效性翻转时动 DOM）
 ├── registry.ts        # 请求类型注册表（目标版面/页、章节标题、发帖方式、目标站点、方针提醒）、转换表特例的 id 解析、上下文收集
 ├── entries.ts         # 自有入口挂载（权限变更版「发起权限申请」、封禁提示屏「寻求帮助」、「提出删除请求」；阶段 5 在此追加）
@@ -95,6 +96,7 @@ tests/
 ├── config.test.ts     # 配置校验/丢弃/变体、组约束
 ├── blockInfo.test.ts  # 封禁信息文本拼装（现行 Widget 逐字格式、限期/无限期、未封禁判空）
 ├── deleteContent.test.ts # 删除请求正文/标题拼装、批量清单解析与去重/非法行报错、重定向信息归并
+├── registry.test.ts   # move 的移动到自身校验（同名/下划线空格/首字母大小写/放行）
 └── setup.ts           # wgULS / libPrefixNumber 直通实现（node 环境没有 site-lib，且 errors.ts 的文案表在模块求值时调用它）
 scripts/build.js       # esbuild 打包 + 完整性自检 + 幂等检查
 vitest.config.ts       # vitest 配置（node 环境，覆盖率只统计 wikitext.ts 与 config.ts）

@@ -58,10 +58,10 @@ const createParamWidget = (param: RequestParam, $overlay: JQuery): ParamWidget =
  */
 const createParamField = (param: RequestParam, $overlay: JQuery, onChange: () => void, onEnter?: () => void): ParamField => {
     const widget = createParamWidget(param, $overlay);
-    // 只读字段有两类：auto: currentPage 的值由当前页面名派生（请求对象就是本页，
-    // 允许改动会造出「在本页发关于别的页的请求」的错位内容）；readOnly 由配置声明
-    // （如封禁申诉入口预填的封禁信息）。只读是文本类控件的能力，其余类型静默忽略
-    if (widget instanceof OO.ui.TextInputWidget && (param.readOnly === true || param.auto === "currentPage")) {
+    // 只读由配置显式声明（如封禁申诉入口预填的封禁信息、移动请求的移动前标题）。
+    // auto 只负责预填初始值，不意味着只读——移动请求的「移动后标题」预填当前页名后仍要允许改动。
+    // 只读是文本类控件的能力，其余类型静默忽略
+    if (widget instanceof OO.ui.TextInputWidget && param.readOnly === true) {
         widget.setReadOnly(true);
     }
     // 三类控件的 change/enter 回调形态一致，但联合类型上的 on 重载互不兼容，
