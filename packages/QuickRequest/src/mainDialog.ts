@@ -13,6 +13,7 @@ import type {
     PreviewDialogData,
     PreviewSubmission,
     QuickRequestContext,
+    RequestParam,
     RequestTypeDefinition,
     TemplateSpec,
     TypeConfig,
@@ -65,6 +66,8 @@ class MainDialog extends OO.ui.ProcessDialog {
     private templateSpec: TemplateActiveSpec | null = null;
     private variantInput: OO.ui.DropdownInputWidget | null = null;
     private paramFields: ParamField[] = [];
+    /** 隐藏字段（hidden 参数）的固定值，键 → 值；随参数区重建 */
+    private hiddenValues: Record<string, string> = {};
 
     private loadingPanel!: OO.ui.PanelLayout;
     private formPanel!: OO.ui.PanelLayout;
@@ -305,10 +308,18 @@ class MainDialog extends OO.ui.ProcessDialog {
         this.paramFieldset.clearItems();
         // 初始值优先级：入口预填（preset，如封禁申诉入口查好的封禁信息）＞
         // auto: currentPage（本页名，取代旧的 preloadparams[]/$1 预填）＞ 配置 default
-        this.paramFields = (spec.parameters ?? []).map((param) => {
+        const initialValue = (param: RequestParam): string | undefined => {
             const presetValue = this.preset?.[param.key];
             const autoValue = param.auto === "currentPage" ? this.context.pageName : undefined;
-            const initial = presetValue ?? autoValue ?? param.default;
+            return presetValue ?? autoValue ?? param.default;
+        };
+        // 隐藏字段（hidden）不渲染控件，值固定为初始值、随提交一并带出
+        // （move 的 original——对齐原生移动表单不显示源页面名）
+        this.hiddenValues = Object.fromEntries((spec.parameters ?? [])
+            .filter((param) => param.hidden === true)
+            .map((param) => [param.key, initialValue(param) ?? ""] as const));
+        this.paramFields = (spec.parameters ?? []).filter((param) => param.hidden !== true).map((param) => {
+            const initial = initialValue(param);
             const effective = initial === undefined ? param : { ...param, "default": initial };
             return createParamField(
                 effective,
@@ -330,9 +341,14 @@ class MainDialog extends OO.ui.ProcessDialog {
         this.onFormChanged();
     }
 
+    /** 当前表单全量值：隐藏字段的固定值 + 可见控件的当前值。 */
+    private collectValues(): Record<string, string> {
+        return { ...this.hiddenValues, ...readValues(this.paramFields) };
+    }
+
     /** 按 visibleIf 刷新字段可见性；隐藏字段不参与校验，值仍随表单传出。 */
     private applyFieldVisibility(): void {
-        const values = readValues(this.paramFields);
+        const values = this.collectValues();
         for (const field of this.paramFields) {
             const rule = field.param.visibleIf;
             if (rule) {
@@ -369,7 +385,7 @@ class MainDialog extends OO.ui.ProcessDialog {
         }
         this.applyFieldVisibility();
         const firstInvalid = validateFields(this.paramFields);
-        const groupSatisfied = isGroupSatisfied(this.activeSpec, readValues(this.paramFields));
+        const groupSatisfied = isGroupSatisfied(this.activeSpec, this.collectValues());
         this.groupHint.toggle(!groupSatisfied);
         this.getActions().setAbilities({ preview: firstInvalid === null && groupSatisfied });
     }
@@ -389,9 +405,15 @@ class MainDialog extends OO.ui.ProcessDialog {
             firstInvalid.focus?.();
             return null;
         }
-        const values = readValues(this.paramFields);
+        const values = this.collectValues();
         if (!isGroupSatisfied(spec, values)) {
             void showError(wgULS("内容不完整", "內容不完整"), wgULS("请至少填写组内的一项内容。", "請至少填寫組內的一項內容。"));
+            return null;
+        }
+        // 类型级校验（跨字段组合，如移动到自身）：返回文案即拦下
+        const validationError = this.definition.validate?.(values, this.context) ?? null;
+        if (validationError !== null) {
+            void showError(wgULS("无法发起请求", "無法發起請求"), validationError);
             return null;
         }
 
