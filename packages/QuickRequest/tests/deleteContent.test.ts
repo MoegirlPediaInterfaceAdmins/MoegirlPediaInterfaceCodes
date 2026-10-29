@@ -1,4 +1,6 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
+import { getApiForSite } from "../src/api.ts";
+import type * as ApiModule from "../src/api.ts";
 import {
     applyRedirectInfo,
     buildBatchBody,
@@ -6,8 +8,15 @@ import {
     buildSingleBody,
     normalizeBatchTitle,
     parseBatchPages,
+    resolveBatchPages,
 } from "../src/deleteContent.ts";
 import type { QuickRequestContext } from "../src/types.ts";
+
+// resolveBatchPages 依赖站点 API；只桩掉 getApiForSite，其余导出保持原实现
+vi.mock("../src/api.ts", async (importOriginal) => {
+    const actual = await importOriginal<typeof ApiModule>();
+    return { ...actual, getApiForSite: vi.fn() };
+});
 
 const context: QuickRequestContext = {
     pageName: "Example_page",
@@ -92,11 +101,56 @@ describe("applyRedirectInfo", () => {
             { title: "cm:Bar", queryTitle: "Bar", site: "commons" as const },
         ];
         const normalized = new Map([["Foo bar", "Foo bar baz"]]);
-        const redirects = new Set(["Foo bar baz"]);
-        expect(applyRedirectInfo(pages, normalized, redirects)).toEqual([
+        const redirectFlags = new Map([["Foo bar baz", true]]);
+        expect(applyRedirectInfo(pages, normalized, redirectFlags)).toEqual([
             { title: "cm:foo_bar", isRedirect: true },
             { title: "cm:Bar", isRedirect: false },
         ]);
+    });
+
+    it("标记映射查不到的条目按非重定向处理", () => {
+        const pages = [
+            { title: "cm:Baz", queryTitle: "Baz", site: "commons" as const },
+        ];
+        expect(applyRedirectInfo(pages, new Map(), new Map())).toEqual([
+            { title: "cm:Baz", isRedirect: false },
+        ]);
+    });
+});
+
+describe("resolveBatchPages", () => {
+    it("以 prop=info 逐页 redirect 标记判定，不再携带 redirects 参数", async () => {
+        const post = vi.fn().mockResolvedValue({
+            query: {
+                normalized: [{ from: "foo_bar", to: "Foo bar" }],
+                pages: [
+                    { title: "Foo bar", redirect: true },
+                    { title: "Bar", redirect: false },
+                ],
+            },
+        });
+        vi.mocked(getApiForSite).mockReturnValue({ post } as never);
+
+        const result = await resolveBatchPages([
+            { title: "cm:foo_bar", queryTitle: "foo_bar", site: "commons" },
+            { title: "cm:Bar", queryTitle: "Bar", site: "commons" },
+        ]);
+        expect(result).toEqual([
+            { title: "cm:foo_bar", isRedirect: true },
+            { title: "cm:Bar", isRedirect: false },
+        ]);
+        expect(post).toHaveBeenCalledTimes(1);
+        expect(post.mock.calls[0][0]).toMatchObject({ action: "query", prop: "info", formatversion: 2 });
+        expect(post.mock.calls[0][0]).not.toHaveProperty("redirects");
+    });
+
+    it("任一批次查询失败时抛错，不再按非重定向继续", async () => {
+        const post = vi.fn().mockRejectedValue(new Error("network"));
+        vi.mocked(getApiForSite).mockReturnValue({ post } as never);
+
+        await expect(resolveBatchPages([
+            { title: "A", queryTitle: "A", site: "zh" },
+        ])).rejects.toThrow("批量查询页面重定向状态失败");
     });
 });
 

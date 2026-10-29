@@ -120,34 +120,40 @@ const parseBatchPages = (text: string, site: SiteId): BatchPage[] => {
 
 /**
  * 批量查询用的标题归一化：下划线转空格、折叠连续空白、仅首字符为小写字母时大写——
- * 与 MediaWiki 标题规范化在 API normalized/redirects 对照场景下的既有做法一致。
+ * 与 MediaWiki 标题规范化在 API normalized 对照场景下的既有做法一致。
  * @param title 原始标题
  * @returns 归一化标题
  */
 const normalizeBatchTitle = (title: string): string => title.replace(/_/g, " ").replace(/\s+/g, " ").trim().replace(/^[a-z]/, (char) => char.toUpperCase());
 
 /**
- * 把查询得到的归一化映射与重定向集合应用到页面清单。
+ * 把查询得到的归一化映射与重定向标记应用到页面清单。
  * @param pages 已解析的页面清单
  * @param normalizedTitles 键为归一化的 from、值为 normalized 目标的映射
- * @param redirectTitles 归一化形态的重定向来源集合
+ * @param redirectFlags 键为归一化标题、值为是否重定向的标记（prop=info 的 pages[].redirect）
  * @returns 与入参顺序一致的检测结果
  */
-const applyRedirectInfo = (pages: BatchPage[], normalizedTitles: Map<string, string>, redirectTitles: Set<string>): ResolvedPage[] =>
+const applyRedirectInfo = (pages: BatchPage[], normalizedTitles: Map<string, string>, redirectFlags: Map<string, boolean>): ResolvedPage[] =>
     pages.map(({ title, queryTitle }) => {
         const normalized = normalizeBatchTitle(queryTitle);
-        return { title, isRedirect: redirectTitles.has(normalizedTitles.get(normalized) ?? normalized) };
+        return { title, isRedirect: redirectFlags.get(normalizedTitles.get(normalized) ?? normalized) ?? false };
     });
 
 /**
- * 批量查询页面清单中各页面是否为重定向页（按站点分流、50 个一批；查询失败按非重定向继续）。
+ * 批量查询页面清单中各页面是否为重定向页（按站点分流、50 个一批）。
+ * 重定向判定读 prop=info 逐页带回的 redirect 标记（master 41d64ef8 修复语义）；
+ * 任一批次查询失败直接抛错——错把重定向页当普通页发帖会漏掉 NoRedirectLink，
+ * 不再按非重定向继续。
  * @param pages 已解析的页面清单
  * @returns 与入参顺序一致的检测结果
+ * @throws {Error} 任一批次查询失败时
  */
 const resolveBatchPages = async (pages: BatchPage[]): Promise<ResolvedPage[]> => {
     const normalizedTitles = new Map<string, string>();
-    const redirectTitles = new Set<string>();
+    const redirectFlags = new Map<string, boolean>();
     const titlesBySite = new Map<SiteId, string[]>();
+    // 收集各批次的失败（闭包内置布尔标志会被类型收窄判恒假，见 no-unnecessary-condition）
+    const failures: unknown[] = [];
     for (const { queryTitle, site } of pages) {
         const list = titlesBySite.get(site) ?? [];
         list.push(queryTitle);
@@ -161,21 +167,26 @@ const resolveBatchPages = async (pages: BatchPage[]): Promise<ResolvedPage[]> =>
                 const res = await getApiForSite(site).post({
                     action: "query",
                     titles: batch.join("|"),
-                    redirects: true,
+                    prop: "info",
                     formatversion: 2,
-                }) as { query?: { normalized?: { from: string; to: string }[]; redirects?: { from: string }[] } };
+                }) as { query?: { normalized?: { from: string; to: string }[]; pages?: { title: string; redirect?: boolean }[] } };
                 for (const { from, to } of res.query?.normalized ?? []) {
                     normalizedTitles.set(normalizeBatchTitle(from), to);
                 }
-                for (const { from } of res.query?.redirects ?? []) {
-                    redirectTitles.add(normalizeBatchTitle(from));
+                // pages[].title 是规范化后的标题，与 normalized 映射链的终点同构
+                for (const { title, redirect } of res.query?.pages ?? []) {
+                    redirectFlags.set(normalizeBatchTitle(title), redirect === true);
                 }
             } catch (error) {
+                failures.push(error);
                 console.warn("[QuickRequest] 批量查询重定向失败", error);
             }
         }));
     }));
-    return applyRedirectInfo(pages, normalizedTitles, redirectTitles);
+    if (failures.length > 0) {
+        throw new Error(wgULS("批量查询页面重定向状态失败，请稍后重试", "批量查詢頁面重新導向狀態失敗，請稍後重試"));
+    }
+    return applyRedirectInfo(pages, normalizedTitles, redirectFlags);
 };
 
 /**
@@ -329,6 +340,6 @@ const buildDeleteParams = async (): Promise<RequestParam[]> => {
     return params;
 };
 
-export { applyRedirectInfo, buildBatchBody, buildDeleteBody, buildDeleteParams, buildDeleteSectionTitle, buildSingleBody, normalizeBatchTitle, parseBatchPages };
+export { applyRedirectInfo, buildBatchBody, buildDeleteBody, buildDeleteParams, buildDeleteSectionTitle, buildSingleBody, normalizeBatchTitle, parseBatchPages, resolveBatchPages };
 
 export type { BatchPage, ResolvedPage };

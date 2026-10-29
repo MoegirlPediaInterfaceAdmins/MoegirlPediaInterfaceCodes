@@ -200,34 +200,36 @@ var currentSite = () => isZhHost() ? "zh" : "commons", linkedPageNameFor = (page
     seen.has(page.title) || (seen.add(page.title), result.push(page));
   }
   return result;
-}, normalizeBatchTitle = (title) => title.replace(/_/g, " ").replace(/\s+/g, " ").trim().replace(/^[a-z]/, (char) => char.toUpperCase()), applyRedirectInfo = (pages, normalizedTitles, redirectTitles) => pages.map(({ title, queryTitle }) => {
+}, normalizeBatchTitle = (title) => title.replace(/_/g, " ").replace(/\s+/g, " ").trim().replace(/^[a-z]/, (char) => char.toUpperCase()), applyRedirectInfo = (pages, normalizedTitles, redirectFlags) => pages.map(({ title, queryTitle }) => {
   let normalized = normalizeBatchTitle(queryTitle);
-  return { title, isRedirect: redirectTitles.has(normalizedTitles.get(normalized) ?? normalized) };
+  return { title, isRedirect: redirectFlags.get(normalizedTitles.get(normalized) ?? normalized) ?? !1 };
 }), resolveBatchPages = async (pages) => {
-  let normalizedTitles = /* @__PURE__ */ new Map(), redirectTitles = /* @__PURE__ */ new Set(), titlesBySite = /* @__PURE__ */ new Map();
+  let normalizedTitles = /* @__PURE__ */ new Map(), redirectFlags = /* @__PURE__ */ new Map(), titlesBySite = /* @__PURE__ */ new Map(), failures = [];
   for (let { queryTitle, site } of pages) {
     let list = titlesBySite.get(site) ?? [];
     list.push(queryTitle), titlesBySite.set(site, list);
   }
-  return await Promise.all([...titlesBySite].map(async ([site, titles]) => {
+  if (await Promise.all([...titlesBySite].map(async ([site, titles]) => {
     let unique = [...new Set(titles)], batches = Array.from({ length: Math.ceil(unique.length / 50) }, (_, index) => unique.slice(index * 50, index * 50 + 50));
     await Promise.all(batches.map(async (batch) => {
       try {
         let res = await getApiForSite(site).post({
           action: "query",
           titles: batch.join("|"),
-          redirects: !0,
+          prop: "info",
           formatversion: 2
         });
         for (let { from, to } of res.query?.normalized ?? [])
           normalizedTitles.set(normalizeBatchTitle(from), to);
-        for (let { from } of res.query?.redirects ?? [])
-          redirectTitles.add(normalizeBatchTitle(from));
+        for (let { title, redirect } of res.query?.pages ?? [])
+          redirectFlags.set(normalizeBatchTitle(title), redirect === !0);
       } catch (error) {
-        console.warn("[QuickRequest] 批量查询重定向失败", error);
+        failures.push(error), console.warn("[QuickRequest] 批量查询重定向失败", error);
       }
     }));
-  })), applyRedirectInfo(pages, normalizedTitles, redirectTitles);
+  })), failures.length > 0)
+    throw new Error(wgULS("批量查询页面重定向状态失败，请稍后重试", "批量查詢頁面重新導向狀態失敗，請稍後重試"));
+  return applyRedirectInfo(pages, normalizedTitles, redirectFlags);
 }, buildDeleteSectionTitle = (values, ctx, site) => {
   let suffix = titleSuffix(ctx.userName, ctx.now);
   return values.batch === "1" ? `批量删除请求${suffix}` : `请求删除页面：[[${linkedPageNameFor(ctx.pageName, site)}]]${suffix}`;
