@@ -1,6 +1,6 @@
 # QuickRequest
 
-[萌娘百科](https://zh.moegirl.org.cn/)小工具 `Gadget-QuickRequest`：统一承载全部「发帖式请求」——填表单、预览、把请求发到对应版面或讨论页。阶段 1 覆盖编辑请求（含转换表变体）、移动请求、创建请求；阶段 2 覆盖用户组申请/提名（14 个申请类型变体）；阶段 3 覆盖封禁申诉；阶段 4 将 requestDeletion 并入为删除请求（zh 站与共享站）；反破坏举报等变体随后续里程碑并入（见 PR #1153 的方案 §6）。
+[萌娘百科](https://zh.moegirl.org.cn/)小工具 `Gadget-QuickRequest`：统一承载全部「发帖式请求」——填表单、预览、把请求发到对应版面或讨论页。阶段 1 覆盖编辑请求（含转换表变体）、移动请求、创建请求；阶段 2 覆盖用户组申请/提名（14 个申请类型变体）；阶段 3 覆盖封禁申诉；阶段 4 将 requestDeletion 并入为删除请求（zh 站与共享站）；阶段 5 覆盖反破坏举报申请、用户查核记录、技术编辑请求（见 PR #1153 的方案 §6）。
 
 源码为 TypeScript（`src/`），经 **esbuild** 打包为单文件产物，直接写入 [`src/gadgets/QuickRequest/`](../../src/gadgets/QuickRequest/)（wiki 部署读取该位置），由 postCommit CI 自动重建并提交。
 
@@ -18,6 +18,9 @@
 - **用户组申请（阶段 2）**：`open("userGroup")` 打开「权限申请」对话框——顶部「申请类型」下拉切换 14 个变体（维护姬 / 管理员 / 用户查核员 / 监督员 / 界面管理员 / 机器人（含追加任务、机器用户）/ 文件维护员 / 优质编辑者、技术编辑员、荣誉维护人员、IP封禁豁免者、手动确认用户），映射 7 个基模板（`Template:权限申请/*`）。发帖走 **append 模式**（`action=edit` + `appendtext`）：申请族模板的正文以 `== X申请 - User:{{subst:REVISIONUSER}} ==` 开头、标题由模板在存盘替换时生成，addtopic 的 sectiontitle 会再叠一层标题造成重复——append 只追加正文，与现行入口 `section=new&nosummary=1`（隐藏标题框，MediaWiki 因此不写标题行）的保存结果一致。入口为权限变更版（`萌娘百科_talk:讨论版/权限变更`）页面的 p-cactions「发起权限申请」（与页顶模板渲染的现行按钮并存，替换需站内配合，列入部署前置事项）；可用性沿用现行申请按钮的守卫：已登录 + 自动确认用户。站内无辞职模板（辞职历来是自由发帖），本类型只覆盖申请/提名。
 - **封禁申诉（阶段 3）**：封禁提示屏（`MediaWiki:Blockedtext*` → `Template:BlockedUserHelp`，服务端渲染 `<div id="BlockedUserHelp">`）上追加「寻求帮助」按钮。点击时以现行 `Widget:BlockedUserHelp` 的同一条查询（`list=users&usprop=blockinfo`）现查封禁详情，按其逐字格式拼出「封禁信息」文本，经 `open("banAppeal", { 1: 封禁信息 })` 预填进只读字段；用户只填「求助理由」。正文模板 `Template:BlockedUserHelp/request` 同样以 `== 用户被封禁而寻求帮助 ==` 开头（标题由模板生成），故发帖走 **append 模式**，目标为 `User_talk:<用户名>`——新用户的讨论页可能不存在，append 以 `allowCreate` 放开 `nocreate`，与现行 `section=new` 直接建页的行为一致。现行 Widget 注入的同名表单与本按钮并存，替换需站内配合（去掉模板里的 `{{#Widget:BlockedUserHelp}}`），列入部署前置事项。
 - **删除请求（阶段 4，requestDeletion 并入）**：`open("delete")` 打开「请求删除」对话框——理由下拉（选项打开时从 `MediaWiki:Filedelete-reason-dropdown`（File 命名空间）/ `MediaWiki:Deletereason-dropdown` 的渲染 HTML 解析，失败降级为只有「其他」）+ 详情 + 批量提删（勾选后展开页面清单，一行一个；仅持有 autopatrol 权限的用户可见）+「按回车提交」偏好（持久化到 LocalObjectStorage，读取时回退旧 `AnnTools-requestDeletion` 键）。正文为手工拼装的纯文本（非模板调用，走程序化表单、不经配置页），标题「请求删除页面:[[页面]] - 用户 - 日期」/批量「批量删除请求 - 用户 - 日期」，格式与旧工具逐字一致；批量清单解析（`cm:`/`zhmoe:` 前缀分流、去重、非法行报错）与重定向检测（按站点分批查询，重定向页以 `{{NoRedirectLink}}` 链接）在预览前完成。入口为 p-cactions「提出删除请求」（zh 站与共享站相同），守卫沿用旧工具：页面已存在且非特殊命名空间、讨论版各级版面自身与已挂 `{{will2Be2Deleted}}` 的页面不显示、巡查员/管理员默认不显示（`?AnnTools-debug=requestDeletion` 调试开关保留）。共享站发起时发帖至主站版面：被申请删除的页面名自动加 `cm:` 前缀，预览解析、发帖、锚点回读经 `mw.ForeignApi` 在主站执行，成功后跳转带主站基址；编辑标签随之从旧工具的 `Automation tool` 换为 `Automation tool|QuickRequest`（部署前置事项）。
+- **反破坏举报申请（阶段 5）**：`open("vandalReport", { 1: 用户名 })`——收位置参数 1=被举报者用户名、2=申请理由。正文模板 `Template:编辑请求/反破坏举报申请` 以 `==提请将[[User:…]]列入破坏者列表==` 开头（标题由模板生成），走 **append 模式**。入口为用户页/用户讨论页的 p-cactions「反破坏举报申请」，被举报者按 `wgRelevantUserName` 预填（子页面亦指向页面主人，可改填为分身等），仅巡查员/管理员可见（Abuse 认定按反破坏方针在维护组内讨论，提请属巡查/维护动作）。发帖版面缺省 `萌娘百科_talk:长期破坏者`——模板 doc 标注「目前是」，实际以配置页 `targetPage` 为准。
+- **用户查核记录（阶段 5）**：`open("checkuserRecord")`——收 日期/申请者/执行人/被查核对象/事由/结果/备注 命名参数。正文模板 `Template:编辑请求/用户查核记录` 以 `== 新增查核记录 - … ==` 开头（标题含 subst 魔法字、存盘时替换），走 **append 模式**，发到记录页的讨论页（`萌娘百科_talk:用户查核记录`——记录页自身受 patrolleredit 保护，真实话题均在讨论页）。入口为记录页及其讨论页的 p-cactions「新增查核记录」，仅查核员可见。
+- **技术编辑请求（阶段 5）**：`open("editTech")`——收 sandbox / test（选填）/ reason。正文模板 `Template:编辑请求/技术` 不带章节标题（区别于其余编辑请求族变体），走 addtopic，章节标题沿用版面既有的「编辑请求 - 用户 - 日期」（真实用例核实）。入口由 pageInfo 在技术页面（模板命名空间或 JS/CSS/JSON 内容模型）的保护信息里、普通编辑请求旁追加「提出技术编辑请求」。
 - **提交前确认**：edit 类型带方针修改提醒（editRequestWarning 的迁移）——当前页属于「萌娘百科方针 / 萌娘百科指引」分类（读 `mw.config` 的 `wgCategories`，零请求）且用户不在跳过名单（patroller / sysop / techeditor / interface-admin / staff）时，主对话框打开即以横幅提示，提交前再逐条确认。
 - **失败处理**：登录失效、限流、页面保护、滥用过滤器等给出中文说明，可在同一对话框内「重试」，已填内容不丢。
 - **签名**：不外部追加——各模板以 `sign` 参数的缺省值输出 `——~~~~`。
@@ -58,6 +61,7 @@
 | `types.<id>.parameters[].default` | 否 | 初始值，缺省为空；入口预填（preset）的优先级高于它（也高于 `auto`） |
 | `types.<id>.requireAnyOf` | 否 | 组约束：所列键至少填一项。edit 的 `original`/`new` 用它表达「仅删除 / 仅新增 / 修改」三态（模板仅在全空时报错）；只保留真实存在的键 |
 | `types.<id>.fixedParams` | 否 | 固定参数：每次调用都带上、不在表单中展示（值原样输出，不做管道转义——预览为强制步骤，含管道的输入若拆参在预览可见，用户自行修正；客户端改写反而会破坏 nowiki / pre 等合法输入） |
+| `types.<id>.targetPage` | 否 | 发帖目标页，设置时优先于代码里的目标版面/页（vandalReport 的版面在其模板 doc 标注「目前是」，故做成配置项；其余类型的目标页是稳定约定，留在代码里） |
 | `types.<id>.variants[]` | 否 | 同型多模板变体（userGroup 用）：存在时表单顶部出现「申请类型」下拉，类型级 `template`/`parameters`/`requireAnyOf` 不再使用 |
 | `types.<id>.variants[].id` | 是 | 变体 id，类型内唯一（重复 id 只保留首个） |
 | `types.<id>.variants[].label` | 是 | 变体下拉框显示名 |
@@ -84,7 +88,7 @@ src/
 ├── wikitext.ts        # 拼模板调用（固定参数 + 用户参数，值原样不做转义）、subst 改写（预览与发送共用的唯一变换点）
 ├── fields.ts          # 参数控件工厂（page/user/multiline/text）、取值、必填校验（仅在有效性翻转时动 DOM）
 ├── registry.ts        # 请求类型注册表（目标版面/页、章节标题、发帖方式、目标站点、方针提醒）、转换表特例的 id 解析、上下文收集
-├── entries.ts         # 自有入口挂载（权限变更版「发起权限申请」、封禁提示屏「寻求帮助」、「提出删除请求」；阶段 5 在此追加）
+├── entries.ts         # 自有入口挂载（权限变更版「发起权限申请」、封禁提示屏「寻求帮助」、「提出删除请求」、用户页「反破坏举报申请」、查核记录页「新增查核记录」）
 ├── openWindow.ts      # 独立 WindowManager 挂载对话框，关闭后清理并回调（嵌套弹窗的前提）
 ├── messageDialog.ts   # 通用消息框、「关闭」错误提示、「关闭/重试」确认、「返回修改/继续提交」确认
 ├── send.ts            # addtopic 发帖与 append 追加发帖（多参 reject 取错误码、按目标站选 API）、回读新章节锚点、跳转（跨站带基址）
@@ -96,10 +100,10 @@ tests/
 ├── config.test.ts     # 配置校验/丢弃/变体、组约束
 ├── blockInfo.test.ts  # 封禁信息文本拼装（现行 Widget 逐字格式、限期/无限期、未封禁判空）
 ├── deleteContent.test.ts # 删除请求正文/标题拼装、批量清单解析与去重/非法行报错、重定向信息归并
-├── registry.test.ts   # move 的移动到自身校验（同名/下划线空格/首字母大小写/放行）
+├── registry.test.ts   # move 的移动到自身校验（同名/下划线空格/首字母大小写/放行）、阶段 5 类型注册（可见性/目标页/append）
 └── setup.ts           # wgULS / libPrefixNumber 直通实现（node 环境没有 site-lib，且 errors.ts 的文案表在模块求值时调用它）
 scripts/build.js       # esbuild 打包 + 完整性自检 + 幂等检查
-vitest.config.ts       # vitest 配置（node 环境，覆盖率只统计 wikitext.ts 与 config.ts）
+vitest.config.ts       # vitest 配置（node 环境，覆盖率只统计四个纯逻辑模块）
 ```
 
 ## 构建与门禁
@@ -115,4 +119,4 @@ npm test                # 全仓门禁（eslint / stylelint / tsc 覆盖本包�
 - 打包器与 [UserMessages](../UserMessages/scripts/build.js) 同款：esbuild `bundle` + `format: "esm"` + `target: "es2020"` + `minifySyntax`，产物不压缩（压缩交给界面库部署侧的 terser）；`charset: "utf8"` 保留中文字面量，`banner` 带 `"use strict"`。
 - 类型来自 `@types/oojs-ui`（列在 `packages/tsconfig.json` 的 `types` 里）、`types-mediawiki`，以及仓库共享的 [`src/@types/site-lib.d.ts`](../../src/@types/site-lib.d.ts)（`wgULS` / `libPrefixNumber` / `libGetPageNames`）。包内 `oo.d.ts` 只声明这两个类型包没收录的 `mw.widgets.TitleInputWidget` / `UserInputWidget` 与 `OO.ui.ProcessDialog.$body`。
 - 产物由 `src/gadgets/QuickRequest/.eslint-exemptions.yaml` 排除在 lint 之外；`Gadget-QuickRequest.json`（手工维护，非构建产物）登记在 `scripts/buildPackages/exclusions.yaml`。包内不写行内 `eslint-disable`：与 jQuery Promise / OOUI 打交道的三条规则在 `eslint.config.js` 里对 `packages/QuickRequest/src` 整目录关闭（与 UserMessages 相同）。
-- 单元测试只覆盖 `src/wikitext.ts`、`src/config.ts`、`src/blockInfo.ts` 与 `src/deleteContent.ts` 的纯逻辑：模板调用拼装（空值省略、固定参数）、`{{` → `{{subst:`、配置校验/丢弃/变体、组约束、封禁信息拼装、删除请求正文/标题/批量清单解析。其余模块要完整的 OOUI / `mw.Api` 运行时，不在单测范围内；覆盖率报告写到 `.cache/coverage/QuickRequest`（已 gitignore）。
+- 单元测试只覆盖纯逻辑：`src/wikitext.ts`（模板调用拼装——空值省略、固定参数；`{{` → `{{subst:`）、`src/config.ts`（校验/丢弃/变体、组约束、targetPage）、`src/blockInfo.ts`（封禁信息拼装）、`src/deleteContent.ts`（删除请求正文/标题/批量清单解析）与 `src/registry.ts`（类型级校验与阶段 5 注册记录）。其余模块要完整的 OOUI / `mw.Api` 运行时，不在单测范围内；覆盖率报告写到 `.cache/coverage/QuickRequest`（已 gitignore）。

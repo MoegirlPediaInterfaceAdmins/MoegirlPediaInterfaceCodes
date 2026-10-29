@@ -85,6 +85,12 @@ interface TypeConfig {
     variants?: TypeVariant[];
     /** 固定参数：每次调用都带上、不在表单中展示（与变体的 fixedParams 同语义） */
     fixedParams?: Record<string, string>;
+    /**
+     * 发帖目标页；设置时优先于注册表 resolveTarget 的返回值。
+     * vandalReport 的版面在其模板 doc 里标注「目前是」——版面可能迁移，故做成配置项；
+     * 其余类型的目标页是稳定约定（本页讨论页、固定版面），留在注册表。
+     */
+    targetPage?: string;
 }
 
 /** 站内配置页的结构。 */
