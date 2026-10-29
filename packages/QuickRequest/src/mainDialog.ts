@@ -226,7 +226,7 @@ class MainDialog extends OO.ui.ProcessDialog {
         this.typeConfig = typeConfig;
         const fieldset = new OO.ui.FieldsetLayout({ label: this.definition.label });
 
-        const targetPage = this.definition.resolveTarget(this.context);
+        const targetPage = this.resolveTargetPage();
         if (targetPage !== false) {
             fieldset.addItems([
                 new OO.ui.FieldLayout(new OO.ui.LabelWidget({ label: targetPage.replace(/_/g, " ") }), {
@@ -294,6 +294,15 @@ class MainDialog extends OO.ui.ProcessDialog {
     private currentVariant(): TypeVariant {
         const variants = this.typeConfig?.variants ?? [];
         return variants.find((variant) => variant.id === this.variantInput?.getValue()) ?? variants[0];
+    }
+
+    /**
+     * 发帖目标页：配置页的 targetPage 优先（vandalReport 的版面在其模板 doc 标注
+     * 「目前是」，须可配置），缺省回退注册表 resolveTarget。
+     * @returns 目标页名；当前页面没有讨论页等场景为 false
+     */
+    private resolveTargetPage(): string | false {
+        return this.typeConfig?.targetPage ?? this.definition.resolveTarget(this.context);
     }
 
     /**
@@ -439,7 +448,7 @@ class MainDialog extends OO.ui.ProcessDialog {
             submittedText = buildSubmitText(raw);
         }
 
-        const targetPage = this.definition.resolveTarget(this.context);
+        const targetPage = this.resolveTargetPage();
         if (targetPage === false) {
             void showError(wgULS("无法发起请求", "無法發起請求"), wgULS("当前页面没有对应的讨论页。", "目前頁面沒有對應的討論頁。"));
             return null;

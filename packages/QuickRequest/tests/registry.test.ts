@@ -32,3 +32,42 @@ describe("move 类型的移动到自身校验", () => {
         expect(moveDefinition.validate?.({ original: "Example_page", "new": "Help:Example page", reason: "r" }, context)).toBe(null);
     });
 });
+
+describe("阶段 5 类型的注册记录", () => {
+    it("vandalReport：可见性为巡查员/管理员，目标为长期破坏者版面，append 追加", () => {
+        const definition = REQUEST_TYPES.vandalReport;
+        if (definition === undefined) {
+            throw new Error("vandalReport 类型未注册");
+        }
+        expect(definition.availability({ ...context, userGroups: ["patroller"] })).toBe(true);
+        expect(definition.availability({ ...context, userGroups: ["sysop"] })).toBe(true);
+        expect(definition.availability({ ...context, userGroups: ["autoconfirmed"] })).toBe(false);
+        // 模板 doc 标注版面「目前是」——配置页 targetPage 优先，此值为回退
+        expect(definition.resolveTarget(context)).toBe("萌娘百科_talk:长期破坏者");
+        // 模板正文以 ==提请将[[User:…]]列入破坏者列表== 开头，标题由模板生成
+        expect(definition.postMode).toBe("append");
+    });
+
+    it("checkuserRecord：仅查核员可见，目标为记录页的讨论页，append 追加", () => {
+        const definition = REQUEST_TYPES.checkuserRecord;
+        if (definition === undefined) {
+            throw new Error("checkuserRecord 类型未注册");
+        }
+        expect(definition.availability({ ...context, userGroups: ["checkuser"] })).toBe(true);
+        expect(definition.availability({ ...context, userGroups: ["sysop"] })).toBe(false);
+        // 记录页自身受 patrolleredit 保护，请求发到其讨论页（真实话题核实）
+        expect(definition.resolveTarget(context)).toBe("萌娘百科_talk:用户查核记录");
+        expect(definition.postMode).toBe("append");
+    });
+
+    it("editTech：恒可用，目标为本页讨论页，标题沿用「编辑请求 - 用户 - 日期」", () => {
+        const definition = REQUEST_TYPES.editTech;
+        if (definition === undefined) {
+            throw new Error("editTech 类型未注册");
+        }
+        expect(definition.availability(context)).toBe(true);
+        expect(definition.resolveTarget(context)).toBe("Example_talk");
+        // 模板正文不带标题；真实用例（CSS 页讨论页）的章节标题与 edit 相同
+        expect(definition.sectionTitle?.(context)).toBe("编辑请求 - Someone - 2026.10.29");
+    });
+});
