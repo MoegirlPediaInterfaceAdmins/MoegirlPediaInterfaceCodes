@@ -122,6 +122,96 @@
                 }
             ]
         },
+        "vandalReport": {
+            "template": "Template:编辑请求/反破坏举报申请",
+            "targetPage": "萌娘百科_talk:长期破坏者",
+            "parameters": [
+                {
+                    "key": "1",
+                    "label": "被举报者用户名（不带 User:，区分繁简）",
+                    "type": "user",
+                    "required": true
+                },
+                {
+                    "key": "2",
+                    "label": "申请理由（不必签名）",
+                    "type": "multiline",
+                    "required": true
+                }
+            ]
+        },
+        "checkuserRecord": {
+            "template": "Template:编辑请求/用户查核记录",
+            "parameters": [
+                {
+                    "key": "日期",
+                    "label": "查核日期（如 2026.10.27）",
+                    "type": "text",
+                    "required": true
+                },
+                {
+                    "key": "申请者",
+                    "label": "查核申请者用户名（不带 User:）",
+                    "type": "user",
+                    "required": true
+                },
+                {
+                    "key": "执行人",
+                    "label": "执行人用户名（不带 User:）",
+                    "type": "user",
+                    "required": true
+                },
+                {
+                    "key": "被查核对象",
+                    "label": "被查核对象（完整内部链接，每行一个，如 [[U:示例用户]]）",
+                    "type": "multiline",
+                    "required": true
+                },
+                {
+                    "key": "事由",
+                    "label": "查核的事由/原因",
+                    "type": "text",
+                    "required": true
+                },
+                {
+                    "key": "结果",
+                    "label": "查核结果",
+                    "type": "text",
+                    "required": true
+                },
+                {
+                    "key": "备注",
+                    "label": "备注（是否为维护组内部申请，选填）",
+                    "type": "text"
+                },
+                {
+                    "key": "reason",
+                    "label": "修改原因",
+                    "type": "text"
+                }
+            ]
+        },
+        "editTech": {
+            "template": "Template:编辑请求/技术",
+            "parameters": [
+                {
+                    "key": "sandbox",
+                    "label": "沙盒版本页面",
+                    "type": "page",
+                    "required": true
+                },
+                {
+                    "key": "test",
+                    "label": "测试用例页面（选填，萌百经常没有）",
+                    "type": "page"
+                },
+                {
+                    "key": "reason",
+                    "label": "修改原因",
+                    "type": "text"
+                }
+            ]
+        },
         "userGroup": {
             "variants": [
                 {

@@ -1,10 +1,12 @@
 import { isZhHost } from "./api.ts";
 import {
+    CHECKUSER_RECORD_TALK,
     CONVERSION_TABLE_PATTERN,
     OPERATIONS_BOARD,
     POLICY_CATEGORIES,
     RIGHTS_BOARD,
     titleSuffix,
+    VANDAL_BOARD,
     WARNING_SKIP_GROUPS,
 } from "./constants.ts";
 import { buildDeleteBody, buildDeleteParams, buildDeleteSectionTitle } from "./deleteContent.ts";
@@ -162,7 +164,50 @@ const deleteDefinition: RequestTypeDefinition = {
     },
 };
 
-/** 阶段 1-4 的请求类型注册表；vandalReport / checkuserRecord / editTech 随阶段 5 补齐。 */
+/**
+ * 反破坏举报申请（阶段 5）：发到长期破坏者版面，收位置参数 1=被举报者用户名、2=理由。
+ * 模板正文以 `==提请将[[User:…]]列入破坏者列表==` 开头（2026-10 实测模板源码）——标题由
+ * 模板在存盘替换时生成，与申请族相同，走 append、不提供 sectionTitle。版面在模板 doc
+ * 标注「目前是」，实际目标以配置页 targetPage 优先（mainDialog），resolveTarget 的返回值
+ * 仅作配置缺省时的回退。可见性对齐巡查场景（巡查员/管理员）：Abuse 认定按反破坏方针
+ * 在维护组内讨论（至少两名管理在内的五名维护人员同意），提请属维护动作。
+ */
+const vandalReportDefinition: RequestTypeDefinition = {
+    id: "vandalReport",
+    label: wgULS("反破坏举报申请", "反破壞舉報申請"),
+    availability: (ctx) => ctx.userGroups.includes("patroller") || ctx.userGroups.includes("sysop"),
+    resolveTarget: () => VANDAL_BOARD,
+    postMode: "append",
+};
+
+/**
+ * 用户查核记录（阶段 5）：查核员把新增记录以编辑请求发到记录页的讨论页
+ * （记录页自身受 patrolleredit 保护，讨论页无保护；真实话题均在讨论页，2026-10 核实）。
+ * 模板正文以 `== 新增查核记录 - {{subst:REVISIONUSER}} - {{subst:LOCALYEAR}}.… ==` 开头
+ * ——标题含 subst 魔法字、存盘时才替换，客户端拼不出，走 append、不提供 sectionTitle。
+ * 受众为查核员：记录由执行查核的查核员发起增补。
+ */
+const checkuserRecordDefinition: RequestTypeDefinition = {
+    id: "checkuserRecord",
+    label: wgULS("新增查核记录", "新增查核記錄"),
+    availability: (ctx) => ctx.userGroups.includes("checkuser"),
+    resolveTarget: () => CHECKUSER_RECORD_TALK,
+    postMode: "append",
+};
+
+/**
+ * 技术编辑请求（阶段 5）：面向 JS/CSS/JSON/模板页面的编辑请求，发到本页讨论页。
+ * 模板正文不带章节标题（区别于其余编辑请求族变体），走 addtopic；章节标题沿用
+ * 版面既有的「编辑请求 - 用户 - 日期」——两个真实用例（CSS 页讨论页，2026-10）均如此，
+ * 与 edit 同格式。入口由 pageInfo 在技术页面条件下追加（见 Gadget-pageInfo.js）。
+ */
+const editTechDefinition: RequestTypeDefinition = {
+    ...editDefinition,
+    id: "editTech",
+    label: wgULS("技术编辑请求", "技術編輯請求"),
+};
+
+/** 请求类型注册表（阶段 1-5 全量）。 */
 const REQUEST_TYPES: Partial<Record<RequestTypeId, RequestTypeDefinition>> = {
     edit: editDefinition,
     editConversiontable: editConversiontableDefinition,
@@ -171,6 +216,9 @@ const REQUEST_TYPES: Partial<Record<RequestTypeId, RequestTypeDefinition>> = {
     userGroup: userGroupDefinition,
     banAppeal: banAppealDefinition,
     "delete": deleteDefinition,
+    vandalReport: vandalReportDefinition,
+    checkuserRecord: checkuserRecordDefinition,
+    editTech: editTechDefinition,
 };
 
 /**
