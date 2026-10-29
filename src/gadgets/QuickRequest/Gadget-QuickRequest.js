@@ -50,11 +50,11 @@ var toErrorMessage = (error) => error instanceof Error ? error.message : String(
 var PARAM_TYPES = /* @__PURE__ */ new Set(["page", "user", "text", "multiline"]), isParamType = (value) => typeof value == "string" && PARAM_TYPES.has(value), compact = (items) => items.filter((item) => item !== null), prefetch = null, isNonEmptyString = (value) => typeof value == "string" && value.trim() !== "", toRequestParam = (raw) => {
   if (typeof raw != "object" || raw === null)
     return null;
-  let { key, label, type, required, auto, readOnly, hint, default: defaultValue } = raw;
+  let { key, label, type, required, auto, readOnly, hidden, hint, default: defaultValue } = raw;
   if (!isNonEmptyString(key) || !isNonEmptyString(label))
     return null;
   let param = { key, label };
-  return isParamType(type) && (param.type = type), typeof required == "boolean" && (param.required = required), auto === "currentPage" && (param.auto = auto), typeof readOnly == "boolean" && (param.readOnly = readOnly), isNonEmptyString(hint) && (param.hint = hint), typeof defaultValue == "string" && (param.default = defaultValue), param;
+  return isParamType(type) && (param.type = type), typeof required == "boolean" && (param.required = required), auto === "currentPage" && (param.auto = auto), typeof readOnly == "boolean" && (param.readOnly = readOnly), typeof hidden == "boolean" && (param.hidden = hidden), isNonEmptyString(hint) && (param.hint = hint), typeof defaultValue == "string" && (param.default = defaultValue), param;
 }, toFixedParams = (raw) => {
   if (typeof raw != "object" || raw === null)
     return;
@@ -339,12 +339,20 @@ var policyWarning = (ctx) => {
   ...editDefinition,
   id: "editConversiontable",
   label: wgULS("编辑请求（转换表）", "編輯請求（轉換表）")
+}, isSamePageTitle = (a, b) => {
+  let normalize = (title) => {
+    let spaced = title.replace(/_/g, " ").trim();
+    return spaced.charAt(0).toUpperCase() + spaced.slice(1);
+  };
+  return normalize(a) === normalize(b);
 }, moveDefinition = {
   id: "move",
   label: wgULS("移动请求", "移動請求"),
   availability: () => !0,
   resolveTarget: () => OPERATIONS_BOARD,
-  sectionTitle: (ctx) => `移动请求${titleSuffix(ctx.userName, ctx.now)}`
+  sectionTitle: (ctx) => `移动请求${titleSuffix(ctx.userName, ctx.now)}`,
+  // 新标题与当前页面名相同即移动到自身，原生移动同样不允许
+  validate: (values, ctx) => isSamePageTitle(values.new, ctx.pageName) ? wgULS("新标题与当前页面名相同，无需移动。", "新標題與目前頁面名稱相同，無需移動。") : null
 }, createDefinition = {
   id: "create",
   label: wgULS("创建请求", "建立請求"),
@@ -453,7 +461,7 @@ var createParamWidget = (param, $overlay) => {
   }
 }, createParamField = (param, $overlay, onChange, onEnter) => {
   let widget = createParamWidget(param, $overlay);
-  return widget instanceof OO.ui.TextInputWidget && (param.readOnly === !0 || param.auto === "currentPage") && widget.setReadOnly(!0), widget.on("change", onChange), onEnter !== void 0 && param.enterSubmits === !0 && widget instanceof OO.ui.TextInputWidget && widget.on("enter", onEnter), {
+  return widget instanceof OO.ui.TextInputWidget && param.readOnly === !0 && widget.setReadOnly(!0), widget.on("change", onChange), onEnter !== void 0 && param.enterSubmits === !0 && widget instanceof OO.ui.TextInputWidget && widget.on("enter", onEnter), {
     param,
     widget,
     read: () => widget instanceof OO.ui.CheckboxInputWidget ? widget.isSelected() ? "1" : "" : widget.getValue(),
@@ -481,29 +489,10 @@ var createParamWidget = (param, $overlay) => {
 };
 
 // packages/QuickRequest/src/wikitext.ts
-var escapeTopLevelPipes = (value) => {
-  let depth = 0, out = "", index = 0;
-  for (; index < value.length; ) {
-    let two = value.slice(index, index + 2);
-    if (two === "{{" || two === "[[") {
-      depth += 1, out += two, index += 2;
-      continue;
-    }
-    if (depth > 0 && (two === "}}" || two === "]]")) {
-      depth -= 1, out += two, index += 2;
-      continue;
-    }
-    if (value[index] === "|" && depth === 0) {
-      out += "{{!}}", index += 1;
-      continue;
-    }
-    out += value[index], index += 1;
-  }
-  return out;
-}, buildTemplateWikitext = (spec, values) => {
-  let fixed = Object.entries(spec.fixedParams ?? {}).map(([key, value]) => `|${key}=${escapeTopLevelPipes(value)}`).join(""), params = (spec.parameters ?? []).map(({ key }) => {
+var buildTemplateWikitext = (spec, values) => {
+  let fixed = Object.entries(spec.fixedParams ?? {}).map(([key, value]) => `|${key}=${value}`).join(""), params = (spec.parameters ?? []).map(({ key }) => {
     let value = values[key];
-    return value ? `|${key}=${escapeTopLevelPipes(value)}` : "";
+    return value ? `|${key}=${value}` : "";
   }).join("");
   return `{{${spec.template}${fixed}${params}}}`;
 }, toSubst = (wikitext) => wikitext.replace(/^\{\{/, "{{subst:"), buildSubmitText = (wikitext) => toSubst(wikitext);
@@ -563,6 +552,8 @@ var MainDialog = class extends OO.ui.ProcessDialog {
     __publicField(this, "templateSpec", null);
     __publicField(this, "variantInput", null);
     __publicField(this, "paramFields", []);
+    /** 隐藏字段（hidden 参数）的固定值，键 → 值；随参数区重建 */
+    __publicField(this, "hiddenValues", {});
     __publicField(this, "loadingPanel");
     __publicField(this, "formPanel");
     __publicField(this, "paramFieldset");
@@ -726,8 +717,13 @@ var MainDialog = class extends OO.ui.ProcessDialog {
    * @param spec 生效的表单规格
    */
   rebuildParamArea(spec) {
-    this.activeSpec = spec, this.templateSpec = Reflect.has(spec, "template") ? spec : null, this.paramFieldset.clearItems(), this.paramFields = (spec.parameters ?? []).map((param) => {
-      let presetValue = this.preset?.[param.key], autoValue = param.auto === "currentPage" ? this.context.pageName : void 0, initial = presetValue ?? autoValue ?? param.default, effective = initial === void 0 ? param : { ...param, default: initial };
+    this.activeSpec = spec, this.templateSpec = Reflect.has(spec, "template") ? spec : null, this.paramFieldset.clearItems();
+    let initialValue = (param) => {
+      let presetValue = this.preset?.[param.key], autoValue = param.auto === "currentPage" ? this.context.pageName : void 0;
+      return presetValue ?? autoValue ?? param.default;
+    };
+    this.hiddenValues = Object.fromEntries((spec.parameters ?? []).filter((param) => param.hidden === !0).map((param) => [param.key, initialValue(param) ?? ""])), this.paramFields = (spec.parameters ?? []).filter((param) => param.hidden !== !0).map((param) => {
+      let initial = initialValue(param), effective = initial === void 0 ? param : { ...param, default: initial };
       return createParamField(
         effective,
         this.$overlay,
@@ -742,9 +738,13 @@ var MainDialog = class extends OO.ui.ProcessDialog {
     let groupLabels = (spec.requireAnyOf ?? []).map((key) => spec.parameters?.find((param) => param.key === key)?.label ?? key);
     this.groupHint.setLabel(groupLabels.length > 0 ? wgULS(`「${groupLabels.join("」「")}」至少填写一项`, `「${groupLabels.join("」「")}」至少填寫一項`) : ""), this.onFormChanged();
   }
+  /** 当前表单全量值：隐藏字段的固定值 + 可见控件的当前值。 */
+  collectValues() {
+    return { ...this.hiddenValues, ...readValues(this.paramFields) };
+  }
   /** 按 visibleIf 刷新字段可见性；隐藏字段不参与校验，值仍随表单传出。 */
   applyFieldVisibility() {
-    let values = readValues(this.paramFields);
+    let values = this.collectValues();
     for (let field of this.paramFields) {
       let rule = field.param.visibleIf;
       rule && (field.hidden = values[rule.param] !== rule.equals, field.layout.toggle(!field.hidden));
@@ -767,7 +767,7 @@ var MainDialog = class extends OO.ui.ProcessDialog {
     if (!this.activeSpec)
       return;
     this.applyFieldVisibility();
-    let firstInvalid = validateFields(this.paramFields), groupSatisfied = isGroupSatisfied(this.activeSpec, readValues(this.paramFields));
+    let firstInvalid = validateFields(this.paramFields), groupSatisfied = isGroupSatisfied(this.activeSpec, this.collectValues());
     this.groupHint.toggle(!groupSatisfied), this.getActions().setAbilities({ preview: firstInvalid === null && groupSatisfied });
   }
   /**
@@ -782,9 +782,12 @@ var MainDialog = class extends OO.ui.ProcessDialog {
     let firstInvalid = validateFields(this.paramFields);
     if (firstInvalid)
       return firstInvalid.focus?.(), null;
-    let values = readValues(this.paramFields);
+    let values = this.collectValues();
     if (!isGroupSatisfied(spec, values))
       return showError(wgULS("内容不完整", "內容不完整"), wgULS("请至少填写组内的一项内容。", "請至少填寫組內的一項內容。")), null;
+    let validationError = this.definition.validate?.(values, this.context) ?? null;
+    if (validationError !== null)
+      return showError(wgULS("无法发起请求", "無法發起請求"), validationError), null;
     let programmatic = this.definition.programmaticForm, submittedText;
     if (programmatic)
       try {

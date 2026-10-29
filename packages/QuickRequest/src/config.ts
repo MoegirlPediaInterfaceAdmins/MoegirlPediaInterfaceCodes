@@ -39,7 +39,7 @@ const toRequestParam = (raw: unknown): RequestParam | null => {
     if (typeof raw !== "object" || raw === null) {
         return null;
     }
-    const { key, label, type, required, auto, readOnly, hint, "default": defaultValue } = raw as Record<string, unknown>;
+    const { key, label, type, required, auto, readOnly, hidden, hint, "default": defaultValue } = raw as Record<string, unknown>;
     if (!isNonEmptyString(key) || !isNonEmptyString(label)) {
         return null;
     }
@@ -55,6 +55,9 @@ const toRequestParam = (raw: unknown): RequestParam | null => {
     }
     if (typeof readOnly === "boolean") {
         param.readOnly = readOnly;
+    }
+    if (typeof hidden === "boolean") {
+        param.hidden = hidden;
     }
     if (isNonEmptyString(hint)) {
         param.hint = hint;
