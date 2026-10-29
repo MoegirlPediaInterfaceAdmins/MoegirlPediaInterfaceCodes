@@ -145,6 +145,25 @@ describe("parseConfig", () => {
             expect(params[3]?.hint).toBeUndefined();
         }
     });
+
+    it("hidden 只接受布尔值（隐藏字段不渲染，值仍自动带出）", () => {
+        const result = parseConfig(JSON.stringify({
+            types: {
+                move: {
+                    template: "Template:移动请求",
+                    parameters: [
+                        { key: "original", label: "移动前标题", auto: "currentPage", readOnly: true, hidden: true },
+                        { key: "new", label: "移动后标题", hidden: "yes" },
+                    ],
+                },
+            },
+        }));
+        expect(result.ok).toBe(true);
+        if (result.ok) {
+            expect(result.config.types.move.parameters?.[0].hidden).toBe(true);
+            expect(result.config.types.move.parameters?.[1].hidden).toBeUndefined();
+        }
+    });
 });
 
 describe("parseConfig 变体（variants）", () => {

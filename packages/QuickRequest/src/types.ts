@@ -25,6 +25,8 @@ interface RequestParam {
     auto?: "currentPage";
     /** 只读：值由入口预填或自动派生，不让用户改动（如封禁申诉的封禁信息），缺省可编辑 */
     readOnly?: boolean;
+    /** 隐藏：字段不在表单渲染，值仍按预填/自动派生规则并入提交（move 的 original 用，对齐原生移动不显示源页面名） */
+    hidden?: boolean;
     /** 字段说明，展示为标签旁的帮助图标；缺省不展示 */
     hint?: string;
     /** dropdown 的选项（动态来源在程序化表单的 buildParams 里现取；配置页类型暂不提供） */
@@ -182,6 +184,11 @@ interface RequestTypeDefinition {
     site?: SiteId;
     /** 程序化表单（delete 用）：不走路由配置页模板的字段与正文由代码提供 */
     programmaticForm?: ProgrammaticForm;
+    /**
+     * 提交前的类型级校验：返回错误文案时拦下预览并提示，返回 null 放行。
+     * 字段级必填与组约束之外、依赖跨字段组合的检查放这里（move 的「移动到自身」）。
+     */
+    validate?: (values: Record<string, string>, ctx: QuickRequestContext) => string | null;
 }
 
 declare global {

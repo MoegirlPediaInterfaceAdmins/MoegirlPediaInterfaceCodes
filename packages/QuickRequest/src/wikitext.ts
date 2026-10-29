@@ -1,62 +1,26 @@
 import type { TemplateSpec } from "./types.ts";
 
 /**
- * 转义值中会拆散模板参数的顶层管道符。
- *
- * 逐字符扫描 {{ }} 与 [[ ]] 的括号深度,只把深度 0 的 | 替换为 {{!}}:
- * 嵌套模板与内链里的管道是它们自己的参数分隔符,必须原样保留;
- * {{!}} 在渲染时展开回字面 |,内容不丢失。用户往字段里粘贴表格源码
- * ({| |} 的管道全在深度 0)或含 | 的文字时,参数结构不会被拆散。
- * 深度已为 0 时出现的孤立 }} / ]] 属于不平衡输入,原样保留(由服务端模板解析报错)。
- * @param value 字段原始值
- * @returns 顶层管道已转义的值
- */
-const escapeTopLevelPipes = (value: string): string => {
-    let depth = 0;
-    let out = "";
-    let index = 0;
-    while (index < value.length) {
-        const two = value.slice(index, index + 2);
-        if (two === "{{" || two === "[[") {
-            depth += 1;
-            out += two;
-            index += 2;
-            continue;
-        }
-        if (depth > 0 && (two === "}}" || two === "]]")) {
-            depth -= 1;
-            out += two;
-            index += 2;
-            continue;
-        }
-        if (value[index] === "|" && depth === 0) {
-            out += "{{!}}";
-            index += 1;
-            continue;
-        }
-        out += value[index];
-        index += 1;
-    }
-    return out;
-};
-
-/**
  * 由模板规格与参数值拼出 wikitext。值为空的参数整段省略，不输出 |key=。
  * 纯数字键（如 "1"）与命名键同样以 |key=值 输出——对位置参数而言 |1=值 与裸值等价，且不依赖参数顺序。
- * 值先经 escapeTopLevelPipes,防止字面 | 拆散本层参数。
- * 固定参数（fixedParams，如 用户组=机器用户）先于用户参数输出，二者走同一转义路径。
+ *
+ * 值一律原样拼接、不做任何改写（含顶层管道符）：预览是强制步骤、与提交共用同一份文本，
+ * 含管道的输入造成的拆参异常在预览中可见，用户可当场修正；反之若在客户端改写
+ * （如把顶层 | 替换为 {{!}}），会破坏 nowiki / pre / syntaxhighlight 等环境里的合法输入，
+ * 等于维护一个不完整的 wikitext 解析器——两者取舍下不改写用户输入。
+ * 固定参数（fixedParams，如 用户组=机器用户）先于用户参数输出，同样原样拼接。
  * @param spec 模板规格（类型条目或其变体）
  * @param values 参数名 → 值
  * @returns 拼出的 wikitext
  */
 const buildTemplateWikitext = (spec: TemplateSpec, values: Record<string, string>): string => {
     const fixed = Object.entries(spec.fixedParams ?? {})
-        .map(([key, value]) => `|${key}=${escapeTopLevelPipes(value)}`)
+        .map(([key, value]) => `|${key}=${value}`)
         .join("");
     const params = (spec.parameters ?? [])
         .map(({ key }) => {
             const value = values[key];
-            return value ? `|${key}=${escapeTopLevelPipes(value)}` : "";
+            return value ? `|${key}=${value}` : "";
         })
         .join("");
 

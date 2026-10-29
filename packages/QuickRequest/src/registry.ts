@@ -70,6 +70,20 @@ const editConversiontableDefinition: RequestTypeDefinition = {
     label: wgULS("编辑请求（转换表）", "編輯請求（轉換表）"),
 };
 
+/**
+ * 判断两个页面名是否指同一页面：下划线与空格互通、仅首字母大小写不同视为相同
+ * （MediaWiki 标题首字母大小写不敏感）。「移动到自身」校验用。
+ * @param a 页面名一
+ * @param b 页面名二
+ */
+const isSamePageTitle = (a: string, b: string): boolean => {
+    const normalize = (title: string): string => {
+        const spaced = title.replace(/_/g, " ").trim();
+        return spaced.charAt(0).toUpperCase() + spaced.slice(1);
+    };
+    return normalize(a) === normalize(b);
+};
+
 /** 移动请求：发到操作申请版。 */
 const moveDefinition: RequestTypeDefinition = {
     id: "move",
@@ -77,6 +91,10 @@ const moveDefinition: RequestTypeDefinition = {
     availability: () => true,
     resolveTarget: () => OPERATIONS_BOARD,
     sectionTitle: (ctx) => `移动请求${titleSuffix(ctx.userName, ctx.now)}`,
+    // 新标题与当前页面名相同即移动到自身，原生移动同样不允许
+    validate: (values, ctx) => isSamePageTitle(values.new, ctx.pageName)
+        ? wgULS("新标题与当前页面名相同，无需移动。", "新標題與目前頁面名稱相同，無需移動。")
+        : null,
 };
 
 /** 创建请求：发到操作申请版。 */

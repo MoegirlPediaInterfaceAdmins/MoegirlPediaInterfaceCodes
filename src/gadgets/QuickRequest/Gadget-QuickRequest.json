@@ -67,13 +67,16 @@
                     "label": "移动前标题",
                     "type": "text",
                     "required": true,
-                    "auto": "currentPage"
+                    "auto": "currentPage",
+                    "readOnly": true,
+                    "hidden": true
                 },
                 {
                     "key": "new",
                     "label": "移动后标题",
                     "type": "page",
-                    "required": true
+                    "required": true,
+                    "auto": "currentPage"
                 },
                 {
                     "key": "reason",
@@ -91,7 +94,8 @@
                     "label": "申请创建的标题",
                     "type": "page",
                     "required": true,
-                    "auto": "currentPage"
+                    "auto": "currentPage",
+                    "readOnly": true
                 },
                 {
                     "key": "reason",
