@@ -60,8 +60,15 @@ const open = (type: RequestTypeId, preset?: Record<string, string>): void => {
         return;
     }
 
-    // QuickRequest 以 rights: [edit] 加载，能执行到这里必为有名用户，无需再判 wgUserName
-    const context = buildContext((mw.config.get("wgUserName") as string | null | undefined) ?? "");
+    // rights: [edit] 只拦「默认自动加载」：pageInfo 的 mw.loader.using 路径与静态依赖链
+    // 都不做 rights 过滤，匿名用户也能走到这里。萌百禁止匿名编辑、提交终会被服务端拒绝，
+    // 但章节标题与编辑摘要都以用户名结尾——与其渲染一份必然发不出去的表单，不如入口直接提示
+    const userName = (mw.config.get("wgUserName") as string | null | undefined) ?? "";
+    if (userName === "") {
+        mw.notify(wgULS("请登录后再使用此功能。", "請登入後再使用此功能。"));
+        return;
+    }
+    const context = buildContext(userName);
     // 自有入口挂载前已查过 availability，这里是 open 层的兜底（如控制台直接调用）
     if (!definition.availability(context)) {
         mw.notify(wgULS("您暂不满足发起此请求的条件。", "您暫不滿足發起此請求的條件。"), { type: "warn" });

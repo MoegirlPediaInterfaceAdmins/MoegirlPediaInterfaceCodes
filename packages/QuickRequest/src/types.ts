@@ -5,6 +5,12 @@
  */
 type ParamType = "page" | "user" | "text" | "multiline" | "dropdown" | "checkbox";
 
+/**
+ * 配置页允许声明的控件类型。dropdown / checkbox 只能经程序化表单由代码构建
+ * （选项与取值逻辑不在配置页承载），配置页校验不含这两项——写入会被静默降级为 text。
+ */
+type ConfigurableParamType = Exclude<ParamType, "dropdown" | "checkbox">;
+
 /** 下拉选项；optgroup 形态渲染为分组标题。 */
 type DropdownOption = { data: string; label: string } | { optgroup: string };
 
@@ -24,7 +30,7 @@ interface RequestParam {
     key: string;
     /** 界面上显示的字段名 */
     label: UIText;
-    /** 控件类型，缺省为 text */
+    /** 控件类型，缺省为 text；dropdown / checkbox 仅程序化表单使用（配置页只接受其余四种，误写静默降级为 text） */
     type?: ParamType;
     /** 是否必填，缺省为 false */
     required?: boolean;
@@ -40,11 +46,11 @@ interface RequestParam {
     options?: DropdownOption[];
     /** 占位提示文本（text / multiline），缺省不展示 */
     placeholder?: UIText;
-    /** 字段可见性：所引用参数的值等于 equals 时显示，否则隐藏（隐藏不参与校验，值仍传给 buildBody） */
+    /** 字段可见性：所引用参数的值等于 equals 时显示，否则隐藏（隐藏不参与校验，值仍传给 buildBody）。仅程序化表单使用，配置页写入会被校验静默丢弃 */
     visibleIf?: { param: string; equals: string };
-    /** 值持久化到 LocalObjectStorage（QuickRequest 键）而不进入正文；用于「按回车提交」等偏好 */
+    /** 值持久化到 LocalObjectStorage（QuickRequest 键）而不进入正文；用于「按回车提交」等偏好。仅程序化表单使用，配置页写入会被校验静默丢弃 */
     storageKey?: string;
-    /** 在此字段按回车即触发「预览」（表单内任一 storageKey 偏好开启时才生效） */
+    /** 在此字段按回车即触发「预览」（表单内任一 storageKey 偏好开启时才生效）。仅程序化表单使用，配置页写入会被校验静默丢弃 */
     enterSubmits?: boolean;
     /** 初始值，缺省为空 */
     "default"?: string;
@@ -293,6 +299,7 @@ interface PreviewDialogCloseResult {
 type SendResult = { ok: true; newrevid: number | undefined } | { ok: false; code: string; detail: string; ambiguous: boolean };
 
 export type {
+    ConfigurableParamType,
     ConfigResult,
     DropdownOption,
     MainDialogCloseResult,
