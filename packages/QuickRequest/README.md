@@ -15,13 +15,13 @@
 - **发送流程**：填参数（必填项即时校验、组约束整组提示）→「预览」查看渲染结果 →「提交请求」。预览是叠在主对话框之上的独立对话框，「返回」只关预览、主框原样保留，可反复修改再次预览；也可展开查看待提交的 wikitext。
 - **预览**：`action=parse` 带 `pst=1`，先做保存前变换（`{{subst:}}`、模板内的 `~~~~`）再解析，与真实保存后的渲染一致；`title` 传发帖目标页，`{{ARTICLEPAGENAME}}` 等页面上下文相关魔法字按目标页解析。
 - **发送**：默认 `action=discussiontoolsedit` + `paction=addtopic`（requestDeletion 已验证），带 `sectiontitle` 与编辑标签 `Automation tool|QuickRequest`（需站内预先定义，部署前置事项）；成功后回读新章节锚点，提示「提交成功，3 秒后跳转」后跳到新话题，已在目标页时用 hash + reload。
-- **用户组申请（阶段 2）**：`open("userGroup")` 打开「权限申请」对话框——顶部「申请类型」下拉切换 14 个变体（维护姬 / 管理员 / 用户查核员 / 监督员 / 界面管理员 / 机器人（含追加任务、机器用户）/ 文件维护员 / 优质编辑者、技术编辑员、荣誉维护人员、IP封禁豁免者、手动确认用户），映射 7 个基模板（`Template:权限申请/*`）。发帖走 **append 模式**（`action=edit` + `appendtext`）：申请族模板的正文以 `== X申请 - User:{{subst:REVISIONUSER}} ==` 开头、标题由模板在存盘替换时生成，addtopic 的 sectiontitle 会再叠一层标题造成重复——append 只追加正文，与现行入口 `section=new&nosummary=1`（隐藏标题框，MediaWiki 因此不写标题行）的保存结果一致。入口为权限变更版（`萌娘百科_talk:讨论版/权限变更`）页面的 p-cactions「发起权限申请」（与页顶模板渲染的现行按钮并存，替换需站内配合，列入部署前置事项）；可用性沿用现行申请按钮的守卫：已登录 + 自动确认用户。站内无辞职模板（辞职历来是自由发帖），本类型只覆盖申请/提名。
-- **封禁申诉（阶段 3）**：封禁提示屏（`MediaWiki:Blockedtext*` → `Template:BlockedUserHelp`，服务端渲染 `<div id="BlockedUserHelp">`）上追加「寻求帮助」按钮。点击时以现行 `Widget:BlockedUserHelp` 的同一条查询（`list=users&usprop=blockinfo`）现查封禁详情，按其逐字格式拼出「封禁信息」文本，经 `open("banAppeal", { 1: 封禁信息 })` 预填进只读字段；用户只填「求助理由」。正文模板 `Template:BlockedUserHelp/request` 同样以 `== 用户被封禁而寻求帮助 ==` 开头（标题由模板生成），故发帖走 **append 模式**，目标为 `User_talk:<用户名>`——新用户的讨论页可能不存在，append 以 `allowCreate` 放开 `nocreate`，与现行 `section=new` 直接建页的行为一致。现行 Widget 注入的同名表单与本按钮并存，替换需站内配合（去掉模板里的 `{{#Widget:BlockedUserHelp}}`），列入部署前置事项。
+- **用户组申请（阶段 2）**：`open("userGroup")` 打开「权限申请」对话框——顶部「申请类型」下拉切换 14 个变体（维护姬 / 管理员 / 用户查核员 / 监督员 / 界面管理员 / 机器人（含追加任务、机器用户）/ 文件维护员 / 优质编辑者、技术编辑员、荣誉维护人员、IP封禁豁免者、手动确认用户），映射 7 个基模板（`Template:权限申请/*`）。发帖走 **append 模式**（`action=edit` + `appendtext`）：申请族模板的正文以 `== X申请 - User:{{subst:REVISIONUSER}} ==` 开头、标题由模板在存盘替换时生成，addtopic 的 sectiontitle 会再叠一层标题造成重复——append 只追加正文，与现行入口 `section=new&nosummary=1`（隐藏标题框，MediaWiki 因此不写标题行）的保存结果一致。**无自有入口**（第五轮评审决定）：站内直接把现行申请按钮（Widget:Applybutton / Module:权限申请按钮）改为调用 `window.libQuickRequest.open("userGroup")`（部署前置事项，与配置页同批）；守卫（自动确认用户）保留在 open 层兜底。站内无辞职模板（辞职历来是自由发帖），本类型只覆盖申请/提名。
+- **封禁申诉（阶段 3）**：封禁提示屏（`MediaWiki:Blockedtext*` → `Template:BlockedUserHelp`，服务端渲染 `<div id="BlockedUserHelp">`）上追加「寻求帮助」按钮。点击时以现行 `Widget:BlockedUserHelp` 的同一条查询（`list=users&usprop=blockinfo`）现查封禁详情，按其逐字格式拼出「封禁信息」文本，经 `open("banAppeal", { 1: 封禁信息 })` 预填进只读字段；用户只填「求助理由」。在此之上补查 `list=blocks&bkusers=` 列出同账号并行的其余封禁（部分封禁可多条并存，blockinfo 只报一条；查询失败或为空不影响主信息；IP 侧自动封禁在客户端拿不到自身 IP，不在覆盖内）。正文模板 `Template:BlockedUserHelp/request` 同样以 `== 用户被封禁而寻求帮助 ==` 开头（标题由模板生成），故发帖走 **append 模式**，目标为 `User_talk:<用户名>`——新用户的讨论页可能不存在，append 以 `allowCreate` 放开 `nocreate`，与现行 `section=new` 直接建页的行为一致。现行 Widget 注入的同名表单与本按钮并存，替换需站内配合（去掉模板里的 `{{#Widget:BlockedUserHelp}}`），列入部署前置事项。
 - **删除请求（阶段 4，requestDeletion 并入）**：`open("delete")` 打开「请求删除」对话框——理由下拉（选项打开时从 `MediaWiki:Filedelete-reason-dropdown`（File 命名空间）/ `MediaWiki:Deletereason-dropdown` 的渲染 HTML 解析，失败降级为只有「其他」）+ 详情 + 批量提删（勾选后展开页面清单，一行一个；仅持有 autopatrol 权限的用户可见）+「按回车提交」偏好（持久化到 LocalObjectStorage，读取时回退旧 `AnnTools-requestDeletion` 键）。正文为手工拼装的纯文本（非模板调用，走程序化表单、不经配置页），标题「请求删除页面:[[页面]] - 用户 - 日期」/批量「批量删除请求 - 用户 - 日期」，格式与旧工具逐字一致；批量清单解析（`cm:`/`zhmoe:` 前缀分流、去重、非法行报错）与重定向检测（按站点分批查询，重定向页以 `{{NoRedirectLink}}` 链接）在预览前完成。入口为 p-cactions「提出删除请求」（zh 站与共享站相同），守卫沿用旧工具：页面已存在且非特殊命名空间、讨论版各级版面自身与已挂 `{{will2Be2Deleted}}` 的页面不显示、巡查员/管理员默认不显示（`?AnnTools-debug=requestDeletion` 调试开关保留）。共享站发起时发帖至主站版面：被申请删除的页面名自动加 `cm:` 前缀，预览解析、发帖、锚点回读经 `mw.ForeignApi` 在主站执行，成功后跳转带主站基址；编辑标签随之从旧工具的 `Automation tool` 换为 `Automation tool|QuickRequest`（部署前置事项）。
-- **反破坏举报申请（阶段 5）**：`open("vandalReport", { 1: 用户名 })`——收位置参数 1=被举报者用户名、2=申请理由。正文模板 `Template:编辑请求/反破坏举报申请` 以 `==提请将[[User:…]]列入破坏者列表==` 开头（标题由模板生成），走 **append 模式**。入口为用户页/用户讨论页的 p-cactions「反破坏举报申请」，被举报者按 `wgRelevantUserName` 预填（子页面亦指向页面主人，可改填为分身等），仅巡查员/管理员可见（Abuse 认定按反破坏方针在维护组内讨论，提请属巡查/维护动作）。发帖版面缺省 `萌娘百科_talk:长期破坏者`——模板 doc 标注「目前是」，实际以配置页 `targetPage` 为准。
-- **用户查核记录（阶段 5）**：`open("checkuserRecord")`——收 日期/申请者/执行人/被查核对象/事由/结果/备注 命名参数。正文模板 `Template:编辑请求/用户查核记录` 以 `== 新增查核记录 - … ==` 开头（标题含 subst 魔法字、存盘时替换），走 **append 模式**，发到记录页的讨论页（`萌娘百科_talk:用户查核记录`——记录页自身受 patrolleredit 保护，真实话题均在讨论页）。入口为记录页及其讨论页的 p-cactions「新增查核记录」，仅查核员可见。
+- **反破坏举报申请（阶段 5）**：`open("vandalReport", { 1: 用户名 })`——收位置参数 1=被举报者用户名、2=申请理由。正文模板 `Template:编辑请求/反破坏举报申请` 以 `==提请将[[User:…]]列入破坏者列表==` 开头（标题由模板生成），走 **append 模式**。**无自有入口**（第五轮评审决定）：站内挂载方调用 `open("vandalReport", …)` 自行决定入口位置（部署前置事项）；open 层守卫对齐版面 `萌娘百科_talk:长期破坏者` 自身的编辑保护（autoconfirmed）——能手动发提请帖的就能用表单，提请环节无用户组限制（反破坏方针限制的是 Abuse 的认定环节）。发帖版面缺省 `萌娘百科_talk:长期破坏者`——模板 doc 标注「目前是」，实际以配置页 `targetPage` 为准。
+- **用户查核记录（阶段 5）**：`open("checkuserRecord")`——收 日期/申请者/执行人/被查核对象/事由/结果/备注 命名参数。正文模板 `Template:编辑请求/用户查核记录` 以 `== 新增查核记录 - … ==` 开头（标题含 subst 魔法字、存盘时替换），走 **append 模式**，发到记录页的讨论页（`萌娘百科_talk:用户查核记录`——记录页自身受 patrolleredit 保护，真实话题均在讨论页）。**无自有入口**（第五轮评审决定）：站内挂载方调用 `open("checkuserRecord")`（部署前置事项）；open 层守卫为查核员（记录由执行查核的查核员发起增补）。
 - **技术编辑请求（阶段 5）**：`open("editTech")`——收 sandbox / test（选填）/ reason。正文模板 `Template:编辑请求/技术` 不带章节标题（区别于其余编辑请求族变体），走 addtopic，章节标题沿用版面既有的「编辑请求 - 用户 - 日期」（真实用例核实）。入口由 pageInfo 在技术页面（模板命名空间或 JS/CSS/JSON 内容模型）的保护信息里、普通编辑请求旁追加「提出技术编辑请求」。
-- **提交前确认**：edit 类型带方针修改提醒（editRequestWarning 的迁移）——当前页属于「萌娘百科方针 / 萌娘百科指引」分类（读 `mw.config` 的 `wgCategories`，零请求）且用户不在跳过名单（patroller / sysop / techeditor / interface-admin / staff）时，主对话框打开即以横幅提示，提交前再逐条确认。
+- **提交前确认**：edit 类型带方针修改提醒（editRequestWarning 的迁移）——当前页属于「萌娘百科方针 / 萌娘百科指引」分类且用户不在跳过名单（patroller / sysop / techeditor / interface-admin / staff）时，主对话框打开即以横幅提示，提交前再逐条确认。分类优先读 `mw.config` 的 `wgCategories`（零请求）；Gadget-edit 的入口在编辑视图上，而 `action=edit` 不渲染页面、`wgCategories` 为空——此时回退为按标题查分类（`prop=categories&clcategories=` 只列方针/指引两项的轻查询，失败按未命中处理）。
 - **失败处理**：登录失效、限流、页面保护、滥用过滤器等给出中文说明，可在同一对话框内「重试」，已填内容不丢。
 - **签名**：不外部追加——各模板以 `sign` 参数的缺省值输出 `——~~~~`。
 
@@ -51,20 +51,21 @@
 | --- | --- | --- |
 | `types.<id>.template` | 与 `variants` 至少一项 | **可传参的基模板**页名，如 `Template:编辑请求`。`编辑请求/comment`、`移动请求预载` 等预载脚手架不接受外部传参，不可用于此 |
 | `types.<id>.parameters[].key` | 是 | 模板参数名；纯数字键（如 `1`）映射为模板位置参数 |
-| `types.<id>.parameters[].label` | 是 | 界面上显示的字段名 |
+| `types.<id>.parameters[].label` | 是 | 界面上显示的字段名。简体直书，或 `{"hans": "…", "hant": "…"}` 对象（繁体；OOUI 客户端注入的 DOM 不经服务端语言转换，需要繁体时以对象形态提供、渲染时经 wgULS 解析，`hant` 缺省回落 `hans`；两侧文字完全相同时直书即可）。对象形态缺 `hans` 时整条参数丢弃 |
 | `types.<id>.parameters[].type` | 否 | `page`（标题联想）/ `user`（用户名联想）/ `multiline`（多行）/ `text`（单行，缺省） |
 | `types.<id>.parameters[].required` | 否 | 是否必填，缺省 `false` |
 | `types.<id>.parameters[].auto` | 否 | `currentPage`：打开时自动填入当前页面名（取代旧的 `preloadparams[]`/`$1` 预填）；只预填、不意味着只读（move 的 `new` 预填后仍可改） |
 | `types.<id>.parameters[].readOnly` | 否 | 只读：不让用户改动（如封禁申诉的封禁信息、move 隐藏的 `original`），缺省 `false`；须显式声明，与 `auto` 无绑定 |
 | `types.<id>.parameters[].hidden` | 否 | 隐藏：字段不在表单渲染，值仍按预填/自动派生规则并入提交（move 的 `original`——对齐原生移动不显示源页面名），缺省 `false` |
-| `types.<id>.parameters[].hint` | 否 | 字段说明，展示为标签旁的帮助图标；缺省不展示 |
+| `types.<id>.parameters[].hint` | 否 | 字段说明，展示为标签旁的帮助图标；缺省不展示。文案同 `label` 支持对象形态（形态非法只丢 hint 自身） |
+| `types.<id>.parameters[].placeholder` | 否 | 占位提示文本（text / multiline）；同 `label` 支持对象形态（形态非法只丢自身） |
 | `types.<id>.parameters[].default` | 否 | 初始值，缺省为空；入口预填（preset）的优先级高于它（也高于 `auto`） |
 | `types.<id>.requireAnyOf` | 否 | 组约束：所列键至少填一项。edit 的 `original`/`new` 用它表达「仅删除 / 仅新增 / 修改」三态（模板仅在全空时报错）；只保留真实存在的键 |
-| `types.<id>.fixedParams` | 否 | 固定参数：每次调用都带上、不在表单中展示（值原样输出，不做管道转义——预览为强制步骤，含管道的输入若拆参在预览可见，用户自行修正；客户端改写反而会破坏 nowiki / pre 等合法输入） |
+| `types.<id>.fixedParams` | 否 | 固定参数：每次调用都带上、不在表单中展示（值原样输出，不做管道转义——预览为强制步骤，含管道的输入若拆参在预览可见，用户自行修正；客户端改写反而会破坏 nowiki / pre 等合法输入）。值是写进正文的 wikitext，保持简体（存盘后的显示由站内语言转换处理），不做对象形态 |
 | `types.<id>.targetPage` | 否 | 发帖目标页，设置时优先于代码里的目标版面/页（vandalReport 的版面在其模板 doc 标注「目前是」，故做成配置项；其余类型的目标页是稳定约定，留在代码里） |
 | `types.<id>.variants[]` | 否 | 同型多模板变体（userGroup 用）：存在时表单顶部出现「申请类型」下拉，类型级 `template`/`parameters`/`requireAnyOf` 不再使用 |
 | `types.<id>.variants[].id` | 是 | 变体 id，类型内唯一（重复 id 只保留首个） |
-| `types.<id>.variants[].label` | 是 | 变体下拉框显示名 |
+| `types.<id>.variants[].label` | 是 | 变体下拉框显示名；同 `parameters[].label` 支持对象形态（非法时该变体整条丢弃） |
 | `types.<id>.variants[].template` | 是 | 该变体的基模板页名 |
 | `types.<id>.variants[].parameters` / `requireAnyOf` / `fixedParams` | 否 | 语义同类型级字段，按变体各自校验（`requireAnyOf` 按变体自身参数过滤） |
 
@@ -81,14 +82,15 @@ src/
 ├── types.ts           # 配置/参数/类型定义、对话框数据与关闭结果、window 增广（QuickRequest / libQuickRequest）
 ├── errors.ts          # 错误码 → 中文说明（含防滥用过滤器分支）、从 reject 载荷取服务端 info
 ├── api.ts             # mw.Api 惰性单例；目标站 API 选择（ForeignApi 单例）、读取页面 wikitext、parse 预览（pst=true）
-├── blockInfo.ts       # 封禁信息：list=users&usprop=blockinfo 查询与封禁信息文本拼装（格式逐字沿用现行 Widget）
+├── blockInfo.ts       # 封禁信息：blockinfo 主查询（格式逐字沿用现行 Widget）+ list=blocks 并行封禁补充
 ├── deleteContent.ts   # 删除请求：批量清单解析/重定向检测/正文与标题拼装、理由下拉解析、表单字段构建（程序化表单）
 ├── storage.ts         # 持久偏好（LocalObjectStorage，QuickRequest 键；读取回退旧 requestDeletion 键）
 ├── config.ts          # 配置页 JSON 的校验/合并/预取（幂等）、组约束判断、按 id 取类型条目
+├── uitext.ts          # 界面文案解析：配置页的 {hans, hant} 对象形态经 wgULS 转当前用户变体
 ├── wikitext.ts        # 拼模板调用（固定参数 + 用户参数，值原样不做转义）、subst 改写（预览与发送共用的唯一变换点）
 ├── fields.ts          # 参数控件工厂（page/user/multiline/text）、取值、必填校验（仅在有效性翻转时动 DOM）
 ├── registry.ts        # 请求类型注册表（目标版面/页、章节标题、发帖方式、目标站点、方针提醒）、转换表特例的 id 解析、上下文收集
-├── entries.ts         # 自有入口挂载（权限变更版「发起权限申请」、封禁提示屏「寻求帮助」、「提出删除请求」、用户页「反破坏举报申请」、查核记录页「新增查核记录」）
+├── entries.ts         # 自有入口挂载（封禁提示屏「寻求帮助」、「提出删除请求」；其余类型无自有入口，站内挂载方经 window.libQuickRequest 调起）
 ├── openWindow.ts      # 独立 WindowManager 挂载对话框，关闭后清理并回调（嵌套弹窗的前提）
 ├── messageDialog.ts   # 通用消息框、「关闭」错误提示、「关闭/重试」确认、「返回修改/继续提交」确认
 ├── send.ts            # addtopic 发帖与 append 追加发帖（多参 reject 取错误码、按目标站选 API）、回读新章节锚点、跳转（跨站带基址）
@@ -97,9 +99,10 @@ src/
 └── oo.d.ts            # 类型补充：mw.widgets 的两个输入框、OO.ui.ProcessDialog.$body
 tests/
 ├── wikitext.test.ts   # 模板调用拼装（含固定参数、封禁信息内链管道）、subst
-├── config.test.ts     # 配置校验/丢弃/变体、组约束
-├── blockInfo.test.ts  # 封禁信息文本拼装（现行 Widget 逐字格式、限期/无限期、未封禁判空）
-├── deleteContent.test.ts # 删除请求正文/标题拼装、批量清单解析与去重/非法行报错、重定向信息归并
+├── config.test.ts     # 配置校验/丢弃/变体、组约束、targetPage、UIText 对象形态、随包配置页整页解析
+├── blockInfo.test.ts  # 封禁信息文本拼装（现行 Widget 逐字格式、限期/无限期、未封禁判空）、并行封禁合并（去重/失败回退）
+├── deleteContent.test.ts # 删除请求正文/标题拼装、批量清单解析与去重/非法行报错、重定向检测（vi.mock 桩掉站点 API）
+├── uitext.test.ts     # 界面文案解析（字符串直书、对象形态、hant 回落）
 ├── registry.test.ts   # move 的移动到自身校验（同名/下划线空格/首字母大小写/放行）、阶段 5 类型注册（可见性/目标页/append）
 └── setup.ts           # wgULS / libPrefixNumber 直通实现（node 环境没有 site-lib，且 errors.ts 的文案表在模块求值时调用它）
 scripts/build.js       # esbuild 打包 + 完整性自检 + 幂等检查

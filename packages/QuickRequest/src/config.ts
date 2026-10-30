@@ -1,7 +1,7 @@
 import { CONFIG_PAGE } from "./constants.ts";
 import { toErrorMessage } from "./errors.ts";
 import { fetchPageContent } from "./api.ts";
-import type { ConfigResult, ParamType, QuickRequestConfig, RequestParam, TypeConfig, TypeVariant } from "./types.ts";
+import type { ConfigResult, ParamType, QuickRequestConfig, RequestParam, TypeConfig, TypeVariant, UIText } from "./types.ts";
 
 /** 合法的控件类型集合。 */
 const PARAM_TYPES = new Set<string>(["page", "user", "text", "multiline"]);
@@ -31,6 +31,26 @@ let prefetch: Promise<ConfigResult> | null = null;
 const isNonEmptyString = (value: unknown): value is string => typeof value === "string" && value.trim() !== "";
 
 /**
+ * 校验界面文案：简体直书，或 {hans, hant} 对（hans 必填非空；hant 为字符串时收录，
+ * 缺省由渲染层回落 hans）。OOUI 注入的 DOM 不经服务端语言转换，繁体以对象形态提供。
+ * @param raw 原始取值
+ * @returns 文案；非法时为 null（label 非法丢弃整条参数/变体，hint/placeholder 非法只丢自身）
+ */
+const toUIText = (raw: unknown): UIText | null => {
+    if (isNonEmptyString(raw)) {
+        return raw;
+    }
+    if (typeof raw !== "object" || raw === null) {
+        return null;
+    }
+    const { hans, hant } = raw as Record<string, unknown>;
+    if (!isNonEmptyString(hans)) {
+        return null;
+    }
+    return typeof hant === "string" ? { hans, hant } : { hans };
+};
+
+/**
  * 校验单个参数定义，非法则返回 null。
  * @param raw 原始条目
  * @returns 参数定义；非法时为 null
@@ -39,11 +59,16 @@ const toRequestParam = (raw: unknown): RequestParam | null => {
     if (typeof raw !== "object" || raw === null) {
         return null;
     }
-    const { key, label, type, required, auto, readOnly, hidden, hint, "default": defaultValue } = raw as Record<string, unknown>;
-    if (!isNonEmptyString(key) || !isNonEmptyString(label)) {
+    const { key, label, type, required, auto, readOnly, hidden, hint, placeholder, "default": defaultValue } = raw as Record<string, unknown>;
+    if (!isNonEmptyString(key)) {
         return null;
     }
-    const param: RequestParam = { key, label };
+    // label 是参数的唯一必填界面信息，对象/字符串形态都不合法时整条丢弃
+    const labelText = toUIText(label);
+    if (labelText === null) {
+        return null;
+    }
+    const param: RequestParam = { key, label: labelText };
     if (isParamType(type)) {
         param.type = type;
     }
@@ -59,8 +84,14 @@ const toRequestParam = (raw: unknown): RequestParam | null => {
     if (typeof hidden === "boolean") {
         param.hidden = hidden;
     }
-    if (isNonEmptyString(hint)) {
-        param.hint = hint;
+    // hint / placeholder 是装饰性字段，形态非法只丢自身，不影响参数收录
+    const hintText = toUIText(hint);
+    if (hintText !== null) {
+        param.hint = hintText;
+    }
+    const placeholderText = toUIText(placeholder);
+    if (placeholderText !== null) {
+        param.placeholder = placeholderText;
     }
     if (typeof defaultValue === "string") {
         param.default = defaultValue;
@@ -98,10 +129,11 @@ const toTypeVariant = (raw: unknown): TypeVariant | null => {
         return null;
     }
     const { id, label, template, parameters, requireAnyOf, fixedParams } = raw as Record<string, unknown>;
-    if (!isNonEmptyString(id) || !isNonEmptyString(label) || !isNonEmptyString(template)) {
+    const labelText = toUIText(label);
+    if (!isNonEmptyString(id) || labelText === null || !isNonEmptyString(template)) {
         return null;
     }
-    const variant: TypeVariant = { id, label, template };
+    const variant: TypeVariant = { id, label: labelText, template };
     if (Array.isArray(parameters)) {
         variant.parameters = compact(parameters.map(toRequestParam));
     }

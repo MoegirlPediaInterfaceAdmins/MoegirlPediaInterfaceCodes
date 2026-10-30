@@ -1,4 +1,4 @@
-import { isZhHost } from "./api.ts";
+import { getApi, isZhHost } from "./api.ts";
 import {
     CHECKUSER_RECORD_TALK,
     CONVERSION_TABLE_PATTERN,
@@ -14,21 +14,35 @@ import type { QuickRequestContext, RequestTypeDefinition, RequestTypeId, Warning
 
 /**
  * 方针 / 指引修改提醒（editRequestWarning 的迁移）。
- * 旧实现按讨论页命名空间（namespaces: [5]）近似判断且静态提示；
- * 这里改为检查当前页（基页面）的分类是否属于方针 / 指引，命中且用户不在跳过名单时才提醒。
- * 分类读 mw.config 的 wgCategories（当前渲染页的可见分类，零请求）：两个方针分类页
- * 均未挂 __HIDDENCAT__（2026-10 实测），成员必为可见分类、必在其中；入口都在基页上，
- * 渲染页与 ctx.pageName 一致。
+ * 分类读 mw.config 的 wgCategories（当前渲染页的可见分类）：两个方针分类页
+ * 均未挂 __HIDDENCAT__（2026-10 实测），成员必为可见分类、必在其中。
+ * 例外：Gadget-edit 的入口在编辑视图上，而 action=edit 不渲染页面、wgCategories
+ * 为空——此时回退为按标题查分类（clcategories 只列方针/指引两项，轻查询），
+ * 查询失败按未命中处理（宁可少提醒，不因辅助信息阻塞发帖）。
  * @param ctx 打开对话框时收集的上下文
  * @returns 确认项列表；无需提醒时为空数组
  */
-const policyWarning = (ctx: QuickRequestContext): Promise<Warning[]> => {
+const policyWarning = async (ctx: QuickRequestContext): Promise<Warning[]> => {
     if (ctx.userGroups.some((group) => WARNING_SKIP_GROUPS.includes(group))) {
-        return Promise.resolve([]);
+        return [];
     }
-    const categories = mw.config.get("wgCategories");
-    if (!POLICY_CATEGORIES.some((category) => categories.includes(category))) {
-        return Promise.resolve([]);
+    let hit = POLICY_CATEGORIES.some((category) => mw.config.get("wgCategories").includes(category));
+    if (!hit && mw.config.get("wgAction") === "edit") {
+        try {
+            const res = await getApi().post({
+                action: "query",
+                titles: ctx.pageName,
+                prop: "categories",
+                clcategories: POLICY_CATEGORIES.join("|"),
+                formatversion: 2,
+            }) as { query?: { pages?: { categories?: unknown[] }[] } };
+            hit = (res.query?.pages?.[0]?.categories?.length ?? 0) > 0;
+        } catch (error) {
+            console.warn("[QuickRequest] 编辑视图回退查询页面分类失败", error);
+        }
+    }
+    if (!hit) {
+        return [];
     }
     const message = $("<div>").append(
         $("<p>").append(
@@ -116,6 +130,8 @@ const createDefinition: RequestTypeDefinition = {
  * 只追加预载正文）的保存结果一致，也不提供 sectionTitle。
  * 具体申请类型（维护姬/管理员/机器人/通用等 14 个变体，映射 7 个基模板）在配置页的
  * variants 里；站内无辞职模板（辞职历来是自由发帖），本类型只覆盖申请/提名。
+ * 无自有入口：现行申请按钮（Widget:Applybutton）的替换由站内直接调用
+ * window.libQuickRequest 实现（部署前置事项），守卫与其一致（自动确认用户）。
  */
 const userGroupDefinition: RequestTypeDefinition = {
     id: "userGroup",
@@ -169,13 +185,14 @@ const deleteDefinition: RequestTypeDefinition = {
  * 模板正文以 `==提请将[[User:…]]列入破坏者列表==` 开头（2026-10 实测模板源码）——标题由
  * 模板在存盘替换时生成，与申请族相同，走 append、不提供 sectionTitle。版面在模板 doc
  * 标注「目前是」，实际目标以配置页 targetPage 优先（mainDialog），resolveTarget 的返回值
- * 仅作配置缺省时的回退。可见性对齐巡查场景（巡查员/管理员）：Abuse 认定按反破坏方针
- * 在维护组内讨论（至少两名管理在内的五名维护人员同意），提请属维护动作。
+ * 仅作配置缺省时的回退。可见性对齐版面自身的编辑保护（autoconfirmed）——提请环节没有
+ * 用户组限制（反破坏方针限制的是 Abuse 的认定环节）；本类型无自有入口，open 层守卫
+ * 是站内挂载之外的兜底。
  */
 const vandalReportDefinition: RequestTypeDefinition = {
     id: "vandalReport",
     label: wgULS("反破坏举报申请", "反破壞舉報申請"),
-    availability: (ctx) => ctx.userGroups.includes("patroller") || ctx.userGroups.includes("sysop"),
+    availability: (ctx) => ctx.userGroups.includes("autoconfirmed"),
     resolveTarget: () => VANDAL_BOARD,
     postMode: "append",
 };
@@ -185,7 +202,8 @@ const vandalReportDefinition: RequestTypeDefinition = {
  * （记录页自身受 patrolleredit 保护，讨论页无保护；真实话题均在讨论页，2026-10 核实）。
  * 模板正文以 `== 新增查核记录 - {{subst:REVISIONUSER}} - {{subst:LOCALYEAR}}.… ==` 开头
  * ——标题含 subst 魔法字、存盘时才替换，客户端拼不出，走 append、不提供 sectionTitle。
- * 受众为查核员：记录由执行查核的查核员发起增补。
+ * 受众为查核员（记录由执行查核的查核员发起增补）；无自有入口，站内挂载方经
+ * window.libQuickRequest 调起，open 层守卫作兜底。
  */
 const checkuserRecordDefinition: RequestTypeDefinition = {
     id: "checkuserRecord",

@@ -58,9 +58,8 @@ const WARNING_SKIP_GROUPS = ["patroller", "sysop", "techeditor", "interface-admi
 
 /**
  * 章节标题的用户与日期后缀。
- * 「 - <用户名> - <YYYY.MM.DD>」是各版面既有的话题标题格式，日期经 libPrefixNumber 补零，
- * 沿袭自 Gadget-edit / Gadget-requestDeletion 等旧实现（pageInfo 那份重复实现已随本包移除）；
- * 格式变化会影响版面存档与机器人流程。
+ * 「 - <用户名> - <YYYY.MM.DD>」是各版面既有话题的标题格式，日期经 libPrefixNumber 补零，
+ * 沿袭自 Gadget-edit / Gadget-requestDeletion 等旧实现（pageInfo 那份重复实现已随本包移除）。
  * @param userName 用户名
  * @param now 取哪一刻的时间
  * @returns ` - <用户名> - <YYYY.MM.DD>` 后缀
