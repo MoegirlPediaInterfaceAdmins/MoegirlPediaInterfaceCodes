@@ -178,16 +178,18 @@ $(() => (async () => {
             13: { count: 0, redirect: [] },
             14: { count: 0, redirect: [] },
             15: { count: 0, redirect: [] },
+            114: { count: 0, redirect: [] },
+            115: { count: 0, redirect: [] },
+            116: { count: 0, redirect: [] },
+            117: { count: 0, redirect: [] },
+            118: { count: 0, redirect: [] },
+            119: { count: 0, redirect: [] },
             274: { count: 0, redirect: [] },
             275: { count: 0, redirect: [] },
             710: { count: 0, redirect: [] },
             711: { count: 0, redirect: [] },
             828: { count: 0, redirect: [] },
             829: { count: 0, redirect: [] },
-            2300: { count: 0, redirect: [] },
-            2301: { count: 0, redirect: [] },
-            2302: { count: 0, redirect: [] },
-            2303: { count: 0, redirect: [] },
         };
         const global = { redirect: 0 };
         whatembeddedin.text(`共有${list.all.length}个页面嵌入了本页面，其中有${list.redirects.length}个重定向页面。`);
