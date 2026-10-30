@@ -175,12 +175,12 @@
             if (actions.edit === false && talkPage && $editRequestList) {
                 appendRequestLink($editRequestList, {
                     type: "edit",
-                    text: "提出编辑请求",
+                    text: wgULS("提出编辑请求", "提出編輯請求"),
                 });
                 if (isTechPage) {
                     appendRequestLink($editRequestList, {
                         type: "editTech",
-                        text: "提出技术编辑请求",
+                        text: wgULS("提出技术编辑请求", "提出技術編輯請求"),
                     });
                 }
             } else {
@@ -189,7 +189,7 @@
             if (actions.move === false && $moveRequestList) {
                 appendRequestLink($moveRequestList, {
                     type: "move",
-                    text: "提出移动请求",
+                    text: wgULS("提出移动请求", "提出移動請求"),
                 });
             } else {
                 $moveRequestList?.remove();
@@ -197,7 +197,7 @@
             if (actions.create === false && $createRequestList) {
                 appendRequestLink($createRequestList, {
                     type: "create",
-                    text: "提出创建请求",
+                    text: wgULS("提出创建请求", "提出建立請求"),
                 });
             } else {
                 $createRequestList?.remove();
@@ -219,12 +219,12 @@
             const $requestList = $("<ul>").appendTo($protectionInfoContent);
             appendRequestLink($requestList, {
                 type: "edit",
-                text: "提出编辑请求",
+                text: wgULS("提出编辑请求", "提出編輯請求"),
             });
             if (isTechPage) {
                 appendRequestLink($requestList, {
                     type: "editTech",
-                    text: "提出技术编辑请求",
+                    text: wgULS("提出技术编辑请求", "提出技術編輯請求"),
                 });
             }
         }

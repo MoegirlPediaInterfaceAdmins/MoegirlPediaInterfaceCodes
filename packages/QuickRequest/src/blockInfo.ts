@@ -36,11 +36,41 @@ const formatBlockInfo = (user: BlockInfoUser): string | null => {
     return text;
 };
 
+/** list=blocks&bkusers= 返回的单个封禁条目（同账号可并存多个部分封禁；无 formatted 字段）。 */
+interface BlockEntry {
+    /** 封禁编号 */
+    blockid?: number;
+    /** 执行封禁的管理员 */
+    by?: string;
+    /** 封禁原因 */
+    reason?: string;
+    /** 期满时刻（API 原始形态：infinite 或 ISO 时间） */
+    expiry?: string;
+}
+
 /**
- * 查询当前用户的封禁状态并拼出封禁信息。与现行 Widget:BlockedUserHelp 是同一条查询
- * （action=query&list=users&usprop=blockinfo，按当前用户名查），行为完全对齐。
+ * 把 blockinfo 主封禁之外的并行封禁追加为列表行（第五轮评审补充：同账号可并存
+ * 多个部分封禁，blockinfo 只报一条）。blocks 查询没有本地化格式化的时间字段
+ * （区别于 users 查询的 *formatted），期满如实使用 API 原始值；原因处理与主封禁一致。
+ * @param blocks 并行封禁条目（调用方已按主封禁 blockid 去重）
+ * @returns 追加行；空清单为空串
+ */
+const formatExtraBlocks = (blocks: BlockEntry[]): string => blocks
+    .filter((block): block is BlockEntry & { blockid: number } => block.blockid !== undefined)
+    .map((block) => {
+        const reason = block.reason?.replaceAll("\n", "") ?? "";
+        const expiry = block.expiry === "infinite" || block.expiry === undefined ? "无限期" : `期满 ${block.expiry}`;
+        return `* 并行封禁 #${block.blockid}：${expiry}，原因：${reason === "" ? "未给出原因" : reason}`;
+    })
+    .join("\n");
+
+/**
+ * 查询当前用户的封禁状态并拼出封禁信息。主查询与现行 Widget:BlockedUserHelp 是同一条
+ * （action=query&list=users&usprop=blockinfo，按当前用户名查）；在此之上补查
+ * list=blocks&bkusers= 列出同账号并行的其余封禁（失败或为空不影响主信息）。
+ * 注：IP 侧自动封禁的受害者在客户端拿不到自身 IP，无法枚举，不在本查询覆盖内。
  * @returns 封禁信息文本；当前未被账号级封禁时为 null
- * @throws 查询失败（网络错误等）时抛出
+ * @throws 主查询失败（网络错误等）时抛出
  */
 const fetchBlockInfoText = async (): Promise<string | null> => {
     const userName = (mw.config.get("wgUserName") as string | null | undefined) ?? "";
@@ -51,7 +81,26 @@ const fetchBlockInfoText = async (): Promise<string | null> => {
         ususers: userName,
         formatversion: 2,
     }) as { query?: { users?: BlockInfoUser[] } };
-    return formatBlockInfo(res.query?.users?.[0] ?? {});
+    const user = res.query?.users?.[0] ?? {};
+    const primary = formatBlockInfo(user);
+    if (primary === null) {
+        return null;
+    }
+    let extras: BlockEntry[] = [];
+    try {
+        const blocksRes = await getApi().post({
+            action: "query",
+            list: "blocks",
+            bkusers: userName,
+            bkprop: "id|by|reason|expiry",
+            formatversion: 2,
+        }) as { query?: { blocks?: BlockEntry[] } };
+        extras = (blocksRes.query?.blocks ?? []).filter((block) => block.blockid !== user.blockid);
+    } catch (error) {
+        console.warn("[QuickRequest] 并行封禁查询失败", error);
+    }
+    const extraText = formatExtraBlocks(extras);
+    return extraText === "" ? primary : `${primary}\n${extraText}`;
 };
 
-export { type BlockInfoUser, fetchBlockInfoText, formatBlockInfo };
+export { type BlockEntry, type BlockInfoUser, fetchBlockInfoText, formatBlockInfo };

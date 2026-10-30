@@ -7,6 +7,7 @@ import type { ParamField } from "./fields.ts";
 import { buildSubmitText, buildTemplateWikitext } from "./wikitext.ts";
 import { showError } from "./messageDialog.ts";
 import { setPreference } from "./storage.ts";
+import { resolveUIText } from "./uitext.ts";
 import type {
     ConfigResult,
     MainDialogData,
@@ -194,6 +195,9 @@ class MainDialog extends OO.ui.ProcessDialog {
                     targetPage: submission.targetPage,
                     ...submission.getSectionTitle === undefined ? {} : { getSectionTitle: submission.getSectionTitle },
                     ...submission.postMode === undefined ? {} : { postMode: submission.postMode },
+                    // allowCreate 同样由 collectSubmission 产出（banAppeal 建页），漏传会让
+                    // append 退回 nocreate、新用户讨论页建页失败
+                    ...submission.allowCreate === undefined ? {} : { allowCreate: submission.allowCreate },
                     editSummary: submission.editSummary,
                     api: this.api,
                     targetBase: this.targetBase,
@@ -240,7 +244,7 @@ class MainDialog extends OO.ui.ProcessDialog {
         let initialSpec: ActiveSpec | TemplateActiveSpec;
         if (variants.length > 0) {
             this.variantInput = new OO.ui.DropdownInputWidget({
-                options: variants.map(({ id, label }) => ({ data: id, label })),
+                options: variants.map(({ id, label }) => ({ data: id, label: resolveUIText(label) })),
                 value: variants[0]?.id,
             });
             this.variantInput.on("change", () => {
@@ -345,7 +349,10 @@ class MainDialog extends OO.ui.ProcessDialog {
         this.paramFieldset.addItems(this.paramFields.map(({ layout }) => layout));
 
         const groupLabels = (spec.requireAnyOf ?? [])
-            .map((key) => spec.parameters?.find((param) => param.key === key)?.label ?? key);
+            .map((key) => {
+                const label = spec.parameters?.find((param) => param.key === key)?.label;
+                return label === undefined ? key : resolveUIText(label);
+            });
         this.groupHint.setLabel(groupLabels.length > 0 ? wgULS(`「${groupLabels.join("」「")}」至少填写一项`, `「${groupLabels.join("」「")}」至少填寫一項`) : "");
         this.onFormChanged();
     }
