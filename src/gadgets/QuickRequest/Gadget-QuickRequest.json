@@ -1,0 +1,676 @@
+{
+    "types": {
+        "edit": {
+            "template": "Template:编辑请求",
+            "requireAnyOf": [
+                "original",
+                "new"
+            ],
+            "parameters": [
+                {
+                    "key": "original",
+                    "label": {
+                        "hans": "需要删除/修改的旧内容",
+                        "hant": "需要刪除/修改的舊內容"
+                    },
+                    "type": "multiline"
+                },
+                {
+                    "key": "new",
+                    "label": {
+                        "hans": "需要新增/修改后的内容",
+                        "hant": "需要新增/修改後的內容"
+                    },
+                    "type": "multiline"
+                },
+                {
+                    "key": "reason",
+                    "label": "修改原因",
+                    "type": "text"
+                }
+            ]
+        },
+        "editConversiontable": {
+            "template": "Template:编辑请求/Conversiontable",
+            "parameters": [
+                {
+                    "key": "original1",
+                    "label": {
+                        "hans": "「与错误转换相关的」旧内容",
+                        "hant": "「與錯誤轉換相關的」舊內容"
+                    },
+                    "type": "multiline"
+                },
+                {
+                    "key": "new1",
+                    "label": {
+                        "hans": "「与错误转换相关的」新内容",
+                        "hant": "「與錯誤轉換相關的」新內容"
+                    },
+                    "type": "multiline"
+                },
+                {
+                    "key": "original2",
+                    "label": {
+                        "hans": "「地区译名不转换」旧内容",
+                        "hant": "「地區譯名不轉換」舊內容"
+                    },
+                    "type": "multiline"
+                },
+                {
+                    "key": "new2",
+                    "label": {
+                        "hans": "「地区译名不转换」新内容",
+                        "hant": "「地區譯名不轉換」新內容"
+                    },
+                    "type": "multiline"
+                },
+                {
+                    "key": "other",
+                    "label": "其他需求",
+                    "type": "multiline"
+                },
+                {
+                    "key": "reason",
+                    "label": "修改原因",
+                    "type": "text"
+                }
+            ]
+        },
+        "move": {
+            "template": "Template:移动请求",
+            "parameters": [
+                {
+                    "key": "original",
+                    "label": {
+                        "hans": "移动前标题",
+                        "hant": "移動前標題"
+                    },
+                    "type": "text",
+                    "required": true,
+                    "auto": "currentPage",
+                    "readOnly": true,
+                    "hidden": true
+                },
+                {
+                    "key": "new",
+                    "label": {
+                        "hans": "移动后标题",
+                        "hant": "移動後標題"
+                    },
+                    "type": "page",
+                    "required": true,
+                    "auto": "currentPage"
+                },
+                {
+                    "key": "reason",
+                    "label": {
+                        "hans": "移动原因",
+                        "hant": "移動原因"
+                    },
+                    "type": "multiline",
+                    "required": true
+                }
+            ]
+        },
+        "create": {
+            "template": "Template:创建请求",
+            "parameters": [
+                {
+                    "key": "new",
+                    "label": {
+                        "hans": "申请创建的标题",
+                        "hant": "申請建立的標題"
+                    },
+                    "type": "page",
+                    "required": true,
+                    "auto": "currentPage",
+                    "readOnly": true
+                },
+                {
+                    "key": "reason",
+                    "label": {
+                        "hans": "申请原因",
+                        "hant": "申請原因"
+                    },
+                    "type": "multiline",
+                    "required": true
+                }
+            ]
+        },
+        "banAppeal": {
+            "template": "Template:BlockedUserHelp/request",
+            "parameters": [
+                {
+                    "key": "1",
+                    "label": {
+                        "hans": "封禁信息（自动填写，请勿修改）",
+                        "hant": "封鎖資訊（自動填寫，請勿修改）"
+                    },
+                    "type": "multiline",
+                    "readOnly": true
+                },
+                {
+                    "key": "reason",
+                    "label": "求助理由",
+                    "type": "multiline",
+                    "hint": {
+                        "hans": "如果您是被防滥用过滤器封禁的，请只填写类似「希望检查缘由」的文字，以免再次被防滥用过滤器阻止编辑。",
+                        "hant": "如果您是被防濫用過濾器封鎖的，請只填寫類似「希望檢查緣由」的文字，以免再次被防濫用過濾器阻止編輯。"
+                    }
+                }
+            ]
+        },
+        "vandalReport": {
+            "template": "Template:编辑请求/反破坏举报申请",
+            "targetPage": "萌娘百科_talk:长期破坏者",
+            "parameters": [
+                {
+                    "key": "1",
+                    "label": {
+                        "hans": "被举报者用户名（不带 User:，区分繁简）",
+                        "hant": "被舉報者使用者名稱（不帶 User:，區分繁簡）"
+                    },
+                    "type": "user",
+                    "required": true
+                },
+                {
+                    "key": "2",
+                    "label": {
+                        "hans": "申请理由（不必签名）",
+                        "hant": "申請理由（不必簽名）"
+                    },
+                    "type": "multiline",
+                    "required": true
+                }
+            ]
+        },
+        "checkuserRecord": {
+            "template": "Template:编辑请求/用户查核记录",
+            "parameters": [
+                {
+                    "key": "日期",
+                    "label": "查核日期（如 2026.10.27）",
+                    "type": "text",
+                    "required": true
+                },
+                {
+                    "key": "申请者",
+                    "label": {
+                        "hans": "查核申请者用户名（不带 User:）",
+                        "hant": "查核申請者使用者名稱（不帶 User:）"
+                    },
+                    "type": "user",
+                    "required": true
+                },
+                {
+                    "key": "执行人",
+                    "label": {
+                        "hans": "执行人用户名（不带 User:）",
+                        "hant": "執行人使用者名稱（不帶 User:）"
+                    },
+                    "type": "user",
+                    "required": true
+                },
+                {
+                    "key": "被查核对象",
+                    "label": {
+                        "hans": "被查核对象（完整内部链接，每行一个，如 [[U:示例用户]]）",
+                        "hant": "被查核對象（完整內部連結，每行一個，如 [[U:示例使用者]]）"
+                    },
+                    "type": "multiline",
+                    "required": true
+                },
+                {
+                    "key": "事由",
+                    "label": "查核的事由/原因",
+                    "type": "text",
+                    "required": true
+                },
+                {
+                    "key": "结果",
+                    "label": {
+                        "hans": "查核结果",
+                        "hant": "查核結果"
+                    },
+                    "type": "text",
+                    "required": true
+                },
+                {
+                    "key": "备注",
+                    "label": {
+                        "hans": "备注（是否为维护组内部申请，选填）",
+                        "hant": "備註（是否為維護組內部申請，選填）"
+                    },
+                    "type": "text"
+                },
+                {
+                    "key": "reason",
+                    "label": "修改原因",
+                    "type": "text"
+                }
+            ]
+        },
+        "editTech": {
+            "template": "Template:编辑请求/技术",
+            "parameters": [
+                {
+                    "key": "sandbox",
+                    "label": {
+                        "hans": "沙盒版本页面",
+                        "hant": "沙盒版本頁面"
+                    },
+                    "type": "page",
+                    "required": true
+                },
+                {
+                    "key": "test",
+                    "label": {
+                        "hans": "测试用例页面（选填，萌百经常没有）",
+                        "hant": "測試用例頁面（選填，萌百經常沒有）"
+                    },
+                    "type": "page"
+                },
+                {
+                    "key": "reason",
+                    "label": "修改原因",
+                    "type": "text"
+                }
+            ]
+        },
+        "userGroup": {
+            "variants": [
+                {
+                    "id": "patroller",
+                    "label": {
+                        "hans": "维护姬申请",
+                        "hant": "維護姬申請"
+                    },
+                    "template": "Template:权限申请/维护姬申请",
+                    "parameters": [
+                        {
+                            "key": "1",
+                            "label": {
+                                "hans": "申请理由（不必签名）",
+                                "hant": "申請理由（不必簽名）"
+                            },
+                            "type": "multiline",
+                            "required": true
+                        }
+                    ]
+                },
+                {
+                    "id": "sysop",
+                    "label": {
+                        "hans": "管理员申请",
+                        "hant": "管理員申請"
+                    },
+                    "template": "Template:权限申请/管理员申请",
+                    "parameters": [
+                        {
+                            "key": "1",
+                            "label": {
+                                "hans": "申请理由（不必签名）",
+                                "hant": "申請理由（不必簽名）"
+                            },
+                            "type": "multiline",
+                            "required": true
+                        }
+                    ]
+                },
+                {
+                    "id": "checkuser",
+                    "label": {
+                        "hans": "用户查核员申请",
+                        "hant": "使用者查核員申請"
+                    },
+                    "template": "Template:权限申请/查核监督申请",
+                    "fixedParams": {
+                        "用户组": "用户查核员"
+                    },
+                    "parameters": [
+                        {
+                            "key": "1",
+                            "label": {
+                                "hans": "申请理由（不必签名）",
+                                "hant": "申請理由（不必簽名）"
+                            },
+                            "type": "multiline",
+                            "required": true
+                        }
+                    ]
+                },
+                {
+                    "id": "oversight",
+                    "label": {
+                        "hans": "监督员申请",
+                        "hant": "監督員申請"
+                    },
+                    "template": "Template:权限申请/查核监督申请",
+                    "fixedParams": {
+                        "用户组": "监督员"
+                    },
+                    "parameters": [
+                        {
+                            "key": "1",
+                            "label": {
+                                "hans": "申请理由（不必签名）",
+                                "hant": "申請理由（不必簽名）"
+                            },
+                            "type": "multiline",
+                            "required": true
+                        }
+                    ]
+                },
+                {
+                    "id": "interfaceAdmin",
+                    "label": {
+                        "hans": "界面管理员申请",
+                        "hant": "介面管理員申請"
+                    },
+                    "template": "Template:权限申请/界面管理员申请",
+                    "parameters": [
+                        {
+                            "key": "1",
+                            "label": {
+                                "hans": "申请理由（不必签名）",
+                                "hant": "申請理由（不必簽名）"
+                            },
+                            "type": "multiline",
+                            "required": true
+                        }
+                    ]
+                },
+                {
+                    "id": "bot",
+                    "label": {
+                        "hans": "机器人申请",
+                        "hant": "機器人申請"
+                    },
+                    "template": "Template:权限申请/机器人申请",
+                    "fixedParams": {
+                        "用户组": "机器人",
+                        "追加任务": "false"
+                    },
+                    "parameters": [
+                        {
+                            "key": "1",
+                            "label": {
+                                "hans": "机器人账户名（不带 User:）",
+                                "hant": "機器人帳戶名（不帶 User:）"
+                            },
+                            "type": "user",
+                            "required": true
+                        },
+                        {
+                            "key": "2",
+                            "label": {
+                                "hans": "申请理由（不必签名）",
+                                "hant": "申請理由（不必簽名）"
+                            },
+                            "type": "multiline",
+                            "required": true
+                        },
+                        {
+                            "key": "3",
+                            "label": {
+                                "hans": "附加申请的用户组（可填维护姬、管理员等，选填）",
+                                "hant": "附加申請的使用者組（可填維護姬、管理員等，選填）"
+                            },
+                            "type": "text"
+                        }
+                    ]
+                },
+                {
+                    "id": "botTask",
+                    "label": {
+                        "hans": "机器人追加任务申请",
+                        "hant": "機器人追加任務申請"
+                    },
+                    "template": "Template:权限申请/机器人申请",
+                    "fixedParams": {
+                        "用户组": "机器人"
+                    },
+                    "parameters": [
+                        {
+                            "key": "1",
+                            "label": {
+                                "hans": "机器人账户名（不带 User:）",
+                                "hant": "機器人帳戶名（不帶 User:）"
+                            },
+                            "type": "user",
+                            "required": true
+                        },
+                        {
+                            "key": "2",
+                            "label": {
+                                "hans": "追加的任务与理由（不必签名）",
+                                "hant": "追加的任務與理由（不必簽名）"
+                            },
+                            "type": "multiline",
+                            "required": true
+                        },
+                        {
+                            "key": "3",
+                            "label": {
+                                "hans": "附加申请的用户组（可填维护姬、管理员等，选填）",
+                                "hant": "附加申請的使用者組（可填維護姬、管理員等，選填）"
+                            },
+                            "type": "text"
+                        }
+                    ]
+                },
+                {
+                    "id": "botUser",
+                    "label": {
+                        "hans": "机器用户申请",
+                        "hant": "機器使用者申請"
+                    },
+                    "template": "Template:权限申请/机器人申请",
+                    "fixedParams": {
+                        "用户组": "机器用户",
+                        "追加任务": "false"
+                    },
+                    "parameters": [
+                        {
+                            "key": "1",
+                            "label": {
+                                "hans": "机器用户账户名（不带 User:）",
+                                "hant": "機器使用者帳戶名（不帶 User:）"
+                            },
+                            "type": "user",
+                            "required": true
+                        },
+                        {
+                            "key": "2",
+                            "label": {
+                                "hans": "申请理由与申请时长（不必签名）",
+                                "hant": "申請理由與申請時長（不必簽名）"
+                            },
+                            "type": "multiline",
+                            "required": true
+                        }
+                    ]
+                },
+                {
+                    "id": "fileMaintainer",
+                    "label": {
+                        "hans": "文件维护员申请",
+                        "hant": "檔案維護員申請"
+                    },
+                    "template": "Template:权限申请/文件维护申请",
+                    "parameters": [
+                        {
+                            "key": "time",
+                            "label": {
+                                "hans": "申请时长（如 12小时、1周，选填，缺省 12小时）",
+                                "hant": "申請時長（如 12小時、1週，選填，缺省 12小時）"
+                            },
+                            "type": "text"
+                        },
+                        {
+                            "key": "1",
+                            "label": {
+                                "hans": "申请理由（不必签名）",
+                                "hant": "申請理由（不必簽名）"
+                            },
+                            "type": "multiline",
+                            "required": true
+                        }
+                    ]
+                },
+                {
+                    "id": "goodEditor",
+                    "label": {
+                        "hans": "优质编辑者申请/提名",
+                        "hant": "優質編輯者申請/提名"
+                    },
+                    "template": "Template:权限申请/通用申请",
+                    "fixedParams": {
+                        "用户组": "优质编辑者"
+                    },
+                    "parameters": [
+                        {
+                            "key": "1",
+                            "label": {
+                                "hans": "用户名（申请填本人，提名填对方；不带 User:）",
+                                "hant": "使用者名稱（申請填本人，提名填對方；不帶 User:）"
+                            },
+                            "type": "user",
+                            "required": true
+                        },
+                        {
+                            "key": "2",
+                            "label": {
+                                "hans": "申请/提名理由（不必签名）",
+                                "hant": "申請/提名理由（不必簽名）"
+                            },
+                            "type": "multiline",
+                            "required": true
+                        }
+                    ]
+                },
+                {
+                    "id": "techEditor",
+                    "label": {
+                        "hans": "技术编辑员申请/提名",
+                        "hant": "技術編輯員申請/提名"
+                    },
+                    "template": "Template:权限申请/通用申请",
+                    "fixedParams": {
+                        "用户组": "技术编辑员"
+                    },
+                    "parameters": [
+                        {
+                            "key": "1",
+                            "label": {
+                                "hans": "被提名者用户名（留空为本人申请；不带 User:）",
+                                "hant": "被提名者使用者名稱（留空為本人申請；不帶 User:）"
+                            },
+                            "type": "user"
+                        },
+                        {
+                            "key": "2",
+                            "label": {
+                                "hans": "申请/提名理由（不必签名）",
+                                "hant": "申請/提名理由（不必簽名）"
+                            },
+                            "type": "multiline",
+                            "required": true
+                        }
+                    ]
+                },
+                {
+                    "id": "honorMaintainer",
+                    "label": {
+                        "hans": "荣誉维护人员申请/提名",
+                        "hant": "榮譽維護人員申請/提名"
+                    },
+                    "template": "Template:权限申请/通用申请",
+                    "fixedParams": {
+                        "用户组": "荣誉维护人员"
+                    },
+                    "parameters": [
+                        {
+                            "key": "1",
+                            "label": {
+                                "hans": "被提名者用户名（留空为本人申请；不带 User:）",
+                                "hant": "被提名者使用者名稱（留空為本人申請；不帶 User:）"
+                            },
+                            "type": "user"
+                        },
+                        {
+                            "key": "2",
+                            "label": {
+                                "hans": "申请/提名理由（不必签名）",
+                                "hant": "申請/提名理由（不必簽名）"
+                            },
+                            "type": "multiline",
+                            "required": true
+                        }
+                    ]
+                },
+                {
+                    "id": "ipbe",
+                    "label": {
+                        "hans": "IP封禁豁免者申请/提名",
+                        "hant": "IP封鎖豁免者申請/提名"
+                    },
+                    "template": "Template:权限申请/通用申请",
+                    "fixedParams": {
+                        "用户组": "IP封禁豁免者"
+                    },
+                    "parameters": [
+                        {
+                            "key": "1",
+                            "label": {
+                                "hans": "被提名者用户名（留空为本人申请；不带 User:）",
+                                "hant": "被提名者使用者名稱（留空為本人申請；不帶 User:）"
+                            },
+                            "type": "user"
+                        },
+                        {
+                            "key": "2",
+                            "label": {
+                                "hans": "申请/提名理由（不必签名）",
+                                "hant": "申請/提名理由（不必簽名）"
+                            },
+                            "type": "multiline",
+                            "required": true
+                        }
+                    ]
+                },
+                {
+                    "id": "manualConfirmed",
+                    "label": {
+                        "hans": "手动确认用户申请/提名",
+                        "hant": "手動確認使用者申請/提名"
+                    },
+                    "template": "Template:权限申请/通用申请",
+                    "fixedParams": {
+                        "用户组": "手动确认用户"
+                    },
+                    "parameters": [
+                        {
+                            "key": "1",
+                            "label": {
+                                "hans": "被提名者用户名（留空为本人申请；不带 User:）",
+                                "hant": "被提名者使用者名稱（留空為本人申請；不帶 User:）"
+                            },
+                            "type": "user"
+                        },
+                        {
+                            "key": "2",
+                            "label": {
+                                "hans": "申请/提名理由（不必签名；申请共享站手动确认用户请注明）",
+                                "hant": "申請/提名理由（不必簽名；申請共享站手動確認使用者請註明）"
+                            },
+                            "type": "multiline",
+                            "required": true
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+}

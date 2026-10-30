@@ -62,7 +62,6 @@
     - usergroup
     - queryContributions
     - userpageDelete
-    - requestDeletion
 
 - name: editing
   gadgets:
@@ -124,7 +123,6 @@
     - vector-2022-styles
     - moeskin-styles
     - edit
-    - editRequestWarning
     - site-lib
     - libBottomRightCorner
     - libOOUIDialog
@@ -164,3 +162,4 @@
     - prism-language-perl
     - prism-language-python
     - prism-language-ruby
+    - QuickRequest

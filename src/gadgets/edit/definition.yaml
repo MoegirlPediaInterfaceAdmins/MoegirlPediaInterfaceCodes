@@ -28,6 +28,7 @@ peers: []
 
 dependencies:
   - ext.gadget.site-lib
+  - ext.gadget.QuickRequest
 
 _sites:
   - zh

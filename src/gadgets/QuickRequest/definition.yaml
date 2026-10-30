@@ -1,6 +1,6 @@
 ResourceLoader: true
 
-hidden: false
+hidden: true
 
 default: true
 
@@ -26,19 +26,22 @@ rights:
 peers: []
 
 dependencies:
-  - ext.gadget.libOOUIDialog
-  - ext.gadget.site-lib
   - ext.gadget.LocalObjectStorage
+  - ext.gadget.site-lib
   - mediawiki.api
   - mediawiki.ForeignApi
   - mediawiki.user
   - mediawiki.util
+  - mediawiki.widgets
+  - mediawiki.widgets.UserInputWidget
+  - oojs-ui
 
 _sites:
   - zh
   - commons
 
-_section: user
+_section: system
 
 _files:
-  - Gadget-requestDeletion.js
+  - Gadget-QuickRequest.js
+  - Gadget-QuickRequest.json
