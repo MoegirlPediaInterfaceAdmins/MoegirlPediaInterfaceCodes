@@ -72,3 +72,14 @@ describe("阶段 5 类型的注册记录", () => {
         expect(definition.sectionTitle?.(context)).toBe("编辑请求 - Someone - 2026.10.29");
     });
 });
+
+describe("章节标题的日期补零", () => {
+    it("个位数月/日经 libPrefixNumber 补零为两位", () => {
+        const editDefinition = REQUEST_TYPES.edit;
+        if (editDefinition === undefined) {
+            throw new Error("edit 类型未注册");
+        }
+        expect(editDefinition.sectionTitle?.({ ...context, now: new Date(2026, 0, 5) })).toBe("编辑请求 - Someone - 2026.01.05");
+        expect(REQUEST_TYPES.move?.sectionTitle?.({ ...context, now: new Date(2026, 10, 1) })).toBe("移动请求 - Someone - 2026.11.01");
+    });
+});
