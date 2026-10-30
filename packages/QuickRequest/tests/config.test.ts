@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { readFileSync } from "node:fs";
 import { findTypeConfig, isGroupSatisfied, parseConfig } from "../src/config.ts";
 
 const rawConfig = JSON.stringify({
@@ -186,6 +187,69 @@ describe("parseConfig", () => {
         }
     });
 
+    it("label/hint/placeholder 接受 {hans, hant} 对象形态，缺 hant 回落 hans（渲染层处理）", () => {
+        const result = parseConfig(JSON.stringify({
+            types: {
+                edit: {
+                    template: "Template:编辑请求",
+                    parameters: [
+                        { key: "original", label: { hans: "旧内容", hant: "舊內容" }, hint: { hans: "提示" }, placeholder: { hans: "占位", hant: "佔位" } },
+                        { key: "reason", label: "修改原因" },
+                    ],
+                },
+            },
+        }));
+        expect(result.ok).toBe(true);
+        if (result.ok) {
+            const params = result.config.types.edit.parameters ?? [];
+            expect(params[0]?.label).toEqual({ hans: "旧内容", hant: "舊內容" });
+            expect(params[0]?.hint).toEqual({ hans: "提示" });
+            expect(params[0]?.placeholder).toEqual({ hans: "占位", hant: "佔位" });
+            expect(params[1]?.label).toBe("修改原因");
+        }
+    });
+
+    it("对象形态缺 hans（或空串）的 label 非法——整条参数丢弃；hint/placeholder 非法只丢自身", () => {
+        const result = parseConfig(JSON.stringify({
+            types: {
+                edit: {
+                    template: "Template:编辑请求",
+                    parameters: [
+                        { key: "bad1", label: { hant: "只有繁体" } },
+                        { key: "bad2", label: { hans: "" } },
+                        { key: "ok", label: "保留项", hint: { hant: "只有繁体的提示" }, placeholder: { hant: "佔位" } },
+                    ],
+                },
+            },
+        }));
+        expect(result.ok).toBe(true);
+        if (result.ok) {
+            const params = result.config.types.edit.parameters ?? [];
+            expect(params).toHaveLength(1);
+            expect(params[0]?.key).toBe("ok");
+            expect(params[0]?.hint).toBeUndefined();
+            expect(params[0]?.placeholder).toBeUndefined();
+        }
+    });
+
+    it("变体的 label 同样接受对象形态，非法时该变体整条丢弃", () => {
+        const result = parseConfig(JSON.stringify({
+            types: {
+                userGroup: {
+                    variants: [
+                        { id: "ok", label: { hans: "维护姬申请", hant: "維護姬申請" }, template: "Template:权限申请/维护姬申请" },
+                        { id: "bad", label: { hant: "只有繁体" }, template: "Template:权限申请/管理员申请" },
+                    ],
+                },
+            },
+        }));
+        expect(result.ok).toBe(true);
+        if (result.ok) {
+            expect(result.config.types.userGroup.variants).toHaveLength(1);
+            expect(result.config.types.userGroup.variants?.[0]?.label).toEqual({ hans: "维护姬申请", hant: "維護姬申請" });
+        }
+    });
+
     it("targetPage 不替代 template/variants 的存在性要求", () => {
         const result = parseConfig(JSON.stringify({
             types: {
@@ -194,6 +258,19 @@ describe("parseConfig", () => {
         }));
         // 唯一条目因无 template/variants 被丢弃，类型列表为空 → 判为失败
         expect(result.ok).toBe(false);
+    });
+
+    it("随包部署的 Gadget-QuickRequest.json 可整页解析且类型齐全", () => {
+        // 守门：配置页随仓库部署（不经站内二次编辑），语法或字段错误应在提交前暴露
+        const raw = readFileSync(new URL("../../../src/gadgets/QuickRequest/Gadget-QuickRequest.json", import.meta.url), "utf8");
+        const result = parseConfig(raw);
+        expect(result.ok).toBe(true);
+        if (result.ok) {
+            for (const id of ["edit", "editConversiontable", "move", "create", "banAppeal", "vandalReport", "checkuserRecord", "editTech", "userGroup"]) {
+                expect(result.config.types[id], `${id} 类型条目缺失`).toBeDefined();
+            }
+            expect(result.config.types.userGroup.variants).toHaveLength(14);
+        }
     });
 });
 

@@ -1,35 +1,6 @@
 import { fetchBlockInfoText } from "./blockInfo.ts";
-import { BOARD_PREFIX, CHECKUSER_RECORD_PAGE, CHECKUSER_RECORD_TALK, RIGHTS_BOARD } from "./constants.ts";
+import { BOARD_PREFIX } from "./constants.ts";
 import { toErrorMessage } from "./errors.ts";
-import { buildContext, REQUEST_TYPES } from "./registry.ts";
-
-/**
- * 权限变更版的「发起权限申请」入口（p-cactions，阶段 2）。
- * 现行申请按钮由页顶模板渲染（Module:权限申请按钮 生成 URL 预载链接），
- * 替换为 QuickRequest 需要站内配合，列入部署前置事项；在此之前本入口与其并存。
- * 可用性沿用 Widget:Applybutton 的守卫：已登录（gadget 的 rights: [edit] 已保证）
- * 且为自动确认用户——不满足时入口不出现。
- */
-const mountUserGroupEntry = (): void => {
-    if (mw.config.get("wgPageName") !== RIGHTS_BOARD) {
-        return;
-    }
-    // 本包以 rights: [edit] 加载，执行到这里必为有名用户；available 的 autoconfirmed
-    // 条件与现行申请按钮（Widget:Applybutton）的守卫一致
-    const definition = REQUEST_TYPES.userGroup;
-    if (!definition?.availability(buildContext((mw.config.get("wgUserName") as string | null | undefined) ?? ""))) {
-        return;
-    }
-    const link = mw.util.addPortletLink("p-cactions", "#", wgULS("发起权限申请", "發起權限申請"), "ca-quickrequest-usergroup");
-    if (!link) {
-        return;
-    }
-    // window.libQuickRequest 在 index.ts 末尾才赋值，挂载早于赋值——到点击时才解引用
-    $(link).on("click", (event) => {
-        event.preventDefault();
-        window.libQuickRequest?.open("userGroup");
-    });
-};
 
 /**
  * 封禁提示屏上的「寻求帮助」入口（阶段 3）。
@@ -94,59 +65,13 @@ const mountDeleteEntry = (): void => {
 };
 
 /**
- * 「反破坏举报申请」入口（阶段 5）：挂在用户页与用户讨论页的 p-cactions。
- * 可见性为巡查员/管理员（Abuse 认定按反破坏方针在维护组内讨论，提请属巡查/维护动作）；
- * 被举报者按页面的相关用户（wgRelevantUserName——用户子页面亦指向页面主人）预填为
- * 位置参数 1，可改填（如举报相关分身）。实际发帖版面以配置页 targetPage 为准。
+ * QuickRequest 自有入口的挂载器列表（封禁提示屏「寻求帮助」、「提出删除请求」）。
+ * 权限申请（userGroup）、反破坏举报（vandalReport）、新增查核记录（checkuserRecord）
+ * 不设侧边栏入口：这三类的可见性属站内挂载决策，由 Widget/模板直接调用
+ * window.libQuickRequest.open(...) 实现各自的入口（部署前置事项，与配置页同批）；
+ * open 层仍保有各自的 availability 守卫。
  */
-const mountVandalReportEntry = (): void => {
-    const { wgNamespaceNumber, wgRelevantUserName } = mw.config.get(["wgNamespaceNumber", "wgRelevantUserName"]);
-    if (wgNamespaceNumber !== 2 && wgNamespaceNumber !== 3) {
-        return;
-    }
-    const definition = REQUEST_TYPES.vandalReport;
-    if (!definition?.availability(buildContext((mw.config.get("wgUserName") as string | null | undefined) ?? ""))) {
-        return;
-    }
-    const link = mw.util.addPortletLink("p-cactions", "#", wgULS("反破坏举报申请", "反破壞舉報申請"), "ca-quickrequest-vandal-report", wgULS("提请将此用户列入破坏者列表", "提請將此使用者列入破壞者列表"));
-    if (!link) {
-        return;
-    }
-    $(link).on("click", (event) => {
-        event.preventDefault();
-        window.libQuickRequest?.open("vandalReport", typeof wgRelevantUserName === "string" ? { 1: wgRelevantUserName } : undefined);
-    });
-};
-
-/**
- * 「新增查核记录」入口（阶段 5）：挂在用户查核记录页及其讨论页的 p-cactions，
- * 仅查核员可见（记录由执行查核的查核员发起增补，经讨论页的编辑请求落盘）。
- * 目标页固定为讨论页（resolveTarget），与挂载页面无关——在记录页上点击同样发到讨论页。
- */
-const mountCheckuserRecordEntry = (): void => {
-    const { wgPageName } = mw.config.get(["wgPageName"]);
-    if (wgPageName !== CHECKUSER_RECORD_PAGE && wgPageName !== CHECKUSER_RECORD_TALK) {
-        return;
-    }
-    const definition = REQUEST_TYPES.checkuserRecord;
-    if (!definition?.availability(buildContext((mw.config.get("wgUserName") as string | null | undefined) ?? ""))) {
-        return;
-    }
-    const link = mw.util.addPortletLink("p-cactions", "#", wgULS("新增查核记录", "新增查核記錄"), "ca-quickrequest-checkuser-record", wgULS("在用户查核记录版面发起新增记录请求", "在用戶查核記錄版面發起新增記錄請求"));
-    if (!link) {
-        return;
-    }
-    $(link).on("click", (event) => {
-        event.preventDefault();
-        window.libQuickRequest?.open("checkuserRecord");
-    });
-};
-
-/**
- * QuickRequest 自有入口的挂载器列表（权限变更版「发起权限申请」、封禁提示屏「寻求帮助」、
- * 「提出删除请求」、用户页「反破坏举报申请」、查核记录页「新增查核记录」）。
- */
-const entryMounters: (() => void)[] = [mountUserGroupEntry, mountBanAppealEntry, mountDeleteEntry, mountVandalReportEntry, mountCheckuserRecordEntry];
+const entryMounters: (() => void)[] = [mountBanAppealEntry, mountDeleteEntry];
 
 /**
  * 挂载全部自有入口。index 在模块求值时调用一次。

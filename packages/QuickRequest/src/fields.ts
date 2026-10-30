@@ -1,4 +1,5 @@
 import type { RequestParam } from "./types.ts";
+import { resolveUIText } from "./uitext.ts";
 
 /** 参数控件：文本类输入框、下拉框或复选框。 */
 type ParamWidget = OO.ui.TextInputWidget | OO.ui.DropdownInputWidget | OO.ui.CheckboxInputWidget;
@@ -31,7 +32,7 @@ interface ParamField {
  */
 const createParamWidget = (param: RequestParam, $overlay: JQuery): ParamWidget => {
     const value = param.default ?? "";
-    const placeholder = param.placeholder === undefined ? {} : { placeholder: param.placeholder };
+    const placeholder = param.placeholder === undefined ? {} : { placeholder: resolveUIText(param.placeholder) };
     switch (param.type ?? "text") {
         case "page":
             return new mw.widgets.TitleInputWidget({ value, suggestions: true, $overlay });
@@ -91,9 +92,9 @@ const createParamField = (param: RequestParam, $overlay: JQuery, onChange: () =>
             }
             : undefined,
         layout: new OO.ui.FieldLayout(widget, {
-            label: param.label,
+            label: resolveUIText(param.label),
             align: param.type === "checkbox" ? "inline" : "top",
-            ...param.hint === undefined ? {} : { help: param.hint, helpInline: true },
+            ...param.hint === undefined ? {} : { help: resolveUIText(param.hint), helpInline: true },
         }),
         flagged: false,
         hidden: false,
@@ -122,7 +123,9 @@ const validateFields = (fields: ParamField[]): ParamField | null => {
         if (invalid !== field.flagged) {
             field.flagged = invalid;
             field.flagValidity?.(!invalid);
-            field.layout.setErrors(invalid ? [wgULS(`${field.param.label}不能为空`, `${field.param.label}不能為空`)] : []);
+            // 校验文案直接内嵌字段名（label 含 {hans, hant} 对象形态时先解析，两侧共用）
+            const labelText = resolveUIText(field.param.label);
+            field.layout.setErrors(invalid ? [wgULS(`${labelText}不能为空`, `${labelText}不能為空`)] : []);
         }
         if (invalid && !firstInvalid) {
             firstInvalid = field;
