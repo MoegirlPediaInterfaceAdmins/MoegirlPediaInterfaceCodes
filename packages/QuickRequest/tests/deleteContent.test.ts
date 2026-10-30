@@ -1,13 +1,23 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { getApiForSite } from "../src/api.ts";
+import type * as ApiModule from "../src/api.ts";
 import {
     applyRedirectInfo,
     buildBatchBody,
+    buildDeleteBody,
     buildDeleteSectionTitle,
     buildSingleBody,
     normalizeBatchTitle,
     parseBatchPages,
+    resolveBatchPages,
 } from "../src/deleteContent.ts";
 import type { QuickRequestContext } from "../src/types.ts";
+
+// resolveBatchPages 依赖站点 API；只桩掉 getApiForSite，其余导出保持原实现
+vi.mock("../src/api.ts", async (importOriginal) => {
+    const actual = await importOriginal<typeof ApiModule>();
+    return { ...actual, getApiForSite: vi.fn() };
+});
 
 const context: QuickRequestContext = {
     pageName: "Example_page",
@@ -92,11 +102,105 @@ describe("applyRedirectInfo", () => {
             { title: "cm:Bar", queryTitle: "Bar", site: "commons" as const },
         ];
         const normalized = new Map([["Foo bar", "Foo bar baz"]]);
-        const redirects = new Set(["Foo bar baz"]);
-        expect(applyRedirectInfo(pages, normalized, redirects)).toEqual([
+        const redirectFlags = new Map([["Foo bar baz", true]]);
+        expect(applyRedirectInfo(pages, normalized, redirectFlags)).toEqual([
             { title: "cm:foo_bar", isRedirect: true },
             { title: "cm:Bar", isRedirect: false },
         ]);
+    });
+
+    it("标记映射查不到的条目按非重定向处理", () => {
+        const pages = [
+            { title: "cm:Baz", queryTitle: "Baz", site: "commons" as const },
+        ];
+        expect(applyRedirectInfo(pages, new Map(), new Map())).toEqual([
+            { title: "cm:Baz", isRedirect: false },
+        ]);
+    });
+});
+
+describe("resolveBatchPages", () => {
+    it("以 prop=info 逐页 redirect 标记判定，不再携带 redirects 参数", async () => {
+        const post = vi.fn().mockResolvedValue({
+            query: {
+                normalized: [{ from: "foo_bar", to: "Foo bar" }],
+                pages: [
+                    { title: "Foo bar", redirect: true },
+                    { title: "Bar", redirect: false },
+                ],
+            },
+        });
+        vi.mocked(getApiForSite).mockReturnValue({ post } as never);
+
+        const result = await resolveBatchPages([
+            { title: "cm:foo_bar", queryTitle: "foo_bar", site: "commons" },
+            { title: "cm:Bar", queryTitle: "Bar", site: "commons" },
+        ]);
+        expect(result).toEqual([
+            { title: "cm:foo_bar", isRedirect: true },
+            { title: "cm:Bar", isRedirect: false },
+        ]);
+        expect(post).toHaveBeenCalledTimes(1);
+        expect(post.mock.calls[0][0]).toMatchObject({ action: "query", prop: "info", formatversion: 2 });
+        expect(post.mock.calls[0][0]).not.toHaveProperty("redirects");
+    });
+
+    it("任一批次查询失败时抛错，不再按非重定向继续", async () => {
+        const post = vi.fn().mockRejectedValue(new Error("network"));
+        vi.mocked(getApiForSite).mockReturnValue({ post } as never);
+
+        await expect(resolveBatchPages([
+            { title: "A", queryTitle: "A", site: "zh" },
+        ])).rejects.toThrow("批量查询页面重定向状态失败");
+    });
+
+    it("超过 50 个页面按 50 个一批拆分查询，结果顺序与入参一致", async () => {
+        const titles = Array.from({ length: 101 }, (_, index) => `Page${index + 1}`);
+        const post = vi.fn((params: { titles?: string }) => Promise.resolve({
+            query: { pages: params.titles?.split("|").map((title) => ({ title })) ?? [] },
+        }));
+        vi.mocked(getApiForSite).mockReturnValue({ post } as never);
+
+        const pages = await resolveBatchPages(titles.map((title) => ({ title, queryTitle: title, site: "zh" as const })));
+        expect(post).toHaveBeenCalledTimes(3);
+        expect(post.mock.calls[0][0].titles?.split("|")).toHaveLength(50);
+        expect(post.mock.calls[1][0].titles?.split("|")).toHaveLength(50);
+        expect(post.mock.calls[2][0].titles?.split("|")).toEqual(["Page101"]);
+        expect(pages).toHaveLength(101);
+        expect(pages[0]).toEqual({ title: "Page1", isRedirect: false });
+        expect(pages[100]).toEqual({ title: "Page101", isRedirect: false });
+    });
+});
+
+describe("buildDeleteBody 的理由/详情组合", () => {
+    // currentSite 读 location.hostname（node 环境没有 location，桩成主站）
+    beforeEach(() => {
+        vi.stubGlobal("location", { hostname: "zh.moegirl.org.cn" });
+    });
+    afterEach(() => {
+        vi.unstubAllGlobals();
+    });
+
+    it("只填理由时无详细原因行", async () => {
+        expect(await buildDeleteBody({ reason: "理由", detail: "" }, context)).toBe(
+            "* '''页面标题'''：[[:Example_page]]\n* '''申请理由'''：理由\n~~~~",
+        );
+    });
+
+    it("只填详情时详情即理由，不再单列为详细原因", async () => {
+        expect(await buildDeleteBody({ reason: "", detail: "详情" }, context)).toBe(
+            "* '''页面标题'''：[[:Example_page]]\n* '''申请理由'''：详情\n~~~~",
+        );
+    });
+
+    it("两者都填时详情单列为详细原因", async () => {
+        expect(await buildDeleteBody({ reason: "理由", detail: "详情" }, context)).toBe(
+            "* '''页面标题'''：[[:Example_page]]\n* '''申请理由'''：理由\n* '''详细原因'''：详情\n~~~~",
+        );
+    });
+
+    it("批量勾选但清单为空时抛错", async () => {
+        await expect(buildDeleteBody({ batch: "1", reason: "理由", detail: "", pages: "" }, context)).rejects.toThrow("请至少填写一个页面");
     });
 });
 
