@@ -128,4 +128,11 @@ describe("fetchBlockInfoText 的并行封禁合并", () => {
         const text = await fetchBlockInfoText();
         expect(text).toContain("* 并行封禁 #2：无限期，原因：未给出原因");
     });
+
+    it("主查询失败时抛出（入口按查询失败提示，不打开对话框）", async () => {
+        const post = vi.fn().mockRejectedValue(new Error("network"));
+        vi.mocked(getApi).mockReturnValue({ post } as never);
+
+        await expect(fetchBlockInfoText()).rejects.toThrow("network");
+    });
 });

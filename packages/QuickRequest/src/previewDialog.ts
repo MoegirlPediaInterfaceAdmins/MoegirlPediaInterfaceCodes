@@ -85,6 +85,17 @@ class PreviewDialog extends OO.ui.ProcessDialog {
         return super.getSetupProcess(data).next(() => {
             const payload = data as unknown as PreviewDialogData;
             this.htmlPanel.$element.html(payload.previewHtml);
+            // 跨站预览（共享站发起删除请求）时渲染 HTML 来自目标站，链接是目标站的相对路径——
+            // 不处理的话点击会落到当前站的同名路径，补上目标站基址才指向正确
+            if (payload.targetBase !== "") {
+                this.htmlPanel.$element.find("a").each((_, element) => {
+                    const href = element.getAttribute("href");
+                    // 只改写站内相对路径（"/zh/…"、"/index.php?…"）；协议相对（//…）与绝对地址保持原样
+                    if (href !== null && href.startsWith("/") && !href.startsWith("//")) {
+                        element.setAttribute("href", `${payload.targetBase}${href}`);
+                    }
+                });
+            }
             this.wikitextInput.setValue(payload.submittedText);
             this.wikitextToggle.setValue(false);
             this.wikitextLayout.toggle(false);

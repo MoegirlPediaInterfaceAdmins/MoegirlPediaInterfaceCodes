@@ -1,17 +1,17 @@
 import { CONFIG_PAGE } from "./constants.ts";
 import { toErrorMessage } from "./errors.ts";
 import { fetchPageContent } from "./api.ts";
-import type { ConfigResult, ParamType, QuickRequestConfig, RequestParam, TypeConfig, TypeVariant, UIText } from "./types.ts";
+import type { ConfigurableParamType, ConfigResult, QuickRequestConfig, RequestParam, TypeConfig, TypeVariant, UIText } from "./types.ts";
 
-/** 合法的控件类型集合。 */
+/** 配置页允许的控件类型集合（dropdown / checkbox 仅程序化表单使用，不在此列——误写会静默降级为 text）。 */
 const PARAM_TYPES = new Set<string>(["page", "user", "text", "multiline"]);
 
 /**
- * 判断是否为合法的控件类型。
+ * 判断是否为配置页允许的控件类型。
  * @param value 待判断的值
  * @returns 是否合法
  */
-const isParamType = (value: unknown): value is ParamType => typeof value === "string" && PARAM_TYPES.has(value);
+const isParamType = (value: unknown): value is ConfigurableParamType => typeof value === "string" && PARAM_TYPES.has(value);
 
 /**
  * 滤掉校验未通过的条目。

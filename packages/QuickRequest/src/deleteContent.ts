@@ -332,7 +332,7 @@ const buildDeleteParams = async (): Promise<RequestParam[]> => {
     }
     params.push({
         key: "enterToSubmit",
-        label: wgULS("理由详情按回车提交（浏览器级设置）", "理由詳情按確認鍵提交（瀏覽器級設置）"),
+        label: wgULS("理由详情按回车提交（浏览器级设置）", "理由詳情按 Enter 鍵提交（瀏覽器層級設定）"),
         type: "checkbox",
         "default": readEnterPreference(),
         storageKey: "enterToSubmit",

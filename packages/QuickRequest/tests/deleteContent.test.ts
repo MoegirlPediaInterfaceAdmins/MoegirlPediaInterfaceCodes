@@ -1,9 +1,10 @@
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { getApiForSite } from "../src/api.ts";
 import type * as ApiModule from "../src/api.ts";
 import {
     applyRedirectInfo,
     buildBatchBody,
+    buildDeleteBody,
     buildDeleteSectionTitle,
     buildSingleBody,
     normalizeBatchTitle,
@@ -151,6 +152,55 @@ describe("resolveBatchPages", () => {
         await expect(resolveBatchPages([
             { title: "A", queryTitle: "A", site: "zh" },
         ])).rejects.toThrow("批量查询页面重定向状态失败");
+    });
+
+    it("超过 50 个页面按 50 个一批拆分查询，结果顺序与入参一致", async () => {
+        const titles = Array.from({ length: 101 }, (_, index) => `Page${index + 1}`);
+        const post = vi.fn((params: { titles?: string }) => Promise.resolve({
+            query: { pages: params.titles?.split("|").map((title) => ({ title })) ?? [] },
+        }));
+        vi.mocked(getApiForSite).mockReturnValue({ post } as never);
+
+        const pages = await resolveBatchPages(titles.map((title) => ({ title, queryTitle: title, site: "zh" as const })));
+        expect(post).toHaveBeenCalledTimes(3);
+        expect(post.mock.calls[0][0].titles?.split("|")).toHaveLength(50);
+        expect(post.mock.calls[1][0].titles?.split("|")).toHaveLength(50);
+        expect(post.mock.calls[2][0].titles?.split("|")).toEqual(["Page101"]);
+        expect(pages).toHaveLength(101);
+        expect(pages[0]).toEqual({ title: "Page1", isRedirect: false });
+        expect(pages[100]).toEqual({ title: "Page101", isRedirect: false });
+    });
+});
+
+describe("buildDeleteBody 的理由/详情组合", () => {
+    // currentSite 读 location.hostname（node 环境没有 location，桩成主站）
+    beforeEach(() => {
+        vi.stubGlobal("location", { hostname: "zh.moegirl.org.cn" });
+    });
+    afterEach(() => {
+        vi.unstubAllGlobals();
+    });
+
+    it("只填理由时无详细原因行", async () => {
+        expect(await buildDeleteBody({ reason: "理由", detail: "" }, context)).toBe(
+            "* '''页面标题'''：[[:Example_page]]\n* '''申请理由'''：理由\n~~~~",
+        );
+    });
+
+    it("只填详情时详情即理由，不再单列为详细原因", async () => {
+        expect(await buildDeleteBody({ reason: "", detail: "详情" }, context)).toBe(
+            "* '''页面标题'''：[[:Example_page]]\n* '''申请理由'''：详情\n~~~~",
+        );
+    });
+
+    it("两者都填时详情单列为详细原因", async () => {
+        expect(await buildDeleteBody({ reason: "理由", detail: "详情" }, context)).toBe(
+            "* '''页面标题'''：[[:Example_page]]\n* '''申请理由'''：理由\n* '''详细原因'''：详情\n~~~~",
+        );
+    });
+
+    it("批量勾选但清单为空时抛错", async () => {
+        await expect(buildDeleteBody({ batch: "1", reason: "理由", detail: "", pages: "" }, context)).rejects.toThrow("请至少填写一个页面");
     });
 });
 

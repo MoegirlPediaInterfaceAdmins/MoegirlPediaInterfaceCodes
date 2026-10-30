@@ -752,7 +752,10 @@ var PreviewDialog = class extends OO.ui.ProcessDialog {
   getSetupProcess(data) {
     return super.getSetupProcess(data).next(() => {
       let payload = data;
-      this.htmlPanel.$element.html(payload.previewHtml), this.wikitextInput.setValue(payload.submittedText), this.wikitextToggle.setValue(!1), this.wikitextLayout.toggle(!1), this.getActions().setAbilities({ send: !0 }), this.payload = payload, this.getWarnings = payload.getWarnings;
+      this.htmlPanel.$element.html(payload.previewHtml), payload.targetBase !== "" && this.htmlPanel.$element.find("a").each((_, element) => {
+        let href = element.getAttribute("href");
+        href !== null && href.startsWith("/") && !href.startsWith("//") && element.setAttribute("href", `${payload.targetBase}${href}`);
+      }), this.wikitextInput.setValue(payload.submittedText), this.wikitextToggle.setValue(!1), this.wikitextLayout.toggle(!1), this.getActions().setAbilities({ send: !0 }), this.payload = payload, this.getWarnings = payload.getWarnings;
     }, this);
   }
   /**
@@ -980,7 +983,7 @@ var currentSite = () => isZhHost() ? "zh" : "commons", linkedPageNameFor = (page
     visibleIf: { param: "batch", equals: "1" }
   })), params.push({
     key: "enterToSubmit",
-    label: wgULS("理由详情按回车提交（浏览器级设置）", "理由詳情按確認鍵提交（瀏覽器級設置）"),
+    label: wgULS("理由详情按回车提交（浏览器级设置）", "理由詳情按 Enter 鍵提交（瀏覽器層級設定）"),
     type: "checkbox",
     default: readEnterPreference(),
     storageKey: "enterToSubmit"
@@ -1136,7 +1139,12 @@ var describeConfigFailure = (reason) => wgULS(`${CONFIG_PAGE} 读取或解析失
     console.warn("[QuickRequest] 未知的请求类型", type);
     return;
   }
-  let context = buildContext(mw.config.get("wgUserName") ?? "");
+  let userName = mw.config.get("wgUserName") ?? "";
+  if (userName === "") {
+    mw.notify(wgULS("请登录后再使用此功能。", "請登入後再使用此功能。"));
+    return;
+  }
+  let context = buildContext(userName);
   if (!definition.availability(context)) {
     mw.notify(wgULS("您暂不满足发起此请求的条件。", "您暫不滿足發起此請求的條件。"), { type: "warn" });
     return;
