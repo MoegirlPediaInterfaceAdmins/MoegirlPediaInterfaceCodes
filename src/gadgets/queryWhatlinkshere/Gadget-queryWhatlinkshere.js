@@ -27,7 +27,44 @@ $(() => (async () => {
     const target = pageinfo.title;
     const ns = pageinfo.ns;
     const title = target.replace(ns === 0 ? "" : RegExp(`^(?:${wgNamespaceIds[ns].join("|")}):`, "i"), "");
-    $("#mw-content-text > .mw-htmlform-ooui-wrapper").after(`<span class="cdx-card" style="background-color:transparent"><span class="cdx-card__text"><span class="cdx-card__text__title">链入情况</span><span class="cdx-card__text__description"><a href="/Special:Search/${encodeURIComponent(`linksto:"${target}" insource:"${target}"`)}?profile=all&fulltext=1" target="_blank" class="external text">通过搜索查找链入</a></span><button id="queryWhatlinkshere" class="cdx-button cdx-button--action-progressive">点此查询链入情况</button><p id="whatlinkshere" style="display: none;">加载中……</p></span></span><span class="cdx-card" style="background-color:transparent"><span class="cdx-card__text"><span class="cdx-card__text__title">嵌入情况</span><span class="cdx-card__text__description"><a href="/Special:Search/${encodeURIComponent(`hastemplate:"${target}" insource:"${title}"`)}?profile=all&fulltext=1" target="_blank" class="external text">通过搜索查找嵌入</a></span><button id="queryWhatembeddedin" class="cdx-button cdx-button--action-progressive">点此查询嵌入情况</button><p id="whatembeddedin" style="display: none;">加载中……</p></span></span>`);
+    const queryAll = async (contKey, params, pick, output) => {
+        const result = [];
+        let cont;
+        do {
+            const res = await api.post({ ...params, [contKey]: cont });
+            cont = res.continue?.[contKey];
+            result.push(...pick(res));
+            if (cont !== undefined) {
+                output.append("…");
+            }
+        } while (cont !== undefined);
+        return result;
+    };
+    const makeNsList = (makeRedirect) => Object.fromEntries(Object.keys(libLocalizedNamespaces).filter((key) => Number(key) >= 0).map((key) => [key, { count: 0, redirect: makeRedirect() }]));
+    const getNsName = (nsnumber) => Number(nsnumber) === 0 ? mw.msg("blanknamespace") : upperFirstCase(libLocalizedNamespaces[nsnumber]);
+    const renderNsList = (nslist, buildLi) => {
+        const ul = $("<ul/>");
+        Object.entries(nslist).filter(([, { count }]) => count > 0).sort(([a], [b]) => a - b).forEach((entry) => ul.append(buildLi(entry)));
+        return ul;
+    };
+    const loadingLabel = wgULS("加载中……", "加載中……");
+    const makeCard = ({ id, title, searchLabel, buttonLabel, searchQuery }) => `<span class="cdx-card" style="background-color:transparent"><span class="cdx-card__text"><span class="cdx-card__text__title">${title}</span><span class="cdx-card__text__description"><a href="/Special:Search/${encodeURIComponent(searchQuery)}?profile=all&fulltext=1" target="_blank" class="external text">${searchLabel}</a></span><button id="queryWhat${id}" class="cdx-button cdx-button--action-progressive">${buttonLabel}</button><p id="what${id}" style="display: none;">${loadingLabel}</p></span></span>`;
+    $("#mw-content-text > .mw-htmlform-ooui-wrapper").after([
+        {
+            id: "linkshere",
+            title: wgULS("链入情况", "鏈入情況"),
+            searchLabel: wgULS("通过搜索查找链入", "通過搜索查找鏈入"),
+            buttonLabel: wgULS("点此查询链入情况", "點此查詢鏈入情況"),
+            searchQuery: `linksto:"${target}" insource:"${target}"`,
+        },
+        {
+            id: "embeddedin",
+            title: wgULS("嵌入情况", "嵌入情況"),
+            searchLabel: wgULS("通过搜索查找嵌入", "通過搜索查找嵌入"),
+            buttonLabel: wgULS("点此查询嵌入情况", "點此查詢嵌入情況"),
+            searchQuery: `hastemplate:"${target}" insource:"${title}"`,
+        },
+    ].map(makeCard).join(""));
     const queryWhatlinkshere = $("#queryWhatlinkshere");
     const queryWhatembeddedin = $("#queryWhatembeddedin");
     const whatlinkshere = $("#whatlinkshere");
@@ -35,176 +72,65 @@ $(() => (async () => {
     queryWhatlinkshere.on("click", async () => {
         queryWhatlinkshere.hide();
         whatlinkshere.show();
-        const list = await (async () => {
-            const result = [];
-            const eol = Symbol();
-            let lhcontinue = undefined;
-            while (lhcontinue !== eol) {
-                const _result = await api.post({
-                    action: "query",
-                    assertuser: wgUserName,
-                    format: "json",
-                    prop: "linkshere",
-                    titles: target,
-                    lhprop: "redirect|title|pageid",
-                    lhcontinue,
-                    lhlimit: "max",
-                });
-                if (_result.continue) {
-                    lhcontinue = _result.continue.lhcontinue;
-                    whatlinkshere.append("…");
-                } else {
-                    lhcontinue = eol;
-                }
-                result.push(...Object.values(_result.query.pages)[0].linkshere || []);
-            }
-            return result;
-        })();
-        const nslist = {
-            0: { count: 0, redirect: 0 },
-            1: { count: 0, redirect: 0 },
-            2: { count: 0, redirect: 0 },
-            3: { count: 0, redirect: 0 },
-            4: { count: 0, redirect: 0 },
-            5: { count: 0, redirect: 0 },
-            6: { count: 0, redirect: 0 },
-            7: { count: 0, redirect: 0 },
-            8: { count: 0, redirect: 0 },
-            9: { count: 0, redirect: 0 },
-            10: { count: 0, redirect: 0 },
-            11: { count: 0, redirect: 0 },
-            12: { count: 0, redirect: 0 },
-            13: { count: 0, redirect: 0 },
-            14: { count: 0, redirect: 0 },
-            15: { count: 0, redirect: 0 },
-            114: { count: 0, redirect: 0 },
-            115: { count: 0, redirect: 0 },
-            116: { count: 0, redirect: 0 },
-            117: { count: 0, redirect: 0 },
-            118: { count: 0, redirect: 0 },
-            119: { count: 0, redirect: 0 },
-            274: { count: 0, redirect: 0 },
-            275: { count: 0, redirect: 0 },
-            710: { count: 0, redirect: 0 },
-            711: { count: 0, redirect: 0 },
-            828: { count: 0, redirect: 0 },
-            829: { count: 0, redirect: 0 },
-        };
-        const global = { redirect: 0 };
-        const redirectCount = list.filter((item) => Reflect.has(item, "redirect")).length;
-        whatlinkshere.text(`共有${list.length}个页面含有到本页面的站内链接（不考虑嵌入）${redirectCount > 0 ? `，其中有${redirectCount}个重定向页面。` : "。"}`);
-        if (list.length > 0) {
-            whatlinkshere.append("按命名空间划分如下：");
-        }
-        const ul = $("<ul/>");
+        const list = await queryAll("lhcontinue", {
+            action: "query",
+            assertuser: wgUserName,
+            format: "json",
+            prop: "linkshere",
+            titles: target,
+            lhprop: "redirect|title|pageid",
+            lhlimit: "max",
+        }, (res) => Object.values(res.query.pages)[0].linkshere || [], whatlinkshere);
+        const nslist = makeNsList(() => 0);
+        let redirectCount = 0;
         list.forEach((item) => {
             nslist[item.ns].count++;
             if (Reflect.has(item, "redirect")) {
                 nslist[item.ns].redirect++;
-                global.redirect++;
+                redirectCount++;
             }
         });
-        Object.entries(nslist).filter(([, { count }]) => count > 0).sort(([a], [b]) => a - b).forEach(([nsnumber, { count, redirect }]) => ul.append(`<li>${Number(nsnumber) === 0 ? mw.msg("blanknamespace") : upperFirstCase(libLocalizedNamespaces[nsnumber])}：${count}个页面${redirect > 0 ? `（其中有${redirect}个重定向页面）` : ""}`));
-        whatlinkshere.after(ul);
+        whatlinkshere.text(wgULS(
+            `共有${list.length}个页面含有到本页面的站内链接（不考虑嵌入）${redirectCount > 0 ? `，其中有${redirectCount}个重定向页面。` : "。"}`,
+            `共有${list.length}個頁面含有到本頁面的站內連結（不考慮嵌入）${redirectCount > 0 ? `，其中有${redirectCount}個重新導向頁面。` : "。"}`,
+        ));
+        if (list.length > 0) {
+            whatlinkshere.append(wgULS("按命名空间划分如下：", "按命名空間劃分如下："));
+        }
+        whatlinkshere.after(renderNsList(nslist, ([nsnumber, { count, redirect }]) => `<li>${getNsName(nsnumber)}：${wgULS(`${count}个页面`, `${count}個頁面`)}${redirect > 0 ? wgULS(`（其中有${redirect}个重定向页面）`, `（其中有${redirect}個重新導向頁面）`) : ""}`));
     });
     queryWhatembeddedin.on("click", async () => {
         queryWhatembeddedin.hide();
         whatembeddedin.show();
-        const list = await (async () => {
-            const result = {
-                redirects: [],
-                all: [],
-            };
-            const eol = Symbol();
-            let eicontinue = undefined;
-            while (eicontinue !== eol) {
-                const _result = await api.post({
-                    action: "query",
-                    assertuser: wgUserName,
-                    format: "json",
-                    list: "embeddedin",
-                    eititle: target,
-                    einamespace: "*",
-                    eifilterredir: "redirects",
-                    eicontinue,
-                    eilimit: "max",
-                });
-                if (_result.continue) {
-                    eicontinue = _result.continue.eicontinue;
-                    whatembeddedin.append("…");
-                } else {
-                    eicontinue = eol;
-                }
-                result.redirects.push(..._result.query.embeddedin);
-                result.all.push(..._result.query.embeddedin);
-            }
-            eicontinue = undefined;
-            while (eicontinue !== eol) {
-                const _result = await api.post({
-                    action: "query",
-                    assertuser: wgUserName,
-                    format: "json",
-                    list: "embeddedin",
-                    eititle: target,
-                    einamespace: "*",
-                    eifilterredir: "nonredirects",
-                    eicontinue,
-                    eilimit: "max",
-                });
-                if (_result.continue) {
-                    eicontinue = _result.continue.eicontinue;
-                    whatembeddedin.append("…");
-                } else {
-                    eicontinue = eol;
-                }
-                result.all.push(..._result.query.embeddedin);
-            }
-            return result;
-        })();
-        const nslist = {
-            0: { count: 0, redirect: [] },
-            1: { count: 0, redirect: [] },
-            2: { count: 0, redirect: [] },
-            3: { count: 0, redirect: [] },
-            4: { count: 0, redirect: [] },
-            5: { count: 0, redirect: [] },
-            6: { count: 0, redirect: [] },
-            7: { count: 0, redirect: [] },
-            8: { count: 0, redirect: [] },
-            9: { count: 0, redirect: [] },
-            10: { count: 0, redirect: [] },
-            11: { count: 0, redirect: [] },
-            12: { count: 0, redirect: [] },
-            13: { count: 0, redirect: [] },
-            14: { count: 0, redirect: [] },
-            15: { count: 0, redirect: [] },
-            114: { count: 0, redirect: [] },
-            115: { count: 0, redirect: [] },
-            116: { count: 0, redirect: [] },
-            117: { count: 0, redirect: [] },
-            118: { count: 0, redirect: [] },
-            119: { count: 0, redirect: [] },
-            274: { count: 0, redirect: [] },
-            275: { count: 0, redirect: [] },
-            710: { count: 0, redirect: [] },
-            711: { count: 0, redirect: [] },
-            828: { count: 0, redirect: [] },
-            829: { count: 0, redirect: [] },
+        const eiParams = {
+            action: "query",
+            assertuser: wgUserName,
+            format: "json",
+            list: "embeddedin",
+            eititle: target,
+            einamespace: "*",
+            eilimit: "max",
         };
-        const global = { redirect: 0 };
-        whatembeddedin.text(`共有${list.all.length}个页面嵌入了本页面，其中有${list.redirects.length}个重定向页面。`);
-        if (list.all.length > 0) {
-            whatembeddedin.append("按命名空间划分如下：");
-        }
-        const ul = $("<ul/>");
+        const redirects = await queryAll("eicontinue", { ...eiParams, eifilterredir: "redirects" }, (res) => res.query.embeddedin, whatembeddedin);
+        const nonredirects = await queryAll("eicontinue", { ...eiParams, eifilterredir: "nonredirects" }, (res) => res.query.embeddedin, whatembeddedin);
+        const list = {
+            redirects,
+            all: [...redirects, ...nonredirects],
+        };
+        const nslist = makeNsList(() => []);
         list.all.forEach(({ ns }) => {
             nslist[ns].count++;
         });
         list.redirects.forEach(({ ns, title }) => {
             nslist[ns].redirect.push(title);
-            global.redirect++;
         });
-        Object.entries(nslist).filter(([, { count }]) => count > 0).sort(([a], [b]) => a - b).forEach(([nsnumber, { count, redirect }]) => ul.append(`<li class="mw-parser-output">${Number(nsnumber) === 0 ? mw.msg("blanknamespace") : upperFirstCase(libLocalizedNamespaces[nsnumber])}：${count}个页面${redirect.length > 0 ? `（其中有${redirect.length}个重定向页面：${redirect.map((title) => `<a target="_blank" rel="nofollow noreferrer noopener" class="external text" href="/index.php?title=${encodeURIComponent(title)}&amp;redirect=no">${title}</a>`).join("、")}）` : ""}`));
-        whatembeddedin.after(ul);
+        whatembeddedin.text(wgULS(
+            `共有${list.all.length}个页面嵌入了本页面，其中有${list.redirects.length}个重定向页面。`,
+            `共有${list.all.length}個頁面嵌入了本頁面，其中有${list.redirects.length}個重新導向頁面。`,
+        ));
+        if (list.all.length > 0) {
+            whatembeddedin.append(wgULS("按命名空间划分如下：", "按命名空間劃分如下："));
+        }
+        whatembeddedin.after(renderNsList(nslist, ([nsnumber, { count, redirect }]) => `<li class="mw-parser-output">${getNsName(nsnumber)}：${wgULS(`${count}个页面`, `${count}個頁面`)}${redirect.length > 0 ? `${wgULS(`（其中有${redirect.length}个重定向页面：`, `（其中有${redirect.length}個重新導向頁面：`)}${redirect.map((title) => `<a target="_blank" rel="nofollow noreferrer noopener" class="external text" href="/index.php?title=${encodeURIComponent(title)}&amp;redirect=no">${title}</a>`).join("、")}）` : ""}`));
     });
 })());
