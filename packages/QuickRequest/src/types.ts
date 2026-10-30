@@ -11,12 +11,19 @@ type DropdownOption = { data: string; label: string } | { optgroup: string };
 /** 发帖目标站点 id。 */
 type SiteId = "zh" | "commons";
 
+/**
+ * 界面文案的配置形态：简体直书，或 {hans, hant} 对（hant 缺省回落简体）。
+ * OOUI 客户端注入的 DOM 不经服务端语言转换，繁体以对象形态提供、渲染时经
+ * wgULS 解析（见 uitext.ts）；两者字符串完全相同时直书即可。
+ */
+type UIText = string | { hans: string; hant?: string };
+
 /** 请求参数定义（对应配置 JSON 里的 parameters 数组项）。 */
 interface RequestParam {
     /** 模板参数名；纯数字键（如 "1"）映射为模板位置参数，其余键映射为命名参数 */
     key: string;
     /** 界面上显示的字段名 */
-    label: string;
+    label: UIText;
     /** 控件类型，缺省为 text */
     type?: ParamType;
     /** 是否必填，缺省为 false */
@@ -28,11 +35,11 @@ interface RequestParam {
     /** 隐藏：字段不在表单渲染，值仍按预填/自动派生规则并入提交（move 的 original 用，对齐原生移动不显示源页面名） */
     hidden?: boolean;
     /** 字段说明，展示为标签旁的帮助图标；缺省不展示 */
-    hint?: string;
+    hint?: UIText;
     /** dropdown 的选项（动态来源在程序化表单的 buildParams 里现取；配置页类型暂不提供） */
     options?: DropdownOption[];
     /** 占位提示文本（text / multiline），缺省不展示 */
-    placeholder?: string;
+    placeholder?: UIText;
     /** 字段可见性：所引用参数的值等于 equals 时显示，否则隐藏（隐藏不参与校验，值仍传给 buildBody） */
     visibleIf?: { param: string; equals: string };
     /** 值持久化到 LocalObjectStorage（QuickRequest 键）而不进入正文；用于「按回车提交」等偏好 */
@@ -60,7 +67,7 @@ interface TypeVariant extends TemplateSpec {
     /** 变体 id，类型内唯一 */
     id: string;
     /** 变体下拉框显示名，如「维护姬申请」 */
-    label: string;
+    label: UIText;
     /** 组约束：所列参数键至少填写一项，按变体自身参数过滤 */
     requireAnyOf?: string[];
 }
@@ -306,5 +313,6 @@ export type {
     TemplateSpec,
     TypeConfig,
     TypeVariant,
+    UIText,
     Warning,
 };

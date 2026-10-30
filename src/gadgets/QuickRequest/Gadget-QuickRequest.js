@@ -11,7 +11,8 @@ var __publicField = (obj, key, value) => __defNormalProp(obj, typeof key != "sym
 var CONFIG_PAGE = "MediaWiki:Gadget-QuickRequest.json", SITE_ORIGINS = {
   zh: "https://mzh.moegirl.org.cn",
   commons: "https://commons.moegirl.org.cn"
-}, BOARD_PREFIX = "萌娘百科_talk:讨论版", DIALOG_SIZE = "large", MAX_MAIN_BODY_HEIGHT = 520, MAX_PREVIEW_BODY_HEIGHT = 560, REDIRECT_DELAY = 3e3, CHANGE_TAG = "Automation tool|QuickRequest", OPERATIONS_BOARD = "萌娘百科_talk:讨论版/操作申请", RIGHTS_BOARD = "萌娘百科_talk:讨论版/权限变更", VANDAL_BOARD = "萌娘百科_talk:长期破坏者", CHECKUSER_RECORD_PAGE = "萌娘百科:用户查核记录", CHECKUSER_RECORD_TALK = "萌娘百科_talk:用户查核记录", CONVERSION_TABLE_PATTERN = /^MediaWiki:Conversiontable\/zh-[a-z]+$/, POLICY_CATEGORIES = ["萌娘百科方针", "萌娘百科指引"], WARNING_SKIP_GROUPS = ["patroller", "sysop", "techeditor", "interface-admin", "staff"], titleSuffix = (userName, now) => ` - ${userName} - ${now.getFullYear()}.${libPrefixNumber(now.getMonth() + 1)}.${libPrefixNumber(now.getDate())}`;
+}, BOARD_PREFIX = "萌娘百科_talk:讨论版", DIALOG_SIZE = "large", MAX_MAIN_BODY_HEIGHT = 520, MAX_PREVIEW_BODY_HEIGHT = 560, REDIRECT_DELAY = 3e3, CHANGE_TAG = "Automation tool|QuickRequest", OPERATIONS_BOARD = "萌娘百科_talk:讨论版/操作申请", RIGHTS_BOARD = "萌娘百科_talk:讨论版/权限变更", VANDAL_BOARD = "萌娘百科_talk:长期破坏者";
+var CHECKUSER_RECORD_TALK = "萌娘百科_talk:用户查核记录", CONVERSION_TABLE_PATTERN = /^MediaWiki:Conversiontable\/zh-[a-z]+$/, POLICY_CATEGORIES = ["萌娘百科方针", "萌娘百科指引"], WARNING_SKIP_GROUPS = ["patroller", "sysop", "techeditor", "interface-admin", "staff"], titleSuffix = (userName, now) => ` - ${userName} - ${now.getFullYear()}.${libPrefixNumber(now.getMonth() + 1)}.${libPrefixNumber(now.getDate())}`;
 
 // packages/QuickRequest/src/api.ts
 var REQUEST_TIMEOUT = 3e4, apiInstance = null, getApi = () => (apiInstance ?? (apiInstance = new mw.Api({ ajax: { timeout: REQUEST_TIMEOUT } })), apiInstance), foreignApis = {}, isZhHost = () => /^m?zh\.moegirl\.org\.cn$/.test(location.hostname), isCurrentHost = (site) => site === "zh" ? isZhHost() : !isZhHost(), getApiForSite = (site) => isCurrentHost(site) ? getApi() : (foreignApis[site] ?? (foreignApis[site] = new mw.ForeignApi(`${SITE_ORIGINS[site]}/api.php`, { ajax: { timeout: REQUEST_TIMEOUT } })), foreignApis[site]), fetchPageContent = async (title) => (await getApi().post({
@@ -47,14 +48,28 @@ var toErrorMessage = (error) => error instanceof Error ? error.message : String(
 };
 
 // packages/QuickRequest/src/config.ts
-var PARAM_TYPES = /* @__PURE__ */ new Set(["page", "user", "text", "multiline"]), isParamType = (value) => typeof value == "string" && PARAM_TYPES.has(value), compact = (items) => items.filter((item) => item !== null), prefetch = null, isNonEmptyString = (value) => typeof value == "string" && value.trim() !== "", toRequestParam = (raw) => {
+var PARAM_TYPES = /* @__PURE__ */ new Set(["page", "user", "text", "multiline"]), isParamType = (value) => typeof value == "string" && PARAM_TYPES.has(value), compact = (items) => items.filter((item) => item !== null), prefetch = null, isNonEmptyString = (value) => typeof value == "string" && value.trim() !== "", toUIText = (raw) => {
+  if (isNonEmptyString(raw))
+    return raw;
   if (typeof raw != "object" || raw === null)
     return null;
-  let { key, label, type, required, auto, readOnly, hidden, hint, default: defaultValue } = raw;
-  if (!isNonEmptyString(key) || !isNonEmptyString(label))
+  let { hans, hant } = raw;
+  return isNonEmptyString(hans) ? typeof hant == "string" ? { hans, hant } : { hans } : null;
+}, toRequestParam = (raw) => {
+  if (typeof raw != "object" || raw === null)
     return null;
-  let param = { key, label };
-  return isParamType(type) && (param.type = type), typeof required == "boolean" && (param.required = required), auto === "currentPage" && (param.auto = auto), typeof readOnly == "boolean" && (param.readOnly = readOnly), typeof hidden == "boolean" && (param.hidden = hidden), isNonEmptyString(hint) && (param.hint = hint), typeof defaultValue == "string" && (param.default = defaultValue), param;
+  let { key, label, type, required, auto, readOnly, hidden, hint, placeholder, default: defaultValue } = raw;
+  if (!isNonEmptyString(key))
+    return null;
+  let labelText = toUIText(label);
+  if (labelText === null)
+    return null;
+  let param = { key, label: labelText };
+  isParamType(type) && (param.type = type), typeof required == "boolean" && (param.required = required), auto === "currentPage" && (param.auto = auto), typeof readOnly == "boolean" && (param.readOnly = readOnly), typeof hidden == "boolean" && (param.hidden = hidden);
+  let hintText = toUIText(hint);
+  hintText !== null && (param.hint = hintText);
+  let placeholderText = toUIText(placeholder);
+  return placeholderText !== null && (param.placeholder = placeholderText), typeof defaultValue == "string" && (param.default = defaultValue), param;
 }, toFixedParams = (raw) => {
   if (typeof raw != "object" || raw === null)
     return;
@@ -65,10 +80,10 @@ var PARAM_TYPES = /* @__PURE__ */ new Set(["page", "user", "text", "multiline"])
 }, toTypeVariant = (raw) => {
   if (typeof raw != "object" || raw === null)
     return null;
-  let { id, label, template, parameters, requireAnyOf, fixedParams } = raw;
-  if (!isNonEmptyString(id) || !isNonEmptyString(label) || !isNonEmptyString(template))
+  let { id, label, template, parameters, requireAnyOf, fixedParams } = raw, labelText = toUIText(label);
+  if (!isNonEmptyString(id) || labelText === null || !isNonEmptyString(template))
     return null;
-  let variant = { id, label, template };
+  let variant = { id, label: labelText, template };
   if (Array.isArray(parameters) && (variant.parameters = compact(parameters.map(toRequestParam))), Array.isArray(requireAnyOf)) {
     let keys = new Set((variant.parameters ?? []).map(({ key }) => key)), valid = requireAnyOf.filter((key) => typeof key == "string" && keys.has(key));
     valid.length > 0 && (variant.requireAnyOf = valid);
@@ -135,303 +150,40 @@ var formatBlockInfo = (user) => {
   return text += `* 封禁开始时间：${user.blockedtimestampformatted ?? ""}
 `, text += `* 封禁期满时间：${user.blockexpiry === "infinite" ? "无限期" : user.blockexpiryformatted ?? ""}
 `, text += `* 封禁编号：#${user.blockid}`, text;
-}, fetchBlockInfoText = async () => {
-  let userName = mw.config.get("wgUserName") ?? "", res = await getApi().post({
+}, formatExtraBlocks = (blocks) => blocks.filter((block) => block.blockid !== void 0).map((block) => {
+  let reason = block.reason?.replaceAll(`
+`, "") ?? "", expiry = block.expiry === "infinite" || block.expiry === void 0 ? "无限期" : `期满 ${block.expiry}`;
+  return `* 并行封禁 #${block.blockid}：${expiry}，原因：${reason === "" ? "未给出原因" : reason}`;
+}).join(`
+`), fetchBlockInfoText = async () => {
+  let userName = mw.config.get("wgUserName") ?? "", user = (await getApi().post({
     action: "query",
     list: "users",
     usprop: "blockinfo",
     ususers: userName,
     formatversion: 2
-  });
-  return formatBlockInfo(res.query?.users?.[0] ?? {});
-};
-
-// packages/QuickRequest/src/storage.ts
-var storage = null, getStorage = () => (storage ?? (storage = new LocalObjectStorage("AnnTools-QuickRequest")), storage), getPreference = (key, legacy) => {
-  let value = getStorage().getItem(key);
-  if (typeof value == "string")
-    return value;
-  if (legacy !== void 0) {
-    let legacyValue = new LocalObjectStorage(legacy.name).getItem(legacy.key);
-    if (legacyValue != null)
-      return typeof legacyValue == "string" ? legacyValue : JSON.stringify(legacyValue);
-  }
-  return null;
-}, setPreference = (key, value) => {
-  getStorage().setItem(key, value);
-};
-
-// packages/QuickRequest/src/deleteContent.ts
-var currentSite = () => isZhHost() ? "zh" : "commons", linkedPageNameFor = (pageName, site) => site === "zh" ? pageName : `cm:${pageName}`, buildSingleBody = (linkedPageName, isRedirect, reason, detail) => {
-  let lines = [
-    `* '''页面标题'''：${isRedirect ? `{{NoRedirectLink|${linkedPageName}}}` : `[[:${linkedPageName}]]`}`,
-    `* '''申请理由'''：${reason}`
-  ];
-  return detail !== "" && lines.push(`* '''详细原因'''：${detail}`), lines.push("~~~~"), lines.join(`
-`);
-}, buildBatchBody = (pages, reason, detail) => {
-  let lines = [
-    "* '''页面标题'''：",
-    ...pages.map(({ title, isRedirect }) => `** ${isRedirect ? `{{NoRedirectLink|${title}}}` : `[[:${title}]]`}`),
-    `* '''申请理由'''：${reason}`
-  ];
-  return detail !== "" && lines.push(`* '''详细原因'''：${detail}`), lines.push("~~~~"), lines.join(`
-`);
-}, parseBatchPages = (text, site) => {
-  let lines = text.split(`
-`).map((line) => line.trim()).filter((line) => line !== ""), invalidLines = lines.filter((line) => {
-    let stripped = line.replace(/^(?:cm:|zhmoe:)/i, "");
-    return stripped === "" || /[|[\]{}<>]/.test(stripped);
-  });
-  if (invalidLines.length > 0)
-    throw new Error(wgULS(
-      `以下页面标题无效（仅有前缀，或含 | [ ] { } < > 等字符）：${invalidLines.join("、")}`,
-      `以下頁面標題無效（僅有前綴，或含 | [ ] { } < > 等字元）：${invalidLines.join("、")}`
-    ));
-  let toBatchPage = (line) => {
-    if (/^zhmoe:/i.test(line)) {
-      let title = line.substring(6);
-      return { title, queryTitle: title, site: "zh" };
-    }
-    return /^cm:/i.test(line) ? { title: line, queryTitle: line.substring(3), site: "commons" } : site === "zh" ? { title: line, queryTitle: line, site: "zh" } : { title: `cm:${line}`, queryTitle: line, site: "commons" };
-  }, result = [], seen = /* @__PURE__ */ new Set();
-  for (let line of lines) {
-    let page = toBatchPage(line);
-    seen.has(page.title) || (seen.add(page.title), result.push(page));
-  }
-  return result;
-}, normalizeBatchTitle = (title) => title.replace(/_/g, " ").replace(/\s+/g, " ").trim().replace(/^[a-z]/, (char) => char.toUpperCase()), applyRedirectInfo = (pages, normalizedTitles, redirectFlags) => pages.map(({ title, queryTitle }) => {
-  let normalized = normalizeBatchTitle(queryTitle);
-  return { title, isRedirect: redirectFlags.get(normalizedTitles.get(normalized) ?? normalized) ?? !1 };
-}), resolveBatchPages = async (pages) => {
-  let normalizedTitles = /* @__PURE__ */ new Map(), redirectFlags = /* @__PURE__ */ new Map(), titlesBySite = /* @__PURE__ */ new Map(), failures = [];
-  for (let { queryTitle, site } of pages) {
-    let list = titlesBySite.get(site) ?? [];
-    list.push(queryTitle), titlesBySite.set(site, list);
-  }
-  if (await Promise.all([...titlesBySite].map(async ([site, titles]) => {
-    let unique = [...new Set(titles)], batches = Array.from({ length: Math.ceil(unique.length / 50) }, (_, index) => unique.slice(index * 50, index * 50 + 50));
-    await Promise.all(batches.map(async (batch) => {
-      try {
-        let res = await getApiForSite(site).post({
-          action: "query",
-          titles: batch.join("|"),
-          prop: "info",
-          formatversion: 2
-        });
-        for (let { from, to } of res.query?.normalized ?? [])
-          normalizedTitles.set(normalizeBatchTitle(from), to);
-        for (let { title, redirect } of res.query?.pages ?? [])
-          redirectFlags.set(normalizeBatchTitle(title), redirect === !0);
-      } catch (error) {
-        failures.push(error), console.warn("[QuickRequest] 批量查询重定向失败", error);
-      }
-    }));
-  })), failures.length > 0)
-    throw new Error(wgULS("批量查询页面重定向状态失败，请稍后重试", "批量查詢頁面重新導向狀態失敗，請稍後重試"));
-  return applyRedirectInfo(pages, normalizedTitles, redirectFlags);
-}, buildDeleteSectionTitle = (values, ctx, site) => {
-  let suffix = titleSuffix(ctx.userName, ctx.now);
-  return values.batch === "1" ? `批量删除请求${suffix}` : `请求删除页面：[[${linkedPageNameFor(ctx.pageName, site)}]]${suffix}`;
-}, buildDeleteBody = async (values, ctx) => {
-  let reason = values.reason, detail = values.detail, requestReason = reason !== "" ? reason : detail, requestDetail = reason !== "" ? detail : "", site = currentSite();
-  if (values.batch === "1") {
-    let pages = parseBatchPages(values.pages, site);
-    if (pages.length === 0)
-      throw new Error(wgULS("请至少填写一个页面", "請至少填寫一個頁面"));
-    return buildBatchBody(await resolveBatchPages(pages), requestReason, requestDetail);
-  }
-  return buildSingleBody(linkedPageNameFor(ctx.pageName, site), ctx.isRedirect, requestReason, requestDetail);
-}, autopatrolPromise = null, checkAutopatrol = () => (autopatrolPromise ?? (autopatrolPromise = new Promise((resolve) => {
-  mw.user.getRights().then((rights) => {
-    resolve(rights.includes("autopatrol"));
-  }).catch((error) => {
-    console.warn("[QuickRequest] 获取用户权限失败，按无 autopatrol 权限处理", error), resolve(!1);
-  });
-})), autopatrolPromise), fetchReasonOptions = async () => {
+  })).query?.users?.[0] ?? {}, primary = formatBlockInfo(user);
+  if (primary === null)
+    return null;
+  let extras = [];
   try {
-    let wgNamespaceNumber = mw.config.get("wgNamespaceNumber"), wgNamespaceIds = mw.config.get("wgNamespaceIds"), page = wgNamespaceNumber === wgNamespaceIds.file ? "MediaWiki:Filedelete-reason-dropdown" : "MediaWiki:Deletereason-dropdown", res = await getApi().post({
-      action: "parse",
-      page,
-      prop: "text",
+    extras = ((await getApi().post({
+      action: "query",
+      list: "blocks",
+      bkusers: userName,
+      bkprop: "id|by|reason|expiry",
       formatversion: 2
-    }), $container = $("<div>").html(res.parse?.text ?? ""), options = [], pushOption = (element) => {
-      let text = element.innerText.trim();
-      options.push({ data: text, label: text });
-    };
-    return $container.children(".mw-parser-output").children("ul").children("li").each((_, element) => {
-      let $element = $(element);
-      $element.children("ul").length > 0 ? (options.push({ optgroup: $element.clone().find("*").remove().end().text().trim() }), $element.children("ul").children("li").each((__, child) => {
-        pushOption(child);
-      })) : pushOption(element);
-    }), options;
+    })).query?.blocks ?? []).filter((block) => block.blockid !== user.blockid);
   } catch (error) {
-    return console.warn("[QuickRequest] 理由下拉加载失败", error), [];
+    console.warn("[QuickRequest] 并行封禁查询失败", error);
   }
-}, readEnterPreference = () => {
-  let value = getPreference("enterToSubmit", { name: "AnnTools-requestDeletion", key: "enterToSubmit" });
-  return value !== null && value !== "" && value !== "false" ? "1" : "";
-}, buildDeleteParams = async () => {
-  let [options, hasAutopatrol] = await Promise.all([fetchReasonOptions(), checkAutopatrol()]), site = currentSite(), params = [
-    {
-      key: "reason",
-      label: wgULS("删除理由", "刪除理由"),
-      type: "dropdown",
-      options: [{ data: "", label: wgULS("其他（请自行说明理由）", "其他（請自行說明理由）") }, ...options]
-    },
-    { key: "detail", label: wgULS("详情", "詳情"), type: "text", enterSubmits: !0 }
-  ];
-  return hasAutopatrol && (params.push({ key: "batch", label: wgULS("批量提删", "批次提刪"), type: "checkbox" }), params.push({
-    key: "pages",
-    label: wgULS("待删除页面", "待刪除頁面"),
-    type: "multiline",
-    placeholder: site === "zh" ? wgULS(`一行一个主站页面，不需要添加[[ ]]，不自动包含当前页面；
-共享站页面请加 cm: 前缀`, `一行一個主站頁面，不需要添加[[ ]]，不自動包含當前頁面；
-共享站頁面請加 cm: 前綴`) : wgULS(`一行一个共享站页面，不需要添加[[ ]]，不自动包含当前页面；
-主站页面请加 zhmoe: 前缀`, `一行一個共享站頁面，不需要添加[[ ]]，不自動包含當前頁面；
-主站頁面請加 zhmoe: 前綴`),
-    visibleIf: { param: "batch", equals: "1" }
-  })), params.push({
-    key: "enterToSubmit",
-    label: wgULS("理由详情按回车提交（浏览器级设置）", "理由詳情按確認鍵提交（瀏覽器級設置）"),
-    type: "checkbox",
-    default: readEnterPreference(),
-    storageKey: "enterToSubmit"
-  }), params;
+  let extraText = formatExtraBlocks(extras);
+  return extraText === "" ? primary : `${primary}
+${extraText}`;
 };
-
-// packages/QuickRequest/src/registry.ts
-var policyWarning = (ctx) => {
-  if (ctx.userGroups.some((group) => WARNING_SKIP_GROUPS.includes(group)))
-    return Promise.resolve([]);
-  let categories = mw.config.get("wgCategories");
-  if (!POLICY_CATEGORIES.some((category) => categories.includes(category)))
-    return Promise.resolve([]);
-  let message = $("<div>").append(
-    $("<p>").append(
-      wgULS("进行", "進行"),
-      $("<strong>").text(wgULS("实质性", "實質性")),
-      wgULS("修改时，需要通过", "修改時，需要通過"),
-      $("<a>", {
-        href: "/萌娘百科:提案",
-        text: wgULS("提案", "提案")
-      }).css("font-weight", "bold"),
-      wgULS("或", "或"),
-      $("<a>", {
-        href: "/萌娘百科:快速提案",
-        text: wgULS("快速提案", "快速提案")
-      }).css("font-weight", "bold"),
-      wgULS("流程才可对方针和指引进行改动。", "流程才可對方針和指引進行改動。")
-    ),
-    $("<p>").append(
-      wgULS("在讨论页发起的编辑请求仅可用于修正错别字等", "在討論頁發起的編輯請求僅可用於修正錯別字等"),
-      $("<strong>").text(wgULS("非实质性", "非實質性")),
-      wgULS("修改。", "修改。")
-    )
-  );
-  return Promise.resolve([{ title: wgULS("提醒", "提醒"), message }]);
-}, editDefinition = {
-  id: "edit",
-  label: wgULS("编辑请求", "編輯請求"),
-  availability: () => !0,
-  resolveTarget: (ctx) => ctx.talkPage,
-  sectionTitle: (ctx) => `编辑请求${titleSuffix(ctx.userName, ctx.now)}`,
-  warnings: policyWarning
-}, editConversiontableDefinition = {
-  ...editDefinition,
-  id: "editConversiontable",
-  label: wgULS("编辑请求（转换表）", "編輯請求（轉換表）")
-}, isSamePageTitle = (a, b) => {
-  let normalize = (title) => {
-    let spaced = title.replace(/_/g, " ").trim();
-    return spaced.charAt(0).toUpperCase() + spaced.slice(1);
-  };
-  return normalize(a) === normalize(b);
-}, moveDefinition = {
-  id: "move",
-  label: wgULS("移动请求", "移動請求"),
-  availability: () => !0,
-  resolveTarget: () => OPERATIONS_BOARD,
-  sectionTitle: (ctx) => `移动请求${titleSuffix(ctx.userName, ctx.now)}`,
-  // 新标题与当前页面名相同即移动到自身，原生移动同样不允许
-  validate: (values, ctx) => isSamePageTitle(values.new, ctx.pageName) ? wgULS("新标题与当前页面名相同，无需移动。", "新標題與目前頁面名稱相同，無需移動。") : null
-}, createDefinition = {
-  id: "create",
-  label: wgULS("创建请求", "建立請求"),
-  availability: () => !0,
-  resolveTarget: () => OPERATIONS_BOARD,
-  sectionTitle: (ctx) => `创建请求${titleSuffix(ctx.userName, ctx.now)}`
-}, userGroupDefinition = {
-  id: "userGroup",
-  label: wgULS("权限申请", "權限申請"),
-  // 与现行申请按钮（Widget:Applybutton）的守卫一致：仅自动确认用户可用
-  availability: (ctx) => ctx.userGroups.includes("autoconfirmed"),
-  resolveTarget: () => RIGHTS_BOARD,
-  postMode: "append"
-}, banAppealDefinition = {
-  id: "banAppeal",
-  label: wgULS("封禁申诉", "封鎖申訴"),
-  availability: () => !0,
-  resolveTarget: (ctx) => `User_talk:${ctx.userName}`,
-  postMode: "append",
-  allowCreate: !0
-}, deleteDefinition = {
-  id: "delete",
-  label: wgULS("请求删除", "請求刪除"),
-  availability: () => !0,
-  resolveTarget: () => OPERATIONS_BOARD,
-  site: "zh",
-  programmaticForm: {
-    buildParams: buildDeleteParams,
-    requireAnyOf: ["reason", "detail"],
-    buildBody: buildDeleteBody,
-    buildSectionTitle: (values, ctx) => buildDeleteSectionTitle(values, ctx, isZhHost() ? "zh" : "commons")
-  }
-}, vandalReportDefinition = {
-  id: "vandalReport",
-  label: wgULS("反破坏举报申请", "反破壞舉報申請"),
-  availability: (ctx) => ctx.userGroups.includes("patroller") || ctx.userGroups.includes("sysop"),
-  resolveTarget: () => VANDAL_BOARD,
-  postMode: "append"
-}, checkuserRecordDefinition = {
-  id: "checkuserRecord",
-  label: wgULS("新增查核记录", "新增查核記錄"),
-  availability: (ctx) => ctx.userGroups.includes("checkuser"),
-  resolveTarget: () => CHECKUSER_RECORD_TALK,
-  postMode: "append"
-}, editTechDefinition = {
-  ...editDefinition,
-  id: "editTech",
-  label: wgULS("技术编辑请求", "技術編輯請求")
-}, REQUEST_TYPES = {
-  edit: editDefinition,
-  editConversiontable: editConversiontableDefinition,
-  move: moveDefinition,
-  create: createDefinition,
-  userGroup: userGroupDefinition,
-  banAppeal: banAppealDefinition,
-  delete: deleteDefinition,
-  vandalReport: vandalReportDefinition,
-  checkuserRecord: checkuserRecordDefinition,
-  editTech: editTechDefinition
-}, resolveRequestType = (id, pageName) => id === "edit" && CONVERSION_TABLE_PATTERN.test(pageName) ? REQUEST_TYPES.editConversiontable : REQUEST_TYPES[id], buildContext = (userName) => ({
-  pageName: mw.config.get("wgPageName"),
-  talkPage: libGetPageNames().talkPage,
-  userName,
-  userGroups: mw.config.get("wgUserGroups") ?? [],
-  now: /* @__PURE__ */ new Date(),
-  isRedirect: mw.config.get("wgIsRedirect")
-});
 
 // packages/QuickRequest/src/entries.ts
-var mountUserGroupEntry = () => {
-  if (mw.config.get("wgPageName") !== RIGHTS_BOARD || !REQUEST_TYPES.userGroup?.availability(buildContext(mw.config.get("wgUserName") ?? "")))
-    return;
-  let link = mw.util.addPortletLink("p-cactions", "#", wgULS("发起权限申请", "發起權限申請"), "ca-quickrequest-usergroup");
-  link && $(link).on("click", (event) => {
-    event.preventDefault(), window.libQuickRequest?.open("userGroup");
-  });
-}, mountBanAppealEntry = () => {
+var mountBanAppealEntry = () => {
   let $container = $("#BlockedUserHelp");
   if ($container.length === 0)
     return;
@@ -458,30 +210,17 @@ var mountUserGroupEntry = () => {
   link && $(link).on("click", (event) => {
     event.preventDefault(), window.libQuickRequest?.open("delete");
   });
-}, mountVandalReportEntry = () => {
-  let { wgNamespaceNumber, wgRelevantUserName } = mw.config.get(["wgNamespaceNumber", "wgRelevantUserName"]);
-  if (wgNamespaceNumber !== 2 && wgNamespaceNumber !== 3 || !REQUEST_TYPES.vandalReport?.availability(buildContext(mw.config.get("wgUserName") ?? "")))
-    return;
-  let link = mw.util.addPortletLink("p-cactions", "#", wgULS("反破坏举报申请", "反破壞舉報申請"), "ca-quickrequest-vandal-report", wgULS("提请将此用户列入破坏者列表", "提請將此使用者列入破壞者列表"));
-  link && $(link).on("click", (event) => {
-    event.preventDefault(), window.libQuickRequest?.open("vandalReport", typeof wgRelevantUserName == "string" ? { 1: wgRelevantUserName } : void 0);
-  });
-}, mountCheckuserRecordEntry = () => {
-  let { wgPageName } = mw.config.get(["wgPageName"]);
-  if (wgPageName !== CHECKUSER_RECORD_PAGE && wgPageName !== CHECKUSER_RECORD_TALK || !REQUEST_TYPES.checkuserRecord?.availability(buildContext(mw.config.get("wgUserName") ?? "")))
-    return;
-  let link = mw.util.addPortletLink("p-cactions", "#", wgULS("新增查核记录", "新增查核記錄"), "ca-quickrequest-checkuser-record", wgULS("在用户查核记录版面发起新增记录请求", "在用戶查核記錄版面發起新增記錄請求"));
-  link && $(link).on("click", (event) => {
-    event.preventDefault(), window.libQuickRequest?.open("checkuserRecord");
-  });
-}, entryMounters = [mountUserGroupEntry, mountBanAppealEntry, mountDeleteEntry, mountVandalReportEntry, mountCheckuserRecordEntry], mountEntries = () => {
+}, entryMounters = [mountBanAppealEntry, mountDeleteEntry], mountEntries = () => {
   for (let mount of entryMounters)
     mount();
 };
 
+// packages/QuickRequest/src/uitext.ts
+var resolveUIText = (text) => typeof text == "string" ? text : wgULS(text.hans, text.hant ?? text.hans);
+
 // packages/QuickRequest/src/fields.ts
 var createParamWidget = (param, $overlay) => {
-  let value = param.default ?? "", placeholder = param.placeholder === void 0 ? {} : { placeholder: param.placeholder };
+  let value = param.default ?? "", placeholder = param.placeholder === void 0 ? {} : { placeholder: resolveUIText(param.placeholder) };
   switch (param.type ?? "text") {
     case "page":
       return new mw.widgets.TitleInputWidget({ value, suggestions: !0, $overlay });
@@ -509,9 +248,9 @@ var createParamWidget = (param, $overlay) => {
       widget.focus();
     } : void 0,
     layout: new OO.ui.FieldLayout(widget, {
-      label: param.label,
+      label: resolveUIText(param.label),
       align: param.type === "checkbox" ? "inline" : "top",
-      ...param.hint === void 0 ? {} : { help: param.hint, helpInline: !0 }
+      ...param.hint === void 0 ? {} : { help: resolveUIText(param.hint), helpInline: !0 }
     }),
     flagged: !1,
     hidden: !1
@@ -520,7 +259,12 @@ var createParamWidget = (param, $overlay) => {
   let firstInvalid = null;
   for (let field of fields) {
     let invalid = !field.hidden && (field.param.required ?? !1) && field.read().trim() === "";
-    invalid !== field.flagged && (field.flagged = invalid, field.flagValidity?.(!invalid), field.layout.setErrors(invalid ? [wgULS(`${field.param.label}不能为空`, `${field.param.label}不能為空`)] : [])), invalid && !firstInvalid && (firstInvalid = field);
+    if (invalid !== field.flagged) {
+      field.flagged = invalid, field.flagValidity?.(!invalid);
+      let labelText = resolveUIText(field.param.label);
+      field.layout.setErrors(invalid ? [wgULS(`${labelText}不能为空`, `${labelText}不能為空`)] : []);
+    }
+    invalid && !firstInvalid && (firstInvalid = field);
   }
   return firstInvalid;
 };
@@ -569,6 +313,21 @@ var showMessage = (spec, actions) => new Promise((resolve) => {
   { action: "close", label: wgULS("关闭", "關閉"), flags: ["safe", "primary"] },
   { action: "retry", label: wgULS("仍要重试", "仍要重試") }
 ]) === "retry" ? "retry" : "close";
+
+// packages/QuickRequest/src/storage.ts
+var storage = null, getStorage = () => (storage ?? (storage = new LocalObjectStorage("AnnTools-QuickRequest")), storage), getPreference = (key, legacy) => {
+  let value = getStorage().getItem(key);
+  if (typeof value == "string")
+    return value;
+  if (legacy !== void 0) {
+    let legacyValue = new LocalObjectStorage(legacy.name).getItem(legacy.key);
+    if (legacyValue != null)
+      return typeof legacyValue == "string" ? legacyValue : JSON.stringify(legacyValue);
+  }
+  return null;
+}, setPreference = (key, value) => {
+  getStorage().setItem(key, value);
+};
 
 // packages/QuickRequest/src/mainDialog.ts
 var MainDialog = class extends OO.ui.ProcessDialog {
@@ -681,6 +440,9 @@ var MainDialog = class extends OO.ui.ProcessDialog {
           targetPage: submission.targetPage,
           ...submission.getSectionTitle === void 0 ? {} : { getSectionTitle: submission.getSectionTitle },
           ...submission.postMode === void 0 ? {} : { postMode: submission.postMode },
+          // allowCreate 同样由 collectSubmission 产出（banAppeal 建页），漏传会让
+          // append 退回 nocreate、新用户讨论页建页失败
+          ...submission.allowCreate === void 0 ? {} : { allowCreate: submission.allowCreate },
           editSummary: submission.editSummary,
           api: this.api,
           targetBase: this.targetBase,
@@ -717,7 +479,7 @@ var MainDialog = class extends OO.ui.ProcessDialog {
     let variants = typeConfig?.variants ?? [], initialSpec;
     if (variants.length > 0)
       this.variantInput = new OO.ui.DropdownInputWidget({
-        options: variants.map(({ id, label }) => ({ data: id, label })),
+        options: variants.map(({ id, label }) => ({ data: id, label: resolveUIText(label) })),
         value: variants[0]?.id
       }), this.variantInput.on("change", () => {
         this.rebuildParamArea(this.currentVariant());
@@ -780,7 +542,10 @@ var MainDialog = class extends OO.ui.ProcessDialog {
         }
       );
     }), this.paramFieldset.addItems(this.paramFields.map(({ layout }) => layout));
-    let groupLabels = (spec.requireAnyOf ?? []).map((key) => spec.parameters?.find((param) => param.key === key)?.label ?? key);
+    let groupLabels = (spec.requireAnyOf ?? []).map((key) => {
+      let label = spec.parameters?.find((param) => param.key === key)?.label;
+      return label === void 0 ? key : resolveUIText(label);
+    });
     this.groupHint.setLabel(groupLabels.length > 0 ? wgULS(`「${groupLabels.join("」「")}」至少填写一项`, `「${groupLabels.join("」「")}」至少填寫一項`) : ""), this.onFormChanged();
   }
   /** 当前表单全量值：隐藏字段的固定值 + 可见控件的当前值。 */
@@ -1081,6 +846,280 @@ __publicField(PreviewDialog, "static", {
     { action: "send", label: wgULS("提交请求", "提交請求"), flags: ["primary", "progressive"] },
     { action: "back", label: wgULS("返回", "返回"), flags: ["safe"] }
   ]
+});
+
+// packages/QuickRequest/src/deleteContent.ts
+var currentSite = () => isZhHost() ? "zh" : "commons", linkedPageNameFor = (pageName, site) => site === "zh" ? pageName : `cm:${pageName}`, buildSingleBody = (linkedPageName, isRedirect, reason, detail) => {
+  let lines = [
+    `* '''页面标题'''：${isRedirect ? `{{NoRedirectLink|${linkedPageName}}}` : `[[:${linkedPageName}]]`}`,
+    `* '''申请理由'''：${reason}`
+  ];
+  return detail !== "" && lines.push(`* '''详细原因'''：${detail}`), lines.push("~~~~"), lines.join(`
+`);
+}, buildBatchBody = (pages, reason, detail) => {
+  let lines = [
+    "* '''页面标题'''：",
+    ...pages.map(({ title, isRedirect }) => `** ${isRedirect ? `{{NoRedirectLink|${title}}}` : `[[:${title}]]`}`),
+    `* '''申请理由'''：${reason}`
+  ];
+  return detail !== "" && lines.push(`* '''详细原因'''：${detail}`), lines.push("~~~~"), lines.join(`
+`);
+}, parseBatchPages = (text, site) => {
+  let lines = text.split(`
+`).map((line) => line.trim()).filter((line) => line !== ""), invalidLines = lines.filter((line) => {
+    let stripped = line.replace(/^(?:cm:|zhmoe:)/i, "");
+    return stripped === "" || /[|[\]{}<>]/.test(stripped);
+  });
+  if (invalidLines.length > 0)
+    throw new Error(wgULS(
+      `以下页面标题无效（仅有前缀，或含 | [ ] { } < > 等字符）：${invalidLines.join("、")}`,
+      `以下頁面標題無效（僅有前綴，或含 | [ ] { } < > 等字元）：${invalidLines.join("、")}`
+    ));
+  let toBatchPage = (line) => {
+    if (/^zhmoe:/i.test(line)) {
+      let title = line.substring(6);
+      return { title, queryTitle: title, site: "zh" };
+    }
+    return /^cm:/i.test(line) ? { title: line, queryTitle: line.substring(3), site: "commons" } : site === "zh" ? { title: line, queryTitle: line, site: "zh" } : { title: `cm:${line}`, queryTitle: line, site: "commons" };
+  }, result = [], seen = /* @__PURE__ */ new Set();
+  for (let line of lines) {
+    let page = toBatchPage(line);
+    seen.has(page.title) || (seen.add(page.title), result.push(page));
+  }
+  return result;
+}, normalizeBatchTitle = (title) => title.replace(/_/g, " ").replace(/\s+/g, " ").trim().replace(/^[a-z]/, (char) => char.toUpperCase()), applyRedirectInfo = (pages, normalizedTitles, redirectFlags) => pages.map(({ title, queryTitle }) => {
+  let normalized = normalizeBatchTitle(queryTitle);
+  return { title, isRedirect: redirectFlags.get(normalizedTitles.get(normalized) ?? normalized) ?? !1 };
+}), resolveBatchPages = async (pages) => {
+  let normalizedTitles = /* @__PURE__ */ new Map(), redirectFlags = /* @__PURE__ */ new Map(), titlesBySite = /* @__PURE__ */ new Map(), failures = [];
+  for (let { queryTitle, site } of pages) {
+    let list = titlesBySite.get(site) ?? [];
+    list.push(queryTitle), titlesBySite.set(site, list);
+  }
+  if (await Promise.all([...titlesBySite].map(async ([site, titles]) => {
+    let unique = [...new Set(titles)], batches = Array.from({ length: Math.ceil(unique.length / 50) }, (_, index) => unique.slice(index * 50, index * 50 + 50));
+    await Promise.all(batches.map(async (batch) => {
+      try {
+        let res = await getApiForSite(site).post({
+          action: "query",
+          titles: batch.join("|"),
+          prop: "info",
+          formatversion: 2
+        });
+        for (let { from, to } of res.query?.normalized ?? [])
+          normalizedTitles.set(normalizeBatchTitle(from), to);
+        for (let { title, redirect } of res.query?.pages ?? [])
+          redirectFlags.set(normalizeBatchTitle(title), redirect === !0);
+      } catch (error) {
+        failures.push(error), console.warn("[QuickRequest] 批量查询重定向失败", error);
+      }
+    }));
+  })), failures.length > 0)
+    throw new Error(wgULS("批量查询页面重定向状态失败，请稍后重试", "批量查詢頁面重新導向狀態失敗，請稍後重試"));
+  return applyRedirectInfo(pages, normalizedTitles, redirectFlags);
+}, buildDeleteSectionTitle = (values, ctx, site) => {
+  let suffix = titleSuffix(ctx.userName, ctx.now);
+  return values.batch === "1" ? `批量删除请求${suffix}` : `请求删除页面：[[${linkedPageNameFor(ctx.pageName, site)}]]${suffix}`;
+}, buildDeleteBody = async (values, ctx) => {
+  let reason = values.reason, detail = values.detail, requestReason = reason !== "" ? reason : detail, requestDetail = reason !== "" ? detail : "", site = currentSite();
+  if (values.batch === "1") {
+    let pages = parseBatchPages(values.pages, site);
+    if (pages.length === 0)
+      throw new Error(wgULS("请至少填写一个页面", "請至少填寫一個頁面"));
+    return buildBatchBody(await resolveBatchPages(pages), requestReason, requestDetail);
+  }
+  return buildSingleBody(linkedPageNameFor(ctx.pageName, site), ctx.isRedirect, requestReason, requestDetail);
+}, autopatrolPromise = null, checkAutopatrol = () => (autopatrolPromise ?? (autopatrolPromise = new Promise((resolve) => {
+  mw.user.getRights().then((rights) => {
+    resolve(rights.includes("autopatrol"));
+  }).catch((error) => {
+    console.warn("[QuickRequest] 获取用户权限失败，按无 autopatrol 权限处理", error), resolve(!1);
+  });
+})), autopatrolPromise), fetchReasonOptions = async () => {
+  try {
+    let wgNamespaceNumber = mw.config.get("wgNamespaceNumber"), wgNamespaceIds = mw.config.get("wgNamespaceIds"), page = wgNamespaceNumber === wgNamespaceIds.file ? "MediaWiki:Filedelete-reason-dropdown" : "MediaWiki:Deletereason-dropdown", res = await getApi().post({
+      action: "parse",
+      page,
+      prop: "text",
+      formatversion: 2
+    }), $container = $("<div>").html(res.parse?.text ?? ""), options = [], pushOption = (element) => {
+      let text = element.innerText.trim();
+      options.push({ data: text, label: text });
+    };
+    return $container.children(".mw-parser-output").children("ul").children("li").each((_, element) => {
+      let $element = $(element);
+      $element.children("ul").length > 0 ? (options.push({ optgroup: $element.clone().find("*").remove().end().text().trim() }), $element.children("ul").children("li").each((__, child) => {
+        pushOption(child);
+      })) : pushOption(element);
+    }), options;
+  } catch (error) {
+    return console.warn("[QuickRequest] 理由下拉加载失败", error), [];
+  }
+}, readEnterPreference = () => {
+  let value = getPreference("enterToSubmit", { name: "AnnTools-requestDeletion", key: "enterToSubmit" });
+  return value !== null && value !== "" && value !== "false" ? "1" : "";
+}, buildDeleteParams = async () => {
+  let [options, hasAutopatrol] = await Promise.all([fetchReasonOptions(), checkAutopatrol()]), site = currentSite(), params = [
+    {
+      key: "reason",
+      label: wgULS("删除理由", "刪除理由"),
+      type: "dropdown",
+      options: [{ data: "", label: wgULS("其他（请自行说明理由）", "其他（請自行說明理由）") }, ...options]
+    },
+    { key: "detail", label: wgULS("详情", "詳情"), type: "text", enterSubmits: !0 }
+  ];
+  return hasAutopatrol && (params.push({ key: "batch", label: wgULS("批量提删", "批次提刪"), type: "checkbox" }), params.push({
+    key: "pages",
+    label: wgULS("待删除页面", "待刪除頁面"),
+    type: "multiline",
+    placeholder: site === "zh" ? wgULS(`一行一个主站页面，不需要添加[[ ]]，不自动包含当前页面；
+共享站页面请加 cm: 前缀`, `一行一個主站頁面，不需要添加[[ ]]，不自動包含當前頁面；
+共享站頁面請加 cm: 前綴`) : wgULS(`一行一个共享站页面，不需要添加[[ ]]，不自动包含当前页面；
+主站页面请加 zhmoe: 前缀`, `一行一個共享站頁面，不需要添加[[ ]]，不自動包含當前頁面；
+主站頁面請加 zhmoe: 前綴`),
+    visibleIf: { param: "batch", equals: "1" }
+  })), params.push({
+    key: "enterToSubmit",
+    label: wgULS("理由详情按回车提交（浏览器级设置）", "理由詳情按確認鍵提交（瀏覽器級設置）"),
+    type: "checkbox",
+    default: readEnterPreference(),
+    storageKey: "enterToSubmit"
+  }), params;
+};
+
+// packages/QuickRequest/src/registry.ts
+var policyWarning = async (ctx) => {
+  if (ctx.userGroups.some((group) => WARNING_SKIP_GROUPS.includes(group)))
+    return [];
+  let hit = POLICY_CATEGORIES.some((category) => mw.config.get("wgCategories").includes(category));
+  if (!hit && mw.config.get("wgAction") === "edit")
+    try {
+      hit = ((await getApi().post({
+        action: "query",
+        titles: ctx.pageName,
+        prop: "categories",
+        clcategories: POLICY_CATEGORIES.join("|"),
+        formatversion: 2
+      })).query?.pages?.[0]?.categories?.length ?? 0) > 0;
+    } catch (error) {
+      console.warn("[QuickRequest] 编辑视图回退查询页面分类失败", error);
+    }
+  if (!hit)
+    return [];
+  let message = $("<div>").append(
+    $("<p>").append(
+      wgULS("进行", "進行"),
+      $("<strong>").text(wgULS("实质性", "實質性")),
+      wgULS("修改时，需要通过", "修改時，需要通過"),
+      $("<a>", {
+        href: "/萌娘百科:提案",
+        text: wgULS("提案", "提案")
+      }).css("font-weight", "bold"),
+      wgULS("或", "或"),
+      $("<a>", {
+        href: "/萌娘百科:快速提案",
+        text: wgULS("快速提案", "快速提案")
+      }).css("font-weight", "bold"),
+      wgULS("流程才可对方针和指引进行改动。", "流程才可對方針和指引進行改動。")
+    ),
+    $("<p>").append(
+      wgULS("在讨论页发起的编辑请求仅可用于修正错别字等", "在討論頁發起的編輯請求僅可用於修正錯別字等"),
+      $("<strong>").text(wgULS("非实质性", "非實質性")),
+      wgULS("修改。", "修改。")
+    )
+  );
+  return Promise.resolve([{ title: wgULS("提醒", "提醒"), message }]);
+}, editDefinition = {
+  id: "edit",
+  label: wgULS("编辑请求", "編輯請求"),
+  availability: () => !0,
+  resolveTarget: (ctx) => ctx.talkPage,
+  sectionTitle: (ctx) => `编辑请求${titleSuffix(ctx.userName, ctx.now)}`,
+  warnings: policyWarning
+}, editConversiontableDefinition = {
+  ...editDefinition,
+  id: "editConversiontable",
+  label: wgULS("编辑请求（转换表）", "編輯請求（轉換表）")
+}, isSamePageTitle = (a, b) => {
+  let normalize = (title) => {
+    let spaced = title.replace(/_/g, " ").trim();
+    return spaced.charAt(0).toUpperCase() + spaced.slice(1);
+  };
+  return normalize(a) === normalize(b);
+}, moveDefinition = {
+  id: "move",
+  label: wgULS("移动请求", "移動請求"),
+  availability: () => !0,
+  resolveTarget: () => OPERATIONS_BOARD,
+  sectionTitle: (ctx) => `移动请求${titleSuffix(ctx.userName, ctx.now)}`,
+  // 新标题与当前页面名相同即移动到自身，原生移动同样不允许
+  validate: (values, ctx) => isSamePageTitle(values.new, ctx.pageName) ? wgULS("新标题与当前页面名相同，无需移动。", "新標題與目前頁面名稱相同，無需移動。") : null
+}, createDefinition = {
+  id: "create",
+  label: wgULS("创建请求", "建立請求"),
+  availability: () => !0,
+  resolveTarget: () => OPERATIONS_BOARD,
+  sectionTitle: (ctx) => `创建请求${titleSuffix(ctx.userName, ctx.now)}`
+}, userGroupDefinition = {
+  id: "userGroup",
+  label: wgULS("权限申请", "權限申請"),
+  // 与现行申请按钮（Widget:Applybutton）的守卫一致：仅自动确认用户可用
+  availability: (ctx) => ctx.userGroups.includes("autoconfirmed"),
+  resolveTarget: () => RIGHTS_BOARD,
+  postMode: "append"
+}, banAppealDefinition = {
+  id: "banAppeal",
+  label: wgULS("封禁申诉", "封鎖申訴"),
+  availability: () => !0,
+  resolveTarget: (ctx) => `User_talk:${ctx.userName}`,
+  postMode: "append",
+  allowCreate: !0
+}, deleteDefinition = {
+  id: "delete",
+  label: wgULS("请求删除", "請求刪除"),
+  availability: () => !0,
+  resolveTarget: () => OPERATIONS_BOARD,
+  site: "zh",
+  programmaticForm: {
+    buildParams: buildDeleteParams,
+    requireAnyOf: ["reason", "detail"],
+    buildBody: buildDeleteBody,
+    buildSectionTitle: (values, ctx) => buildDeleteSectionTitle(values, ctx, isZhHost() ? "zh" : "commons")
+  }
+}, vandalReportDefinition = {
+  id: "vandalReport",
+  label: wgULS("反破坏举报申请", "反破壞舉報申請"),
+  availability: (ctx) => ctx.userGroups.includes("autoconfirmed"),
+  resolveTarget: () => VANDAL_BOARD,
+  postMode: "append"
+}, checkuserRecordDefinition = {
+  id: "checkuserRecord",
+  label: wgULS("新增查核记录", "新增查核記錄"),
+  availability: (ctx) => ctx.userGroups.includes("checkuser"),
+  resolveTarget: () => CHECKUSER_RECORD_TALK,
+  postMode: "append"
+}, editTechDefinition = {
+  ...editDefinition,
+  id: "editTech",
+  label: wgULS("技术编辑请求", "技術編輯請求")
+}, REQUEST_TYPES = {
+  edit: editDefinition,
+  editConversiontable: editConversiontableDefinition,
+  move: moveDefinition,
+  create: createDefinition,
+  userGroup: userGroupDefinition,
+  banAppeal: banAppealDefinition,
+  delete: deleteDefinition,
+  vandalReport: vandalReportDefinition,
+  checkuserRecord: checkuserRecordDefinition,
+  editTech: editTechDefinition
+}, resolveRequestType = (id, pageName) => id === "edit" && CONVERSION_TABLE_PATTERN.test(pageName) ? REQUEST_TYPES.editConversiontable : REQUEST_TYPES[id], buildContext = (userName) => ({
+  pageName: mw.config.get("wgPageName"),
+  talkPage: libGetPageNames().talkPage,
+  userName,
+  userGroups: mw.config.get("wgUserGroups") ?? [],
+  now: /* @__PURE__ */ new Date(),
+  isRedirect: mw.config.get("wgIsRedirect")
 });
 
 // packages/QuickRequest/src/index.ts

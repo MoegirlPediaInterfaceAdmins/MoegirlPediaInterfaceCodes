@@ -34,14 +34,15 @@ describe("move 类型的移动到自身校验", () => {
 });
 
 describe("阶段 5 类型的注册记录", () => {
-    it("vandalReport：可见性为巡查员/管理员，目标为长期破坏者版面，append 追加", () => {
+    it("vandalReport：可见性对齐版面编辑保护（autoconfirmed），目标为长期破坏者版面，append 追加", () => {
         const definition = REQUEST_TYPES.vandalReport;
         if (definition === undefined) {
             throw new Error("vandalReport 类型未注册");
         }
-        expect(definition.availability({ ...context, userGroups: ["patroller"] })).toBe(true);
-        expect(definition.availability({ ...context, userGroups: ["sysop"] })).toBe(true);
-        expect(definition.availability({ ...context, userGroups: ["autoconfirmed"] })).toBe(false);
+        // 版面萌娘百科_talk:长期破坏者 的编辑保护即 autoconfirmed——能手动发帖的就能用表单；
+        // 提请环节无用户组限制（反破坏方针限制的是 Abuse 的认定环节，不是提请）
+        expect(definition.availability({ ...context, userGroups: ["autoconfirmed"] })).toBe(true);
+        expect(definition.availability({ ...context, userGroups: [] })).toBe(false);
         // 模板 doc 标注版面「目前是」——配置页 targetPage 优先，此值为回退
         expect(definition.resolveTarget(context)).toBe("萌娘百科_talk:长期破坏者");
         // 模板正文以 ==提请将[[User:…]]列入破坏者列表== 开头，标题由模板生成
