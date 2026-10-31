@@ -1,0 +1,36 @@
+ResourceLoader: true
+
+hidden: true
+
+default: true
+
+supportsUrlLoad: false
+
+skins: []
+
+actions: []
+
+categories: []
+
+namespaces: []
+
+contentModels: []
+
+type: general
+
+package: false
+
+rights: []
+
+peers: []
+
+dependencies:
+  - mediawiki.api
+
+_sites:
+  - zh
+
+_section: system
+
+_files:
+  - Gadget-Watermark.js
