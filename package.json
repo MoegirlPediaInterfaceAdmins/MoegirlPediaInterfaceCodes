@@ -32,7 +32,8 @@
         "package:build": "node scripts/buildPackages/index.js",
         "package:test": "node scripts/buildPackages/index.js --check",
         "build:js": "npx tsc --project tsconfig.production.json && npx tsc --project tsconfig.artifacts.json",
-        "postbuild:js": "node scripts/injection/index.js && node scripts/minification/terser.js"
+        "postbuild:js": "node scripts/injection/index.js && node scripts/minification/terser.js",
+        "postbuild": "rm -rdf dist/_generated dist/_compiled"
     },
     "dependencies": {
         "@actions/artifact": "^6.3.1",

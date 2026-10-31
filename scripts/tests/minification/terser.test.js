@@ -44,15 +44,16 @@ describe("minification/terser", () => {
         expect(failure).toBeInstanceOf(Error);
         expect(failure.code).toBe(1);
         expect(failure.stderr).toContain("Error minifying file");
-        const minifiedGood = await fs.readFile(path.join(workingDir, "dist", "_minified", "good.js"), "utf8");
+        // 压缩产物直接落 dist 根路径（与 postcss 的 CSS 同层），不再有 _minified 层
+        const minifiedGood = await fs.readFile(path.join(workingDir, "dist", "good.js"), "utf8");
         expect(minifiedGood.length).toBeGreaterThan(0);
-        await expect(fs.access(path.join(workingDir, "dist", "_minified", "bad.js"))).rejects.toThrow();
+        await expect(fs.access(path.join(workingDir, "dist", "bad.js"))).rejects.toThrow();
     });
 
     it("全部文件压缩成功时以退出码 0 结束", async () => {
         await fs.rm(path.join(workingDir, "dist", "_compiled", "bad.js"));
         await expect(execFileAsync(process.execPath, [terserEntry], { cwd: workingDir, timeout: 60_000 })).resolves.toBeDefined();
-        const minifiedGood = await fs.readFile(path.join(workingDir, "dist", "_minified", "good.js"), "utf8");
+        const minifiedGood = await fs.readFile(path.join(workingDir, "dist", "good.js"), "utf8");
         expect(minifiedGood.length).toBeGreaterThan(0);
     });
 });
