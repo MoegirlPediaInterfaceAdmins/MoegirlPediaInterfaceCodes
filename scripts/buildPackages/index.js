@@ -21,6 +21,9 @@ const fileExists = async (filePath) => {
 };
 
 const checkOnly = process.argv.includes("--check");
+// --no-commit：构建照常但不调 createCommit（linter_test 的重建只为给
+// package:test 提供与磁盘一致的产物，该 job 无 git 身份也无法推送）
+const noCommit = process.argv.includes("--no-commit");
 const packagesDirents = await fs.promises.readdir("packages", { withFileTypes: true });
 const packageNames = packagesDirents.filter((dirent) => dirent.isDirectory()).map(({ name }) => name);
 console.info("packages:", packageNames, checkOnly ? "(check mode)" : "(build mode)");
@@ -70,7 +73,7 @@ for (const name of packageNames) {
             .map((fileName) => path.posix.join("src", "gadgets", name, fileName))
             .filter((srcPath) => !excluded.includes(srcPath)),
     );
-    if (!checkOnly) {
+    if (!checkOnly && !noCommit) {
         await createCommit(`auto(Gadget-${name}): rebuild artifacts from packages/${name}`);
     }
 }
