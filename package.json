@@ -87,6 +87,7 @@
         "typescript": "^6.0.3",
         "uglify-js": "^3.19.3",
         "unassertify": "^3.0.1",
+        "watermark-js-plus": "^1.6.6",
         "yaml": "^2.9.1"
     },
     "devDependencies": {
