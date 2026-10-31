@@ -27,13 +27,13 @@
         "ci": "rm -rdf node_modules && node scripts/ci/selectRegistry.js && npm ci --registry=\"$(cat .cache/ci-registry)\" --replace-registry-host=always",
         "build": "npm run clean && npm run build:artifacts && run-p -l build:css build:js",
         "clean": "rm -rdf dist",
+        "clean:intermediate": "rm -rdf dist/_generated dist/_compiled",
         "build:artifacts": "node scripts/buildArtifacts/index.js",
-        "build:css": "postcss 'src/**/*.css' --base src/ -d dist/ --verbose && postcss 'dist/_generated/**/*.css' --base dist/_generated/ -d dist/ --verbose",
+        "build:css": "postcss 'src/**/*.css' --base src/ -d dist/ --verbose",
         "package:build": "node scripts/buildPackages/index.js",
         "package:test": "node scripts/buildPackages/index.js --check",
         "build:js": "npx tsc --project tsconfig.production.json && npx tsc --project tsconfig.artifacts.json",
-        "postbuild:js": "node scripts/injection/index.js && node scripts/minification/terser.js",
-        "postbuild": "rm -rdf dist/_generated dist/_compiled"
+        "postbuild:js": "node scripts/injection/index.js && node scripts/minification/terser.js && postcss 'dist/_generated/**/*.css' --base dist/_generated/ -d dist/ --verbose && npm run clean:intermediate"
     },
     "dependencies": {
         "@actions/artifact": "^6.3.1",
