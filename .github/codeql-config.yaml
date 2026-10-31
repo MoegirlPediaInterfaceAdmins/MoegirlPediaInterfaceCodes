@@ -36,3 +36,4 @@ paths-ignore:
   - src/gadgets/prism-plugin-phpdoc
   - src/gadgets/prism-plugin-previewers
   - src/gadgets/JSONViewer
+  - src/gadgets/Watermark
