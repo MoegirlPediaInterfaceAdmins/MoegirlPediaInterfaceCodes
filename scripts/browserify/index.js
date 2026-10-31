@@ -18,6 +18,11 @@ console.info("Initialization done.");
  */
 const browserifyTargets = await yamlModule.readFile("scripts/browserify/targets.yaml");
 dump("browserifyTargets:", browserifyTargets);
+// --out=<目录> 指定产物根目录（构建链传 dist/_generated）；缺省写 src/gadgets（入库模式，
+// postCommit CI 继续 commit 产物）。两种模式共用同一份生成逻辑，仅落点不同
+const outFlag = process.argv.find((arg) => arg.startsWith("--out="));
+const outputRoot = outFlag ? outFlag.slice("--out=".length) : path.join("src", "gadgets");
+const inRepoMode = outputRoot === path.join("src", "gadgets");
 const tempPath = await mkdlocaltmp();
 const inputPath = path.join(tempPath, "input.js");
 console.info("中间产物（临时入口）目录:", tempPath);
@@ -32,7 +37,7 @@ try {
     for (const browserifyTarget of browserifyTargets) {
         console.info("target:", browserifyTarget);
         const { module, gadget: { name, fileName }, removePlugins, prependCode } = browserifyTarget;
-        const file = path.join("src/gadgets", name, fileName);
+        const file = path.join(outputRoot, name, fileName);
         fileList.push(file);
         await fs.promises.rm(inputPath, {
             recursive: true,
@@ -83,9 +88,13 @@ try {
             continue;
         }
         console.info(`[${module}]`, "generated successfully.");
-        await createCommit(`auto(Gadget-${name}): bump ${module} to ${localPackageVersions[module].version} by browserify`);
+        if (inRepoMode) {
+            await createCommit(`auto(Gadget-${name}): bump ${module} to ${localPackageVersions[module].version} by browserify`);
+        }
     }
-    exportVariable("linguist-generated-browserify", JSON.stringify(fileList));
+    if (inRepoMode) {
+        exportVariable("linguist-generated-browserify", JSON.stringify(fileList));
+    }
 } finally {
     // 成功与失败路径都清理临时目录，避免本地多次构建后 .tmp/mgp-* 累积
     await fs.promises.rm(tempPath, { recursive: true, force: true });

@@ -6,7 +6,12 @@ import rollupOptions from "../rollup.config.js";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const repoRoot = path.resolve(root, "..", "..");
-const distFile = rollupOptions.output.file;
+// --out=<目录> 指定产物根目录（构建链传 dist/_generated）；缺省沿用 rollup.config.js 的
+// src/gadgets 落点（入库模式）
+const outFlag = process.argv.find((arg) => arg.startsWith("--out="));
+const distFile = outFlag
+    ? path.join(repoRoot, outFlag.slice("--out=".length), "Navigation_popups", "Gadget-popups.js")
+    : rollupOptions.output.file;
 const { input, plugins, treeshake, onwarn, output } = rollupOptions;
 
 const bundle = await rollup({ input, plugins, treeshake, onwarn });

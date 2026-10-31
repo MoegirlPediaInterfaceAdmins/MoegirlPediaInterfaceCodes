@@ -5,7 +5,9 @@ import { fileURLToPath } from "node:url";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const repoRoot = path.resolve(root, "..", "..");
-const gadgetDir = path.join(repoRoot, "src", "gadgets", "HotCat");
+// --out=<目录> 指定产物根目录（构建链传 dist/_generated）；缺省写 src/gadgets（入库模式）
+const outFlag = process.argv.find((arg) => arg.startsWith("--out="));
+const gadgetDir = outFlag ? path.join(repoRoot, outFlag.slice("--out=".length), "HotCat") : path.join(repoRoot, "src", "gadgets", "HotCat");
 
 // esbuild 以入口文件名给产物命名（index.js），写入磁盘时再改成 on-wiki 需要的 gadget 名
 const ENTRY = "src/index.ts";

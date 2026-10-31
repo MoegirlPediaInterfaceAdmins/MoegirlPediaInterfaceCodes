@@ -21,6 +21,11 @@ const fileExists = async (filePath) => {
 };
 
 const checkOnly = process.argv.includes("--check");
+// --out=<目录> 指定产物根目录（构建链传 dist/_generated）；缺省写 src/gadgets（入库模式，
+// postCommit CI 继续 commit 产物）。转发给各包构建脚本，check 模式的幂等对比也读同一目录
+const outFlag = process.argv.find((arg) => arg.startsWith("--out="));
+const outputRoot = outFlag ? outFlag.slice("--out=".length) : path.join("src", "gadgets");
+const inRepoMode = outputRoot === path.join("src", "gadgets");
 const packagesDirents = await fs.promises.readdir("packages", { withFileTypes: true });
 const packageNames = packagesDirents.filter((dirent) => dirent.isDirectory()).map(({ name }) => name);
 console.info("packages:", packageNames, checkOnly ? "(check mode)" : "(build mode)");
@@ -46,7 +51,7 @@ for (const name of packageNames) {
     for (const buildScript of ["build.js", "build-css.js"]) {
         if (scriptNames.includes(buildScript)) {
             console.info(`[${name}]`, "running", buildScript, checkOnly ? "(--check-idempotent)" : "");
-            await spawnAsync("node", [path.join(packageDir, "scripts", buildScript), ...checkOnly ? ["--check-idempotent"] : []]);
+            await spawnAsync("node", [path.join(packageDir, "scripts", buildScript), ...checkOnly ? ["--check-idempotent"] : [], ...outFlag ? [outFlag] : []]);
         }
     }
     if (checkOnly) {
@@ -62,18 +67,20 @@ for (const name of packageNames) {
             await spawnAsync(commandForPlatform("npx"), ["vitest", "run", "--coverage", "--root", packageDir]);
         }
     }
-    const gadgetDir = path.join("src", "gadgets", name);
+    const gadgetDir = path.join(outputRoot, name);
     const gadgetFiles = await fs.promises.readdir(gadgetDir);
     artifactFiles.push(
         ...gadgetFiles
             .filter((fileName) => fileName.startsWith("Gadget-"))
-            .map((fileName) => path.posix.join("src", "gadgets", name, fileName))
+            .map((fileName) => path.posix.join(outputRoot, name, fileName))
             .filter((srcPath) => !excluded.includes(srcPath)),
     );
-    if (!checkOnly) {
+    if (!checkOnly && inRepoMode) {
         await createCommit(`auto(Gadget-${name}): rebuild artifacts from packages/${name}`);
     }
 }
-exportVariable("linguist-generated-packages", JSON.stringify(artifactFiles));
+if (inRepoMode) {
+    exportVariable("linguist-generated-packages", JSON.stringify(artifactFiles));
+}
 console.info("artifactFiles:", artifactFiles);
 console.info("Done.");

@@ -43,7 +43,11 @@ export const build = async () => {
     return Buffer.from(`${banner}${css}`, "utf8");
 };
 
-const distFile = path.join(repoRoot, "src", "gadgets", "Navigation_popups", "Gadget-popups.css");
+// --out=<目录> 指定产物根目录（构建链传 dist/_generated）；缺省写 src/gadgets（入库模式）
+const outFlag = process.argv.find((arg) => arg.startsWith("--out="));
+const distFile = outFlag
+    ? path.join(repoRoot, outFlag.slice("--out=".length), "Navigation_popups", "Gadget-popups.css")
+    : path.join(repoRoot, "src", "gadgets", "Navigation_popups", "Gadget-popups.css");
 
 const write = async (buf) => {
     await fs.promises.mkdir(path.dirname(distFile), { recursive: true });
