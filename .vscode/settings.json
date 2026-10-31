@@ -175,6 +175,7 @@
         "Gadget/userpageCat",
         "Gadget/userpageDelete",
         "Gadget/vector-2022-styles",
+        "Gadget/Watermark",
         "Gadget/widgetPreload",
         "Gadget/wikiBlame",
         "Gadget/wikidiff2",
@@ -198,7 +199,8 @@
         "Package/HotCat",
         "Package/JSONViewer",
         "Package/Navigation_popups",
-        "Package/UserMessages"
+        "Package/UserMessages",
+        "Package/Watermark"
     ],
     "conventionalCommits.storeScopesGlobally": false,
     "github.copilot.chat.organizationInstructions.enabled": false,
