@@ -27,7 +27,6 @@ peers: []
 dependencies:
   - ext.gadget.libOOUIDialog
   - user
-  - mediawiki.api
   - ext.gadget.libRequestAnimationFrame
   - ext.gadget.site-lib
 
