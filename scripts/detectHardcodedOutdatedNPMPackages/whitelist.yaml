@@ -1,3 +1,2 @@
-whitelist:
-  src/gadgets/wikieditor-highlight/Gadget-wikieditor-highlight.js:
-    - codemirror@5.65.1
+# 已确认允许滞后的硬编码 npm CDN 引用（文件路径 -> 包@版本列表）；当前无条目
+whitelist: {}

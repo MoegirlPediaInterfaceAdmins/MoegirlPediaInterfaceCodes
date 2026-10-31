@@ -43,11 +43,9 @@ export const build = async () => {
     return Buffer.from(`${banner}${css}`, "utf8");
 };
 
-// --out=<目录> 指定产物根目录（构建链传 dist/_generated）；缺省写 src/gadgets（入库模式）
-const outFlag = process.argv.find((arg) => arg.startsWith("--out="));
-const distFile = outFlag
-    ? path.join(repoRoot, outFlag.slice("--out=".length), "Navigation_popups", "Gadget-popups.css")
-    : path.join(repoRoot, "src", "gadgets", "Navigation_popups", "Gadget-popups.css");
+// 产物写入构建链暂存区 dist/_generated/gadgets（gitignore 覆盖，不进入仓库），
+// 目录层级与 src/ 下一致；由 build:css 第二段 postcss 编入 dist/
+const distFile = path.join(repoRoot, "dist", "_generated", "gadgets", "Navigation_popups", "Gadget-popups.css");
 
 const write = async (buf) => {
     await fs.promises.mkdir(path.dirname(distFile), { recursive: true });
@@ -63,8 +61,8 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
             if (!first.equals(second)) {
                 throw new Error("CSS build is not deterministic: two consecutive builds differ");
             }
-            // 产物是提交进仓库的文件，缺失（ENOENT）本身就是异常，直接让读取失败抛出，
-            // 不再把缺失当作「跳过对比」处理
+            // 产物由 npm run build:artifacts 生成到 dist/_generated，缺失（ENOENT）说明
+            // 还没跑过生成，直接让读取失败抛出
             const onDisk = await fs.promises.readFile(distFile);
             if (!first.equals(onDisk)) {
                 throw new Error(`${path.relative(repoRoot, distFile)} on disk differs from a fresh build`);

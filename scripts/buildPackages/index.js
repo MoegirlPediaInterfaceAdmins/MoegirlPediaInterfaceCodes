@@ -1,10 +1,7 @@
-import { exportVariable } from "@actions/core";
 import fs from "node:fs";
 import path from "node:path";
 import console from "../modules/console.js";
-import createCommit from "../modules/createCommit.js";
 import spawnAsync, { commandForPlatform } from "../modules/spawnAsync.js";
-import yamlModule from "../modules/yamlModule.js";
 console.info("Initialization done.");
 
 /**
@@ -21,11 +18,8 @@ const fileExists = async (filePath) => {
 };
 
 const checkOnly = process.argv.includes("--check");
-// --out=<目录> 指定产物根目录（构建链传 dist/_generated）；缺省写 src/gadgets（入库模式，
-// postCommit CI 继续 commit 产物）。转发给各包构建脚本，check 模式的幂等对比也读同一目录
-const outFlag = process.argv.find((arg) => arg.startsWith("--out="));
-const outputRoot = outFlag ? outFlag.slice("--out=".length) : path.join("src", "gadgets");
-const inRepoMode = outputRoot === path.join("src", "gadgets");
+// 产物由各包构建脚本写到 dist/_generated/gadgets（gitignore 覆盖，不进入仓库）；
+// check 模式的幂等对比也读同一目录，需先经 npm run build:artifacts 生成
 const packagesDirents = await fs.promises.readdir("packages", { withFileTypes: true });
 const packageNames = packagesDirents.filter((dirent) => dirent.isDirectory()).map(({ name }) => name);
 console.info("packages:", packageNames, checkOnly ? "(check mode)" : "(build mode)");
@@ -33,16 +27,6 @@ if (packageNames.length === 0) {
     throw new Error("No package found under packages/");
 }
 
-const { excluded = [] } = await yamlModule.readFile("scripts/buildPackages/exclusions.yaml").catch(() => ({}));
-
-/**
- * 产物清单约定：src/gadgets/<包名>/ 下以 Gadget- 开头的文件即该包的构建产物，
- * 用于 linguist 登记与 auto commit 范围判断，新增包无需在本脚本登记任何配置。
- * 例外在 exclusions.yaml 的 excluded 中列出。
- *
- * @type {string[]}
- */
-const artifactFiles = [];
 for (const name of packageNames) {
     const packageDir = path.join("packages", name);
     const scriptEntries = await fs.promises.readdir(path.join(packageDir, "scripts"), { withFileTypes: true });
@@ -51,7 +35,7 @@ for (const name of packageNames) {
     for (const buildScript of ["build.js", "build-css.js"]) {
         if (scriptNames.includes(buildScript)) {
             console.info(`[${name}]`, "running", buildScript, checkOnly ? "(--check-idempotent)" : "");
-            await spawnAsync("node", [path.join(packageDir, "scripts", buildScript), ...checkOnly ? ["--check-idempotent"] : [], ...outFlag ? [outFlag] : []]);
+            await spawnAsync("node", [path.join(packageDir, "scripts", buildScript), ...checkOnly ? ["--check-idempotent"] : []]);
         }
     }
     if (checkOnly) {
@@ -67,20 +51,5 @@ for (const name of packageNames) {
             await spawnAsync(commandForPlatform("npx"), ["vitest", "run", "--coverage", "--root", packageDir]);
         }
     }
-    const gadgetDir = path.join(outputRoot, name);
-    const gadgetFiles = await fs.promises.readdir(gadgetDir);
-    artifactFiles.push(
-        ...gadgetFiles
-            .filter((fileName) => fileName.startsWith("Gadget-"))
-            .map((fileName) => path.posix.join(outputRoot, name, fileName))
-            .filter((srcPath) => !excluded.includes(srcPath)),
-    );
-    if (!checkOnly && inRepoMode) {
-        await createCommit(`auto(Gadget-${name}): rebuild artifacts from packages/${name}`);
-    }
 }
-if (inRepoMode) {
-    exportVariable("linguist-generated-packages", JSON.stringify(artifactFiles));
-}
-console.info("artifactFiles:", artifactFiles);
 console.info("Done.");

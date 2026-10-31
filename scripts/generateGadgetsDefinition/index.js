@@ -2,12 +2,16 @@ import console, { dump } from "../modules/console.js";
 console.info("Initialization done.");
 import fs from "node:fs";
 import path from "node:path";
+import { artifactManifest } from "../modules/artifactManifest.js";
 import createCommit from "../modules/createCommit.js";
 import { sortWithLowerFirstCharacter } from "../modules/sortWithLowerFirstCharacter.js";
 import yamlModule from "../modules/yamlModule.js";
 import reconcileDefinitionFiles from "./reconcileDefinitionFiles.js";
 
 const gadgetBaseRoot = "src/gadgets";
+// 构建产物不入库：browserify / vendor / packages 三类产物只存在于 dist/_generated，
+// 各 gadget 目录下不再有产物文件；_files 对账需把产物清单并入目录扫描结果
+const manifest = await artifactManifest();
 
 /**
  * @type { { name: string, gadgets: string[] }[] }
@@ -19,7 +23,16 @@ const gadgetDirents = await fs.promises.readdir(gadgetBaseRoot, { withFileTypes:
 // 各 section 的 gadgets 顺序稳定，也保证未登记文件按稳定顺序追加进 definition.yaml，
 // 避免交叉重新生成时出现纯排序 diff
 const gadgetNames = sortWithLowerFirstCharacter(gadgetDirents.filter((dirent) => dirent.isDirectory()).map(({ name }) => name));
-const gadgetDirs = await Promise.all(gadgetNames.map(async (gadget) => ({ gadget, files: sortWithLowerFirstCharacter((await fs.promises.readdir(path.join(gadgetBaseRoot, gadget))).filter((file) => [".js", ".css", ".json"].includes(path.extname(path.join(gadgetBaseRoot, gadget, file))))) })));
+const gadgetDirs = await Promise.all(gadgetNames.map(async (gadget) => {
+    const gadgetDir = path.join(gadgetBaseRoot, gadget);
+    const dirFiles = (await fs.promises.readdir(gadgetDir)).filter((file) => [".js", ".css", ".json"].includes(path.extname(path.join(gadgetDir, file))));
+    // manifest 条目与目录内文件天然不相交（产物不入库），直接拼接
+    const manifestFiles = manifest.get(gadget) ?? [];
+    return {
+        gadget,
+        files: sortWithLowerFirstCharacter([...dirFiles, ...manifestFiles]),
+    };
+}));
 const gadgets = gadgetDirs.map(({ gadget }) => gadget);
 const gadgetFiles = gadgetDirs.flatMap(({ files: _files }) => _files);
 const duplicatedGadgetFiles = gadgetFiles.filter((file, index) => gadgetFiles.lastIndexOf(file) !== index);

@@ -1,9 +1,6 @@
 import { configs } from "@annangela/eslint-config";
-import path from "node:path";
 import jsonModule from "./scripts/modules/jsonModule.js";
 import { nodeLintTargets } from "./scripts/modules/lintTargets.js";
-import readDir from "./scripts/modules/readDir.js";
-import yamlModule from "./scripts/modules/yamlModule.js";
 
 const packageJson = await jsonModule.readFile("./package.json");
 
@@ -20,19 +17,6 @@ const ignores = [
     // 的匹配——只否定目录内文件（!.husky/*.mjs）不会生效
     "!.husky/**",
 ];
-
-// 各目录的 .eslint-exemptions.yaml 声明该目录需豁免 lint 的文件；ESLint 引擎不识别
-// 这个文件名，由这里遍历读取并合并进全局 ignores
-const srcExemptionFiles = (await readDir("./src")).filter((n) => path.basename(n) === ".eslint-exemptions.yaml");
-for (const srcExemptionFile of srcExemptionFiles) {
-    const dir = path.dirname(srcExemptionFile);
-    const srcExemptions = await yamlModule.readFile(srcExemptionFile);
-    if (Array.isArray(srcExemptions.ignorePatterns)) {
-        for (const ignorePattern of srcExemptions.ignorePatterns) {
-            ignores.push(path.posix.join(dir.replaceAll("\\", "/"), ignorePattern));
-        }
-    }
-}
 
 /**
  * @typedef { Pick<import("eslint").Linter.Config, "files" | "ignores"> } FileSpec

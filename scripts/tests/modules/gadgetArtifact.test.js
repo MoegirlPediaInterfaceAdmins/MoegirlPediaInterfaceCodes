@@ -4,20 +4,6 @@ import path from "node:path";
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import { buildGeneratedFileHeader, writeGadgetArtifact } from "../../modules/gadgetArtifact.js";
 
-// gadgetArtifact 经 yamlModule 读写 .eslint-exemptions.yaml；mock 成可断言的假实现，
-// 既隔离真实 YAML 读写，也保证本测试不向仓库工作区写任何文件。
-// 用 vi.hoisted 提升句柄，vi.mock 工厂（会被提升执行）才能引用这些 vi.fn。
-const yamlMocks = vi.hoisted(() => ({
-    readFile: vi.fn(),
-    writeFile: vi.fn(),
-}));
-
-vi.mock("../../modules/yamlModule.js", () => ({
-    "default": { readFile: yamlMocks.readFile, writeFile: yamlMocks.writeFile },
-    readFile: yamlMocks.readFile,
-    writeFile: yamlMocks.writeFile,
-}));
-
 // 产物路径落点在写盘全被拦截的前提下仅用于构造参数；每次运行用 mkdtemp 唯一目录，
 // 防止上次运行残留的同名产物让「有变更」用例被误判为内容一致
 let artifactBase;
@@ -34,9 +20,6 @@ beforeEach(() => {
     // 拦截真实写盘：spy 默认会透传原实现，必须显式替换为空实现
     vi.spyOn(fs.promises, "writeFile").mockResolvedValue(undefined);
     vi.spyOn(fs.promises, "mkdir").mockResolvedValue(undefined);
-    // 默认模拟「.eslint-exemptions.yaml 不存在」，实现会回退到 {}
-    yamlMocks.readFile.mockRejectedValue(Object.assign(new Error("ENOENT"), { code: "ENOENT" }));
-    yamlMocks.writeFile.mockResolvedValue(undefined);
 });
 
 afterEach(() => {
@@ -83,7 +66,7 @@ describe("buildGeneratedFileHeader", () => {
 });
 
 describe("writeGadgetArtifact", () => {
-    it("新内容 .js 产物：建目录、写入全文，并向 .eslint-exemptions.yaml 登记文件名", async () => {
+    it("新内容写入：建目录并写入全文（js 与 css 同路径）", async () => {
         const file = path.join(artifactBase, "G", "G.js");
         const code = "/* code */\n";
 
@@ -91,46 +74,9 @@ describe("writeGadgetArtifact", () => {
 
         expect(fs.promises.mkdir).toHaveBeenCalledWith(path.dirname(file), { recursive: true });
         expect(fs.promises.writeFile).toHaveBeenCalledWith(file, code);
-        const exemptionsName = path.join(path.dirname(file), ".eslint-exemptions.yaml");
-        expect(yamlMocks.readFile).toHaveBeenCalledWith(exemptionsName);
-        expect(yamlMocks.writeFile).toHaveBeenCalledWith(exemptionsName, { ignorePatterns: ["G.js"] });
     });
 
-    it("豁免清单已登记该文件名时不重复写豁免清单，产物仍正常写入", async () => {
-        yamlMocks.readFile.mockResolvedValueOnce({ ignorePatterns: ["G.js"] });
-        const file = path.join(artifactBase, "G", "G.js");
-        const code = "/* code */\n";
-
-        await expect(writeGadgetArtifact(file, code)).resolves.toBe(true);
-
-        expect(fs.promises.writeFile).toHaveBeenCalledWith(file, code);
-        expect(yamlMocks.writeFile).not.toHaveBeenCalled();
-    });
-
-    it("豁免清单的 ignorePatterns 非数组时先归一化为数组再登记", async () => {
-        yamlMocks.readFile.mockResolvedValueOnce({ ignorePatterns: "G.js" });
-        const file = path.join(artifactBase, "G", "G.js");
-
-        await writeGadgetArtifact(file, "code");
-
-        expect(yamlMocks.writeFile).toHaveBeenCalledWith(
-            path.join(path.dirname(file), ".eslint-exemptions.yaml"),
-            { ignorePatterns: ["G.js"] },
-        );
-    });
-
-    it("非 .js 产物只写入，不读写 .eslint-exemptions.yaml", async () => {
-        const file = path.join(artifactBase, "G", "G.css");
-
-        await expect(writeGadgetArtifact(file, "body {}")).resolves.toBe(true);
-
-        expect(fs.promises.mkdir).toHaveBeenCalledWith(path.dirname(file), { recursive: true });
-        expect(fs.promises.writeFile).toHaveBeenCalledWith(file, "body {}");
-        expect(yamlMocks.readFile).not.toHaveBeenCalled();
-        expect(yamlMocks.writeFile).not.toHaveBeenCalled();
-    });
-
-    it("磁盘内容一致时返回 false 且不产生任何写操作或豁免清单登记", async () => {
+    it("磁盘内容一致时返回 false 且不产生任何写操作", async () => {
         const file = path.join(artifactBase, "G", "G.js");
         const code = "/* unchanged */\n";
         vi.spyOn(fs.promises, "readFile").mockResolvedValue(code);
@@ -139,7 +85,14 @@ describe("writeGadgetArtifact", () => {
 
         expect(fs.promises.mkdir).not.toHaveBeenCalled();
         expect(fs.promises.writeFile).not.toHaveBeenCalled();
-        expect(yamlMocks.readFile).not.toHaveBeenCalled();
-        expect(yamlMocks.writeFile).not.toHaveBeenCalled();
+    });
+
+    it("磁盘文件不存在时视为有变更并写入", async () => {
+        const file = path.join(artifactBase, "G", "G.css");
+        vi.spyOn(fs.promises, "readFile").mockRejectedValue(Object.assign(new Error("ENOENT"), { code: "ENOENT" }));
+
+        await expect(writeGadgetArtifact(file, "body {}")).resolves.toBe(true);
+
+        expect(fs.promises.writeFile).toHaveBeenCalledWith(file, "body {}");
     });
 });

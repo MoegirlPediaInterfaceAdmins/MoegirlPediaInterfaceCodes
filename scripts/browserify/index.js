@@ -1,9 +1,7 @@
-import { exportVariable } from "@actions/core";
 import browserify from "browserify";
 import fs from "node:fs";
 import path from "node:path";
 import console, { dump } from "../modules/console.js";
-import createCommit from "../modules/createCommit.js";
 import exec from "../modules/exec.js";
 import { buildGeneratedFileHeader, writeGadgetArtifact } from "../modules/gadgetArtifact.js";
 import buildInputCode from "./buildInputCode.js";
@@ -18,11 +16,9 @@ console.info("Initialization done.");
  */
 const browserifyTargets = await yamlModule.readFile("scripts/browserify/targets.yaml");
 dump("browserifyTargets:", browserifyTargets);
-// --out=<目录> 指定产物根目录（构建链传 dist/_generated）；缺省写 src/gadgets（入库模式，
-// postCommit CI 继续 commit 产物）。两种模式共用同一份生成逻辑，仅落点不同
-const outFlag = process.argv.find((arg) => arg.startsWith("--out="));
-const outputRoot = outFlag ? outFlag.slice("--out=".length) : path.join("src", "gadgets");
-const inRepoMode = outputRoot === path.join("src", "gadgets");
+// 产物只服务构建链：统一写到 dist/_generated/gadgets（gitignore 覆盖，不进入仓库），
+// 由 tsconfig.artifacts.json 编入 dist/_compiled；目录层级与 src/ 下一致
+const outputRoot = path.join("dist", "_generated", "gadgets");
 const tempPath = await mkdlocaltmp();
 const inputPath = path.join(tempPath, "input.js");
 console.info("中间产物（临时入口）目录:", tempPath);
@@ -33,12 +29,10 @@ try {
      */
     const localPackageVersions = JSON.parse(jsonOutput).dependencies;
     console.info("npm ls:", ["", ...Object.entries(localPackageVersions).map(([name, { version }]) => `* ${name}@${version}`)].join("\n"));
-    const fileList = [];
     for (const browserifyTarget of browserifyTargets) {
         console.info("target:", browserifyTarget);
         const { module, gadget: { name, fileName }, removePlugins, prependCode } = browserifyTarget;
         const file = path.join(outputRoot, name, fileName);
-        fileList.push(file);
         await fs.promises.rm(inputPath, {
             recursive: true,
             force: true,
@@ -88,12 +82,6 @@ try {
             continue;
         }
         console.info(`[${module}]`, "generated successfully.");
-        if (inRepoMode) {
-            await createCommit(`auto(Gadget-${name}): bump ${module} to ${localPackageVersions[module].version} by browserify`);
-        }
-    }
-    if (inRepoMode) {
-        exportVariable("linguist-generated-browserify", JSON.stringify(fileList));
     }
 } finally {
     // 成功与失败路径都清理临时目录，避免本地多次构建后 .tmp/mgp-* 累积
