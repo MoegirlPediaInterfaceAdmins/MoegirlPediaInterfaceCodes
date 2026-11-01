@@ -18,7 +18,8 @@ const fileExists = async (filePath) => {
 };
 
 const checkOnly = process.argv.includes("--check");
-// 产物由各包构建脚本写到 dist/_generated/gadgets（gitignore 覆盖，不进入仓库）；
+// 产物由各包构建脚本写到 dist/_generated/gadgets（gitignore 覆盖，不进入仓库），
+// 全程无任何提交动作（linter_test 无 git 身份亦不受影响，取代 #1162 的 --no-commit 方案）；
 // check 模式的幂等对比也读同一目录，需先经 npm run build:artifacts 生成
 const packagesDirents = await fs.promises.readdir("packages", { withFileTypes: true });
 const packageNames = packagesDirents.filter((dirent) => dirent.isDirectory()).map(({ name }) => name);

@@ -125,13 +125,15 @@ $(() => {
          * 批量查询页面清单中各页面是否为重定向页。
          *
          * @param {Array<{ title: string, queryTitle: string, site: "zh" | "commons" }>} pages 已解析的页面清单
+         * @throws {OO.ui.Error} 查询页面重定向状态失败时
          * @returns {Promise<Array<{ title: string, isRedirect: boolean }>>} 与入参顺序一致
          */
         const resolveBatchPages = async (pages) => {
             const normalizeTitle = (title) => title.replace(/_/g, " ").replace(/\s+/g, " ").trim().replace(/^[a-z]/, (char) => char.toUpperCase());
-            const redirectTitles = new Set();
+            const redirectFlags = new Map();
             const normalizedTitles = new Map();
             const titlesBySite = new Map();
+            let queryFailed = false;
             pages.forEach(({ queryTitle, site }) => {
                 if (!titlesBySite.has(site)) {
                     titlesBySite.set(site, []);
@@ -145,19 +147,23 @@ $(() => {
                         const { query } = await siteAPI.get({
                             action: "query",
                             titles: batch.join("|"),
-                            redirects: true,
+                            prop: "info",
                             formatversion: 2,
                         });
                         (query?.normalized ?? []).forEach(({ from, to }) => normalizedTitles.set(normalizeTitle(from), normalizeTitle(to)));
-                        (query?.redirects ?? []).forEach(({ from }) => redirectTitles.add(normalizeTitle(from)));
+                        (query?.pages ?? []).forEach(({ title, redirect }) => redirectFlags.set(normalizeTitle(title), redirect === true));
                     } catch (e) {
+                        queryFailed = true;
                         console.warn("[RequestDeletion] 批量查询重定向失败", e);
                     }
                 }));
             }));
+            if (queryFailed) {
+                throw new OO.ui.Error(wgULS("批量查询页面重定向状态失败，请稍后重试", "批量查詢頁面重新導向狀態失敗，請稍後重試"));
+            }
             return pages.map(({ title, queryTitle }) => {
                 const queryNormalizedTitle = normalizeTitle(queryTitle);
-                return { title, isRedirect: redirectTitles.has(normalizedTitles.get(queryNormalizedTitle) ?? queryNormalizedTitle) };
+                return { title, isRedirect: redirectFlags.get(normalizedTitles.get(queryNormalizedTitle) ?? queryNormalizedTitle) ?? false };
             });
         };
 

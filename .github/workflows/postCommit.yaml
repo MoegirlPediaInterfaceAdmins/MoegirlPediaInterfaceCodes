@@ -189,7 +189,9 @@ jobs:
       - name: Run unit test
         run: npm run test:unit
       # 产物不入库后由构建链生成：先在本检出内生成到 dist/_generated，
-      # package:test 的幂等对比与 postcss 产物检查才有输入
+      # package:test 的幂等对比与 postcss 产物检查才有输入。
+      # 本 job 无 git 身份（prepareGit 仅 postCommit job 执行）且权限只读，
+      # build:artifacts 全程只写 dist/（gitignore 覆盖），天然不产生提交
       - name: Build artifacts
         run: npm run build:artifacts
       - name: Run packages test

@@ -24,7 +24,7 @@
         const url = new URL(location.href);
         url.hostname = url.hostname.replace(/^[^.]+/g, "commons");
         url.pathname = mw.config.get("wgScript");
-        url.searchParams.set("title", `${mw.config.get("wgCanonicalNamespace")}:${mw.config.get("wgCanonicalSpecialPageName")}`);
+        url.searchParams.set("title", mw.config.get("wgPageName"));
         location.replace(url);
     }
     /* 浮动滚动条 */
