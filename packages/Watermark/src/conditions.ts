@@ -29,7 +29,11 @@ export type WatermarkScene = "history-revision" | "user-page" | "draft" | "varia
  * @param namespaceNumber 命名空间编号
  * @param namespaceIds wgNamespaceIds
  */
-export const getNamespacePrefixRegex = (namespaceNumber: number, namespaceIds: Record<string, number>): RegExp => RegExp(`^(?:${Object.entries(namespaceIds).filter(([, id]) => id === namespaceNumber).map(([name]) => name.toLowerCase()).join("|")}):`, "i");
+export const getNamespacePrefixRegex = (namespaceNumber: number, namespaceIds: Record<string, number>): RegExp =>
+    RegExp(
+        `^(?:${Object.entries(namespaceIds).filter(([, id]) => id === namespaceNumber).map(([name]) => name.toLowerCase()).join("|")}):`,
+        "i",
+    );
 
 /**
  * 标题归一化：空格转下划线、剥命名空间前缀、去首尾空白。

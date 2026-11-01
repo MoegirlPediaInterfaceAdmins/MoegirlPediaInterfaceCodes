@@ -48,10 +48,16 @@ $(() => {
         const scene = decideScene(ctx, displayedTitle);
         let content: string | null = null;
         if (scene === "variant-check") {
-            const variantTitles = await fetchVariantTitles(ctx.pageName, ctx.articleId);
-            content = hasVariantMatch(variantTitles, displayedTitle, getNamespacePrefixRegex(ctx.namespaceNumber, ctx.namespaceIds))
-                ? null
-                : contents["user-page"];
+            // 复核用于排除简繁变体等正常改写；请求失败时保持不显示——
+            // 若失败时改为显示，网络抖动会让大量正常的变体标题页被误盖水印
+            try {
+                const variantTitles = await fetchVariantTitles(ctx.pageName, ctx.articleId);
+                content = hasVariantMatch(variantTitles, displayedTitle, getNamespacePrefixRegex(ctx.namespaceNumber, ctx.namespaceIds))
+                    ? null
+                    : contents["user-page"];
+            } catch (error) {
+                console.warn("[Watermark] varianttitles 复核失败，本页不显示水印", error);
+            }
         } else if (scene !== null) {
             content = contents[scene];
         }
@@ -60,7 +66,11 @@ $(() => {
         }
         await new Watermark({ ...visibleOptions, content }).create();
         if (ctx.skin === "moeskin") {
-            await new BlindWatermark({ ...auxiliaryOptions, content }).create();
+            // 库的 validateUnique 拒绝在同一父元素下创建第二个水印实例（可见层已挂在 body 上），
+            // 且校验失败时 create() 会静默返回，故本层必须另选挂载点。documentElement 与 body
+            // 同被库按全屏 fixed 定位处理（checkParentElementType 的 root 分支），各自实例的
+            // parentObserver 也分别监听自己父元素的 childList，防移除能力不受影响
+            await new BlindWatermark({ ...auxiliaryOptions, content, parent: document.documentElement }).create();
         }
     })();
 });
