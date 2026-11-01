@@ -15,7 +15,7 @@
         "test:stylelint": "stylelint 'src/**/*.css' 'packages/**/*.css' 'packages/**/*.scss' --cache --cache-strategy content --cache-location .cache/ --color --max-warnings 0",
         "test:v8r": "node scripts/v8r/index.js",
         "test:mailmap": "node scripts/emailmapChecker/index.js",
-        "test:tsc": "tsc -p tsconfig.json && tsc -p packages/tsconfig.json",
+        "test:tsc": "tsc -p tsconfig.json --noEmit && tsc -p packages/tsconfig.json",
         "test:unit": "vitest run --config scripts/vitest.config.js",
         "lint:scripts": "node scripts/eslint/index.js",
         "lint:commit-message": "node scripts/commitLint/index.js commits",
