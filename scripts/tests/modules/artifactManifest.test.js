@@ -11,13 +11,19 @@ vi.mock("node:fs", () => ({
     },
 }));
 
-const yamlState = vi.hoisted(() => ({ files: {} }));
+const yamlState = vi.hoisted(() => ({ files: {}, errors: {} }));
 vi.mock("../../modules/yamlModule.js", () => ({
     "default": {
         readFile: vi.fn((filePath) => {
+            const error = yamlState.errors[filePath];
+            if (error) {
+                return Promise.reject(error);
+            }
             const entry = yamlState.files[filePath];
             if (entry === undefined) {
-                return Promise.reject(new Error(`ENOENT: no such file '${filePath}'`));
+                // 与真实 fs.readFile 的 ENOENT 同构（带 code），被测实现的
+                // 「仅 ENOENT 放行」分支依赖该字段
+                return Promise.reject(Object.assign(new Error(`ENOENT: no such file '${filePath}'`), { code: "ENOENT" }));
             }
             return Promise.resolve(structuredClone(entry));
         }),
@@ -31,6 +37,7 @@ beforeEach(() => {
 afterEach(() => {
     fsState.dirs = {};
     yamlState.files = {};
+    yamlState.errors = {};
 });
 
 describe("artifactManifest", () => {
@@ -92,5 +99,48 @@ describe("artifactManifest", () => {
         // someToolPackage 与 UserMessages 都读不到 artifacts.yaml —— 前者演示非 gadget 包被
         // 跳过的容错路径，后者演示：gadget 包缺声明同样跳过（声明文件是唯一事实来源）
         await expect(artifactManifest()).resolves.toEqual(new Map());
+    });
+
+    it("声明文件读取失败且非 ENOENT（如 YAML 语法错误、权限错误）时抛出而非跳过", async () => {
+        const { artifactManifest } = await import("../../modules/artifactManifest.js");
+
+        yamlState.files = {
+            "scripts/browserify/targets.yaml": [],
+            "scripts/vendor/targets.yaml": [],
+        };
+        yamlState.errors = {
+            "packages/HotCat/artifacts.yaml": new Error("YAMLParseError: bad indentation"),
+        };
+        fsState.dirs = { packages: [{ name: "HotCat", isDirectory: () => true }] };
+
+        // 静默跳过会让 manifest 缺条目，generateGadgetsDefinition 的 _files 对账将
+        // 产物判为不存在而误删条目（gadget 注册丢失），必须让错误立即暴露
+        await expect(artifactManifest()).rejects.toThrow("YAMLParseError");
+    });
+
+    it("声明结构不是字符串数组时抛出", async () => {
+        const { artifactManifest } = await import("../../modules/artifactManifest.js");
+
+        yamlState.files = {
+            "scripts/browserify/targets.yaml": [],
+            "scripts/vendor/targets.yaml": [],
+            "packages/HotCat/artifacts.yaml": { files: ["Gadget-HotCat.js"] },
+        };
+        fsState.dirs = { packages: [{ name: "HotCat", isDirectory: () => true }] };
+
+        await expect(artifactManifest()).rejects.toThrow("packages/HotCat/artifacts.yaml");
+    });
+
+    it("声明数组含非字符串元素时抛出", async () => {
+        const { artifactManifest } = await import("../../modules/artifactManifest.js");
+
+        yamlState.files = {
+            "scripts/browserify/targets.yaml": [],
+            "scripts/vendor/targets.yaml": [],
+            "packages/HotCat/artifacts.yaml": ["Gadget-HotCat.js", 42],
+        };
+        fsState.dirs = { packages: [{ name: "HotCat", isDirectory: () => true }] };
+
+        await expect(artifactManifest()).rejects.toThrow("packages/HotCat/artifacts.yaml");
     });
 });

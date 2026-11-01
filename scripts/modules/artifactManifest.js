@@ -26,11 +26,21 @@ export const artifactManifest = async () => {
     }
     const packageDirents = await fs.promises.readdir("packages", { withFileTypes: true });
     for (const { name } of packageDirents.filter((dirent) => dirent.isDirectory())) {
-        // packages/ 允许存在不带 artifacts.yaml 的目录（如纯工具包、tsconfig 等文件条目），
-        // 读不到声明即视为无产物，不参与清单
-        const artifacts = await yamlModule.readFile(path.join("packages", name, "artifacts.yaml")).catch(() => null);
-        if (!Array.isArray(artifacts)) {
+        const artifactsPath = path.join("packages", name, "artifacts.yaml");
+        // 仅「声明文件不存在」（ENOENT）表示该目录是非 gadget 包（如纯工具包），允许跳过；
+        // 其余读取错误（YAML 语法、权限等）必须抛出：静默跳过会让 manifest 缺条目，
+        // definition.yaml 的 _files 对账将把产物判为不存在而误删（gadget 注册丢失）
+        const artifacts = await yamlModule.readFile(artifactsPath).catch((error) => {
+            if (error?.code === "ENOENT") {
+                return null;
+            }
+            throw error;
+        });
+        if (artifacts === null) {
             continue;
+        }
+        if (!Array.isArray(artifacts) || !artifacts.every((fileName) => typeof fileName === "string")) {
+            throw new Error(`${artifactsPath}: 产物声明必须是字符串数组（各产物文件名的列表）`);
         }
         for (const fileName of artifacts) {
             add(name, fileName);
