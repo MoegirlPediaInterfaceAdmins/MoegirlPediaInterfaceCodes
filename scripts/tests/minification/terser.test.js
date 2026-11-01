@@ -44,15 +44,52 @@ describe("minification/terser", () => {
         expect(failure).toBeInstanceOf(Error);
         expect(failure.code).toBe(1);
         expect(failure.stderr).toContain("Error minifying file");
-        const minifiedGood = await fs.readFile(path.join(workingDir, "dist", "_minified", "good.js"), "utf8");
+        // 压缩产物直接落 dist 根路径（与 postcss 的 CSS 同层），不再有 _minified 层
+        const minifiedGood = await fs.readFile(path.join(workingDir, "dist", "good.js"), "utf8");
         expect(minifiedGood.length).toBeGreaterThan(0);
-        await expect(fs.access(path.join(workingDir, "dist", "_minified", "bad.js"))).rejects.toThrow();
+        await expect(fs.access(path.join(workingDir, "dist", "bad.js"))).rejects.toThrow();
     });
 
     it("全部文件压缩成功时以退出码 0 结束", async () => {
         await fs.rm(path.join(workingDir, "dist", "_compiled", "bad.js"));
         await expect(execFileAsync(process.execPath, [terserEntry], { cwd: workingDir, timeout: 60_000 })).resolves.toBeDefined();
-        const minifiedGood = await fs.readFile(path.join(workingDir, "dist", "_minified", "good.js"), "utf8");
+        const minifiedGood = await fs.readFile(path.join(workingDir, "dist", "good.js"), "utf8");
         expect(minifiedGood.length).toBeGreaterThan(0);
+    });
+
+    it("第二次运行时按上一次的输出清单清理已无对应编译产物的陈旧 js", async () => {
+        // 单独执行 build:js（不经完整 build 开头的 clean）时，源文件删除/改名后重建，
+        // 上一次压缩的输出会残留在 dist 根并作为陈旧文件继续被部署；terser 以
+        // .cache/terser-output-manifest.json 记录每次实际写出的文件（放 .cache 是
+        // 为了不被 postbuild:js 尾部的 clean:intermediate 清掉），下一次运行据此删除
+        await fs.rm(path.join(workingDir, "dist", "_compiled", "bad.js"));
+        await expect(execFileAsync(process.execPath, [terserEntry], { cwd: workingDir, timeout: 60_000 })).resolves.toBeDefined();
+        // 模拟源文件改名：good.js -> renamed.js（跨目录，父目录随之消失）
+        await fs.rm(path.join(workingDir, "dist", "_compiled", "good.js"));
+        await fs.mkdir(path.join(workingDir, "dist", "_compiled", "gadgets", "demo"), { recursive: true });
+        await fs.writeFile(
+            path.join(workingDir, "dist", "_compiled", "gadgets", "demo", "renamed.js"),
+            "function f() { return 1; }\n",
+        );
+        await expect(execFileAsync(process.execPath, [terserEntry], { cwd: workingDir, timeout: 60_000 })).resolves.toBeDefined();
+        // 上一次的输出被清理（连同变空的父目录）
+        await expect(fs.access(path.join(workingDir, "dist", "good.js"))).rejects.toThrow();
+        // 本次输出正常落盘，且清单更新为本次的输出集合
+        const renamed = await fs.readFile(path.join(workingDir, "dist", "gadgets", "demo", "renamed.js"), "utf8");
+        expect(renamed.length).toBeGreaterThan(0);
+        const manifest = JSON.parse(await fs.readFile(path.join(workingDir, ".cache", "terser-output-manifest.json"), "utf8"));
+        expect(manifest).toEqual([path.join("gadgets", "demo", "renamed.js")]);
+    });
+
+    it("dist 根下不在输出清单内的其他 js（非 terser 产物）不被清理", async () => {
+        // 清理判定只依据自身输出的历史清单，不能反推「不在本次清单内的都删」——
+        // dist 根还有别的产物来源（如本地 test:tsc 的 dev emit）
+        const foreign = path.join(workingDir, "dist", "src", "dev-only.js");
+        await fs.mkdir(path.dirname(foreign), { recursive: true });
+        await fs.writeFile(foreign, "// not a terser output\n");
+        await fs.rm(path.join(workingDir, "dist", "_compiled", "bad.js"));
+        await expect(execFileAsync(process.execPath, [terserEntry], { cwd: workingDir, timeout: 60_000 })).resolves.toBeDefined();
+        // 首次运行无历史清单，不触发清理；外部文件原样保留
+        await expect(fs.access(foreign)).resolves.toBeUndefined();
     });
 });

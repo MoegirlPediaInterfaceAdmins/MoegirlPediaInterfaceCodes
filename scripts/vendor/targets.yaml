@@ -1,0 +1,189 @@
+# 构建链 vendor 目标：从 node_modules/<moduleName>/<distFilePath> 读取文件，
+# 加上生成头后写到 dist/_generated/gadgets/<gadget.name>/<gadget.fileName>。
+# 版本由 package-lock.json 固定，升级经 dependabot 的 lock PR 人工合并。
+
+- moduleName: json5
+  distFilePath: dist/index.js
+  gadget:
+    name: libJSON5
+    fileName: Gadget-libJSON5.js
+- moduleName: localforage
+  distFilePath: dist/localforage.js
+  gadget:
+    name: localforage
+    fileName: Gadget-localforage.js
+- moduleName: prismjs
+  distFilePath: components/prism-core.js
+  gadget:
+    name: prism-core
+    fileName: Gadget-prism-core.js
+- moduleName: prismjs
+  distFilePath: plugins/line-numbers/prism-line-numbers.js
+  gadget:
+    name: prism-core
+    fileName: Gadget-prism-line-numbers.js
+- moduleName: prismjs
+  distFilePath: plugins/line-numbers/prism-line-numbers.css
+  gadget:
+    name: prism-core
+    fileName: Gadget-prism-line-numbers.css
+- moduleName: prismjs
+  distFilePath: components/prism-bash.js
+  gadget:
+    name: prism-language-bash
+    fileName: Gadget-prism-language-bash.js
+- moduleName: prismjs
+  distFilePath: components/prism-c.js
+  gadget:
+    name: prism-language-c
+    fileName: Gadget-prism-language-c.js
+- moduleName: prismjs
+  distFilePath: components/prism-clike.js
+  gadget:
+    name: prism-language-clike
+    fileName: Gadget-prism-language-clike.js
+- moduleName: prismjs
+  distFilePath: components/prism-coffeescript.js
+  gadget:
+    name: prism-language-coffeescript
+    fileName: Gadget-prism-language-coffeescript.js
+- moduleName: prismjs
+  distFilePath: components/prism-cpp.js
+  gadget:
+    name: prism-language-cpp
+    fileName: Gadget-prism-language-cpp.js
+- moduleName: prismjs
+  distFilePath: components/prism-csharp.js
+  gadget:
+    name: prism-language-csharp
+    fileName: Gadget-prism-language-csharp.js
+- moduleName: prismjs
+  distFilePath: components/prism-css.js
+  gadget:
+    name: prism-language-css
+    fileName: Gadget-prism-language-css.js
+- moduleName: prismjs
+  distFilePath: components/prism-css-extras.js
+  gadget:
+    name: prism-language-css
+    fileName: Gadget-prism-language-css-extras.js
+- moduleName: prismjs
+  distFilePath: components/prism-java.js
+  gadget:
+    name: prism-language-java
+    fileName: Gadget-prism-language-java.js
+- moduleName: prismjs
+  distFilePath: components/prism-javascript.js
+  gadget:
+    name: prism-language-javascript
+    fileName: Gadget-prism-language-javascript.js
+- moduleName: prismjs
+  distFilePath: components/prism-js-extras.js
+  gadget:
+    name: prism-language-javascript
+    fileName: Gadget-prism-language-javascript-extras.js
+- moduleName: prismjs
+  distFilePath: components/prism-json.js
+  gadget:
+    name: prism-language-json
+    fileName: Gadget-prism-language-json.js
+- moduleName: prismjs
+  distFilePath: components/prism-json5.js
+  gadget:
+    name: prism-language-json
+    fileName: Gadget-prism-language-json5.js
+- moduleName: prismjs
+  distFilePath: components/prism-latex.js
+  gadget:
+    name: prism-language-latex
+    fileName: Gadget-prism-language-latex.js
+- moduleName: prismjs
+  distFilePath: components/prism-lua.js
+  gadget:
+    name: prism-language-lua
+    fileName: Gadget-prism-language-lua.js
+- moduleName: prismjs
+  distFilePath: components/prism-markup.js
+  gadget:
+    name: prism-language-markup
+    fileName: Gadget-prism-language-markup.js
+- moduleName: prismjs
+  distFilePath: components/prism-perl.js
+  gadget:
+    name: prism-language-perl
+    fileName: Gadget-prism-language-perl.js
+- moduleName: prismjs
+  distFilePath: components/prism-markup-templating.js
+  gadget:
+    name: prism-language-php
+    fileName: Gadget-prism-language-markup-templating.js
+- moduleName: prismjs
+  distFilePath: components/prism-php.js
+  gadget:
+    name: prism-language-php
+    fileName: Gadget-prism-language-php.js
+- moduleName: prismjs
+  distFilePath: components/prism-php-extras.js
+  gadget:
+    name: prism-language-php
+    fileName: Gadget-prism-language-php-extras.js
+- moduleName: prismjs
+  distFilePath: components/prism-python.js
+  gadget:
+    name: prism-language-python
+    fileName: Gadget-prism-language-python.js
+- moduleName: prismjs
+  distFilePath: components/prism-regex.js
+  gadget:
+    name: prism-language-regex
+    fileName: Gadget-prism-language-regex.js
+- moduleName: prismjs
+  distFilePath: components/prism-ruby.js
+  gadget:
+    name: prism-language-ruby
+    fileName: Gadget-prism-language-ruby.js
+- moduleName: prismjs
+  distFilePath: components/prism-typescript.js
+  gadget:
+    name: prism-language-typescript
+    fileName: Gadget-prism-language-typescript.js
+- moduleName: prismjs
+  distFilePath: components/prism-yaml.js
+  gadget:
+    name: prism-language-yaml
+    fileName: Gadget-prism-language-yaml.js
+- moduleName: prismjs
+  distFilePath: components/prism-javadoclike.js
+  gadget:
+    name: prism-plugin-javadoclike
+    fileName: Gadget-prism-plugin-javadoclike.js
+- moduleName: prismjs
+  distFilePath: components/prism-jsdoc.js
+  gadget:
+    name: prism-plugin-jsdoc
+    fileName: Gadget-prism-plugin-jsdoc.js
+- moduleName: prismjs
+  distFilePath: plugins/match-braces/prism-match-braces.js
+  gadget:
+    name: prism-plugin-match-braces
+    fileName: Gadget-prism-plugin-match-braces.js
+- moduleName: prismjs
+  distFilePath: plugins/match-braces/prism-match-braces.css
+  gadget:
+    name: prism-plugin-match-braces
+    fileName: Gadget-prism-plugin-match-braces.css
+- moduleName: prismjs
+  distFilePath: components/prism-phpdoc.js
+  gadget:
+    name: prism-plugin-phpdoc
+    fileName: Gadget-prism-plugin-phpdoc.js
+- moduleName: prismjs
+  distFilePath: plugins/previewers/prism-previewers.js
+  gadget:
+    name: prism-plugin-previewers
+    fileName: Gadget-prism-plugin-previewers.js
+- moduleName: prismjs
+  distFilePath: plugins/previewers/prism-previewers.css
+  gadget:
+    name: prism-plugin-previewers
+    fileName: Gadget-prism-plugin-previewers.css

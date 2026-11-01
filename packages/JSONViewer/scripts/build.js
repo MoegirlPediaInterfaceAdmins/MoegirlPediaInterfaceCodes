@@ -5,7 +5,9 @@ import { fileURLToPath } from "node:url";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const repoRoot = path.resolve(root, "..", "..");
-const gadgetDir = path.join(repoRoot, "src", "gadgets", "JSONViewer");
+// 产物写入构建链暂存区 dist/_generated/gadgets（gitignore 覆盖，不进入仓库），
+// 目录层级与 src/ 下一致，由 tsconfig.artifacts.json（js）与 build:css 第二段（css）编入部署链
+const gadgetDir = path.join(repoRoot, "dist", "_generated", "gadgets", "JSONViewer");
 
 // esbuild 以入口文件名给产物命名（index.js / index.css），写入磁盘时再改成 on-wiki 需要的 gadget 名
 const ENTRY = "src/index.tsx";
@@ -145,7 +147,8 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
                 if (!a.equals(b)) {
                     throw new Error(`${name}: 连续两次构建产物不一致`);
                 }
-                // 产物是提交进仓库的文件，缺失（ENOENT）本身就是异常，直接让读取失败抛出
+                // 产物由 npm run build:artifacts 生成到 dist/_generated，缺失（ENOENT）说明
+                // 还没跑过生成，直接让读取失败抛出
                 const onDisk = await fs.promises.readFile(file);
                 if (!a.equals(onDisk)) {
                     throw new Error(`${name}: ${path.relative(repoRoot, file)} on disk differs from a fresh build`);

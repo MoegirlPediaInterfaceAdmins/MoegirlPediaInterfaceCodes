@@ -97,9 +97,9 @@ export default {
         // no imports/exports, so "es" emits a plain flat chunk.
         format: "es",
         banner,
-        // 产物直接写入 src/gadgets 下的 gadget 目录（wiki 部署读取该位置），
-        // 不经过包内 dist/。
-        file: fileURLToPath(new URL("../../src/gadgets/Navigation_popups/Gadget-popups.js", import.meta.url)),
+        // 产物写入构建链暂存区 dist/_generated/gadgets（gitignore 覆盖，不进入仓库），
+        // 目录层级与 src/ 下一致，由 tsconfig.artifacts.json 编入 dist/_compiled。
+        file: fileURLToPath(new URL("../../dist/_generated/gadgets/Navigation_popups/Gadget-popups.js", import.meta.url)),
         // terser on the interface codes side runs with toplevel:false and
         // keep_fnames/keep_classnames; there are no exports to preserve.
     },

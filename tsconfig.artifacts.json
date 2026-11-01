@@ -1,0 +1,11 @@
+{
+    "$schema": "https://json.schemastore.org/tsconfig",
+    "extends": "./tsconfig.production.json",
+    "compilerOptions": {
+        "rootDir": "./dist/_generated/",
+        "outDir": "./dist/_compiled/"
+    },
+    "include": [
+        "dist/_generated"
+    ]
+}

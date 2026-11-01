@@ -1,10 +1,8 @@
-import { exportVariable } from "@actions/core";
 import fs from "node:fs";
 import path from "node:path";
 import console from "../modules/console.js";
-import createCommit from "../modules/createCommit.js";
 import spawnAsync, { commandForPlatform } from "../modules/spawnAsync.js";
-import yamlModule from "../modules/yamlModule.js";
+import { assertGeneratedArtifactsDeclared } from "../modules/artifactManifest.js";
 console.info("Initialization done.");
 
 /**
@@ -21,9 +19,9 @@ const fileExists = async (filePath) => {
 };
 
 const checkOnly = process.argv.includes("--check");
-// --no-commit：构建照常但不调 createCommit（linter_test 的重建只为给
-// package:test 提供与磁盘一致的产物，该 job 无 git 身份也无法推送）
-const noCommit = process.argv.includes("--no-commit");
+// 产物由各包构建脚本写到 dist/_generated/gadgets（gitignore 覆盖，不进入仓库），
+// 全程无任何提交动作（linter_test 无 git 身份亦不受影响，取代 #1162 的 --no-commit 方案）；
+// check 模式的幂等对比也读同一目录，需先经 npm run build:artifacts 生成
 const packagesDirents = await fs.promises.readdir("packages", { withFileTypes: true });
 const packageNames = packagesDirents.filter((dirent) => dirent.isDirectory()).map(({ name }) => name);
 console.info("packages:", packageNames, checkOnly ? "(check mode)" : "(build mode)");
@@ -31,16 +29,6 @@ if (packageNames.length === 0) {
     throw new Error("No package found under packages/");
 }
 
-const { excluded = [] } = await yamlModule.readFile("scripts/buildPackages/exclusions.yaml").catch(() => ({}));
-
-/**
- * 产物清单约定：src/gadgets/<包名>/ 下以 Gadget- 开头的文件即该包的构建产物，
- * 用于 linguist 登记与 auto commit 范围判断，新增包无需在本脚本登记任何配置。
- * 例外在 exclusions.yaml 的 excluded 中列出。
- *
- * @type {string[]}
- */
-const artifactFiles = [];
 for (const name of packageNames) {
     const packageDir = path.join("packages", name);
     const scriptEntries = await fs.promises.readdir(path.join(packageDir, "scripts"), { withFileTypes: true });
@@ -65,18 +53,8 @@ for (const name of packageNames) {
             await spawnAsync(commandForPlatform("npx"), ["vitest", "run", "--coverage", "--root", packageDir]);
         }
     }
-    const gadgetDir = path.join("src", "gadgets", name);
-    const gadgetFiles = await fs.promises.readdir(gadgetDir);
-    artifactFiles.push(
-        ...gadgetFiles
-            .filter((fileName) => fileName.startsWith("Gadget-"))
-            .map((fileName) => path.posix.join("src", "gadgets", name, fileName))
-            .filter((srcPath) => !excluded.includes(srcPath)),
-    );
-    if (!checkOnly && !noCommit) {
-        await createCommit(`auto(Gadget-${name}): rebuild artifacts from packages/${name}`);
-    }
 }
-exportVariable("linguist-generated-packages", JSON.stringify(artifactFiles));
-console.info("artifactFiles:", artifactFiles);
+// 链尾反向对账（build 与 package:test 两种模式的公共出口）：磁盘产物必须全部已声明，
+// 拦截「忘写 artifacts.yaml 导致 generateGadgetsDefinition 静默删除 `_files` 产物条目」
+await assertGeneratedArtifactsDeclared();
 console.info("Done.");

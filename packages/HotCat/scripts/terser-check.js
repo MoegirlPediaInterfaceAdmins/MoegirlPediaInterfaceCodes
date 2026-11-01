@@ -11,7 +11,9 @@ import options from "../../../scripts/minification/options.js";
 const execFileAsync = promisify(execFile);
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const repoRoot = path.resolve(root, "..", "..");
-const artifact = path.join(repoRoot, "src", "gadgets", "HotCat", "Gadget-HotCat.js");
+// 产物位于构建链暂存区（需先 npm run build:artifacts），门禁语义与部署链一致：
+// tsc es2020 emit + terser 可压缩
+const artifact = path.join(repoRoot, "dist", "_generated", "gadgets", "HotCat", "Gadget-HotCat.js");
 const rawCode = await fs.promises.readFile(artifact, "utf8");
 
 // Gate 1：产物必须是合法 es2020。

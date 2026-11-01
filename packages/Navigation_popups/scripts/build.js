@@ -6,6 +6,7 @@ import rollupOptions from "../rollup.config.js";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const repoRoot = path.resolve(root, "..", "..");
+// 产物落点由 rollup.config.js 的 output.file 声明（构建链暂存区 dist/_generated/gadgets）
 const distFile = rollupOptions.output.file;
 const { input, plugins, treeshake, onwarn, output } = rollupOptions;
 
@@ -64,8 +65,8 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
             if (!first.equals(second)) {
                 throw new Error("build is not deterministic: two consecutive builds differ");
             }
-            // 产物是提交进仓库的文件，缺失（ENOENT）本身就是异常，直接让读取失败抛出，
-            // 不再把缺失当作「跳过对比」处理
+            // 产物由 npm run build:artifacts 生成到 dist/_generated，缺失（ENOENT）说明
+            // 还没跑过生成，直接让读取失败抛出
             const onDisk = await fs.promises.readFile(distFile);
             if (!first.equals(onDisk)) {
                 throw new Error(`${path.relative(repoRoot, distFile)} on disk differs from a fresh build`);

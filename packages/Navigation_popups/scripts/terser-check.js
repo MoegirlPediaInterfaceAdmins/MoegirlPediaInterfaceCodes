@@ -108,7 +108,9 @@ const execFileAsync = promisify(execFile);
 // the ecma output option) rejects such leaks, so the deploy chain below would
 // pass even on a mis-targeted build. acorn with ecmaVersion 2020 is the
 // precise boundary: it fails to parse exactly the es2021+ grammar.
-const rawArtifact = path.join(repoRoot, "src", "gadgets", "Navigation_popups", "Gadget-popups.js");
+// Artifact lives in the build staging area (dist/_generated/gadgets — run
+// npm run build:artifacts first).
+const rawArtifact = path.join(repoRoot, "dist", "_generated", "gadgets", "Navigation_popups", "Gadget-popups.js");
 const rawCode = await fs.promises.readFile(rawArtifact, "utf8");
 try {
     parse(rawCode, { ecmaVersion: 2020 });

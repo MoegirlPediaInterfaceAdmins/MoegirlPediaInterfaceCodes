@@ -121,12 +121,6 @@ jobs:
         run: node scripts/postCommit/prepareGit.js
       - name: Expose GitHub Runtime
         uses: crazy-max/ghaction-github-runtime@04d248b84655b509d8c44dc1d6f990c879747487 # v4
-      - name: Auto browserify generator
-        run: node scripts/browserify/index.js
-      - name: Auto prefetch
-        run: node scripts/prefetch/index.js
-      - name: Auto build packages
-        run: npm run package:build
       - name: Gadgets-definition Generator
         run: node scripts/generateGadgetsDefinition/index.js
       - name: Conventional Commits scopes generator
@@ -194,12 +188,12 @@ jobs:
         run: npm run test:tsc
       - name: Run unit test
         run: npm run test:unit
-      # linter_test 检出的是触发修订，不包含 postCommit job 重建产物后的自动提交；
-      # 先在本检出内重建，package:test 的「与磁盘一致」对比才有意义。
-      # --no-commit：本 job 无 git 身份（prepareGit 仅 postCommit job 执行）且
-      # 权限只读，重建产物不入提交，否则产物有过期修订时 git.commit 直接失败
-      - name: Rebuild packages
-        run: npm run package:build -- --no-commit
+      # 产物不入库后由构建链生成：先在本检出内生成到 dist/_generated，
+      # package:test 的幂等对比与 postcss 产物检查才有输入。
+      # 本 job 无 git 身份（prepareGit 仅 postCommit job 执行）且权限只读，
+      # build:artifacts 全程只写 dist/（gitignore 覆盖），天然不产生提交
+      - name: Build artifacts
+        run: npm run build:artifacts
       - name: Run packages test
         run: npm run package:test
       - name: Run postcss test
