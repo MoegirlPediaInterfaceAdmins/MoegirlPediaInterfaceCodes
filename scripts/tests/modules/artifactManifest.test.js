@@ -144,3 +144,64 @@ describe("artifactManifest", () => {
         await expect(artifactManifest()).rejects.toThrow("packages/HotCat/artifacts.yaml");
     });
 });
+
+describe("assertGeneratedArtifactsDeclared", () => {
+    it("磁盘产物全部已在清单中声明时通过", async () => {
+        const { assertGeneratedArtifactsDeclared } = await import("../../modules/artifactManifest.js");
+
+        yamlState.files = {
+            "scripts/browserify/targets.yaml": [],
+            "scripts/vendor/targets.yaml": [
+                { gadget: { name: "libJSON5", fileName: "Gadget-libJSON5.js" } },
+            ],
+            "packages/HotCat/artifacts.yaml": ["Gadget-HotCat.js"],
+        };
+        fsState.dirs = {
+            packages: [{ name: "HotCat", isDirectory: () => true }],
+            "dist/_generated/gadgets": [{ name: "libJSON5", isDirectory: () => true }, { name: "HotCat", isDirectory: () => true }],
+            "dist/_generated/gadgets/libJSON5": [{ name: "Gadget-libJSON5.js", isDirectory: () => false }],
+            "dist/_generated/gadgets/HotCat": [{ name: "Gadget-HotCat.js", isDirectory: () => false }],
+        };
+
+        await expect(assertGeneratedArtifactsDeclared()).resolves.toBeUndefined();
+    });
+
+    it("磁盘产物未在清单中声明时抛错并列出文件与修复入口", async () => {
+        const { assertGeneratedArtifactsDeclared } = await import("../../modules/artifactManifest.js");
+
+        // 模拟新增包忘写 packages/NewGadget/artifacts.yaml：构建已写出产物但清单缺条目
+        yamlState.files = {
+            "scripts/browserify/targets.yaml": [],
+            "scripts/vendor/targets.yaml": [],
+        };
+        fsState.dirs = {
+            packages: [{ name: "NewGadget", isDirectory: () => true }],
+            "dist/_generated/gadgets": [{ name: "NewGadget", isDirectory: () => true }],
+            "dist/_generated/gadgets/NewGadget": [{ name: "Gadget-NewGadget.js", isDirectory: () => false }],
+        };
+
+        // 不拦截的话，generateGadgetsDefinition 会把该产物判为 unexist 而静默删条目
+        await expect(assertGeneratedArtifactsDeclared()).rejects.toThrow("NewGadget/Gadget-NewGadget.js");
+    });
+
+    it("清单中声明但磁盘上不存在的产物不触发报错（只校验磁盘 ⊆ 清单）", async () => {
+        const { assertGeneratedArtifactsDeclared } = await import("../../modules/artifactManifest.js");
+
+        // 单独执行 package:build 时磁盘上只有 packages 产物，browserify/vendor 产物尚未生成；
+        // 清单 ⊆ 磁盘的方向由构建链完整性保证，不在本校验范围
+        yamlState.files = {
+            "scripts/browserify/targets.yaml": [
+                { gadget: { name: "libHashwasm", fileName: "Gadget-libHashwasm.js" } },
+            ],
+            "scripts/vendor/targets.yaml": [
+                { gadget: { name: "libJSON5", fileName: "Gadget-libJSON5.js" } },
+            ],
+        };
+        fsState.dirs = {
+            packages: [],
+            "dist/_generated/gadgets": [],
+        };
+
+        await expect(assertGeneratedArtifactsDeclared()).resolves.toBeUndefined();
+    });
+});

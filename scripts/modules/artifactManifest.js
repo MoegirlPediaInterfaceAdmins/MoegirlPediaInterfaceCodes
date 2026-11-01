@@ -49,4 +49,41 @@ export const artifactManifest = async () => {
     return manifest;
 };
 
+/**
+ * 反向对账：dist/_generated/gadgets 下实际存在的产物必须全部出现在 artifactManifest 汇总的
+ * 清单中。新增包忘写 packages/<name>/artifacts.yaml（或 targets.yaml 漏条目）时，
+ * generateGadgetsDefinition 会把 definition.yaml `_files` 里的产物条目判为 unexist 而静默
+ * 删除（gadget 注册丢失），本校验在构建链尾提前拦截。只校验「磁盘 ⊆ 清单」：单独执行
+ * package:build 时磁盘上只有 packages 产物，「清单 ⊆ 磁盘」由构建链完整性保证，不在此校验。
+ * 由 buildPackages（build 与 package:test 两种模式的公共链尾）调用，此时三类产物均已落盘。
+ * @returns {Promise<void>} 存在未声明产物时抛错
+ */
+export const assertGeneratedArtifactsDeclared = async () => {
+    const manifest = await artifactManifest();
+    const root = path.join("dist", "_generated", "gadgets");
+    const undeclared = [];
+    const walk = async (dir) => {
+        for (const dirent of await fs.promises.readdir(dir, { withFileTypes: true })) {
+            const entryPath = path.join(dir, dirent.name);
+            if (dirent.isDirectory()) {
+                await walk(entryPath);
+            } else {
+                const gadget = path.relative(root, dir);
+                if (!(manifest.get(gadget) ?? []).includes(dirent.name)) {
+                    undeclared.push(path.posix.join(gadget, dirent.name));
+                }
+            }
+        }
+    };
+    await walk(root);
+    if (undeclared.length > 0) {
+        throw new Error([
+            "dist/_generated/gadgets 下存在未在产物清单中声明的产物，",
+            "generateGadgetsDefinition 会因此把对应 `_files` 条目判为 unexist 而静默删除（gadget 注册丢失）；",
+            "packages 类请在 packages/<包名>/artifacts.yaml 补声明，browserify/vendor 类请补对应 targets.yaml 条目：",
+            undeclared.join(", "),
+        ].join("\n"));
+    }
+};
+
 export default artifactManifest;

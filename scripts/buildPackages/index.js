@@ -2,6 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 import console from "../modules/console.js";
 import spawnAsync, { commandForPlatform } from "../modules/spawnAsync.js";
+import { assertGeneratedArtifactsDeclared } from "../modules/artifactManifest.js";
 console.info("Initialization done.");
 
 /**
@@ -53,4 +54,7 @@ for (const name of packageNames) {
         }
     }
 }
+// 链尾反向对账（build 与 package:test 两种模式的公共出口）：磁盘产物必须全部已声明，
+// 拦截「忘写 artifacts.yaml 导致 generateGadgetsDefinition 静默删除 `_files` 产物条目」
+await assertGeneratedArtifactsDeclared();
 console.info("Done.");

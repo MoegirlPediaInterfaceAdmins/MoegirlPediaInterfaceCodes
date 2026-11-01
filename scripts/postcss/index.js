@@ -9,13 +9,14 @@ startGroup("postcss output:");
 const execAsync = promisify(exec);
 /**
  * 两段输入与 npm run build:css 一致：手写 CSS 来自 src/，构建产物 CSS 来自
- * dist/_generated（需先 npm run build:artifacts 生成），base 均使输出落入 dist/ 对应路径；
- * postcss 的 warning 输出在 stderr，收集后交 parseOutput 解析
+ * dist/_generated（需先 npm run build:artifacts 生成），base 均使输出落入 dist/ 对应路径
  * @param {string} globArgs glob 与 --base 参数
- * @returns {Promise<string>} postcss 的 stderr 输出
+ * @returns {Promise<string>} postcss 的 stderr 输出（warning 所在，收集后交 parseOutput 解析）
  */
 const runPostcss = async (globArgs) => {
-    const { stderr } = await execAsync(`NO_COLOR=true npx postcss ${globArgs} -d dist/ --verbose`);
+    const { stdout, stderr } = await execAsync(`NO_COLOR=true npx postcss ${globArgs} -d dist/ --verbose`);
+    // --verbose 的处理文件清单在 stdout，原样透传到终端（CI 日志）
+    process.stdout.write(stdout);
     return stderr;
 };
 const output = [
