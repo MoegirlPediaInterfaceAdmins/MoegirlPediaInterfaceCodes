@@ -1,6 +1,6 @@
 import { BlindWatermark, Watermark } from "watermark-js-plus/es";
 import { decideScene, getNamespacePrefixRegex, hasVariantMatch, type PageContext } from "./conditions.ts";
-import { auxiliaryOptions, contents, visibleOptions } from "./options.ts";
+import { auxiliaryOptions, contents, visibleOptions, watermarkZIndex } from "./options.ts";
 
 /**
  * 拉取某页面的全部语言变体标题（prop=info&inprop=varianttitles）。
@@ -64,6 +64,28 @@ $(() => {
         if (!content) {
             return;
         }
+        // 库生成的内联样式对 opacity、四边偏移等属性没有声明或没有 !important，外部样式表
+        // 可以隐藏水印节点或将其移出视口，且不会触发 mutationObserve（它只监听元素属性与
+        // DOM 结构，不监听样式表）。这里注入的规则恢复迁移前内联样式承担的静态约束；
+        // 选择器特征取随机的 watermarkZIndex，规则随水印按需注入并追加到 html 末尾（文档
+        // 序上晚于页面既有样式表，同等优先级时后出现的规则生效）。注意：样式表的
+        // !important 之间仍按 specificity 与出现顺序竞争，这不是内联 !important 的级联
+        // 封顶，拦截对象是不执行脚本的样式表规则
+        const style = document.createElement("style");
+        style.textContent = `html [style*="${watermarkZIndex}"][style*="${watermarkZIndex}"] {
+    opacity: 1 !important;
+    top: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    margin: 0 !important;
+    max-width: unset !important;
+    max-height: unset !important;
+    filter: none !important;
+    clip-path: none !important;
+    mix-blend-mode: normal !important;
+}`;
+        document.documentElement.append(style);
         await new Watermark({ ...visibleOptions, content }).create();
         if (ctx.skin === "moeskin") {
             // 库的 validateUnique 拒绝在同一父元素下创建第二个水印实例（可见层已挂在 body 上），

@@ -1,6 +1,14 @@
 import type { WatermarkOptions } from "watermark-js-plus/es";
 
 /**
+ * 水印节点的 z-index，每次页面加载随机取 [1e9, 2^31) 内的整数。
+ * 随机化不是为了层级（区间下界已保证盖过页面常规元素），而是让内联样式串不含
+ * 固定特征值——index.ts 以此值拼接防护规则的选择器，预写在个人样式表里的规则
+ * 无法按固定特征命中水印节点。
+ */
+export const watermarkZIndex = 1e9 + Math.floor(Math.random() * (2 ** 31 - 1e9));
+
+/**
  * 三种水印场景的文案（`multi-line-text` 以 `\n` 分行）。
  */
 export const contents: Readonly<Record<"history-revision" | "user-page" | "draft", string>> = {
@@ -11,7 +19,7 @@ export const contents: Readonly<Record<"history-revision" | "user-page" | "draft
 
 /**
  * 可见水印参数。视觉基线沿用迁移前 site-js 的自建实现：
- * 300×300 平铺、逆时针 15° 旋转、24px 黑字、0.17 透明度、文字中心位于图块 (50%, 36%)。
+ * 300×300 平铺、逆时针 15° 旋转、24px 黑字、0.17 透明度、文字中心位于图块约 (147, 148)。
  * `rotate` 与 `textRowMaxWidth` 必须显式给出——库默认 45° 与自动折行都会改变现有视觉。
  */
 export const visibleOptions: Readonly<Partial<WatermarkOptions>> = {
@@ -27,14 +35,16 @@ export const visibleOptions: Readonly<Partial<WatermarkOptions>> = {
     globalAlpha: 0.17,
     lineHeight: 30,
     textRowMaxWidth: 300,
-    // 迁移前文字中心位于图块 (50%, 36%)（left:50% / top:36% + translate(-50%,-50%)）；
-    // 库默认 translatePlacement "middle" 放在 (50%, 50%)。显式给出 translateX/Y 可归位，
-    // 但显式平移会把库的基线默认改为 top/left，须一并显式设回 middle/center
-    translateX: 150,
-    translateY: 108,
+    // 迁移前文字中心：锚点在 (150, 108)（left:50% / top:36%），但 CSS transform 列表
+    // rotate(-15deg) translate(-50%, -50%) 的平移向量随其后的旋转一起转动，实际中心
+    // 在约 (147, 148)（300×60 文字块推算为 (147.4, 147.9)；文字块高度在 55–67px 内
+    // 中心稳定于 x∈[146.4, 148.0]、y≈148，故取整数）。显式平移会把库的基线默认改为
+    // top/left，须一并显式设回 middle/center
+    translateX: 147,
+    translateY: 148,
     textBaseline: "middle",
     textAlign: "center",
-    zIndex: 2147483647,
+    zIndex: watermarkZIndex,
     mutationObserve: true,
 };
 
@@ -53,5 +63,8 @@ export const auxiliaryOptions: Readonly<Partial<WatermarkOptions>> = {
     rotate: 15,
     fontSize: "24px",
     fontColor: "#000000",
+    // 与可见层共用同一 z-index：防护规则的选择器以此值拼接，两层节点都要被覆盖；
+    // 同值不改变层叠关系（同 z-index 时按 DOM 顺序绘制，与共用库默认值时一致）
+    zIndex: watermarkZIndex,
     mutationObserve: true,
 };
