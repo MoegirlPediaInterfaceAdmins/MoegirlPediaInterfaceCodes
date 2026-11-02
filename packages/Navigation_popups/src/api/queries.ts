@@ -162,7 +162,7 @@ export const loadAPIPreview = (queryType: string, article: Title, navpop: Navpop
     }
 };
 const linkList = (list: string[]): string => {
-    list.sort((x, y) => x === y ? 0 : x < y ? -1 : 1);
+    list.sort();
     const buf: (string | null)[] = [];
     for (const item of list) {
         buf.push(wikiLink({
