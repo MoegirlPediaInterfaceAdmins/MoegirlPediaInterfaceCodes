@@ -62,7 +62,12 @@ export const auxiliaryOptions: Readonly<Partial<WatermarkOptions>> = {
     // 与可见层同为逆时针 15°（库的正值=逆时针，见 visibleOptions.rotate 注释）
     rotate: 15,
     fontSize: "24px",
-    fontColor: "#000000",
+    // 单通道差值：globalAlpha 0.005 经 canvas 8bit alpha 量化后实际为 1/255，合成公式
+    // round((src + 254·bg)/255) 下 src=255 的通道恰好补回损失（差值为 0）、src=0 的
+    // 通道恒为 -1。取青色使差值只落在 R 通道（如 #f7f7f9 → #f6f7f9），黑字则是三通道
+    // 各 -1 的灰差。解码侧 color-burn 为逐通道二值化（=255 白、<255 黑），本层显影为
+    // 青色文字，判别边界与黑字相同
+    fontColor: "#00ffff",
     // 与可见层共用同一 z-index：防护规则的选择器以此值拼接，两层节点都要被覆盖；
     // 同值不改变层叠关系（同 z-index 时按 DOM 顺序绘制，与共用库默认值时一致）
     zIndex: watermarkZIndex,
