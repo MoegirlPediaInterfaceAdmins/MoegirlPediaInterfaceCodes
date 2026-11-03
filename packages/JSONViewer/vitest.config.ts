@@ -1,6 +1,8 @@
 import { defineConfig } from "vitest/config";
 
 export default defineConfig({
+    // 默认缓存写进包内 node_modules/.vite；挪到 .cache/，包目录保持干净
+    cacheDir: "../../.cache/vite/JSONViewer",
     test: {
         environment: "jsdom",
         include: ["tests/**/*.test.ts"],
@@ -11,6 +13,8 @@ export default defineConfig({
             include: ["src/**/*.ts"],
             // ambient 类型声明无可执行代码
             exclude: ["src/env.d.ts"],
+            // 报告写到 .cache/（已 gitignore），包目录不产生 coverage/
+            reportsDirectory: "../../.cache/coverage/JSONViewer",
         },
     },
 });

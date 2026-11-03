@@ -1,6 +1,8 @@
 import { defineConfig } from "vitest/config";
 
 export default defineConfig({
+    // 默认缓存写进包内 node_modules/.vite；挪到 .cache/，包目录保持干净
+    cacheDir: "../../.cache/vite/Navigation_popups",
     test: {
         environment: "jsdom",
         include: ["tests/**/*.test.ts"],
@@ -16,6 +18,8 @@ export default defineConfig({
             include: ["src/**/*.ts"],
             // ambient 类型声明无可执行代码；SCSS 不经 vitest 转译
             exclude: ["src/types/**"],
+            // 报告写到 .cache/（已 gitignore），包目录不产生 coverage/
+            reportsDirectory: "../../.cache/coverage/Navigation_popups",
             // 四项 100% 常开（.zcode/rewrite-plan.md §6）：不可测的防御
             // 分支按「不过度防御」原则删除，而不是写 coverage ignore。
             thresholds: {
