@@ -49,7 +49,7 @@ export const visibleOptions: Readonly<Partial<WatermarkOptions>> = {
 };
 
 /**
- * MoeSkin 附加层参数。平铺尺寸取 400×400 而非可见层的 300×300：
+ * 附加层参数。平铺尺寸取 400×400 而非可见层的 300×300：
  * 若两层参数一致，本层文字会逐字叠在可见层文字上（本层像素贡献仅约 3%），
  * 解码增强后只能看到可见层图案；错开平铺尺寸后两层文字网格在画面上分离，各自可辨。
  * `globalAlpha` 与 `mode` 不在此设置——BlindWatermark 构造器对二者强制固定，

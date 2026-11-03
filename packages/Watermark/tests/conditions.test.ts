@@ -7,7 +7,6 @@ const NAMESPACE_IDS: Record<string, number> = { user: 2, user_talk: 3, 用户: 2
 
 const baseContext: PageContext = {
     userGroups: ["*"],
-    skin: "vector",
     action: "view",
     articleId: 1,
     namespaceNumber: 0,

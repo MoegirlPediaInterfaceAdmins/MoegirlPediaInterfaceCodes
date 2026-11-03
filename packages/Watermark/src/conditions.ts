@@ -4,7 +4,6 @@
  */
 export interface PageContext {
     readonly userGroups: readonly string[];
-    readonly skin: string;
     readonly action: string;
     readonly articleId: number;
     readonly namespaceNumber: number;

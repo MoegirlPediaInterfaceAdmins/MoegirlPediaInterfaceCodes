@@ -21,8 +21,7 @@ const fetchVariantTitles = async (pageName: string, articleId: number): Promise<
 
 $(() => {
     void (async () => {
-        const { skin, wgAction, wgArticleId, wgNamespaceIds, wgNamespaceNumber, wgPageName, wgCurRevisionId, wgRevisionId, wgUserGroups } = mw.config.get() as {
-            skin: string;
+        const { wgAction, wgArticleId, wgNamespaceIds, wgNamespaceNumber, wgPageName, wgCurRevisionId, wgRevisionId, wgUserGroups } = mw.config.get() as {
             wgAction: string;
             wgArticleId: number;
             wgNamespaceIds: Record<string, number>;
@@ -34,7 +33,6 @@ $(() => {
         };
         const ctx: PageContext = {
             userGroups: wgUserGroups,
-            skin,
             action: wgAction,
             articleId: wgArticleId,
             namespaceNumber: wgNamespaceNumber,
@@ -87,12 +85,10 @@ $(() => {
 }`;
         document.documentElement.append(style);
         await new Watermark({ ...visibleOptions, content }).create();
-        if (ctx.skin === "moeskin") {
-            // 库的 validateUnique 拒绝在同一父元素下创建第二个水印实例（可见层已挂在 body 上），
-            // 且校验失败时 create() 会静默返回，故本层必须另选挂载点。documentElement 与 body
-            // 同被库按全屏 fixed 定位处理（checkParentElementType 的 root 分支），各自实例的
-            // parentObserver 也分别监听自己父元素的 childList，防移除能力不受影响
-            await new BlindWatermark({ ...auxiliaryOptions, content, parent: document.documentElement }).create();
-        }
+        // 库的 validateUnique 拒绝在同一父元素下创建第二个水印实例（可见层已挂在 body 上），
+        // 且校验失败时 create() 会静默返回，故本层必须另选挂载点。documentElement 与 body
+        // 同被库按全屏 fixed 定位处理（checkParentElementType 的 root 分支），各自实例的
+        // parentObserver 也分别监听自己父元素的 childList，防移除监听不受影响
+        await new BlindWatermark({ ...auxiliaryOptions, content, parent: document.documentElement }).create();
     })();
 });
