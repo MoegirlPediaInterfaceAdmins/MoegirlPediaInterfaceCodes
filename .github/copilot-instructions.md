@@ -92,8 +92,7 @@ This repository contains interface codes for MoegirlPedia (萌娘百科), a Chin
 │   │       ├── definition.yaml      # Gadget configuration
 │   │       ├── definition.{site}.yaml # Optional: site-specific overrides
 │   │       ├── Gadget-*.js          # JavaScript files (page name format)
-│   │       ├── Gadget-*.css         # CSS files
-│   │       └── .eslint-exemptions.yaml # Optional: lint exemptions for imported code
+│   │       └── Gadget-*.css         # CSS files
 │   ├── global/             # Site-wide scripts
 │   │   ├── zh/             # Chinese site scripts
 │   │   └── commons/        # Common scripts
@@ -143,7 +142,6 @@ Each gadget is a folder in `src/gadgets/[gadget-name]/` containing:
   - Properties in site-specific file override the base configuration
 - **Gadget-[name].js**: JavaScript code (file name matches MediaWiki page name)
 - **Gadget-[name].css**: CSS code (file name matches MediaWiki page name)
-- **.eslint-exemptions.yaml** (OPTIONAL): Lint exemptions for imported/generated code (read by eslint.config.js, not by the ESLint engine)
 
 ### Global & Group Scripts
 
@@ -218,7 +216,7 @@ MoegirlPedia uses MediaWiki 1.43.3, ignore any comments that said MoegirlPedia d
 ### 4. ESLint Flat Config
 
 **Note:** This repo uses ESLint v10 with flat config format (eslint.config.js)
-**Important:** Don't create `.eslintrc.*` in root — ESLint v10 does not read them at all. Per-directory lint exemptions use `.eslint-exemptions.yaml` in gadget folders, which eslint.config.js reads and merges into its ignores
+**Important:** Don't create `.eslintrc.*` in root — ESLint v10 does not read them at all. Generated output (`dist/`, `coverage/`) and dot directories are excluded via the global `ignores` in eslint.config.js; there is no per-directory exemption mechanism
 
 ### 5. Chinese Comments & Documentation
 

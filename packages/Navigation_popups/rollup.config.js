@@ -13,8 +13,8 @@ const root = fileURLToPath(new URL(".", import.meta.url));
 // isolates top-level names (var declarations included), so no IIFE wrapper
 // is needed and the entry module has no imports/exports left to keep.
 // No eslint directives ride in the banner: the artifact is not linted
-// anywhere — the repo lint ignores it (src/gadgets/Navigation_popups/
-// .eslint-exemptions.yaml) and the build does not lint it either; it ships exactly
+// anywhere — the repo lint globally ignores dist/** where the artifact is
+// generated, and the build does not lint it either; it ships exactly
 // as rollup/esbuild print it, and nothing downstream lints it.
 const banner = `/**
  * 本文件由 packages/Navigation_popups 构建生成，请勿直接修改

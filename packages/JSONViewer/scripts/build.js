@@ -73,9 +73,8 @@ const buildOptions = (dev = false) => ({
 
 /**
  * 去掉 esbuild 残留在产物正文里的整行 eslint 指令注释：它们来自依赖源码
- * （如 preact/compat/client.mjs 的裸 `// eslint-disable-next-line`）。产物被界面库的
- * src/gadgets/JSONViewer/.eslint-exemptions.yaml 排除在规则之外（该目录下实际无规则生效），
- * 此时任何残留指令都会被 eslint 报成 unused directive / 未知规则，故将指令行整体剔除。
+ * （如 preact/compat/client.mjs 的裸 `// eslint-disable-next-line`），指向的规则
+ * 只在依赖源码的 lint 配置里存在，对打包后的产物没有作用，故将指令行整体剔除。
  */
 const stripInlineDirectives = (text) =>
     text.split("\n").filter((line) => !/^\s*\/\/\s*eslint-(?:disable|enable)\b/.test(line)).join("\n");
