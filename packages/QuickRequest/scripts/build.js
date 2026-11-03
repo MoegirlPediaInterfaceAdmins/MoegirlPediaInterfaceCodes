@@ -5,7 +5,9 @@ import { fileURLToPath } from "node:url";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const repoRoot = path.resolve(root, "..", "..");
-const gadgetDir = path.join(repoRoot, "src", "gadgets", "QuickRequest");
+// 产物写入构建链暂存区 dist/_generated/gadgets（gitignore 覆盖，不进入仓库），
+// 目录层级与 src/ 下一致，由 tsconfig.artifacts.json 编入 dist/_compiled
+const gadgetDir = path.join(repoRoot, "dist", "_generated", "gadgets", "QuickRequest");
 
 // esbuild 以入口文件名给产物命名（index.js），写入磁盘时再改成 on-wiki 需要的 gadget 名
 const ENTRY = "src/index.ts";
@@ -78,7 +80,7 @@ const buildOnce = async () => {
     return Buffer.from(text, "utf8");
 };
 
-/** 产物直接写入 src/gadgets/QuickRequest/（wiki 部署读取该位置），不经过包内 dist/ */
+/** 产物写入构建链暂存区 dist/_generated/gadgets/QuickRequest（不进入仓库），经部署链编译下发 */
 const write = async () => {
     const buffer = await buildOnce();
     const file = path.join(gadgetDir, JS_NAME);
@@ -95,7 +97,8 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
             if (!first.equals(second)) {
                 throw new Error(`${JS_NAME}: 连续两次构建产物不一致`);
             }
-            // 产物是提交进仓库的文件，缺失（ENOENT）本身就是异常，直接让读取失败抛出
+            // 产物由 npm run build:artifacts（package:build）生成到 dist/_generated，
+            // 缺失（ENOENT）说明还没跑过生成，直接让读取失败抛出
             const artifact = path.join(gadgetDir, JS_NAME);
             const onDisk = await fs.promises.readFile(artifact);
             if (!first.equals(onDisk)) {
