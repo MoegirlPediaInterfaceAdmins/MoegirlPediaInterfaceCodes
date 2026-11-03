@@ -230,6 +230,8 @@ type ConfigResult = { ok: true; config: QuickRequestConfig } | { ok: false; mess
 interface MainDialogData {
     definition: RequestTypeDefinition;
     context: QuickRequestContext;
+    /** 对话框标题（类型 label）。OO.ui.Dialog 会读取打开数据里的 title 覆写静态标题。 */
+    title: string;
     /** 入口预填值（参数键 → 值），如封禁申诉入口预填的封禁信息；无预填时省略 */
     preset?: Record<string, string>;
     /** 配置的预取 promise（承诺不 reject）；程序化表单类型不经配置页，省略 */

@@ -73,7 +73,7 @@ class MainDialog extends OO.ui.ProcessDialog {
     private loadingPanel!: OO.ui.PanelLayout;
     private formPanel!: OO.ui.PanelLayout;
     private paramFieldset!: OO.ui.FieldsetLayout;
-    private groupHint!: OO.ui.LabelWidget;
+    private groupHint!: OO.ui.MessageWidget;
     private summaryInput!: OO.ui.TextInputWidget;
 
     /**
@@ -233,7 +233,8 @@ class MainDialog extends OO.ui.ProcessDialog {
         const targetPage = this.resolveTargetPage();
         if (targetPage !== false) {
             fieldset.addItems([
-                new OO.ui.FieldLayout(new OO.ui.LabelWidget({ label: targetPage.replace(/_/g, " ") }), {
+                // 只读输入框而非纯文本：与表单内其他控件视觉一致，长页面名横向滚动不撑破布局，且可选中复制
+                new OO.ui.FieldLayout(new OO.ui.TextInputWidget({ value: targetPage.replace(/_/g, " "), readOnly: true }), {
                     label: wgULS("发至", "發至"),
                     align: "top",
                 }),
@@ -271,9 +272,9 @@ class MainDialog extends OO.ui.ProcessDialog {
         this.paramFieldset = new OO.ui.FieldsetLayout();
         fieldset.addItems([this.paramFieldset]);
 
-        // 组约束不指向单个控件，以整组提示呈现（文案随变体重建）
-        this.groupHint = new OO.ui.LabelWidget({ label: "" });
-        this.groupHint.$element.css("color", "#d33");
+        // 组约束不指向单个控件，以整组提示呈现（文案随变体重建）；
+        // 与方针警告同一 MessageWidget 呈现形式，显隐由 toggle 控制（空文案仍会渲染框体）
+        this.groupHint = new OO.ui.MessageWidget({ type: "warning", inline: true });
         fieldset.addItems([this.groupHint]);
 
         this.summaryInput = new OO.ui.TextInputWidget({ value: this.definition.defaultSummary ?? "", placeholder: wgULS("留空则自动生成", "留空則自動生成") });
@@ -353,6 +354,7 @@ class MainDialog extends OO.ui.ProcessDialog {
                 const label = spec.parameters?.find((param) => param.key === key)?.label;
                 return label === undefined ? key : resolveUIText(label);
             });
+        this.groupHint.toggle(groupLabels.length > 0);
         this.groupHint.setLabel(groupLabels.length > 0 ? wgULS(`「${groupLabels.join("」「")}」至少填写一项`, `「${groupLabels.join("」「")}」至少填寫一項`) : "");
         this.onFormChanged();
     }
