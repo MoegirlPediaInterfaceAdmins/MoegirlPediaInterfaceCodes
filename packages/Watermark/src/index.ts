@@ -21,7 +21,7 @@ const fetchVariantTitles = async (pageName: string, articleId: number): Promise<
 
 $(() => {
     void (async () => {
-        const { wgAction, wgArticleId, wgNamespaceIds, wgNamespaceNumber, wgPageName, wgCurRevisionId, wgRevisionId, wgUserGroups } = mw.config.get() as {
+        const { wgAction, wgArticleId, wgNamespaceIds, wgNamespaceNumber, wgPageName, wgCurRevisionId, wgRevisionId, wgUserGroups, wgUserName, wgUserId } = mw.config.get() as {
             wgAction: string;
             wgArticleId: number;
             wgNamespaceIds: Record<string, number>;
@@ -30,6 +30,8 @@ $(() => {
             wgCurRevisionId: number;
             wgRevisionId: number;
             wgUserGroups: string[];
+            wgUserName: string | null;
+            wgUserId: number;
         };
         const ctx: PageContext = {
             userGroups: wgUserGroups,
@@ -89,6 +91,8 @@ $(() => {
         // 且校验失败时 create() 会静默返回，故本层必须另选挂载点。documentElement 与 body
         // 同被库按全屏 fixed 定位处理（checkParentElementType 的 root 分支），各自实例的
         // parentObserver 也分别监听自己父元素的 childList，防移除监听不受影响
-        await new BlindWatermark({ ...auxiliaryOptions, content, parent: document.documentElement }).create();
+        // 附加层内容不随场景文案，固定携带观看者的用户名与用户 ID（未登录时为 null / 0）
+        const identityContent = `wgUserName: ${wgUserName ?? "null"}\nwgUserId: ${wgUserId}`;
+        await new BlindWatermark({ ...auxiliaryOptions, content: identityContent, parent: document.documentElement }).create();
     })();
 });
