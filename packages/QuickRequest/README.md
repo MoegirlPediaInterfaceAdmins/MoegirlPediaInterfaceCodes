@@ -2,11 +2,11 @@
 
 [萌娘百科](https://zh.moegirl.org.cn/)小工具 `Gadget-QuickRequest`：统一承载全部「发帖式请求」——填表单、预览、把请求发到对应版面或讨论页。阶段 1 覆盖编辑请求（含转换表变体）、移动请求、创建请求；阶段 2 覆盖用户组申请/提名（14 个申请类型变体）；阶段 3 覆盖封禁申诉；阶段 4 将 requestDeletion 并入为删除请求（zh 站与共享站）；阶段 5 覆盖反破坏举报申请、用户查核记录、技术编辑请求（见 PR #1153 的方案 §6）。
 
-源码为 TypeScript（`src/`），经 **esbuild** 打包为单文件产物，直接写入 [`src/gadgets/QuickRequest/`](../../src/gadgets/QuickRequest/)（wiki 部署读取该位置），由 postCommit CI 自动重建并提交。
+源码为 TypeScript（`src/`），经 **esbuild** 打包为单文件产物，构建期生成到 `dist/`（构建产物不进入仓库）；仓库内 [`src/gadgets/QuickRequest/`](../../src/gadgets/QuickRequest/) 只保留 `definition.yaml` 与手写配置页 `Gadget-QuickRequest.json`。
 
 > [!WARNING]
-> **产物是编译生成的，请勿手改。**
-> 改 `src/**/*.ts` → 根目录 `npm run package:build` → 重新生成产物。
+> **产物是编译生成的，请勿手改；产物不在仓库内。**
+> 改 `src/**/*.ts` → 根目录 `npm run package:build` → 产物生成到 `dist/_generated/`，随部署链下发。
 
 ## 功能
 
@@ -105,7 +105,8 @@ tests/
 ├── uitext.test.ts     # 界面文案解析（字符串直书、对象形态、hant 回落）
 ├── registry.test.ts   # move 的移动到自身校验（同名/下划线空格/首字母大小写/放行）、阶段 5 类型注册（可见性/目标页/append）
 └── setup.ts           # wgULS / libPrefixNumber 直通实现（node 环境没有 site-lib，且 errors.ts 的文案表在模块求值时调用它）
-scripts/build.js       # esbuild 打包 + 完整性自检 + 幂等检查
+artifacts.yaml         # 本包产物文件名清单（供 definition.yaml 的 _files 对账；产物不入库）
+scripts/build.js       # esbuild 打包（产物写 dist/_generated/gadgets/QuickRequest）+ 完整性自检 + 幂等检查
 vitest.config.ts       # vitest 配置（node 环境，覆盖率只统计六个纯逻辑模块）
 ```
 
@@ -114,12 +115,12 @@ vitest.config.ts       # vitest 配置（node 环境，覆盖率只统计六个�
 依赖统一由仓库根目录管理，本包不设独立 package.json：
 
 ```bash
-npm run package:build   # 构建产物 → src/gadgets/QuickRequest/（postCommit CI 亦自动执行并提交）
-npm run package:test    # 构建幂等检查 + 单元测试（vitest）
-npm test                # 全仓门禁（eslint / stylelint / tsc 覆盖本包源码与测试；产物不参与 lint）
+npm run package:build   # 构建产物 → dist/_generated/gadgets/QuickRequest/（不入库，随部署链下发）
+npm run package:test    # 构建幂等检查 + 单元测试（vitest --coverage，以包目录为 root）
+npm test                # 全仓门禁（eslint / stylelint / tsc 覆盖本包源码与测试）
 ```
 
 - 打包器与 [UserMessages](../UserMessages/scripts/build.js) 同款：esbuild `bundle` + `format: "esm"` + `target: "es2020"` + `minifySyntax`，产物不压缩（压缩交给界面库部署侧的 terser）；`charset: "utf8"` 保留中文字面量，`banner` 带 `"use strict"`。
 - 类型来自 `@types/oojs-ui`（列在 `packages/tsconfig.json` 的 `types` 里）、`types-mediawiki`，以及仓库共享的 [`src/@types/site-lib.d.ts`](../../src/@types/site-lib.d.ts)（`wgULS` / `libPrefixNumber` / `libGetPageNames`）。包内 `oo.d.ts` 只声明这两个类型包没收录的 `mw.widgets.TitleInputWidget` / `UserInputWidget` 与 `OO.ui.ProcessDialog.$body`。
-- 产物由 `src/gadgets/QuickRequest/.eslint-exemptions.yaml` 排除在 lint 之外；`Gadget-QuickRequest.json`（手工维护，非构建产物）登记在 `scripts/buildPackages/exclusions.yaml`。包内不写行内 `eslint-disable`：与 jQuery Promise / OOUI 打交道的三条规则在 `eslint.config.js` 里对 `packages/QuickRequest/src` 整目录关闭（与 UserMessages 相同）。
+- 产物不进入仓库（生成到 `dist/_generated/`，gitignore 覆盖），不参与 lint；`Gadget-QuickRequest.json` 为手写配置页，随包目录 `src/gadgets/QuickRequest/` 维护，产物文件名声明在包内 `artifacts.yaml`（供 `definition.yaml` 的 `_files` 对账）。包内不写行内 `eslint-disable`：与 jQuery Promise / OOUI 打交道的三条规则在 `eslint.config.js` 里对 `packages/QuickRequest/src` 整目录关闭（与 UserMessages 相同）。
 - 单元测试只覆盖纯逻辑：`src/wikitext.ts`（模板调用拼装——空值省略、固定参数；`{{` → `{{subst:`）、`src/config.ts`（校验/丢弃/变体、组约束、targetPage）、`src/blockInfo.ts`（封禁信息拼装）、`src/deleteContent.ts`（删除请求正文/标题/批量清单解析）、`src/registry.ts`（类型级校验与阶段 5 注册记录）与 `src/uitext.ts`（界面文案解析）。其余模块要完整的 OOUI / `mw.Api` 运行时，不在单测范围内；覆盖率报告写到 `.cache/coverage/QuickRequest`（已 gitignore）。
