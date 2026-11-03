@@ -1,10 +1,10 @@
 # HotCat
 
-[萌娘百科](https://zh.moegirl.org.cn/) [HotCat](https://zh.moegirl.org.cn/Help:HotCat小工具) 小工具（`Gadget-HotCat`）的源码包。源码为 TypeScript（`src/`，按域分层），经 **esbuild** 打包为单文件产物，直接写入 [`src/gadgets/HotCat/`](../../src/gadgets/HotCat/)（wiki 部署读取该位置），由 postCommit CI 自动重建并提交。
+[萌娘百科](https://zh.moegirl.org.cn/) [HotCat](https://zh.moegirl.org.cn/Help:HotCat小工具) 小工具（`Gadget-HotCat`）的源码包。源码为 TypeScript（`src/`，按域分层），经 **esbuild** 打包为单文件产物。产物不进入仓库：部署机器人执行 `npm run build` 时构建到 `dist/`。
 
-> [!WARNING]
-> **产物是编译生成的，请勿手改。**
-> 源码（`src/**/*.ts`）→ 根目录 `npm run package:build` → `src/gadgets/HotCat/Gadget-HotCat.js`，一切修改在源码进行，产物由 CI 自动重建。
+> [!NOTE]
+> **产物由源码编译生成。**
+> 源码（`src/**/*.ts`）→ 根目录 `npm run package:build` → 构建到 `dist/`，一切修改在源码进行。
 
 ## 来源与版权
 
@@ -71,7 +71,7 @@ scripts/
 
 ```bash
 # 仓库根目录
-npm run package:build                         # 构建产物 → src/gadgets/HotCat/
+npm run package:build                         # 构建产物 → dist/（不入库）
 node packages/HotCat/scripts/build.js --check-idempotent   # 幂等 + 与磁盘产物一致
 node packages/HotCat/scripts/terser-check.js  # 部署链等价门禁
 ```

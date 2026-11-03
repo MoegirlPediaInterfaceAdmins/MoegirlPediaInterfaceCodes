@@ -1,10 +1,10 @@
 # JSONViewer
 
-[萌娘百科](https://zh.moegirl.org.cn/) [JSONViewer](https://zh.moegirl.org.cn/MediaWiki:Gadget-JSONViewer.js) 小工具（`Gadget-JSONViewer`）的源码包。源码为 TypeScript / TSX（`src/`），经 **esbuild** 打包为单文件产物，直接写入 [`src/gadgets/JSONViewer/`](../../src/gadgets/JSONViewer/)（wiki 部署读取该位置），由 postCommit CI 自动重建并提交。
+[萌娘百科](https://zh.moegirl.org.cn/) [JSONViewer](https://zh.moegirl.org.cn/MediaWiki:Gadget-JSONViewer.js) 小工具（`Gadget-JSONViewer`）的源码包。源码为 TypeScript / TSX（`src/`），经 **esbuild** 打包为单文件产物。产物不进入仓库：部署机器人执行 `npm run build` 时构建到 `dist/`。
 
-> [!WARNING]
-> **产物是编译生成的，请勿手改。**
-> 源码（`src/**/*.ts(x)`）→ 根目录 `npm run package:build` → `src/gadgets/JSONViewer/`，一切修改在源码进行，产物由 CI 自动重建。
+> [!NOTE]
+> **产物由源码编译生成。**
+> 源码（`src/**/*.ts(x)`）→ 根目录 `npm run package:build` → 构建到 `dist/`，一切修改在源码进行。
 
 ## 功能
 
@@ -42,6 +42,6 @@ scripts/build.js        # esbuild 构建（发布 / --watch dev / --check-idempo
 
 依赖统一由仓库根目录管理，本包不设独立 package.json：
 
-- `npm run package:build` —— 构建产物并写入 `src/gadgets/JSONViewer/`；
+- `npm run package:build` —— 构建产物到 `dist/`（不入库；部署链由部署机器人执行 `npm run build` 构建）；
 - `npm run package:test` —— 构建幂等检查与单元测试（`--check` 模式）；
 - `node packages/JSONViewer/scripts/build.js --watch` —— dev watch：产出未压缩 + inline sourcemap 的单文件（CSS 以 `<style>` 注入打包进 JS）到 `packages/JSONViewer/dist/dev/`（已被 `.gitignore` 的 `dist` 覆盖），改动即时重建；`__DEV__` 取 true，入口里为 safemode 调试写的 `mw.loader.using` 分支被保留，便于脱离依赖声明单独调试。

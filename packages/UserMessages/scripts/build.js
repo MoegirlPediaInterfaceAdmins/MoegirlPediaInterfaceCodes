@@ -80,7 +80,7 @@ const buildOnce = async () => {
     return Buffer.from(text, "utf8");
 };
 
-/** 产物直接写入 src/gadgets/UserMessages/（wiki 部署读取该位置），不经过包内 dist/ */
+/** 产物写入文件头部注释的构建链暂存区 dist/_generated/gadgets/UserMessages，交给部署链继续处理 */
 const write = async () => {
     const buffer = await buildOnce();
     const file = path.join(gadgetDir, JS_NAME);

@@ -1,10 +1,10 @@
 # Navigation popups
 
-[萌娘百科](https://zh.moegirl.org.cn/) [Navigation popups](https://zh.moegirl.org.cn/MediaWiki:Gadget-popups.js) 小工具（`Gadget-popups`）的源码包。JS 源码为 TypeScript（`src/`，按功能域分层），经 **Rollup + esbuild** 打包为单文件产物；CSS 源码为 SCSS（`src/css/`），经 **sass** 编译。两份产物直接写入 [`src/gadgets/Navigation_popups/`](../../src/gadgets/Navigation_popups/)（wiki 部署读取该位置），由 postCommit CI 自动重建并提交。
+[萌娘百科](https://zh.moegirl.org.cn/) [Navigation popups](https://zh.moegirl.org.cn/MediaWiki:Gadget-popups.js) 小工具（`Gadget-popups`）的源码包。JS 源码为 TypeScript（`src/`，按功能域分层），经 **Rollup + esbuild** 打包为单文件产物；CSS 源码为 SCSS（`src/css/`），经 **sass** 编译。两份产物不进入仓库：部署机器人执行 `npm run build` 时构建到 `dist/`。
 
-> [!WARNING]
-> **产物是编译生成的，请勿手改，也不要把上游新版代码直接复制粘贴进来。**
-> 源码（`src/**/*.ts`）→ 根目录 `npm run package:build` → `src/gadgets/Navigation_popups/`，一切修改在源码进行，产物由 CI 自动重建。
+> [!NOTE]
+> **产物由源码编译生成，也不要把上游新版代码直接复制粘贴进来。**
+> 源码（`src/**/*.ts`）→ 根目录 `npm run package:build` → 构建到 `dist/`，一切修改在源码进行。
 > 萌百版相对上游有大量定制（简繁翻译内置、moment 时间格式化、中文站点适配、Moeskin/vector-2022 容器适配、暗色三变体等）；上游同步必须对照 [docs/functional-spec.md](./docs/functional-spec.md)。
 
 ## 迁移说明
@@ -63,9 +63,9 @@ docs/                   # functional-spec.md（功能基准）、semantic-notes.
 
 ```bash
 npm ci                    # 安装依赖（仓库根）
-npm run package:build     # 构建产物 → src/gadgets/Navigation_popups/（postCommit CI 亦自动执行并提交）
+npm run package:build     # 构建产物 → dist/（不入库；部署链由部署机器人执行 npm run build 构建）
 npm run package:test      # 包级门禁：JS 与 CSS 构建幂等检查 + terser-check 部署链等价门禁 + vitest 全量（coverage 100%）
-npm test                  # 全仓门禁（含 eslint / stylelint / tsc，覆盖本包源码与产物）
+npm test                  # 全仓门禁（含 eslint / stylelint / tsc，覆盖本包源码与测试）
 ```
 
 门禁对应关系：
