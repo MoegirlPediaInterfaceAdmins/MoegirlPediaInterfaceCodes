@@ -86,6 +86,7 @@ const open = (type: RequestTypeId, preset?: Record<string, string>): void => {
     const data: MainDialogData = {
         definition,
         context,
+        title: definition.label,
         ...preset === undefined ? {} : { preset },
         ...definition.programmaticForm === undefined ? { configPromise: prefetchConfig() } : {},
         api: getApiForSite(site),
