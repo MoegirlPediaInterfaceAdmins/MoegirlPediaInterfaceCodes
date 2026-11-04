@@ -281,8 +281,8 @@
 			"parameters": [
 				{
 					"key": "1",
-					"label": "页面名",
-					"type": "page",
+					"label": "原因",
+					"type": "multiline",
 					"required": true
 				}
 			]
