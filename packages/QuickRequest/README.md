@@ -94,7 +94,7 @@ src/
 ├── openWindow.ts      # 独立 WindowManager 挂载对话框，关闭后清理并回调（嵌套弹窗的前提）
 ├── messageDialog.ts   # 通用消息框、「关闭」错误提示、「关闭/重试」确认、「返回修改/继续提交」确认、传输层失败的「关闭/仍要重试」确认
 ├── send.ts            # addtopic 发帖与 append 追加发帖（多参 reject 取错误码、按目标站选 API）、回读新章节锚点、跳转（跨站带基址）
-├── mainDialog.ts      # 主对话框：发至展示、申请类型下拉（变体）、程序化表单路径、字段显隐与持久偏好、组约束提示、开框确认横幅、编辑摘要、校验与预览请求
+├── mainDialog.ts      # 主对话框：发至展示、申请类型下拉（变体）、程序化表单路径、字段显隐与持久偏好、组约束提示、开框确认横幅、校验与预览请求
 ├── previewDialog.ts   # 预览对话框：渲染 HTML、折叠 wikitext、提交前确认、发送/重试、提交中按钮态
 └── oo.d.ts            # 类型补充：mw.widgets 的两个输入框、OO.ui.ProcessDialog.$body
 tests/

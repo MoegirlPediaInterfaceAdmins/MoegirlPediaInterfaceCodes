@@ -13,8 +13,6 @@ interface SendParams {
     sectionTitle: string;
     /** 最终提交正文，已含 subst 改写（由 buildSubmitText 生成） */
     wikitext: string;
-    /** 编辑摘要；空串表示不传该参数，由服务端自动生成 */
-    summary: string;
     /** 发帖所用 API（目标站）；缺省当前站 */
     api?: mw.Api;
 }
@@ -25,8 +23,6 @@ interface AppendParams {
     page: string;
     /** 最终提交正文，已含 subst 改写（由 buildSubmitText 生成） */
     wikitext: string;
-    /** 编辑摘要；空串表示不传该参数，由服务端自动生成 */
-    summary: string;
     /** 允许创建不存在的目标页（banAppeal：本人讨论页可能不存在），缺省带 nocreate */
     allowCreate?: boolean;
     /** 发帖所用 API（目标站）；缺省当前站 */
@@ -41,7 +37,7 @@ interface AppendParams {
  * 向目标页面追加一个新话题。
  *
  * action=discussiontoolsedit + paction=addtopic（requestDeletion 已在生产环境验证）。
- * summary 为空时不传该参数：addtopic 缺省由服务端按章节标题自动生成摘要。
+ * 不传 summary：始终是新话题发帖，摘要由服务端按章节标题自动生成（与所有现行入口一致）。
  * 用 .then(onOk, onError) 而非 try/catch：postWithToken 以 (code, result, ...) 多参 reject，
  * await 只会拿到第一个参数（错误码），会丢掉 result.error.info。
  *
@@ -49,17 +45,14 @@ interface AppendParams {
  * @param params 发送参数
  * @returns 发送结果
  */
-const postTopic = (params: SendParams): JQuery.Promise<SendResult> => {
-    // summary 为空时不传该参数：addtopic 缺省由服务端按章节标题自动生成摘要
-    const summary = params.summary === "" ? {} : { summary: params.summary };
-    return (params.api ?? getApi()).postWithToken("csrf", {
+const postTopic = (params: SendParams): JQuery.Promise<SendResult> =>
+    (params.api ?? getApi()).postWithToken("csrf", {
         action: "discussiontoolsedit",
         paction: "addtopic",
         formatversion: 2,
         page: params.page,
         sectiontitle: params.sectionTitle,
         wikitext: params.wikitext,
-        ...summary,
         assertuser: (mw.config.get("wgUserName") as string | null | undefined) ?? "",
         nocontent: "",
         watchlist: "nochange",
@@ -75,7 +68,6 @@ const postTopic = (params: SendParams): JQuery.Promise<SendResult> => {
             // addtopic 非幂等,自动重试可能重复发帖——标记 ambiguous,由上层换警示文案
             return { ok: false as const, code, detail: describeSendError(code, result), ambiguous: code === "http" };
         });
-};
 
 /**
  * 向目标页面追加一段自带章节标题的正文（userGroup 等申请类模板）。
@@ -86,16 +78,15 @@ const postTopic = (params: SendParams): JQuery.Promise<SendResult> => {
  * 保存结果一致。首尾各补一个换行与页尾内容分隔。
  * nocreate 缺省生效：目标页不存在时直接失败，避免凭空建页（版面页不可能不存在）；
  * banAppeal 例外——本人讨论页可能不存在，现行 section=new 会直接建页，allowCreate 与之对齐。
- * summary 为空时不传该参数，由服务端自动生成。
+ * 不传 summary：与现行入口一致，由服务端自动生成摘要。
  *
  * 失败处理与 postTopic 相同（.then/.catch 而非 try/catch 的原因见其注释）；
  * append 同样非幂等，传输层失败后的重试可能重复发帖，同样标记 ambiguous。
  * @param params 发送参数
  * @returns 发送结果
  */
-const appendTopic = (params: AppendParams): JQuery.Promise<SendResult> => {
-    const summary = params.summary === "" ? {} : { summary: params.summary };
-    return (params.api ?? getApi()).postWithToken("csrf", {
+const appendTopic = (params: AppendParams): JQuery.Promise<SendResult> =>
+    (params.api ?? getApi()).postWithToken("csrf", {
         action: "edit",
         formatversion: 2,
         title: params.page,
@@ -104,7 +95,6 @@ const appendTopic = (params: AppendParams): JQuery.Promise<SendResult> => {
         assertuser: (mw.config.get("wgUserName") as string | null | undefined) ?? "",
         watchlist: "nochange",
         tags: CHANGE_TAG,
-        ...summary,
     })
         .then((res: unknown) => ({
             ok: true as const,
@@ -114,7 +104,6 @@ const appendTopic = (params: AppendParams): JQuery.Promise<SendResult> => {
             console.warn("[QuickRequest] 发送失败", code, result);
             return { ok: false as const, code, detail: describeSendError(code, result), ambiguous: code === "http" };
         });
-};
 
 /**
  * 读取指定修订里新话题的章节锚点。

@@ -28,7 +28,7 @@ type ActiveSpec = Pick<TemplateSpec, "parameters"> & Pick<TypeConfig, "requireAn
 type TemplateActiveSpec = ActiveSpec & TemplateSpec;
 
 /**
- * 主对话框：按请求类型展示参数表单与编辑摘要，然后进入预览。
+ * 主对话框：按请求类型展示参数表单，然后进入预览。
  *
  * 类型配置（站内 JSON 页）在打开时才可用，因此 initialize 只搭出「加载中 / 表单」
  * 两个容器，真正的表单在 getSetupProcess 里等预取落定后再构建。
@@ -74,7 +74,6 @@ class MainDialog extends OO.ui.ProcessDialog {
     private formPanel!: OO.ui.PanelLayout;
     private paramFieldset!: OO.ui.FieldsetLayout;
     private groupHint!: OO.ui.MessageWidget;
-    private summaryInput!: OO.ui.TextInputWidget;
 
     /**
      * 搭出「加载中」与「表单」两个容器，不碰配置（此时类型条目还未知）。
@@ -198,7 +197,6 @@ class MainDialog extends OO.ui.ProcessDialog {
                     // allowCreate 同样由 collectSubmission 产出（banAppeal 建页），漏传会让
                     // append 退回 nocreate、新用户讨论页建页失败
                     ...submission.allowCreate === undefined ? {} : { allowCreate: submission.allowCreate },
-                    editSummary: submission.editSummary,
                     api: this.api,
                     targetBase: this.targetBase,
                     ...this.definition.warnings === undefined
@@ -272,13 +270,10 @@ class MainDialog extends OO.ui.ProcessDialog {
         this.paramFieldset = new OO.ui.FieldsetLayout();
         fieldset.addItems([this.paramFieldset]);
 
-        // 组约束不指向单个控件，以整组提示呈现（文案随变体重建）；
-        // 与方针警告同一 MessageWidget 呈现形式，显隐由 toggle 控制（空文案仍会渲染框体）
-        this.groupHint = new OO.ui.MessageWidget({ type: "warning", inline: true });
-        fieldset.addItems([this.groupHint]);
-
-        this.summaryInput = new OO.ui.TextInputWidget({ value: this.definition.defaultSummary ?? "", placeholder: wgULS("留空则自动生成", "留空則自動生成") });
-        fieldset.addItems([new OO.ui.FieldLayout(this.summaryInput, { label: wgULS("编辑摘要", "編輯摘要"), align: "top" })]);
+        // 组约束不指向单个控件，以整组提示呈现（文案随变体重建）。构造方式与方针警告横幅
+        // 一致：无 inline 的块级形态。不在这里挂载——插入位置取决于组约束字段在参数区里的
+        // 排布，由 rebuildParamArea 把它嵌到组字段紧后
+        this.groupHint = new OO.ui.MessageWidget({ type: "warning" });
 
         this.formPanel.$element.append(fieldset.$element);
         this.rebuildParamArea(initialSpec);
@@ -347,9 +342,23 @@ class MainDialog extends OO.ui.ProcessDialog {
                 },
             );
         });
-        this.paramFieldset.addItems(this.paramFields.map(({ layout }) => layout));
+        // 组提示嵌在组约束字段最后一个的紧后方：提示只关于这几个字段，若落在参数区末尾，
+        // delete 的批量提删、回车提交等开关字段会夹在字段与提示之间，看起来错位；
+        // 无组约束的规格不插入（groupHint 不入 DOM，toggle 无视觉效果）
+        const groupKeys = spec.requireAnyOf ?? [];
+        let hintIndex = -1;
+        this.paramFields.forEach(({ param }, index) => {
+            if (groupKeys.includes(param.key)) {
+                hintIndex = index + 1;
+            }
+        });
+        const layouts: OO.ui.Element[] = this.paramFields.map(({ layout }) => layout);
+        if (hintIndex !== -1) {
+            layouts.splice(hintIndex, 0, this.groupHint);
+        }
+        this.paramFieldset.addItems(layouts);
 
-        const groupLabels = (spec.requireAnyOf ?? [])
+        const groupLabels = groupKeys
             .map((key) => {
                 const label = spec.parameters?.find((param) => param.key === key)?.label;
                 return label === undefined ? key : resolveUIText(label);
@@ -477,7 +486,6 @@ class MainDialog extends OO.ui.ProcessDialog {
             ...getSectionTitle === undefined ? {} : { getSectionTitle },
             ...this.definition.postMode === undefined ? {} : { postMode: this.definition.postMode },
             ...this.definition.allowCreate === undefined ? {} : { allowCreate: this.definition.allowCreate },
-            editSummary: this.summaryInput.getValue().trim(),
         };
     }
 }
