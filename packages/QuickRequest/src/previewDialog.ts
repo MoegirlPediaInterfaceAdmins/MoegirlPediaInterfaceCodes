@@ -155,7 +155,6 @@ class PreviewDialog extends OO.ui.ProcessDialog {
                             ? await appendTopic({
                                 page: payload.targetPage,
                                 wikitext: payload.submittedText,
-                                summary: payload.editSummary,
                                 ...payload.allowCreate === undefined ? {} : { allowCreate: payload.allowCreate },
                                 api: payload.api,
                             })
@@ -163,7 +162,6 @@ class PreviewDialog extends OO.ui.ProcessDialog {
                                 page: payload.targetPage,
                                 sectionTitle,
                                 wikitext: payload.submittedText,
-                                summary: payload.editSummary,
                                 api: payload.api,
                             });
                         if (result.ok) {

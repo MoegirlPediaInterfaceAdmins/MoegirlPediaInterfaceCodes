@@ -192,8 +192,6 @@ interface RequestTypeDefinition {
      * 流程遇到这种情况会直接建页，allowCreate 与之对齐。
      */
     allowCreate?: boolean;
-    /** 默认编辑摘要；空串表示不传 summary 参数，由服务端自动生成 */
-    defaultSummary?: string;
     /** 提交前确认项；返回空数组表示直接提交 */
     warnings?: (ctx: QuickRequestContext) => Promise<Warning[]>;
     /**
@@ -267,8 +265,6 @@ interface PreviewDialogData {
     api: mw.Api;
     /** 发帖目标站的站点基址；目标即当前站时为空串（成功后跳转 URL 用） */
     targetBase: string;
-    /** 编辑摘要；空串表示不传，由服务端自动生成 */
-    editSummary: string;
     /** 提交前确认项的惰性提供者；缺省表示该类型无需确认 */
     getWarnings?: () => Promise<Warning[]>;
 }
