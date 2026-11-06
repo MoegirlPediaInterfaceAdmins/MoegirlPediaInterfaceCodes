@@ -90,6 +90,8 @@ const packageGlobals = {
     // 值位置的误用仍会被 tsc 检出（TS2693: "only refers to a type"）
     JQuery: false,
     HTMLElementTagNameMap: false,
+    // MoeSkin moeskin.pagetools 钩子载荷，QuickRequest 的 oo.d.ts 声明
+    MoeSkinPageTools: false,
     // ext.gadget.libOOUIDialog 提供的站点全局
     oouiDialog: false,
     HTMLCollectionOf: false,

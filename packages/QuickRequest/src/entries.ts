@@ -35,11 +35,16 @@ const mountBanAppealEntry = (): void => {
     $container.append(button.$element);
 };
 
+/** MoeSkin 页面工具列按钮的图标：tabler 官方 outline trash 图标（report 等 gadget 同样内联 tabler SVG）。 */
+const TRASH_ICON = "<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M4 7l16 0' /><path d='M10 11l0 6' /><path d='M14 11l0 6' /><path d='M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12' /><path d='M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3' /></svg>";
+
 /**
- * 「提出删除请求」入口（阶段 4，沿用旧 Gadget-requestDeletion 的挂载与全部守卫）。
- * 挂在 p-cactions，zh 站与共享站相同；守卫：页面已存在（wgArticleId 非 0）且非特殊命名空间，
- * 讨论版各级版面自身、已挂 {{will2Be2Deleted}} 的页面不显示；巡查员/管理员默认不显示，
- * ?AnnTools-debug=requestDeletion（竖线分隔多值）调试开关保留。
+ * 「提出删除请求」入口（阶段 4，沿用旧 Gadget-requestDeletion 的全部守卫）。
+ * MoeSkin 下挂皮肤提供的页面工具列（moeskin.pagetools 扩展点，与 report / shortlink /
+ * InPageEdit-v2 的用法一致；旧工具在 MoeSkin 下同样挂 p-cactions，没有专门处理），
+ * 其余皮肤沿用旧工具的 p-cactions，zh 站与共享站相同。守卫：页面已存在（wgArticleId 非 0）
+ * 且非特殊命名空间，讨论版各级版面自身、已挂 {{will2Be2Deleted}} 的页面不显示；
+ * 巡查员/管理员默认不显示，?AnnTools-debug=requestDeletion（竖线分隔多值）调试开关保留。
  */
 const mountDeleteEntry = (): void => {
     const { wgArticleId, wgPageName, wgNamespaceNumber, wgUserGroups } = mw.config.get(["wgArticleId", "wgPageName", "wgNamespaceNumber", "wgUserGroups"]);
@@ -54,14 +59,23 @@ const mountDeleteEntry = (): void => {
     ) {
         return;
     }
+    const openDelete = (event: JQuery.TriggeredEvent): void => {
+        event.preventDefault();
+        window.libQuickRequest?.open("delete");
+    };
+    if (mw.config.get("skin") === "moeskin") {
+        // mw.hook 会记住最近一次触发：皮肤先于本模块就绪时，add 进来的回调立即执行
+        mw.hook("moeskin.pagetools").add(({ addPageToolsButton }: MoeSkinPageTools) => {
+            const $button = addPageToolsButton(TRASH_ICON, wgULS("提出删除请求", "提出刪除請求"), "extra");
+            $button.attr({ id: "ca-quickrequest-delete", href: "#" }).on("click", openDelete);
+        });
+        return;
+    }
     const link = mw.util.addPortletLink("p-cactions", "#", wgULS("提出删除请求", "提出刪除請求"), "ca-quickrequest-delete", wgULS("向讨论版提出删除请求", "向討論版提出刪除請求"));
     if (!link) {
         return;
     }
-    $(link).on("click", (event) => {
-        event.preventDefault();
-        window.libQuickRequest?.open("delete");
-    });
+    $(link).on("click", openDelete);
 };
 
 /**

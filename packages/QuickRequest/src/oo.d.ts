@@ -1,7 +1,8 @@
 /*
- * 只补 @types 里确实没有的两处（其余全局类型都来自仓库既有声明）：
+ * 只补 @types 里确实没有的声明（其余全局类型都来自仓库既有声明）：
  *   —— mw.widgets：types-mediawiki 未收录 mediawiki.widgets 的两个输入框；
- *   —— OO.ui.ProcessDialog.$body：@types/oojs-ui 只在文档注释里提过，没有正式声明。
+ *   —— OO.ui.ProcessDialog.$body：@types/oojs-ui 只在文档注释里提过，没有正式声明；
+ *   —— LocalObjectStorage 全局类与 MoeSkin 的 moeskin.pagetools 钩子载荷。
  * 本文件是全局脚本声明文件（不带 import/export）。
  */
 
@@ -78,4 +79,20 @@ declare class LocalObjectStorage {
      * @param key 存储键
      */
     removeItem(key: string): void;
+}
+
+/**
+ * MoeSkin 皮肤 `moeskin.pagetools` 钩子的载荷：皮肤提供的页面工具列扩展点。
+ * 仓库内 report / shortlink / InPageEdit-v2 等 gadget 均经 addPageToolsButton 挂按钮；
+ * 皮肤未提供类型声明，按这些既有调用的形态补充。类型名同时登记在根 eslint.config.js 的
+ * globals 中（no-undef 识别不了 ambient 类型）。
+ */
+interface MoeSkinPageTools {
+    /**
+     * @param content 按钮内容（图标 HTML 字符串或 jQuery 节点）
+     * @param title 按钮提示文案
+     * @param section 工具列分组，既有调用均传 "extra"
+     * @returns 按钮的 jQuery 节点
+     */
+    addPageToolsButton: (content: string | JQuery, title: string, section?: string) => JQuery;
 }
