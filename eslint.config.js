@@ -138,6 +138,8 @@ const config = [
                 EventListener: false,
                 GlobalEventHandlers: false,
                 MouseEventInit: false,
+                // MoeSkin moeskin.pagetools 钩子载荷，QuickRequest 的 oo.d.ts 声明
+                MoeSkinPageTools: false,
             },
         },
         rules: {
