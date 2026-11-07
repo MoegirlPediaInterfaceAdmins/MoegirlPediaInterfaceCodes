@@ -46,24 +46,17 @@ $(() => {
 
     // 编辑请求
     if (!$("ul.permissions-errors").find('a[href*="MoeAuth"]').length && !!$(".permissions-errors, #wpTextbox1[readonly]")[1] && mw.config.get("wgUserName") && !$(".editRequest .cdx-button")[0]) {
-        const { talkPage, basePageName } = libGetPageNames();
-        if (talkPage !== false) {
+        const { talkPage } = libGetPageNames();
+        // 转换表页面的特例由 QuickRequest 内部处理：open("edit") 会自动落到 editConversiontable 类型
+        if (talkPage !== false && window.libQuickRequest) {
             const container = $("<div/>", {
                 "class": "editRequest",
             });
-            const now = new Date();
-            container.append(wgULS("虽然您无权编辑本页面，但您可以点击右侧按钮在本页的讨论页提出编辑请求，让可以编辑的人代为编辑：", "雖然您無權編輯本頁面，但您可以點擊右側按鈕在本頁的討論頁提出編輯請求，讓可以編輯的人代為編輯："));
+            container.append(wgULS("虽然您无权编辑本页面，但您可以使用按钮在本页的讨论页提出编辑请求，让可以编辑的人代为编辑：", "雖然您無權編輯本頁面，但您可以使用按鈕在本頁的討論頁提出編輯請求，讓可以編輯的人代為編輯："));
             $("<button/>", {
                 "class": "cdx-button cdx-button--action-progressive cdx-button--weight-primary",
             }).text(wgULS("提出编辑请求", "提出編輯請求")).on("click", () => {
-                const editRequestURL = new URL(`${mw.config.get("wgScriptPath")}/index.php`, location.origin);
-                editRequestURL.searchParams.set("action", "edit");
-                editRequestURL.searchParams.set("preload", wgGetEditRequestPreload(wgPageName, basePageName));
-                editRequestURL.searchParams.set("preloadtitle", `编辑请求 - ${mw.config.get("wgUserName")} - ${now.getFullYear()}.${libPrefixNumber(now.getMonth() + 1)}.${libPrefixNumber(now.getDate())}`);
-                editRequestURL.searchParams.set("section", "new");
-                editRequestURL.searchParams.set("title", talkPage);
-                editRequestURL.searchParams.set("dtpreload", "1");
-                window.open(editRequestURL.href, "_blank");
+                window.libQuickRequest.open("edit");
             }).appendTo(container);
             $("#mw-content-text").children(".wikiEditor-ui:first, textarea[readonly]:first").before("<hr>").before(container);
         }
