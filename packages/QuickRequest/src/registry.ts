@@ -164,7 +164,7 @@ const banAppealDefinition: RequestTypeDefinition = {
  * （site: "zh"——预览、发帖、锚点回读与跳转全部经 mw.ForeignApi / 站点基址指向主站）。
  * 正文为手工拼装的纯文本（非模板调用），走程序化表单：字段（理由下拉/详情/批量）与
  * 正文/标题构建在 deleteContent.ts，拼装格式与旧 Gadget-requestDeletion 逐字一致。
- * 入口沿用旧工具的 p-cactions「提出删除请求」与全部守卫（见 entries.ts）。
+ * 入口「提出删除请求」在 MoeSkin 下挂皮肤的页面工具列，其余皮肤挂 p-cactions，守卫沿用旧工具（见 entries.ts）。
  */
 const deleteDefinition: RequestTypeDefinition = {
     id: "delete",
