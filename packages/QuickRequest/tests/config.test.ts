@@ -272,6 +272,24 @@ describe("parseConfig", () => {
             expect(result.config.types.userGroup.variants).toHaveLength(14);
         }
     });
+
+    it("部署端在配置页顶部插入的 __WARNING__ / _addText 不影响解析", () => {
+        // 部署机器人同步 MediaWiki:Gadget-QuickRequest.json 时会在页面顶部插入
+        // __WARNING__（勿手动修改提示）与 _addText（来源标注）两个顶层键（与
+        // Gadget-UserMessages.json 的同步形态一致）。守门：parseConfig 只取 types，
+        // 若日后加入严格的顶层键校验，这个用例会在部署后才暴露的问题提前到提交前。
+        const raw = readFileSync(new URL("../../../src/gadgets/QuickRequest/Gadget-QuickRequest.json", import.meta.url), "utf8");
+        const deployed = JSON.stringify({
+            __WARNING__: "!!! DON'T MODIFY THIS PAGE MANUALLY, YOUR CHANGES WILL BE OVERWRITTEN !!!",
+            _addText: "{{GHIACode|page=GHIA:MoegirlPediaInterfaceCodes/blob/master/src/gadgets/QuickRequest/Gadget-QuickRequest.json|user=[[U:Example]]|shortId=0000000|summary=example}}",
+            ...JSON.parse(raw) as Record<string, unknown>,
+        });
+        const result = parseConfig(deployed);
+        expect(result.ok).toBe(true);
+        if (result.ok) {
+            expect(Object.keys(result.config.types)).toHaveLength(9);
+        }
+    });
 });
 
 describe("parseConfig 变体（variants）", () => {
