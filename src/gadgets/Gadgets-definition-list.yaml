@@ -80,6 +80,7 @@
     - wikiplus-highlight
     - DisamAssist
     - AiAssisted
+    - MoeUpload
 
 - name: maintenance
   gadgets:

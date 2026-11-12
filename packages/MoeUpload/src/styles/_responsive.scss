@@ -1,0 +1,25 @@
+// 窄屏断点（720px）：拖放区收紧，条目主行换行、缩略图缩小、操作行独占整行。
+
+@media (width <= 720px) {
+    .moeupload-dropzone {
+        padding: 24px 10px;
+    }
+
+    .moeupload-item__main {
+        flex-wrap: wrap;
+    }
+
+    .moeupload-item__thumb {
+        flex-basis: 48px;
+        height: 48px;
+    }
+
+    .moeupload-item__actions {
+        width: 100%;
+        justify-content: flex-start;
+    }
+
+    .moeupload-toolbar .oo-ui-buttonWidget {
+        flex: 0 1 auto;
+    }
+}

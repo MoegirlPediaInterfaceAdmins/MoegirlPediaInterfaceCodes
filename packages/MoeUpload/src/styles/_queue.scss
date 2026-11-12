@@ -1,0 +1,149 @@
+.moeupload-queue {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.moeupload-item {
+    border: 1px solid var(--mu-border-soft);
+    border-radius: var(--mu-radius);
+    background: var(--mu-bg);
+    box-shadow: var(--mu-shadow);
+
+    &__main {
+        display: flex;
+        gap: 12px;
+        padding: 12px;
+        align-items: flex-start;
+    }
+
+    &__thumb {
+        flex: 0 0 64px;
+        height: 64px;
+        border-radius: 4px;
+        background: var(--mu-bg-soft);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+
+        img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+    }
+
+    &__body {
+        // 占满剩余宽度；min-width: 0 允许收缩，长文件名行内换行、不撑破布局。
+        flex: 1 1 auto;
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    &__namerow {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+
+        // 文件名输入占满整行剩余宽度。
+        .moeupload-titleinput {
+            flex: 1 1 auto;
+            min-width: 0;
+        }
+    }
+
+    &__inforow {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        flex-wrap: wrap;
+        font-size: 12px;
+        color: var(--mu-text-muted);
+    }
+
+    &__size {
+        word-break: break-all;
+    }
+
+    &__url {
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 2;
+        overflow: hidden;
+        word-break: break-all;
+        max-width: 100%;
+        color: inherit;
+        text-decoration: none;
+
+        &:hover {
+            text-decoration: underline;
+        }
+    }
+
+    &__status {
+        font-weight: 600;
+
+        &--done,
+        &--success {
+            color: var(--mu-green);
+        }
+
+        &--failed,
+        &--error {
+            color: var(--mu-red);
+        }
+
+        &--uploading,
+        &--submitting,
+        &--checking {
+            color: var(--mu-primary);
+        }
+    }
+
+    &__actions {
+        display: flex;
+        gap: 6px;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+        align-items: flex-start;
+        flex: 0 0 auto;
+    }
+
+    &__meta {
+        border-top: 1px solid var(--mu-border-soft);
+        background: var(--mu-bg-soft);
+        padding: 12px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        border-radius: 0 0 var(--mu-radius) var(--mu-radius);
+    }
+
+    &__metahead {
+        display: flex;
+    }
+
+    .oo-ui-progressBarWidget {
+        width: 100%;
+        max-width: 480px;
+    }
+}
+
+.moeupload-metaform {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+
+    &__field {
+        width: 100%;
+    }
+}
+
+.moeupload-summary {
+    font-size: 12px;
+    color: var(--mu-text-muted);
+    text-align: right;
+}

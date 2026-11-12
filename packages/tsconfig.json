@@ -4,10 +4,19 @@
     "compilerOptions": {
         "noEmit": true,
         "allowImportingTsExtensions": true,
+        "resolveJsonModule": true,
+        // MoeUpload 源码保持其既有的可选属性传递方式
+        "exactOptionalPropertyTypes": false,
+        "paths": {
+            "@/*": [
+                "./MoeUpload/src/*"
+            ]
+        },
         "jsx": "react",
         "types": [
             "jquery",
-            "oojs-ui"
+            "oojs-ui",
+            "node"
         ]
     },
     "include": [

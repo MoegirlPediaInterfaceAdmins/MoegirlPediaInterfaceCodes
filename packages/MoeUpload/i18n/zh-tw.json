@@ -1,0 +1,18 @@
+{
+    "error.network": "網路請求失敗",
+
+    "dropzone.oversize": "「{name}」超過站點單一檔案上限（{limit}），已略過。",
+    "dropzone.badType": "「{name}」不支援上傳這種格式的檔案，已略過。",
+
+    "url.button": "加入佇列",
+    "url.skipped": "已略過 {count} 行無效連結。",
+
+    "toolbar.clearAll": "清空佇列",
+    "toolbar.clearConfirm": "確定清空佇列嗎？未完成的檔案將被丟棄。",
+
+    "item.view": "檢視檔案頁面",
+    "item.applyAllConfirm": "將把此項的描述、來源、作者、許可與分類套用到佇列中所有未完成的檔案，繼續嗎？",
+    "item.queued": "檔案已提交，進入站點審核佇列，審核通過後將正式發布。",
+
+    "status.queued": "已進入審核佇列"
+}

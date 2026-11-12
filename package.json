@@ -68,6 +68,7 @@
         "localforage": "^1.10.0",
         "moment": "^2.31.0",
         "npm-run-all2": "^9.0.4",
+        "ooui-react": "^1.0.4",
         "postcss": "^8.5.32",
         "postcss-cli": "^12.0.0",
         "postcss-discard-comments": "^9.0.8",
@@ -91,6 +92,7 @@
         "typescript": "^6.0.3",
         "uglify-js": "^3.19.3",
         "unassertify": "^3.0.1",
+        "vite": "^8.3.8",
         "watermark-js-plus": "^1.6.6",
         "yaml": "^2.9.1"
     },
@@ -103,6 +105,7 @@
         "@commitlint/load": "^21.2.2",
         "@csstools/stylelint-formatter-github": "^2.0.0",
         "@inpageedit/core": "^0.19.0",
+        "@types/node": "^25.9.9",
         "@types/react": "^19.3.0",
         "@types/react-dom": "^19.3.0",
         "eslint": "^10.14.0",

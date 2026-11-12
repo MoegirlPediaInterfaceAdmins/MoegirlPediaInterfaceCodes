@@ -1,0 +1,34 @@
+// 外壳排版与项目自有 OOUI 输入框配色（属自身色板）。
+
+.moeupload {
+    color: var(--mu-text);
+    font-size: 14px;
+    line-height: 1.6;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+
+    .oo-ui-textInputWidget input,
+    .oo-ui-textInputWidget textarea,
+    .oo-ui-textInputWidget .oo-ui-inputWidget-input {
+        background-color: var(--mu-bg);
+        color: var(--mu-text);
+    }
+}
+
+// TitleInput 容器与内部根节点必须 width: 100%：OOUI 根节点 inline-block 会收缩，flex 只拉伸直接子节点。
+.moeupload-titleinput {
+    width: 100%;
+
+    > * {
+        width: 100%;
+        max-width: 100%;
+        box-sizing: border-box;
+    }
+
+    // 内部输入框取满容器（真实 OOUI 主题已是 border-box，这里兜住 mock 假件的 content-box）
+    input {
+        width: 100%;
+        box-sizing: border-box;
+    }
+}

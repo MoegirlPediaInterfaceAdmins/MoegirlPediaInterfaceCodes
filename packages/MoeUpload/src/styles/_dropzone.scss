@@ -1,0 +1,56 @@
+// 拖放区：整块是点击与拖放目标。
+
+.moeupload-dropzone {
+    border: 2px dashed var(--mu-border);
+    border-radius: var(--mu-radius);
+    background: var(--mu-bg-soft);
+    padding: 36px 16px;
+    text-align: center;
+    cursor: pointer;
+    transition:
+        border-color 0.15s ease,
+        background-color 0.15s ease;
+
+    .oo-ui-iconElement-icon {
+        opacity: 0.65;
+    }
+
+    &:hover {
+        border-color: var(--mu-primary);
+    }
+
+    // 键盘焦点：除边框变色外补一圈外描边，避免只靠颜色变化指示焦点
+    &:focus-visible {
+        border-color: var(--mu-primary);
+        outline: 2px solid var(--mu-primary);
+        outline-offset: 2px;
+    }
+
+    &--drag {
+        border-color: var(--mu-primary);
+        background: var(--mu-drop-bg);
+    }
+
+    &--disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    &__title {
+        font-size: 16px;
+        font-weight: 600;
+        margin-top: 8px;
+    }
+
+    &__hint {
+        color: var(--mu-text-muted);
+        font-size: 12px;
+        margin-top: 4px;
+    }
+}
+
+.moeupload-row {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
