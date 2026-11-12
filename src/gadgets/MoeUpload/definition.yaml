@@ -45,7 +45,7 @@ _sites:
   - zh
   - commons
 
-_section: editing
+_section: user
 
 _files:
   - Gadget-MoeUpload.css
