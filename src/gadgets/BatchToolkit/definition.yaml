@@ -1,8 +1,8 @@
 ResourceLoader: true
 
-hidden: false
+hidden: true
 
-default: false
+default: true
 
 supportsUrlLoad: false
 
@@ -21,7 +21,7 @@ type: general
 package: false
 
 rights:
-  - autoconfirmed
+  - edit
 
 peers: []
 
