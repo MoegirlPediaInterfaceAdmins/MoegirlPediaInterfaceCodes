@@ -13,38 +13,29 @@
         $container.append($("<br>"), document.createTextNode(`${mw.msg(action)}：${levels.map((level) => mw.msg(`protect-level-${level}`)).join("、")}`), $requestList);
         return $requestList;
     };
-    const buildRequestUrl = ({ title, preload, preloadTitle, preloadParams, scriptPath }) => {
-        const requestURL = new URL(`${scriptPath}/index.php`, location.origin);
-        requestURL.searchParams.set("action", "edit");
-        requestURL.searchParams.set("preload", preload);
-        requestURL.searchParams.set("preloadtitle", preloadTitle);
-        requestURL.searchParams.set("dtpreload", "1");
-        requestURL.searchParams.set("section", "new");
-        requestURL.searchParams.set("title", title);
-        if (Array.isArray(preloadParams)) {
-            preloadParams.forEach((param) => requestURL.searchParams.append("preloadparams[]", param));
-        }
-        return requestURL.href;
+    // QuickRequest 经 mw.loader.using 按需加载，而非静态依赖：pageInfo 对匿名用户也加载，
+    // 而依赖链不受 rights 过滤（站内 lib 类 gadget 以 rights: [hidden] 靠依赖拉起即是此机制），
+    // 静态依赖会把 QuickRequest 及其重依赖拉给全站；登录用户本就由 QuickRequest 自身的
+    // default: true 自动加载，using 对已加载模块立即返回
+    const openQuickRequest = (type) => {
+        mw.loader.using("ext.gadget.QuickRequest").done(() => {
+            window.libQuickRequest.open(type);
+        }).fail(() => {
+            mw.notify(wgULS("无法加载快速申请工具，请刷新页面重试。", "無法載入快速申請工具，請重新整理頁面後重試。"), { type: "error" });
+        });
     };
-    const appendRequestLink = ($list, { title, preload, preloadTitle, preloadParams, scriptPath, text }) => {
+    const appendRequestLink = ($list, { type, text }) => {
         $("<li>").append($("<a>", {
-            href: buildRequestUrl({
-                title,
-                preload,
-                preloadTitle,
-                preloadParams,
-                scriptPath,
-            }),
-            target: "_blank",
-            "class": "external",
+            href: "#",
             css: {
                 marginLeft: "1em",
             },
             text,
+        }).on("click", (e) => {
+            e.preventDefault();
+            openQuickRequest(type);
         })).appendTo($list);
     };
-    const getRequestTitleSuffix = (userName, now) => ` - ${userName} - ${now.getFullYear()}.${libPrefixNumber(now.getMonth() + 1)}.${libPrefixNumber(now.getDate())}`;
-    const getEditRequestPreload = (pageName, basePageName) => wgGetEditRequestPreload(pageName, basePageName);
 
     await $.ready;
 
@@ -77,6 +68,11 @@
     // - 不含级联保护与 hook 拦截（TitleBlacklist 类），此类页面依旧不显示，与旧行为一致；
     // - 匿名用户无 edit 权限，该值对匿名全站恒 false，须以登录态门控，否则匿名到处见锁
     const notEditable = !!wgUserName && mw.config.get("wgIsProbablyEditable") === false;
+    // 技术编辑请求（Template:编辑请求/技术，QuickRequest 阶段 5）的适用页面：模板命名空间，
+    // 或 JS/CSS/JSON 等技术内容模型（真实用例均在模板 CSS 子页/MediaWiki 技术页的讨论页）。
+    // 这类页面在普通编辑请求之外追加「提出技术编辑请求」入口
+    const techContentModels = new Set(["css", "sanitized-css", "javascript", "json"]);
+    const isTechPage = mw.config.get("wgNamespaceNumber") === 10 || techContentModels.has(mw.config.get("wgPageContentModel"));
 
     if (!hasProtectionRecord && !notEditable) {
         return;
@@ -124,7 +120,7 @@
         }
     }
 
-    const { talkPage, basePageName } = libGetPageNames();
+    const { talkPage } = libGetPageNames();
     const isDark = document.documentElement.classList.contains("skin-theme-clientpref-night") || document.documentElement.classList.contains("dark");
     const $protectionInfoContainer = $("<a>", {
         "class": "page-info-protection annotation",
@@ -173,40 +169,35 @@
             console.warn("[Gadget-pageInfo] Failed to query intestactions", error);
             actions = {};
         }
+        // 匿名用户不出请求链接（无 edit 权，QuickRequest 不会为其加载）；
+        // 登录用户出链接，点击时经 mw.loader.using 按需加载后打开
         if (wgUserName) {
-            const now = new Date();
-            const requestTitleSuffix = getRequestTitleSuffix(wgUserName, now);
             if (actions.edit === false && talkPage && $editRequestList) {
                 appendRequestLink($editRequestList, {
-                    title: talkPage,
-                    preload: getEditRequestPreload(wgPageName, basePageName),
-                    preloadTitle: `编辑请求${requestTitleSuffix}`,
-                    scriptPath: wgScriptPath,
-                    text: "提出编辑请求",
+                    type: "edit",
+                    text: wgULS("提出编辑请求", "提出編輯請求"),
                 });
+                if (isTechPage) {
+                    appendRequestLink($editRequestList, {
+                        type: "editTech",
+                        text: wgULS("提出技术编辑请求", "提出技術編輯請求"),
+                    });
+                }
             } else {
                 $editRequestList?.remove();
             }
             if (actions.move === false && $moveRequestList) {
                 appendRequestLink($moveRequestList, {
-                    title: "萌娘百科讨论:讨论版/操作申请",
-                    preload: "Template:移动请求预载",
-                    preloadTitle: `移动请求${requestTitleSuffix}`,
-                    preloadParams: [wgPageName],
-                    scriptPath: wgScriptPath,
-                    text: "提出移动请求",
+                    type: "move",
+                    text: wgULS("提出移动请求", "提出移動請求"),
                 });
             } else {
                 $moveRequestList?.remove();
             }
             if (actions.create === false && $createRequestList) {
                 appendRequestLink($createRequestList, {
-                    title: "萌娘百科讨论:讨论版/操作申请",
-                    preload: "Template:创建请求预载",
-                    preloadTitle: `创建请求${requestTitleSuffix}`,
-                    preloadParams: [wgPageName],
-                    scriptPath: wgScriptPath,
-                    text: "提出创建请求",
+                    type: "create",
+                    text: wgULS("提出创建请求", "提出建立請求"),
                 });
             } else {
                 $createRequestList?.remove();
@@ -225,15 +216,17 @@
             text: wgULS("点此查看原因", "點此查看原因"),
         }));
         if (talkPage) {
-            const now = new Date();
-            const requestTitleSuffix = getRequestTitleSuffix(wgUserName, now);
-            appendRequestLink($("<ul>").appendTo($protectionInfoContent), {
-                title: talkPage,
-                preload: getEditRequestPreload(wgPageName, basePageName),
-                preloadTitle: `编辑请求${requestTitleSuffix}`,
-                scriptPath: wgScriptPath,
-                text: "提出编辑请求",
+            const $requestList = $("<ul>").appendTo($protectionInfoContent);
+            appendRequestLink($requestList, {
+                type: "edit",
+                text: wgULS("提出编辑请求", "提出編輯請求"),
             });
+            if (isTechPage) {
+                appendRequestLink($requestList, {
+                    type: "editTech",
+                    text: wgULS("提出技术编辑请求", "提出技術編輯請求"),
+                });
+            }
         }
         $protectionInfoContent.appendTo($protectionInfoContainer);
         $protectionInfoContainer.trigger("mouseout");
