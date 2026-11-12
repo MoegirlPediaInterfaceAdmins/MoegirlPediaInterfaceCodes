@@ -1,8 +1,8 @@
 ResourceLoader: true
 
-hidden: true
+hidden: false
 
-default: true
+default: false
 
 supportsUrlLoad: false
 
@@ -21,7 +21,7 @@ type: general
 package: false
 
 rights:
-  - upload
+  - autoconfirmed
 
 peers: []
 
@@ -33,7 +33,7 @@ _sites:
   - zh
   - commons
 
-_section: editing
+_section: user
 
 _files:
-  - Gadget-uploader.js
+  - Gadget-BatchToolkit.js
