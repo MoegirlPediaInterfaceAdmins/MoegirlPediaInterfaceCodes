@@ -1,4 +1,0 @@
-# 本包产物文件名清单（构建产物不进入仓库，由 scripts/modules/artifactManifest.js 汇总，
-# 供 definition.yaml 的 _files 对账使用；手写文件不要列在这里）
-- Gadget-MoeUpload.css
-- Gadget-MoeUpload.js

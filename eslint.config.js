@@ -50,7 +50,6 @@ const fileSpec = {
 const packageFiles = [
     "packages/*/src/**/*.{ts,tsx}",
     "packages/*/tests/**/*.{ts,tsx}",
-    "packages/*/mock/**/*.{ts,tsx}",
 ];
 
 /**
@@ -135,8 +134,6 @@ const config = [
                 EventListener: false,
                 GlobalEventHandlers: false,
                 MouseEventInit: false,
-                RequestInfo: false,
-                RequestInit: false,
             },
         },
         rules: {
@@ -146,45 +143,6 @@ const config = [
             // last_attr…）与 wiki/DOM 约定标识符 1:1 保留以便上游补丁仍可对照
             "no-use-before-define": "off",
             camelcase: "off",
-        },
-    },
-    {
-        // packages/MoeUpload 的既有实现中，对服务端契约的防御式读取、jQuery/mw.Api
-        // Promise 与 OOUI 包装的写法都是刻意的，逐条改写成“更现代”的形式会改变运行时
-        // 兜底或 abort/多参语义，故对整包关闭这些与包内既有 lint 配置冲突的规则。
-        files: [
-            "packages/MoeUpload/**/*.{ts,tsx}",
-        ],
-        rules: {
-            // 类型只描述服务端契约，运行时仍按缺失字段/旧版本/mock 兜底
-            "@typescript-eslint/no-unnecessary-condition": "off",
-            // mw.Api 的 .done/.fail 与 jQuery Promise 不能改写为 await（会丢失 abort/多参）
-            "promise/prefer-await-to-then": "off",
-            "@typescript-eslint/use-unknown-in-catch-callback-variable": "off",
-            // 上传管线的公开签名保留 Promise，即使某个分支当前无 await
-            "@typescript-eslint/require-await": "off",
-            // 源项目以单行箭头体表达状态回写，保持与独立仓库一致
-            "@stylistic/max-statements-per-line": "off",
-            // Number() 与非空断言用于兼容服务端字符串化返回/已校验下标
-            "@typescript-eslint/no-unnecessary-type-conversion": "off",
-            "@typescript-eslint/no-non-null-assertion": "off",
-            // 可中断延时等闭包前向引用写法需要 let
-            "prefer-const": "off",
-        },
-    },
-    {
-        // packages/MoeUpload 测试：Action API 模拟器返回宽松 JSON，断言需要 any 读取
-        files: [
-            "packages/MoeUpload/tests/**/*.ts",
-            "packages/MoeUpload/mock/**/*.ts",
-        ],
-        rules: {
-            "@typescript-eslint/no-explicit-any": "off",
-            "@typescript-eslint/no-unsafe-assignment": "off",
-            "@typescript-eslint/no-unsafe-member-access": "off",
-            "@typescript-eslint/no-unsafe-argument": "off",
-            "@typescript-eslint/no-unsafe-call": "off",
-            "@typescript-eslint/no-unsafe-return": "off",
         },
     },
     {
