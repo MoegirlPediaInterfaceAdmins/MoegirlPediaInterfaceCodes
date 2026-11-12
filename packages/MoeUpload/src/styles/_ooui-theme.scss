@@ -1,0 +1,90 @@
+// OOUI 深色/层级/图标覆盖：只在本工具宿主 body 类下生效，避免影响站点其他 OOUI 组件；
+// 规则与接口代码库 moeskin-styles / vector-2022-styles 中本项目用到的部分保持同步。
+
+@mixin moeupload-ooui-dark {
+    .oo-ui-window {
+        color: var(--mu-ooui-text);
+    }
+
+    .oo-ui-window-frame {
+        background-color: var(--mu-ooui-surface);
+    }
+
+    .oo-ui-dialog-content {
+        background-color: var(--mu-ooui-surface);
+    }
+
+    .oo-ui-window .oo-ui-window-head,
+    .oo-ui-window .oo-ui-window-foot {
+        background-color: var(--mu-ooui-chrome);
+    }
+
+    .oo-ui-window .oo-ui-window-body {
+        background-color: var(--mu-ooui-surface);
+    }
+
+    // 本项目补充：OOUI 默认遮罩为 65% 白，深色下过亮
+    .oo-ui-windowManager-modal > .oo-ui-dialog {
+        background-color: var(--mu-ooui-backdrop);
+    }
+
+    .oo-ui-messageDialog-message {
+        color: var(--mu-ooui-text);
+    }
+
+    .oo-ui-inputWidget-input {
+        border-color: var(--mu-ooui-control-border);
+        background-color: var(--mu-ooui-control-bg);
+        color: var(--mu-ooui-text);
+        box-shadow: none;
+    }
+
+    .oo-ui-textInputWidget .oo-ui-inputWidget-input::placeholder {
+        color: var(--mu-ooui-placeholder);
+    }
+
+    .oo-ui-dropdownWidget-handle {
+        border-color: var(--mu-ooui-control-border);
+        background-color: var(--mu-ooui-control-bg);
+        color: var(--mu-ooui-text);
+    }
+
+    .oo-ui-menuSelectWidget {
+        border-color: var(--mu-ooui-control-border);
+        background-color: var(--mu-ooui-surface);
+    }
+
+    .oo-ui-optionWidget-selected {
+        background-color: var(--mu-ooui-selected);
+    }
+}
+
+// 两条暗色来源合并：MoeSkin 用 html.dark，Vector 2022 用 skin-theme-clientpref-night；
+// body 类宿主用 :is 合并，避免规则按分支重复展开。
+:is(html.dark, html.skin-theme-clientpref-night) {
+    body:is(.moeupload-active, .moeupload-dialog-active) {
+        @include moeupload-ooui-dark;
+    }
+}
+
+@media (prefers-color-scheme: dark) {
+    html:not(.light, .skin-theme-clientpref-day) {
+        body:is(.moeupload-active, .moeupload-dialog-active) {
+            @include moeupload-ooui-dark;
+        }
+    }
+}
+
+// 弹窗窗框层级：对齐 moeskin-styles 的 20，避免被 MoeSkin 全局头部遮挡；浮层由 --mu-float-z 再 +1。
+body:is(.moeupload-active, .moeupload-dialog-active) {
+    .oo-ui-windowManager-modal > .oo-ui-dialog {
+        z-index: 20;
+    }
+}
+
+// Vector 2022 夜间没有覆盖 ProcessDialog 安全区图标，仍为深色；只处理本工具弹窗。
+html.skin-theme-clientpref-night body.moeupload-dialog-active {
+    .moeupload-dialog .oo-ui-processDialog-actions-safe .oo-ui-iconElement-icon {
+        filter: invert(1);
+    }
+}

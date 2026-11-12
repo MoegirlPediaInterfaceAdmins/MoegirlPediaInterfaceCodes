@@ -103,6 +103,7 @@
         "Gadget/mermaid",
         "Gadget/modIconPrep",
         "Gadget/ModerationStatus",
+        "Gadget/MoeUpload",
         "Gadget/moeskin-classic",
         "Gadget/moeskin-styles",
         "Gadget/moeskin-topbar",
@@ -198,6 +199,7 @@
         "Group/user",
         "Package/HotCat",
         "Package/JSONViewer",
+        "Package/MoeUpload",
         "Package/Navigation_popups",
         "Package/UserMessages",
         "Package/Watermark"
