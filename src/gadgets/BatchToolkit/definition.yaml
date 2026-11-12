@@ -21,7 +21,7 @@ type: general
 package: false
 
 rights:
-  - upload
+  - edit
 
 peers: []
 
@@ -33,7 +33,7 @@ _sites:
   - zh
   - commons
 
-_section: editing
+_section: user
 
 _files:
-  - Gadget-uploader.js
+  - Gadget-BatchToolkit.js

@@ -63,6 +63,7 @@
     - queryContributions
     - userpageDelete
     - requestDeletion
+    - BatchToolkit
 
 - name: editing
   gadgets:
@@ -75,7 +76,6 @@
     - InPageEdit-v2
     - enable-nest-highlight
     - disable-nest-alert
-    - uploader
     - temp-editcheck
     - wikiplus-highlight
     - DisamAssist
