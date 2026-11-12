@@ -52,4 +52,22 @@ const describeWarnings = (warnings: ApiUploadWarnings): string[] => {
     return entries.length > 0 ? entries : [t("warning.other")];
 };
 
-export { describeWarnings };
+// 覆盖上传（「上传新版本」）的目标必然已存在：这些警告由上传意图本身决定，
+// 不是用户需要处理的冲突，只有服务端 ignorewarnings=1 才能越过，故须单独识别、不计入失败
+const OVERWRITE_WARNING_KEYS: ReadonlySet<string> = new Set([
+    "exists",
+    "exists-normalized",
+    "page-exists",
+]);
+
+// 剔除覆盖上传必然命中的存在性警告，返回仍需用户处理的其余警告
+const stripOverwriteWarnings = (warnings: ApiUploadWarnings): ApiUploadWarnings =>
+    Object.fromEntries(
+        Object.entries(warnings).filter(([key]) => !OVERWRITE_WARNING_KEYS.has(key)),
+    );
+
+// 是否只剩存在性警告；空对象视为真（调用方传的是 UploadWarnings 的警告，恒非空）
+const isOverwriteOnlyWarnings = (warnings: ApiUploadWarnings): boolean =>
+    Object.keys(stripOverwriteWarnings(warnings)).length === 0;
+
+export { describeWarnings, isOverwriteOnlyWarnings, stripOverwriteWarnings };

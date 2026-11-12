@@ -1,7 +1,13 @@
 import type { ApiUploadWarnings } from "types-mediawiki-response";
 import { ApiError, errText, isAbortError } from "@/api/client";
 import { finalizeUpload, stashBlob, stashUrl } from "@/api/upload";
-import { describeWarnings, t } from "@/locale";
+import type { FinalizeResult } from "@/api/upload";
+import {
+    describeWarnings,
+    isOverwriteOnlyWarnings,
+    stripOverwriteWarnings,
+    t,
+} from "@/locale";
 import { findMetaViolation } from "@/logic/validation";
 import { buildDescription } from "@/logic/wikitext";
 import type { MoeUploadConfig, QueueItem } from "@/types";
@@ -68,28 +74,28 @@ const runSubmit = async (
     signal: AbortSignal,
 ): Promise<void> => {
     patch({ status: "submitting", error: undefined });
-    try {
-        // reupload 不带 text：描述页保留由 recordUpload3() 的 exists 分支决定，省略 text 不影响
-        const text = item.reupload ? undefined : buildDescription(item, config);
-        const result = await finalizeUpload({
+    // reupload 不带 text：描述页保留由 recordUpload3() 的 exists 分支决定，省略 text 不影响
+    const text = item.reupload ? undefined : buildDescription(item, config);
+    const submit = (ignoreWarnings: boolean): Promise<FinalizeResult> =>
+        finalizeUpload({
             filekey: item.filekey,
             filename: item.name,
             text,
             comment: config.comment,
             tags: config.uploadTags,
-            ignoreWarnings: item.ignoreWarnings,
+            ignoreWarnings,
             signal,
         });
-        patch({ status: "done", result });
-    } catch (error) {
+
+    const fail = (error: unknown): void => {
         if (isAbortError(error)) {
             patch({ status: item.filekey ? "staged" : "ready" });
         } else if (isUploadWarnings(error)) {
-            // warnings 落条目红字展示且保留 filekey（改名重试/覆盖上传无需重传）
-            patch({
-                status: "failed",
-                error: describeWarnings(error.warnings).join("；"),
-            });
+            // warnings 落条目红字展示且保留 filekey（改名重试/覆盖上传无需重传）；
+            // 覆盖上传条目的存在性警告由意图本身决定，只展示仍需用户处理的其他警告
+            const rest = item.reupload ? stripOverwriteWarnings(error.warnings) : error.warnings;
+            const shown = Object.keys(rest).length > 0 ? rest : error.warnings;
+            patch({ status: "failed", error: describeWarnings(shown).join("；") });
         } else if (isModerationQueued(error)) {
             // 审核入队：置 queued 终态并清 filekey，防止重复提交
             patch({ status: "queued", filekey: undefined });
@@ -98,6 +104,25 @@ const runSubmit = async (
             patch({ filekey: undefined, status: "ready" });
         } else {
             patch({ status: "failed", error: errText(error) });
+        }
+    };
+
+    for (let attempt = 0; attempt < 2; attempt++) {
+        try {
+            patch({ status: "done", result: await submit(item.ignoreWarnings || attempt > 0) });
+            return;
+        } catch (error) {
+            const autoOverwrite
+                = attempt === 0
+                    && !item.ignoreWarnings
+                    && item.reupload === true
+                    && isUploadWarnings(error)
+                    && isOverwriteOnlyWarnings(error.warnings);
+            if (autoOverwrite) {
+                continue;
+            }
+            fail(error);
+            return;
         }
     }
 };

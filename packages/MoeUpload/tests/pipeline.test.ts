@@ -242,9 +242,11 @@ describe("runSubmit · 提交与冲突", () => {
         expect(stashBlob).not.toHaveBeenCalled();
     });
 
-    it("reupload 条目提交不带 text 且不自动带 ignorewarnings", async () => {
-        vi.mocked(finalizeUpload).mockResolvedValue({ title: "File:a.png" });
-        const { patch } = recorder();
+    it("reupload 目标已存在：首次不带 ignorewarnings，纯存在性警告时自动重提并置 done", async () => {
+        vi.mocked(finalizeUpload)
+            .mockRejectedValueOnce(new UploadWarnings({ exists: "File:a.png" }))
+            .mockResolvedValueOnce({ title: "File:a.png", descriptionurl: "/File:a.png" });
+        const { patches, patch } = recorder();
         await runSubmit(
             makeItem({ status: "staged", filekey: "fk-1", reupload: true }),
             DEFAULT_CONFIG,
@@ -252,9 +254,129 @@ describe("runSubmit · 提交与冲突", () => {
             new AbortController().signal,
         );
 
-        expect(vi.mocked(finalizeUpload)).toHaveBeenCalledWith(
+        expect(vi.mocked(finalizeUpload)).toHaveBeenCalledTimes(2);
+        expect(vi.mocked(finalizeUpload)).toHaveBeenNthCalledWith(
+            1,
             expect.objectContaining({ filekey: "fk-1", text: undefined, ignoreWarnings: false }),
         );
+        // 警告不消费暂存：重提复用同一 filekey，这次带 ignorewarnings（不再让用户点「覆盖上传」）
+        expect(vi.mocked(finalizeUpload)).toHaveBeenNthCalledWith(
+            2,
+            expect.objectContaining({ filekey: "fk-1", text: undefined, ignoreWarnings: true }),
+        );
+        expect(lastPatch(patches).status).toBe("done");
+        expect(lastPatch(patches).result?.title).toBe("File:a.png");
+    });
+
+    it("exists-normalized 与 page-exists 同样视为覆盖上传的必然警告", async () => {
+        vi.mocked(finalizeUpload)
+            .mockRejectedValueOnce(
+                new UploadWarnings({
+                    "exists-normalized": "File:a.png",
+                    "page-exists": "File:a.png",
+                }),
+            )
+            .mockResolvedValueOnce({ title: "File:a.png" });
+        const { patches, patch } = recorder();
+        await runSubmit(
+            makeItem({ status: "staged", filekey: "fk-1", reupload: true }),
+            DEFAULT_CONFIG,
+            patch,
+            new AbortController().signal,
+        );
+
+        expect(vi.mocked(finalizeUpload)).toHaveBeenCalledTimes(2);
+        expect(lastPatch(patches).status).toBe("done");
+    });
+
+    it("存在性警告与其他警告并存：不重提，只展示其他警告", async () => {
+        vi.mocked(finalizeUpload).mockRejectedValue(
+            new UploadWarnings({ exists: "File:a.png", duplicate: ["File:b.png"] }),
+        );
+        const { patches, patch } = recorder();
+        await runSubmit(
+            makeItem({ status: "staged", filekey: "fk-1", reupload: true }),
+            DEFAULT_CONFIG,
+            patch,
+            new AbortController().signal,
+        );
+
+        expect(vi.mocked(finalizeUpload)).toHaveBeenCalledTimes(1);
+        expect(lastPatch(patches).status).toBe("failed");
+        expect(lastPatch(patches).error).toContain("内容与已有文件重复");
+        expect(lastPatch(patches).error).not.toContain("同名文件已存在");
+    });
+
+    it("reupload 只有非存在性警告时不重提", async () => {
+        vi.mocked(finalizeUpload).mockRejectedValue(
+            new UploadWarnings({ duplicate: ["File:b.png"] }),
+        );
+        const { patches, patch } = recorder();
+        await runSubmit(
+            makeItem({ status: "staged", filekey: "fk-1", reupload: true }),
+            DEFAULT_CONFIG,
+            patch,
+            new AbortController().signal,
+        );
+
+        expect(vi.mocked(finalizeUpload)).toHaveBeenCalledTimes(1);
+        expect(lastPatch(patches).status).toBe("failed");
+        expect(lastPatch(patches).error).toContain("内容与已有文件重复");
+    });
+
+    it("非 reupload 条目的 exists 警告仍按失败处理（不自动覆盖）", async () => {
+        vi.mocked(finalizeUpload).mockRejectedValue(
+            new UploadWarnings({ exists: "File:a.png" }),
+        );
+        const { patches, patch } = recorder();
+        await runSubmit(
+            makeItem({ status: "staged", filekey: "fk-1" }),
+            DEFAULT_CONFIG,
+            patch,
+            new AbortController().signal,
+        );
+
+        expect(vi.mocked(finalizeUpload)).toHaveBeenCalledTimes(1);
+        expect(lastPatch(patches).status).toBe("failed");
+        expect(lastPatch(patches).error).toContain("同名文件已存在");
+    });
+
+    it("已显式覆盖上传（ignoreWarnings）时不再重提", async () => {
+        vi.mocked(finalizeUpload).mockRejectedValue(
+            new UploadWarnings({ exists: "File:a.png" }),
+        );
+        const { patches, patch } = recorder();
+        await runSubmit(
+            makeItem({ status: "staged", filekey: "fk-1", reupload: true, ignoreWarnings: true }),
+            DEFAULT_CONFIG,
+            patch,
+            new AbortController().signal,
+        );
+
+        expect(vi.mocked(finalizeUpload)).toHaveBeenCalledTimes(1);
+        expect(vi.mocked(finalizeUpload)).toHaveBeenCalledWith(
+            expect.objectContaining({ ignoreWarnings: true }),
+        );
+        // 异常路径（服务端未按 ignorewarnings 覆盖）原样展示，不静默吞掉
+        expect(lastPatch(patches).status).toBe("failed");
+        expect(lastPatch(patches).error).toContain("同名文件已存在");
+    });
+
+    it("重提失败时按普通失败处理", async () => {
+        vi.mocked(finalizeUpload)
+            .mockRejectedValueOnce(new UploadWarnings({ exists: "File:a.png" }))
+            .mockRejectedValueOnce(new ApiError("abusefilter", "被过滤器拦截"));
+        const { patches, patch } = recorder();
+        await runSubmit(
+            makeItem({ status: "staged", filekey: "fk-1", reupload: true }),
+            DEFAULT_CONFIG,
+            patch,
+            new AbortController().signal,
+        );
+
+        expect(vi.mocked(finalizeUpload)).toHaveBeenCalledTimes(2);
+        expect(lastPatch(patches).status).toBe("failed");
+        expect(lastPatch(patches).error).toContain("被过滤器拦截");
     });
 
     it("ignoreWarnings 透传到 finalizeUpload（覆盖上传链路）", async () => {

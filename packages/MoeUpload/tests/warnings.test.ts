@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { describeWarnings } from "@/locale";
+import { describeWarnings, isOverwriteOnlyWarnings, stripOverwriteWarnings } from "@/locale";
 
 // 警告形态：exists 系拍平成「键=子类型、值=文件名」，duplicate 是文件名字符串数组，
 // no-change / duplicate-version 改名为 nochange / duplicateversions 且只留时间戳
@@ -64,5 +64,31 @@ describe("describeWarnings · 键与形态对齐源码", () => {
             "同名文件已存在：a.png",
             "内容与已有文件重复：b.jpg",
         ]);
+    });
+});
+
+// 覆盖上传（上传新版本）的目标必然已存在：exists 系警告由意图本身决定，不算需要用户处理的冲突
+describe("覆盖上传的存在性警告", () => {
+    it("stripOverwriteWarnings 只剔除 exists 系，其余原样保留", () => {
+        expect(
+            stripOverwriteWarnings({
+                exists: "a.png",
+                "exists-normalized": "a.png",
+                "page-exists": "a.png",
+            }),
+        ).toEqual({});
+        expect(stripOverwriteWarnings({ exists: "a.png", duplicate: ["b.png"] })).toEqual({
+            duplicate: ["b.png"],
+        });
+        expect(stripOverwriteWarnings({ badfilename: "a b.png" })).toEqual({ badfilename: "a b.png" });
+    });
+
+    it("isOverwriteOnlyWarnings 仅在全部为存在性键时为真", () => {
+        expect(isOverwriteOnlyWarnings({ exists: "a.png" })).toBe(true);
+        expect(
+            isOverwriteOnlyWarnings({ "exists-normalized": "a.png", "page-exists": "a.png" }),
+        ).toBe(true);
+        expect(isOverwriteOnlyWarnings({ exists: "a.png", duplicate: ["b.png"] })).toBe(false);
+        expect(isOverwriteOnlyWarnings({ duplicate: ["b.png"] })).toBe(false);
     });
 });

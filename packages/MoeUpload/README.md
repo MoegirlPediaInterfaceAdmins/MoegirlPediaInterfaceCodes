@@ -10,8 +10,8 @@ MediaWiki `Special:Upload` 的纯前端替换方案。脚本在原生上传页�
 - **文件类型白名单**：仅允许图片/音频/视频扩展名，白名单外的拖入与粘贴即时跳过（URL 不受限）
 - **大文件分块上传**：超过阈值自动走 stash + chunk 分块，上传中显示不定态进度条，可取消
 - **URL 上传**：多行文本框一行一个直链，批量入队，文件名自动推断（入队后可改）；由服务器拉取（按 `upload_by_url` 权限自动显隐）
-- **上传新版本**：从文件页「上传新版本」进入（`?wpForReUpload=1&wpDestFile=X`）时自动绑定目标文件名并保留原描述页
-- **冲突提醒**：一次点击完成上传；服务器返回 warnings（重名、内容重复、滥用过滤器拦截等）时，批次结束弹一次汇总窗，每个文件的警告以红色文字显示在其卡片上；用户可自行改名后「重试」（复用 filekey 不重传）或显式「覆盖上传」
+- **上传新版本**：从文件页「上传新版本」进入（`?wpForReUpload=1&wpDestFile=X`）时自动绑定目标文件名并保留原描述页；目标文件必然已存在，因此只含「同名文件已存在」类警告时自动带 `ignorewarnings` 重提并完成覆盖，不再要求二次确认
+- **冲突提醒**：一次点击完成上传；服务器返回 warnings（重名、内容重复、滥用过滤器拦截等）时，批次结束弹一次汇总窗，每个文件的警告以红色文字显示在其卡片上；用户可自行改名后「重试」（复用 filekey 不重传）或显式「覆盖上传」（「上传新版本」条目改名无意义，只展示仍需处理的其他警告）
 - **审核队列识别**：站点启用 Moderation 扩展时，`moderation-image-queued` 响应显示为「已进入审核队列」终态而非错误
 - **主站上传弹窗**：主站（zh）经工具栏「MoeUpload」、MoeSkin 页面工具按钮或 `mw.hook('moeupload.open')` 打开上传弹窗，上传经跨站 API（`mw.ForeignApi`）直接打到共享站
 - **内置元数据规范**：字段 schema、许可协议、wikitext 组装模板集中定义于 `src/config/defaults.ts`，支持「应用到全部」
@@ -62,6 +62,8 @@ scripts/                     # build.js / build-css.js / vite-build.js（Vite AP
   → 点击「上传」→ 元数据校验(纯本地) → stash 暂存(分块/不定态进度/可取消) → finalize 提交(+描述wikitext)
   ─┬─ 成功 → 完成(文件页链接)
    ├─ moderation 拦截(moderation-image-queued) → 已进入审核队列(终态，原描述页保留)
+   ├─ 「上传新版本」只命中存在性警告(exists / exists-normalized / page-exists)
+   │     → 自动带 ignorewarnings 重提 → 覆盖成功 → 完成
    └─ 服务器 warnings(重名/内容重复/滥用过滤器等) → 条目上红色警告提示 + 批次汇总弹窗
       → 用户自行处理：改名后「重试」(复用 filekey 不重传) 或显式「覆盖上传」
 ```
