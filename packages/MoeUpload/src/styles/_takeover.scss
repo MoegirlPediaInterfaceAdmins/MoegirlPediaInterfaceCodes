@@ -1,9 +1,0 @@
-// 接管后隐藏原生上传表单（JS 侧还会兜底隐藏内容区兄弟节点）。
-body.moeupload-active {
-    #contentSub,
-    #uploadtext,
-    #mw-upload-form,
-    form#upload {
-        display: none !important;
-    }
-}

@@ -99,7 +99,7 @@
 机器人通过以下流程编译代码，然后提交到萌百：
 
 - 执行 `npm ci` 安装依赖；
-- 执行 `npm run build` 完成编译：其中 `build:artifacts` 先把三类产物（browserify 打包、vendor 从 `node_modules` 读取、packages/ 各包构建）生成到中间目录 `dist/_generated`，随后两条链并行——手写 CSS 经 postcss 处理；JavaScript 经两趟 tsc 编译到 `dist/_compiled`、由 terser 压缩，产物 CSS 再经 postcss 处理——全部输出到 `dist/` 对应路径（与 `src/` 下的相对路径一致）；JS 链尾部清理中间目录（`dist/_generated`、`dist/_compiled`，任一步失败则保留），最终 `dist/` 下只有待部署的 js 与 css；
+- 执行 `npm run build` 完成编译：其中 `build:artifacts` 先把三类产物（browserify 打包、vendor 从 `node_modules` 读取、packages/ 四个包构建）生成到中间目录 `dist/_generated`，随后两条链并行——手写 CSS 经 postcss 处理；JavaScript 经两趟 tsc 编译到 `dist/_compiled`、由 terser 压缩，产物 CSS 再经 postcss 处理——全部输出到 `dist/` 对应路径（与 `src/` 下的相对路径一致）；JS 链尾部清理中间目录（`dist/_generated`、`dist/_compiled`，任一步失败则保留），最终 `dist/` 下只有待部署的 js 与 css；
 - 根据模板生成 `MediaWiki:Gadgets-definition` 页面。
 
 如需手动唤起机器人，请到 [`post commit CI` workflow](https://github.com/MoegirlPediaInterfaceAdmins/MoegirlPediaInterfaceCodes/actions/workflows/postCommit.yaml) 处，选择 `Branch` 为 `master`，手动执行该 workflow。
