@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unnecessary-condition -- res.query.pages 在类型上可选，需要 ?? 兜底；按下标取首元素在类型上不含 undefined，运行时却不一定会命中，因此保留真值守卫。 */
-import type { ApiQueryResponse, QueryPage } from "types-mediawiki-response";
+import type { ApiQueryResponseWithResult, QueryPage } from "types-mediawiki-response";
 
 /**
  * 解析 URL 中的 diff/oldid 参数为版本号，无参数或参数非法时返回 undefined。
@@ -37,7 +37,7 @@ export const pageSource = async (
         rvprop: "content",
         rvslots: "main",
         ...params,
-    }) as ApiQueryResponse;
+    }) as ApiQueryResponseWithResult;
     // 用 QueryPage<'revisions'> 收窄到本次请求真正带回来的字段，读没请求的 prop 会编译不过。
     // 标题由调用方传入，missing/invalid 仍是接口可能给出的状态，revisions 未必存在。
     const [pageData] = (res.query.pages ?? []) as QueryPage<"revisions">[];
