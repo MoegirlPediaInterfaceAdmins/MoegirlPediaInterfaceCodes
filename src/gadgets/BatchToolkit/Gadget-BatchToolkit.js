@@ -17,9 +17,9 @@
 
         const hasPermission
             = hasGroupPermission
-                || (title === "BatchDelete"
-                    && userSetting === true
-                    && wgUserGroups.includes("autoconfirmed"));
+                || title === "BatchDelete"
+                && userSetting === true
+                && wgUserGroups.includes("autoconfirmed");
 
         const isEnabled
             = title === "BatchUpload"
