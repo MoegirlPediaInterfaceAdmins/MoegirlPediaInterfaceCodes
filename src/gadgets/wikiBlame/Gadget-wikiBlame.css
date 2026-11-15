@@ -1,0 +1,171 @@
+.wikiblame-dialog-body {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 16px;
+    box-sizing: border-box;
+    height: 100%;
+}
+
+.wikiblame-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.wikiblame-title {
+    margin: 0;
+    font-size: 1.15em;
+    font-weight: 600;
+}
+
+.wikiblame-search-row {
+    display: flex;
+    gap: 8px;
+    align-items: flex-end;
+    flex-wrap: wrap;
+}
+
+.wikiblame-search-input {
+    flex: 1 1 240px;
+}
+
+.wikiblame-actions {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.wikiblame-hint {
+    font-size: 0.9em;
+    color: var(--color-subtle, #54595d);
+    margin: 0;
+}
+
+.wikiblame-hint-warn {
+    color: var(--color-warning, #ac6600);
+}
+
+.wikiblame-hint-error {
+    color: var(--color-error, #d33);
+}
+
+.wikiblame-advanced-toggle {
+    align-self: flex-start;
+}
+
+.wikiblame-advanced-panel {
+    display: none;
+    padding: 10px 12px;
+    border: 1px solid var(--border-color-subtle, #c8ccd1);
+    border-radius: 4px;
+    background-color: var(--background-color-neutral-subtle, #f8f9fa);
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.wikiblame-advanced-panel.is-open {
+    display: flex;
+}
+
+.wikiblame-advanced-field {
+    flex: 1 1 160px;
+}
+
+.wikiblame-source-toolbar {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.wikiblame-filter-input {
+    flex: 1 1 200px;
+}
+
+.wikiblame-source-viewer {
+    flex: 1 1 auto;
+    min-height: 180px;
+    max-height: 360px;
+    overflow: auto;
+    border: 1px solid var(--border-color-subtle, #c8ccd1);
+    border-radius: 4px;
+    background-color: var(--background-color-base, #fff);
+    font-family: monospace;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.wikiblame-source-line {
+    display: flex;
+    padding: 2px 8px;
+    cursor: pointer;
+    border-bottom: 1px solid var(--border-color-muted, #eaecf0);
+    user-select: text;
+}
+
+.wikiblame-source-line:hover {
+    background-color: var(--background-color-interactive-subtle, #f1f4f9);
+}
+
+.wikiblame-source-line.is-selected {
+    background-color: var(--background-color-progressive-subtle, #eaf3ff);
+}
+
+.wikiblame-line-num {
+    flex: 0 0 3.5em;
+    color: var(--color-subtle, #72777d);
+    user-select: none;
+    text-align: right;
+    padding-right: 10px;
+}
+
+.wikiblame-line-text {
+    flex: 1 1 auto;
+    white-space: pre-wrap;
+    word-break: break-all;
+}
+
+.wikiblame-progress {
+    font-size: 0.9em;
+    min-height: 1.4em;
+}
+
+.wikiblame-result-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+    padding: 8px 12px;
+    border: 1px solid var(--border-color-subtle, #c8ccd1);
+    border-radius: 4px;
+    background-color: var(--background-color-neutral-subtle, #f8f9fa);
+    font-size: 0.92em;
+}
+
+.wikiblame-diff-wrapper {
+    flex: 1 1 auto;
+    overflow: auto;
+    border: 1px solid var(--border-color-subtle, #c8ccd1);
+    border-radius: 4px;
+    padding: 6px;
+}
+
+@media (width <= 720px) {
+    .wikiblame-dialog-body {
+        padding: 10px;
+        gap: 8px;
+    }
+
+    .wikiblame-source-viewer {
+        max-height: 240px;
+        font-size: 12px;
+    }
+
+    .wikiblame-line-num {
+        flex: 0 0 2.6em;
+        padding-right: 6px;
+    }
+}

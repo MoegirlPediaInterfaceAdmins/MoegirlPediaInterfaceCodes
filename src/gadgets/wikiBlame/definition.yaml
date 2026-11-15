@@ -30,6 +30,9 @@ dependencies:
   - oojs
   - oojs-ui
   - oojs-ui-core
+  - mediawiki.api
+  - mediawiki.user
+  - mediawiki.util
   - mediawiki.diff.styles
 
 _sites:
@@ -39,3 +42,4 @@ _section: maintenance
 
 _files:
   - Gadget-wikiBlame.js
+  - Gadget-wikiBlame.css

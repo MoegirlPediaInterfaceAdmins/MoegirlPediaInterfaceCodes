@@ -1,412 +1,788 @@
-// 通过选中文字快速找到编辑者和日期 by User:Bbrabbit
-// 注意：此工具会绝赞产生大量API请求，非维护组谨慎使用。维护组：需要WAF豁免。
-/* eslint-disable no-use-before-define */
+// 基于 Wikitext 源码与二分/多路查找的 wikiBlame（拷打编辑）小工具
+// 适配移动端与繁简/字词转换（LC），支持 sysop/staff 批量查询修订、patroller 无速率限制及非 noratelimit 用户使用前警告
 "use strict";
 $(() => {
-    const { wgIsArticle, wgArticleId, wgNamespaceNumber } = mw.config.get(["wgIsArticle", "wgArticleId", "wgNamespaceNumber"]);
+    const {
+        wgIsArticle,
+        wgArticleId,
+        wgNamespaceNumber,
+        wgPageName,
+        wgUserName,
+        wgUserGroups,
+        wgScript,
+    } = mw.config.get([
+        "wgIsArticle",
+        "wgArticleId",
+        "wgNamespaceNumber",
+        "wgPageName",
+        "wgUserName",
+        "wgUserGroups",
+        "wgScript",
+    ]);
 
     if (!wgIsArticle || !wgArticleId || wgNamespaceNumber % 2 === 1) {
         return;
     }
 
-    // dialog classes
-    class WikiBlameDialog extends OO.ui.Dialog {
-        static static = { ...super.static, name: "wikiBlameDialog" };
-        constructor(config) {
-            super(config);
-        }
+    const userGroups = Array.isArray(wgUserGroups) ? wgUserGroups : [];
+    const canBatchQueryRevisions = userGroups.includes("sysop") || userGroups.includes("staff");
+    const MULTI_REV_BATCH_SIZE = 20;
+    const MULTI_WAY_BRANCHES = 8;
 
-        initialize() {
-            super.initialize();
-            const selection = getSelected();
-            const currentDate = new Date();
-            const currentYear = currentDate.getFullYear();
-            const currentMonth = currentDate.getMonth() + 1;
-            const currentDay = currentDate.getUTCDate();
-            const startYearList = [],
-                startMonthList = [],
-                startDayList = [],
-                endYearList = [],
-                endMonthList = [],
-                endDayList = [];
-            for (let i = 2010; i <= currentYear; i++) {
-                startYearList.push(new OO.ui.MenuOptionWidget({
-                    data: String(i),
-                    label: String(i),
-                }));
-                endYearList.push(new OO.ui.MenuOptionWidget({
-                    data: String(i),
-                    label: String(i),
-                }));
+    const sleep = (ms) => new Promise((resolve) => {
+        setTimeout(resolve, ms);
+    });
+
+    const getSelectedText = () => {
+        const selection = window.getSelection();
+        return selection ? selection.toString().trim() : "";
+    };
+
+    const extractSlotContent = (rev) => {
+        if (!rev) {
+            return null;
+        }
+        if (rev.slots && rev.slots.main) {
+            if (rev.slots.main.texthidden || rev.slots.main.content === undefined) {
+                return null;
             }
-            Array(12)
-                .fill(1)
-                .map((x, y) => x + y)
-                .forEach((i) => {
-                    startMonthList.push(new OO.ui.MenuOptionWidget({
-                        data: String(i),
-                        label: String(i),
-                    }));
-                    endMonthList.push(new OO.ui.MenuOptionWidget({
-                        data: String(i),
-                        label: String(i),
-                    }));
-                });
-            Array(31)
-                .fill(1)
-                .map((x, y) => x + y)
-                .forEach((i) => {
-                    startDayList.push(new OO.ui.MenuOptionWidget({
-                        data: String(i),
-                        label: String(i),
-                    }));
-                    endDayList.push(new OO.ui.MenuOptionWidget({
-                        data: String(i),
-                        label: String(i),
-                    }));
-                });
+            return rev.slots.main.content;
+        }
+        if (rev.texthidden || rev["*"] === undefined) {
+            return null;
+        }
+        return rev["*"];
+    };
 
-            const currentSelection = new OO.ui.TextInputWidget({
-                value: selection,
-            });
-            const revisionCheck = new OO.ui.TextInputWidget({
-                value: "50",
-            });
-            const startDateLabel = new OO.ui.LabelWidget({
-                label: "开始日期",
-            });
-            const startYear = new OO.ui.DropdownWidget({
-                menu: {
-                    items: startYearList,
-                },
-            });
-            const startMonth = new OO.ui.DropdownWidget({
-                menu: {
-                    items: startMonthList,
-                },
-            });
-            const startDay = new OO.ui.DropdownWidget({
-                menu: {
-                    items: startDayList,
-                },
-            });
-            const endDateLabel = new OO.ui.LabelWidget({
-                label: "结束日期",
-            });
-            const endYear = new OO.ui.DropdownWidget({
-                menu: {
-                    items: endYearList,
-                },
-            });
-            const endMonth = new OO.ui.DropdownWidget({
-                menu: {
-                    items: endMonthList,
-                },
-            });
-            const endDay = new OO.ui.DropdownWidget({
-                menu: {
-                    items: endDayList,
-                },
-            });
-            const submit = new OO.ui.ButtonWidget({
-                label: "提交",
-                flags: ["progressive", "primary"],
-            });
-            const close = new OO.ui.ButtonWidget({
-                id: "wiki-blame-close",
-                label: "✖",
-            });
-            const progress = new OO.ui.LabelWidget({
-                id: "wiki-blame-progress",
-                label: "",
-            });
-            const fieldSet = new OO.ui.FieldsetLayout({
-                label: "拷打编辑小工具",
-            });
-            fieldSet.$header.append(close.$element);
-            fieldSet.addItems([
-                new OO.ui.FieldLayout(currentSelection, {
-                    label: "选中文字",
-                    align: "top",
-                }),
-                new OO.ui.FieldLayout(revisionCheck, {
-                    label: "搜索数量",
-                    align: "top",
-                }),
-                new OO.ui.FieldLayout(startDateLabel, {
-                    align: "inline",
-                }),
-                new OO.ui.FieldLayout(startYear, {
-                    id: "start-year",
-                    align: "inline",
-                }),
-                new OO.ui.FieldLayout(startMonth, {
-                    id: "start-month",
-                    align: "inline",
-                }),
-                new OO.ui.FieldLayout(startDay, {
-                    id: "start-day",
-                    align: "inline",
-                }),
-                new OO.ui.FieldLayout(endDateLabel, {
-                    align: "inline",
-                }),
-                new OO.ui.FieldLayout(endYear, {
-                    id: "end-year",
-                    align: "inline",
-                }),
-                new OO.ui.FieldLayout(endMonth, {
-                    id: "end-month",
-                    align: "inline",
-                }),
-                new OO.ui.FieldLayout(endDay, {
-                    id: "end-day",
-                    align: "inline",
-                }),
-                new OO.ui.FieldLayout(submit, {
-                    align: "right",
-                }),
-                new OO.ui.FieldLayout(progress, {
-                }),
-            ]);
-            this.content = new OO.ui.PanelLayout({
-                padded: true,
-                expanded: false,
-            });
-            this.content.$element.append(fieldSet.$element);
-            this.$body.append(this.content.$element);
-            startYear.getMenu().selectItemByData(String(currentYear));
-            startMonth.getMenu().selectItemByData(String(currentMonth));
-            startDay.getMenu().selectItemByData(String(currentDay));
-            endYear.getMenu().selectItemByData(String(currentYear));
-            endMonth.getMenu().selectItemByData(String(currentMonth));
-            endDay.getMenu().selectItemByData(String(currentDay));
-            submit.on("click", () => {
-                const startDate = `${startYear.getMenu().findSelectedItem().getData()}-${`0${startMonth.getMenu().findSelectedItem().getData()}`.slice(-2)}-${`0${startDay.getMenu().findSelectedItem().getData()}`.slice(-2)}T00:00:00Z`;
-                const endDate = `${endYear.getMenu().findSelectedItem().getData()}-${`0${endMonth.getMenu().findSelectedItem().getData()}`.slice(-2)}-${`0${endDay.getMenu().findSelectedItem().getData()}`.slice(-2)}T23:59:59Z`;
-                const limit = revisionCheck.getValue();
-                queryRevisionApi(startDate, endDate, limit, selection);
-            });
-            close.on("click", () => {
-                const windowManager = window.wikiBlameWindowManager;
-                windowManager.currentWindow.close();
-            });
-            $("#start-year, #start-month, #start-day, #end-year, #end-month, #end-day").css({
-                display: "inline-block",
-                width: "33%",
-            });
-            $(".oo-ui-fieldsetLayout-group .oo-ui-fieldLayout-align-right").css({
-                "float": "right",
-            });
-            $("#wiki-blame-close > a").removeClass("oo-ui-buttonElement-button");
-            $("#wiki-blame-close > a").css({ "text-decoration": "none" });
-            $("#wiki-blame-close").css({ "float": "right" });
+    const formatTimestamp = (iso) => {
+        if (!iso) {
+            return "";
         }
-        getBodyHeight() {
-            return this.content.$element.outerHeight(true) + 10;
+        const date = new Date(iso);
+        if (Number.isNaN(date.getTime())) {
+            return iso;
         }
-    }
+        return date.toLocaleString();
+    };
 
-    class PageLayout extends OO.ui.PageLayout {
-        #label;
-        constructor(name, config, diffTable, label) {
-            super(name, config);
-            this.#label = label;
-            this.$element.append($(diffTable));
-        }
-        setupOutlineItem() {
-            this.outlineItem.setLabel(this.#label);
-        }
-    }
-
-    class WikiBlameDiffDialog extends OO.ui.Dialog {
-        static static = { ...super.static, name: "wikiBlameDiffDialog" };
-        revisionList = undefined;
-        constructor(config, revisionList) {
-            super(config);
-            this.revisionList = revisionList;
+    class WikiBlameSession {
+        constructor() {
+            this.api = new mw.Api();
+            this.contentCache = new Map();
+            this.hasApiHighLimits = false;
+            this.hasNoRateLimit = false;
+            this.canBatchRevisions = canBatchQueryRevisions;
+            this.cancelled = false;
+            this.rightsLoaded = false;
         }
 
-        initialize() {
-            super.initialize();
-            const pageList = [];
-            const server = mw.config.get("wgServer");
-            const script = mw.config.get("wgScript");
-            console.log(this.revisionList);
-            for (const r of this.revisionList) {
-                const diffTable = `<a href=${server}${script}?curid=${r.fromid}&oldid=${r.torevid} target="_blank">永久链接</a>
-                <table class="diff">
-                    <colgroup>
-                        <col class="diff-marker">
-                        <col class="diff-content">
-                        <col class="diff-marker">
-                        <col class="diff-content">
-                    </colgroup>
-                    <tbody>
-                        ${r["*"]}
-                    </tbody>
-                    </table>`;
-                pageList.push(new PageLayout(r.user + r.fromrevid, undefined, diffTable, `${r.user} ${r.timestamp}`));
+        async initRights() {
+            if (this.rightsLoaded) {
+                return;
             }
-            const close = new OO.ui.ButtonWidget({
-                id: "wiki-blame-close",
-                label: "✖",
-            });
-            this.content = new OO.ui.BookletLayout({
-                id: "wiki-blame-booklet",
-                outlined: true,
-            });
-            close.on("click", () => {
-                const windowManager = window.wikiBlameWindowManager;
-                windowManager.currentWindow.close();
-            });
-            this.content.addPages(pageList);
-            this.$body.append(close.$element, this.content.$element);
-            $("#wiki-blame-close > a").removeClass("oo-ui-buttonElement-button");
-            $("#wiki-blame-close > a").css({ "text-decoration": "none" });
-            $("#wiki-blame-booklet").css({ "margin-top": "20px" });
-            $("#wiki-blame-close").css({ "float": "right" });
+            try {
+                const rights = await mw.user.getRights();
+                this.hasApiHighLimits = rights.includes("apihighlimits");
+                this.hasNoRateLimit = rights.includes("noratelimit");
+            } catch {
+                this.hasApiHighLimits = false;
+                this.hasNoRateLimit = false;
+            }
+            this.rightsLoaded = true;
         }
 
-        getBodyHeight = () => 500;
-    }
+        cancel() {
+            this.cancelled = true;
+        }
 
-    // helper functions
-    const queryRevisionApi = async (startDate, endDate, limit, selection) => {
-        const api = new mw.Api();
-        const pagename = mw.config.get("wgPageName");
-        const username = mw.config.get("wgUserName");
-        try {
-            let remaining = limit;
-            let cont = undefined;
-            const BATCH_SIZE = 50;
-            let revisions = [];
-            const progress = document.createElement("span");
-            progress.innerText = "0";
-            $("#wiki-blame-progress").html(`<p>/${limit}</p>`).find("p").prepend(progress);
-            // 使用循环持续获取版本，直到没有新版本或者达到用户指定的上限
-            while (remaining > 0) {
-                const params = {
-                    action: "query",
-                    assertuser: username,
-                    prop: "revisions",
-                    rvprop: "ids|timestamp|user|parsedcomment|tags|content",
-                    titles: pagename,
-                    rvlimit: BATCH_SIZE,
-                    rvstart: startDate,
-                    rvend: endDate,
-                    rvdir: "newer",
-                };
-                // 如需要rvcontinue参数，则添加。该参数不能为空，否则会报错
-                if (cont !== undefined) {
-                    params.rvcontinue = cont;
+        resetCancel() {
+            this.cancelled = false;
+        }
+
+        async requestWithBackoff(params, usePost = false) {
+            if (this.cancelled) {
+                throw new Error("CANCELLED");
+            }
+            const maxRetries = 4;
+            let delay = this.hasNoRateLimit ? 0 : 250;
+            for (let attempt = 0; attempt <= maxRetries; attempt++) {
+                if (this.cancelled) {
+                    throw new Error("CANCELLED");
                 }
-                const data = await api.get(params);
-                const pageId = Object.keys(data.query.pages)[0];
-                const revisionsResult = data.query.pages[pageId].revisions;
-                if (revisionsResult === undefined) {
-                    $("#wiki-blame-progress").html("<p style=\"color: red\">指定区间内无编辑或API错误</p>");
-                    return;
+                if (attempt > 0 || delay > 0) {
+                    await sleep(delay);
                 }
-                revisions.push(...revisionsResult);
-                remaining -= BATCH_SIZE;
-                progress.innerText = `${Math.min(+progress.innerText + BATCH_SIZE, limit)}`;
-                // 如果还有更多版本，修改rvcontinue参数，否则退出循环
-                if (Reflect.has(data, "continue")) {
-                    cont = data.continue.rvcontinue;
-                } else {
+                try {
+                    const reqParams = {
+                        formatversion: 2,
+                        ...params,
+                    };
+                    if (wgUserName) {
+                        reqParams.assertuser = wgUserName;
+                    }
+                    return await (usePost ? this.api.post(reqParams) : this.api.get(reqParams));
+                } catch (err) {
+                    const isRateLimited = err === "ratelimited" || err === "http" || err && err.code === "ratelimited";
+                    if (isRateLimited && attempt < maxRetries) {
+                        delay = Math.min((delay || 250) * 2 + 500, 8000);
+                        continue;
+                    }
+                    const info = err && err.message || (typeof err === "string" ? err : "API 请求失败");
+                    throw new Error(String(info), { cause: err });
+                }
+            }
+            throw new Error("RATE_LIMITED");
+        }
+
+        async fetchCurrentSource() {
+            await this.initRights();
+            const data = await this.requestWithBackoff({
+                action: "query",
+                prop: "revisions",
+                titles: wgPageName,
+                rvprop: "ids|timestamp|user|sha1|content",
+                rvslots: "main",
+                rvlimit: 1,
+            });
+            const page = data && data.query && data.query.pages && data.query.pages[0];
+            const rev = page && page.revisions && page.revisions[0];
+            if (!rev) {
+                throw new Error("NO_REVISIONS");
+            }
+            const content = extractSlotContent(rev);
+            if (content === null) {
+                throw new Error("CONTENT_HIDDEN");
+            }
+            this.contentCache.set(rev.revid, content);
+            return {
+                revid: rev.revid,
+                timestamp: rev.timestamp,
+                user: rev.user,
+                content,
+            };
+        }
+
+        async fetchRevisionMetadata({ startDate, endDate, maxRevisions, onProgress }) {
+            await this.initRights();
+            const batchSize = this.hasApiHighLimits ? 500 : 50;
+            const rawRevs = [];
+            let rvcontinue = null;
+
+            while (true) {
+                if (this.cancelled) {
+                    throw new Error("CANCELLED");
+                }
+                const remaining = maxRevisions > 0 ? maxRevisions - rawRevs.length : batchSize;
+                if (maxRevisions > 0 && remaining <= 0) {
                     break;
                 }
+                const params = {
+                    action: "query",
+                    prop: "revisions",
+                    titles: wgPageName,
+                    rvprop: "ids|timestamp|user|sha1|comment",
+                    rvlimit: Math.min(batchSize, remaining),
+                    rvdir: "older",
+                };
+                if (endDate) {
+                    params.rvstart = `${endDate}T23:59:59Z`;
+                }
+                if (startDate) {
+                    params.rvend = `${startDate}T00:00:00Z`;
+                }
+                if (rvcontinue) {
+                    params.rvcontinue = rvcontinue;
+                }
+                const data = await this.requestWithBackoff(params);
+                const page = data && data.query && data.query.pages && data.query.pages[0];
+                const revs = page && page.revisions || [];
+                rawRevs.push(...revs);
+                if (onProgress) {
+                    onProgress(`正在拉取修订元数据：已获取 ${rawRevs.length} 条…`);
+                }
+                if (!data.continue || !data.continue.rvcontinue || revs.length === 0) {
+                    break;
+                }
+                rvcontinue = data.continue.rvcontinue;
             }
-            // 去除被版本删除的版本
-            revisions = revisions.filter((r) => Reflect.has(r, "*"));
-            const revisionsList = [];
-            const targetRevisions = [];
-            for (let i = 0; i < revisions.length; i++) {
-                const current = revisions[i];
-                // 特殊处理第一个版本
-                if (i === 0) {
-                    if (current["*"].includes(selection)) {
-                        targetRevisions.push(current);
-                    }
+
+            // 转为从旧到新，并跳过 sha1 相同的连续重复版本（如空编辑或完整回退后的等效版本）
+            const chronological = rawRevs.reverse();
+            const deduped = [];
+            for (const rev of chronological) {
+                if (rev.texthidden) {
                     continue;
                 }
-                // 和前一个版本对比，如果多出了选择的文本，则加入列表
-                const previous = revisions[i - 1];
-                if (current["*"].includes(selection) && !previous["*"].includes(selection)) {
-                    targetRevisions.push(current);
+                const prev = deduped.length > 0 ? deduped[deduped.length - 1] : null;
+                if (prev && prev.sha1 && rev.sha1 && prev.sha1 === rev.sha1) {
+                    continue;
+                }
+                deduped.push(rev);
+            }
+            return deduped;
+        }
+
+        async fetchRevisionContentsBatch(revids) {
+            const uncached = revids.filter((id) => !this.contentCache.has(id));
+            for (let i = 0; i < uncached.length; i += MULTI_REV_BATCH_SIZE) {
+                const chunk = uncached.slice(i, i + MULTI_REV_BATCH_SIZE);
+                const data = await this.requestWithBackoff({
+                    action: "query",
+                    prop: "revisions",
+                    revids: chunk.join("|"),
+                    rvprop: "ids|content",
+                    rvslots: "main",
+                });
+                const pages = data && data.query && data.query.pages || [];
+                for (const page of pages) {
+                    const revs = page.revisions || [];
+                    for (const rev of revs) {
+                        const content = extractSlotContent(rev);
+                        if (content !== null) {
+                            this.contentCache.set(rev.revid, content);
+                        }
+                    }
                 }
             }
-            // 重置进度
-            progress.innerText = "0";
-            $("#wiki-blame-progress").html(`<p>/${targetRevisions.length}</p>`).find("p").prepend(progress);
+            const result = new Map();
+            for (const id of revids) {
+                result.set(id, this.contentCache.has(id) ? this.contentCache.get(id) : null);
+            }
+            return result;
+        }
 
-            await Promise.allSettled(targetRevisions.map(async (r) => {
-                try {
-                    const rdata = await api.post({
-                        action: "compare",
-                        assertuser: username,
-                        fromrev: r.revid,
-                        torelative: "prev",
+        async fetchRevisionContent(revid) {
+            if (this.contentCache.has(revid)) {
+                return this.contentCache.get(revid);
+            }
+            const data = await this.requestWithBackoff({
+                action: "query",
+                prop: "revisions",
+                revids: revid,
+                rvprop: "ids|content",
+                rvslots: "main",
+            });
+            const page = data && data.query && data.query.pages && data.query.pages[0];
+            const rev = page && page.revisions && page.revisions[0];
+            const content = extractSlotContent(rev);
+            if (content !== null) {
+                this.contentCache.set(revid, content);
+            }
+            return content;
+        }
+
+        async fetchCompare(fromrev, torev) {
+            if (!fromrev) {
+                return null;
+            }
+            const data = await this.requestWithBackoff({
+                action: "compare",
+                fromrev,
+                torev,
+            }, true);
+            return data && data.compare ? data.compare : null;
+        }
+
+        async searchIntroduction({ revisions, targetText, caseInsensitive, upperIndex, onProgress }) {
+            const matcher = caseInsensitive
+                ? (text) => text !== null && text.toLowerCase().includes(targetText.toLowerCase())
+                : (text) => text !== null && text.includes(targetText);
+
+            if (revisions.length === 0) {
+                return { status: "NOT_FOUND_IN_RANGE" };
+            }
+
+            let high = typeof upperIndex === "number" ? upperIndex : revisions.length - 1;
+            if (high < 0) {
+                return { status: "NOT_FOUND_IN_RANGE" };
+            }
+
+            if (this.canBatchRevisions) {
+                const boundaryMap = await this.fetchRevisionContentsBatch([revisions[0].revid, revisions[high].revid]);
+                if (!matcher(boundaryMap.get(revisions[high].revid))) {
+                    return { status: "NOT_IN_LATEST" };
+                }
+                if (matcher(boundaryMap.get(revisions[0].revid))) {
+                    return {
+                        status: "IN_OLDEST",
+                        rev: revisions[0],
+                        prevRev: null,
+                        revIndex: 0,
+                    };
+                }
+            } else {
+                const highContent = await this.fetchRevisionContent(revisions[high].revid);
+                if (!matcher(highContent)) {
+                    return { status: "NOT_IN_LATEST" };
+                }
+                const lowContent = await this.fetchRevisionContent(revisions[0].revid);
+                if (matcher(lowContent)) {
+                    return {
+                        status: "IN_OLDEST",
+                        rev: revisions[0],
+                        prevRev: null,
+                        revIndex: 0,
+                    };
+                }
+            }
+
+            let low = 0;
+            let steps = 0;
+            const totalStepsEstimate = Math.max(
+                1,
+                this.canBatchRevisions
+                    ? Math.ceil(Math.log(high + 1) / Math.log(MULTI_WAY_BRANCHES + 1))
+                    : Math.ceil(Math.log2(high + 1)),
+            );
+
+            while (high - low > 1) {
+                if (this.cancelled) {
+                    throw new Error("CANCELLED");
+                }
+                steps++;
+
+                if (this.canBatchRevisions) {
+                    const span = high - low - 1;
+                    if (span <= MULTI_REV_BATCH_SIZE) {
+                        if (onProgress) {
+                            onProgress(`正在批量拉取最后 ${span} 个版本源码以精确定位…`);
+                        }
+                        const candidateIndices = [];
+                        for (let idx = low + 1; idx < high; idx++) {
+                            candidateIndices.push(idx);
+                        }
+                        const batchMap = await this.fetchRevisionContentsBatch(candidateIndices.map((idx) => revisions[idx].revid));
+                        for (const idx of candidateIndices) {
+                            const content = batchMap.get(revisions[idx].revid);
+                            if (content === null) {
+                                low = idx;
+                                continue;
+                            }
+                            if (matcher(content)) {
+                                high = idx;
+                                break;
+                            }
+                            low = idx;
+                        }
+                        break;
+                    }
+
+                    if (onProgress) {
+                        onProgress(`正在多路批量定位版本：第 ${steps}/${totalStepsEstimate} 轮（剩余区间 ${high - low} 个版本）…`);
+                    }
+                    const sampleIndices = [];
+                    for (let b = 1; b <= MULTI_WAY_BRANCHES; b++) {
+                        const idx = low + Math.floor((high - low) * b / (MULTI_WAY_BRANCHES + 1));
+                        if (idx > low && idx < high && !sampleIndices.includes(idx)) {
+                            sampleIndices.push(idx);
+                        }
+                    }
+                    const sampleMap = await this.fetchRevisionContentsBatch(sampleIndices.map((idx) => revisions[idx].revid));
+                    let narrowed = false;
+                    for (const idx of sampleIndices) {
+                        const content = sampleMap.get(revisions[idx].revid);
+                        if (content === null) {
+                            continue;
+                        }
+                        if (matcher(content)) {
+                            high = idx;
+                            narrowed = true;
+                            break;
+                        }
+                        low = idx;
+                        narrowed = true;
+                    }
+                    if (!narrowed) {
+                        low = sampleIndices[sampleIndices.length - 1];
+                    }
+                } else {
+                    const mid = Math.floor((low + high) / 2);
+                    if (onProgress) {
+                        onProgress(`正在二分定位版本：第 ${steps}/${totalStepsEstimate} 步（剩余区间 ${high - low} 个版本）…`);
+                    }
+                    const midContent = await this.fetchRevisionContent(revisions[mid].revid);
+                    if (midContent === null) {
+                        low = mid;
+                        continue;
+                    }
+                    if (matcher(midContent)) {
+                        high = mid;
+                    } else {
+                        low = mid;
+                    }
+                }
+            }
+
+            return {
+                status: "FOUND",
+                rev: revisions[high],
+                prevRev: revisions[low],
+                revIndex: high,
+            };
+        }
+    }
+
+    class WikiBlameDialog extends OO.ui.Dialog {
+        static static = {
+            ...super.static,
+            name: "wikiBlameDialog",
+        };
+
+        constructor(config, initialSelection, session) {
+            super(config);
+            this.initialSelection = initialSelection || "";
+            this.session = session;
+            this.sourceLines = [];
+            this.cachedRevisions = null;
+            this.cachedRangeKey = "";
+        }
+
+        initialize() {
+            super.initialize();
+
+            this.$body.addClass("wikiblame-dialog-body");
+
+            const $header = $("<div>").addClass("wikiblame-header");
+            const $title = $("<h3>").addClass("wikiblame-title").text("拷打编辑（Wikitext 源码定位）");
+            this.closeButton = new OO.ui.ButtonWidget({
+                framed: false,
+                icon: "close",
+                title: "关闭",
+            });
+            $header.append($title, this.closeButton.$element);
+
+            this.searchInput = new OO.ui.TextInputWidget({
+                value: this.initialSelection,
+                placeholder: "输入或点选下方源码中的任意内容…",
+            });
+            this.submitButton = new OO.ui.ButtonWidget({
+                label: "定位来源",
+                flags: ["progressive", "primary"],
+            });
+            this.cancelButton = new OO.ui.ButtonWidget({
+                label: "取消",
+                flags: ["destructive"],
+                disabled: true,
+            });
+
+            const $searchRow = $("<div>").addClass("wikiblame-search-row").append(
+                $("<div>").addClass("wikiblame-search-input").append(this.searchInput.$element),
+                $("<div>").addClass("wikiblame-actions").append(this.submitButton.$element, this.cancelButton.$element),
+            );
+
+            this.$hint = $("<p>").addClass("wikiblame-hint").text("直接点选下方源码中的任意一行（移动端推荐），或输入/粘贴 Wikitext 片段后点击“定位来源”。");
+
+            this.advancedToggle = new OO.ui.ButtonWidget({
+                label: "高级选项",
+                framed: false,
+                icon: "settings",
+                classes: ["wikiblame-advanced-toggle"],
+            });
+
+            this.startDateInput = new OO.ui.TextInputWidget({
+                placeholder: "YYYY-MM-DD（留空不限）",
+            });
+            this.endDateInput = new OO.ui.TextInputWidget({
+                placeholder: "YYYY-MM-DD（留空不限）",
+            });
+            this.maxRevsInput = new OO.ui.TextInputWidget({
+                value: "0",
+                placeholder: "0 表示不限",
+            });
+            this.caseInsensitiveCheckbox = new OO.ui.CheckboxInputWidget({
+                selected: false,
+            });
+
+            const $advancedPanel = $("<div>").addClass("wikiblame-advanced-panel").append(
+                new OO.ui.FieldLayout(this.startDateInput, { label: "开始日期", align: "top", classes: ["wikiblame-advanced-field"] }).$element,
+                new OO.ui.FieldLayout(this.endDateInput, { label: "结束日期", align: "top", classes: ["wikiblame-advanced-field"] }).$element,
+                new OO.ui.FieldLayout(this.maxRevsInput, { label: "最多检索版本数（0=全部）", align: "top", classes: ["wikiblame-advanced-field"] }).$element,
+                new OO.ui.FieldLayout(this.caseInsensitiveCheckbox, { label: "忽略大小写", align: "inline", classes: ["wikiblame-advanced-field"] }).$element,
+            );
+
+            this.filterInput = new OO.ui.TextInputWidget({
+                placeholder: "在当前源码中过滤/查找关键词…",
+                icon: "search",
+            });
+            this.$filterCount = $("<span>").addClass("wikiblame-hint");
+            const $sourceToolbar = $("<div>").addClass("wikiblame-source-toolbar").append(
+                $("<div>").addClass("wikiblame-filter-input").append(this.filterInput.$element),
+                this.$filterCount,
+            );
+
+            this.$sourceViewer = $("<div>").addClass("wikiblame-source-viewer").text("正在加载当前页面源码…");
+            this.$progress = $("<div>").addClass("wikiblame-progress");
+            this.$resultArea = $("<div>").hide();
+
+            this.$body.append(
+                $header,
+                $searchRow,
+                this.$hint,
+                this.advancedToggle.$element,
+                $advancedPanel,
+                $sourceToolbar,
+                this.$sourceViewer,
+                this.$progress,
+                this.$resultArea,
+            );
+
+            this.closeButton.on("click", () => {
+                this.session.cancel();
+                this.close();
+            });
+            this.advancedToggle.on("click", () => {
+                $advancedPanel.toggleClass("is-open");
+                this.updateSize();
+            });
+            this.filterInput.on("change", () => {
+                this.renderSourceLines();
+            });
+            this.submitButton.on("click", () => {
+                this.runBlame(null);
+            });
+            this.cancelButton.on("click", () => {
+                this.session.cancel();
+                this.$progress.text("已取消检索。");
+                this.setBusy(false);
+            });
+            this.searchInput.on("enter", () => {
+                this.runBlame(null);
+            });
+
+            this.loadCurrentSource();
+        }
+
+        setBusy(busy) {
+            this.submitButton.setDisabled(busy);
+            this.cancelButton.setDisabled(!busy);
+        }
+
+        async loadCurrentSource() {
+            try {
+                const current = await this.session.fetchCurrentSource();
+                this.sourceLines = current.content.split("\n");
+                if (this.initialSelection && !current.content.includes(this.initialSelection)) {
+                    this.$hint
+                        .addClass("wikiblame-hint-warn")
+                        .text("当前页面源码中未直接找到页面所选文本（可能经过了繁简/字词转换或来自模板），请在下方源码中点选或搜索对应源码。");
+                }
+                this.renderSourceLines();
+                this.updateSize();
+            } catch (err) {
+                this.$sourceViewer.empty().append(
+                    $("<span>").addClass("wikiblame-hint-error").text(`无法加载页面源码：${err.message || err}`),
+                );
+            }
+        }
+
+        renderSourceLines() {
+            const keyword = this.filterInput.getValue().trim().toLowerCase();
+            this.$sourceViewer.empty();
+            let matchedCount = 0;
+
+            const fragment = document.createDocumentFragment();
+            this.sourceLines.forEach((line, idx) => {
+                if (keyword && !line.toLowerCase().includes(keyword)) {
+                    return;
+                }
+                matchedCount++;
+                const $line = $("<div>").addClass("wikiblame-source-line").attr("data-line", idx + 1);
+                const $num = $("<span>").addClass("wikiblame-line-num").text(idx + 1);
+                const $text = $("<span>").addClass("wikiblame-line-text").text(line || " ");
+                $line.append($num, $text);
+                $line.on("click", () => {
+                    const innerSelection = getSelectedText();
+                    const picked = innerSelection || line.trim();
+                    if (picked) {
+                        this.$sourceViewer.find(".wikiblame-source-line").removeClass("is-selected");
+                        $line.addClass("is-selected");
+                        this.searchInput.setValue(picked);
+                    }
+                });
+                fragment.appendChild($line[0]);
+            });
+
+            this.$sourceViewer[0].appendChild(fragment);
+            this.$filterCount.text(keyword ? `匹配 ${matchedCount} 行` : `共 ${this.sourceLines.length} 行`);
+        }
+
+        async runBlame(upperIndexOverride) {
+            const targetText = this.searchInput.getValue().trim();
+            if (!targetText) {
+                mw.notify("请先输入或点选需要定位的源码文本", { type: "warn" });
+                return;
+            }
+
+            this.session.resetCancel();
+            this.setBusy(true);
+            if (upperIndexOverride === null) {
+                this.$resultArea.hide().empty();
+            }
+
+            const startDate = this.startDateInput.getValue().trim();
+            const endDate = this.endDateInput.getValue().trim();
+            const maxRevs = Math.max(0, Number.parseInt(this.maxRevsInput.getValue(), 10) || 0);
+            const caseInsensitive = this.caseInsensitiveCheckbox.isSelected();
+            const rangeKey = `${startDate}|${endDate}|${maxRevs}`;
+
+            try {
+                if (!this.cachedRevisions || this.cachedRangeKey !== rangeKey) {
+                    this.cachedRevisions = await this.session.fetchRevisionMetadata({
+                        startDate,
+                        endDate,
+                        maxRevisions: maxRevs,
+                        onProgress: (msg) => {
+                            this.$progress.text(msg);
+                        },
                     });
-                    rdata.compare.user = r.user;
-                    rdata.compare.revid = rdata.torevid;
-                    const editDate = new Date(r.timestamp);
-                    rdata.compare.timestamp = editDate.toLocaleDateString();
-                    revisionsList.push(rdata.compare);
-                } catch { }
-                progress.innerText = `${+progress.innerText + 1}`;
-            }));
-            createDiffDialog(revisionsList);
-        } catch (err) {
-            console.log(err);
+                    this.cachedRangeKey = rangeKey;
+                }
+
+                const result = await this.session.searchIntroduction({
+                    revisions: this.cachedRevisions,
+                    targetText,
+                    caseInsensitive,
+                    upperIndex: upperIndexOverride,
+                    onProgress: (msg) => {
+                        this.$progress.text(msg);
+                    },
+                });
+
+                if (result.status === "NOT_FOUND_IN_RANGE") {
+                    this.$progress.empty().append($("<span>").addClass("wikiblame-hint-error").text("指定范围内没有可用的修订版本。"));
+                    return;
+                }
+                if (result.status === "NOT_IN_LATEST") {
+                    const msg = upperIndexOverride !== null
+                        ? "上一个版本源码中已不包含该文本（当前结果即为引入该文本的编辑）。"
+                        : "最新版本源码中不包含该文本，请检查输入或放宽日期范围。";
+                    this.$progress.empty().append($("<span>").addClass("wikiblame-hint-warn").text(msg));
+                    return;
+                }
+
+                this.$progress.text("正在获取版本差异对比…");
+                const compareData = await this.session.fetchCompare(
+                    result.prevRev ? result.prevRev.revid : null,
+                    result.rev.revid,
+                );
+                this.$progress.text(result.status === "IN_OLDEST" ? "该文本自区间内最早版本起即已存在。" : "定位完成。");
+                this.renderResult(result, compareData);
+            } catch (err) {
+                if (err && err.message === "CANCELLED") {
+                    return;
+                }
+                this.$progress.empty().append(
+                    $("<span>").addClass("wikiblame-hint-error").text(`检索失败：${err && err.message || err}`),
+                );
+            } finally {
+                this.setBusy(false);
+            }
         }
-    };
 
-    const getSelected = () => {
-        const text = window.getSelection().toString();
-        return text;
-    };
-    const createDialog = () => {
-        const myDialog = new WikiBlameDialog({
-            id: "wiki-blame-dialog-popup",
-            size: "medium",
-        });
-        if (!window.wikiBlameWindowManager) {
-            window.wikiBlameWindowManager = new OO.ui.WindowManager();
+        renderResult(result, compareData) {
+            const { rev, prevRev, revIndex } = result;
+            const revUrl = `${wgScript}?title=${encodeURIComponent(wgPageName)}&oldid=${rev.revid}`;
+            const diffUrl = prevRev
+                ? `${wgScript}?title=${encodeURIComponent(wgPageName)}&diff=${rev.revid}&oldid=${prevRev.revid}`
+                : revUrl;
+
+            const $meta = $("<div>").addClass("wikiblame-result-meta");
+            $meta.append(
+                $("<span>").text(`编者：${rev.user || "未知"}`),
+                $("<span>").text(`时间：${formatTimestamp(rev.timestamp)}`),
+                $("<a>").attr({ href: revUrl, target: "_blank", rel: "noopener" }).text(`版本 #${rev.revid}`),
+                $("<a>").attr({ href: diffUrl, target: "_blank", rel: "noopener" }).text("查看完整差异"),
+            );
+            if (rev.comment) {
+                $meta.append($("<span>").text(`摘要：${rev.comment}`));
+            }
+
+            if (revIndex > 0) {
+                const earlierBtn = new OO.ui.ButtonWidget({
+                    label: "从更早版本继续查找",
+                    framed: true,
+                });
+                earlierBtn.on("click", () => {
+                    this.runBlame(revIndex - 1);
+                });
+                $meta.append(earlierBtn.$element);
+            }
+
+            const $diffWrapper = $("<div>").addClass("wikiblame-diff-wrapper");
+            const diffBody = compareData && (compareData.body || compareData["*"]);
+            if (diffBody) {
+                const $table = $("<table>").addClass("diff").append(
+                    $("<colgroup>").append(
+                        $("<col>").addClass("diff-marker"),
+                        $("<col>").addClass("diff-content"),
+                        $("<col>").addClass("diff-marker"),
+                        $("<col>").addClass("diff-content"),
+                    ),
+                    $("<tbody>").html(diffBody),
+                );
+                $diffWrapper.append($table);
+            } else {
+                $diffWrapper.text("无差异表格可展示（可能为首个版本）。");
+            }
+
+            this.$resultArea.empty().append($meta, $diffWrapper).show();
+            this.updateSize();
         }
-        const windowManager = window.wikiBlameWindowManager;
-        $(document.body).append(window.wikiBlameWindowManager.$element);
-        windowManager.addWindows([myDialog]);
-        windowManager.openWindow(myDialog);
+
+        getBodyHeight() {
+            const viewportCap = Math.max(360, window.innerHeight - 100);
+            const contentHeight = this.$body[0] ? this.$body[0].scrollHeight + 16 : 520;
+            return Math.min(viewportCap, Math.max(460, contentHeight));
+        }
+    }
+
+    let windowManager = null;
+
+    const openWikiBlameDialog = async () => {
+        const initialSelection = getSelectedText();
+        const session = new WikiBlameSession();
+        await session.initRights();
+
+        if (!session.hasNoRateLimit) {
+            const confirmed = await OO.ui.confirm(
+                "您的账号当前未持有 noratelimit 权限（仅维护姬及以上用户组持有）。检索历史修订将产生多次 API 请求，在修订数较多的页面上频繁使用可能触发限流或 WAF 拦截。是否继续使用？",
+                {
+                    title: "速率限制提示",
+                    actions: [
+                        { action: "accept", label: "继续使用", flags: ["primary", "progressive"] },
+                        { action: "cancel", label: "取消", flags: "safe" },
+                    ],
+                },
+            );
+            if (!confirmed) {
+                return;
+            }
+        }
+
+        if (!windowManager) {
+            windowManager = new OO.ui.WindowManager();
+            $(document.body).append(windowManager.$element);
+        } else {
+            windowManager.clearWindows();
+        }
+        const dialog = new WikiBlameDialog({
+            size: window.innerWidth <= 720 ? "full" : "larger",
+        }, initialSelection, session);
+        windowManager.addWindows([dialog]);
+        windowManager.openWindow(dialog);
     };
 
-    const createDiffDialog = (revisionsList) => {
-        const windowManager = window.wikiBlameWindowManager;
-        if (windowManager.currentWindow
-            && window.wikiBlameWindowManager.currentWindow.getElementId() === "wiki-blame-dialog-popup") { windowManager.currentWindow.close(); }
-        const diffDialog = new WikiBlameDiffDialog({
-            size: "larger",
-        }, revisionsList);
-        windowManager.addWindows([diffDialog]);
-        windowManager.openWindow(diffDialog);
-    };
-
-    // 在侧边栏添加按钮
-    mw.util.addPortletLink(
+    const link = mw.util.addPortletLink(
         "p-cactions",
         "#",
         "拷打编辑",
         "t-wikiblame",
-        "查找选中文字的编辑来源",
+        "打开拷打编辑源码定位工具",
     );
-    $("#t-wikiblame").on("click", (e) => {
-        e.preventDefault();
-        const selection = getSelected();
-        if (!selection) {
-            mw.notify("请先选中文字");
-            return;
-        }
-        createDialog();
-    });
+    if (link) {
+        $(link).on("click", (e) => {
+            e.preventDefault();
+            openWikiBlameDialog();
+        });
+    }
 });
