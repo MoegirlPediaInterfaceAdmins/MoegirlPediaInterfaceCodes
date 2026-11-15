@@ -44,15 +44,32 @@ $(() => {
     const NON_BOT_MAX_PAGES = 50;
     const NON_BOT_DELAY_MS = 20000;
     const SYSOP_FLOOD_PROMPT_THRESHOLD = 10;
+    const API_TIMEOUT_MS = 30000;
 
     const api = new mw.Api();
 
-    const escapeRegex = (str) => String(str).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const escapeRegex = (str) => `${str ?? ""}`.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
     const normalizeCatName = (raw) => {
-        let name = String(raw || "").trim().replace(/_/g, " ");
+        let name = `${raw ?? ""}`.trim().replace(/_/g, " ");
         name = name.replace(/^(?:Category|分类|分類)\s*:\s*/i, "");
         return name.trim();
+    };
+
+    const validateCategoryTitle = (raw) => {
+        const clean = normalizeCatName(raw);
+        if (!clean || /[[\]{}|<>#]/.test(clean)) {
+            return null;
+        }
+        try {
+            const parsed = mw.Title.newFromText(clean, 14);
+            if (!parsed || parsed.getNamespaceId() !== 14) {
+                return null;
+            }
+            return parsed.getMainText();
+        } catch {
+            return null;
+        }
     };
 
     const buildCategoryRegex = (catName) => {
@@ -115,8 +132,9 @@ $(() => {
             if (allowNonFiles) {
                 selectors.push(
                     ".mw-search-results .mw-search-result-heading a",
-                    ".mw-spcontent ul li a",
-                    ".TablePager td a",
+                    ".mw-spcontent ol.special li > a:first-child",
+                    ".mw-prefixindex-list li > a:first-child",
+                    ".TablePager td.TablePager_col_img_name a:first-child",
                 );
             }
         }
@@ -126,7 +144,12 @@ $(() => {
         $(selectors.join(", ")).each((_, el) => {
             const $a = $(el);
             const href = $a.attr("href") || "";
-            if (!href || href.startsWith("#") || $a.hasClass("external")) {
+            if (
+                !href
+                || href.startsWith("#")
+                || $a.hasClass("external")
+                || /[?&](?:action|diff|oldid|redlink)=/i.test(href)
+            ) {
                 return;
             }
             const titleAttr = $a.attr("title") || "";
@@ -136,7 +159,7 @@ $(() => {
             }
             try {
                 const parsed = mw.Title.newFromText(rawTitle);
-                if (!parsed) {
+                if (!parsed || parsed.getNamespaceId() < 0) {
                     return;
                 }
                 const prefixed = parsed.getPrefixedText();
@@ -166,7 +189,7 @@ $(() => {
             cllimit: "max",
             clshow: "!hidden",
             formatversion: "2",
-        });
+        }, { timeout: API_TIMEOUT_MS });
 
         const subReq = allowCategoryMembers
             ? api.get({
@@ -174,15 +197,15 @@ $(() => {
                 list: "categorymembers",
                 cmtitle: fullTitle,
                 cmtype: "subcat",
-                cmlimit: Math.min(Math.max(Number(subcatLimit) || 50, 1), 500),
+                cmlimit: Math.min(Math.max(+subcatLimit || 50, 1), 500),
                 formatversion: "2",
-            })
+            }, { timeout: API_TIMEOUT_MS })
             : Promise.resolve(null);
 
         const [parentRes, subRes] = await Promise.all([parentReq, subReq]);
 
         const pageNode = parentRes?.query?.pages?.[0];
-        const missing = Boolean(pageNode?.missing);
+        const missing = !!pageNode?.missing;
         const parents = (pageNode?.categories || []).map((c) => normalizeCatName(c.title)).filter(Boolean);
         const subs = allowCategoryMembers
             ? (subRes?.query?.categorymembers || []).map((c) => normalizeCatName(c.title)).filter(Boolean)
@@ -201,15 +224,18 @@ $(() => {
             search: clean,
             limit: 12,
             format: "json",
-        });
+        }, { timeout: API_TIMEOUT_MS });
         const titles = Array.isArray(res?.[1]) ? res[1] : [];
         return titles.map((t) => normalizeCatName(t)).filter(Boolean);
     };
 
     const computeNewWikitext = ({ text, mode, sourceCat, targetCat, doCleanup }) => {
-        let newText = String(text ?? "");
-        const targetNorm = normalizeCatName(targetCat);
+        let newText = `${text ?? ""}`;
+        const targetNorm = targetCat ? validateCategoryTitle(targetCat) : "";
         const sourceNorm = normalizeCatName(sourceCat);
+        if (mode !== "remove" && !targetNorm) {
+            return { status: "invalid-target", text: newText };
+        }
         const targetRegex = targetNorm ? buildCategoryRegex(targetNorm) : null;
         const sourceRegex = sourceNorm ? buildCategoryRegex(sourceNorm) : null;
 
@@ -274,6 +300,24 @@ $(() => {
         return { status: "ok", text: newText };
     };
 
+    const verifyCommittedOnServer = ({ latestText, mode, sourceCat, targetCat }) => {
+        const targetRegex = targetCat ? buildCategoryRegex(targetCat) : null;
+        const sourceRegex = sourceCat ? buildCategoryRegex(sourceCat) : null;
+        const hasTarget = targetRegex ? targetRegex.test(latestText) : false;
+        const hasSource = sourceRegex ? sourceRegex.test(latestText) : false;
+
+        if (mode === "add" || mode === "copy") {
+            return hasTarget;
+        }
+        if (mode === "move") {
+            return hasTarget && !hasSource;
+        }
+        if (mode === "remove") {
+            return !hasSource;
+        }
+        return false;
+    };
+
     // ==================== 挂载 Codex 应用 ====================
     const mountEl = document.createElement("div");
     mountEl.className = "cal-app";
@@ -287,7 +331,7 @@ $(() => {
     const app = Vue.createMwApp({
         data: () => {
             const prefs = loadPrefs();
-            const savedHeight = Number(mw.storage.get(HEIGHT_STORAGE_KEY)) || 440;
+            const savedHeight = +mw.storage.get(HEIGHT_STORAGE_KEY) || 440;
             return {
                 isOpen: false,
                 panelHeight: Math.min(Math.max(savedHeight, 260), 760),
@@ -299,6 +343,8 @@ $(() => {
                 subCats: [],
                 catNotFound: false,
                 isLoadingCats: false,
+                catTreeRequestId: 0,
+                suggestRequestId: 0,
 
                 selectedTitles: [],
                 prefs,
@@ -310,11 +356,16 @@ $(() => {
                 selfFloodActive: false,
                 canFetchCategoryMembers,
 
+                batchPending: false,
+                activeBatchToken: 0,
                 isRunning: false,
                 stopRequested: false,
                 progressDone: 0,
                 progressTotal: 0,
                 currentEditingTitle: "",
+                activeRequest: null,
+                delayTimer: null,
+                delayResolver: null,
 
                 resultDialog: {
                     open: false,
@@ -382,7 +433,10 @@ $(() => {
         methods: {
             uls,
             bindPageItems() {
-                $(`.${CLASS_LABEL}`).off("click.catALot");
+                $(`.${CLASS_LABEL}`)
+                    .off("click.catALot")
+                    .removeClass(`${CLASS_LABEL} ${CLASS_SELECTED} ${CLASS_LAST}`)
+                    .removeAttr("data-cal-title");
                 const $links = collectTargetLinks(this.prefs.editpages);
                 let prevEl = null;
 
@@ -409,6 +463,7 @@ $(() => {
                     prevEl = currentEl;
                     this.syncSelectedTitles();
                 });
+                this.syncSelectedTitles();
             },
             syncSelectedTitles() {
                 const titles = [];
@@ -441,7 +496,7 @@ $(() => {
                     window.removeEventListener("mousemove", onMove);
                     window.removeEventListener("mouseup", onUp);
                     try {
-                        mw.storage.set(HEIGHT_STORAGE_KEY, String(this.panelHeight));
+                        mw.storage.set(HEIGHT_STORAGE_KEY, `${this.panelHeight}`);
                     } catch {}
                 };
                 window.addEventListener("mousemove", onMove);
@@ -452,6 +507,7 @@ $(() => {
                 if (!clean) {
                     return;
                 }
+                const reqId = ++this.catTreeRequestId;
                 this.currentCategory = clean;
                 this.isLoadingCats = true;
                 this.catNotFound = false;
@@ -461,27 +517,46 @@ $(() => {
                         this.prefs.subcatcount,
                         this.canFetchCategoryMembers,
                     );
+                    if (reqId !== this.catTreeRequestId) {
+                        return;
+                    }
                     this.catNotFound = missing;
                     this.parentCats = parents;
                     this.subCats = subs;
                 } catch (err) {
+                    if (reqId !== this.catTreeRequestId) {
+                        return;
+                    }
+                    this.catNotFound = false;
+                    this.parentCats = [];
+                    this.subCats = [];
                     mw.notify(`${uls("获取分类列表失败", "獲取分類列表失敗")}: ${err}`, { type: "error" });
                 } finally {
-                    this.isLoadingCats = false;
+                    if (reqId === this.catTreeRequestId) {
+                        this.isLoadingCats = false;
+                    }
                 }
             },
             async onSearchInputChange() {
                 const val = this.cleanInputCategory;
                 if (!val) {
+                    this.suggestRequestId += 1;
                     this.suggestions = [];
                     this.activeSuggestionIdx = -1;
                     return;
                 }
+                const reqId = ++this.suggestRequestId;
                 try {
-                    this.suggestions = await fetchCategorySuggestions(val);
+                    const results = await fetchCategorySuggestions(val);
+                    if (reqId !== this.suggestRequestId || this.cleanInputCategory !== val) {
+                        return;
+                    }
+                    this.suggestions = results;
                     this.activeSuggestionIdx = -1;
                 } catch {
-                    this.suggestions = [];
+                    if (reqId === this.suggestRequestId) {
+                        this.suggestions = [];
+                    }
                 }
             },
             onSearchKeydown(e) {
@@ -526,7 +601,7 @@ $(() => {
                 const prevEditPages = this.prefs.editpages;
                 this.prefs = {
                     ...this.prefsDraft,
-                    subcatcount: Math.min(Math.max(Number(this.prefsDraft.subcatcount) || 50, 1), 500),
+                    subcatcount: Math.min(Math.max(+this.prefsDraft.subcatcount || 50, 1), 500),
                 };
                 savePrefs(this.prefs);
                 this.prefsOpen = false;
@@ -539,6 +614,11 @@ $(() => {
                 mw.notify(uls("Cat-a-lot 设置已保存。", "Cat-a-lot 設置已保存。"), { type: "success" });
             },
             askDialog({ title = "Cat-a-lot", message, showCancel = true }) {
+                if (this.confirmDialog.resolver) {
+                    const prevResolve = this.confirmDialog.resolver;
+                    this.confirmDialog.resolver = null;
+                    prevResolve(false);
+                }
                 return new Promise((resolve) => {
                     this.confirmDialog = {
                         open: true,
@@ -557,9 +637,32 @@ $(() => {
                     r(val);
                 }
             },
+            trackRequest(jqPromise) {
+                this.activeRequest = jqPromise;
+                return jqPromise.always(() => {
+                    if (this.activeRequest === jqPromise) {
+                        this.activeRequest = null;
+                    }
+                });
+            },
+            stopBatch() {
+                this.stopRequested = true;
+                if (this.delayTimer) {
+                    clearTimeout(this.delayTimer);
+                    this.delayTimer = null;
+                }
+                if (this.delayResolver) {
+                    const resolveDelay = this.delayResolver;
+                    this.delayResolver = null;
+                    resolveDelay();
+                }
+                if (this.activeRequest && typeof this.activeRequest.abort === "function") {
+                    this.activeRequest.abort();
+                }
+            },
             async grantSelfFlood() {
                 try {
-                    await api.postWithToken("userrights", {
+                    await this.trackRequest(api.postWithToken("userrights", {
                         action: "userrights",
                         user: userName,
                         add: "flood",
@@ -567,7 +670,7 @@ $(() => {
                         reason: "【[[Help:Cat-a-lot|Cat-a-lot]]】：临时启用机器用户（flood）",
                         tags: this.hasBotRight ? `${API_TAG}|bot` : API_TAG,
                         formatversion: "2",
-                    });
+                    }, { timeout: API_TIMEOUT_MS }));
                     this.hasBotRight = true;
                     this.selfFloodActive = true;
                     mw.notify(uls("已成功自授权 2 小时机器用户（flood）！", "已成功自授權 2 小時機器用戶（flood）！"), { type: "success" });
@@ -592,7 +695,7 @@ $(() => {
                         reason: "【[[Help:Cat-a-lot|Cat-a-lot]]】：批量分类完成，移除临时机器用户（flood）",
                         tags: this.hasBotRight ? `${API_TAG}|bot` : API_TAG,
                         formatversion: "2",
-                    });
+                    }, { timeout: API_TIMEOUT_MS });
                     this.selfFloodActive = false;
                     if (!userGroups.includes("bot")) {
                         this.hasBotRight = false;
@@ -604,7 +707,7 @@ $(() => {
             },
             buildEditSummary(mode, targetCat) {
                 const src = this.pageCategoryName;
-                const tgt = normalizeCatName(targetCat);
+                const tgt = targetCat;
                 if (mode === "add") {
                     return uls(`[[Help:Cat-a-lot|Cat-a-lot]]：加入分类[[Category:${tgt}]]`, `[[Help:Cat-a-lot|Cat-a-lot]]：加入分類[[Category:${tgt}]]`);
                 }
@@ -617,77 +720,90 @@ $(() => {
                 return uls(`[[Help:Cat-a-lot|Cat-a-lot]]：从分类移除：[[Category:${src}]]`, `[[Help:Cat-a-lot|Cat-a-lot]]：從分類移除：[[Category:${src}]]`);
             },
             async runBatch(mode, targetCat = "") {
-                if (this.isRunning) {
+                if (this.isRunning || this.batchPending) {
                     return;
                 }
-                const titles = [...this.selectedTitles];
-                if (titles.length === 0) {
-                    await this.askDialog({
-                        message: uls("没有选择任何页面或文件！", "沒有選擇任何頁面或文件！"),
-                        showCancel: false,
-                    });
-                    return;
-                }
-
-                const cleanTarget = normalizeCatName(targetCat);
-                if (mode !== "remove" && !cleanTarget) {
-                    await this.askDialog({
-                        message: uls("请先输入或选择目标分类名称。", "請先輸入或選擇目標分類名稱。"),
-                        showCancel: false,
-                    });
-                    return;
-                }
-
-                // 权限与速率控制（参考 Widget:BatchEdit）
+                this.batchPending = true;
+                const batchToken = ++this.activeBatchToken;
                 let grantedThisRun = false;
-                if (!this.hasBotRight) {
-                    if (this.isSysopOrStaff) {
-                        if (titles.length > SYSOP_FLOOD_PROMPT_THRESHOLD) {
-                            const ok = await this.askDialog({
-                                message: uls(
-                                    `您本次计划批量处理 ${titles.length} 个页面（已超过 10 页）。\n建议临时授权机器用户（flood）以避免近期更改刷屏并豁免速率限制。\n\n是否立即为您自授权 2 小时的机器用户（flood）？`,
-                                    `您本次計劃批次處理 ${titles.length} 個頁面（已超過 10 頁）。\n建議臨時授權機器用戶（flood）以避免近期更改洗版並豁免速率限制。\n\n是否立即為您自授權 2 小時的機器用戶（flood）？`,
-                                ),
-                                showCancel: true,
-                            });
-                            if (ok) {
-                                grantedThisRun = await this.grantSelfFlood();
-                            }
-                        }
-                    } else if (titles.length > NON_BOT_MAX_PAGES) {
+
+                try {
+                    const titles = [...this.selectedTitles];
+                    if (titles.length === 0) {
+                        await this.askDialog({
+                            message: uls("没有选择任何页面或文件！", "沒有選擇任何頁面或文件！"),
+                            showCancel: false,
+                        });
+                        return;
+                    }
+
+                    const cleanTarget = mode === "remove" ? "" : validateCategoryTitle(targetCat);
+                    if (mode !== "remove" && !cleanTarget) {
                         await this.askDialog({
                             message: uls(
-                                `非机器用户单次最多批量处理 ${NON_BOT_MAX_PAGES} 个页面（当前已选 ${titles.length} 个）。请减少选择数量后再试。`,
-                                `非機器用戶單次最多批次處理 ${NON_BOT_MAX_PAGES} 個頁面（當前已選 ${titles.length} 個）。請減少選擇數量後再試。`,
+                                "目标分类名称无效（不能包含 [[、]]、{{、}}、| 等特殊字符）。请检查后重试。",
+                                "目標分類名稱無效（不能包含 [[、]]、{{、}}、| 等特殊字元）。請檢查後重試。",
                             ),
                             showCancel: false,
                         });
                         return;
                     }
-                }
 
-                const delayMs = this.hasBotRight ? 0 : NON_BOT_DELAY_MS;
-                const skippedAlready = [];
-                const skippedNotFound = [];
-                const skippedServer = [];
-                let doneCount = 0;
+                    // 权限与速率控制（参考 Widget:BatchEdit）
+                    if (!this.hasBotRight) {
+                        if (this.isSysopOrStaff) {
+                            if (titles.length > SYSOP_FLOOD_PROMPT_THRESHOLD) {
+                                const ok = await this.askDialog({
+                                    message: uls(
+                                        `您本次计划批量处理 ${titles.length} 个页面（已超过 10 页）。\n建议临时授权机器用户（flood）以避免近期更改刷屏并豁免速率限制。\n\n是否立即为您自授权 2 小时的机器用户（flood）？`,
+                                        `您本次計劃批次處理 ${titles.length} 個頁面（已超過 10 頁）。\n建議臨時授權機器用戶（flood）以避免近期更改洗版並豁免速率限制。\n\n是否立即為您自授權 2 小時的機器用戶（flood）？`,
+                                    ),
+                                    showCancel: true,
+                                });
+                                if (this.activeBatchToken !== batchToken) {
+                                    return;
+                                }
+                                if (ok) {
+                                    grantedThisRun = await this.grantSelfFlood();
+                                    if (this.activeBatchToken !== batchToken) {
+                                        return;
+                                    }
+                                }
+                            }
+                        } else if (titles.length > NON_BOT_MAX_PAGES) {
+                            await this.askDialog({
+                                message: uls(
+                                    `非机器用户单次最多批量处理 ${NON_BOT_MAX_PAGES} 个页面（当前已选 ${titles.length} 个）。请减少选择数量后再试。`,
+                                    `非機器用戶單次最多批次處理 ${NON_BOT_MAX_PAGES} 個頁面（當前已選 ${titles.length} 個）。請減少選擇數量後再試。`,
+                                ),
+                                showCancel: false,
+                            });
+                            return;
+                        }
+                    }
 
-                this.isRunning = true;
-                this.stopRequested = false;
-                this.progressDone = 0;
-                this.progressTotal = titles.length;
-                this.currentEditingTitle = "";
+                    const delayMs = this.hasBotRight ? 0 : NON_BOT_DELAY_MS;
+                    const skippedAlready = [];
+                    const skippedNotFound = [];
+                    const skippedServer = [];
+                    let doneCount = 0;
 
-                try {
+                    this.isRunning = true;
+                    this.stopRequested = false;
+                    this.progressDone = 0;
+                    this.progressTotal = titles.length;
+                    this.currentEditingTitle = "";
+
                     for (let i = 0; i < titles.length; i++) {
                         if (this.stopRequested) {
                             break;
                         }
                         const title = titles[i];
                         this.currentEditingTitle = title;
+                        let editSubmitted = false;
 
                         try {
-                            const queryRes = await api.get({
+                            const queryRes = await this.trackRequest(api.get({
                                 action: "query",
                                 prop: "revisions",
                                 titles: title,
@@ -695,7 +811,7 @@ $(() => {
                                 rvslots: "main",
                                 curtimestamp: 1,
                                 formatversion: "2",
-                            });
+                            }, { timeout: API_TIMEOUT_MS }));
                             const pageObj = queryRes?.query?.pages?.[0];
                             const rev = pageObj?.revisions?.[0];
                             const content = rev?.slots?.main?.content;
@@ -734,7 +850,8 @@ $(() => {
                                         editPayload.bot = true;
                                     }
 
-                                    const editRes = await api.postWithToken("csrf", editPayload);
+                                    editSubmitted = true;
+                                    const editRes = await this.trackRequest(api.postWithToken("csrf", editPayload, { timeout: API_TIMEOUT_MS }));
                                     if (editRes?.edit?.result === "Success") {
                                         doneCount += 1;
                                         $(`.${CLASS_LABEL}`)
@@ -747,34 +864,83 @@ $(() => {
                                 }
                             }
                         } catch (err) {
-                            skippedServer.push(`${title}（${err?.error?.info || err?.message || err}）`);
+                            const isAborted = this.stopRequested && (err === "abort" || err?.statusText === "abort");
+                            let reconciled = false;
+                            if (editSubmitted && !err?.error?.code) {
+                                try {
+                                    const verifyRes = await api.get({
+                                        action: "query",
+                                        prop: "revisions",
+                                        titles: title,
+                                        rvprop: "content",
+                                        rvslots: "main",
+                                        formatversion: "2",
+                                    }, { timeout: API_TIMEOUT_MS });
+                                    const latestText = verifyRes?.query?.pages?.[0]?.revisions?.[0]?.slots?.main?.content;
+                                    if (
+                                        latestText !== undefined
+                                        && verifyCommittedOnServer({
+                                            latestText,
+                                            mode,
+                                            sourceCat: this.pageCategoryName,
+                                            targetCat: cleanTarget,
+                                        })
+                                    ) {
+                                        doneCount += 1;
+                                        $(`.${CLASS_LABEL}`)
+                                            .filter((_, el) => $(el).attr("data-cal-title") === title)
+                                            .removeClass(CLASS_SELECTED)
+                                            .addClass(CLASS_DONE);
+                                        reconciled = true;
+                                    }
+                                } catch {}
+                            }
+                            if (!reconciled && !isAborted) {
+                                skippedServer.push(`${title}（${err?.error?.info || err?.message || err}）`);
+                            }
                         }
 
                         this.progressDone = i + 1;
                         if (delayMs > 0 && i < titles.length - 1 && !this.stopRequested) {
-                            await new Promise((resolve) => setTimeout(resolve, delayMs));
+                            await new Promise((resolve) => {
+                                this.delayResolver = resolve;
+                                this.delayTimer = setTimeout(() => {
+                                    this.delayTimer = null;
+                                    this.delayResolver = null;
+                                    resolve();
+                                }, delayMs);
+                            });
                         }
                     }
-                } finally {
-                    if (grantedThisRun) {
-                        await this.revokeSelfFlood();
-                    }
-                    this.isRunning = false;
-                    this.currentEditingTitle = "";
-                    this.syncSelectedTitles();
-                }
 
-                this.resultDialog = {
-                    open: true,
-                    title: this.stopRequested ? uls("已终止处理", "已終止處理") : uls("全部页面已处理", "全部頁面已處理"),
-                    summaryText: uls(
-                        `成功编辑 ${doneCount} 页；跳过（已在分类中）${skippedAlready.length} 页；跳过（未找到原分类）${skippedNotFound.length} 页；失败 ${skippedServer.length} 页。`,
-                        `成功編輯 ${doneCount} 頁；跳過（已在分類中）${skippedAlready.length} 頁；跳過（未找到原分類）${skippedNotFound.length} 頁；失敗 ${skippedServer.length} 頁。`,
-                    ),
-                    skippedAlready,
-                    skippedNotFound,
-                    skippedServer,
-                };
+                    this.resultDialog = {
+                        open: true,
+                        title: this.stopRequested ? uls("已终止处理", "已終止處理") : uls("全部页面已处理", "全部頁面已處理"),
+                        summaryText: uls(
+                            `成功编辑 ${doneCount} 页；跳过（已在分类中）${skippedAlready.length} 页；跳过（未找到原分类）${skippedNotFound.length} 页；失败 ${skippedServer.length} 页。`,
+                            `成功編輯 ${doneCount} 頁；跳過（已在分類中）${skippedAlready.length} 頁；跳過（未找到原分類）${skippedNotFound.length} 頁；失敗 ${skippedServer.length} 頁。`,
+                        ),
+                        skippedAlready,
+                        skippedNotFound,
+                        skippedServer,
+                    };
+                } finally {
+                    if (this.activeBatchToken === batchToken) {
+                        if (grantedThisRun) {
+                            await this.revokeSelfFlood();
+                        }
+                        if (this.delayTimer) {
+                            clearTimeout(this.delayTimer);
+                            this.delayTimer = null;
+                        }
+                        this.delayResolver = null;
+                        this.activeRequest = null;
+                        this.isRunning = false;
+                        this.batchPending = false;
+                        this.currentEditingTitle = "";
+                        this.syncSelectedTitles();
+                    }
+                }
             },
         },
         template: `
@@ -803,7 +969,7 @@ $(() => {
                             <span class="cal-hint">{{ progressDone }} / {{ progressTotal }}</span>
                         </div>
                         <cdx-progress-bar :aria-label="'Cat-a-lot progress'"></cdx-progress-bar>
-                        <cdx-button size="small" action="destructive" type="button" @click="stopRequested = true">
+                        <cdx-button size="small" action="destructive" type="button" @click="stopBatch">
                             {{ uls("停止", "停止") }}
                         </cdx-button>
                     </div>

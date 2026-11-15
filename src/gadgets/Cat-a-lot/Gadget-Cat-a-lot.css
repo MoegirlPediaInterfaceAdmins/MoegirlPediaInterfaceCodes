@@ -189,7 +189,6 @@ html.skin-theme-clientpref-night .cal-app .cdx-text-input__input:disabled {
     background-color: #202122 !important;
     color: #72777d !important;
     border-color: #3a3f45 !important;
-    -webkit-text-fill-color: #72777d !important;
 }
 
 html.dark .cal-app .cdx-checkbox__input:not(:checked) + .cdx-checkbox__icon,
