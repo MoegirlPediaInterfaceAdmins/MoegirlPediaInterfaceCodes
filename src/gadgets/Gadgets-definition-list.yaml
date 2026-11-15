@@ -64,6 +64,7 @@
     - userpageDelete
     - requestDeletion
     - BatchToolkit
+    - displayname-search
 
 - name: editing
   gadgets:
