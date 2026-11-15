@@ -1,0 +1,44 @@
+ResourceLoader: true
+
+hidden: false
+
+default: false
+
+supportsUrlLoad: false
+
+skins: []
+
+actions: []
+
+categories: []
+
+namespaces: []
+
+contentModels: []
+
+type: general
+
+package: false
+
+rights:
+  - viewmywatchlist
+
+peers: []
+
+dependencies:
+  - "mediawiki.api"
+  - "oojs-ui-core"
+  - "oojs-ui-widgets"
+  - "oojs-ui-windows"
+  - "oojs-ui.styles.icons-movement"
+  - "ext.gadget.site-lib"
+
+_sites:
+  - zh
+  - commons
+
+_section: user
+
+_files:
+  - Gadget-displayname-search.js
+  - Gadget-displayname-search.css

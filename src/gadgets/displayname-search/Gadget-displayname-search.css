@@ -1,0 +1,50 @@
+/* <pre> */
+.gadget-displayname-query-panel {
+    margin-top: 10px;
+    padding: 10px 12px;
+    background-color: var(--background-color-neutral-subtle, #f8f9fa);
+    border: 1px solid var(--border-color-subtle, #c8ccd1);
+    border-radius: 2px;
+}
+
+.gadget-displayname-query-action {
+    max-width: 42em;
+}
+
+.gadget-displayname-query-status {
+    display: inline-block;
+    margin-top: 6px;
+    font-size: 0.9em;
+    color: var(--color-subtle, #54595d);
+}
+
+.gadget-displayname-query-status.is-error {
+    color: var(--color-error, #d73333);
+}
+
+.gadget-displayname-query-status:empty,
+.gadget-displayname-select-loading:empty {
+    display: none;
+}
+
+.gadget-displayname-select-menu {
+    margin-top: 8px;
+    max-height: 360px;
+    overflow-y: auto;
+}
+
+.gadget-displayname-select-pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 12px;
+}
+
+.gadget-displayname-select-loading {
+    display: block;
+    padding: 20px 0;
+    text-align: center;
+    color: var(--color-subtle, #54595d);
+}
+/* </pre> */
