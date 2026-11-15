@@ -1,4 +1,4 @@
-// 基于 Wikitext 源码与二分/多路查找的 wikiBlame（拷打编辑）小工具
+// 基于 Wikitext 源码与指数回溯+二分/多路查找的 wikiBlame（拷打编辑）小工具
 // 适配移动端与繁简/字词转换（LC），支持 sysop/staff 批量查询修订、patroller 无速率限制及非 noratelimit 用户使用前警告
 "use strict";
 $(() => {
@@ -28,14 +28,25 @@ $(() => {
     const canBatchQueryRevisions = userGroups.includes("sysop") || userGroups.includes("staff");
     const MULTI_REV_BATCH_SIZE = 20;
     const MULTI_WAY_BRANCHES = 8;
+    const DEFAULT_MAX_REVISIONS = 1000;
+    const HARD_MAX_REVISIONS = 5000;
 
     const sleep = (ms) => new Promise((resolve) => {
         setTimeout(resolve, ms);
     });
 
-    const getSelectedText = () => {
+    const getSelectedText = (containerEl = null) => {
         const selection = window.getSelection();
-        return selection ? selection.toString().trim() : "";
+        if (!selection || selection.rangeCount === 0) {
+            return "";
+        }
+        if (containerEl) {
+            const { anchorNode, focusNode } = selection;
+            if (!anchorNode || !focusNode || !containerEl.contains(anchorNode) || !containerEl.contains(focusNode)) {
+                return "";
+            }
+        }
+        return selection.toString().trim();
     };
 
     const extractSlotContent = (rev) => {
@@ -65,6 +76,37 @@ $(() => {
         return date.toLocaleString();
     };
 
+    const createMatcher = (targetText, context, caseInsensitive) => {
+        const normalize = (str) => caseInsensitive ? str.toLowerCase() : str;
+        const needle = normalize(targetText);
+        const hasContext = Boolean(context && context.isDuplicate && (context.prevLine || context.nextLine));
+        const prevNeedle = hasContext && context.prevLine ? normalize(context.prevLine) : "";
+        const nextNeedle = hasContext && context.nextLine ? normalize(context.nextLine) : "";
+
+        return (text) => {
+            if (text === null) {
+                return false;
+            }
+            const haystack = normalize(text);
+            if (!hasContext) {
+                return haystack.includes(needle);
+            }
+            // 对重复行结合前后行上下文定位具体出现位置
+            const lines = haystack.split("\n");
+            for (let i = 0; i < lines.length; i++) {
+                if (!lines[i].includes(needle)) {
+                    continue;
+                }
+                const prevOk = !prevNeedle || i > 0 && lines[i - 1].includes(prevNeedle);
+                const nextOk = !nextNeedle || i + 1 < lines.length && lines[i + 1].includes(nextNeedle);
+                if (prevOk && nextOk) {
+                    return true;
+                }
+            }
+            return false;
+        };
+    };
+
     class WikiBlameSession {
         constructor() {
             this.api = new mw.Api();
@@ -72,7 +114,6 @@ $(() => {
             this.hasApiHighLimits = false;
             this.hasNoRateLimit = false;
             this.canBatchRevisions = canBatchQueryRevisions;
-            this.cancelled = false;
             this.rightsLoaded = false;
         }
 
@@ -91,26 +132,21 @@ $(() => {
             this.rightsLoaded = true;
         }
 
-        cancel() {
-            this.cancelled = true;
-        }
-
-        resetCancel() {
-            this.cancelled = false;
-        }
-
-        async requestWithBackoff(params, usePost = false) {
-            if (this.cancelled) {
+        async requestWithBackoff(params, signal, usePost = false) {
+            if (signal && signal.cancelled) {
                 throw new Error("CANCELLED");
             }
             const maxRetries = 4;
             let delay = this.hasNoRateLimit ? 0 : 250;
             for (let attempt = 0; attempt <= maxRetries; attempt++) {
-                if (this.cancelled) {
+                if (signal && signal.cancelled) {
                     throw new Error("CANCELLED");
                 }
                 if (attempt > 0 || delay > 0) {
                     await sleep(delay);
+                }
+                if (signal && signal.cancelled) {
+                    throw new Error("CANCELLED");
                 }
                 try {
                     const reqParams = {
@@ -128,13 +164,13 @@ $(() => {
                         continue;
                     }
                     const info = err && err.message || (typeof err === "string" ? err : "API 请求失败");
-                    throw new Error(String(info), { cause: err });
+                    throw new Error(`${info}`, { cause: err });
                 }
             }
             throw new Error("RATE_LIMITED");
         }
 
-        async fetchCurrentSource() {
+        async fetchCurrentSource(signal) {
             await this.initRights();
             const data = await this.requestWithBackoff({
                 action: "query",
@@ -143,7 +179,7 @@ $(() => {
                 rvprop: "ids|timestamp|user|sha1|content",
                 rvslots: "main",
                 rvlimit: 1,
-            });
+            }, signal);
             const page = data && data.query && data.query.pages && data.query.pages[0];
             const rev = page && page.revisions && page.revisions[0];
             if (!rev) {
@@ -162,25 +198,23 @@ $(() => {
             };
         }
 
-        async fetchRevisionMetadata({ startDate, endDate, maxRevisions, onProgress }) {
+        async fetchRevisionMetadata({ startDate, endDate, maxRevisions, signal, onProgress }) {
             await this.initRights();
             const batchSize = this.hasApiHighLimits ? 500 : 50;
+            const cappedMax = Math.min(Math.max(1, maxRevisions), HARD_MAX_REVISIONS);
             const rawRevs = [];
             let rvcontinue = null;
 
-            while (true) {
-                if (this.cancelled) {
+            while (rawRevs.length < cappedMax) {
+                if (signal && signal.cancelled) {
                     throw new Error("CANCELLED");
                 }
-                const remaining = maxRevisions > 0 ? maxRevisions - rawRevs.length : batchSize;
-                if (maxRevisions > 0 && remaining <= 0) {
-                    break;
-                }
+                const remaining = cappedMax - rawRevs.length;
                 const params = {
                     action: "query",
                     prop: "revisions",
                     titles: wgPageName,
-                    rvprop: "ids|timestamp|user|sha1|comment",
+                    rvprop: "ids|timestamp|user|sha1",
                     rvlimit: Math.min(batchSize, remaining),
                     rvdir: "older",
                 };
@@ -193,7 +227,7 @@ $(() => {
                 if (rvcontinue) {
                     params.rvcontinue = rvcontinue;
                 }
-                const data = await this.requestWithBackoff(params);
+                const data = await this.requestWithBackoff(params, signal);
                 const page = data && data.query && data.query.pages && data.query.pages[0];
                 const revs = page && page.revisions || [];
                 rawRevs.push(...revs);
@@ -206,7 +240,7 @@ $(() => {
                 rvcontinue = data.continue.rvcontinue;
             }
 
-            // 转为从旧到新，并跳过 sha1 相同的连续重复版本（如空编辑或完整回退后的等效版本）
+            // 转为从旧到新，并跳过 sha1 相同的连续重复版本
             const chronological = rawRevs.reverse();
             const deduped = [];
             for (const rev of chronological) {
@@ -222,7 +256,7 @@ $(() => {
             return deduped;
         }
 
-        async fetchRevisionContentsBatch(revids) {
+        async fetchRevisionContentsBatch(revids, signal) {
             const uncached = revids.filter((id) => !this.contentCache.has(id));
             for (let i = 0; i < uncached.length; i += MULTI_REV_BATCH_SIZE) {
                 const chunk = uncached.slice(i, i + MULTI_REV_BATCH_SIZE);
@@ -232,7 +266,7 @@ $(() => {
                     revids: chunk.join("|"),
                     rvprop: "ids|content",
                     rvslots: "main",
-                });
+                }, signal);
                 const pages = data && data.query && data.query.pages || [];
                 for (const page of pages) {
                     const revs = page.revisions || [];
@@ -251,7 +285,7 @@ $(() => {
             return result;
         }
 
-        async fetchRevisionContent(revid) {
+        async fetchRevisionContent(revid, signal) {
             if (this.contentCache.has(revid)) {
                 return this.contentCache.get(revid);
             }
@@ -261,7 +295,7 @@ $(() => {
                 revids: revid,
                 rvprop: "ids|content",
                 rvslots: "main",
-            });
+            }, signal);
             const page = data && data.query && data.query.pages && data.query.pages[0];
             const rev = page && page.revisions && page.revisions[0];
             const content = extractSlotContent(rev);
@@ -271,7 +305,19 @@ $(() => {
             return content;
         }
 
-        async fetchCompare(fromrev, torev) {
+        async fetchRevisionComment(revid, signal) {
+            const data = await this.requestWithBackoff({
+                action: "query",
+                prop: "revisions",
+                revids: revid,
+                rvprop: "ids|comment",
+            }, signal);
+            const page = data && data.query && data.query.pages && data.query.pages[0];
+            const rev = page && page.revisions && page.revisions[0];
+            return rev && rev.comment ? rev.comment : "";
+        }
+
+        async fetchCompare(fromrev, torev, signal) {
             if (!fromrev) {
                 return null;
             }
@@ -279,67 +325,202 @@ $(() => {
                 action: "compare",
                 fromrev,
                 torev,
-            }, true);
+            }, signal, true);
             return data && data.compare ? data.compare : null;
         }
 
-        async searchIntroduction({ revisions, targetText, caseInsensitive, upperIndex, onProgress }) {
-            const matcher = caseInsensitive
-                ? (text) => text !== null && text.toLowerCase().includes(targetText.toLowerCase())
-                : (text) => text !== null && text.includes(targetText);
+        async findNearestMatchBackward({ revisions, startIndex, matcher, signal, onProgress }) {
+            if (this.canBatchRevisions) {
+                for (let end = startIndex; end >= 0; end -= MULTI_REV_BATCH_SIZE) {
+                    if (signal && signal.cancelled) {
+                        throw new Error("CANCELLED");
+                    }
+                    const start = Math.max(0, end - MULTI_REV_BATCH_SIZE + 1);
+                    const chunkIndices = [];
+                    for (let i = end; i >= start; i--) {
+                        chunkIndices.push(i);
+                    }
+                    if (onProgress) {
+                        onProgress(`正在向更早版本回溯匹配位置（已检查至第 ${revisions.length - start} 条）…`);
+                    }
+                    const batchMap = await this.fetchRevisionContentsBatch(
+                        chunkIndices.map((idx) => revisions[idx].revid),
+                        signal,
+                    );
+                    for (const idx of chunkIndices) {
+                        if (matcher(batchMap.get(revisions[idx].revid))) {
+                            return idx;
+                        }
+                    }
+                }
+                return -1;
+            }
 
+            for (let i = startIndex; i >= 0; i--) {
+                if (signal && signal.cancelled) {
+                    throw new Error("CANCELLED");
+                }
+                if (onProgress && (startIndex - i) % 5 === 0) {
+                    onProgress(`正在向更早版本回溯匹配位置（已回溯 ${startIndex - i + 1} 个版本）…`);
+                }
+                const content = await this.fetchRevisionContent(revisions[i].revid, signal);
+                if (matcher(content)) {
+                    return i;
+                }
+            }
+            return -1;
+        }
+
+        async searchIntroduction({ revisions, matcher, beforeRevid, signal, onProgress }) {
             if (revisions.length === 0) {
                 return { status: "NOT_FOUND_IN_RANGE" };
             }
 
-            let high = typeof upperIndex === "number" ? upperIndex : revisions.length - 1;
-            if (high < 0) {
-                return { status: "NOT_FOUND_IN_RANGE" };
-            }
-
-            if (this.canBatchRevisions) {
-                const boundaryMap = await this.fetchRevisionContentsBatch([revisions[0].revid, revisions[high].revid]);
-                if (!matcher(boundaryMap.get(revisions[high].revid))) {
-                    return { status: "NOT_IN_LATEST" };
+            let anchorIndex = revisions.length - 1;
+            if (beforeRevid) {
+                const exactIdx = revisions.findIndex((r) => r.revid === beforeRevid);
+                if (exactIdx !== -1) {
+                    anchorIndex = exactIdx - 1;
+                } else {
+                    // 若用户更改了检索范围导致原版本不在新列表中，取新列表中小于 beforeRevid 的最新版本作为上界
+                    anchorIndex = -1;
+                    for (let i = revisions.length - 1; i >= 0; i--) {
+                        if (revisions[i].revid < beforeRevid) {
+                            anchorIndex = i;
+                            break;
+                        }
+                    }
                 }
-                if (matcher(boundaryMap.get(revisions[0].revid))) {
-                    return {
-                        status: "IN_OLDEST",
-                        rev: revisions[0],
-                        prevRev: null,
-                        revIndex: 0,
-                    };
+                if (anchorIndex < 0) {
+                    return { status: "NO_EARLIER_OCCURRENCE" };
+                }
+                anchorIndex = await this.findNearestMatchBackward({
+                    revisions,
+                    startIndex: anchorIndex,
+                    matcher,
+                    signal,
+                    onProgress,
+                });
+                if (anchorIndex < 0) {
+                    return { status: "NO_EARLIER_OCCURRENCE" };
                 }
             } else {
-                const highContent = await this.fetchRevisionContent(revisions[high].revid);
-                if (!matcher(highContent)) {
+                const latestContent = await this.fetchRevisionContent(revisions[anchorIndex].revid, signal);
+                if (!matcher(latestContent)) {
                     return { status: "NOT_IN_LATEST" };
-                }
-                const lowContent = await this.fetchRevisionContent(revisions[0].revid);
-                if (matcher(lowContent)) {
-                    return {
-                        status: "IN_OLDEST",
-                        rev: revisions[0],
-                        prevRev: null,
-                        revIndex: 0,
-                    };
                 }
             }
 
-            let low = 0;
-            let steps = 0;
-            const totalStepsEstimate = Math.max(
+            if (anchorIndex === 0) {
+                return {
+                    status: "IN_OLDEST",
+                    rev: revisions[0],
+                    prevRev: null,
+                    revIndex: 0,
+                };
+            }
+
+            // 阶段 1：从 anchorIndex 向上指数回溯，捕捉最近一次被删除/未出现的位置，避免跳过“删除后重新加入”
+            let low = -1;
+            let high = anchorIndex;
+            let step = 1;
+
+            if (this.canBatchRevisions) {
+                while (high > 0 && low === -1) {
+                    if (signal && signal.cancelled) {
+                        throw new Error("CANCELLED");
+                    }
+                    const probeIndices = [];
+                    while (probeIndices.length < MULTI_WAY_BRANCHES && high - step >= 0) {
+                        probeIndices.push(high - step);
+                        step *= 2;
+                    }
+                    if (probeIndices.length === 0) {
+                        probeIndices.push(0);
+                    } else if (probeIndices[probeIndices.length - 1] > 0 && probeIndices.length < MULTI_WAY_BRANCHES && high - step < 0) {
+                        probeIndices.push(0);
+                    }
+
+                    if (onProgress) {
+                        onProgress(`正在指数回溯最近引入区间（已探测至第 ${probeIndices[probeIndices.length - 1] + 1} 个版本）…`);
+                    }
+                    const probeMap = await this.fetchRevisionContentsBatch(
+                        probeIndices.map((idx) => revisions[idx].revid),
+                        signal,
+                    );
+                    for (const idx of probeIndices) {
+                        const content = probeMap.get(revisions[idx].revid);
+                        if (content === null) {
+                            continue;
+                        }
+                        if (matcher(content)) {
+                            high = idx;
+                        } else {
+                            low = idx;
+                            break;
+                        }
+                    }
+                    if (high === 0 && low === -1) {
+                        return {
+                            status: "IN_OLDEST",
+                            rev: revisions[0],
+                            prevRev: null,
+                            revIndex: 0,
+                        };
+                    }
+                }
+            } else {
+                while (high > 0 && low === -1) {
+                    if (signal && signal.cancelled) {
+                        throw new Error("CANCELLED");
+                    }
+                    const probeIdx = Math.max(0, anchorIndex - step);
+                    if (onProgress) {
+                        onProgress(`正在指数回溯最近引入区间（探测版本 #${revisions[probeIdx].revid}）…`);
+                    }
+                    const probeContent = await this.fetchRevisionContent(revisions[probeIdx].revid, signal);
+                    if (probeContent !== null && !matcher(probeContent)) {
+                        low = probeIdx;
+                        break;
+                    }
+                    if (probeContent !== null) {
+                        high = probeIdx;
+                    }
+                    if (probeIdx === 0) {
+                        return {
+                            status: "IN_OLDEST",
+                            rev: revisions[0],
+                            prevRev: null,
+                            revIndex: 0,
+                        };
+                    }
+                    step *= 2;
+                }
+            }
+
+            if (low === -1) {
+                return {
+                    status: "IN_OLDEST",
+                    rev: revisions[0],
+                    prevRev: null,
+                    revIndex: 0,
+                };
+            }
+
+            // 阶段 2：在局部已知区间 [low, high] 内进行二分/多路精确收窄
+            let rounds = 0;
+            const totalRoundsEstimate = Math.max(
                 1,
                 this.canBatchRevisions
-                    ? Math.ceil(Math.log(high + 1) / Math.log(MULTI_WAY_BRANCHES + 1))
-                    : Math.ceil(Math.log2(high + 1)),
+                    ? Math.ceil(Math.log(high - low + 1) / Math.log(MULTI_WAY_BRANCHES + 1))
+                    : Math.ceil(Math.log2(high - low + 1)),
             );
 
             while (high - low > 1) {
-                if (this.cancelled) {
+                if (signal && signal.cancelled) {
                     throw new Error("CANCELLED");
                 }
-                steps++;
+                rounds++;
 
                 if (this.canBatchRevisions) {
                     const span = high - low - 1;
@@ -351,7 +532,10 @@ $(() => {
                         for (let idx = low + 1; idx < high; idx++) {
                             candidateIndices.push(idx);
                         }
-                        const batchMap = await this.fetchRevisionContentsBatch(candidateIndices.map((idx) => revisions[idx].revid));
+                        const batchMap = await this.fetchRevisionContentsBatch(
+                            candidateIndices.map((idx) => revisions[idx].revid),
+                            signal,
+                        );
                         for (const idx of candidateIndices) {
                             const content = batchMap.get(revisions[idx].revid);
                             if (content === null) {
@@ -368,7 +552,7 @@ $(() => {
                     }
 
                     if (onProgress) {
-                        onProgress(`正在多路批量定位版本：第 ${steps}/${totalStepsEstimate} 轮（剩余区间 ${high - low} 个版本）…`);
+                        onProgress(`正在多路批量定位版本：第 ${rounds}/${totalRoundsEstimate} 轮（剩余区间 ${high - low} 个版本）…`);
                     }
                     const sampleIndices = [];
                     for (let b = 1; b <= MULTI_WAY_BRANCHES; b++) {
@@ -377,7 +561,10 @@ $(() => {
                             sampleIndices.push(idx);
                         }
                     }
-                    const sampleMap = await this.fetchRevisionContentsBatch(sampleIndices.map((idx) => revisions[idx].revid));
+                    const sampleMap = await this.fetchRevisionContentsBatch(
+                        sampleIndices.map((idx) => revisions[idx].revid),
+                        signal,
+                    );
                     let narrowed = false;
                     for (const idx of sampleIndices) {
                         const content = sampleMap.get(revisions[idx].revid);
@@ -398,9 +585,9 @@ $(() => {
                 } else {
                     const mid = Math.floor((low + high) / 2);
                     if (onProgress) {
-                        onProgress(`正在二分定位版本：第 ${steps}/${totalStepsEstimate} 步（剩余区间 ${high - low} 个版本）…`);
+                        onProgress(`正在二分定位版本：第 ${rounds}/${totalRoundsEstimate} 步（剩余区间 ${high - low} 个版本）…`);
                     }
-                    const midContent = await this.fetchRevisionContent(revisions[mid].revid);
+                    const midContent = await this.fetchRevisionContent(revisions[mid].revid, signal);
                     if (midContent === null) {
                         low = mid;
                         continue;
@@ -433,8 +620,12 @@ $(() => {
             this.initialSelection = initialSelection || "";
             this.session = session;
             this.sourceLines = [];
+            this.lineCounts = new Map();
+            this.selectedContext = null;
             this.cachedRevisions = null;
             this.cachedRangeKey = "";
+            this.activeRunId = 0;
+            this.activeRunSignal = null;
         }
 
         initialize() {
@@ -486,8 +677,8 @@ $(() => {
                 placeholder: "YYYY-MM-DD（留空不限）",
             });
             this.maxRevsInput = new OO.ui.TextInputWidget({
-                value: "0",
-                placeholder: "0 表示不限",
+                value: `${DEFAULT_MAX_REVISIONS}`,
+                placeholder: `1-${HARD_MAX_REVISIONS}`,
             });
             this.caseInsensitiveCheckbox = new OO.ui.CheckboxInputWidget({
                 selected: false,
@@ -496,7 +687,7 @@ $(() => {
             const $advancedPanel = $("<div>").addClass("wikiblame-advanced-panel").append(
                 new OO.ui.FieldLayout(this.startDateInput, { label: "开始日期", align: "top", classes: ["wikiblame-advanced-field"] }).$element,
                 new OO.ui.FieldLayout(this.endDateInput, { label: "结束日期", align: "top", classes: ["wikiblame-advanced-field"] }).$element,
-                new OO.ui.FieldLayout(this.maxRevsInput, { label: "最多检索版本数（0=全部）", align: "top", classes: ["wikiblame-advanced-field"] }).$element,
+                new OO.ui.FieldLayout(this.maxRevsInput, { label: `最多检索版本数（上限 ${HARD_MAX_REVISIONS}）`, align: "top", classes: ["wikiblame-advanced-field"] }).$element,
                 new OO.ui.FieldLayout(this.caseInsensitiveCheckbox, { label: "忽略大小写", align: "inline", classes: ["wikiblame-advanced-field"] }).$element,
             );
 
@@ -527,7 +718,7 @@ $(() => {
             );
 
             this.closeButton.on("click", () => {
-                this.session.cancel();
+                this.cancelActiveRun();
                 this.close();
             });
             this.advancedToggle.on("click", () => {
@@ -537,11 +728,16 @@ $(() => {
             this.filterInput.on("change", () => {
                 this.renderSourceLines();
             });
+            this.searchInput.on("change", () => {
+                if (this.selectedContext && this.searchInput.getValue().trim() !== this.selectedContext.lineText) {
+                    this.selectedContext = null;
+                }
+            });
             this.submitButton.on("click", () => {
                 this.runBlame(null);
             });
             this.cancelButton.on("click", () => {
-                this.session.cancel();
+                this.cancelActiveRun();
                 this.$progress.text("已取消检索。");
                 this.setBusy(false);
             });
@@ -552,15 +748,30 @@ $(() => {
             this.loadCurrentSource();
         }
 
+        cancelActiveRun() {
+            this.activeRunId++;
+            if (this.activeRunSignal) {
+                this.activeRunSignal.cancelled = true;
+            }
+        }
+
         setBusy(busy) {
             this.submitButton.setDisabled(busy);
             this.cancelButton.setDisabled(!busy);
         }
 
         async loadCurrentSource() {
+            const loadSignal = { cancelled: false };
             try {
-                const current = await this.session.fetchCurrentSource();
+                const current = await this.session.fetchCurrentSource(loadSignal);
                 this.sourceLines = current.content.split("\n");
+                this.lineCounts.clear();
+                for (const line of this.sourceLines) {
+                    const trimmed = line.trim();
+                    if (trimmed) {
+                        this.lineCounts.set(trimmed, (this.lineCounts.get(trimmed) || 0) + 1);
+                    }
+                }
                 if (this.initialSelection && !current.content.includes(this.initialSelection)) {
                     this.$hint
                         .addClass("wikiblame-hint-warn")
@@ -591,11 +802,23 @@ $(() => {
                 const $text = $("<span>").addClass("wikiblame-line-text").text(line || " ");
                 $line.append($num, $text);
                 $line.on("click", () => {
-                    const innerSelection = getSelectedText();
-                    const picked = innerSelection || line.trim();
+                    const innerSelection = getSelectedText(this.$sourceViewer[0]);
+                    const lineTrimmed = line.trim();
+                    const picked = innerSelection || lineTrimmed;
                     if (picked) {
                         this.$sourceViewer.find(".wikiblame-source-line").removeClass("is-selected");
                         $line.addClass("is-selected");
+                        if (!innerSelection && (this.lineCounts.get(lineTrimmed) || 0) > 1) {
+                            this.selectedContext = {
+                                lineIndex: idx,
+                                lineText: picked,
+                                isDuplicate: true,
+                                prevLine: idx > 0 ? this.sourceLines[idx - 1].trim() : "",
+                                nextLine: idx + 1 < this.sourceLines.length ? this.sourceLines[idx + 1].trim() : "",
+                            };
+                        } else {
+                            this.selectedContext = null;
+                        }
                         this.searchInput.setValue(picked);
                     }
                 });
@@ -606,80 +829,131 @@ $(() => {
             this.$filterCount.text(keyword ? `匹配 ${matchedCount} 行` : `共 ${this.sourceLines.length} 行`);
         }
 
-        async runBlame(upperIndexOverride) {
+        async runBlame(beforeRevid) {
             const targetText = this.searchInput.getValue().trim();
             if (!targetText) {
                 mw.notify("请先输入或点选需要定位的源码文本", { type: "warn" });
                 return;
             }
 
-            this.session.resetCancel();
+            const startDate = this.startDateInput.getValue().trim();
+            const endDate = this.endDateInput.getValue().trim();
+            const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+            if (startDate && !dateRegex.test(startDate) || endDate && !dateRegex.test(endDate)) {
+                const msg = "日期格式无效，请使用 YYYY-MM-DD（或留空）。";
+                this.$progress.empty().append($("<span>").addClass("wikiblame-hint-error").text(msg));
+                mw.notify(msg, { type: "error" });
+                return;
+            }
+
+            const rawMaxRevs = this.maxRevsInput.getValue().trim();
+            if (!/^\d+$/.test(rawMaxRevs)) {
+                const msg = `请在“最多检索版本数”中输入 1 到 ${HARD_MAX_REVISIONS} 之间的正整数。`;
+                this.$progress.empty().append($("<span>").addClass("wikiblame-hint-error").text(msg));
+                mw.notify(msg, { type: "error" });
+                return;
+            }
+            const parsedMaxRevs = Number.parseInt(rawMaxRevs, 10);
+            if (parsedMaxRevs < 1 || parsedMaxRevs > HARD_MAX_REVISIONS) {
+                const msg = `最多检索版本数必须在 1 到 ${HARD_MAX_REVISIONS} 之间。`;
+                this.$progress.empty().append($("<span>").addClass("wikiblame-hint-error").text(msg));
+                mw.notify(msg, { type: "error" });
+                return;
+            }
+
+            this.cancelActiveRun();
+            const runId = this.activeRunId;
+            const runSignal = { cancelled: false };
+            this.activeRunSignal = runSignal;
+            const isStale = () => runId !== this.activeRunId || runSignal.cancelled;
+
             this.setBusy(true);
-            if (upperIndexOverride === null) {
+            if (!beforeRevid) {
                 this.$resultArea.hide().empty();
             }
 
-            const startDate = this.startDateInput.getValue().trim();
-            const endDate = this.endDateInput.getValue().trim();
-            const maxRevs = Math.max(0, Number.parseInt(this.maxRevsInput.getValue(), 10) || 0);
             const caseInsensitive = this.caseInsensitiveCheckbox.isSelected();
-            const rangeKey = `${startDate}|${endDate}|${maxRevs}`;
+            const matcher = createMatcher(targetText, this.selectedContext, caseInsensitive);
+            const rangeKey = `${startDate}|${endDate}|${parsedMaxRevs}`;
 
             try {
                 if (!this.cachedRevisions || this.cachedRangeKey !== rangeKey) {
-                    this.cachedRevisions = await this.session.fetchRevisionMetadata({
+                    const revs = await this.session.fetchRevisionMetadata({
                         startDate,
                         endDate,
-                        maxRevisions: maxRevs,
+                        maxRevisions: parsedMaxRevs,
+                        signal: runSignal,
                         onProgress: (msg) => {
-                            this.$progress.text(msg);
+                            if (!isStale()) {
+                                this.$progress.text(msg);
+                            }
                         },
                     });
+                    if (isStale()) {
+                        return;
+                    }
+                    this.cachedRevisions = revs;
                     this.cachedRangeKey = rangeKey;
                 }
 
                 const result = await this.session.searchIntroduction({
                     revisions: this.cachedRevisions,
-                    targetText,
-                    caseInsensitive,
-                    upperIndex: upperIndexOverride,
+                    matcher,
+                    beforeRevid,
+                    signal: runSignal,
                     onProgress: (msg) => {
-                        this.$progress.text(msg);
+                        if (!isStale()) {
+                            this.$progress.text(msg);
+                        }
                     },
                 });
+                if (isStale()) {
+                    return;
+                }
 
                 if (result.status === "NOT_FOUND_IN_RANGE") {
                     this.$progress.empty().append($("<span>").addClass("wikiblame-hint-error").text("指定范围内没有可用的修订版本。"));
                     return;
                 }
                 if (result.status === "NOT_IN_LATEST") {
-                    const msg = upperIndexOverride !== null
-                        ? "上一个版本源码中已不包含该文本（当前结果即为引入该文本的编辑）。"
-                        : "最新版本源码中不包含该文本，请检查输入或放宽日期范围。";
-                    this.$progress.empty().append($("<span>").addClass("wikiblame-hint-warn").text(msg));
+                    this.$progress.empty().append($("<span>").addClass("wikiblame-hint-warn").text("最新版本源码中不包含该文本（或上下文已变化），请检查输入或放宽条件。"));
+                    return;
+                }
+                if (result.status === "NO_EARLIER_OCCURRENCE") {
+                    this.$progress.empty().append($("<span>").addClass("wikiblame-hint-warn").text("在当前检索范围内未找到更早一次出现该文本的编辑。"));
                     return;
                 }
 
                 this.$progress.text("正在获取版本差异对比…");
-                const compareData = await this.session.fetchCompare(
-                    result.prevRev ? result.prevRev.revid : null,
-                    result.rev.revid,
-                );
+                const [compareData, comment] = await Promise.all([
+                    this.session.fetchCompare(
+                        result.prevRev ? result.prevRev.revid : null,
+                        result.rev.revid,
+                        runSignal,
+                    ),
+                    this.session.fetchRevisionComment(result.rev.revid, runSignal),
+                ]);
+                if (isStale()) {
+                    return;
+                }
+
                 this.$progress.text(result.status === "IN_OLDEST" ? "该文本自区间内最早版本起即已存在。" : "定位完成。");
-                this.renderResult(result, compareData);
+                this.renderResult(result, compareData, comment);
             } catch (err) {
-                if (err && err.message === "CANCELLED") {
+                if (isStale() || err && err.message === "CANCELLED") {
                     return;
                 }
                 this.$progress.empty().append(
                     $("<span>").addClass("wikiblame-hint-error").text(`检索失败：${err && err.message || err}`),
                 );
             } finally {
-                this.setBusy(false);
+                if (runId === this.activeRunId) {
+                    this.setBusy(false);
+                }
             }
         }
 
-        renderResult(result, compareData) {
+        renderResult(result, compareData, comment) {
             const { rev, prevRev, revIndex } = result;
             const revUrl = `${wgScript}?title=${encodeURIComponent(wgPageName)}&oldid=${rev.revid}`;
             const diffUrl = prevRev
@@ -693,8 +967,8 @@ $(() => {
                 $("<a>").attr({ href: revUrl, target: "_blank", rel: "noopener" }).text(`版本 #${rev.revid}`),
                 $("<a>").attr({ href: diffUrl, target: "_blank", rel: "noopener" }).text("查看完整差异"),
             );
-            if (rev.comment) {
-                $meta.append($("<span>").text(`摘要：${rev.comment}`));
+            if (comment) {
+                $meta.append($("<span>").text(`摘要：${comment}`));
             }
 
             if (revIndex > 0) {
@@ -703,7 +977,7 @@ $(() => {
                     framed: true,
                 });
                 earlierBtn.on("click", () => {
-                    this.runBlame(revIndex - 1);
+                    this.runBlame(rev.revid);
                 });
                 $meta.append(earlierBtn.$element);
             }
@@ -745,7 +1019,7 @@ $(() => {
 
         if (!session.hasNoRateLimit) {
             const confirmed = await OO.ui.confirm(
-                "您的账号当前未持有 noratelimit 权限（仅维护姬及以上用户组持有）。检索历史修订将产生多次 API 请求，在修订数较多的页面上频繁使用可能触发限流或 WAF 拦截。是否继续使用？",
+                "您的账号当前未持有 noratelimit 权限（仅巡查员及以上用户组持有）。检索历史修订将产生多次 API 请求，在修订数较多的页面上频繁使用可能触发限流或 WAF 拦截。是否继续使用？",
                 {
                     title: "速率限制提示",
                     actions: [
