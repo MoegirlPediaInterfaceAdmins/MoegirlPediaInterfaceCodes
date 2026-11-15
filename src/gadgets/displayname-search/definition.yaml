@@ -40,5 +40,5 @@ _sites:
 _section: user
 
 _files:
-  - Gadget-displayname-serch.js
-  - Gadget-displayname-serch.css
+  - Gadget-displayname-search.js
+  - Gadget-displayname-search.css

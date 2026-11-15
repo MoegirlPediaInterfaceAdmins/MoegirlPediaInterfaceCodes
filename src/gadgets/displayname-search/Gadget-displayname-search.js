@@ -13,13 +13,17 @@ $(() => {
     const api = new mw.Api();
     const targetWidget = OO.ui.infuse($targetInputWidget[0]);
     const userCache = new Map();
+    const REQUEST_TIMEOUT_MS = 15000;
+
+    // 全局操作令牌，防止旧的异步填入请求覆盖新的查询或选择
+    let operationToken = 0;
 
     // 构造 OOUI 表单控件
     const displaynameInput = new OO.ui.TextInputWidget({
         placeholder: wgULS(
-            "请输入用户昵称（可附带 #1234 精确匹配，不填则广泛搜索）",
-            "請輸入使用者暱稱（可附帶 #1234 精確匹配，不填則廣泛搜尋）",
-            "請輸入用戶暱稱（可附帶 #1234 精確匹配，不填則廣泛搜索）",
+            "请输入用户昵称（可附带 #1234 精确匹配，省略后缀则按昵称广泛搜索）",
+            "請輸入使用者暱稱（可附帶 #1234 精確匹配，省略後綴則按暱稱廣泛搜尋）",
+            "請輸入用戶暱稱（可附帶 #1234 精確匹配，省略後綴則按暱稱廣泛搜索）",
         ),
         minLength: 1,
         maxLength: 37,
@@ -80,7 +84,43 @@ $(() => {
         if (typeof error === "string") {
             return error;
         }
-        return error?.error?.info || error?.message || String(error);
+        return error?.error?.info || error?.message || `${error}`;
+    };
+
+    /**
+     * 带有限超时的 api.post 封装，避免网络挂起导致按钮或弹窗卡死
+     * @param {Record<string, unknown>} params
+     * @param {number} [timeoutMs=REQUEST_TIMEOUT_MS]
+     * @returns {Promise<any>}
+     */
+    const postWithTimeout = async (params, timeoutMs = REQUEST_TIMEOUT_MS) => {
+        const request = api.post(params);
+        let timerId = null;
+        const timeoutPromise = new Promise((resolve, reject) => {
+            void resolve;
+            timerId = setTimeout(() => {
+                if (typeof request.abort === "function") {
+                    request.abort();
+                }
+                reject(
+                    new Error(
+                        wgULS(
+                            "请求超时，请检查网络后重试",
+                            "請求逾時，請檢查網路後重試",
+                            "請求超時，請檢查網絡後重試",
+                        ),
+                    ),
+                );
+            }, timeoutMs);
+        });
+
+        try {
+            return await Promise.race([request, timeoutPromise]);
+        } finally {
+            if (timerId !== null) {
+                clearTimeout(timerId);
+            }
+        }
     };
 
     /**
@@ -118,9 +158,9 @@ $(() => {
             return {
                 valid: false,
                 errorMessage: wgULS(
-                    "# 后面必须为 4 位数字编号（例如：昵称#1234），或省略 # 进行广泛搜索",
-                    "# 後面必須為 4 位數字編號（例如：暱稱#1234），或省略 # 進行廣泛搜尋",
-                    "# 後面必須為 4 位數字編號（例如：暱稱#1234），或省略 # 進行廣泛搜索",
+                    "# 后面必须为 4 位数字编号（例如：昵称#1234），或省略 # 按昵称广泛搜索",
+                    "# 後面必須為 4 位數字編號（例如：暱稱#1234），或省略 # 按暱稱廣泛搜尋",
+                    "# 後面必須為 4 位數字編號（例如：暱稱#1234），或省略 # 按暱稱廣泛搜索",
                 ),
             };
         }
@@ -147,7 +187,7 @@ $(() => {
      * @returns {Promise<Array<{userid: number, displayname: string, displaytag: string}>>}
      */
     const fetchUserRecordsByDisplayName = async (displayname, targetTag) => {
-        const data = await api.post({
+        const data = await postWithTimeout({
             action: "moedisplayname",
             op: "get",
             displayname,
@@ -155,8 +195,8 @@ $(() => {
         });
         const list = data?.displaynames || [];
         return list.filter((item) => {
-            const name = String(item.displayname || "").trim();
-            const tag = String(item.displaytag || "").trim();
+            const name = `${item.displayname ?? ""}`.trim();
+            const tag = `${item.displaytag ?? ""}`.trim();
             if (isDeactivatedUser(name, tag)) {
                 return false;
             }
@@ -175,7 +215,7 @@ $(() => {
             const chunkSize = 50;
             for (let i = 0; i < uncachedIds.length; i += chunkSize) {
                 const chunk = uncachedIds.slice(i, i + chunkSize);
-                const data = await api.post({
+                const data = await postWithTimeout({
                     action: "query",
                     list: "users",
                     usprop: "name",
@@ -194,10 +234,12 @@ $(() => {
     };
 
     /**
-     * 获取选中记录的用户名并填入目标输入框
+     * 获取选中记录的用户名并填入目标输入框（绑定操作令牌防止旧请求覆盖）
      * @param {{userid: number, displayname: string, displaytag: string}} record
+     * @param {number} [expectedOpToken]
      */
-    const applySelectedUser = async (record) => {
+    const applySelectedUser = async (record, expectedOpToken) => {
+        const currentOpToken = expectedOpToken ?? ++operationToken;
         setStatus(
             wgULS(
                 "正在获取用户名…",
@@ -207,6 +249,9 @@ $(() => {
         );
         try {
             await fetchUserNamesByIds([record.userid]);
+            if (currentOpToken !== operationToken) {
+                return;
+            }
             const username = userCache.get(record.userid);
             if (username) {
                 targetWidget.setValue(username);
@@ -224,6 +269,9 @@ $(() => {
                 );
             }
         } catch (error) {
+            if (currentOpToken !== operationToken) {
+                return;
+            }
             setStatus(
                 wgULS(
                     "获取用户名失败：",
@@ -445,16 +493,23 @@ $(() => {
         DisplayNameSelectionDialog.prototype.getActionProcess = function (action) {
             if (action === "select" && selectedData) {
                 const chosen = selectedData;
+                const opToken = ++operationToken;
                 return new OO.ui.Process(async () => {
                     await this.close().closed;
-                    await applySelectedUser(chosen);
+                    if (opToken !== operationToken) {
+                        return;
+                    }
+                    await applySelectedUser(chosen, opToken);
                 });
             }
 
             if (action === "cancel") {
+                const opToken = ++operationToken;
                 return new OO.ui.Process(async () => {
                     await this.close().closed;
-                    setStatus(wgULS("已取消选择", "已取消選擇"));
+                    if (opToken === operationToken) {
+                        setStatus(wgULS("已取消选择", "已取消選擇"));
+                    }
                 });
             }
 
@@ -498,6 +553,7 @@ $(() => {
                 wgULS(
                     "禁止查询“已注销#0000”",
                     "禁止查詢「已注销#0000」",
+                    "禁止查詢「已注销#0000」",
                 ),
                 true,
             );
@@ -509,11 +565,15 @@ $(() => {
             return;
         }
 
+        const currentOpToken = ++operationToken;
         setStatus(wgULS("正在查询…", "正在查詢…"));
         queryButton.setDisabled(true);
 
         try {
             const records = await fetchUserRecordsByDisplayName(displayname, displaytag);
+            if (currentOpToken !== operationToken) {
+                return;
+            }
 
             if (!records.length) {
                 setStatus(
@@ -533,7 +593,7 @@ $(() => {
             }
 
             if (records.length === 1) {
-                await applySelectedUser(records[0]);
+                await applySelectedUser(records[0], currentOpToken);
             } else {
                 setStatus(
                     wgULS(
@@ -545,12 +605,16 @@ $(() => {
                 windowManager.openWindow(getSelectionDialog(), { items: records });
             }
         } catch (error) {
-            setStatus(
-                wgULS("查询出错：", "查詢出錯：") + formatError(error),
-                true,
-            );
+            if (currentOpToken === operationToken) {
+                setStatus(
+                    wgULS("查询出错：", "查詢出錯：") + formatError(error),
+                    true,
+                );
+            }
         } finally {
-            queryButton.setDisabled(false);
+            if (currentOpToken === operationToken) {
+                queryButton.setDisabled(false);
+            }
         }
     };
 
