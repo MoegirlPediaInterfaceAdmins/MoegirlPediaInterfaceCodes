@@ -121,20 +121,30 @@ $(() => {
     const CLASS_DONE = "gadget-cat_a_lot-label--done";
 
     const collectTargetLinks = (allowNonFiles) => {
+        const fileOnlySpecials = new Set(["Listfiles", "Uncategorizedfiles", "Unusedfiles"]);
+        const isFileOnlySpecial = nsNumber === -1 && fileOnlySpecials.has(canonicalSpecial);
         const selectors = [];
+
         if (nsNumber === 14) {
-            selectors.push("#mw-category-media .gallerybox .gallerytext a");
-            if (allowNonFiles) {
-                selectors.push("#mw-pages .mw-category a", "#mw-pages li a", "#mw-subcategories .CategoryTreeItem a");
-            }
-        } else {
-            selectors.push("#mw-content-text .gallerybox .gallerytext a");
+            selectors.push("#mw-category-media .gallerybox .gallerytext > a:first-child");
             if (allowNonFiles) {
                 selectors.push(
-                    ".mw-search-results .mw-search-result-heading a",
+                    "#mw-pages .mw-category li > a:first-child",
+                    "#mw-subcategories .CategoryTreeItem > a:first-child",
+                );
+            }
+        } else {
+            selectors.push("#mw-content-text .gallerybox .gallerytext > a:first-child");
+            if (isFileOnlySpecial) {
+                selectors.push(
+                    ".mw-spcontent ol.special li > a:first-child",
+                    ".TablePager td.TablePager_col_img_name > a:first-child",
+                );
+            } else if (allowNonFiles) {
+                selectors.push(
+                    ".mw-search-results .mw-search-result-heading > a:first-child",
                     ".mw-spcontent ol.special li > a:first-child",
                     ".mw-prefixindex-list li > a:first-child",
-                    ".TablePager td.TablePager_col_img_name a:first-child",
                 );
             }
         }
@@ -148,6 +158,7 @@ $(() => {
                 !href
                 || href.startsWith("#")
                 || $a.hasClass("external")
+                || $a.hasClass("new")
                 || /[?&](?:action|diff|oldid|redlink)=/i.test(href)
             ) {
                 return;
@@ -162,10 +173,10 @@ $(() => {
                 if (!parsed || parsed.getNamespaceId() < 0) {
                     return;
                 }
-                const prefixed = parsed.getPrefixedText();
-                if (!allowNonFiles && parsed.getNamespaceId() !== 6) {
+                if ((isFileOnlySpecial || !allowNonFiles) && parsed.getNamespaceId() !== 6) {
                     return;
                 }
+                const prefixed = parsed.getPrefixedText();
                 if (seenTitles.has(prefixed)) {
                     return;
                 }
