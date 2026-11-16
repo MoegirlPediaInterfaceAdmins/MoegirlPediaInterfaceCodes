@@ -1,14 +1,21 @@
+html.dark body.skin-moeskin {
+    --extiw-link-color: #af9416;
+    --extiw-heimu-hover-color: #d7b61b;
+}
+
 /* 外链 */
 a.extiw:not([href*=".moegirl.org.cn"]),
 a.extiw:not([href*=".moegirl.org.cn"]):visited,
 body.heimu_toggle_on span.heimu a.extiw:not([href*=".moegirl.org.cn"]),
-body.heimu_toggle_on a.extiw:not([href*=".moegirl.org.cn"]) span.heimu {
-    color: #00AF89;
+body.heimu_toggle_on span.heimu a.extiw:not([href*=".moegirl.org.cn"]):visited,
+body.heimu_toggle_on a.extiw:not([href*=".moegirl.org.cn"]) span.heimu,
+body.heimu_toggle_on a.extiw:not([href*=".moegirl.org.cn"]):visited span.heimu {
+    color: var(--extiw-link-color, #00AF89);
 }
 
 .heimu:hover a.extiw:not([href*=".moegirl.org.cn"]),
 .heimu:hover a.extiw:not([href*=".moegirl.org.cn"]):visited,
 a.extiw:not([href*=".moegirl.org.cn"]):hover .heimu,
 a.extiw:not([href*=".moegirl.org.cn"]):hover:visited .heimu {
-    color: #00D7A8;
+    color: var(--extiw-heimu-hover-color, #00D7A8);
 }
