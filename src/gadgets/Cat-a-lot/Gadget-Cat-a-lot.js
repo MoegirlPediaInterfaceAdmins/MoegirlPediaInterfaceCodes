@@ -202,7 +202,7 @@ $(() => {
         }, { timeout: API_TIMEOUT_MS });
 
         const subReq = allowCategoryMembers
-            ? api.get({
+            ? api.post({
                 action: "query",
                 list: "categorymembers",
                 cmtitle: fullTitle,
@@ -228,7 +228,7 @@ $(() => {
         if (!clean) {
             return [];
         }
-        const res = await api.get({
+        const res = await api.post({
             action: "opensearch",
             namespace: 14,
             search: clean,
