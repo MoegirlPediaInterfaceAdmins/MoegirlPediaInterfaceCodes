@@ -367,7 +367,7 @@ $(() => (async () => {
                     converted = converted.replace(REGEXP.noOCC, (_, content) => `<!--noOCC-->${occMappings.push(content) - 1}<!--/noOCC-->`);
 
                     const occVariant = variant.replace("hans", "cn").replace(/zh-(?:han)?/, "").replace("tw", "twp");
-                    const converter = OpenCC.Converter({ from: occVariant, to: occVariant });
+                    const converter = OpenCC.Converter({ from: occVariant === "cn" ? "t" : occVariant, to: occVariant });
                     converted = converter(converted);
 
                     converted = converted.replace(REGEXP.noOCC, (_, index) => `<!--noOCC-->${occMappings[index]}<!--/noOCC-->`);
