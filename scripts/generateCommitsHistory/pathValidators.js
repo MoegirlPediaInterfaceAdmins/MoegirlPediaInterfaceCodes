@@ -2,7 +2,10 @@
  * @param { string } file file path like "src/@types/libBottomRightCorner.d.ts"
  * @returns { boolean }
  */
-export const pathValidator = (file) => file.startsWith("src/") && ![
+export const pathValidator = (file) => [
+    "src/",
+    "packages/",
+].some((prefix) => file.startsWith(prefix)) && ![
     "src/@types/",
 ].some((blacklist) => file.startsWith(blacklist));
 
