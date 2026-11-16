@@ -94,7 +94,6 @@ $(() => {
             watchlist: "preferences",
             minor: false,
             editpages: true,
-            docleanup: false,
             subcatcount: 50,
         };
         let stored = {};
@@ -240,7 +239,7 @@ $(() => {
         return titles.map((t) => normalizeCatName(t)).filter(Boolean);
     };
 
-    const computeNewWikitext = ({ text, mode, sourceCat, targetCat, doCleanup }) => {
+    const computeNewWikitext = ({ text, mode, sourceCat, targetCat }) => {
         let newText = `${text ?? ""}`;
         const targetNorm = targetCat ? validateCategoryTitle(targetCat) : "";
         const sourceNorm = normalizeCatName(sourceCat);
@@ -300,12 +299,6 @@ $(() => {
             }
             sourceRegex.lastIndex = 0;
             newText = newText.replace(sourceRegex, "").replace(/\n{3,}/g, "\n\n");
-        }
-
-        if (doCleanup) {
-            newText = newText
-                .replace(/\{\{\s*(?:Check categories|Uncategorized|Uncat)\s*(?:\|[^}]*)?\}\}\s*/gi, "")
-                .replace(/\n{3,}/g, "\n\n");
         }
 
         return { status: "ok", text: newText };
@@ -814,7 +807,7 @@ $(() => {
                         let editSubmitted = false;
 
                         try {
-                            const queryRes = await this.trackRequest(api.get({
+                            const queryRes = await this.trackRequest(api.post({
                                 action: "query",
                                 prop: "revisions",
                                 titles: title,
@@ -834,7 +827,6 @@ $(() => {
                                     mode,
                                     sourceCat: this.pageCategoryName,
                                     targetCat: cleanTarget,
-                                    doCleanup: this.prefs.docleanup,
                                 });
 
                                 if (computed.status === "skipped-already") {
@@ -879,7 +871,7 @@ $(() => {
                             let reconciled = false;
                             if (editSubmitted && !err?.error?.code) {
                                 try {
-                                    const verifyRes = await api.get({
+                                    const verifyRes = await api.post({
                                         action: "query",
                                         prop: "revisions",
                                         titles: title,
@@ -1095,7 +1087,6 @@ $(() => {
                         </cdx-field>
                         <cdx-checkbox v-model="prefsDraft.minor">{{ uls("将编辑标记为小修改", "將編輯標記為小修改") }}</cdx-checkbox>
                         <cdx-checkbox v-model="prefsDraft.editpages">{{ uls("允许对非文件页面与子分类进行分类操作", "允許對非文件頁面與子分類進行分類操作") }}</cdx-checkbox>
-                        <cdx-checkbox v-model="prefsDraft.docleanup">{{ uls("移除 {{Check categories}} 并进行细节清理", "移除 {{Check categories}} 並進行細節清理") }}</cdx-checkbox>
                         <cdx-field>
                             <template #label>{{ uls("最多显示的子分类数量", "最多顯示的子分類數量") }}</template>
                             <cdx-text-input v-model="prefsDraft.subcatcount" input-type="number"></cdx-text-input>
