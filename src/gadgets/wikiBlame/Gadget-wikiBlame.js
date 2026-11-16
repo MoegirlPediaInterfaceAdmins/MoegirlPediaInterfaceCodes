@@ -9,7 +9,6 @@ $(() => {
         wgPageName,
         wgUserName,
         wgUserGroups,
-        wgScript,
     } = mw.config.get([
         "wgIsArticle",
         "wgArticleId",
@@ -17,7 +16,6 @@ $(() => {
         "wgPageName",
         "wgUserName",
         "wgUserGroups",
-        "wgScript",
     ]);
 
     if (!wgIsArticle || !wgArticleId || wgNamespaceNumber % 2 === 1) {
@@ -916,23 +914,22 @@ $(() => {
                     return;
                 }
                 if (result.status === "NOT_IN_LATEST") {
-                    this.$progress.empty().append($("<span>").addClass("wikiblame-hint-warn").text("最新版本源码中不包含该文本（或上下文已变化），请检查输入或放宽条件。"));
+                    this.$progress.empty().append($("<span>").addClass("wikiblame-hint-warn").text("所选修订区间内的最新版本中不包含该文本（或上下文已变化），请检查输入或放宽条件。"));
                     return;
                 }
                 if (result.status === "NO_EARLIER_OCCURRENCE") {
+                  this.$resultArea.hide().empty();
                     this.$progress.empty().append($("<span>").addClass("wikiblame-hint-warn").text("在当前检索范围内未找到更早一次出现该文本的编辑。"));
                     return;
                 }
 
                 this.$progress.text("正在获取版本差异对比…");
-                const [compareData, comment] = await Promise.all([
-                    this.session.fetchCompare(
-                        result.prevRev ? result.prevRev.revid : null,
-                        result.rev.revid,
-                        runSignal,
-                    ),
-                    this.session.fetchRevisionComment(result.rev.revid, runSignal),
-                ]);
+                const compareData = await this.session.fetchCompare(
+                    result.prevRev ? result.prevRev.revid : null,
+                    result.rev.revid,
+                    runSignal,
+                    ).catch(() => null);
+                const comment = result.rev.comment || "";
                 if (isStale()) {
                     return;
                 }
@@ -943,6 +940,7 @@ $(() => {
                 if (isStale() || err && err.message === "CANCELLED") {
                     return;
                 }
+                this.$resultArea.hide().empty();
                 this.$progress.empty().append(
                     $("<span>").addClass("wikiblame-hint-error").text(`检索失败：${err && err.message || err}`),
                 );
@@ -955,9 +953,9 @@ $(() => {
 
         renderResult(result, compareData, comment) {
             const { rev, prevRev, revIndex } = result;
-            const revUrl = `${wgScript}?title=${encodeURIComponent(wgPageName)}&oldid=${rev.revid}`;
+            const revUrl = mw.util.getUrl(wgPageName, { oldid: rev.revid });
             const diffUrl = prevRev
-                ? `${wgScript}?title=${encodeURIComponent(wgPageName)}&diff=${rev.revid}&oldid=${prevRev.revid}`
+                ? mw.util.getUrl(wgPageName, { diff: rev.revid, oldid: prevRev.revid })
                 : revUrl;
 
             const $meta = $("<div>").addClass("wikiblame-result-meta");
@@ -983,7 +981,7 @@ $(() => {
             }
 
             const $diffWrapper = $("<div>").addClass("wikiblame-diff-wrapper");
-            const diffBody = compareData && (compareData.body || compareData["*"]);
+            const diffBody = compareData && compareData.body;
             if (diffBody) {
                 const $table = $("<table>").addClass("diff").append(
                     $("<colgroup>").append(
@@ -1017,27 +1015,11 @@ $(() => {
         const session = new WikiBlameSession();
         await session.initRights();
 
-        if (!session.hasNoRateLimit) {
-            const confirmed = await OO.ui.confirm(
-                "您的账号当前未持有 noratelimit 权限。检索历史修订将产生多次 API 请求，在修订数较多的页面上频繁使用可能触发限流或 WAF 拦截。是否继续使用？",
-                {
-                    title: "速率限制提示",
-                    actions: [
-                        { action: "accept", label: "继续使用", flags: ["primary", "progressive"] },
-                        { action: "cancel", label: "取消", flags: "safe" },
-                    ],
-                },
-            );
-            if (!confirmed) {
-                return;
-            }
-        }
-
         if (!windowManager) {
             windowManager = new OO.ui.WindowManager();
             $(document.body).append(windowManager.$element);
         } else {
-            windowManager.clearWindows();
+            await windowManager.clearWindows();
         }
         const dialog = new WikiBlameDialog({
             size: window.innerWidth <= 720 ? "full" : "larger",
