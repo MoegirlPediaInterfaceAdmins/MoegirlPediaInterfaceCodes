@@ -15,14 +15,12 @@ const JS_OUTPUT = "index.js";
 const JS_NAME = "Gadget-Watermark.js";
 
 /**
- * 产物头部声明：生成警告、仓库地址与内嵌依赖的许可（watermark-js-plus 为 MIT，
- * 其许可要求保留版权与许可声明，产物内嵌其代码故在此携带）。
+ * 产物头部许可声明：内嵌 watermark-js-plus（MIT），其许可要求保留版权与许可声明，
+ * 产物内嵌其代码故在此携带。
  * "use strict" 由 banner 显式携带：产物以裸顶层语句形式交付，esbuild 不注入指令，
  * 而部署侧要求文件以严格模式运行。
  */
 const BANNER = `/**
- * 本文件由 packages/Watermark 构建生成，请勿直接修改
- * 仓库地址：https://github.com/MoegirlPediaInterfaceAdmins/MoegirlPediaInterfaceCodes
  * 内嵌 watermark-js-plus（https://github.com/zhensherlock/watermark-js-plus，MIT License）
  */`;
 
@@ -47,10 +45,10 @@ const buildOptions = () => ({
     banner: { js: `${BANNER}\n"use strict";` },
 });
 
-/** 产物门禁：banner 位于文件头部、没有残留的模块语法、无 BOM/CR、以换行符结尾 */
+/** 产物门禁：许可声明位于文件头部、没有残留的模块语法、无 BOM/CR、以换行符结尾 */
 const assertArtifact = (name, text) => {
     if (!text.startsWith(BANNER)) {
-        throw new Error(`${name}: banner 缺失或不位于文件头部`);
+        throw new Error(`${name}: 许可声明缺失或不位于文件头部`);
     }
     if (/^\s*(?:import|export)\b/m.test(text)) {
         throw new Error(`${name}: 产物中残留未打包的 import/export 语法`);

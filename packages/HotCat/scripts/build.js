@@ -14,12 +14,6 @@ const ENTRY = "src/index.ts";
 const JS_OUTPUT = "index.js";
 const JS_NAME = "Gadget-HotCat.js";
 
-/** 产物头部声明。 */
-const BANNER = `/**
- * 本文件由 packages/HotCat 构建生成，请勿直接修改
- * 仓库地址：https://github.com/MoegirlPediaInterfaceAdmins/MoegirlPediaInterfaceCodes
- */`;
-
 /** esbuild 构建选项。 */
 const buildOptions = () => ({
     entryPoints: [path.join(root, ENTRY)],
@@ -29,7 +23,7 @@ const buildOptions = () => ({
     charset: "utf8",
     outdir: path.join(root, "dist"),
     minifySyntax: true,
-    banner: { js: `${BANNER}\n"use strict";` },
+    banner: { js: '"use strict";' },
 });
 
 /** 移除整行 eslint 指令。 */
@@ -40,8 +34,8 @@ const stripInlineDirectives = (text) => text
 
 /** 产物完整性检查。 */
 const assertArtifact = (name, text) => {
-    if (!text.startsWith(BANNER)) {
-        throw new Error(`${name}: banner 缺失或不位于文件头部`);
+    if (!text.startsWith('"use strict";')) {
+        throw new Error(`${name}: 产物未以 "use strict" 开头`);
     }
     if (/^\s*(?:import|export)\b/m.test(text)) {
         throw new Error(`${name}: 产物中残留未打包的 import/export 语法`);

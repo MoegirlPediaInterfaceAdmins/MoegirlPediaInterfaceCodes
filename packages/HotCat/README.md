@@ -81,8 +81,8 @@ node packages/HotCat/scripts/terser-check.js  # 部署链等价门禁
 - `entryPoints: src/index.ts`，`bundle: true`，`format: "esm"`（裸顶层语句，gadget 由 `mw.loader.implement` 隔离作用域）；
 - `target: es2020` 与部署侧 `tsconfig.production.json` / terser `ecma` 一致；
 - 只开 `minifySyntax`，压缩留给部署侧 terser（避免二次压缩）；
-- banner 写入「请勿手改」与仓库地址，并显式加 `"use strict"`（legacy 依赖严格模式下的 `this` 语义）；
-- 产物门禁：banner 在头部、无残留 `import/export`、无 BOM/CR、以换行结尾。
+- banner 只携带 `"use strict"`（legacy 依赖严格模式下的 `this` 语义）；
+- 产物门禁：`"use strict"` 在头部、无残留 `import/export`、无 BOM/CR、以换行结尾。
 
 ## 测试范围
 

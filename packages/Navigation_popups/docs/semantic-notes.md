@@ -219,7 +219,7 @@
 | 旧条目 | 结论 | 说明 |
 | --- | --- | --- |
 | 1. 模块定义在脚本加载期求值（原为 DOM ready 回调内） | **仍成立（已改写收录）** | 重写版模块顶层零副作用，初始化集中在 `boot()`（ready/load 触发），机制与移植版不同但差异类型相同：模块与 `window.pg` 在**加载期**求值/装配，legacy 全部在 ready 回调内。守卫语义等价（守卫在装入前判定，`window.pg` 同步标记，见 `src/entry.ts`）。可见性：仅「脚本加载后、DOM ready 前」这一瞬间读 `window.pg` 的脚本可见。 |
-| 2. 行内注释被剥离（产物只剩 banner） | **仍成立（已改写收录）** | esbuild 转译剥除函数体内的行内注释，产物只保留 `rollup.config.js` 的 banner。实测补充：**class 字段位置的注释会随 class 字段降级移入构造函数而保留**（形态为构造函数内注释），属纯文本差异，不影响行为。 |
+| 2. 行内注释被剥离（产物只剩 banner） | **仍成立（已改写收录）** | esbuild 转译剥除函数体内的行内注释，产物只保留 `rollup.config.js` 的 banner（现仅含 `"use strict";`）。实测补充：**class 字段位置的注释会随 class 字段降级移入构造函数而保留**（形态为构造函数内注释），属纯文本差异，不影响行为。 |
 | 3. es2020 降级：class 字段编译为 `__publicField` 辅助函数 | **不复存在** | 重写版 esbuild 读取本仓 `tsconfig.json`（`target: es2020`），`useDefineForClassFields` 因此为 **false** 语义，class 字段降级为构造函数内 `this.x = …` 赋值（与 legacy 部署链 tsc es2020 同形），**不产生** `__publicField`/`__defProp` 辅助。实测：以本仓 `rollup.config.js` 对 `src/core/popup.ts` 打包，产物中 `class _Navpopup` 的字段全部为构造器内赋值、辅助函数计数为 0（另见「esbuild 会重命名自引用类并留下 `let X = _X;` 别名，`scripts/build.js` 将其提升为 `const`」）。 |
 | 4. 类型转换改写：`Boolean()`/`Number()` → `!!`/`+`（14 处） | **不复存在** | 重写版源码本就零 `Boolean()`/`Number()` 构造调用（grep 全 src 仅命中 1 处说明性注释）。`eslint.config.js` 的 `no-restricted-syntax` 两条禁令**保留**，防回归。 |
 | 5. 产物 banner 的 eslint-disable 扩充（3 条） | **不复存在** | 现产物 banner **零 eslint-disable 条目**（见 `rollup.config.js` 的 banner 文本）。产物 lint 改为构建期门禁：`scripts/build.js` 先用本仓 eslint（`fix: true`）整理产物格式、再在**禁止 fix 的情况下复检**，任何 banner 未正当豁免的违规都会使构建失败。旧「规则要求与 es2020 目标直接冲突」的豁免场景已不存在（源码零逻辑赋值运算符；esbuild 的 `let X = _X` 别名由 build.js 提升为 const）。 |

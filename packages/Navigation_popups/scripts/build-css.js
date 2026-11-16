@@ -6,15 +6,6 @@ import * as sass from "sass";
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const repoRoot = path.resolve(root, "..", "..");
 
-// The banner only carries the generated-file warning and the repo URL;
-// upstream provenance (the navpop oldid links) lives in the README's
-// 来源与授权 section.
-const banner = `/**
- * 本文件由 packages/Navigation_popups 构建生成，请勿直接修改
- * 仓库地址：https://github.com/MoegirlPediaInterfaceAdmins/MoegirlPediaInterfaceCodes
- */
-`;
-
 export const build = async () => {
     const compiled = await sass.compileAsync(path.join(root, "src", "css", "main.scss"), {
         style: "expanded",
@@ -40,7 +31,7 @@ export const build = async () => {
     }
     // sass expanded output carries no trailing newline; normalize it in.
     css = `${css.replace(/\n+$/u, "")}\n`;
-    return Buffer.from(`${banner}${css}`, "utf8");
+    return Buffer.from(css, "utf8");
 };
 
 // 产物写入构建链暂存区 dist/_generated/gadgets（gitignore 覆盖，不进入仓库），

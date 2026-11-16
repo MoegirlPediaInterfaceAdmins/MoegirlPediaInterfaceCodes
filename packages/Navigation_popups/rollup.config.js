@@ -3,9 +3,8 @@ import { fileURLToPath } from "node:url";
 
 const root = fileURLToPath(new URL(".", import.meta.url));
 
-// The banner only carries the generated-file warning, the repo URL and the
-// strict directive; upstream provenance (the behavior-baseline oldid) lives
-// in the README's 来源与授权 section.
+// The banner carries only the artifact's strict directive; upstream provenance
+// (the behavior-baseline oldid) lives in the README's 来源与授权 section.
 // "use strict" is the artifact's only strict directive — build.js strips the
 // per-module prologues esbuild injects, so this one survives alone.
 // The artifact ships as bare top-level statements (format "es"): the gadget
@@ -16,11 +15,7 @@ const root = fileURLToPath(new URL(".", import.meta.url));
 // anywhere — the repo lint globally ignores dist/** where the artifact is
 // generated, and the build does not lint it either; it ships exactly
 // as rollup/esbuild print it, and nothing downstream lints it.
-const banner = `/**
- * 本文件由 packages/Navigation_popups 构建生成，请勿直接修改
- * 仓库地址：https://github.com/MoegirlPediaInterfaceAdmins/MoegirlPediaInterfaceCodes
- */
-"use strict";`;
+const banner = '"use strict";';
 
 // Modules allowed to participate in rollup-reported cycles (see onwarn).
 // Current cycle inventory (collected via a probe run against rollup's API):

@@ -14,11 +14,6 @@ const CSS_OUTPUT = "index.css";
 const JS_NAME = "Gadget-Cat-a-lot.js";
 const CSS_NAME = "Gadget-Cat-a-lot.css";
 
-const BANNER = `/**
- * 本文件由 packages/Cat-a-lot 构建生成，请勿直接修改
- * 仓库地址：https://github.com/MoegirlPediaInterfaceAdmins/MoegirlPediaInterfaceCodes
- */`;
-
 // SFC 预编译为 render；Vue helper 来自 runtime.ts。CSS 单独输出给 postcss 链。
 const buildOptions = () => ({
     entryPoints: [path.join(root, ENTRY)],
@@ -29,7 +24,7 @@ const buildOptions = () => ({
     outdir: path.join(root, "dist"),
     minifySyntax: true,
     plugins: [vueSfcPlugin],
-    banner: { js: `${BANNER}\n"use strict";`, css: BANNER },
+    banner: { js: '"use strict";' },
 });
 
 const stripInlineDirectives = (text) => text
@@ -38,8 +33,8 @@ const stripInlineDirectives = (text) => text
     .join("\n");
 
 const assertArtifact = (name, text, isCss) => {
-    if (!text.startsWith(BANNER)) {
-        throw new Error(`${name}: banner 缺失或不位于文件头部`);
+    if (!isCss && !text.startsWith('"use strict";')) {
+        throw new Error(`${name}: 产物未以 "use strict" 开头`);
     }
     if (isCss ? /^\s*@import\b/mu.test(text) : /^\s*(?:import|export)\b/mu.test(text)) {
         throw new Error(`${name}: 产物中残留未打包的${isCss ? " @import" : " import/export"}语法`);

@@ -17,16 +17,6 @@ const JS_NAME = "Gadget-JSONViewer.js";
 const CSS_NAME = "Gadget-JSONViewer.css";
 
 /**
- * 产物头部声明：只携带生成警告与仓库地址。
- * JS 的 "use strict" 由 banner 显式携带：产物以 esm 裸语句形式交付，esbuild 不注入指令，
- * 而产物门禁要求文件以 "use strict" 开头。
- */
-const BANNER = `/**
- * 本文件由 packages/JSONViewer 构建生成，请勿直接修改
- * 仓库地址：https://github.com/MoegirlPediaInterfaceAdmins/MoegirlPediaInterfaceCodes
- */`;
-
-/**
  * dev 专用内联插件（style-loader 语义）：把每个 CSS 模块编译为向页面注入 `<style>` 的 JS 模块，
  * 开发调试时单个脚本即携带全部样式，无需另行加载 CSS 产物；注入顺序与模块求值顺序一致，
  * 也与生产产物中 CSS 的合并顺序相同。生产模式不注册该插件：CSS 单独打包，满足界面库
@@ -68,7 +58,7 @@ const buildOptions = (dev = false) => ({
     define: { __DEV__: dev ? "true" : "false" },
     ...dev
         ? { plugins: [cssInjectPlugin], sourcemap: "inline" }
-        : { banner: { js: `${BANNER}\n"use strict";`, css: BANNER } },
+        : { banner: { js: '"use strict";' } },
 });
 
 /**
@@ -79,10 +69,10 @@ const buildOptions = (dev = false) => ({
 const stripInlineDirectives = (text) =>
     text.split("\n").filter((line) => !/^\s*\/\/\s*eslint-(?:disable|enable)\b/.test(line)).join("\n");
 
-/** 产物门禁：banner 位于文件头部、没有残留的模块语法、以换行符结尾 */
+/** 产物门禁："use strict" 位于文件头部、没有残留的模块语法、以换行符结尾 */
 const assertArtifact = (name, text, isCss) => {
-    if (!text.startsWith(BANNER)) {
-        throw new Error(`${name}: banner 缺失或不位于文件头部`);
+    if (!isCss && !text.startsWith('"use strict";')) {
+        throw new Error(`${name}: 产物未以 "use strict" 开头`);
     }
     if (isCss ? /^\s*@import\b/m.test(text) : /^\s*(?:import|export)\b/m.test(text)) {
         throw new Error(`${name}: 产物中残留未打包的${isCss ? " @import" : " import/export"}语法`);
