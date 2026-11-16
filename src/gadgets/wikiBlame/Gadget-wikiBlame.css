@@ -17,8 +17,10 @@
     box-sizing: border-box;
     height: 100%;
     color: var(--wikiblame-text);
+    background-color: var(--wikiblame-bg);
 }
 
+body.skin-moeskin.dark .wikiblame-dialog-body,
 html.dark .wikiblame-dialog-body,
 html.skin-theme-clientpref-night .wikiblame-dialog-body {
     --wikiblame-bg: #101418;
@@ -128,8 +130,8 @@ html.skin-theme-clientpref-night .wikiblame-dialog-body {
 
 .wikiblame-source-viewer {
     flex: 1 1 auto;
-    min-height: 180px;
-    max-height: 360px;
+    min-height: 260px;
+    max-height: 520px;
     overflow: auto;
     border: 1px solid var(--wikiblame-border);
     border-radius: 4px;
@@ -198,6 +200,124 @@ html.skin-theme-clientpref-night .wikiblame-dialog-body {
     padding: 6px;
 }
 
+.wikiblame-diff-wrapper .diff {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+}
+
+.wikiblame-diff-wrapper .diff td {
+    padding: 2px 6px;
+    vertical-align: top;
+    font-family: monospace;
+    font-size: 13px;
+    line-height: 1.5;
+    word-break: break-all;
+}
+
+.wikiblame-diff-wrapper .diff .diff-lineno {
+    font-weight: bold;
+    color: var(--wikiblame-text-subtle);
+    background-color: var(--wikiblame-bg-subtle);
+}
+
+.wikiblame-diff-wrapper .diff .diff-marker {
+    width: 1.5em;
+    text-align: center;
+    user-select: none;
+    color: var(--wikiblame-text-subtle);
+}
+
+.wikiblame-diff-wrapper .diff .diff-context {
+    background-color: var(--wikiblame-bg-subtle);
+    border: 1px solid var(--wikiblame-border-muted);
+    color: var(--wikiblame-text);
+}
+
+.wikiblame-diff-wrapper .diff .diff-addedline {
+    background-color: #e6ffed;
+    border: 1px solid #aceebb;
+    border-left: 3px solid #2da44e;
+    color: #202122;
+}
+
+.wikiblame-diff-wrapper .diff .diff-deletedline {
+    background-color: #ffebe9;
+    border: 1px solid #ffcecb;
+    border-left: 3px solid #cf222e;
+    color: #202122;
+}
+
+.wikiblame-diff-wrapper .diff ins.diffchange {
+    background-color: #abf2bc;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.wikiblame-diff-wrapper .diff del.diffchange {
+    background-color: #ffcecb;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+html.dark .wikiblame-diff-wrapper .diff .diff-addedline,
+body.skin-moeskin.dark .wikiblame-diff-wrapper .diff .diff-addedline,
+html.skin-theme-clientpref-night .wikiblame-diff-wrapper .diff .diff-addedline {
+    background-color: #132a1c;
+    border-color: #235c31;
+    border-left-color: #3fb950;
+    color: #eaecf0;
+}
+
+html.dark .wikiblame-diff-wrapper .diff .diff-deletedline,
+body.skin-moeskin.dark .wikiblame-diff-wrapper .diff .diff-deletedline,
+html.skin-theme-clientpref-night .wikiblame-diff-wrapper .diff .diff-deletedline {
+    background-color: #31171a;
+    border-color: #6b2429;
+    border-left-color: #f85149;
+    color: #eaecf0;
+}
+
+html.dark .wikiblame-diff-wrapper .diff ins.diffchange,
+body.skin-moeskin.dark .wikiblame-diff-wrapper .diff ins.diffchange,
+html.skin-theme-clientpref-night .wikiblame-diff-wrapper .diff ins.diffchange {
+    background-color: #235c31;
+    color: #fff;
+}
+
+html.dark .wikiblame-diff-wrapper .diff del.diffchange,
+body.skin-moeskin.dark .wikiblame-diff-wrapper .diff del.diffchange,
+html.skin-theme-clientpref-night .wikiblame-diff-wrapper .diff del.diffchange {
+    background-color: #6b2429;
+    color: #fff;
+}
+
+@media (prefers-color-scheme: dark) {
+    html.skin-theme-clientpref-os .wikiblame-diff-wrapper .diff .diff-addedline {
+        background-color: #132a1c;
+        border-color: #235c31;
+        border-left-color: #3fb950;
+        color: #eaecf0;
+    }
+
+    html.skin-theme-clientpref-os .wikiblame-diff-wrapper .diff .diff-deletedline {
+        background-color: #31171a;
+        border-color: #6b2429;
+        border-left-color: #f85149;
+        color: #eaecf0;
+    }
+
+    html.skin-theme-clientpref-os .wikiblame-diff-wrapper .diff ins.diffchange {
+        background-color: #235c31;
+        color: #fff;
+    }
+
+    html.skin-theme-clientpref-os .wikiblame-diff-wrapper .diff del.diffchange {
+        background-color: #6b2429;
+        color: #fff;
+    }
+}
+
 @media (width <= 720px) {
     .wikiblame-dialog-body {
         padding: 10px;
@@ -205,7 +325,7 @@ html.skin-theme-clientpref-night .wikiblame-dialog-body {
     }
 
     .wikiblame-source-viewer {
-        max-height: 240px;
+        max-height: 300px;
         font-size: 12px;
     }
 
