@@ -1,5 +1,5 @@
 // 基于 Wikitext 源码与指数回溯+二分/多路查找的 wikiBlame（拷打编辑）小工具
-// 适配移动端与繁简/字词转换（LC），支持 sysop/staff 批量查询修订、patroller 无速率限制及非 noratelimit 用户使用前警告
+// 适配移动端与繁简/字词转换（LC），支持 sysop/staff 批量查询修订及非 noratelimit 用户使用前警告
 "use strict";
 $(() => {
     const {
@@ -1019,7 +1019,7 @@ $(() => {
 
         if (!session.hasNoRateLimit) {
             const confirmed = await OO.ui.confirm(
-                "您的账号当前未持有 noratelimit 权限（仅巡查员及以上用户组持有）。检索历史修订将产生多次 API 请求，在修订数较多的页面上频繁使用可能触发限流或 WAF 拦截。是否继续使用？",
+                "您的账号当前未持有 noratelimit 权限。检索历史修订将产生多次 API 请求，在修订数较多的页面上频繁使用可能触发限流或 WAF 拦截。是否继续使用？",
                 {
                     title: "速率限制提示",
                     actions: [
