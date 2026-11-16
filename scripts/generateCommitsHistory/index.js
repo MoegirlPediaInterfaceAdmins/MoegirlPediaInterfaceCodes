@@ -15,7 +15,7 @@ import { debugConsole, debugLoggingEnabled, isInGithubActions, isInMasterBranch,
 import yamlModule from "../modules/yamlModule.js";
 import { isFromGithubWebInterface, parseCoAuthor, removeSplitter } from "./attribution.js";
 import countCommitChanges from "./countCommitChanges.js";
-import { parseNumstatPaths, renamePathValidator } from "./pathValidators.js";
+import { getChangeUnitKey, parseNumstatPaths, renamePathValidator } from "./pathValidators.js";
 
 const execFile = promisify(execFileCallback);
 
@@ -94,7 +94,7 @@ for (const { hash, parents } of rawHistory) {
     if (parentList.length < 2) {
         continue;
     }
-    // 预筛：相对第一父没有 src/ 改动就直接跳过，避免对全部合并提交都发起 git 调用
+    // 预筛：相对第一父没有 src/ 或 packages/ 改动就直接跳过，避免对全部合并提交都发起 git 调用
     const firstParentSrcFiles = (await numstatFiles(parentList[0], hash)).filter(renamePathValidator);
     if (firstParentSrcFiles.length === 0) {
         continue;
@@ -106,11 +106,11 @@ for (const { hash, parents } of rawHistory) {
         intersection = new Set([...intersection].filter((file) => parentFiles.has(file)));
     }
     if (intersection.size > 0) {
-        mergeChangedFiles.set(hash, intersection.size);
+        mergeChangedFiles.set(hash, new Set([...intersection].map(getChangeUnitKey)).size);
         console.info(`Merge commit ${hash.slice(0, 8)} has ${intersection.size} file(s) differing from all parents:`, [...intersection]);
     }
 }
-console.info("Merge commits with src/ first-parent changes:", mergeCandidates, "| with unique resolution changes:", mergeChangedFiles.size);
+console.info("Merge commits with src/ or packages/ first-parent changes:", mergeCandidates, "| with unique resolution changes:", mergeChangedFiles.size);
 await jsonModule.writeFile(rawHistoryPath, rawHistory);
 console.info("Successfully saved to", rawHistoryPath);
 console.info(await fs.promises.stat(rawHistoryPath));
@@ -157,7 +157,7 @@ for (const { hash, _date, authorName, _authorEmail, _signatureKey, _signatureSta
     debugConsole.log("Parsing:", { date, hash, authorName, authorEmail, committerName, committerEmail, signatureKey, signatureStatus: _signatureStatus, signatureSigner: _signatureSigner, coAuthors, diff });
     const { changedFiles, touchedSrc } = countCommitChanges(diff, hash, mergeChangedFiles);
     if (!touchedSrc) {
-        debugConsole.log("\tNothing in src/ has been changed, skip.");
+        debugConsole.log("\tNothing in src/ or packages/ has been changed, skip.");
         continue;
     }
     const fromGithubWebInterface = isFromGithubWebInterface({ signatureStatus: _signatureStatus, signatureSigner: _signatureSigner, committerName, committerEmail });
