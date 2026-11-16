@@ -2,7 +2,8 @@ import console from "../modules/console.js";
 console.info("Initialization done.");
 import exitIf from "../modules/exitIf.js";
 import lintMessage from "./lintMessage.js";
-import { isInGithubActions } from "../modules/octokit.js";
+import normalizeEmptySubject from "./normalizeEmptySubject.js";
+import { isInGithubActions, isPullRequest } from "../modules/octokit.js";
 import readWorkflowEvent from "../modules/workflowEvent.js";
 import getWorkflowCommits from "../modules/getWorkflowCommits.js";
 
@@ -26,19 +27,6 @@ const printErrors = (subject, errors) => {
 };
 
 /**
- * 将仅包含 type / type(scope) 的首行补全为 `type: `，以便 commitlint 正常校验 type。
- * @param {string} message
- */
-const normalizeEmptySubject = (message) => {
-    const [firstLine, ...rest] = message.split("\n");
-    const trimmed = firstLine.trim();
-    if (/^[^\s:]+(?:\([^)]*\))?:?$/.test(trimmed)) {
-        return [trimmed.replace(/:?$/, ": "), ...rest].join("\n");
-    }
-    return message;
-};
-
-/**
  * 逐条校验，全部通过才返回；失败时打印明细并 exit 1。
  * @param {{ subject: string; message: string; url?: string; }[]} items
  * @param {{ allowEmptySubject?: boolean; }} [options]
@@ -48,14 +36,8 @@ const checkAll = async (items, { allowEmptySubject = false } = {}) => {
     for (const { subject, message, url } of items) {
         const targetMessage = allowEmptySubject ? normalizeEmptySubject(message) : message;
         const { valid, errors } = await lintMessage(targetMessage);
-        if (valid) {
-            continue;
-        }
-        const remainingErrors = allowEmptySubject
-            ? errors.filter(({ name }) => name !== "subject-empty")
-            : errors;
-        if (remainingErrors.length > 0) {
-            failures.push({ subject, errors: remainingErrors, url });
+        if (!valid) {
+            failures.push({ subject, errors, url });
         }
     }
     exitIf(failures.length === 0, `All ${items.length} message(s) are valid, exit.`);
@@ -76,7 +58,6 @@ if (mode === "title") {
     exitIf(typeof title !== "string" || title.length === 0, "No pull request title in payload, exit.");
     await checkAll([{ subject: `PR title: ${title}`, message: title }]);
 } else {
-    const isPullRequest = Boolean((await readWorkflowEvent())?.pull_request);
     await checkAll(
         (await getWorkflowCommits()).map(({ id, message, url }) => ({
             subject: `${id.slice(0, 7)}: ${message.split("\n")[0]}`,
