@@ -55,6 +55,7 @@
     - displayname-both
     - displayname-show
     - displayname-copy
+    - displayname-search
     - CommentsinLocalTime
     - editCount
     - Logout-confirm
@@ -63,7 +64,6 @@
     - userpageDelete
     - requestDeletion
     - BatchToolkit
-    - displayname-search
 
 - name: editing
   gadgets:
@@ -72,12 +72,12 @@
     - DotsSyntaxHighlighter
     - HotCat
     - Wikiplus
+    - wikiplus-highlight
     - inpageedit-next
     - InPageEdit-v2
     - enable-nest-highlight
     - disable-nest-alert
     - temp-editcheck
-    - wikiplus-highlight
     - DisamAssist
     - AiAssisted
     - Cat-a-lot
@@ -123,20 +123,20 @@
     - site-styles
     - vector-2022-styles
     - moeskin-styles
-    - edit
-    - editRequestWarning
     - site-lib
     - libBottomRightCorner
     - libOOUIDialog
-    - LocalObjectStorage
-    - localforage
-    - jQueryLazyload
     - libHashwasm
     - libJSON5
     - libCachedCode
     - libDiscussionUtil
     - libRequestAnimationFrame
     - libStandardMessages
+    - edit
+    - editRequestWarning
+    - LocalObjectStorage
+    - localforage
+    - jQueryLazyload
     - prism-core
     - prism-language-css
     - prism-language-javascript
