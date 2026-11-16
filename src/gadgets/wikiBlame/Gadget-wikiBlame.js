@@ -164,7 +164,7 @@ $(() => {
                         this.pendingRequests.delete(req);
                     }
                 } catch (err) {
-                    const isRateLimited = err === "ratelimited" || (err && err.code === "ratelimited");
+                    const isRateLimited = err === "ratelimited" || err && err.code === "ratelimited";
                     if (isRateLimited && attempt < maxRetries) {
                         delay = Math.min((delay || 250) * 2 + 500, 8000);
                         continue;
@@ -812,7 +812,7 @@ $(() => {
                         e.preventDefault();
                         $line.trigger("click");
                     }
-                 });
+                });
                 $line.on("click", () => {
                     const innerSelection = getSelectedText(this.$sourceViewer[0]);
                     const lineTrimmed = line.trim();
@@ -858,7 +858,7 @@ $(() => {
                 const dt = new Date(y, m - 1, d);
                 return dt.getFullYear() === y && dt.getMonth() === m - 1 && dt.getDate() === d;
             };
-            if ((startDate && !isValidDate(startDate)) || (endDate && !isValidDate(endDate))) {
+            if (startDate && !isValidDate(startDate) || endDate && !isValidDate(endDate)) {
                 const msg = "日期无效，请使用真实的 YYYY-MM-DD 日期（或留空）。";
                 this.$progress.empty().append($("<span>").addClass("wikiblame-hint-error").text(msg));
                 mw.notify(msg, { type: "error" });
@@ -949,7 +949,7 @@ $(() => {
                     return;
                 }
                 if (result.status === "NO_EARLIER_OCCURRENCE") {
-                  this.$resultArea.hide().empty();
+                    this.$resultArea.hide().empty();
                     this.$progress.empty().append($("<span>").addClass("wikiblame-hint-warn").text("在当前检索范围内未找到更早一次出现该文本的编辑。"));
                     return;
                 }
@@ -959,7 +959,7 @@ $(() => {
                     result.prevRev ? result.prevRev.revid : null,
                     result.rev.revid,
                     runSignal,
-                    ).catch(() => null);
+                ).catch(() => null);
                 const comment = result.rev.comment || "";
                 if (isStale()) {
                     return;
