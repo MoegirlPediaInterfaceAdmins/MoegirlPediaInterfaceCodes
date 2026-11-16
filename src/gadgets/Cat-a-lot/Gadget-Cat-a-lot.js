@@ -52,7 +52,7 @@ $(() => {
 
     const normalizeCatName = (raw) => {
         let name = `${raw ?? ""}`.trim().replace(/_/g, " ");
-        name = name.replace(/^(?:Category|分类|分類)\s*:\s*/i, "");
+        name = name.replace(/^(?:Category|Cat|分类|分類)\s*:\s*/i, "");
         return name.trim();
     };
 
@@ -84,7 +84,7 @@ $(() => {
                 : escapeRegex(first);
         const restPattern = escapeRegex(clean.slice(1)).replace(/ /g, "[ _]+");
         return new RegExp(
-            `\\[\\[\\s*(?:Category|分类|分類)\\s*:\\s*${firstPattern}${restPattern}\\s*(?:(\\|[^\\]]*))?\\]\\]`,
+            `\\[\\[\\s*(?:Category|Cat|分类|分類)\\s*:\\s*${firstPattern}${restPattern}\\s*(?:(\\|[^\\]]*))?\\]\\]`,
             "gi",
         );
     };
@@ -193,7 +193,7 @@ $(() => {
         const clean = normalizeCatName(catName);
         const fullTitle = `Category:${clean}`;
 
-        const parentReq = api.get({
+        const parentReq = api.post({
             action: "query",
             prop: "categories",
             titles: fullTitle,
@@ -720,15 +720,15 @@ $(() => {
                 const src = this.pageCategoryName;
                 const tgt = targetCat;
                 if (mode === "add") {
-                    return uls(`[[Help:Cat-a-lot|Cat-a-lot]]：加入分类[[Category:${tgt}]]`, `[[Help:Cat-a-lot|Cat-a-lot]]：加入分類[[Category:${tgt}]]`);
+                    return uls(`[[Help:Cat-a-lot|Cat-a-lot]]：加入分类[[Cat:${tgt}]]`, `[[Help:Cat-a-lot|Cat-a-lot]]：加入分類[[Cat:${tgt}]]`);
                 }
                 if (mode === "copy") {
-                    return uls(`[[Help:Cat-a-lot|Cat-a-lot]]：分类间复制：从[[Category:${src}]]到[[Category:${tgt}]]`, `[[Help:Cat-a-lot|Cat-a-lot]]：分類間複製：從[[Category:${src}]]到[[Category:${tgt}]]`);
+                    return uls(`[[Help:Cat-a-lot|Cat-a-lot]]：分类间复制：从[[Cat:${src}]]到[[Cat:${tgt}]]`, `[[Help:Cat-a-lot|Cat-a-lot]]：分類間複製：從[[Cat:${src}]]到[[Cat:${tgt}]]`);
                 }
                 if (mode === "move") {
-                    return uls(`[[Help:Cat-a-lot|Cat-a-lot]]：分类间移动：从[[Category:${src}]]到[[Category:${tgt}]]`, `[[Help:Cat-a-lot|Cat-a-lot]]：分類間移動：從[[Category:${src}]]到[[Category:${tgt}]]`);
+                    return uls(`[[Help:Cat-a-lot|Cat-a-lot]]：分类间移动：从[[Cat:${src}]]到[[Cat:${tgt}]]`, `[[Help:Cat-a-lot|Cat-a-lot]]：分類間移動：從[[Cat:${src}]]到[[Cat:${tgt}]]`);
                 }
-                return uls(`[[Help:Cat-a-lot|Cat-a-lot]]：从分类移除：[[Category:${src}]]`, `[[Help:Cat-a-lot|Cat-a-lot]]：從分類移除：[[Category:${src}]]`);
+                return uls(`[[Help:Cat-a-lot|Cat-a-lot]]：从分类移除：[[Cat:${src}]]`, `[[Help:Cat-a-lot|Cat-a-lot]]：從分類移除：[[Cat:${src}]]`);
             },
             async runBatch(mode, targetCat = "") {
                 if (this.isRunning || this.batchPending) {
