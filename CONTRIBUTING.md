@@ -22,7 +22,7 @@
 
 ## packages/ 目录下的本地构建小工具
 
-部分小工具的源码位于 [`packages/`](packages/) 目录（如 [packages/Navigation_popups](packages/Navigation_popups)），构建产物不进入仓库：部署机器人执行 `npm run build` 时构建到 `dist/`。对这类小工具：
+部分小工具的源码位于 [`packages/`](packages/) 目录（如 [packages/Navigation_popups](packages/Navigation_popups)），源码为 TypeScript / TSX / Vue SFC，构建产物不进入仓库：部署机器人执行 `npm run build` 时构建到 `dist/`。对这类小工具：
 
 - 修改请在 `packages/<包名>/` 的源码内进行；
 - 在仓库根目录执行 `npm run package:build` 本地构建并验证（部署链由部署机器人执行 `npm run build` 完成）；

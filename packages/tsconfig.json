@@ -12,6 +12,7 @@
     },
     "include": [
         "*/src",
+        "*/src/**/*.vue",
         "*/tests",
         "*/vitest.config.ts",
         "../src/@types/site-lib.d.ts",

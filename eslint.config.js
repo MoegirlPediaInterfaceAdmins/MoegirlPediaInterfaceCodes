@@ -1,4 +1,7 @@
 import { configs } from "@annangela/eslint-config";
+import typescriptParser from "@typescript-eslint/parser";
+import vuePlugin from "eslint-plugin-vue";
+import vueParser from "vue-eslint-parser";
 import jsonModule from "./scripts/modules/jsonModule.js";
 import { nodeLintTargets } from "./scripts/modules/lintTargets.js";
 
@@ -51,6 +54,50 @@ const packageFiles = [
     "packages/*/src/**/*.{ts,tsx}",
     "packages/*/tests/**/*.{ts,tsx}",
 ];
+
+/** packages/ 下 Vue SFC（模板 + 极薄 script）。 */
+const vueFiles = [
+    "packages/*/src/**/*.vue",
+];
+
+/**
+ * packages/ 浏览器侧源码共享的全局名。TS 块与 Vue 块共用，避免两处漂移。
+ * @type { Record<string, false> }
+ */
+const packageGlobals = {
+    ...configs.browser.languageOptions.globals,
+    mw: false,
+    mediaWiki: false,
+    // OOUI 由 ResourceLoader 注入，packages 下的小工具同样使用
+    OO: false,
+    wgULS: false,
+    wgUVS: false,
+    moment: false,
+    // JSONViewer 入口把整段逻辑包在 $(() => …) 中（jQuery ready 简写），不能删
+    $: false,
+    jQuery: false,
+    // 由 esbuild define 注入的编译期常量，见 packages/JSONViewer/src/env.d.ts
+    __DEV__: false,
+    // 由 wikEd gadget 在运行时提供（该小工具存在时）
+    wikEdUseWikEd: false,
+    WikEdUpdateFrame: false,
+    // 仅类型位置的名字：no-undef 无法区分类型位置与值位置，ambient 类型须在此声明；
+    // 值位置的误用仍会被 tsc 检出（TS2693: "only refers to a type"）
+    JQuery: false,
+    HTMLElementTagNameMap: false,
+    // ext.gadget.libOOUIDialog 提供的站点全局
+    oouiDialog: false,
+    HTMLCollectionOf: false,
+    EventListener: false,
+    GlobalEventHandlers: false,
+    MouseEventInit: false,
+};
+
+/** vue-eslint-plugin 的 flat/essential 规则（只取规则，不重复声明 parser/plugin）。 */
+const vueEssentialRules = (Array.isArray(vuePlugin.configs["flat/essential"])
+    ? vuePlugin.configs["flat/essential"]
+    : [vuePlugin.configs["flat/essential"] ?? []])
+    .reduce((rules, entry) => ({ ...rules, ...entry.rules }), {});
 
 /**
  * @type { import("eslint").Linter.Config[] }
@@ -107,34 +154,7 @@ const config = [
         ],
         languageOptions: {
             ...configs.typescript.languageOptions,
-            globals: {
-                ...configs.browser.languageOptions.globals,
-                mw: false,
-                mediaWiki: false,
-                // OOUI 由 ResourceLoader 注入，packages 下的小工具同样使用
-                OO: false,
-                wgULS: false,
-                wgUVS: false,
-                moment: false,
-                // JSONViewer 入口把整段逻辑包在 $(() => …) 中（jQuery ready 简写），不能删
-                $: false,
-                jQuery: false,
-                // 由 esbuild define 注入的编译期常量，见 packages/JSONViewer/src/env.d.ts
-                __DEV__: false,
-                // 由 wikEd gadget 在运行时提供（该小工具存在时）
-                wikEdUseWikEd: false,
-                WikEdUpdateFrame: false,
-                // 仅类型位置的名字：no-undef 无法区分类型位置与值位置，ambient 类型须在此声明；
-                // 值位置的误用仍会被 tsc 检出（TS2693: "only refers to a type"）
-                JQuery: false,
-                HTMLElementTagNameMap: false,
-                // ext.gadget.libOOUIDialog 提供的站点全局
-                oouiDialog: false,
-                HTMLCollectionOf: false,
-                EventListener: false,
-                GlobalEventHandlers: false,
-                MouseEventInit: false,
-            },
+            globals: packageGlobals,
         },
         rules: {
             ...configs.typescript.rules,
@@ -143,6 +163,36 @@ const config = [
             // last_attr…）与 wiki/DOM 约定标识符 1:1 保留以便上游补丁仍可对照
             "no-use-before-define": "off",
             camelcase: "off",
+        },
+    },
+    {
+        // packages/ 下的 Vue SFC：模板由 vue-eslint-parser 解析，script 交给 TS parser，
+        // 规则沿用 TS 严集 + vue plugin 的 flat/essential（不引入 stylistic 规则，避免与
+        // 仓库 4 空格 / 200 列的行宽约定冲突；模板类型由 vue-tsc 负责）。
+        files: [
+            ...vueFiles,
+        ],
+        languageOptions: {
+            parser: vueParser,
+            parserOptions: {
+                ...configs.typescript.languageOptions.parserOptions,
+                parser: typescriptParser,
+                extraFileExtensions: [".vue"],
+                sourceType: "module",
+            },
+            globals: packageGlobals,
+        },
+        plugins: {
+            ...configs.typescript.plugins,
+            vue: vuePlugin,
+        },
+        // eslint-plugin-vue 的 flat/base 通过 processor 吞掉 SFC 行尾的 comment-directive clear 信号
+        processor: "vue/vue",
+        rules: {
+            ...configs.typescript.rules,
+            ...vueEssentialRules,
+            // 组件名由 SFC 文件名与 defineComponent name 决定，CatALotApp 视为多词
+            "vue/multi-word-component-names": "off",
         },
     },
     {

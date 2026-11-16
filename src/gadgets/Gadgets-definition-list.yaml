@@ -80,6 +80,7 @@
     - wikiplus-highlight
     - DisamAssist
     - AiAssisted
+    - Cat-a-lot
 
 - name: maintenance
   gadgets:

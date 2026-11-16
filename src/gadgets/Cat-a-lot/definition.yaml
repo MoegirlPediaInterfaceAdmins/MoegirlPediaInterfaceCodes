@@ -1,0 +1,46 @@
+ResourceLoader: true
+
+hidden: false
+
+default: false
+
+supportsUrlLoad: true
+
+skins: []
+
+actions: []
+
+categories: []
+
+namespaces: []
+
+contentModels: []
+
+type: general
+
+package: false
+
+rights:
+  - autopatrol
+
+peers: []
+
+dependencies:
+  - jquery
+  - mediawiki.api
+  - mediawiki.storage
+  - mediawiki.Title
+  - mediawiki.util
+  - ext.gadget.site-lib
+  - vue
+  - '@wikimedia/codex'
+
+_sites:
+  - zh
+  - commons
+
+_section: editing
+
+_files:
+  - Gadget-Cat-a-lot.js
+  - Gadget-Cat-a-lot.css

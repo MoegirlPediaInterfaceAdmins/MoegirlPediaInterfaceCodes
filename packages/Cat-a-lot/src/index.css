@@ -1,0 +1,588 @@
+/**
+ * Cat-a-lot Gadget Styles (Codex UI + Vector 2022 & MoeSkin Dark Mode)
+ */
+
+.cal-app {
+    --cal-bg: var(--background-color-base, #fff);
+    --cal-bg-subtle: var(--background-color-neutral-subtle, #f8f9fa);
+    --cal-bg-hover: var(--background-color-interactive-subtle, #eaecf0);
+    --cal-bg-progressive-soft: var(--background-color-progressive-subtle, #eaf3ff);
+    --cal-bg-success-soft: var(--background-color-success-subtle, #d5fdf4);
+    --cal-bg-warn-soft: var(--background-color-warning-subtle, #fef6e7);
+    --cal-bg-error-soft: var(--background-color-error-subtle, #ffe9e5);
+    --cal-text: var(--color-base, #202122);
+    --cal-text-emphasized: var(--color-emphasized, #101418);
+    --cal-text-subtle: var(--color-subtle, #54595d);
+    --cal-progressive: var(--color-progressive, #36c);
+    --cal-progressive-hover: var(--color-progressive--hover, #447ff5);
+    --cal-success: var(--color-success, #177860);
+    --cal-warn: var(--color-warning, #ab7f2a);
+    --cal-danger: var(--color-destructive, #d73333);
+    --cal-border: var(--border-color-subtle, #c8ccd1);
+    --cal-border-strong: var(--border-color-base, #a2a9b1);
+    --cal-border-progressive: var(--border-color-progressive, #36c);
+    --cal-radius: var(--border-radius-base, 2px);
+    --cal-shadow: 0 4px 18px rgb(0 0 0 / 14%);
+}
+
+html.dark .cal-app,
+html.dark .cal-dialog-backdrop,
+html.dark #mw-teleport-target,
+html.skin-theme-clientpref-night .cal-app,
+html.skin-theme-clientpref-night .cal-dialog-backdrop,
+html.skin-theme-clientpref-night #mw-teleport-target,
+body.theme-dark .cal-app,
+body.theme-dark .cal-dialog-backdrop,
+body.theme-dark #mw-teleport-target,
+html.theme-dark .cal-app,
+html.theme-dark .cal-dialog-backdrop,
+html.theme-dark #mw-teleport-target {
+    color-scheme: dark;
+
+    --background-color-base: #101418;
+    --background-color-neutral: #27292d;
+    --background-color-neutral-subtle: #202122;
+    --background-color-interactive: #27292d;
+    --background-color-interactive-subtle: #202122;
+    --background-color-interactive-subtle--hover: #2d3036;
+    --background-color-interactive-subtle--active: #363a42;
+    --background-color-disabled: #27292d;
+    --background-color-disabled-subtle: #202122;
+    --background-color-input-binary--checked: #6ea8fe;
+    --background-color-progressive: #6ea8fe;
+    --background-color-progressive--hover: #8bb9fe;
+    --background-color-progressive--active: #5694f1;
+    --background-color-progressive-subtle: rgb(110 168 254 / 16%);
+    --background-color-destructive: #ff6b6b;
+    --background-color-destructive--hover: #ff8787;
+    --background-color-destructive--active: #fa5252;
+    --background-color-destructive-subtle: rgb(255 107 107 / 16%);
+    --background-color-error-subtle: rgb(255 87 87 / 16%);
+    --background-color-warning-subtle: rgb(240 173 78 / 16%);
+    --background-color-success-subtle: rgb(44 169 130 / 16%);
+    --color-base: #eaecf0;
+    --color-emphasized: #f8f9fa;
+    --color-subtle: #a2a9b1;
+    --color-placeholder: #72777d;
+    --color-disabled: #72777d;
+    --color-disabled-emphasized: #72777d;
+    --color-inverted: #101418;
+    --color-progressive: #6ea8fe;
+    --color-progressive--hover: #8bb9fe;
+    --color-destructive: #ff6b6b;
+    --color-error: #ff6b6b;
+    --color-warning: #f5b942;
+    --color-success: #4fd1a5;
+    --border-color-base: #54595d;
+    --border-color-subtle: #3a3f45;
+    --border-color-interactive: #54595d;
+    --border-color-disabled: #3a3f45;
+    --border-color-input-binary: #54595d;
+    --border-color-input-binary--hover: #8bb9fe;
+    --border-color-input-binary--checked: #6ea8fe;
+    --border-color-input-binary--disabled: #3a3f45;
+    --border-color-progressive: #6ea8fe;
+    --box-shadow-color-progressive--focus: #6ea8fe;
+    --cal-bg: #101418;
+    --cal-bg-subtle: #202122;
+    --cal-bg-hover: #27292d;
+    --cal-bg-progressive-soft: rgb(110 168 254 / 16%);
+    --cal-bg-success-soft: rgb(44 169 130 / 16%);
+    --cal-bg-warn-soft: rgb(240 173 78 / 16%);
+    --cal-bg-error-soft: rgb(255 87 87 / 16%);
+    --cal-text: #eaecf0;
+    --cal-text-emphasized: #f8f9fa;
+    --cal-text-subtle: #a2a9b1;
+    --cal-progressive: #6ea8fe;
+    --cal-progressive-hover: #8bb9fe;
+    --cal-success: #4fd1a5;
+    --cal-warn: #f5b942;
+    --cal-danger: #ff6b6b;
+    --cal-border: #3a3f45;
+    --cal-border-strong: #54595d;
+    --cal-border-progressive: #6ea8fe;
+    --cal-shadow: 0 6px 24px rgb(0 0 0 / 55%);
+}
+
+@media (prefers-color-scheme: dark) {
+    html.skin-theme-clientpref-os .cal-app,
+    html.skin-theme-clientpref-os .cal-dialog-backdrop,
+    html.skin-theme-clientpref-os #mw-teleport-target {
+        color-scheme: dark;
+
+        --background-color-base: #101418;
+        --background-color-neutral: #27292d;
+        --background-color-neutral-subtle: #202122;
+        --background-color-interactive: #27292d;
+        --background-color-interactive-subtle: #202122;
+        --background-color-interactive-subtle--hover: #2d3036;
+        --background-color-interactive-subtle--active: #363a42;
+        --background-color-disabled: #27292d;
+        --background-color-disabled-subtle: #202122;
+        --background-color-input-binary--checked: #6ea8fe;
+        --background-color-progressive: #6ea8fe;
+        --background-color-progressive--hover: #8bb9fe;
+        --background-color-progressive--active: #5694f1;
+        --background-color-progressive-subtle: rgb(110 168 254 / 16%);
+        --background-color-destructive: #ff6b6b;
+        --background-color-destructive--hover: #ff8787;
+        --background-color-destructive--active: #fa5252;
+        --background-color-destructive-subtle: rgb(255 107 107 / 16%);
+        --background-color-error-subtle: rgb(255 87 87 / 16%);
+        --background-color-warning-subtle: rgb(240 173 78 / 16%);
+        --background-color-success-subtle: rgb(44 169 130 / 16%);
+        --color-base: #eaecf0;
+        --color-emphasized: #f8f9fa;
+        --color-subtle: #a2a9b1;
+        --color-placeholder: #72777d;
+        --color-disabled: #72777d;
+        --color-disabled-emphasized: #72777d;
+        --color-inverted: #101418;
+        --color-progressive: #6ea8fe;
+        --color-progressive--hover: #8bb9fe;
+        --color-destructive: #ff6b6b;
+        --color-error: #ff6b6b;
+        --color-warning: #f5b942;
+        --color-success: #4fd1a5;
+        --border-color-base: #54595d;
+        --border-color-subtle: #3a3f45;
+        --border-color-interactive: #54595d;
+        --border-color-disabled: #3a3f45;
+        --border-color-input-binary: #54595d;
+        --border-color-input-binary--hover: #8bb9fe;
+        --border-color-input-binary--checked: #6ea8fe;
+        --border-color-input-binary--disabled: #3a3f45;
+        --border-color-progressive: #6ea8fe;
+        --box-shadow-color-progressive--focus: #6ea8fe;
+        --cal-bg: #101418;
+        --cal-bg-subtle: #202122;
+        --cal-bg-hover: #27292d;
+        --cal-bg-progressive-soft: rgb(110 168 254 / 16%);
+        --cal-bg-success-soft: rgb(44 169 130 / 16%);
+        --cal-bg-warn-soft: rgb(240 173 78 / 16%);
+        --cal-bg-error-soft: rgb(255 87 87 / 16%);
+        --cal-text: #eaecf0;
+        --cal-text-emphasized: #f8f9fa;
+        --cal-text-subtle: #a2a9b1;
+        --cal-progressive: #6ea8fe;
+        --cal-progressive-hover: #8bb9fe;
+        --cal-success: #4fd1a5;
+        --cal-warn: #f5b942;
+        --cal-danger: #ff6b6b;
+        --cal-border: #3a3f45;
+        --cal-border-strong: #54595d;
+        --cal-border-progressive: #6ea8fe;
+        --cal-shadow: 0 6px 24px rgb(0 0 0 / 55%);
+    }
+}
+
+html.dark .cal-app .cdx-select-vue__handle[disabled],
+html.dark .cal-app .cdx-select-vue--disabled .cdx-select-vue__handle,
+html.dark .cal-app .cdx-text-input__input:disabled,
+html.dark .cal-app .cdx-text-area__textarea:disabled,
+html.dark .cal-app select:disabled,
+html.dark .cal-app input:disabled,
+html.dark .cal-app textarea:disabled,
+html.skin-theme-clientpref-night .cal-app .cdx-select-vue__handle[disabled],
+html.skin-theme-clientpref-night .cal-app .cdx-select-vue--disabled .cdx-select-vue__handle,
+html.skin-theme-clientpref-night .cal-app .cdx-text-input__input:disabled {
+    background-color: #202122 !important;
+    color: #72777d !important;
+    border-color: #3a3f45 !important;
+}
+
+html.dark .cal-app .cdx-checkbox__input:not(:checked) + .cdx-checkbox__icon,
+html.dark .cal-app .cdx-radio__input:not(:checked) + .cdx-radio__icon,
+html.skin-theme-clientpref-night .cal-app .cdx-checkbox__input:not(:checked) + .cdx-checkbox__icon {
+    background-color: #101418 !important;
+    border-color: #54595d !important;
+}
+
+html.dark .cal-app .cdx-checkbox__input:disabled + .cdx-checkbox__icon,
+html.skin-theme-clientpref-night .cal-app .cdx-checkbox__input:disabled + .cdx-checkbox__icon {
+    background-color: #202122 !important;
+    border-color: #3a3f45 !important;
+}
+
+html.dark #mw-teleport-target .cdx-menu,
+html.dark .cal-app .cdx-menu,
+html.skin-theme-clientpref-night #mw-teleport-target .cdx-menu,
+html.skin-theme-clientpref-night .cal-app .cdx-menu {
+    background-color: #101418;
+    border-color: #54595d;
+    color: #eaecf0;
+}
+
+.cal-dock {
+    position: fixed;
+    right: 12px;
+    bottom: 0;
+    z-index: 250;
+    box-sizing: border-box;
+    width: min(390px, calc(100vw - 24px));
+    background-color: var(--cal-bg);
+    color: var(--cal-text);
+    border: 1px solid var(--cal-border-progressive);
+    border-bottom: none;
+    border-radius: 6px 6px 0 0;
+    box-shadow: var(--cal-shadow);
+    font-size: 13px;
+    line-height: 1.5;
+    display: flex;
+    flex-direction: column;
+}
+
+.cal-dock.is-collapsed {
+    width: auto;
+    min-width: 150px;
+}
+
+.cal-resize-handle {
+    position: absolute;
+    top: -4px;
+    left: 0;
+    right: 0;
+    height: 8px;
+    cursor: ns-resize;
+    z-index: 2;
+}
+
+.cal-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 6px 10px;
+    background-color: var(--cal-bg-subtle);
+    border-bottom: 1px solid var(--cal-border);
+    border-radius: 6px 6px 0 0;
+    user-select: none;
+}
+
+.cal-dock.is-collapsed .cal-head {
+    border-bottom: none;
+}
+
+.cal-head-title {
+    display: inline-flex;
+    align-items: center;
+    font-weight: 700;
+    color: var(--cal-progressive);
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.cal-head-title:hover {
+    text-decoration: underline;
+}
+
+/* A8：仅在确实显示徽章时用 margin 留白，标题后不会出现无意义空白 */
+.cal-head-title .cal-chip {
+    margin-left: 6px;
+}
+
+.cal-head-actions {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.cal-body {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 10px;
+    max-height: var(--cal-panel-height, 440px);
+    overflow: hidden;
+}
+
+.cal-status-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 6px;
+}
+
+.cal-progress {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.cal-chip {
+    display: inline-flex;
+    align-items: center;
+    padding: 1px 8px;
+    font-size: 12px;
+    font-weight: 600;
+    border-radius: 999px;
+    border: 1px solid var(--cal-border);
+    background-color: var(--cal-bg-subtle);
+    color: var(--cal-text);
+    white-space: nowrap;
+}
+
+.cal-chip--notice {
+    background-color: var(--cal-bg-progressive-soft);
+    border-color: var(--cal-border-progressive);
+    color: var(--cal-progressive);
+}
+
+.cal-chip--warning {
+    background-color: var(--cal-bg-warn-soft);
+    border-color: var(--cal-warn);
+    color: var(--cal-warn);
+}
+
+.cal-chip--success {
+    background-color: var(--cal-bg-success-soft);
+    border-color: var(--cal-success);
+    color: var(--cal-success);
+}
+
+.cal-hint {
+    font-size: 12px;
+    color: var(--cal-text-subtle);
+}
+
+.cal-list-hint {
+    padding: 10px;
+}
+
+.cal-list-hint--strong {
+    font-weight: 700;
+}
+
+.cal-cat-list {
+    flex: 1 1 auto;
+    min-height: 110px;
+    overflow-y: auto;
+    border: 1px solid var(--cal-border);
+    border-radius: var(--cal-radius);
+    background-color: var(--cal-bg-subtle);
+}
+
+.cal-cat-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12.5px;
+}
+
+.cal-cat-table tr {
+    border-bottom: 1px solid var(--cal-border);
+}
+
+.cal-cat-table tr:last-child {
+    border-bottom: none;
+}
+
+.cal-cat-table tr:hover {
+    background-color: var(--cal-bg-progressive-soft);
+}
+
+.cal-cat-table td {
+    padding: 4px 6px;
+    vertical-align: middle;
+}
+
+.cal-cat-table .cal-list-hint {
+    padding: 6px 8px;
+}
+
+.cal-cat-dir {
+    width: 22px;
+    text-align: center;
+    color: var(--cal-text-subtle);
+    font-weight: 700;
+}
+
+.cal-cat-name a {
+    color: var(--cal-progressive);
+    cursor: pointer;
+    text-decoration: none;
+    word-break: break-all;
+}
+
+.cal-cat-name a:hover {
+    text-decoration: underline;
+}
+
+.cal-cat-name--current {
+    font-weight: 700;
+    color: var(--cal-text-emphasized);
+}
+
+.cal-cat-acts {
+    white-space: nowrap;
+    text-align: right;
+}
+
+.cal-cat-act-link {
+    display: inline-block;
+    padding: 1px 6px;
+    margin-left: 4px;
+    font-size: 12px;
+    border-radius: var(--cal-radius);
+    border: 1px solid var(--cal-border);
+    background-color: var(--cal-bg);
+    color: var(--cal-progressive);
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.cal-cat-act-link:hover {
+    background-color: var(--cal-bg-progressive-soft);
+    border-color: var(--cal-border-progressive);
+}
+
+/* A14：批处理进行中，分类树与选择链接全部禁用 */
+.cal-dock.is-busy .cal-cat-name a,
+.cal-dock.is-busy .cal-cat-act-link,
+.cal-dock.is-busy .cal-selections a {
+    pointer-events: none;
+    opacity: 0.55;
+    cursor: default;
+}
+
+.cal-input-wrap {
+    position: relative;
+}
+
+.cal-suggestions {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: calc(100% + 4px);
+    max-height: 180px;
+    overflow-y: auto;
+    margin: 0;
+    padding: 4px 0;
+    list-style: none;
+    background-color: var(--cal-bg);
+    border: 1px solid var(--cal-border-progressive);
+    border-radius: var(--cal-radius);
+    box-shadow: var(--cal-shadow);
+    z-index: 20;
+}
+
+.cal-suggestions li {
+    padding: 5px 10px;
+    cursor: pointer;
+    font-size: 12.5px;
+    color: var(--cal-text);
+}
+
+.cal-suggestions li.is-active,
+.cal-suggestions li:hover {
+    background-color: var(--cal-bg-progressive-soft);
+    color: var(--cal-progressive);
+}
+
+.cal-quick-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 6px;
+}
+
+.cal-quick-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+}
+
+.cal-selections {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: var(--cal-text-subtle);
+}
+
+.cal-selections a {
+    color: var(--cal-progressive);
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.cal-selections a:hover {
+    text-decoration: underline;
+}
+
+.cal-prefs-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.cal-result-list {
+    margin: 6px 0 0;
+    padding-left: 18px;
+    max-height: 150px;
+    overflow-y: auto;
+    font-size: 12.5px;
+}
+
+.cal-dialog-text {
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    margin: 0 0 10px;
+}
+
+/* Page item selection highlight (compatible with light & dark mode) */
+.gadget-cat_a_lot-label {
+    border-radius: 2px;
+    transition: background-color 0.15s ease, outline-color 0.15s ease;
+    cursor: pointer;
+}
+
+.gadget-cat_a_lot-label--last-selected {
+    font-weight: 700;
+    outline: 2px dotted #36c;
+    outline-offset: 1px;
+}
+
+.gadget-cat_a_lot-label--done {
+    background-color: rgb(23 120 96 / 20%) !important;
+}
+
+.gadget-cat_a_lot-label--selected {
+    background-color: rgb(51 102 204 / 18%) !important;
+}
+
+html.dark .gadget-cat_a_lot-label--last-selected,
+html.skin-theme-clientpref-night .gadget-cat_a_lot-label--last-selected,
+body.theme-dark .gadget-cat_a_lot-label--last-selected,
+html.theme-dark .gadget-cat_a_lot-label--last-selected {
+    outline-color: #6ea8fe;
+}
+
+html.dark .gadget-cat_a_lot-label--done,
+html.skin-theme-clientpref-night .gadget-cat_a_lot-label--done,
+body.theme-dark .gadget-cat_a_lot-label--done,
+html.theme-dark .gadget-cat_a_lot-label--done {
+    background-color: rgb(79 209 165 / 24%) !important;
+}
+
+html.dark .gadget-cat_a_lot-label--selected,
+html.skin-theme-clientpref-night .gadget-cat_a_lot-label--selected,
+body.theme-dark .gadget-cat_a_lot-label--selected,
+html.theme-dark .gadget-cat_a_lot-label--selected {
+    background-color: rgb(110 168 254 / 25%) !important;
+}
+
+@media (prefers-color-scheme: dark) {
+    html.skin-theme-clientpref-os .gadget-cat_a_lot-label--last-selected {
+        outline-color: #6ea8fe;
+    }
+
+    html.skin-theme-clientpref-os .gadget-cat_a_lot-label--done {
+        background-color: rgb(79 209 165 / 24%) !important;
+    }
+
+    html.skin-theme-clientpref-os .gadget-cat_a_lot-label--selected {
+        background-color: rgb(110 168 254 / 25%) !important;
+    }
+}
