@@ -30,7 +30,6 @@ dependencies:
   - mediawiki.api
   - mediawiki.storage
   - mediawiki.Title
-  - mediawiki.user
   - mediawiki.util
   - ext.gadget.site-lib
   - vue

@@ -266,7 +266,6 @@ html.skin-theme-clientpref-night .cal-app .cdx-menu {
 .cal-head-title {
     display: inline-flex;
     align-items: center;
-    gap: 6px;
     font-weight: 700;
     color: var(--cal-progressive);
     cursor: pointer;
@@ -275,6 +274,11 @@ html.skin-theme-clientpref-night .cal-app .cdx-menu {
 
 .cal-head-title:hover {
     text-decoration: underline;
+}
+
+/* A8：仅在确实显示徽章时用 margin 留白，标题后不会出现无意义空白 */
+.cal-head-title .cal-chip {
+    margin-left: 6px;
 }
 
 .cal-head-actions {
@@ -297,6 +301,12 @@ html.skin-theme-clientpref-night .cal-app .cdx-menu {
     flex-wrap: wrap;
     align-items: center;
     justify-content: space-between;
+    gap: 6px;
+}
+
+.cal-progress {
+    display: flex;
+    flex-direction: column;
     gap: 6px;
 }
 
@@ -336,6 +346,14 @@ html.skin-theme-clientpref-night .cal-app .cdx-menu {
     color: var(--cal-text-subtle);
 }
 
+.cal-list-hint {
+    padding: 10px;
+}
+
+.cal-list-hint--strong {
+    font-weight: 700;
+}
+
 .cal-cat-list {
     flex: 1 1 auto;
     min-height: 110px;
@@ -366,6 +384,10 @@ html.skin-theme-clientpref-night .cal-app .cdx-menu {
 .cal-cat-table td {
     padding: 4px 6px;
     vertical-align: middle;
+}
+
+.cal-cat-table .cal-list-hint {
+    padding: 6px 8px;
 }
 
 .cal-cat-dir {
@@ -414,6 +436,15 @@ html.skin-theme-clientpref-night .cal-app .cdx-menu {
     border-color: var(--cal-border-progressive);
 }
 
+/* A14：批处理进行中，分类树与选择链接全部禁用 */
+.cal-dock.is-busy .cal-cat-name a,
+.cal-dock.is-busy .cal-cat-act-link,
+.cal-dock.is-busy .cal-selections a {
+    pointer-events: none;
+    opacity: 0.55;
+    cursor: default;
+}
+
 .cal-input-wrap {
     position: relative;
 }
@@ -454,6 +485,12 @@ html.skin-theme-clientpref-night .cal-app .cdx-menu {
     align-items: center;
     justify-content: space-between;
     gap: 6px;
+}
+
+.cal-quick-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
 }
 
 .cal-selections {
