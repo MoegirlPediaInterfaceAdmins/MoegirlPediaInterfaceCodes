@@ -8,8 +8,9 @@ supportsUrlLoad: false
 
 skins: []
 
-actions: []
-
+actions: 
+  - view
+  
 categories: []
 
 namespaces: []
@@ -34,6 +35,7 @@ dependencies:
   - mediawiki.user
   - mediawiki.util
   - mediawiki.diff.styles
+  - mediawiki.notification
 
 _sites:
   - zh
