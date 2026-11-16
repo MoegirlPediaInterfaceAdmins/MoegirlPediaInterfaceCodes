@@ -1,16 +1,15 @@
 {
     "include": ["*.js", "*.d.ts"],
     "compilerOptions": {
-        "baseUrl": "./",
         "target": "ES6",
         "module": "ESNext",
-        "moduleResolution": "Node",
+        "moduleResolution": "Bundler",
+        "strict": true,
         "lib": ["ES6", "DOM", "DOM.Iterable"],
         "allowJs": true,
         "checkJs": true,
         "noEmit": true,
         "skipLibCheck": true,
-        "types": ["@inpageedit/core", "types-mediawiki"],
-        "paths": {}
+        "types": ["@inpageedit/core", "types-mediawiki"]
     }
 }

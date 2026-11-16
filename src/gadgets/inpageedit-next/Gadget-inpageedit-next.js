@@ -25,7 +25,8 @@ mw.hook("InPageEdit.ready").add((ipe) => {
         inject: ["quickEdit", "wiki", "currentPage"],
         apply: (ctx) => {
             // Constants
-            const title = ctx.currentPage.wikiTitle;
+            const title = /** @type {import("@inpageedit/core").IWikiTitle} */ (ctx.currentPage.wikiTitle);
+            // @ts-ignore URLSearchParams#get() returns `string | null`; unary `+` coerces null to 0 (intended)
             const revisionId = +ctx.currentPage.params.get("oldid") || undefined;
             /** @type {HTMLElement} */
             let editButton;
@@ -71,7 +72,7 @@ mw.hook("InPageEdit.ready").add((ipe) => {
                     caEdit.insertAdjacentElement("beforebegin", editButton);
                 }
             } else if (isMoeSkin) {
-                /** @type {HTMLAnchorElement} */
+                /** @type {HTMLAnchorElement | null} */
                 const caEdit = document.querySelector(".page-tool-link#ca-edit");
                 if (caEdit) {
                     // @ts-ignore caEdit is HTMLAnchorElement
@@ -79,8 +80,8 @@ mw.hook("InPageEdit.ready").add((ipe) => {
                     editButton.id = "ca-inpageedit";
                     editButton.setAttribute("href", "#");
                     editButton.addEventListener("click", openEditor);
-                    editButton.querySelector(".moe-icon").innerHTML = QuickEditSvg.replace("ipe-icon", "");
-                    editButton.querySelector(".tooltip").textContent = "使用 IPE 编辑";
+                    /** @type {HTMLElement} */ (editButton.querySelector(".moe-icon")).innerHTML = QuickEditSvg.replace("ipe-icon", "");
+                    /** @type {HTMLElement} */ (editButton.querySelector(".tooltip")).textContent = "使用 IPE 编辑";
 
                     caEdit.insertAdjacentElement("afterend", editButton);
                 }
