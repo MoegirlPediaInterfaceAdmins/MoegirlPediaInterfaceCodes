@@ -9,6 +9,7 @@
     --wikiblame-text-error: var(--color-error, #d33);
     --wikiblame-border: var(--border-color-subtle, #c8ccd1);
     --wikiblame-border-muted: var(--border-color-muted, #eaecf0);
+
     display: flex;
     flex-direction: column;
     gap: 12px;
