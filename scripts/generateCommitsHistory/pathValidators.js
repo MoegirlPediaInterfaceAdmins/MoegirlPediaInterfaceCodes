@@ -4,10 +4,9 @@ const PACKAGE_VALID_PATH_RE = /^packages\/([^/]+)\/(?:src\/|scripts\/|artifacts\
  * @param { string } file file path like "src/@types/libBottomRightCorner.d.ts"
  * @returns { boolean }
  */
-export const pathValidator = (file) => (
-    (file.startsWith("src/") && !file.startsWith("src/@types/"))
-    || PACKAGE_VALID_PATH_RE.test(file)
-);
+export const pathValidator = (file) =>
+    file.startsWith("src/") && !file.startsWith("src/@types/")
+    || PACKAGE_VALID_PATH_RE.test(file);
 
 /**
  * 展开 --numstat -M 的重命名路径，返回所有涉及的路径。
@@ -67,4 +66,3 @@ export const getChangeUnitKey = (raw) => {
  * @returns { string[] } 非空行对应的路径列表
  */
 export const parseNumstatPaths = (text) => text.split("\n").filter((line) => line.trim().length > 0).map((line) => line.split("\t").pop());
-
