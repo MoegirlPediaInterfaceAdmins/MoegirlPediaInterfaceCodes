@@ -8,23 +8,20 @@ $(() => {
         wgNamespaceNumber,
         wgPageName,
         wgUserName,
-        wgUserGroups,
     } = mw.config.get([
         "wgIsArticle",
         "wgArticleId",
         "wgNamespaceNumber",
         "wgPageName",
         "wgUserName",
-        "wgUserGroups",
     ]);
 
     if (!wgIsArticle || !wgArticleId || wgNamespaceNumber % 2 === 1) {
         return;
     }
 
-    const userGroups = Array.isArray(wgUserGroups) ? wgUserGroups : [];
-    const canBatchQueryRevisions = userGroups.includes("sysop") || userGroups.includes("staff");
-    const MULTI_REV_BATCH_SIZE = 20;
+    const canBatchQueryRevisions = true;
+    const MULTI_REV_BATCH_SIZE = 50;
     const MULTI_WAY_BRANCHES = 8;
     const DEFAULT_MAX_REVISIONS = 1000;
     const HARD_MAX_REVISIONS = 5000;
@@ -110,7 +107,7 @@ $(() => {
             this.api = new mw.Api();
             this.contentCache = new Map();
             this.hasApiHighLimits = false;
-            this.hasNoRateLimit = false;
+            this.pendingRequests = new Set();
             this.canBatchRevisions = canBatchQueryRevisions;
             this.rightsLoaded = false;
         }
@@ -122,12 +119,17 @@ $(() => {
             try {
                 const rights = await mw.user.getRights();
                 this.hasApiHighLimits = rights.includes("apihighlimits");
-                this.hasNoRateLimit = rights.includes("noratelimit");
             } catch {
                 this.hasApiHighLimits = false;
-                this.hasNoRateLimit = false;
             }
             this.rightsLoaded = true;
+        }
+
+        abortAll() {
+            for (const req of this.pendingRequests) {
+                req.abort?.();
+            }
+            this.pendingRequests.clear();
         }
 
         async requestWithBackoff(params, signal, usePost = false) {
@@ -135,7 +137,7 @@ $(() => {
                 throw new Error("CANCELLED");
             }
             const maxRetries = 4;
-            let delay = this.hasNoRateLimit ? 0 : 250;
+            let delay = 0;
             for (let attempt = 0; attempt <= maxRetries; attempt++) {
                 if (signal && signal.cancelled) {
                     throw new Error("CANCELLED");
@@ -154,9 +156,15 @@ $(() => {
                     if (wgUserName) {
                         reqParams.assertuser = wgUserName;
                     }
-                    return await (usePost ? this.api.post(reqParams) : this.api.get(reqParams));
+                    const req = usePost ? this.api.post(reqParams) : this.api.get(reqParams);
+                    this.pendingRequests.add(req);
+                    try {
+                        return await req;
+                    } finally {
+                        this.pendingRequests.delete(req);
+                    }
                 } catch (err) {
-                    const isRateLimited = err === "ratelimited" || err === "http" || err && err.code === "ratelimited";
+                    const isRateLimited = err === "ratelimited" || (err && err.code === "ratelimited");
                     if (isRateLimited && attempt < maxRetries) {
                         delay = Math.min((delay || 250) * 2 + 500, 8000);
                         continue;
@@ -174,7 +182,7 @@ $(() => {
                 action: "query",
                 prop: "revisions",
                 titles: wgPageName,
-                rvprop: "ids|timestamp|user|sha1|content",
+                rvprop: "ids|timestamp|user|sha1|content|comment",
                 rvslots: "main",
                 rvlimit: 1,
             }, signal);
@@ -212,15 +220,17 @@ $(() => {
                     action: "query",
                     prop: "revisions",
                     titles: wgPageName,
-                    rvprop: "ids|timestamp|user|sha1",
+                    rvprop: "ids|timestamp|user|sha1|comment",
                     rvlimit: Math.min(batchSize, remaining),
                     rvdir: "older",
                 };
                 if (endDate) {
-                    params.rvstart = `${endDate}T23:59:59Z`;
+                    const [year, month, day] = endDate.split("-").map(Number);
+                    params.rvstart = new Date(year, month - 1, day, 23, 59, 59, 999).toISOString();
                 }
                 if (startDate) {
-                    params.rvend = `${startDate}T00:00:00Z`;
+                    const [year, month, day] = startDate.split("-").map(Number);
+                    params.rvend = new Date(year, month - 1, day, 0, 0, 0, 0).toISOString();
                 }
                 if (rvcontinue) {
                     params.rvcontinue = rvcontinue;
@@ -301,18 +311,6 @@ $(() => {
                 this.contentCache.set(revid, content);
             }
             return content;
-        }
-
-        async fetchRevisionComment(revid, signal) {
-            const data = await this.requestWithBackoff({
-                action: "query",
-                prop: "revisions",
-                revids: revid,
-                rvprop: "ids|comment",
-            }, signal);
-            const page = data && data.query && data.query.pages && data.query.pages[0];
-            const rev = page && page.revisions && page.revisions[0];
-            return rev && rev.comment ? rev.comment : "";
         }
 
         async fetchCompare(fromrev, torev, signal) {
@@ -611,6 +609,7 @@ $(() => {
         static static = {
             ...super.static,
             name: "wikiBlameDialog",
+            escapable: true,
         };
 
         constructor(config, initialSelection, session) {
@@ -624,6 +623,13 @@ $(() => {
             this.cachedRangeKey = "";
             this.activeRunId = 0;
             this.activeRunSignal = null;
+            this.currentSource = null;
+        }
+
+        getTeardownProcess(data) {
+            return super.getTeardownProcess(data).next(() => {
+                this.cancelActiveRun();
+            });
         }
 
         initialize() {
@@ -751,6 +757,7 @@ $(() => {
             if (this.activeRunSignal) {
                 this.activeRunSignal.cancelled = true;
             }
+            this.session.abortAll();
         }
 
         setBusy(busy) {
@@ -762,6 +769,7 @@ $(() => {
             const loadSignal = { cancelled: false };
             try {
                 const current = await this.session.fetchCurrentSource(loadSignal);
+                this.currentSource = current;
                 this.sourceLines = current.content.split("\n");
                 this.lineCounts.clear();
                 for (const line of this.sourceLines) {
@@ -795,10 +803,16 @@ $(() => {
                     return;
                 }
                 matchedCount++;
-                const $line = $("<div>").addClass("wikiblame-source-line").attr("data-line", idx + 1);
+                const $line = $("<div>").addClass("wikiblame-source-line").attr("data-line", idx + 1).attr("tabindex", "0");
                 const $num = $("<span>").addClass("wikiblame-line-num").text(idx + 1);
                 const $text = $("<span>").addClass("wikiblame-line-text").text(line || " ");
                 $line.append($num, $text);
+                $line.on("keydown", (e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                        e.preventDefault();
+                        $line.trigger("click");
+                    }
+                 });
                 $line.on("click", () => {
                     const innerSelection = getSelectedText(this.$sourceViewer[0]);
                     const lineTrimmed = line.trim();
@@ -836,9 +850,22 @@ $(() => {
 
             const startDate = this.startDateInput.getValue().trim();
             const endDate = this.endDateInput.getValue().trim();
-            const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
-            if (startDate && !dateRegex.test(startDate) || endDate && !dateRegex.test(endDate)) {
-                const msg = "日期格式无效，请使用 YYYY-MM-DD（或留空）。";
+            const isValidDate = (str) => {
+                if (!/^\d{4}-\d{2}-\d{2}$/.test(str)) {
+                    return false;
+                }
+                const [y, m, d] = str.split("-").map((n) => Number.parseInt(n, 10));
+                const dt = new Date(y, m - 1, d);
+                return dt.getFullYear() === y && dt.getMonth() === m - 1 && dt.getDate() === d;
+            };
+            if ((startDate && !isValidDate(startDate)) || (endDate && !isValidDate(endDate))) {
+                const msg = "日期无效，请使用真实的 YYYY-MM-DD 日期（或留空）。";
+                this.$progress.empty().append($("<span>").addClass("wikiblame-hint-error").text(msg));
+                mw.notify(msg, { type: "error" });
+                return;
+            }
+            if (startDate && endDate && endDate < startDate) {
+                const msg = "结束日期不能早于起始日期。";
                 this.$progress.empty().append($("<span>").addClass("wikiblame-hint-error").text(msg));
                 mw.notify(msg, { type: "error" });
                 return;
@@ -875,6 +902,10 @@ $(() => {
             const rangeKey = `${startDate}|${endDate}|${parsedMaxRevs}`;
 
             try {
+                if (!beforeRevid && !startDate && !endDate && this.currentSource && !matcher(this.currentSource.content)) {
+                    this.$progress.empty().append($("<span>").addClass("wikiblame-hint-warn").text("所选修订区间内的最新版本中不包含该文本（或上下文已变化），请检查输入或放宽条件。"));
+                    return;
+                }
                 if (!this.cachedRevisions || this.cachedRangeKey !== rangeKey) {
                     const revs = await this.session.fetchRevisionMetadata({
                         startDate,
