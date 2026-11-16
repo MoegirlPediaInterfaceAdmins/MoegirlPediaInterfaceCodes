@@ -8,8 +8,9 @@ supportsUrlLoad: false
 
 skins: []
 
-actions: []
-
+actions: 
+  - view
+  
 categories: []
 
 namespaces: []
@@ -30,7 +31,11 @@ dependencies:
   - oojs
   - oojs-ui
   - oojs-ui-core
+  - mediawiki.api
+  - mediawiki.user
+  - mediawiki.util
   - mediawiki.diff.styles
+  - mediawiki.notification
 
 _sites:
   - zh
@@ -39,3 +44,4 @@ _section: maintenance
 
 _files:
   - Gadget-wikiBlame.js
+  - Gadget-wikiBlame.css
