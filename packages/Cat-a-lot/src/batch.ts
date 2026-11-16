@@ -279,10 +279,6 @@ const startBatch = (options: BatchOptions): BatchRun => {
                 }
             }
             clearDelay();
-            // Stop 已经中止过当前请求；正常结束时清掉可能残留的 active 记录
-            if (!isStopped()) {
-                api.abortActive();
-            }
             if (running) {
                 hooks.setRunning(false);
             }

@@ -132,19 +132,25 @@ const createApi = (userName: string): ApiClient => {
         }
     };
 
-    const request = <T>(promise: mw.Api.AbortablePromise): Promise<T> => {
+    const request = <T>(promise: mw.Api.AbortablePromise, trackAbort = true): Promise<T> => {
         const tracked = promise as unknown as TrackedRequest;
-        active = tracked;
+        if (trackAbort) {
+            active = tracked;
+        }
         return new Promise<T>((resolve, reject) => {
             // eslint-disable-next-line promise/prefer-await-to-then, promise/prefer-catch, promise/catch-or-return -- mw.Api 以 (code, result, ...) 多参 reject，await 只能拿到 code，会丢掉 error.info
             tracked.then(
                 (value) => {
-                    clearActive(tracked);
+                    if (trackAbort) {
+                        clearActive(tracked);
+                    }
                     resolve(value as T);
                     return;
                 },
                 (...args) => {
-                    clearActive(tracked);
+                    if (trackAbort) {
+                        clearActive(tracked);
+                    }
                     reject(toApiError(args));
                     return;
                 },
@@ -166,7 +172,7 @@ const createApi = (userName: string): ApiClient => {
             cllimit: "max",
             clshow: "!hidden",
             formatversion: 2,
-        }, { timeout: API_TIMEOUT_MS }));
+        }, { timeout: API_TIMEOUT_MS }), false);
         const subRequest = allowCategoryMembers
             ? request<SubcategoriesResponse>(getApi().post({
                 action: "query",
@@ -175,7 +181,7 @@ const createApi = (userName: string): ApiClient => {
                 cmtype: "subcat",
                 cmlimit: clampSubcatLimit(subcatLimit),
                 formatversion: 2,
-            }, { timeout: API_TIMEOUT_MS }))
+            }, { timeout: API_TIMEOUT_MS }), false)
             : Promise.resolve(null);
 
         const [parentResponse, subResponse] = await Promise.all([parentRequest, subRequest]);
@@ -198,7 +204,7 @@ const createApi = (userName: string): ApiClient => {
             search: clean,
             limit: 12,
             format: "json",
-        }, { timeout: API_TIMEOUT_MS }));
+        }, { timeout: API_TIMEOUT_MS }), false);
         return asArray(asArray(response)[1])
             .filter((item): item is string => typeof item === "string")
             .map((title) => normalizeCatName(title))

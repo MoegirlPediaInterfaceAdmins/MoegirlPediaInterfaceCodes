@@ -544,25 +544,45 @@ html.skin-theme-clientpref-night .cal-app .cdx-menu {
     outline-offset: 1px;
 }
 
-.gadget-cat_a_lot-label--selected {
-    background-color: rgb(51 102 204 / 18%) !important;
-}
-
 .gadget-cat_a_lot-label--done {
     background-color: rgb(23 120 96 / 20%) !important;
 }
 
+.gadget-cat_a_lot-label--selected {
+    background-color: rgb(51 102 204 / 18%) !important;
+}
+
 html.dark .gadget-cat_a_lot-label--last-selected,
-html.skin-theme-clientpref-night .gadget-cat_a_lot-label--last-selected {
+html.skin-theme-clientpref-night .gadget-cat_a_lot-label--last-selected,
+body.theme-dark .gadget-cat_a_lot-label--last-selected,
+html.theme-dark .gadget-cat_a_lot-label--last-selected {
     outline-color: #6ea8fe;
 }
 
+html.dark .gadget-cat_a_lot-label--done,
+html.skin-theme-clientpref-night .gadget-cat_a_lot-label--done,
+body.theme-dark .gadget-cat_a_lot-label--done,
+html.theme-dark .gadget-cat_a_lot-label--done {
+    background-color: rgb(79 209 165 / 24%) !important;
+}
+
 html.dark .gadget-cat_a_lot-label--selected,
-html.skin-theme-clientpref-night .gadget-cat_a_lot-label--selected {
+html.skin-theme-clientpref-night .gadget-cat_a_lot-label--selected,
+body.theme-dark .gadget-cat_a_lot-label--selected,
+html.theme-dark .gadget-cat_a_lot-label--selected {
     background-color: rgb(110 168 254 / 25%) !important;
 }
 
-html.dark .gadget-cat_a_lot-label--done,
-html.skin-theme-clientpref-night .gadget-cat_a_lot-label--done {
-    background-color: rgb(79 209 165 / 24%) !important;
+@media (prefers-color-scheme: dark) {
+    html.skin-theme-clientpref-os .gadget-cat_a_lot-label--last-selected {
+        outline-color: #6ea8fe;
+    }
+
+    html.skin-theme-clientpref-os .gadget-cat_a_lot-label--done {
+        background-color: rgb(79 209 165 / 24%) !important;
+    }
+
+    html.skin-theme-clientpref-os .gadget-cat_a_lot-label--selected {
+        background-color: rgb(110 168 254 / 25%) !important;
+    }
 }

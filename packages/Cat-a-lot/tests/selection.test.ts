@@ -149,6 +149,47 @@ describe("collectTargetLinks", () => {
 
         expect(collectedTitles()).toEqual(["File:FromGallery.png"]);
     });
+
+    it("分类页兼容 CategoryTreeBullet 前置节点与 redirect-in-category 重定向包装", () => {
+        installMw({ namespaceNumber: 14 });
+        document.body.innerHTML = `
+            <div id="mw-pages">
+                <div class="mw-category">
+                    <ul>
+                        <li><span class="redirect-in-category"><a href="/wiki/Redirect_Page" title="Redirect Page">Redirect Page</a></span></li>
+                    </ul>
+                </div>
+            </div>
+            <div id="mw-subcategories">
+                <div class="CategoryTreeItem">
+                    <span class="CategoryTreeBullet"><a href="#">[+]</a></span>
+                    <a class="CategoryTreeLabel" href="/wiki/Category:Sub_With_Bullet" title="Category:Sub With Bullet">Sub With Bullet</a>
+                </div>
+            </div>
+        `;
+
+        collectTargetLinks(true);
+
+        expect(collectedTitles()).toEqual([
+            "Redirect Page",
+            "Category:Sub With Bullet",
+        ]);
+    });
+
+    it("Prefixindex 兼容 allpagesredirect 重定向包装", () => {
+        installMw({ namespaceNumber: -1, specialPageName: "Prefixindex" });
+        document.body.innerHTML = `
+            <div id="mw-content-text">
+                <ul class="mw-prefixindex-list">
+                    <li><div class="allpagesredirect"><a href="/wiki/Prefix_Redirect" title="Prefix Redirect">Prefix Redirect</a></div></li>
+                </ul>
+            </div>
+        `;
+
+        collectTargetLinks(true);
+
+        expect(collectedTitles()).toEqual(["Prefix Redirect"]);
+    });
 });
 
 describe("bindPageItems / 选择", () => {

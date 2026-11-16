@@ -61,11 +61,16 @@
                 <div v-if="isLoadingCats" class="cal-hint cal-list-hint">
                     {{ uls("正在加载分类…", "正在加載分類…") }}
                 </div>
-                <div v-else-if="catNotFound" class="cal-hint cal-list-hint cal-list-hint--strong">
-                    {{ uls("找不到分类。", "找不到分類。") }}
-                </div>
                 <table v-else class="cal-cat-table">
                     <tbody>
+                        <tr v-if="catNotFound">
+                            <td colspan="3" class="cal-hint cal-list-hint cal-list-hint--strong">
+                                {{ uls(
+                                    "找不到分类（分类页尚未创建，仍可直接对其执行操作）。",
+                                    "找不到分類（分類頁尚未建立，仍可直接對其執行操作）。",
+                                ) }}
+                            </td>
+                        </tr>
                         <tr v-for="parent in parentCats" :key="`p-${parent}`">
                             <td class="cal-cat-dir">↑</td>
                             <td class="cal-cat-name">
@@ -97,13 +102,13 @@
                             <td class="cal-cat-name cal-cat-name--current">{{ currentCategory }}</td>
                             <td class="cal-cat-acts">
                                 <a
-                                    v-if="pageCategoryName && currentCategory !== pageCategoryName"
+                                    v-if="pageCategoryName && canActOnCurrentCategory"
                                     class="cal-cat-act-link"
                                     href="#"
                                     @click.prevent="runBatch('copy', currentCategory)"
                                 >{{ uls("复制", "複製") }}</a>
                                 <a
-                                    v-if="pageCategoryName && currentCategory !== pageCategoryName"
+                                    v-if="pageCategoryName && canActOnCurrentCategory"
                                     class="cal-cat-act-link"
                                     href="#"
                                     @click.prevent="runBatch('move', currentCategory)"
@@ -180,6 +185,13 @@
                     <a href="#" @click.prevent="toggleAllSelected(false)">{{ uls("无", "無") }}</a>
                 </div>
                 <div class="cal-quick-buttons">
+                    <cdx-button
+                        v-if="cleanInputCategory && pageCategoryName"
+                        size="small"
+                        type="button"
+                        :disabled="isBusy"
+                        @click="runBatch('copy', cleanInputCategory)"
+                    >{{ uls("复制到输入分类", "複製到輸入分類") }}</cdx-button>
                     <cdx-button
                         v-if="cleanInputCategory && pageCategoryName"
                         size="small"

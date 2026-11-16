@@ -28,7 +28,8 @@ const collectTargetLinks = (allowNonFiles: boolean): JQuery => {
         if (allowNonFiles) {
             selectors.push(
                 "#mw-pages .mw-category li > a:first-child",
-                "#mw-subcategories .CategoryTreeItem > a:first-child",
+                "#mw-pages .mw-category li > .redirect-in-category > a:first-child",
+                "#mw-subcategories .CategoryTreeItem > a:first-of-type",
             );
         }
     } else {
@@ -43,6 +44,7 @@ const collectTargetLinks = (allowNonFiles: boolean): JQuery => {
                 ".mw-search-results .mw-search-result-heading > a:first-child",
                 ".mw-spcontent ol.special li > a:first-child",
                 ".mw-prefixindex-list li > a:first-child",
+                ".mw-prefixindex-list li > .allpagesredirect > a:first-child",
             );
         }
     }

@@ -375,4 +375,28 @@ describe("abortActive", () => {
         expect(abort).toHaveBeenCalledTimes(1);
         void pending;
     });
+
+    it("分类树与搜索建议请求不覆盖且不被 abortActive 误中止", () => {
+        const api = createApi("TestUser");
+        const pageAbort = vi.fn<() => void>();
+        const treeAbort = vi.fn<() => void>();
+        const suggestAbort = vi.fn<() => void>();
+        postMock
+            .mockReturnValueOnce({ then: () => undefined, abort: pageAbort })
+            .mockReturnValueOnce({ then: () => undefined, abort: treeAbort })
+            .mockReturnValueOnce({ then: () => undefined, abort: treeAbort })
+            .mockReturnValueOnce({ then: () => undefined, abort: suggestAbort });
+
+        const pendingPage = api.fetchPageWikitext("TestPage");
+        const pendingTree = api.fetchCategoryTree("Target", 50, true);
+        const pendingSuggest = api.fetchCategorySuggestions("Tar");
+        api.abortActive();
+
+        expect(pageAbort).toHaveBeenCalledTimes(1);
+        expect(treeAbort).not.toHaveBeenCalled();
+        expect(suggestAbort).not.toHaveBeenCalled();
+        void pendingPage;
+        void pendingTree;
+        void pendingSuggest;
+    });
 });

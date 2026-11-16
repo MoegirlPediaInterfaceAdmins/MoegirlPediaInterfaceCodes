@@ -11,7 +11,7 @@ import {
     toggleAll as toggleAllDom,
 } from "./selection.ts";
 import { startBatch } from "./batch.ts";
-import { normalizeCatName, validateCategoryTitle } from "./wikitext.ts";
+import { normalizeCatName, sameCategory, validateCategoryTitle } from "./wikitext.ts";
 import type {
     ApiClient,
     BatchHooks,
@@ -143,6 +143,7 @@ interface CatALotState {
     readonly hasSelection: boolean;
     readonly isBusy: boolean;
     readonly pageCategoryName: string;
+    readonly canActOnCurrentCategory: boolean;
     readonly selectedCountText: string;
     readonly permissionChipText: string;
     readonly permissionChipStatus: PermissionChipStatus;
@@ -255,6 +256,10 @@ const createState = (makeReactive: ReactiveFactory): CatALotState => {
         get pageCategoryName(): string {
             return site.pageCategoryName;
         },
+        get canActOnCurrentCategory(): boolean {
+            return Boolean(state.currentCategory)
+                && (!site.pageCategoryName || !sameCategory(state.currentCategory, site.pageCategoryName));
+        },
         get selectedCountText(): string {
             return uls(
                 `已选择 ${state.selectedTitles.length} 个页面或文件`,
@@ -358,14 +363,15 @@ const createState = (makeReactive: ReactiveFactory): CatALotState => {
             if (!clean) {
                 return;
             }
+            const canonical = validateCategoryTitle(clean) ?? clean;
             state.catTreeRequestId += 1;
             const requestId = state.catTreeRequestId;
-            state.currentCategory = clean;
+            state.currentCategory = canonical;
             state.isLoadingCats = true;
             state.catNotFound = false;
             try {
                 const tree = await api.fetchCategoryTree(
-                    clean,
+                    canonical,
                     state.prefs.subcatcount,
                     state.canFetchCategoryMembers,
                 );
@@ -557,25 +563,6 @@ const createState = (makeReactive: ReactiveFactory): CatALotState => {
             let batchStarted = false;
             try {
                 const titles = [...state.selectedTitles];
-                if (titles.length === 0) {
-                    await state.askDialog({
-                        message: uls("没有选择任何页面或文件！", "沒有選擇任何頁面或文件！"),
-                        showCancel: false,
-                    });
-                    return;
-                }
-                const validatedTarget = mode === "remove" ? "" : validateCategoryTitle(targetCat);
-                if (mode !== "remove" && validatedTarget === null) {
-                    await state.askDialog({
-                        message: uls(
-                            "目标分类名称无效（不能包含 [[、]]、{{、}}、| 等特殊字符）。请检查后重试。",
-                            "目標分類名稱無效（不能包含 [[、]]、{{、}}、| 等特殊字元）。請檢查後重試。",
-                        ),
-                        showCancel: false,
-                    });
-                    return;
-                }
-                const cleanTarget = validatedTarget ?? "";
                 // A14：批处理开始时快照偏好，批处理过程中改设置不影响本批次
                 const prefsSnapshot: CatALotPrefs = { ...state.prefs };
                 const hooks: BatchHooks = {
@@ -606,7 +593,7 @@ const createState = (makeReactive: ReactiveFactory): CatALotState => {
                     titles,
                     mode,
                     sourceCat: state.pageCategoryName,
-                    targetCat: cleanTarget,
+                    targetCat,
                     prefs: prefsSnapshot,
                     hasBotRight: state.hasBotRight,
                     isSysopOrStaff: state.isSysopOrStaff,
@@ -618,7 +605,10 @@ const createState = (makeReactive: ReactiveFactory): CatALotState => {
                 if (token !== state.activeBatchToken) {
                     return;
                 }
-                state.resultDialog = buildResultDialog(result);
+                // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- batchStarted 在 setRunning 回调中赋值，TS 控制流看不到
+                if (batchStarted) {
+                    state.resultDialog = buildResultDialog(result);
+                }
             } catch (error) {
                 if (token === state.activeBatchToken) {
                     notifyText(uls(

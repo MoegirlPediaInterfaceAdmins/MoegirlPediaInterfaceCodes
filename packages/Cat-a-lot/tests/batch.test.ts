@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { startBatch } from "../src/batch.ts";
 import { DEFAULT_PREFS } from "../src/prefs.ts";
+import { createState } from "../src/state.ts";
 import { installMw } from "./helpers/mw.ts";
 import type {
     ApiClient,
@@ -160,6 +161,7 @@ describe("startBatch：前置校验", () => {
         const ask = setup.askDialog.mock.calls[0][0];
         expect(ask.message).toContain("50");
         expect(ask.showCancel).toBe(false);
+        expect(setup.setRunning).not.toHaveBeenCalled();
         expect(setup.fetchPageWikitext).not.toHaveBeenCalled();
     });
 });
@@ -197,6 +199,7 @@ describe("startBatch：编辑与标签", () => {
         expect(setup.setCurrentTitle).toHaveBeenLastCalledWith("");
         expect(setup.setProgress.mock.calls[0]).toEqual([0, 1]);
         expect(setup.setProgress.mock.calls.at(-1)).toEqual([1, 1]);
+        expect(setup.abortActive).not.toHaveBeenCalled();
         expect(setup.releaseSelfFlood).not.toHaveBeenCalled();
     });
 
@@ -406,5 +409,50 @@ describe("startBatch：自授权与停止", () => {
         expect(result.done).toBe(0);
         expect(result.skippedServer).toEqual([]);
         expect(setup.editPage).not.toHaveBeenCalled();
+    });
+});
+
+describe("createState：结果弹窗门控与分类规范化", () => {
+    it("普通用户超 50 页未进入批处理时，关闭提示后不弹出结果对话框", async () => {
+        const { mw } = installMw({ namespaceNumber: 14, title: "Test", groups: [] });
+        Object.assign(mw, {
+            Api: class {
+                post = vi.fn();
+                postWithToken = vi.fn();
+            },
+        });
+        const state = createState((value) => value);
+        state.selectedTitles = Array.from({ length: 51 }, (_value, index) => `Page:${index}`);
+
+        const pending = state.executeBatch("add", "Target", state.activeBatchToken);
+        await Promise.resolve();
+        expect(state.confirmDialog.open).toBe(true);
+        expect(state.confirmDialog.message).toContain("50");
+        state.resolveConfirmDialog(true);
+        await pending;
+
+        expect(state.resultDialog.open).toBe(false);
+        expect(state.isBusy).toBe(false);
+    });
+
+    it("loadCategoryTree 规范化分类名且首字母大小写不同仍识别为当前分类", async () => {
+        const { mw } = installMw({ namespaceNumber: 14, title: "Foo_bar", groups: [] });
+        Object.assign(mw, {
+            Api: class {
+                post = vi.fn(() => Promise.resolve({
+                    query: { pages: [{ categories: [] }] },
+                }));
+                postWithToken = vi.fn();
+            },
+        });
+        const state = createState((value) => value);
+
+        await state.loadCategoryTree("foo_bar");
+        expect(state.currentCategory).toBe("Foo bar");
+        expect(state.canActOnCurrentCategory).toBe(false);
+
+        await state.loadCategoryTree("other_cat");
+        expect(state.currentCategory).toBe("Other cat");
+        expect(state.canActOnCurrentCategory).toBe(true);
     });
 });
