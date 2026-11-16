@@ -26,6 +26,9 @@ $(() => {
     const DEFAULT_MAX_REVISIONS = 1000;
     const HARD_MAX_REVISIONS = 5000;
     const MAX_CACHED_REVISIONS = 150;
+    const VIRTUAL_ROW_HEIGHT = 24;
+    const VIRTUAL_WINDOW_SIZE = 120;
+    const VIRTUAL_OVERSCAN = 30;
 
     const sleep = (ms) => new Promise((resolve) => {
         setTimeout(resolve, ms);
@@ -74,32 +77,86 @@ $(() => {
 
     const createMatcher = (targetText, context, caseInsensitive) => {
         const normalize = (str) => caseInsensitive ? str.toLowerCase() : str;
-        const needle = normalize(targetText);
-        const hasContext = !!(context && context.isDuplicate && (context.prevLine || context.nextLine));
-        const prevNeedle = hasContext && context.prevLine ? normalize(context.prevLine) : "";
-        const nextNeedle = hasContext && context.nextLine ? normalize(context.nextLine) : "";
+        const normTrim = (str) => normalize(str.trim());
+
+        if (!context) {
+            const needle = normalize(targetText);
+            return (text) => text !== null && normalize(text).includes(needle);
+        }
+
+        const needle = normTrim(targetText);
+        const prevNeedle = context.prevLine ? normTrim(context.prevLine) : "";
+        const nextNeedle = context.nextLine ? normTrim(context.nextLine) : "";
+        const beforeNeedles = (context.nearbyBefore || []).map(normTrim).filter(Boolean);
+        const afterNeedles = (context.nearbyAfter || []).map(normTrim).filter(Boolean);
+        const occurrenceCount = context.occurrenceCount || 1;
 
         return (text) => {
             if (text === null) {
                 return false;
             }
-            const haystack = normalize(text);
-            if (!hasContext) {
-                return haystack.includes(needle);
-            }
-            // 对重复行结合前后行上下文定位具体出现位置
-            const lines = haystack.split("\n");
-            for (let i = 0; i < lines.length; i++) {
-                if (!lines[i].includes(needle)) {
-                    continue;
+            // 对点击选中的行采用整行精确匹配与邻近上下文消歧，避免子串误匹配或邻行修改导致漏判
+            const normLines = text.split("\n").map(normTrim);
+            const matchingIndices = [];
+            for (let i = 0; i < normLines.length; i++) {
+                if (normLines[i] === needle) {
+                    matchingIndices.push(i);
                 }
-                const prevOk = !prevNeedle || i > 0 && lines[i - 1].includes(prevNeedle);
-                const nextOk = !nextNeedle || i + 1 < lines.length && lines[i + 1].includes(nextNeedle);
-                if (prevOk && nextOk) {
+            }
+            if (matchingIndices.length === 0) {
+                return false;
+            }
+
+            const matchesBothImmediateNeighbors = (i) => {
+                const prevOk = !prevNeedle || i > 0 && normLines[i - 1] === prevNeedle;
+                const nextOk = !nextNeedle || i + 1 < normLines.length && normLines[i + 1] === nextNeedle;
+                return prevOk && nextOk;
+            };
+
+            const matchesAnyNearbyContext = (i) => {
+                if (!prevNeedle && !nextNeedle && beforeNeedles.length === 0 && afterNeedles.length === 0) {
                     return true;
                 }
+                if (prevNeedle && i > 0 && normLines[i - 1] === prevNeedle) {
+                    return true;
+                }
+                if (nextNeedle && i + 1 < normLines.length && normLines[i + 1] === nextNeedle) {
+                    return true;
+                }
+                if (beforeNeedles.length > 0) {
+                    let collected = 0;
+                    for (let j = i - 1; j >= 0 && collected < 3; j--) {
+                        if (!normLines[j]) {
+                            continue;
+                        }
+                        collected++;
+                        if (beforeNeedles.includes(normLines[j])) {
+                            return true;
+                        }
+                    }
+                }
+                if (afterNeedles.length > 0) {
+                    let collected = 0;
+                    for (let j = i + 1; j < normLines.length && collected < 3; j++) {
+                        if (!normLines[j]) {
+                            continue;
+                        }
+                        collected++;
+                        if (afterNeedles.includes(normLines[j])) {
+                            return true;
+                        }
+                    }
+                }
+                return false;
+            };
+
+            if ((prevNeedle || nextNeedle) && matchingIndices.some(matchesBothImmediateNeighbors)) {
+                return true;
             }
-            return false;
+            if (context.isDuplicate) {
+                return matchingIndices.length >= occurrenceCount && matchingIndices.some(matchesAnyNearbyContext);
+            }
+            return matchingIndices.length === 1 && matchesAnyNearbyContext(matchingIndices[0]);
         };
     };
 
@@ -287,11 +344,11 @@ $(() => {
                     rvdir: "older",
                 };
                 if (endDate) {
-                    const [year, month, day] = endDate.split("-").map(Number);
+                    const [year, month, day] = endDate.split("-").map((n) => +n);
                     params.rvstart = new Date(Date.UTC(year, month - 1, day, 23, 59, 59, 999)).toISOString();
                 }
                 if (startDate) {
-                    const [year, month, day] = startDate.split("-").map(Number);
+                    const [year, month, day] = startDate.split("-").map((n) => +n);
                     params.rvend = new Date(Date.UTC(year, month - 1, day, 0, 0, 0, 0)).toISOString();
                 }
                 if (continueParams) {
@@ -438,6 +495,62 @@ $(() => {
             return -1;
         }
 
+        async verifyNoDeletionBetween({ revisions, fromIndex, toIndex, matcher, signal, onProgress }) {
+            let verifiedHigh = toIndex;
+            if (toIndex - fromIndex <= 1) {
+                return { deletedAt: -1, verifiedHigh };
+            }
+            if (this.canBatchRevisions) {
+                for (let end = toIndex - 1; end > fromIndex; end -= MULTI_REV_BATCH_SIZE) {
+                    if (signal && signal.cancelled) {
+                        throw new Error("CANCELLED");
+                    }
+                    const start = Math.max(fromIndex + 1, end - MULTI_REV_BATCH_SIZE + 1);
+                    const batchIndices = [];
+                    for (let idx = end; idx >= start; idx--) {
+                        batchIndices.push(idx);
+                    }
+                    if (onProgress) {
+                        onProgress(`正在校验中间修订是否存在删除（第 ${start + 1}-${end + 1} 条）…`);
+                    }
+                    const batchMap = await this.fetchRevisionContentsBatch(
+                        batchIndices.map((idx) => revisions[idx].revid),
+                        signal,
+                    );
+                    for (const idx of batchIndices) {
+                        const content = batchMap.get(revisions[idx].revid);
+                        if (content === null) {
+                            continue;
+                        }
+                        if (matcher(content)) {
+                            verifiedHigh = idx;
+                        } else {
+                            return { deletedAt: idx, verifiedHigh };
+                        }
+                    }
+                }
+            } else {
+                for (let idx = toIndex - 1; idx > fromIndex; idx--) {
+                    if (signal && signal.cancelled) {
+                        throw new Error("CANCELLED");
+                    }
+                    if (onProgress && (toIndex - idx) % 5 === 0) {
+                        onProgress(`正在校验中间修订是否存在删除（版本 #${revisions[idx].revid}）…`);
+                    }
+                    const content = await this.fetchRevisionContent(revisions[idx].revid, signal);
+                    if (content === null) {
+                        continue;
+                    }
+                    if (matcher(content)) {
+                        verifiedHigh = idx;
+                    } else {
+                        return { deletedAt: idx, verifiedHigh };
+                    }
+                }
+            }
+            return { deletedAt: -1, verifiedHigh };
+        }
+
         async searchIntroduction({ revisions, matcher, beforeRevid, signal, onProgress }) {
             if (revisions.length === 0) {
                 return { status: "NOT_FOUND_IN_RANGE" };
@@ -530,9 +643,36 @@ $(() => {
                     for (const idx of probeIndices) {
                         const content = probeMap.get(revisions[idx].revid);
                         if (content === null) {
+                            const { deletedAt, verifiedHigh } = await this.verifyNoDeletionBetween({
+                                revisions,
+                                fromIndex: idx - 1,
+                                toIndex: high,
+                                matcher,
+                                signal,
+                                onProgress,
+                            });
+                            if (deletedAt !== -1) {
+                                low = deletedAt;
+                                high = verifiedHigh;
+                                break;
+                            }
+                            high = verifiedHigh;
                             continue;
                         }
                         if (matcher(content)) {
+                            const { deletedAt, verifiedHigh } = await this.verifyNoDeletionBetween({
+                                revisions,
+                                fromIndex: idx,
+                                toIndex: high,
+                                matcher,
+                                signal,
+                                onProgress,
+                            });
+                            if (deletedAt !== -1) {
+                                low = deletedAt;
+                                high = verifiedHigh;
+                                break;
+                            }
                             high = idx;
                         } else {
                             low = idx;
@@ -562,13 +702,39 @@ $(() => {
                         onProgress(`正在指数回溯最近引入区间（探测版本 #${revisions[probeIdx].revid}）…`);
                     }
                     const probeContent = await this.fetchRevisionContent(revisions[probeIdx].revid, signal);
-                    if (probeContent !== null) {
-                        if (matcher(probeContent)) {
-                            high = probeIdx;
-                        } else {
-                            low = probeIdx;
+                    if (probeContent === null) {
+                        const { deletedAt, verifiedHigh } = await this.verifyNoDeletionBetween({
+                            revisions,
+                            fromIndex: probeIdx - 1,
+                            toIndex: high,
+                            matcher,
+                            signal,
+                            onProgress,
+                        });
+                        if (deletedAt !== -1) {
+                            low = deletedAt;
+                            high = verifiedHigh;
                             break;
                         }
+                        high = verifiedHigh;
+                    } else if (matcher(probeContent)) {
+                        const { deletedAt, verifiedHigh } = await this.verifyNoDeletionBetween({
+                            revisions,
+                            fromIndex: probeIdx,
+                            toIndex: high,
+                            matcher,
+                            signal,
+                            onProgress,
+                        });
+                        if (deletedAt !== -1) {
+                            low = deletedAt;
+                            high = verifiedHigh;
+                            break;
+                        }
+                        high = probeIdx;
+                    } else {
+                        low = probeIdx;
+                        break;
                     }
                     if (probeIdx === 0) {
                         break;
@@ -714,14 +880,46 @@ $(() => {
                         signal,
                     );
                     let narrowed = false;
-                    // 从新到旧检查采样点，优先捕捉最晚一次“未出现 -> 出现”的边界
+                    // 从新到旧检查采样点，并在缩窄前校验中间是否存在删除，避免跳过“删除后重新加入”
                     for (let i = sampleIndices.length - 1; i >= 0; i--) {
                         const idx = sampleIndices[i];
                         const content = sampleMap.get(revisions[idx].revid);
                         if (content === null) {
+                            const { deletedAt, verifiedHigh } = await this.verifyNoDeletionBetween({
+                                revisions,
+                                fromIndex: idx - 1,
+                                toIndex: high,
+                                matcher,
+                                signal,
+                                onProgress,
+                            });
+                            if (deletedAt !== -1) {
+                                low = deletedAt;
+                                high = verifiedHigh;
+                                narrowed = true;
+                                break;
+                            }
+                            if (verifiedHigh < high) {
+                                high = verifiedHigh;
+                                narrowed = true;
+                            }
                             continue;
                         }
                         if (matcher(content)) {
+                            const { deletedAt, verifiedHigh } = await this.verifyNoDeletionBetween({
+                                revisions,
+                                fromIndex: idx,
+                                toIndex: high,
+                                matcher,
+                                signal,
+                                onProgress,
+                            });
+                            if (deletedAt !== -1) {
+                                low = deletedAt;
+                                high = verifiedHigh;
+                                narrowed = true;
+                                break;
+                            }
                             high = idx;
                             narrowed = true;
                         } else {
@@ -772,42 +970,37 @@ $(() => {
                     const midContent = await this.fetchRevisionContent(revisions[mid].revid, signal);
                     if (midContent !== null) {
                         if (matcher(midContent)) {
-                            high = mid;
+                            const { deletedAt, verifiedHigh } = await this.verifyNoDeletionBetween({
+                                revisions,
+                                fromIndex: mid,
+                                toIndex: high,
+                                matcher,
+                                signal,
+                                onProgress,
+                            });
+                            if (deletedAt !== -1) {
+                                low = deletedAt;
+                                high = verifiedHigh;
+                            } else {
+                                high = mid;
+                            }
                         } else {
                             low = mid;
                         }
                     } else {
-                        let foundNonNull = false;
-                        for (let offset = 1; mid - offset > low || mid + offset < high; offset++) {
-                            if (signal && signal.cancelled) {
-                                throw new Error("CANCELLED");
-                            }
-                            if (mid + offset < high) {
-                                const rightContent = await this.fetchRevisionContent(revisions[mid + offset].revid, signal);
-                                if (rightContent !== null) {
-                                    if (matcher(rightContent)) {
-                                        high = mid + offset;
-                                    } else {
-                                        low = mid + offset;
-                                    }
-                                    foundNonNull = true;
-                                    break;
-                                }
-                            }
-                            if (mid - offset > low) {
-                                const leftContent = await this.fetchRevisionContent(revisions[mid - offset].revid, signal);
-                                if (leftContent !== null) {
-                                    if (matcher(leftContent)) {
-                                        high = mid - offset;
-                                    } else {
-                                        low = mid - offset;
-                                    }
-                                    foundNonNull = true;
-                                    break;
-                                }
-                            }
-                        }
-                        if (!foundNonNull) {
+                        const { deletedAt, verifiedHigh } = await this.verifyNoDeletionBetween({
+                            revisions,
+                            fromIndex: low,
+                            toIndex: high,
+                            matcher,
+                            signal,
+                            onProgress,
+                        });
+                        if (deletedAt !== -1) {
+                            low = deletedAt;
+                            high = verifiedHigh;
+                        } else {
+                            high = verifiedHigh;
                             break;
                         }
                     }
@@ -836,8 +1029,13 @@ $(() => {
             this.initialSelection = initialSelection || "";
             this.session = session;
             this.sourceLines = [];
+            this.filteredLineIndices = [];
             this.lineCounts = new Map();
+            this.selectedLineIndex = null;
             this.selectedContext = null;
+            this.lastRenderStart = -1;
+            this.lastRenderEnd = -1;
+            this.isBusy = false;
             this.cachedRevisions = null;
             this.cachedRangeKey = "";
             this.activeRunId = 0;
@@ -960,9 +1158,88 @@ $(() => {
                 this.renderSourceLines();
             });
             this.searchInput.on("change", () => {
+                if (this.activeRunSignal) {
+                    this.cancelActiveRun();
+                    this.setBusy(false);
+                }
                 if (this.selectedContext && this.searchInput.getValue().trim() !== this.selectedContext.lineText) {
                     this.selectedContext = null;
                 }
+            });
+            for (const inputWidget of [this.startDateInput, this.endDateInput, this.maxRevsInput, this.caseInsensitiveCheckbox]) {
+                inputWidget.on("change", () => {
+                    if (this.activeRunSignal) {
+                        this.cancelActiveRun();
+                        this.setBusy(false);
+                    }
+                });
+            }
+            this.$sourceViewer.on("scroll", () => {
+                this.renderVisibleSourceSlice(false);
+            });
+            this.$sourceViewer.on("keydown", ".wikiblame-source-line", (e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    $(e.currentTarget).trigger("click");
+                }
+            });
+            this.$sourceViewer.on("click", ".wikiblame-source-line", (e) => {
+                if (this.isBusy) {
+                    return;
+                }
+                const lineEl = e.currentTarget;
+                const idx = +$(lineEl).attr("data-line-index");
+                const line = this.sourceLines[idx];
+                if (line === undefined) {
+                    return;
+                }
+                // 仅当选区位于当前触发行内部时才采用选区文本，避免误用其他行遗留的选区
+                const innerSelection = getSelectedText(lineEl);
+                const lineTrimmed = line.trim();
+                const picked = innerSelection || lineTrimmed;
+                if (!picked) {
+                    return;
+                }
+                this.selectedLineIndex = idx;
+                this.$sourceViewer.find(".wikiblame-source-line").removeClass("is-selected");
+                $(lineEl).addClass("is-selected");
+                if (innerSelection) {
+                    this.selectedContext = null;
+                } else {
+                    const occurrenceCount = this.lineCounts.get(lineTrimmed) || 1;
+                    let occurrenceIndex = 0;
+                    for (let i = 0; i <= idx; i++) {
+                        if (this.sourceLines[i].trim() === lineTrimmed) {
+                            occurrenceIndex++;
+                        }
+                    }
+                    const nearbyBefore = [];
+                    for (let i = idx - 1; i >= 0 && nearbyBefore.length < 3; i--) {
+                        const trimmed = this.sourceLines[i].trim();
+                        if (trimmed) {
+                            nearbyBefore.push(trimmed);
+                        }
+                    }
+                    const nearbyAfter = [];
+                    for (let i = idx + 1; i < this.sourceLines.length && nearbyAfter.length < 3; i++) {
+                        const trimmed = this.sourceLines[i].trim();
+                        if (trimmed) {
+                            nearbyAfter.push(trimmed);
+                        }
+                    }
+                    this.selectedContext = {
+                        lineIndex: idx,
+                        lineText: picked,
+                        isDuplicate: occurrenceCount > 1,
+                        occurrenceCount,
+                        occurrenceIndex,
+                        prevLine: idx > 0 ? this.sourceLines[idx - 1].trim() : "",
+                        nextLine: idx + 1 < this.sourceLines.length ? this.sourceLines[idx + 1].trim() : "",
+                        nearbyBefore,
+                        nearbyAfter,
+                    };
+                }
+                this.searchInput.setValue(picked);
             });
             this.submitButton.on("click", () => {
                 this.runBlame(null);
@@ -988,8 +1265,14 @@ $(() => {
         }
 
         setBusy(busy) {
+            this.isBusy = busy;
             this.submitButton.setDisabled(busy);
             this.cancelButton.setDisabled(!busy);
+            this.searchInput.setDisabled(busy);
+            this.startDateInput.setDisabled(busy);
+            this.endDateInput.setDisabled(busy);
+            this.maxRevsInput.setDisabled(busy);
+            this.caseInsensitiveCheckbox.setDisabled(busy);
         }
 
         async loadCurrentSource() {
@@ -1028,51 +1311,80 @@ $(() => {
 
         renderSourceLines() {
             const keyword = this.filterInput.getValue().trim().toLowerCase();
-            this.$sourceViewer.empty();
-            let matchedCount = 0;
+            this.filteredLineIndices = [];
+            for (let idx = 0; idx < this.sourceLines.length; idx++) {
+                if (!keyword || this.sourceLines[idx].toLowerCase().includes(keyword)) {
+                    this.filteredLineIndices.push(idx);
+                }
+            }
+            this.$filterCount.text(keyword ? `匹配 ${this.filteredLineIndices.length} 行` : `共 ${this.sourceLines.length} 行`);
+            this.$sourceViewer[0].scrollTop = 0;
+            this.lastRenderStart = -1;
+            this.lastRenderEnd = -1;
+            this.renderVisibleSourceSlice(true);
+        }
+
+        renderVisibleSourceSlice(force = false) {
+            if (!this.currentSource) {
+                return;
+            }
+            const viewer = this.$sourceViewer[0];
+            if (!viewer) {
+                return;
+            }
+            const total = this.filteredLineIndices.length;
+            if (total === 0) {
+                if (force || this.lastRenderStart !== 0 || this.lastRenderEnd !== 0) {
+                    this.$sourceViewer.empty().append($("<div>").addClass("wikiblame-hint").text("无匹配源码行。"));
+                    this.lastRenderStart = 0;
+                    this.lastRenderEnd = 0;
+                }
+                return;
+            }
+            const firstVisible = Math.floor(viewer.scrollTop / VIRTUAL_ROW_HEIGHT);
+            const maxStart = Math.max(0, total - VIRTUAL_WINDOW_SIZE);
+            const renderStart = Math.min(maxStart, Math.max(0, firstVisible - VIRTUAL_OVERSCAN));
+            const renderEnd = Math.min(total, renderStart + VIRTUAL_WINDOW_SIZE);
+            if (!force && renderStart === this.lastRenderStart && renderEnd === this.lastRenderEnd) {
+                return;
+            }
+            this.lastRenderStart = renderStart;
+            this.lastRenderEnd = renderEnd;
 
             const fragment = document.createDocumentFragment();
-            this.sourceLines.forEach((line, idx) => {
-                if (keyword && !line.toLowerCase().includes(keyword)) {
-                    return;
-                }
-                matchedCount++;
-                const $line = $("<div>").addClass("wikiblame-source-line").attr("data-line", idx + 1).attr("tabindex", "0");
-                const $num = $("<span>").addClass("wikiblame-line-num").text(idx + 1);
-                const $text = $("<span>").addClass("wikiblame-line-text").text(line || " ");
-                $line.append($num, $text);
-                $line.on("keydown", (e) => {
-                    if (e.key === "Enter" || e.key === " ") {
-                        e.preventDefault();
-                        $line.trigger("click");
-                    }
-                });
-                $line.on("click", () => {
-                    const innerSelection = getSelectedText(this.$sourceViewer[0]);
-                    const lineTrimmed = line.trim();
-                    const picked = innerSelection || lineTrimmed;
-                    if (picked) {
-                        this.$sourceViewer.find(".wikiblame-source-line").removeClass("is-selected");
-                        $line.addClass("is-selected");
-                        if (!innerSelection && (this.lineCounts.get(lineTrimmed) || 0) > 1) {
-                            this.selectedContext = {
-                                lineIndex: idx,
-                                lineText: picked,
-                                isDuplicate: true,
-                                prevLine: idx > 0 ? this.sourceLines[idx - 1].trim() : "",
-                                nextLine: idx + 1 < this.sourceLines.length ? this.sourceLines[idx + 1].trim() : "",
-                            };
-                        } else {
-                            this.selectedContext = null;
-                        }
-                        this.searchInput.setValue(picked);
-                    }
-                });
-                fragment.appendChild($line[0]);
-            });
+            if (renderStart > 0) {
+                const topSpacer = document.createElement("div");
+                topSpacer.style.height = `${renderStart * VIRTUAL_ROW_HEIGHT}px`;
+                fragment.appendChild(topSpacer);
+            }
+            for (let i = renderStart; i < renderEnd; i++) {
+                const idx = this.filteredLineIndices[i];
+                const line = this.sourceLines[idx];
+                const row = document.createElement("div");
+                row.className = idx === this.selectedLineIndex ? "wikiblame-source-line is-selected" : "wikiblame-source-line";
+                row.setAttribute("data-line-index", `${idx}`);
+                row.setAttribute("data-line", `${idx + 1}`);
+                row.setAttribute("tabindex", "0");
 
-            this.$sourceViewer[0].appendChild(fragment);
-            this.$filterCount.text(keyword ? `匹配 ${matchedCount} 行` : `共 ${this.sourceLines.length} 行`);
+                const numSpan = document.createElement("span");
+                numSpan.className = "wikiblame-line-num";
+                numSpan.textContent = `${idx + 1}`;
+
+                const textSpan = document.createElement("span");
+                textSpan.className = "wikiblame-line-text";
+                textSpan.textContent = line || " ";
+
+                row.appendChild(numSpan);
+                row.appendChild(textSpan);
+                fragment.appendChild(row);
+            }
+            if (renderEnd < total) {
+                const bottomSpacer = document.createElement("div");
+                bottomSpacer.style.height = `${(total - renderEnd) * VIRTUAL_ROW_HEIGHT}px`;
+                fragment.appendChild(bottomSpacer);
+            }
+            this.$sourceViewer.empty();
+            viewer.appendChild(fragment);
         }
 
         async runBlame(beforeRevid) {
@@ -1091,7 +1403,7 @@ $(() => {
                 if (!/^\d{4}-\d{2}-\d{2}$/.test(str)) {
                     return false;
                 }
-                const [y, m, d] = str.split("-").map((n) => Number.parseInt(n, 10));
+                const [y, m, d] = str.split("-").map((n) => +n);
                 const dt = new Date(Date.UTC(y, m - 1, d));
                 return dt.getUTCFullYear() === y && dt.getUTCMonth() === m - 1 && dt.getUTCDate() === d;
             };
@@ -1307,17 +1619,25 @@ $(() => {
     }
 
     let windowManager = null;
+    let latestOpenCallId = 0;
 
     const openWikiBlameDialog = async () => {
+        const callId = ++latestOpenCallId;
         const initialSelection = getSelectedText();
         const session = new WikiBlameSession();
         await session.initRights();
+        if (callId !== latestOpenCallId) {
+            return;
+        }
 
         if (!windowManager) {
             windowManager = new OO.ui.WindowManager();
             $(document.body).append(windowManager.$element);
         } else {
             await windowManager.clearWindows();
+            if (callId !== latestOpenCallId) {
+                return;
+            }
         }
         const dialog = new WikiBlameDialog({
             size: window.innerWidth <= 720 ? "full" : "larger",
@@ -1326,6 +1646,7 @@ $(() => {
         windowManager.openWindow(dialog);
     };
 
+    // 在侧边栏添加按钮
     const link = mw.util.addPortletLink(
         "p-cactions",
         "#",
