@@ -7,7 +7,9 @@ html.dark body.skin-moeskin {
 a.extiw:not([href*=".moegirl.org.cn"]),
 a.extiw:not([href*=".moegirl.org.cn"]):visited,
 body.heimu_toggle_on span.heimu a.extiw:not([href*=".moegirl.org.cn"]),
-body.heimu_toggle_on a.extiw:not([href*=".moegirl.org.cn"]) span.heimu {
+body.heimu_toggle_on span.heimu a.extiw:not([href*=".moegirl.org.cn"]):visited,
+body.heimu_toggle_on a.extiw:not([href*=".moegirl.org.cn"]) span.heimu,
+body.heimu_toggle_on a.extiw:not([href*=".moegirl.org.cn"]):visited span.heimu {
     color: var(--extiw-link-color, #00AF89);
 }
 
