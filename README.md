@@ -66,7 +66,7 @@
   - `npm run test:tsc` 用 `tsc` 做类型检查，覆盖根目录 [`tsconfig.json`](tsconfig.json) 与 [`packages/tsconfig.json`](packages/tsconfig.json)（后者包含 [`packages`](packages) 下各包的源码与测试）；
   - `npm run test:mailmap` 检查本地 git 配置中的邮箱是否已登记在 [`.mailmap`](.mailmap)。
 - `npm run lint:scripts` 用 [ESLint](https://eslint.org/) 检查 `npm run test:eslint` 未覆盖的 Node 侧代码（[`scripts`](scripts)、根目录配置文件与 [`.husky`](.husky) 下的 `.mjs`）；检查范围由 [`scripts/modules/lintTargets.js`](scripts/modules/lintTargets.js) 定义，与 [`eslint.config.js`](eslint.config.js) 共用同一份
-- `npm run lint:commit-message` / `npm run lint:pr-title` 用 [commitlint](https://commitlint.js.org/) 校验当前 CI 事件中的提交信息 / PR 标题（规则见 [`commitlint.config.mjs`](commitlint.config.mjs)），供 CI 使用；两者均需在 GitHub Actions 中运行，本地直接执行会因缺少事件载荷而直接退出。本地提交信息检查由 Husky（见下方[「提交前检查」](#提交前检查)）完成
+- `npm run lint:commit-message` / `npm run lint:pr-title` 用 [commitlint](https://commitlint.js.org/) 校验当前 CI 事件中的提交信息 / PR 标题（规则见 [`commitlint.config.mjs`](commitlint.config.mjs)），供 CI 使用；两者均需在 GitHub Actions 中运行，本地直接执行会因缺少事件载荷而直接退出。本地提交信息检查由 Husky（见下方[「提交前检查」](#提交前检查)）完成。其中 `npm run lint:commit-message` 在 PR（`pull_request`）检查中允许仅含 `type` / `type(scope)` 的空 subject 提交（因 PR 最终以标题 squash 合并），而 PR 标题（`lint:pr-title`）与 push 提交仍严格要求包含 subject
 - `npm run format` 可修正可被自动修正的错误
 - `npm run ci` 会测速选出最快的镜像源并让 npm 在安装时使用（不会改动 lock 文件），以加快 `npm ci` 速度
 - `npm run build` 手动编译全部（CSS+JS）代码

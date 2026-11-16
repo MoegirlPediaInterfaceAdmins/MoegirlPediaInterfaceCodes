@@ -2,7 +2,8 @@ import console from "../modules/console.js";
 console.info("Initialization done.");
 import exitIf from "../modules/exitIf.js";
 import lintMessage from "./lintMessage.js";
-import { isInGithubActions } from "../modules/octokit.js";
+import normalizeEmptySubject from "./normalizeEmptySubject.js";
+import { isInGithubActions, isPullRequest } from "../modules/octokit.js";
 import readWorkflowEvent from "../modules/workflowEvent.js";
 import getWorkflowCommits from "../modules/getWorkflowCommits.js";
 
@@ -28,11 +29,13 @@ const printErrors = (subject, errors) => {
 /**
  * 逐条校验，全部通过才返回；失败时打印明细并 exit 1。
  * @param {{ subject: string; message: string; url?: string; }[]} items
+ * @param {{ allowEmptySubject?: boolean; }} [options]
  */
-const checkAll = async (items) => {
+const checkAll = async (items, { allowEmptySubject = false } = {}) => {
     const failures = [];
     for (const { subject, message, url } of items) {
-        const { valid, errors } = await lintMessage(message);
+        const targetMessage = allowEmptySubject ? normalizeEmptySubject(message) : message;
+        const { valid, errors } = await lintMessage(targetMessage);
         if (!valid) {
             failures.push({ subject, errors, url });
         }
@@ -55,9 +58,12 @@ if (mode === "title") {
     exitIf(typeof title !== "string" || title.length === 0, "No pull request title in payload, exit.");
     await checkAll([{ subject: `PR title: ${title}`, message: title }]);
 } else {
-    await checkAll((await getWorkflowCommits()).map(({ id, message, url }) => ({
-        subject: `${id.slice(0, 7)}: ${message.split("\n")[0]}`,
-        message,
-        url,
-    })));
+    await checkAll(
+        (await getWorkflowCommits()).map(({ id, message, url }) => ({
+            subject: `${id.slice(0, 7)}: ${message.split("\n")[0]}`,
+            message,
+            url,
+        })),
+        { allowEmptySubject: isPullRequest },
+    );
 }
