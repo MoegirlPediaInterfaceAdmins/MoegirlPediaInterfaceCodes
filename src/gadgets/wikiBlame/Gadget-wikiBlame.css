@@ -1,10 +1,50 @@
 .wikiblame-dialog-body {
+    --wikiblame-bg: var(--background-color-base, #fff);
+    --wikiblame-bg-subtle: var(--background-color-neutral-subtle, #f8f9fa);
+    --wikiblame-bg-hover: var(--background-color-interactive-subtle, #f1f4f9);
+    --wikiblame-bg-selected: var(--background-color-progressive-subtle, #eaf3ff);
+    --wikiblame-text: var(--color-base, #202122);
+    --wikiblame-text-subtle: var(--color-subtle, #54595d);
+    --wikiblame-text-warn: var(--color-warning, #ac6600);
+    --wikiblame-text-error: var(--color-error, #d33);
+    --wikiblame-border: var(--border-color-subtle, #c8ccd1);
+    --wikiblame-border-muted: var(--border-color-muted, #eaecf0);
     display: flex;
     flex-direction: column;
     gap: 12px;
     padding: 16px;
     box-sizing: border-box;
     height: 100%;
+    color: var(--wikiblame-text);
+}
+
+html.dark .wikiblame-dialog-body,
+html.skin-theme-clientpref-night .wikiblame-dialog-body {
+    --wikiblame-bg: #101418;
+    --wikiblame-bg-subtle: #1b2128;
+    --wikiblame-bg-hover: #252c35;
+    --wikiblame-bg-selected: #1b3454;
+    --wikiblame-text: #eaecf0;
+    --wikiblame-text-subtle: #a2a9b1;
+    --wikiblame-text-warn: #fc3;
+    --wikiblame-text-error: #ff6b6b;
+    --wikiblame-border: #3b424c;
+    --wikiblame-border-muted: #272d35;
+}
+
+@media (prefers-color-scheme: dark) {
+    html.skin-theme-clientpref-os .wikiblame-dialog-body {
+        --wikiblame-bg: #101418;
+        --wikiblame-bg-subtle: #1b2128;
+        --wikiblame-bg-hover: #252c35;
+        --wikiblame-bg-selected: #1b3454;
+        --wikiblame-text: #eaecf0;
+        --wikiblame-text-subtle: #a2a9b1;
+        --wikiblame-text-warn: #fc3;
+        --wikiblame-text-error: #ff6b6b;
+        --wikiblame-border: #3b424c;
+        --wikiblame-border-muted: #272d35;
+    }
 }
 
 .wikiblame-header {
@@ -40,16 +80,16 @@
 
 .wikiblame-hint {
     font-size: 0.9em;
-    color: var(--color-subtle, #54595d);
+    color: var(--wikiblame-text-subtle);
     margin: 0;
 }
 
 .wikiblame-hint-warn {
-    color: var(--color-warning, #ac6600);
+    color: var(--wikiblame-text-warn);
 }
 
 .wikiblame-hint-error {
-    color: var(--color-error, #d33);
+    color: var(--wikiblame-text-error);
 }
 
 .wikiblame-advanced-toggle {
@@ -59,9 +99,9 @@
 .wikiblame-advanced-panel {
     display: none;
     padding: 10px 12px;
-    border: 1px solid var(--border-color-subtle, #c8ccd1);
+    border: 1px solid var(--wikiblame-border);
     border-radius: 4px;
-    background-color: var(--background-color-neutral-subtle, #f8f9fa);
+    background-color: var(--wikiblame-bg-subtle);
     gap: 10px;
     flex-wrap: wrap;
 }
@@ -90,9 +130,10 @@
     min-height: 180px;
     max-height: 360px;
     overflow: auto;
-    border: 1px solid var(--border-color-subtle, #c8ccd1);
+    border: 1px solid var(--wikiblame-border);
     border-radius: 4px;
-    background-color: var(--background-color-base, #fff);
+    background-color: var(--wikiblame-bg);
+    color: var(--wikiblame-text);
     font-family: monospace;
     font-size: 13px;
     line-height: 1.5;
@@ -102,21 +143,21 @@
     display: flex;
     padding: 2px 8px;
     cursor: pointer;
-    border-bottom: 1px solid var(--border-color-muted, #eaecf0);
+    border-bottom: 1px solid var(--wikiblame-border-muted);
     user-select: text;
 }
 
 .wikiblame-source-line:hover {
-    background-color: var(--background-color-interactive-subtle, #f1f4f9);
+    background-color: var(--wikiblame-bg-hover);
 }
 
 .wikiblame-source-line.is-selected {
-    background-color: var(--background-color-progressive-subtle, #eaf3ff);
+    background-color: var(--wikiblame-bg-selected);
 }
 
 .wikiblame-line-num {
     flex: 0 0 3.5em;
-    color: var(--color-subtle, #72777d);
+    color: var(--wikiblame-text-subtle);
     user-select: none;
     text-align: right;
     padding-right: 10px;
@@ -131,6 +172,7 @@
 .wikiblame-progress {
     font-size: 0.9em;
     min-height: 1.4em;
+    color: var(--wikiblame-text);
 }
 
 .wikiblame-result-meta {
@@ -139,17 +181,19 @@
     gap: 10px;
     align-items: center;
     padding: 8px 12px;
-    border: 1px solid var(--border-color-subtle, #c8ccd1);
+    border: 1px solid var(--wikiblame-border);
     border-radius: 4px;
-    background-color: var(--background-color-neutral-subtle, #f8f9fa);
+    background-color: var(--wikiblame-bg-subtle);
+    color: var(--wikiblame-text);
     font-size: 0.92em;
 }
 
 .wikiblame-diff-wrapper {
     flex: 1 1 auto;
     overflow: auto;
-    border: 1px solid var(--border-color-subtle, #c8ccd1);
+    border: 1px solid var(--wikiblame-border);
     border-radius: 4px;
+    background-color: var(--wikiblame-bg);
     padding: 6px;
 }
 
