@@ -5,13 +5,14 @@ import {
     MIN_PANEL_HEIGHT,
     PREFS_STORAGE_KEY,
 } from "./constants.ts";
-import type { CatALotPrefs, WatchlistOption } from "./types.ts";
+import type { CatALotPrefs, DockPosition, WatchlistOption } from "./types.ts";
 
 const DEFAULT_PREFS: CatALotPrefs = {
     watchlist: "preferences",
     minor: false,
     editpages: true,
     subcatcount: 50,
+    position: "bottom-right",
 };
 
 const isRecord = (value: unknown): value is Record<string, unknown> => typeof value === "object"
@@ -22,6 +23,9 @@ const isWatchlistOption = (value: unknown): value is WatchlistOption => value ==
     || value === "nochange"
     || value === "watch"
     || value === "unwatch";
+
+const isDockPosition = (value: unknown): value is DockPosition => value === "bottom-right"
+    || value === "bottom-left";
 
 const sanitizeSubcatCount = (value: unknown): number => {
     const numeric = typeof value === "number"
@@ -42,6 +46,7 @@ const sanitizePrefs = (input: unknown): CatALotPrefs => {
         minor: typeof record.minor === "boolean" ? record.minor : DEFAULT_PREFS.minor,
         editpages: typeof record.editpages === "boolean" ? record.editpages : DEFAULT_PREFS.editpages,
         subcatcount: sanitizeSubcatCount(record.subcatcount),
+        position: isDockPosition(record.position) ? record.position : DEFAULT_PREFS.position,
     };
 };
 

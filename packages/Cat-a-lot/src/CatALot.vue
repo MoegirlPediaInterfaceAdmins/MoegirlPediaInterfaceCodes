@@ -1,5 +1,12 @@
 <template>
-    <div class="cal-dock" :class="{ 'is-collapsed': !isOpen, 'is-busy': isBusy }">
+    <div
+        class="cal-dock"
+        :class="{
+            'is-collapsed': !isOpen,
+            'is-busy': isBusy,
+            'is-bottom-left': prefs.position === 'bottom-left',
+        }"
+    >
         <div
             v-if="isOpen"
             class="cal-resize-handle"
