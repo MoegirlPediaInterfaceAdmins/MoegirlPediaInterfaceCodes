@@ -4,7 +4,7 @@ import {
     SYSOP_FLOOD_PROMPT_THRESHOLD,
     activeChangeTags,
 } from "./constants.ts";
-import { computeNewWikitext, normalizeCatName, validateCategoryTitle, verifyCommittedOnServer } from "./wikitext.ts";
+import { computeNewWikitext, normalizeCatName, sameCategory, validateCategoryTitle, verifyCommittedOnServer } from "./wikitext.ts";
 import type {
     BatchOptions,
     BatchResult,
@@ -142,6 +142,78 @@ const startBatch = (options: BatchOptions): BatchRun => {
                 return result;
             }
             const cleanTarget = validatedTarget ?? "";
+
+            if (
+                mode === "move"
+                && sourceCat !== ""
+                && options.isAllSelected === true
+                && !sameCategory(sourceCat, cleanTarget)
+            ) {
+                const normalizedSource = normalizeCatName(sourceCat);
+                const message = wgULS(
+                    `检测到您正在迁移当前分类下的全部成员。\n如果只是需要将「${normalizedSource}」合并或迁移至「${cleanTarget}」，只需在分类页悬挂 {{分类重定向|${cleanTarget}}}，次日由机器人自动处理，无需手动批量操作。\n\n您也可以点击「悬挂分类重定向」将当前分类页替换为重定向，如果特别着急请点击「立即执行」。`,
+                    `檢測到您正在遷移當前分類下的全部成員。\n如果只是需要將「${normalizedSource}」合併或遷移至「${cleanTarget}」，只需在分類頁懸掛 {{分类重定向|${cleanTarget}}}，次日由機器人自動處理，無需手動批次操作。\n\n您也可以點擊「懸掛分類重定向」將當前分類頁替換為重定向，如果特別著急請點擊「立即執行」。`,
+                );
+                let choice: "primary" | "extra" | "cancel";
+                if (hooks.askMoveAllDialog) {
+                    choice = await hooks.askMoveAllDialog({
+                        message,
+                        primaryLabel: wgULS("立即执行", "立即執行"),
+                        extraLabel: wgULS("悬挂分类重定向", "懸掛分類重定向"),
+                    });
+                } else {
+                    const confirmed = await hooks.askDialog({ message, showCancel: true });
+                    choice = confirmed ? "primary" : "cancel";
+                }
+                if (choice === "cancel" || isStopped()) {
+                    return result;
+                }
+                if (choice === "extra") {
+                    const categoryTitle = `Category:${normalizedSource}`;
+                    const redirectText = `#重定向 [[:Category:${cleanTarget}]]\n{{分类重定向|${cleanTarget}}}`;
+                    try {
+                        const page = await api.fetchPageWikitext(categoryTitle);
+                        if (isStopped()) {
+                            return result;
+                        }
+                        const editParams: EditPageParams = {
+                            title: categoryTitle,
+                            text: redirectText,
+                            summary: wgULS(
+                                `[[Help:Cat-a-lot|Cat-a-lot]]：分类重定向至[[Cat:${cleanTarget}]]`,
+                                `[[Help:Cat-a-lot|Cat-a-lot]]：分類重定向至[[Cat:${cleanTarget}]]`,
+                            ),
+                            watchlist: prefs.watchlist,
+                            minor: prefs.minor,
+                            bot: initiallyHasBotRight,
+                            tags: activeChangeTags(initiallyHasBotRight),
+                        };
+                        if (typeof page.timestamp === "string" && page.timestamp !== "") {
+                            editParams.basetimestamp = page.timestamp;
+                        }
+                        if (typeof page.curtimestamp === "string" && page.curtimestamp !== "") {
+                            editParams.starttimestamp = page.curtimestamp;
+                        }
+                        await api.editPage(editParams);
+                        hooks.notify(
+                            wgULS(
+                                `已将「${categoryTitle}」替换为分类重定向。`,
+                                `已將「${categoryTitle}」替換為分類重定向。`,
+                            ),
+                            "success",
+                        );
+                    } catch (error) {
+                        hooks.notify(
+                            wgULS(
+                                `替换分类重定向失败：${errorMessage(error)}`,
+                                `替換分類重定向失敗：${errorMessage(error)}`,
+                            ),
+                            "error",
+                        );
+                    }
+                    return result;
+                }
+            }
 
             if (!initiallyHasBotRight) {
                 if (isSysopOrStaff && titles.length > SYSOP_FLOOD_PROMPT_THRESHOLD) {

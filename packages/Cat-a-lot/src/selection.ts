@@ -97,7 +97,7 @@ interface PageItemBinding {
 let lastClickedElement: HTMLElement | null = null;
 
 // 重绑前清掉旧状态，避免偏好切换后残留选中/完成标记。
-const bindPageItems = (binding: PageItemBinding): void => {
+const bindPageItems = (binding: PageItemBinding): number => {
     $(`.${CLASS_LABEL}`)
         .off("click.catALot")
         .removeClass(`${CLASS_LABEL} ${CLASS_SELECTED} ${CLASS_LAST} ${CLASS_DONE}`)
@@ -136,6 +136,7 @@ const bindPageItems = (binding: PageItemBinding): void => {
         binding.onSelectionChange();
     });
     binding.onSelectionChange();
+    return $links.length;
 };
 
 const syncSelectedTitles = (): string[] => {
