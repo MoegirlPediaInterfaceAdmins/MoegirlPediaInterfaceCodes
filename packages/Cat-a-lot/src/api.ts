@@ -45,6 +45,18 @@ interface RevisionsResponse {
     };
 }
 
+interface TitleMappingEntry {
+    from?: string;
+    to?: string;
+}
+
+interface ConvertTitlesResponse {
+    query?: {
+        normalized?: readonly TitleMappingEntry[];
+        converted?: readonly TitleMappingEntry[];
+    };
+}
+
 interface EditResponse {
     edit?: {
         result?: string;
@@ -232,6 +244,52 @@ const createApi = (userName: string): ApiClient => {
         };
     };
 
+    const MAX_QUERY_TITLES = 50;
+
+    /** 参考 HotCat，通过 converttitles=1 将分类名规范化并解析语言变体到站点实际分类页标题。 */
+    const resolveCategoryVariants = async (catNames: readonly string[]): Promise<Map<string, string>> => {
+        const result = new Map<string, string>();
+        const unique: string[] = [];
+        for (const raw of catNames) {
+            const clean = normalizeCatName(raw);
+            if (clean && !result.has(clean)) {
+                result.set(clean, clean);
+                unique.push(clean);
+            }
+        }
+        for (let offset = 0; offset < unique.length; offset += MAX_QUERY_TITLES) {
+            const chunk = unique.slice(offset, offset + MAX_QUERY_TITLES);
+            const response = await request<ConvertTitlesResponse>(getApi().post({
+                action: "query",
+                titles: chunk.map((name) => `Category:${name}`).join("|"),
+                converttitles: 1,
+                formatversion: 2,
+            }, { timeout: API_TIMEOUT_MS }));
+            const mappings = new Map<string, string>();
+            const normalized = response.query?.normalized ?? [];
+            const converted = response.query?.converted ?? [];
+            for (const entry of [...normalized, ...converted]) {
+                const from = typeof entry.from === "string" ? normalizeCatName(entry.from) : "";
+                const to = typeof entry.to === "string" ? normalizeCatName(entry.to) : "";
+                if (from && to && from !== to) {
+                    mappings.set(from, to);
+                }
+            }
+            for (const name of chunk) {
+                let current = name;
+                for (let hop = 0; hop < 5; hop += 1) {
+                    const next = mappings.get(current);
+                    if (!next || next === current) {
+                        break;
+                    }
+                    current = next;
+                }
+                result.set(name, current);
+            }
+        }
+        return result;
+    };
+
     const editPage = async (params: EditPageParams): Promise<void> => {
         const payload: Record<string, string | number | boolean> = {
             action: "edit",
@@ -305,6 +363,7 @@ const createApi = (userName: string): ApiClient => {
         fetchCategoryTree,
         fetchCategorySuggestions,
         fetchPageWikitext,
+        resolveCategoryVariants,
         editPage,
         grantFlood,
         revokeFlood,

@@ -4,7 +4,15 @@ import {
     SYSOP_FLOOD_PROMPT_THRESHOLD,
     activeChangeTags,
 } from "./constants.ts";
-import { computeNewWikitext, normalizeCatName, sameCategory, validateCategoryTitle, verifyCommittedOnServer } from "./wikitext.ts";
+import {
+    buildCategoryRegex,
+    computeNewWikitext,
+    extractCategoryNames,
+    normalizeCatName,
+    sameCategory,
+    validateCategoryTitle,
+    verifyCommittedOnServer,
+} from "./wikitext.ts";
 import type {
     BatchOptions,
     BatchResult,
@@ -253,6 +261,49 @@ const startBatch = (options: BatchOptions): BatchRun => {
             // 本次运行实际拥有的 bot/flood 权限：初始权限或本次自授权成功
             const hasBotRight = initiallyHasBotRight || grantedThisRun;
             const delayMs = hasBotRight ? 0 : NON_BOT_DELAY_MS;
+            const variantCache = new Map<string, string>();
+            const canonicalOf = (name: string): string => {
+                const clean = normalizeCatName(name);
+                return variantCache.get(clean) ?? clean;
+            };
+            const ensureVariantsResolved = async (names: readonly string[]): Promise<void> => {
+                const missing: string[] = [];
+                for (const raw of names) {
+                    const clean = normalizeCatName(raw);
+                    if (clean && !variantCache.has(clean)) {
+                        missing.push(clean);
+                    }
+                }
+                if (missing.length === 0) {
+                    return;
+                }
+                try {
+                    const resolved = await api.resolveCategoryVariants(missing);
+                    for (const name of missing) {
+                        variantCache.set(name, resolved.get(name) ?? name);
+                    }
+                } catch (error) {
+                    if (isStopped() && isAbortError(error)) {
+                        throw error;
+                    }
+                    // 变体查询失败时不阻断批处理，回退到原始分类名
+                    for (const name of missing) {
+                        variantCache.set(name, name);
+                    }
+                }
+            };
+            const findVariantMatch = (pageCats: readonly string[], targetName: string): string | null => {
+                const canonicalTarget = canonicalOf(targetName);
+                return pageCats.find((cat) => sameCategory(canonicalOf(cat), canonicalTarget)) ?? null;
+            };
+            const hasDirectCategory = (text: string, catName: string): boolean => {
+                const regex = catName ? buildCategoryRegex(catName) : null;
+                if (!regex) {
+                    return false;
+                }
+                regex.lastIndex = 0;
+                return regex.test(text);
+            };
             running = true;
             hooks.setRunning(true);
             hooks.setProgress(0, titles.length);
@@ -265,6 +316,8 @@ const startBatch = (options: BatchOptions): BatchRun => {
                 const title = titles[i];
                 hooks.setCurrentTitle(title);
                 let editSubmitted = false;
+                let effectiveSourceCat = sourceCat;
+                let effectiveTargetCat = cleanTarget;
 
                 try {
                     const page = await api.fetchPageWikitext(title);
@@ -274,12 +327,55 @@ const startBatch = (options: BatchOptions): BatchRun => {
                     if (page.missing || page.invalid || page.content === undefined) {
                         result.skippedServer.push(`${title}（${wgULS("页面不存在或无法读取", "頁面不存在或無法讀取")}）`);
                     } else {
-                        const computed = computeNewWikitext({
+                        let computed = computeNewWikitext({
                             text: page.content,
                             mode,
-                            sourceCat,
-                            targetCat: cleanTarget,
+                            sourceCat: effectiveSourceCat,
+                            targetCat: effectiveTargetCat,
                         });
+                        if (computed.status !== "skipped-already") {
+                            const pageCats = extractCategoryNames(page.content);
+                            const needSourceCheck = sourceCat !== ""
+                                && (computed.status === "skipped-not-found" || mode === "copy" && !hasDirectCategory(page.content, sourceCat));
+                            const needTargetCheck = cleanTarget !== "";
+                            if (pageCats.length > 0 && (needSourceCheck || needTargetCheck)) {
+                                const toResolve = [...pageCats];
+                                if (sourceCat) {
+                                    toResolve.push(sourceCat);
+                                }
+                                if (cleanTarget) {
+                                    toResolve.push(cleanTarget);
+                                }
+                                await ensureVariantsResolved(toResolve);
+                                if (isStopped()) {
+                                    break;
+                                }
+                                if (needSourceCheck) {
+                                    const matchedSource = findVariantMatch(pageCats, sourceCat);
+                                    if (matchedSource !== null) {
+                                        effectiveSourceCat = matchedSource;
+                                    }
+                                }
+                                if (needTargetCheck) {
+                                    if (mode === "move" && sourceCat !== "" && sameCategory(canonicalOf(sourceCat), canonicalOf(cleanTarget))) {
+                                        effectiveTargetCat = effectiveSourceCat;
+                                    } else {
+                                        const matchedTarget = findVariantMatch(pageCats, cleanTarget);
+                                        if (matchedTarget !== null) {
+                                            effectiveTargetCat = matchedTarget;
+                                        }
+                                    }
+                                }
+                                if (effectiveSourceCat !== sourceCat || effectiveTargetCat !== cleanTarget) {
+                                    computed = computeNewWikitext({
+                                        text: page.content,
+                                        mode,
+                                        sourceCat: effectiveSourceCat,
+                                        targetCat: effectiveTargetCat,
+                                    });
+                                }
+                            }
+                        }
                         if (computed.status === "skipped-already") {
                             result.skippedAlready.push(title);
                         } else if (computed.status === "skipped-not-found") {
@@ -319,8 +415,8 @@ const startBatch = (options: BatchOptions): BatchRun => {
                                 && verifyCommittedOnServer({
                                     latestText: latest.content,
                                     mode,
-                                    sourceCat,
-                                    targetCat: cleanTarget,
+                                    sourceCat: effectiveSourceCat,
+                                    targetCat: effectiveTargetCat,
                                 })
                             ) {
                                 hooks.onPageDone(title);

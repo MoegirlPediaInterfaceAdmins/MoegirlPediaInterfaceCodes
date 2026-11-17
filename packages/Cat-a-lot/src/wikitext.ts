@@ -2,6 +2,11 @@ import type { ComputedWikitext, EditMode } from "./types.ts";
 
 const CATEGORY_NAMESPACE_PATTERN = "(?:[Cc][Aa][Tt][Ee][Gg][Oo][Rr][Yy]|[Cc][Aa][Tt]|分类|分類)";
 
+const ANY_CATEGORY_REGEX = new RegExp(
+    `\\[\\[\\s*${CATEGORY_NAMESPACE_PATTERN}\\s*:\\s*([^\\]|]+?)(?:\\|[^\\]]*)?\\]\\]`,
+    "gu",
+);
+
 const INVALID_TITLE_PATTERN = /[[\]{}|<>#]/u;
 
 const hasControlCharacter = (value: string): boolean => {
@@ -64,6 +69,26 @@ const buildCategoryRegex = (catName: string): RegExp | null => {
 
 const resetRegex = (regex: RegExp): void => {
     regex.lastIndex = 0;
+};
+
+/** 从 wikitext 中提取所有合法的分类名（去重并规范化，保留原文大小写与繁简）。 */
+const extractCategoryNames = (text: string): string[] => {
+    const seen = new Set<string>();
+    const names: string[] = [];
+    resetRegex(ANY_CATEGORY_REGEX);
+    let match: RegExpExecArray | null;
+    while ((match = ANY_CATEGORY_REGEX.exec(text)) !== null) {
+        const clean = normalizeCatName(match[1]);
+        if (!clean || INVALID_TITLE_PATTERN.test(clean) || hasControlCharacter(clean)) {
+            continue;
+        }
+        if (!seen.has(clean)) {
+            seen.add(clean);
+            names.push(clean);
+        }
+    }
+    resetRegex(ANY_CATEGORY_REGEX);
+    return names;
 };
 
 const matches = (regex: RegExp | null, text: string): boolean => {
@@ -209,6 +234,7 @@ export {
     normalizeCatName,
     validateCategoryTitle,
     buildCategoryRegex,
+    extractCategoryNames,
     sameCategory,
     computeNewWikitext,
     verifyCommittedOnServer,

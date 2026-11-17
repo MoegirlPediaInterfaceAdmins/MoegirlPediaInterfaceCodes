@@ -25,8 +25,17 @@ const page = (content: string, overrides: Partial<PageWikitext> = {}): PageWikit
 });
 
 /** 假 ApiClient：只实现批处理用到的查询/编辑/中止。 */
-const createFakeApi = (impl: (title: string) => Promise<PageWikitext>) => {
+const createFakeApi = (
+    impl: (title: string) => Promise<PageWikitext>,
+    variantImpl?: (catNames: readonly string[]) => Promise<Map<string, string>>,
+) => {
     const fetchPageWikitext = vi.fn(impl);
+    const resolveCategoryVariants = vi.fn(
+        variantImpl ?? ((catNames: readonly string[]): Promise<Map<string, string>> => {
+            void catNames;
+            return Promise.resolve(new Map<string, string>());
+        }),
+    );
     const editPage = vi.fn((params: EditPageParams): Promise<void> => {
         void params;
         return Promise.resolve();
@@ -36,12 +45,13 @@ const createFakeApi = (impl: (title: string) => Promise<PageWikitext>) => {
         fetchCategoryTree: vi.fn(() => Promise.resolve({ missing: false, parents: [], subs: [] })),
         fetchCategorySuggestions: vi.fn(() => Promise.resolve([])),
         fetchPageWikitext,
+        resolveCategoryVariants,
         editPage,
         grantFlood: vi.fn(() => Promise.resolve()),
         revokeFlood: vi.fn(() => Promise.resolve()),
         abortActive,
     };
-    return { api, fetchPageWikitext, editPage, abortActive };
+    return { api, fetchPageWikitext, resolveCategoryVariants, editPage, abortActive };
 };
 
 /** 假 BatchHooks。 */
@@ -549,5 +559,92 @@ describe("createState：结果弹窗门控与分类规范化", () => {
         await state.loadCategoryTree("other_cat");
         expect(state.currentCategory).toBe("Other cat");
         expect(state.canActOnCurrentCategory).toBe(true);
+    });
+
+    it("move/remove 能通过变体解析匹配繁简不同但同源的分类并缓存查询结果", async () => {
+        const setup = createFakeApi(
+            (title) => Promise.resolve(page(`Body\n[[Category:英雄聯盟競技賽事|${title}]]\n`)),
+            (catNames) => Promise.resolve(new Map(
+                catNames.map((name) => [name, name === "英雄聯盟競技賽事" ? "英雄联盟竞技赛事" : name]),
+            )),
+        );
+        const hooks = createFakeHooks();
+        const run = startBatch({
+            titles: ["Page1", "Page2"],
+            mode: "move",
+            sourceCat: "英雄联盟竞技赛事",
+            targetCat: "英雄联盟赛事",
+            prefs: DEFAULT_PREFS,
+            hasBotRight: true,
+            isSysopOrStaff: false,
+            api: setup.api,
+            hooks: hooks.hooks,
+        });
+
+        const result = await run.result;
+        expect(result.done).toBe(2);
+        expect(result.skippedNotFound).toEqual([]);
+        expect(setup.editPage).toHaveBeenNthCalledWith(1, expect.objectContaining({
+            title: "Page1",
+            text: "Body\n[[Category:英雄联盟赛事|Page1]]\n",
+        }));
+        expect(setup.editPage).toHaveBeenNthCalledWith(2, expect.objectContaining({
+            title: "Page2",
+            text: "Body\n[[Category:英雄联盟赛事|Page2]]\n",
+        }));
+        // 第二页复用第一页的变体缓存，不再重复查询相同分类
+        expect(setup.resolveCategoryVariants).toHaveBeenCalledTimes(1);
+    });
+
+    it("add 模式下目标分类以另一繁简变体存在于页面时跳过", async () => {
+        const setup = createFakeApi(
+            () => Promise.resolve(page("Body\n[[Category:英雄聯盟賽事]]\n")),
+            (catNames) => Promise.resolve(new Map(
+                catNames.map((name) => [name, name === "英雄聯盟賽事" ? "英雄联盟赛事" : name]),
+            )),
+        );
+        const hooks = createFakeHooks();
+        const run = startBatch({
+            titles: ["Page1"],
+            mode: "add",
+            sourceCat: "",
+            targetCat: "英雄联盟赛事",
+            prefs: DEFAULT_PREFS,
+            hasBotRight: true,
+            isSysopOrStaff: false,
+            api: setup.api,
+            hooks: hooks.hooks,
+        });
+
+        const result = await run.result;
+        expect(result.done).toBe(0);
+        expect(result.skippedAlready).toEqual(["Page1"]);
+        expect(setup.editPage).not.toHaveBeenCalled();
+    });
+
+    it("move 模式下源分类与目标分类为同一分类的不同繁简变体时跳过", async () => {
+        const setup = createFakeApi(
+            () => Promise.resolve(page("Body\n[[Category:英雄聯盟競技賽事]]\n")),
+            (catNames) => Promise.resolve(new Map(
+                catNames.map((name) => [name, name === "英雄聯盟競技賽事" ? "英雄联盟竞技赛事" : name]),
+            )),
+        );
+        const hooks = createFakeHooks();
+        const run = startBatch({
+            titles: ["Page1"],
+            mode: "move",
+            sourceCat: "英雄联盟竞技赛事",
+            targetCat: "英雄聯盟競技賽事",
+            prefs: DEFAULT_PREFS,
+            hasBotRight: true,
+            isSysopOrStaff: false,
+            api: setup.api,
+            hooks: hooks.hooks,
+        });
+
+        const result = await run.result;
+        expect(result.done).toBe(0);
+        expect(result.skippedAlready).toEqual(["Page1"]);
+        expect(setup.editPage).not.toHaveBeenCalled();
     });
 });

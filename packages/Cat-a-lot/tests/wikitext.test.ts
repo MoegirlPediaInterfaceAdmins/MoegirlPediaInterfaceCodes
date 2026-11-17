@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it } from "vitest";
 import {
     buildCategoryRegex,
     computeNewWikitext,
+    extractCategoryNames,
     normalizeCatName,
     sameCategory,
     validateCategoryTitle,
@@ -316,5 +317,21 @@ describe("verifyCommittedOnServer", () => {
             sourceCat: "Source",
             targetCat: "",
         })).toBe(false);
+    });
+});
+
+describe("extractCategoryNames", () => {
+    it("提取并去重所有合法分类名（忽略 sortkey 与非分类链接）", () => {
+        const text = [
+            "[[File:Example.png|thumb]]",
+            "[[Category:英雄聯盟競技賽事|2018]]",
+            "[[分類:英雄聯盟競技賽事]]",
+            "[[cat:foo_bar|key]]",
+            "[[分类:无效#标题]]",
+        ].join("\n");
+        expect(extractCategoryNames(text)).toEqual([
+            "英雄聯盟競技賽事",
+            "foo bar",
+        ]);
     });
 });

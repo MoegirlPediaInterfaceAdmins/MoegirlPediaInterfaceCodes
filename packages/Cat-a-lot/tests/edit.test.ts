@@ -400,3 +400,39 @@ describe("abortActive", () => {
         void pendingSuggest;
     });
 });
+
+describe("resolveCategoryVariants", () => {
+    it("使用 converttitles=1 解析繁简变体并串联 normalized 与 converted", async () => {
+        const api = createApi("TestUser");
+        postMock.mockReturnValue(Promise.resolve({
+            query: {
+                normalized: [
+                    { from: "Category:foo_bar", to: "Category:Foo bar" },
+                ],
+                converted: [
+                    { from: "Category:英雄聯盟競技賽事", to: "Category:英雄联盟竞技赛事" },
+                    { from: "Category:Foo bar", to: "Category:Bar" },
+                ],
+            },
+        }));
+
+        const resolved = await api.resolveCategoryVariants([
+            "英雄聯盟競技賽事",
+            "foo_bar",
+            "电子竞技",
+        ]);
+
+        expect(postMock).toHaveBeenCalledWith(
+            {
+                action: "query",
+                titles: "Category:英雄聯盟競技賽事|Category:foo bar|Category:电子竞技",
+                converttitles: 1,
+                formatversion: 2,
+            },
+            { timeout: API_TIMEOUT_MS },
+        );
+        expect(resolved.get("英雄聯盟競技賽事")).toBe("英雄联盟竞技赛事");
+        expect(resolved.get("foo bar")).toBe("Bar");
+        expect(resolved.get("电子竞技")).toBe("电子竞技");
+    });
+});
