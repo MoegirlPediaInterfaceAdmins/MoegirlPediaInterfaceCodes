@@ -4,11 +4,15 @@ type WatchlistOption = "preferences" | "nochange" | "watch" | "unwatch";
 
 type NotifyType = "info" | "success" | "warn" | "error";
 
+// 选项卡初始停靠位置：右下角（默认）或左下角。
+type DockPosition = "bottom-right" | "bottom-left";
+
 interface CatALotPrefs {
     watchlist: WatchlistOption;
     minor: boolean;
     editpages: boolean;
     subcatcount: number;
+    position: DockPosition;
 }
 
 type CatALotPrefsInput = Partial<Record<keyof CatALotPrefs, unknown>>;
@@ -114,6 +118,7 @@ export type {
     EditMode,
     WatchlistOption,
     NotifyType,
+    DockPosition,
     CatALotPrefs,
     CatALotPrefsInput,
     SiteContext,

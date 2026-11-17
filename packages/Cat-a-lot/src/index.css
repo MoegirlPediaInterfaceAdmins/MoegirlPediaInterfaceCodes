@@ -237,6 +237,12 @@ html.skin-theme-clientpref-night .cal-app .cdx-menu {
     min-width: 150px;
 }
 
+/* 初始选项卡停靠在左下角：仅覆盖水平锚点，竖直仍贴底 */
+.cal-dock.is-bottom-left {
+    right: auto;
+    left: 12px;
+}
+
 .cal-resize-handle {
     position: absolute;
     top: -4px;
