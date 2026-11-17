@@ -245,9 +245,11 @@ class MainDialog extends OO.ui.ProcessDialog {
             this.variantInput = new OO.ui.DropdownInputWidget({
                 options: variants.map(({ id, label }) => ({ data: id, label: resolveUIText(label) })),
                 value: variants[0]?.id,
+                $overlay: this.$overlay,
             });
             this.variantInput.on("change", () => {
                 this.rebuildParamArea(this.currentVariant());
+                this.updateSize();
             });
             fieldset.addItems([new OO.ui.FieldLayout(this.variantInput, { label: wgULS("申请类型", "申請類型"), align: "top" })]);
             initialSpec = variants[0];
@@ -280,11 +282,21 @@ class MainDialog extends OO.ui.ProcessDialog {
 
         // 确认项（方针修改提醒等）在表单出现时即以横幅告知，不等到提交才拦；
         // 提交前的逐条确认仍保留（previewDialog）。横幅只展示正文，标题（如「提醒」）信息量低不重复
-        void this.definition.warnings?.(this.context).then((warnings) => {
-            for (const warning of warnings) {
-                this.formPanel.$element.prepend(new OO.ui.MessageWidget({ type: "warning", label: warning.message }).$element);
-            }
-        });
+        void this.definition.warnings?.(this.context)
+            .then((warnings) => {
+                if (warnings.length === 0) {
+                    return;
+                }
+                for (const warning of warnings) {
+                    this.formPanel.$element.prepend(new OO.ui.MessageWidget({ type: "warning", label: warning.message }).$element);
+                }
+                if (this.isOpened()) {
+                    this.updateSize();
+                }
+            })
+            .catch((error: unknown) => {
+                console.warn("[QuickRequest] 加载提交前提醒失败", error);
+            });
     }
 
     /**
@@ -376,12 +388,20 @@ class MainDialog extends OO.ui.ProcessDialog {
     /** 按 visibleIf 刷新字段可见性；隐藏字段不参与校验，值仍随表单传出。 */
     private applyFieldVisibility(): void {
         const values = this.collectValues();
+        let changed = false;
         for (const field of this.paramFields) {
             const rule = field.param.visibleIf;
             if (rule) {
-                field.hidden = values[rule.param] !== rule.equals;
-                field.layout.toggle(!field.hidden);
+                const nextHidden = values[rule.param] !== rule.equals;
+                if (nextHidden !== field.hidden) {
+                    field.hidden = nextHidden;
+                    field.layout.toggle(!nextHidden);
+                    changed = true;
+                }
             }
+        }
+        if (changed && this.isOpened()) {
+            this.updateSize();
         }
     }
 

@@ -101,9 +101,13 @@ describe("applyRedirectInfo", () => {
             { title: "cm:foo_bar", queryTitle: "foo_bar", site: "commons" as const },
             { title: "cm:Bar", queryTitle: "Bar", site: "commons" as const },
         ];
-        const normalized = new Map([["Foo bar", "Foo bar baz"]]);
-        const redirectFlags = new Map([["Foo bar baz", true]]);
-        expect(applyRedirectInfo(pages, normalized, redirectFlags)).toEqual([
+        const mapsBySite = {
+            commons: {
+                normalizedTitles: new Map([["Foo bar", "Foo bar baz"]]),
+                redirectFlags: new Map([["Foo bar baz", true]]),
+            },
+        };
+        expect(applyRedirectInfo(pages, mapsBySite)).toEqual([
             { title: "cm:foo_bar", isRedirect: true },
             { title: "cm:Bar", isRedirect: false },
         ]);
@@ -113,7 +117,7 @@ describe("applyRedirectInfo", () => {
         const pages = [
             { title: "cm:Baz", queryTitle: "Baz", site: "commons" as const },
         ];
-        expect(applyRedirectInfo(pages, new Map(), new Map())).toEqual([
+        expect(applyRedirectInfo(pages, {})).toEqual([
             { title: "cm:Baz", isRedirect: false },
         ]);
     });
@@ -152,6 +156,25 @@ describe("resolveBatchPages", () => {
         await expect(resolveBatchPages([
             { title: "A", queryTitle: "A", site: "zh" },
         ])).rejects.toThrow("批量查询页面重定向状态失败");
+    });
+
+    it("zh 与 commons 存在同名页面时分站点维护映射，互不覆盖", async () => {
+        const zhPost = vi.fn().mockResolvedValue({
+            query: { pages: [{ title: "Mainpage", redirect: true }] },
+        });
+        const commonsPost = vi.fn().mockResolvedValue({
+            query: { pages: [{ title: "Mainpage", redirect: false }] },
+        });
+        vi.mocked(getApiForSite).mockImplementation((site) => ({ post: site === "zh" ? zhPost : commonsPost }) as never);
+
+        const result = await resolveBatchPages([
+            { title: "Mainpage", queryTitle: "Mainpage", site: "zh" },
+            { title: "cm:Mainpage", queryTitle: "Mainpage", site: "commons" },
+        ]);
+        expect(result).toEqual([
+            { title: "Mainpage", isRedirect: true },
+            { title: "cm:Mainpage", isRedirect: false },
+        ]);
     });
 
     it("超过 50 个页面按 50 个一批拆分查询，结果顺序与入参一致", async () => {

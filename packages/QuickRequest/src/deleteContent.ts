@@ -126,17 +126,23 @@ const parseBatchPages = (text: string, site: SiteId): BatchPage[] => {
  */
 const normalizeBatchTitle = (title: string): string => title.replace(/_/g, " ").replace(/\s+/g, " ").trim().replace(/^[a-z]/, (char) => char.toUpperCase());
 
+/** 单个站点的标题归一化与重定向标记映射。 */
+interface SiteRedirectMaps {
+    normalizedTitles: Map<string, string>;
+    redirectFlags: Map<string, boolean>;
+}
+
 /**
- * 把查询得到的归一化映射与重定向标记应用到页面清单。
+ * 把查询得到的归一化映射与重定向标记应用到页面清单（按站点隔离，避免跨站同名页面互相覆盖）。
  * @param pages 已解析的页面清单
- * @param normalizedTitles 键为归一化的 from、值为 normalized 目标的映射
- * @param redirectFlags 键为归一化标题、值为是否重定向的标记（prop=info 的 pages[].redirect）
+ * @param mapsBySite 按站点维护的归一化与重定向映射
  * @returns 与入参顺序一致的检测结果
  */
-const applyRedirectInfo = (pages: BatchPage[], normalizedTitles: Map<string, string>, redirectFlags: Map<string, boolean>): ResolvedPage[] =>
-    pages.map(({ title, queryTitle }) => {
+const applyRedirectInfo = (pages: BatchPage[], mapsBySite: Partial<Record<SiteId, SiteRedirectMaps>>): ResolvedPage[] =>
+    pages.map(({ title, queryTitle, site }) => {
+        const maps = mapsBySite[site];
         const normalized = normalizeBatchTitle(queryTitle);
-        return { title, isRedirect: redirectFlags.get(normalizedTitles.get(normalized) ?? normalized) ?? false };
+        return { title, isRedirect: maps?.redirectFlags.get(maps.normalizedTitles.get(normalized) ?? normalized) ?? false };
     });
 
 /**
@@ -149,8 +155,7 @@ const applyRedirectInfo = (pages: BatchPage[], normalizedTitles: Map<string, str
  * @throws {Error} 任一批次查询失败时
  */
 const resolveBatchPages = async (pages: BatchPage[]): Promise<ResolvedPage[]> => {
-    const normalizedTitles = new Map<string, string>();
-    const redirectFlags = new Map<string, boolean>();
+    const mapsBySite: Partial<Record<SiteId, SiteRedirectMaps>> = {};
     const titlesBySite = new Map<SiteId, string[]>();
     // 收集各批次的失败（闭包内置布尔标志会被类型收窄判恒假，见 no-unnecessary-condition）
     const failures: unknown[] = [];
@@ -160,6 +165,11 @@ const resolveBatchPages = async (pages: BatchPage[]): Promise<ResolvedPage[]> =>
         titlesBySite.set(site, list);
     }
     await Promise.all([...titlesBySite].map(async ([site, titles]) => {
+        const siteMaps: SiteRedirectMaps = {
+            normalizedTitles: new Map<string, string>(),
+            redirectFlags: new Map<string, boolean>(),
+        };
+        mapsBySite[site] = siteMaps;
         const unique = [...new Set(titles)];
         const batches = Array.from({ length: Math.ceil(unique.length / 50) }, (_, index) => unique.slice(index * 50, index * 50 + 50));
         await Promise.all(batches.map(async (batch) => {
@@ -171,11 +181,11 @@ const resolveBatchPages = async (pages: BatchPage[]): Promise<ResolvedPage[]> =>
                     formatversion: 2,
                 }) as { query?: { normalized?: { from: string; to: string }[]; pages?: { title: string; redirect?: boolean }[] } };
                 for (const { from, to } of res.query?.normalized ?? []) {
-                    normalizedTitles.set(normalizeBatchTitle(from), to);
+                    siteMaps.normalizedTitles.set(normalizeBatchTitle(from), to);
                 }
                 // pages[].title 是规范化后的标题，与 normalized 映射链的终点同构
                 for (const { title, redirect } of res.query?.pages ?? []) {
-                    redirectFlags.set(normalizeBatchTitle(title), redirect === true);
+                    siteMaps.redirectFlags.set(normalizeBatchTitle(title), redirect === true);
                 }
             } catch (error) {
                 failures.push(error);
@@ -186,7 +196,7 @@ const resolveBatchPages = async (pages: BatchPage[]): Promise<ResolvedPage[]> =>
     if (failures.length > 0) {
         throw new Error(wgULS("批量查询页面重定向状态失败，请稍后重试", "批量查詢頁面重新導向狀態失敗，請稍後重試"));
     }
-    return applyRedirectInfo(pages, normalizedTitles, redirectFlags);
+    return applyRedirectInfo(pages, mapsBySite);
 };
 
 /**

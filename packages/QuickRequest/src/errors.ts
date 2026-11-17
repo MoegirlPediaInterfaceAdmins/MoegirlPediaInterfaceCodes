@@ -15,10 +15,13 @@ interface ApiRejectPayload {
     }[];
 }
 
+const ASSERT_USER_FAILED_MESSAGE = wgULS("当前登录状态已失效（可能已在别处退出登录），请刷新页面后重新登录。", "目前登入狀態已失效（可能已在別處登出），請重新整理頁面後重新登入。");
+
 /** 已知错误码 → 中文说明。 */
 const ERROR_MESSAGES: Record<string, string> = {
     badtoken: wgULS("登录令牌已失效，请刷新页面后重试。", "登入權杖已失效，請重新整理頁面後再試。"),
-    assertnameduserfailed: wgULS("当前登录状态已失效（可能已在别处退出登录），请刷新页面后重新登录。", "目前登入狀態已失效（可能已在別處登出），請重新整理頁面後重新登入。"),
+    assertnameduserfailed: ASSERT_USER_FAILED_MESSAGE,
+    assertuserfailed: ASSERT_USER_FAILED_MESSAGE,
     ratelimited: wgULS("操作过于频繁，已被限流，请稍后再试。", "操作過於頻繁，已受到頻率限制，請稍後再試。"),
     permissiondenied: wgULS("权限不足，无法编辑该页面。", "權限不足，無法編輯該頁面。"),
     blocked: wgULS("您当前的账号或 IP 已被封禁，无法编辑。", "您目前的帳號或 IP 已被封鎖，無法編輯。"),

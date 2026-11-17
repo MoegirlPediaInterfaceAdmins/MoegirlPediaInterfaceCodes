@@ -16,8 +16,8 @@ import type {
     RequestTypeId,
 } from "./types.ts";
 
-// 自有入口（阶段 2 起）在此挂载；模块求值不发起任何 API 请求
-mountEntries();
+// 自有入口（阶段 2 起）等 DOM 就绪后挂载；模块求值不发起任何 API 请求
+$(mountEntries);
 
 /**
  * 拼出配置加载失败的原因说明。
