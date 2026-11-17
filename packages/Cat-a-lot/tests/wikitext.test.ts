@@ -334,4 +334,42 @@ describe("extractCategoryNames", () => {
             "foo bar",
         ]);
     });
+
+    it("忽略 HTML 注释与 <nowiki> 中的分类链接", () => {
+        const text = [
+            "<!-- [[Category:Commented]] -->",
+            "<nowiki>[[Category:NowikiCat]]</nowiki>",
+            "<NOWIKI attr='1'>[[Category:UpperNowiki]]</NOWIKI>",
+            "[[Category:Active]]",
+        ].join("\n");
+        expect(extractCategoryNames(text)).toEqual(["Active"]);
+    });
+
+    it("遇到大量未闭合 [[Category: 前缀时保持线性时间不卡死", () => {
+        const malformed = `${"[[Category:".repeat(5000)}long text\n[[Category:RealCat]]`;
+        expect(extractCategoryNames(malformed)).toEqual(["RealCat"]);
+    });
+
+    it("computeNewWikitext 忽略注释与 nowiki 中的分类并移除所有 sourceVariants", () => {
+        const text = [
+            "<!-- [[Category:Source]] -->",
+            "<nowiki>[[Category:Source]]</nowiki>",
+            "[[Category:VariantA|K1]]",
+            "[[Category:VariantB|K2]]",
+        ].join("\n");
+        const moved = computeNewWikitext({
+            text,
+            mode: "move",
+            sourceCat: "Source",
+            targetCat: "Target",
+            sourceVariants: ["VariantA", "VariantB"],
+        });
+        expect(moved.status).toBe("ok");
+        expect(moved.text).toBe([
+            "<!-- [[Category:Source]] -->",
+            "<nowiki>[[Category:Source]]</nowiki>",
+            "[[Category:Target|K1]]",
+            "",
+        ].join("\n"));
+    });
 });

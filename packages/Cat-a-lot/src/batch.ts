@@ -150,12 +150,57 @@ const startBatch = (options: BatchOptions): BatchRun => {
             }
             const cleanTarget = validatedTarget ?? "";
 
+            const MAX_VARIANT_QUERIES_PER_PAGE = 20;
+            const MAX_PRIVILEGED_CATS_PER_PAGE = 200;
+            const variantCache = new Map<string, string>();
+            const canonicalOf = (name: string): string => {
+                const clean = normalizeCatName(name);
+                return variantCache.get(clean) ?? clean;
+            };
+            const ensureVariantsResolved = async (names: readonly string[], batchSize: number): Promise<void> => {
+                const missing: string[] = [];
+                for (const raw of names) {
+                    const clean = normalizeCatName(raw);
+                    if (clean && !variantCache.has(clean)) {
+                        missing.push(clean);
+                    }
+                }
+                if (missing.length === 0) {
+                    return;
+                }
+                const resolved = await api.resolveCategoryVariants(missing, batchSize);
+                for (const name of missing) {
+                    const canonical = resolved.get(name);
+                    if (canonical !== undefined) {
+                        variantCache.set(name, canonical);
+                    }
+                }
+            };
+
             if (
                 mode === "move"
                 && sourceCat !== ""
                 && options.isAllSelected === true
                 && !sameCategory(sourceCat, cleanTarget)
             ) {
+                try {
+                    await ensureVariantsResolved(
+                        [sourceCat, cleanTarget],
+                        isSysopOrStaff || initiallyHasBotRight ? 50 : 1,
+                    );
+                } catch (error) {
+                    if (isStopped() && isAbortError(error)) {
+                        return result;
+                    }
+                    // 变体解析失败时不弹出自重定向误判风险，继续按常规流程处理
+                }
+                if (isStopped()) {
+                    return result;
+                }
+                if (sameCategory(canonicalOf(sourceCat), canonicalOf(cleanTarget))) {
+                    result.skippedAlready.push(...titles);
+                    return result;
+                }
                 const normalizedSource = normalizeCatName(sourceCat);
                 const message = wgULS(
                     `检测到您正在迁移当前分类下的全部成员。\n如果只是需要将「${normalizedSource}」合并或迁移至「${cleanTarget}」，只需在分类页悬挂 {{分类重定向|${cleanTarget}}}，次日由机器人自动处理，无需手动批量操作。\n\n您也可以点击「悬挂分类重定向」将当前分类页替换为重定向，如果特别着急请点击「立即执行」。`,
@@ -261,70 +306,40 @@ const startBatch = (options: BatchOptions): BatchRun => {
             const hasBotRight = initiallyHasBotRight || grantedThisRun;
             const canBatchTitleQueries = isSysopOrStaff || hasBotRight;
             const delayMs = hasBotRight ? 0 : NON_BOT_DELAY_MS;
-            const variantCache = new Map<string, string>();
-            const canonicalOf = (name: string): string => {
-                const clean = normalizeCatName(name);
-                return variantCache.get(clean) ?? clean;
-            };
-            const ensureVariantsResolved = async (names: readonly string[]): Promise<void> => {
-                const missing: string[] = [];
-                for (const raw of names) {
-                    const clean = normalizeCatName(raw);
-                    if (clean && !variantCache.has(clean)) {
-                        missing.push(clean);
-                    }
-                }
-                if (missing.length === 0) {
-                    return;
-                }
-                try {
-                    const resolved = await api.resolveCategoryVariants(missing, canBatchTitleQueries ? 50 : 1);
-                    for (const name of missing) {
-                        variantCache.set(name, resolved.get(name) ?? name);
-                    }
-                } catch (error) {
-                    if (isStopped() && isAbortError(error)) {
-                        throw error;
-                    }
-                    // 变体查询失败时不阻断批处理，回退到原始分类名
-                    for (const name of missing) {
-                        variantCache.set(name, name);
-                    }
-                }
-            };
-            const findSourceVariantMatch = async (pageCats: readonly string[]): Promise<string | null> => {
+            const findSourceVariantMatches = async (pageCats: readonly string[]): Promise<string[]> => {
                 if (canBatchTitleQueries) {
-                    await ensureVariantsResolved([...pageCats, sourceCat]);
+                    const boundedCats = pageCats.slice(0, MAX_PRIVILEGED_CATS_PER_PAGE);
+                    await ensureVariantsResolved([...boundedCats, sourceCat], 50);
                     if (isStopped()) {
-                        return null;
+                        return [];
                     }
                     const canonicalSource = canonicalOf(sourceCat);
-                    return pageCats.find((cat) => sameCategory(canonicalOf(cat), canonicalSource)) ?? null;
+                    return boundedCats.filter((cat) => sameCategory(canonicalOf(cat), canonicalSource));
                 }
-                // 非 sysop/bot/flood 每次请求仅允许查询 1 个标题：先查原分类，再逐个查页面分类并在命中后提前结束
-                await ensureVariantsResolved([sourceCat]);
+                // 非 sysop/bot/flood 每次请求仅允许查询 1 个标题，且单页最多触发 MAX_VARIANT_QUERIES_PER_PAGE 次变体查询
+                await ensureVariantsResolved([sourceCat], 1);
                 if (isStopped()) {
-                    return null;
+                    return [];
                 }
                 const canonicalSource = canonicalOf(sourceCat);
+                const matched: string[] = [];
+                let remainingQueries = MAX_VARIANT_QUERIES_PER_PAGE;
                 for (const cat of pageCats) {
-                    if (variantCache.has(cat) && sameCategory(canonicalOf(cat), canonicalSource)) {
-                        return cat;
-                    }
-                }
-                for (const cat of pageCats) {
-                    if (variantCache.has(cat)) {
-                        continue;
-                    }
-                    await ensureVariantsResolved([cat]);
-                    if (isStopped()) {
-                        return null;
+                    if (!variantCache.has(cat)) {
+                        if (remainingQueries <= 0) {
+                            break;
+                        }
+                        remainingQueries -= 1;
+                        await ensureVariantsResolved([cat], 1);
+                        if (isStopped()) {
+                            return [];
+                        }
                     }
                     if (sameCategory(canonicalOf(cat), canonicalSource)) {
-                        return cat;
+                        matched.push(cat);
                     }
                 }
-                return null;
+                return matched;
             };
             running = true;
             hooks.setRunning(true);
@@ -338,7 +353,7 @@ const startBatch = (options: BatchOptions): BatchRun => {
                 const title = titles[i];
                 hooks.setCurrentTitle(title);
                 let editSubmitted = false;
-                let effectiveSourceCat = sourceCat;
+                let effectiveSourceVariants: string[] = [];
 
                 try {
                     const page = await api.fetchPageWikitext(title);
@@ -351,23 +366,24 @@ const startBatch = (options: BatchOptions): BatchRun => {
                         let computed = computeNewWikitext({
                             text: page.content,
                             mode,
-                            sourceCat: effectiveSourceCat,
+                            sourceCat,
                             targetCat: cleanTarget,
                         });
                         if (computed.status === "skipped-not-found" && sourceCat !== "") {
                             const pageCats = extractCategoryNames(page.content);
                             if (pageCats.length > 0) {
-                                const matchedSource = await findSourceVariantMatch(pageCats);
+                                const matchedSources = await findSourceVariantMatches(pageCats);
                                 if (isStopped()) {
                                     break;
                                 }
-                                if (matchedSource !== null) {
-                                    effectiveSourceCat = matchedSource;
+                                if (matchedSources.length > 0) {
+                                    effectiveSourceVariants = matchedSources;
                                     computed = computeNewWikitext({
                                         text: page.content,
                                         mode,
-                                        sourceCat: effectiveSourceCat,
+                                        sourceCat,
                                         targetCat: cleanTarget,
+                                        sourceVariants: effectiveSourceVariants,
                                     });
                                 }
                             }
@@ -411,8 +427,9 @@ const startBatch = (options: BatchOptions): BatchRun => {
                                 && verifyCommittedOnServer({
                                     latestText: latest.content,
                                     mode,
-                                    sourceCat: effectiveSourceCat,
+                                    sourceCat,
                                     targetCat: cleanTarget,
+                                    sourceVariants: effectiveSourceVariants,
                                 })
                             ) {
                                 hooks.onPageDone(title);

@@ -640,7 +640,101 @@ describe("createState：结果弹窗门控与分类规范化", () => {
         expect(nonPrivSetup.resolveCategoryVariants).toHaveBeenCalledWith(["英雄联盟竞技赛事"], 1);
         expect(nonPrivSetup.resolveCategoryVariants).toHaveBeenCalledWith(["电子竞技"], 1);
         expect(nonPrivSetup.resolveCategoryVariants).toHaveBeenCalledWith(["英雄聯盟競技賽事"], 1);
-        // 命中后提前结束，不再查询后面的 "2018年"
-        expect(nonPrivSetup.resolveCategoryVariants).toHaveBeenCalledTimes(3);
+        expect(nonPrivSetup.resolveCategoryVariants).toHaveBeenCalledWith(["2018年"], 1);
+        expect(nonPrivSetup.resolveCategoryVariants).toHaveBeenCalledTimes(4);
+    });
+
+    it("全选移动时源分类与目标分类解析为同一分类则不弹出重定向确认并跳过", async () => {
+        const setup = createFakeApi(
+            () => Promise.resolve(page("Body\n[[Category:英雄聯盟競技賽事]]\n")),
+            (catNames) => Promise.resolve(new Map(
+                catNames.map((name) => [name, name === "英雄聯盟競技賽事" ? "英雄联盟竞技赛事" : name]),
+            )),
+        );
+        const hooks = createFakeHooks();
+        const run = startBatch({
+            titles: ["Page1"],
+            mode: "move",
+            sourceCat: "英雄联盟竞技赛事",
+            targetCat: "英雄聯盟競技賽事",
+            isAllSelected: true,
+            prefs: DEFAULT_PREFS,
+            hasBotRight: true,
+            isSysopOrStaff: false,
+            api: setup.api,
+            hooks: hooks.hooks,
+        });
+
+        const result = await run.result;
+        expect(hooks.askMoveAllDialog).not.toHaveBeenCalled();
+        expect(setup.editPage).not.toHaveBeenCalled();
+        expect(result.skippedAlready).toEqual(["Page1"]);
+    });
+
+    it("页面存在多个同源变体拼写时全部一并移动/移除", async () => {
+        const setup = createFakeApi(
+            () => Promise.resolve(page("Body\n[[Category:变体一|K1]]\n[[Category:变体二|K2]]\n")),
+            (catNames) => Promise.resolve(new Map(
+                catNames.map((name) => [name, name === "变体一" || name === "变体二" ? "原分类" : name]),
+            )),
+        );
+        const hooks = createFakeHooks();
+        const run = startBatch({
+            titles: ["Page1"],
+            mode: "move",
+            sourceCat: "原分类",
+            targetCat: "目标分类",
+            prefs: DEFAULT_PREFS,
+            hasBotRight: true,
+            isSysopOrStaff: false,
+            api: setup.api,
+            hooks: hooks.hooks,
+        });
+
+        const result = await run.result;
+        expect(result.done).toBe(1);
+        expect(setup.editPage).toHaveBeenCalledWith(expect.objectContaining({
+            title: "Page1",
+            text: "Body\n[[Category:目标分类|K1]]\n\n",
+        }));
+    });
+
+    it("非特权用户单页变体查询受上限控制，且查询失败不缓存并在后续页面重试", async () => {
+        vi.useFakeTimers();
+        try {
+            const manyCats = Array.from({ length: 30 }, (_value, idx) => `[[Category:Cat${idx}]]`).join("\n");
+            let attempt = 0;
+            const setup = createFakeApi(
+                () => Promise.resolve(page(`Body\n${manyCats}\n`)),
+                (catNames) => {
+                    attempt += 1;
+                    if (attempt === 1) {
+                        return Promise.reject(new Error("variant lookup failed"));
+                    }
+                    return Promise.resolve(new Map(catNames.map((name) => [name, name])));
+                },
+            );
+            const hooks = createFakeHooks();
+            const run = startBatch({
+                titles: ["Page1", "Page2"],
+                mode: "remove",
+                sourceCat: "MissingSource",
+                targetCat: "",
+                prefs: DEFAULT_PREFS,
+                hasBotRight: false,
+                isSysopOrStaff: false,
+                api: setup.api,
+                hooks: hooks.hooks,
+            });
+
+            await vi.runAllTimersAsync();
+            const result = await run.result;
+            expect(result.skippedServer).toEqual(["Page1（variant lookup failed）"]);
+            expect(result.skippedNotFound).toEqual(["Page2"]);
+            // Page1 失败 1 次 + Page2 重试 sourceCat 1 次 + 最多 20 个页面分类 = 22 次
+            expect(setup.resolveCategoryVariants).toHaveBeenCalledTimes(22);
+        } finally {
+            vi.useRealTimers();
+        }
     });
 });

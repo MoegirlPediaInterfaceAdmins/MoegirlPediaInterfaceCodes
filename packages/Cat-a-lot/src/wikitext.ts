@@ -2,10 +2,7 @@ import type { ComputedWikitext, EditMode } from "./types.ts";
 
 const CATEGORY_NAMESPACE_PATTERN = "(?:[Cc][Aa][Tt][Ee][Gg][Oo][Rr][Yy]|[Cc][Aa][Tt]|分类|分類)";
 
-const ANY_CATEGORY_REGEX = new RegExp(
-    `\\[\\[\\s*${CATEGORY_NAMESPACE_PATTERN}\\s*:\\s*([^\\]|]+?)(?:\\|[^\\]]*)?\\]\\]`,
-    "gu",
-);
+const CATEGORY_NAMESPACE_PREFIX_REGEX = /^(?:Category|Cat|分类|分類)\s*:\s*/iu;
 
 const INVALID_TITLE_PATTERN = /[[\]{}|<>#]/u;
 
@@ -71,23 +68,98 @@ const resetRegex = (regex: RegExp): void => {
     regex.lastIndex = 0;
 };
 
-/** 从 wikitext 中提取所有合法的分类名（去重并规范化，保留原文大小写与繁简）。 */
-const extractCategoryNames = (text: string): string[] => {
-    const seen = new Set<string>();
-    const names: string[] = [];
-    resetRegex(ANY_CATEGORY_REGEX);
-    let match: RegExpExecArray | null;
-    while ((match = ANY_CATEGORY_REGEX.exec(text)) !== null) {
-        const clean = normalizeCatName(match[1]);
-        if (!clean || INVALID_TITLE_PATTERN.test(clean) || hasControlCharacter(clean)) {
-            continue;
+/** 线性扫描并将 HTML 注释与 <nowiki> 区块替换为空格（保持下标与原文本一致）。 */
+const blankCommentsAndNowiki = (text: string): string => {
+    const lower = text.toLowerCase();
+    const parts: string[] = [];
+    let cursor = 0;
+
+    while (cursor < text.length) {
+        const commentIdx = text.indexOf("<!--", cursor);
+        const nowikiIdx = lower.indexOf("<nowiki", cursor);
+        let nextIdx = -1;
+        let isComment = false;
+
+        if (commentIdx !== -1 && (nowikiIdx === -1 || commentIdx < nowikiIdx)) {
+            nextIdx = commentIdx;
+            isComment = true;
+        } else if (nowikiIdx !== -1) {
+            nextIdx = nowikiIdx;
         }
-        if (!seen.has(clean)) {
-            seen.add(clean);
-            names.push(clean);
+
+        if (nextIdx === -1) {
+            parts.push(text.slice(cursor));
+            break;
+        }
+
+        if (nextIdx > cursor) {
+            parts.push(text.slice(cursor, nextIdx));
+        }
+
+        if (isComment) {
+            const endIdx = text.indexOf("-->", nextIdx + 4);
+            const stopIdx = endIdx === -1 ? text.length : endIdx + 3;
+            parts.push(" ".repeat(stopIdx - nextIdx));
+            cursor = stopIdx;
+        } else {
+            const tagClose = text.indexOf(">", nextIdx + 7);
+            const afterOpen = nextIdx + 7 < text.length ? text.charAt(nextIdx + 7) : "";
+            const isNowikiTag = tagClose !== -1 && (afterOpen === ">" || afterOpen === " " || afterOpen === "\t" || afterOpen === "\n" || afterOpen === "\r" || afterOpen === "/");
+            if (!isNowikiTag) {
+                parts.push(text.slice(nextIdx, nextIdx + 7));
+                cursor = nextIdx + 7;
+                continue;
+            }
+            // 自闭合 <nowiki /> 仅遮罩标签本身
+            if (text.charAt(tagClose - 1) === "/") {
+                parts.push(" ".repeat(tagClose + 1 - nextIdx));
+                cursor = tagClose + 1;
+                continue;
+            }
+            const closeTagIdx = lower.indexOf("</nowiki>", tagClose + 1);
+            const stopIdx = closeTagIdx === -1 ? text.length : closeTagIdx + 9;
+            parts.push(" ".repeat(stopIdx - nextIdx));
+            cursor = stopIdx;
         }
     }
-    resetRegex(ANY_CATEGORY_REGEX);
+
+    return parts.join("");
+};
+
+/** 线性扫描 wikitext（跳过注释与 nowiki）并提取所有合法分类名（去重并规范化，保留原文大小写与繁简）。 */
+const extractCategoryNames = (text: string): string[] => {
+    const masked = blankCommentsAndNowiki(text);
+    const seen = new Set<string>();
+    const names: string[] = [];
+    let cursor = 0;
+
+    while (cursor < masked.length) {
+        const openIdx = masked.indexOf("[[", cursor);
+        if (openIdx === -1) {
+            break;
+        }
+        const closeIdx = masked.indexOf("]]", openIdx + 2);
+        if (closeIdx === -1) {
+            break;
+        }
+        const nextOpen = masked.indexOf("[[", openIdx + 2);
+        if (nextOpen !== -1 && nextOpen < closeIdx) {
+            cursor = nextOpen;
+            continue;
+        }
+        const inner = masked.slice(openIdx + 2, closeIdx).trimStart();
+        if (CATEGORY_NAMESPACE_PREFIX_REGEX.test(inner)) {
+            const pipeIdx = inner.indexOf("|");
+            const rawCat = pipeIdx === -1 ? inner : inner.slice(0, pipeIdx);
+            const clean = normalizeCatName(rawCat);
+            if (clean && !INVALID_TITLE_PATTERN.test(clean) && !hasControlCharacter(clean) && !seen.has(clean)) {
+                seen.add(clean);
+                names.push(clean);
+            }
+        }
+        cursor = closeIdx + 2;
+    }
+
     return names;
 };
 
@@ -119,15 +191,85 @@ const sameCategory = (a: string, b: string): boolean => {
     return leftFirst === rightFirst && left.slice(1) === right.slice(1);
 };
 
+interface CategoryMatchSpan {
+    start: number;
+    end: number;
+    sortkey: string;
+}
+
+const buildSourceRegexes = (sourceCat: string, sourceVariants?: readonly string[]): RegExp[] => {
+    const seen = new Set<string>();
+    const regexes: RegExp[] = [];
+    const extras = sourceVariants ?? [];
+    for (const raw of [sourceCat, ...extras]) {
+        const clean = normalizeCatName(raw);
+        if (!clean || seen.has(clean)) {
+            continue;
+        }
+        seen.add(clean);
+        const regex = buildCategoryRegex(clean);
+        if (regex) {
+            regexes.push(regex);
+        }
+    }
+    return regexes;
+};
+
+const collectMatchSpans = (regexes: readonly RegExp[], maskedText: string): CategoryMatchSpan[] => {
+    const spans: CategoryMatchSpan[] = [];
+    for (const regex of regexes) {
+        resetRegex(regex);
+        let match: RegExpExecArray | null;
+        while ((match = regex.exec(maskedText)) !== null) {
+            spans.push({
+                start: match.index,
+                end: match.index + match[0].length,
+                sortkey: typeof match[1] === "string" ? match[1] : "",
+            });
+        }
+        resetRegex(regex);
+    }
+    spans.sort((a, b) => a.start - b.start);
+    const deduped: CategoryMatchSpan[] = [];
+    for (const span of spans) {
+        if (deduped.length === 0 || span.start >= deduped[deduped.length - 1].end) {
+            deduped.push(span);
+        }
+    }
+    return deduped;
+};
+
+const replaceSpans = (
+    text: string,
+    spans: readonly CategoryMatchSpan[],
+    render: (span: CategoryMatchSpan, index: number) => string,
+): string => {
+    const parts: string[] = [];
+    let cursor = 0;
+    for (let i = 0; i < spans.length; i += 1) {
+        const span = spans[i];
+        if (span.start > cursor) {
+            parts.push(text.slice(cursor, span.start));
+        }
+        parts.push(render(span, i));
+        cursor = span.end;
+    }
+    if (cursor < text.length) {
+        parts.push(text.slice(cursor));
+    }
+    return parts.join("");
+};
+
 interface ComputeWikitextInput {
     text: string;
     mode: EditMode;
     sourceCat: string;
     targetCat: string;
+    sourceVariants?: readonly string[];
 }
 
 const computeNewWikitext = (input: ComputeWikitextInput): ComputedWikitext => {
-    const { text, mode, sourceCat, targetCat } = input;
+    const { text, mode, sourceCat, targetCat, sourceVariants } = input;
     const targetValidated = mode === "remove" ? "" : validateCategoryTitle(targetCat);
     if (mode !== "remove" && targetValidated === null) {
         return { status: "invalid-target", text };
@@ -140,9 +282,10 @@ const computeNewWikitext = (input: ComputeWikitextInput): ComputedWikitext => {
         return { status: "skipped-already", text };
     }
 
+    const maskedText = blankCommentsAndNowiki(text);
     const targetRegex = targetName ? buildCategoryRegex(targetName) : null;
-    const sourceRegex = sourceName ? buildCategoryRegex(sourceName) : null;
-    const alreadyInTarget = matches(targetRegex, text);
+    const sourceRegexes = buildSourceRegexes(sourceName, sourceVariants);
+    const alreadyInTarget = matches(targetRegex, maskedText);
 
     switch (mode) {
         case "add": {
@@ -155,50 +298,40 @@ const computeNewWikitext = (input: ComputeWikitextInput): ComputedWikitext => {
             if (alreadyInTarget) {
                 return { status: "skipped-already", text };
             }
-            if (sourceRegex && matches(sourceRegex, text)) {
-                resetRegex(sourceRegex);
-                let inserted = false;
-                const replaced = text.replace(sourceRegex, (matched: string) => {
-                    if (inserted) {
-                        return matched;
-                    }
-                    inserted = true;
-                    return `${matched}\n[[Category:${targetName}]]`;
-                });
+            const sourceSpans = collectMatchSpans(sourceRegexes, maskedText);
+            if (sourceSpans.length > 0) {
+                const first = sourceSpans[0];
+                const replaced = `${text.slice(0, first.end)}\n[[Category:${targetName}]]${text.slice(first.end)}`;
                 return { status: "ok", text: replaced };
             }
             return { status: "ok", text: appendCategory(text, targetName) };
         }
         case "move": {
-            if (!matches(sourceRegex, text) || !sourceRegex) {
+            const sourceSpans = collectMatchSpans(sourceRegexes, maskedText);
+            if (sourceSpans.length === 0) {
                 return { status: "skipped-not-found", text };
             }
-            resetRegex(sourceRegex);
             if (alreadyInTarget) {
                 return {
                     status: "ok",
-                    text: text.replace(sourceRegex, "").replace(/\n{3,}/gu, "\n\n"),
+                    text: replaceSpans(text, sourceSpans, () => "").replace(/\n{3,}/gu, "\n\n"),
                 };
             }
-            let replacedFirst = false;
-            const replaced = text.replace(sourceRegex, (_matched: string, ...args: unknown[]) => {
-                if (replacedFirst) {
-                    return "";
-                }
-                replacedFirst = true;
-                const sortkey = typeof args[0] === "string" ? args[0] : "";
-                return `[[Category:${targetName}${sortkey}]]`;
-            });
+            const replaced = replaceSpans(
+                text,
+                sourceSpans,
+                (span, index) => index === 0 ? `[[Category:${targetName}${span.sortkey}]]` : "",
+            );
             return { status: "ok", text: replaced };
         }
         case "remove": {
-            if (!matches(sourceRegex, text) || !sourceRegex) {
+            const sourceSpans = collectMatchSpans(sourceRegexes, maskedText);
+            if (sourceSpans.length === 0) {
                 return { status: "skipped-not-found", text };
             }
-            resetRegex(sourceRegex);
             return {
                 status: "ok",
-                text: text.replace(sourceRegex, "").replace(/\n{3,}/gu, "\n\n"),
+                text: replaceSpans(text, sourceSpans, () => "").replace(/\n{3,}/gu, "\n\n"),
             };
         }
     }
@@ -209,14 +342,16 @@ interface VerifyCommittedInput {
     mode: EditMode;
     sourceCat: string;
     targetCat: string;
+    sourceVariants?: readonly string[];
 }
 
 const verifyCommittedOnServer = (input: VerifyCommittedInput): boolean => {
-    const { latestText, mode, sourceCat, targetCat } = input;
+    const { latestText, mode, sourceCat, targetCat, sourceVariants } = input;
+    const maskedLatest = blankCommentsAndNowiki(latestText);
     const targetRegex = targetCat ? buildCategoryRegex(targetCat) : null;
-    const sourceRegex = sourceCat ? buildCategoryRegex(sourceCat) : null;
-    const hasTarget = matches(targetRegex, latestText);
-    const hasSource = matches(sourceRegex, latestText);
+    const sourceRegexes = buildSourceRegexes(sourceCat, sourceVariants);
+    const hasTarget = matches(targetRegex, maskedLatest);
+    const hasSource = sourceRegexes.some((regex) => matches(regex, maskedLatest));
 
     switch (mode) {
         case "add":
