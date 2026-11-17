@@ -66,40 +66,45 @@
     const zhUserPage = () => {
         const scriptPath = mw.config.get("wgScriptPath");
         const zhBase = `${mw.config.get("wgServer").replace("commons.moegirl", "zh.moegirl")}${scriptPath}`;
-        $("#mw-content-text a").each((_, ele) => {
-            try {
-                const link = new URL(ele.href, location.origin);
-                if (link.origin !== location.origin) {
+        mw.hook("wikipage.content").add(($content) => {
+            $content.find("a").each((_, ele) => {
+                if (ele.dataset.zhUserPage) {
                     return;
                 }
-                if (/^\/api\.php/i.test(link.pathname)) {
+                try {
+                    const link = new URL(ele.href, location.origin);
+                    if (link.origin !== location.origin) {
+                        return;
+                    }
+                    if (/\.php$/i.test(link.pathname) && (!/\/index\.php$/i.test(link.pathname) || !link.searchParams.get("title"))) {
+                        return;
+                    }
+                    if ((link.searchParams.get("action") || link.searchParams.get("veaction")) && link.searchParams.get("redlink") !== "1" || link.searchParams.get("diff") || link.searchParams.get("oldid")) {
+                        return;
+                    }
+                    const title = link.searchParams.get("title") || decodeURI(link.pathname.slice(scriptPath.length + 1));
+                    if (/^user:[^/]+$/i.test(title)) {
+                        ele.dataset.zhUserPage = "1";
+                        $(ele).after($("<sub>").append(
+                            "[",
+                            $("<a>", {
+                                target: "_blank",
+                                title: `主站上的用户 ${title.replace(/^user:/i, "")}`,
+                                href: `${zhBase}/${encodeURI(title)}${link.hash}`,
+                                text: "主",
+                            }),
+                            "]",
+                        ));
+                    } else if (/^user[ _]talk:[^/]+$/i.test(title)) {
+                        ele.dataset.zhUserPage = "1";
+                        ele.href = `${zhBase}/${encodeURI(title)}${link.hash}`;
+                        ele.classList.remove("new");
+                        ele.title = `主站上的用户讨论 ${title.replace(/^user[ _]talk:/i, "")}`;
+                    }
+                } catch (_e) {
                     return;
                 }
-                if (!link.searchParams.get("title") && /\.php$/i.test(link.pathname)) {
-                    return;
-                }
-                if (link.searchParams.get("action") && link.searchParams.get("redlink") !== "1" || link.searchParams.get("diff")) {
-                    return;
-                }
-                const title = link.searchParams.get("title") || decodeURI(link.pathname.slice(scriptPath.length + 1));
-                if (/^user:[^/]+$/i.test(title)) {
-                    $(ele).after($("<sub>").append(
-                        "[",
-                        $("<a>", {
-                            target: "_blank",
-                            title: `主站上的用户 ${title.replace(/^user:/i, "")}`,
-                            href: `${zhBase}/${encodeURI(title)}${link.hash}`,
-                            text: "主",
-                        }),
-                        "]",
-                    ));
-                } else if (/^user[ _]talk:[^/]+$/i.test(title)) {
-                    ele.href = `${zhBase}/${encodeURI(title)}${link.hash}`;
-                    ele.classList.remove("new");
-                }
-            } catch (_e) {
-                return;
-            }
+            });
         });
     };
     // 授权协议检测
