@@ -56,7 +56,7 @@ interface ApiClient {
     fetchCategoryTree(catName: string, subcatLimit: number, allowCategoryMembers: boolean): Promise<CategoryTree>;
     fetchCategorySuggestions(query: string): Promise<string[]>;
     fetchPageWikitext(title: string): Promise<PageWikitext>;
-    resolveCategoryVariants(catNames: readonly string[]): Promise<Map<string, string>>;
+    resolveCategoryVariants(catNames: readonly string[], batchSize?: number): Promise<Map<string, string>>;
     editPage(params: EditPageParams): Promise<void>;
     grantFlood(tags: string, userName: string): Promise<void>;
     revokeFlood(tags: string, userName: string): Promise<void>;

@@ -27,12 +27,13 @@ const page = (content: string, overrides: Partial<PageWikitext> = {}): PageWikit
 /** 假 ApiClient：只实现批处理用到的查询/编辑/中止。 */
 const createFakeApi = (
     impl: (title: string) => Promise<PageWikitext>,
-    variantImpl?: (catNames: readonly string[]) => Promise<Map<string, string>>,
+    variantImpl?: (catNames: readonly string[], batchSize?: number) => Promise<Map<string, string>>,
 ) => {
     const fetchPageWikitext = vi.fn(impl);
     const resolveCategoryVariants = vi.fn(
-        variantImpl ?? ((catNames: readonly string[]): Promise<Map<string, string>> => {
+        variantImpl ?? ((catNames: readonly string[], batchSize?: number): Promise<Map<string, string>> => {
             void catNames;
+            void batchSize;
             return Promise.resolve(new Map<string, string>());
         }),
     );
@@ -596,55 +597,50 @@ describe("createState：结果弹窗门控与分类规范化", () => {
         expect(setup.resolveCategoryVariants).toHaveBeenCalledTimes(1);
     });
 
-    it("add 模式下目标分类以另一繁简变体存在于页面时跳过", async () => {
-        const setup = createFakeApi(
-            () => Promise.resolve(page("Body\n[[Category:英雄聯盟賽事]]\n")),
-            (catNames) => Promise.resolve(new Map(
-                catNames.map((name) => [name, name === "英雄聯盟賽事" ? "英雄联盟赛事" : name]),
-            )),
+    it("默认不触发 converttitles，仅在未找到原分类时执行（特权用户批量、非特权用户单标题）", async () => {
+        const directSetup = createFakeApi(
+            () => Promise.resolve(page("Body\n[[Category:英雄联盟竞技赛事]]\n")),
         );
-        const hooks = createFakeHooks();
-        const run = startBatch({
+        const directHooks = createFakeHooks();
+        const directRun = startBatch({
             titles: ["Page1"],
-            mode: "add",
-            sourceCat: "",
+            mode: "move",
+            sourceCat: "英雄联盟竞技赛事",
             targetCat: "英雄联盟赛事",
             prefs: DEFAULT_PREFS,
             hasBotRight: true,
             isSysopOrStaff: false,
-            api: setup.api,
-            hooks: hooks.hooks,
+            api: directSetup.api,
+            hooks: directHooks.hooks,
         });
+        await directRun.result;
+        expect(directSetup.resolveCategoryVariants).not.toHaveBeenCalled();
 
-        const result = await run.result;
-        expect(result.done).toBe(0);
-        expect(result.skippedAlready).toEqual(["Page1"]);
-        expect(setup.editPage).not.toHaveBeenCalled();
-    });
-
-    it("move 模式下源分类与目标分类为同一分类的不同繁简变体时跳过", async () => {
-        const setup = createFakeApi(
-            () => Promise.resolve(page("Body\n[[Category:英雄聯盟競技賽事]]\n")),
+        const nonPrivSetup = createFakeApi(
+            () => Promise.resolve(page("Body\n[[Category:电子竞技]]\n[[Category:英雄聯盟競技賽事]]\n[[Category:2018年]]\n")),
             (catNames) => Promise.resolve(new Map(
                 catNames.map((name) => [name, name === "英雄聯盟競技賽事" ? "英雄联盟竞技赛事" : name]),
             )),
         );
-        const hooks = createFakeHooks();
-        const run = startBatch({
+        const nonPrivHooks = createFakeHooks();
+        const nonPrivRun = startBatch({
             titles: ["Page1"],
-            mode: "move",
+            mode: "remove",
             sourceCat: "英雄联盟竞技赛事",
-            targetCat: "英雄聯盟競技賽事",
+            targetCat: "",
             prefs: DEFAULT_PREFS,
-            hasBotRight: true,
+            hasBotRight: false,
             isSysopOrStaff: false,
-            api: setup.api,
-            hooks: hooks.hooks,
+            api: nonPrivSetup.api,
+            hooks: nonPrivHooks.hooks,
         });
 
-        const result = await run.result;
-        expect(result.done).toBe(0);
-        expect(result.skippedAlready).toEqual(["Page1"]);
-        expect(setup.editPage).not.toHaveBeenCalled();
+        const nonPrivResult = await nonPrivRun.result;
+        expect(nonPrivResult.done).toBe(1);
+        expect(nonPrivSetup.resolveCategoryVariants).toHaveBeenCalledWith(["英雄联盟竞技赛事"], 1);
+        expect(nonPrivSetup.resolveCategoryVariants).toHaveBeenCalledWith(["电子竞技"], 1);
+        expect(nonPrivSetup.resolveCategoryVariants).toHaveBeenCalledWith(["英雄聯盟競技賽事"], 1);
+        // 命中后提前结束，不再查询后面的 "2018年"
+        expect(nonPrivSetup.resolveCategoryVariants).toHaveBeenCalledTimes(3);
     });
 });

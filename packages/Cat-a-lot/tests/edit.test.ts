@@ -435,4 +435,29 @@ describe("resolveCategoryVariants", () => {
         expect(resolved.get("foo bar")).toBe("Bar");
         expect(resolved.get("电子竞技")).toBe("电子竞技");
     });
+
+    it("batchSize=1 时每次只查询一个标题", async () => {
+        const api = createApi("TestUser");
+        postMock
+            .mockReturnValueOnce(Promise.resolve({ query: {} }))
+            .mockReturnValueOnce(Promise.resolve({
+                query: {
+                    converted: [{ from: "Category:英雄聯盟競技賽事", to: "Category:英雄联盟竞技赛事" }],
+                },
+            }));
+
+        const resolved = await api.resolveCategoryVariants(["电子竞技", "英雄聯盟競技賽事"], 1);
+        expect(postMock).toHaveBeenCalledTimes(2);
+        expect(postMock).toHaveBeenNthCalledWith(
+            1,
+            { action: "query", titles: "Category:电子竞技", converttitles: 1, formatversion: 2 },
+            { timeout: API_TIMEOUT_MS },
+        );
+        expect(postMock).toHaveBeenNthCalledWith(
+            2,
+            { action: "query", titles: "Category:英雄聯盟競技賽事", converttitles: 1, formatversion: 2 },
+            { timeout: API_TIMEOUT_MS },
+        );
+        expect(resolved.get("英雄聯盟競技賽事")).toBe("英雄联盟竞技赛事");
+    });
 });

@@ -246,8 +246,11 @@ const createApi = (userName: string): ApiClient => {
 
     const MAX_QUERY_TITLES = 50;
 
-    /** 参考 HotCat，通过 converttitles=1 将分类名规范化并解析语言变体到站点实际分类页标题。 */
-    const resolveCategoryVariants = async (catNames: readonly string[]): Promise<Map<string, string>> => {
+    /** 参考 HotCat，通过 converttitles=1 将分类名规范化并解析语言变体到站点实际分类页标题；非特权用户应传 batchSize=1。 */
+    const resolveCategoryVariants = async (
+        catNames: readonly string[],
+        batchSize = MAX_QUERY_TITLES,
+    ): Promise<Map<string, string>> => {
         const result = new Map<string, string>();
         const unique: string[] = [];
         for (const raw of catNames) {
@@ -257,8 +260,9 @@ const createApi = (userName: string): ApiClient => {
                 unique.push(clean);
             }
         }
-        for (let offset = 0; offset < unique.length; offset += MAX_QUERY_TITLES) {
-            const chunk = unique.slice(offset, offset + MAX_QUERY_TITLES);
+        const chunkSize = Math.min(Math.max(Math.trunc(batchSize) || 1, 1), MAX_QUERY_TITLES);
+        for (let offset = 0; offset < unique.length; offset += chunkSize) {
+            const chunk = unique.slice(offset, offset + chunkSize);
             const response = await request<ConvertTitlesResponse>(getApi().post({
                 action: "query",
                 titles: chunk.map((name) => `Category:${name}`).join("|"),

@@ -5,7 +5,6 @@ import {
     activeChangeTags,
 } from "./constants.ts";
 import {
-    buildCategoryRegex,
     computeNewWikitext,
     extractCategoryNames,
     normalizeCatName,
@@ -260,6 +259,7 @@ const startBatch = (options: BatchOptions): BatchRun => {
 
             // 本次运行实际拥有的 bot/flood 权限：初始权限或本次自授权成功
             const hasBotRight = initiallyHasBotRight || grantedThisRun;
+            const canBatchTitleQueries = isSysopOrStaff || hasBotRight;
             const delayMs = hasBotRight ? 0 : NON_BOT_DELAY_MS;
             const variantCache = new Map<string, string>();
             const canonicalOf = (name: string): string => {
@@ -278,7 +278,7 @@ const startBatch = (options: BatchOptions): BatchRun => {
                     return;
                 }
                 try {
-                    const resolved = await api.resolveCategoryVariants(missing);
+                    const resolved = await api.resolveCategoryVariants(missing, canBatchTitleQueries ? 50 : 1);
                     for (const name of missing) {
                         variantCache.set(name, resolved.get(name) ?? name);
                     }
@@ -292,17 +292,39 @@ const startBatch = (options: BatchOptions): BatchRun => {
                     }
                 }
             };
-            const findVariantMatch = (pageCats: readonly string[], targetName: string): string | null => {
-                const canonicalTarget = canonicalOf(targetName);
-                return pageCats.find((cat) => sameCategory(canonicalOf(cat), canonicalTarget)) ?? null;
-            };
-            const hasDirectCategory = (text: string, catName: string): boolean => {
-                const regex = catName ? buildCategoryRegex(catName) : null;
-                if (!regex) {
-                    return false;
+            const findSourceVariantMatch = async (pageCats: readonly string[]): Promise<string | null> => {
+                if (canBatchTitleQueries) {
+                    await ensureVariantsResolved([...pageCats, sourceCat]);
+                    if (isStopped()) {
+                        return null;
+                    }
+                    const canonicalSource = canonicalOf(sourceCat);
+                    return pageCats.find((cat) => sameCategory(canonicalOf(cat), canonicalSource)) ?? null;
                 }
-                regex.lastIndex = 0;
-                return regex.test(text);
+                // 非 sysop/bot/flood 每次请求仅允许查询 1 个标题：先查原分类，再逐个查页面分类并在命中后提前结束
+                await ensureVariantsResolved([sourceCat]);
+                if (isStopped()) {
+                    return null;
+                }
+                const canonicalSource = canonicalOf(sourceCat);
+                for (const cat of pageCats) {
+                    if (variantCache.has(cat) && sameCategory(canonicalOf(cat), canonicalSource)) {
+                        return cat;
+                    }
+                }
+                for (const cat of pageCats) {
+                    if (variantCache.has(cat)) {
+                        continue;
+                    }
+                    await ensureVariantsResolved([cat]);
+                    if (isStopped()) {
+                        return null;
+                    }
+                    if (sameCategory(canonicalOf(cat), canonicalSource)) {
+                        return cat;
+                    }
+                }
+                return null;
             };
             running = true;
             hooks.setRunning(true);
@@ -317,7 +339,6 @@ const startBatch = (options: BatchOptions): BatchRun => {
                 hooks.setCurrentTitle(title);
                 let editSubmitted = false;
                 let effectiveSourceCat = sourceCat;
-                let effectiveTargetCat = cleanTarget;
 
                 try {
                     const page = await api.fetchPageWikitext(title);
@@ -331,47 +352,22 @@ const startBatch = (options: BatchOptions): BatchRun => {
                             text: page.content,
                             mode,
                             sourceCat: effectiveSourceCat,
-                            targetCat: effectiveTargetCat,
+                            targetCat: cleanTarget,
                         });
-                        if (computed.status !== "skipped-already") {
+                        if (computed.status === "skipped-not-found" && sourceCat !== "") {
                             const pageCats = extractCategoryNames(page.content);
-                            const needSourceCheck = sourceCat !== ""
-                                && (computed.status === "skipped-not-found" || mode === "copy" && !hasDirectCategory(page.content, sourceCat));
-                            const needTargetCheck = cleanTarget !== "";
-                            if (pageCats.length > 0 && (needSourceCheck || needTargetCheck)) {
-                                const toResolve = [...pageCats];
-                                if (sourceCat) {
-                                    toResolve.push(sourceCat);
-                                }
-                                if (cleanTarget) {
-                                    toResolve.push(cleanTarget);
-                                }
-                                await ensureVariantsResolved(toResolve);
+                            if (pageCats.length > 0) {
+                                const matchedSource = await findSourceVariantMatch(pageCats);
                                 if (isStopped()) {
                                     break;
                                 }
-                                if (needSourceCheck) {
-                                    const matchedSource = findVariantMatch(pageCats, sourceCat);
-                                    if (matchedSource !== null) {
-                                        effectiveSourceCat = matchedSource;
-                                    }
-                                }
-                                if (needTargetCheck) {
-                                    if (mode === "move" && sourceCat !== "" && sameCategory(canonicalOf(sourceCat), canonicalOf(cleanTarget))) {
-                                        effectiveTargetCat = effectiveSourceCat;
-                                    } else {
-                                        const matchedTarget = findVariantMatch(pageCats, cleanTarget);
-                                        if (matchedTarget !== null) {
-                                            effectiveTargetCat = matchedTarget;
-                                        }
-                                    }
-                                }
-                                if (effectiveSourceCat !== sourceCat || effectiveTargetCat !== cleanTarget) {
+                                if (matchedSource !== null) {
+                                    effectiveSourceCat = matchedSource;
                                     computed = computeNewWikitext({
                                         text: page.content,
                                         mode,
                                         sourceCat: effectiveSourceCat,
-                                        targetCat: effectiveTargetCat,
+                                        targetCat: cleanTarget,
                                     });
                                 }
                             }
@@ -416,7 +412,7 @@ const startBatch = (options: BatchOptions): BatchRun => {
                                     latestText: latest.content,
                                     mode,
                                     sourceCat: effectiveSourceCat,
-                                    targetCat: effectiveTargetCat,
+                                    targetCat: cleanTarget,
                                 })
                             ) {
                                 hooks.onPageDone(title);
