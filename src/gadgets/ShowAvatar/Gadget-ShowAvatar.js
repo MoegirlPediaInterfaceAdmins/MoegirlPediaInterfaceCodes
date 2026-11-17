@@ -6,7 +6,7 @@ $(() => {
         target: "_blank",
     }).append(children);
     const ViewAvatar = ({ userName }, children) => {
-        const url = new URL("/Special:Viewavatar");
+        const url = new URL("/Special:Viewavatar", location.origin);
         userName && url.searchParams.set("user", userName);
         return $("<a>", {
             href: url.href,
