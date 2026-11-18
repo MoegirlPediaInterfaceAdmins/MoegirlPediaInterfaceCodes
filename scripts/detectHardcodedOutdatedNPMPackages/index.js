@@ -16,6 +16,7 @@ const { whitelist } = await yamlModule.readFile("scripts/detectHardcodedOutdated
 console.info("whitelist:", whitelist);
 const scripts = (await readDir("src")).filter((n) => n.endsWith(".js"));
 dump("scripts:", JSON.stringify(scripts, null, 4));
+const failedPackages = [];
 for (const src of scripts) {
     // await libCachedCode.injectCachedCode("https://testingcf.jsdelivr.net/npm/wikiplus-core@4.0.11/dist/Main.js", "script");
     // 白名单键与 issue 链接统一用仓库相对的正斜杠路径，Windows 本地与 Linux CI 行为一致
@@ -37,7 +38,15 @@ for (const src of scripts) {
         const atIndex = match.lastIndexOf("@");
         const pkg = match.slice(0, atIndex);
         const version = match.slice(atIndex + 1);
-        const packageInfo = await fetchNPMPackageInfo(pkg);
+        let packageInfo;
+        try {
+            packageInfo = await fetchNPMPackageInfo(pkg);
+        } catch (error) {
+            // registry 单点故障不应中断整轮扫描：记录后继续检查其余包，末尾统一以非零退出码收尾
+            console.error("Failed to fetch package info for", pkg, ", skip it:", error);
+            failedPackages.push(match);
+            continue;
+        }
         /**
          * @type { string }
          */
@@ -66,5 +75,9 @@ for (const src of scripts) {
         labels,
         `The harcoded-outdated NPM packages:\n${outdatedPackages.map(({ pkg, latestVersion, version }) => `- [${pkg}](https://www.npmjs.com/package/${pkg}): ${version} -> ${latestVersion}`).join("\n")}`,
     );
+}
+if (failedPackages.length > 0) {
+    console.error(`Failed to analyse ${failedPackages.length} package(s):`, failedPackages);
+    process.exitCode = 1;
 }
 console.info("Done.");

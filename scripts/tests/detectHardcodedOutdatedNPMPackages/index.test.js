@@ -5,6 +5,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 // semver 与 extractHardcodedPackages 保持真实实现——被测行为正是两者的交互
 const state = vi.hoisted(() => ({
     fsSource: "",
+    sources: {},
     readDirFiles: ["src/gadgets/Fake/Gadget-Fake.js"],
     whitelist: {},
     latest: "5.0.0",
@@ -13,7 +14,7 @@ const state = vi.hoisted(() => ({
 vi.mock("node:fs", () => ({
     "default": {
         promises: {
-            readFile: vi.fn(() => Promise.resolve(state.fsSource)),
+            readFile: vi.fn((filePath) => Promise.resolve(state.sources[filePath] ?? state.fsSource)),
         },
     },
 }));
@@ -52,15 +53,18 @@ const importScript = async () => {
 beforeEach(() => {
     vi.resetModules();
     fetchNPMPackageInfo.mockImplementation(() => ({ "dist-tags": { latest: state.latest } }));
+    process.exitCode = 0;
 });
 
 afterEach(() => {
     state.fsSource = "";
+    state.sources = {};
     state.readDirFiles = ["src/gadgets/Fake/Gadget-Fake.js"];
     state.whitelist = {};
     state.latest = "5.0.0";
     fetchNPMPackageInfo.mockReset();
     octokitMocks.createIssue.mockReset();
+    process.exitCode = 0;
 });
 
 describe("detectHardcodedOutdatedNPMPackages", () => {
@@ -138,5 +142,32 @@ describe("detectHardcodedOutdatedNPMPackages", () => {
         expect(rejection).toBeNull();
         expect(fetchNPMPackageInfo).not.toHaveBeenCalled();
         expect(octokitMocks.createIssue).not.toHaveBeenCalled();
+    });
+
+    it("单个包查询 registry 失败时跳过该包、继续扫描其余文件，并以非零退出码收尾", async () => {
+        state.readDirFiles = ["src/gadgets/Fake/A.js", "src/gadgets/Fake/B.js"];
+        state.sources = {
+            "src/gadgets/Fake/A.js": "const url = \"https://cdn.jsdelivr.net/npm/broken@1.0.0/index.js\";\n",
+            "src/gadgets/Fake/B.js": "const url = \"https://cdn.jsdelivr.net/npm/healthy@1.0.0/index.js\";\n",
+        };
+        state.latest = "2.0.0";
+        fetchNPMPackageInfo.mockImplementation((pkg) => pkg === "broken"
+            ? Promise.reject(new Error("registry down"))
+            : Promise.resolve({ "dist-tags": { latest: state.latest } }));
+        const rejection = await importScript();
+        expect(rejection).toBeNull();
+        expect(fetchNPMPackageInfo).toHaveBeenCalledTimes(2);
+        expect(octokitMocks.createIssue).toHaveBeenCalledOnce();
+        expect(octokitMocks.createIssue.mock.calls[0][3]).toContain("healthy): 1.0.0 -> 2.0.0");
+        expect(process.exitCode).toBe(1);
+    });
+
+    it("所有包查询成功时不设置非零退出码", async () => {
+        state.fsSource = "const url = \"https://cdn.jsdelivr.net/npm/healthy@1.0.0/index.js\";\n";
+        state.latest = "2.0.0";
+        const rejection = await importScript();
+        expect(rejection).toBeNull();
+        expect(octokitMocks.createIssue).toHaveBeenCalledOnce();
+        expect(process.exitCode).toBe(0);
     });
 });
