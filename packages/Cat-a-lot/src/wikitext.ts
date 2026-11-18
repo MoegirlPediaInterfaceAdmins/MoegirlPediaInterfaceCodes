@@ -68,86 +68,98 @@ const resetRegex = (regex: RegExp): void => {
     regex.lastIndex = 0;
 };
 
-/** 线性扫描并将 HTML 注释与 <nowiki> 区块替换为空格（保持下标与原文本一致）。 */
+const IGNORED_TAGS = ["nowiki", "pre", "syntaxhighlight", "source", "math", "gallery"] as const;
+
+const isTagBoundary = (char: string): boolean => char === ">"
+    || char === " "
+    || char === "\t"
+    || char === "\n"
+    || char === "\r"
+    || char === "/";
+
+/** 线性扫描并将 HTML 注释与不解析分类语法的标签块（nowiki/pre/syntaxhighlight/source/math/gallery）替换为空格。 */
 const blankCommentsAndNowiki = (text: string): string => {
     const lower = text.toLowerCase();
     const parts: string[] = [];
     let cursor = 0;
 
     while (cursor < text.length) {
-        const commentIdx = text.indexOf("<!--", cursor);
-        const nowikiIdx = lower.indexOf("<nowiki", cursor);
-        let nextIdx = -1;
-        let isComment = false;
-
-        if (commentIdx !== -1 && (nowikiIdx === -1 || commentIdx < nowikiIdx)) {
-            nextIdx = commentIdx;
-            isComment = true;
-        } else if (nowikiIdx !== -1) {
-            nextIdx = nowikiIdx;
-        }
-
-        if (nextIdx === -1) {
+        const ltIdx = text.indexOf("<", cursor);
+        if (ltIdx === -1) {
             parts.push(text.slice(cursor));
             break;
         }
-
-        if (nextIdx > cursor) {
-            parts.push(text.slice(cursor, nextIdx));
+        if (ltIdx > cursor) {
+            parts.push(text.slice(cursor, ltIdx));
         }
 
-        if (isComment) {
-            const endIdx = text.indexOf("-->", nextIdx + 4);
+        if (text.startsWith("<!--", ltIdx)) {
+            const endIdx = text.indexOf("-->", ltIdx + 4);
             const stopIdx = endIdx === -1 ? text.length : endIdx + 3;
-            parts.push(" ".repeat(stopIdx - nextIdx));
+            parts.push(" ".repeat(stopIdx - ltIdx));
             cursor = stopIdx;
-        } else {
-            const tagClose = text.indexOf(">", nextIdx + 7);
-            const afterOpen = nextIdx + 7 < text.length ? text.charAt(nextIdx + 7) : "";
-            const isNowikiTag = tagClose !== -1 && (afterOpen === ">" || afterOpen === " " || afterOpen === "\t" || afterOpen === "\n" || afterOpen === "\r" || afterOpen === "/");
-            if (!isNowikiTag) {
-                parts.push(text.slice(nextIdx, nextIdx + 7));
-                cursor = nextIdx + 7;
-                continue;
-            }
-            // 自闭合 <nowiki /> 仅遮罩标签本身
-            if (text.charAt(tagClose - 1) === "/") {
-                parts.push(" ".repeat(tagClose + 1 - nextIdx));
-                cursor = tagClose + 1;
-                continue;
-            }
-            const closeTagIdx = lower.indexOf("</nowiki>", tagClose + 1);
-            const stopIdx = closeTagIdx === -1 ? text.length : closeTagIdx + 9;
-            parts.push(" ".repeat(stopIdx - nextIdx));
-            cursor = stopIdx;
+            continue;
         }
+
+        const matchedTag = IGNORED_TAGS.find((tag) => {
+            if (!lower.startsWith(tag, ltIdx + 1)) {
+                return false;
+            }
+            const boundaryPos = ltIdx + 1 + tag.length;
+            return boundaryPos < text.length && isTagBoundary(text.charAt(boundaryPos));
+        });
+        if (!matchedTag) {
+            parts.push("<");
+            cursor = ltIdx + 1;
+            continue;
+        }
+
+        const tagClose = text.indexOf(">", ltIdx + 1 + matchedTag.length);
+        if (tagClose === -1) {
+            parts.push(text.slice(ltIdx));
+            break;
+        }
+        // 自闭合标签（如 <nowiki />）仅遮罩标签本身
+        if (text.charAt(tagClose - 1) === "/") {
+            parts.push(" ".repeat(tagClose + 1 - ltIdx));
+            cursor = tagClose + 1;
+            continue;
+        }
+        const closeTag = `</${matchedTag}>`;
+        const closeTagIdx = lower.indexOf(closeTag, tagClose + 1);
+        const stopIdx = closeTagIdx === -1 ? text.length : closeTagIdx + closeTag.length;
+        parts.push(" ".repeat(stopIdx - ltIdx));
+        cursor = stopIdx;
     }
 
     return parts.join("");
 };
 
-/** 线性扫描 wikitext（跳过注释与 nowiki）并提取所有合法分类名（去重并规范化，保留原文大小写与繁简）。 */
+/** 线性扫描 wikitext（跳过注释与不解析标签块）并提取所有合法分类名（去重并规范化，保留原文大小写与繁简）。 */
 const extractCategoryNames = (text: string): string[] => {
     const masked = blankCommentsAndNowiki(text);
     const seen = new Set<string>();
     const names: string[] = [];
     let cursor = 0;
+    let cachedCloseIdx = -1;
 
     while (cursor < masked.length) {
         const openIdx = masked.indexOf("[[", cursor);
         if (openIdx === -1) {
             break;
         }
-        const closeIdx = masked.indexOf("]]", openIdx + 2);
-        if (closeIdx === -1) {
-            break;
+        if (cachedCloseIdx < openIdx + 2) {
+            cachedCloseIdx = masked.indexOf("]]", openIdx + 2);
+            if (cachedCloseIdx === -1) {
+                break;
+            }
         }
         const nextOpen = masked.indexOf("[[", openIdx + 2);
-        if (nextOpen !== -1 && nextOpen < closeIdx) {
+        if (nextOpen !== -1 && nextOpen < cachedCloseIdx) {
             cursor = nextOpen;
             continue;
         }
-        const inner = masked.slice(openIdx + 2, closeIdx).trimStart();
+        const inner = masked.slice(openIdx + 2, cachedCloseIdx).trimStart();
         if (CATEGORY_NAMESPACE_PREFIX_REGEX.test(inner)) {
             const pipeIdx = inner.indexOf("|");
             const rawCat = pipeIdx === -1 ? inner : inner.slice(0, pipeIdx);
@@ -157,7 +169,7 @@ const extractCategoryNames = (text: string): string[] => {
                 names.push(clean);
             }
         }
-        cursor = closeIdx + 2;
+        cursor = cachedCloseIdx + 2;
     }
 
     return names;
@@ -266,10 +278,11 @@ interface ComputeWikitextInput {
     sourceCat: string;
     targetCat: string;
     sourceVariants?: readonly string[];
+    targetVariants?: readonly string[];
 }
 
 const computeNewWikitext = (input: ComputeWikitextInput): ComputedWikitext => {
-    const { text, mode, sourceCat, targetCat, sourceVariants } = input;
+    const { text, mode, sourceCat, targetCat, sourceVariants, targetVariants } = input;
     const targetValidated = mode === "remove" ? "" : validateCategoryTitle(targetCat);
     if (mode !== "remove" && targetValidated === null) {
         return { status: "invalid-target", text };
@@ -283,9 +296,9 @@ const computeNewWikitext = (input: ComputeWikitextInput): ComputedWikitext => {
     }
 
     const maskedText = blankCommentsAndNowiki(text);
-    const targetRegex = targetName ? buildCategoryRegex(targetName) : null;
+    const targetRegexes = buildSourceRegexes(targetName, targetVariants);
     const sourceRegexes = buildSourceRegexes(sourceName, sourceVariants);
-    const alreadyInTarget = matches(targetRegex, maskedText);
+    const alreadyInTarget = targetRegexes.some((regex) => matches(regex, maskedText));
 
     switch (mode) {
         case "add": {
@@ -343,14 +356,15 @@ interface VerifyCommittedInput {
     sourceCat: string;
     targetCat: string;
     sourceVariants?: readonly string[];
+    targetVariants?: readonly string[];
 }
 
 const verifyCommittedOnServer = (input: VerifyCommittedInput): boolean => {
-    const { latestText, mode, sourceCat, targetCat, sourceVariants } = input;
+    const { latestText, mode, sourceCat, targetCat, sourceVariants, targetVariants } = input;
     const maskedLatest = blankCommentsAndNowiki(latestText);
-    const targetRegex = targetCat ? buildCategoryRegex(targetCat) : null;
+    const targetRegexes = buildSourceRegexes(targetCat, targetVariants);
     const sourceRegexes = buildSourceRegexes(sourceCat, sourceVariants);
-    const hasTarget = matches(targetRegex, maskedLatest);
+    const hasTarget = targetRegexes.some((regex) => matches(regex, maskedLatest));
     const hasSource = sourceRegexes.some((regex) => matches(regex, maskedLatest));
 
     switch (mode) {

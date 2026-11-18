@@ -54,6 +54,7 @@ interface ConvertTitlesResponse {
     query?: {
         normalized?: readonly TitleMappingEntry[];
         converted?: readonly TitleMappingEntry[];
+        redirects?: readonly TitleMappingEntry[];
     };
 }
 
@@ -128,6 +129,8 @@ const createBusinessError = (code: string, info: string): Error => {
 const categoryNames = (items: readonly { title?: string | undefined }[] | undefined): string[] => (items ?? [])
     .map((item) => typeof item.title === "string" ? normalizeCatName(item.title) : "")
     .filter((name) => name !== "");
+
+const MAX_QUERY_TITLES = 50;
 
 const createApi = (userName: string): ApiClient => {
     let client: mw.Api | null = null;
@@ -244,9 +247,10 @@ const createApi = (userName: string): ApiClient => {
         };
     };
 
-    const MAX_QUERY_TITLES = 50;
-
-    /** 参考 HotCat，通过 converttitles=1 将分类名规范化并解析语言变体到站点实际分类页标题；非特权用户应传 batchSize=1。 */
+    /**
+     * 参考 HotCat，通过 redirects=1&converttitles=1 将分类名规范化并解析到站点实际存在的变体页/重定向目标页
+     * （converttitles 转换目标为数据库中存在的变体拼写，而非用户界面语言偏好）；非特权用户应传 batchSize=1。
+     */
     const resolveCategoryVariants = async (
         catNames: readonly string[],
         batchSize = MAX_QUERY_TITLES,
@@ -255,7 +259,7 @@ const createApi = (userName: string): ApiClient => {
         const unique: string[] = [];
         for (const raw of catNames) {
             const clean = normalizeCatName(raw);
-            if (clean && !result.has(clean)) {
+            if (clean && !/[|\r\n]/u.test(clean) && !result.has(clean)) {
                 result.set(clean, clean);
                 unique.push(clean);
             }
@@ -266,13 +270,15 @@ const createApi = (userName: string): ApiClient => {
             const response = await request<ConvertTitlesResponse>(getApi().post({
                 action: "query",
                 titles: chunk.map((name) => `Category:${name}`).join("|"),
+                redirects: 1,
                 converttitles: 1,
                 formatversion: 2,
             }, { timeout: API_TIMEOUT_MS }));
             const mappings = new Map<string, string>();
             const normalized = response.query?.normalized ?? [];
             const converted = response.query?.converted ?? [];
-            for (const entry of [...normalized, ...converted]) {
+            const redirects = response.query?.redirects ?? [];
+            for (const entry of [...normalized, ...converted, ...redirects]) {
                 const from = typeof entry.from === "string" ? normalizeCatName(entry.from) : "";
                 const to = typeof entry.to === "string" ? normalizeCatName(entry.to) : "";
                 if (from && to && from !== to) {
@@ -385,4 +391,4 @@ const clampSubcatLimit = (value: number): number => {
 export type {
     CatALotApiError,
 };
-export { createApi };
+export { MAX_QUERY_TITLES, createApi };

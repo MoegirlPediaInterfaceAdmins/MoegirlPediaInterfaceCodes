@@ -402,7 +402,7 @@ describe("abortActive", () => {
 });
 
 describe("resolveCategoryVariants", () => {
-    it("使用 converttitles=1 解析繁简变体并串联 normalized 与 converted", async () => {
+    it("使用 redirects=1&converttitles=1 解析繁简变体、重定向并串联 normalized/converted/redirects", async () => {
         const api = createApi("TestUser");
         postMock.mockReturnValue(Promise.resolve({
             query: {
@@ -413,6 +413,9 @@ describe("resolveCategoryVariants", () => {
                     { from: "Category:英雄聯盟競技賽事", to: "Category:英雄联盟竞技赛事" },
                     { from: "Category:Foo bar", to: "Category:Bar" },
                 ],
+                redirects: [
+                    { from: "Category:Bar", to: "Category:Baz" },
+                ],
             },
         }));
 
@@ -420,20 +423,23 @@ describe("resolveCategoryVariants", () => {
             "英雄聯盟競技賽事",
             "foo_bar",
             "电子竞技",
+            "bad|title",
         ]);
 
         expect(postMock).toHaveBeenCalledWith(
             {
                 action: "query",
                 titles: "Category:英雄聯盟競技賽事|Category:foo bar|Category:电子竞技",
+                redirects: 1,
                 converttitles: 1,
                 formatversion: 2,
             },
             { timeout: API_TIMEOUT_MS },
         );
         expect(resolved.get("英雄聯盟競技賽事")).toBe("英雄联盟竞技赛事");
-        expect(resolved.get("foo bar")).toBe("Bar");
+        expect(resolved.get("foo bar")).toBe("Baz");
         expect(resolved.get("电子竞技")).toBe("电子竞技");
+        expect(resolved.has("bad|title")).toBe(false);
     });
 
     it("batchSize=1 时每次只查询一个标题", async () => {
@@ -450,12 +456,12 @@ describe("resolveCategoryVariants", () => {
         expect(postMock).toHaveBeenCalledTimes(2);
         expect(postMock).toHaveBeenNthCalledWith(
             1,
-            { action: "query", titles: "Category:电子竞技", converttitles: 1, formatversion: 2 },
+            { action: "query", titles: "Category:电子竞技", redirects: 1, converttitles: 1, formatversion: 2 },
             { timeout: API_TIMEOUT_MS },
         );
         expect(postMock).toHaveBeenNthCalledWith(
             2,
-            { action: "query", titles: "Category:英雄聯盟競技賽事", converttitles: 1, formatversion: 2 },
+            { action: "query", titles: "Category:英雄聯盟競技賽事", redirects: 1, converttitles: 1, formatversion: 2 },
             { timeout: API_TIMEOUT_MS },
         );
         expect(resolved.get("英雄聯盟競技賽事")).toBe("英雄联盟竞技赛事");

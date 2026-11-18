@@ -32,9 +32,8 @@ const createFakeApi = (
     const fetchPageWikitext = vi.fn(impl);
     const resolveCategoryVariants = vi.fn(
         variantImpl ?? ((catNames: readonly string[], batchSize?: number): Promise<Map<string, string>> => {
-            void catNames;
             void batchSize;
-            return Promise.resolve(new Map<string, string>());
+            return Promise.resolve(new Map(catNames.map((name) => [name, name])));
         }),
     );
     const editPage = vi.fn((params: EditPageParams): Promise<void> => {
@@ -561,7 +560,9 @@ describe("createState：结果弹窗门控与分类规范化", () => {
         expect(state.currentCategory).toBe("Other cat");
         expect(state.canActOnCurrentCategory).toBe(true);
     });
+});
 
+describe("startBatch：分类变体与边界处理", () => {
     it("move/remove 能通过变体解析匹配繁简不同但同源的分类并缓存查询结果", async () => {
         const setup = createFakeApi(
             (title) => Promise.resolve(page(`Body\n[[Category:英雄聯盟競技賽事|${title}]]\n`)),
@@ -637,14 +638,37 @@ describe("createState：结果弹窗门控与分类规范化", () => {
 
         const nonPrivResult = await nonPrivRun.result;
         expect(nonPrivResult.done).toBe(1);
-        expect(nonPrivSetup.resolveCategoryVariants).toHaveBeenCalledWith(["英雄联盟竞技赛事"], 1);
-        expect(nonPrivSetup.resolveCategoryVariants).toHaveBeenCalledWith(["电子竞技"], 1);
-        expect(nonPrivSetup.resolveCategoryVariants).toHaveBeenCalledWith(["英雄聯盟競技賽事"], 1);
-        expect(nonPrivSetup.resolveCategoryVariants).toHaveBeenCalledWith(["2018年"], 1);
-        expect(nonPrivSetup.resolveCategoryVariants).toHaveBeenCalledTimes(4);
+        expect(nonPrivSetup.resolveCategoryVariants.mock.calls.every(([, size]) => size === 1)).toBe(true);
     });
 
-    it("全选移动时源分类与目标分类解析为同一分类则不弹出重定向确认并跳过", async () => {
+    it("部分选中移动时，若目标分类被解析为源分类的变体则绝不删除源分类链接", async () => {
+        const setup = createFakeApi(
+            () => Promise.resolve(page("Body\n[[Category:英雄聯盟競技賽事]]\n")),
+            (catNames) => Promise.resolve(new Map(
+                catNames.map((name) => [name, name === "英雄聯盟競技賽事" ? "英雄联盟竞技赛事" : name]),
+            )),
+        );
+        const hooks = createFakeHooks();
+        const run = startBatch({
+            titles: ["Page1"],
+            mode: "move",
+            sourceCat: "英雄联盟竞技赛事",
+            targetCat: "英雄聯盟競技賽事",
+            isAllSelected: false,
+            prefs: DEFAULT_PREFS,
+            hasBotRight: true,
+            isSysopOrStaff: false,
+            api: setup.api,
+            hooks: hooks.hooks,
+        });
+
+        const result = await run.result;
+        expect(setup.editPage).not.toHaveBeenCalled();
+        expect(result.done).toBe(0);
+        expect(result.skippedAlready).toEqual(["Page1"]);
+    });
+
+    it("全选移动时源分类与目标分类解析为同一分类则不弹出重定向确认、给出提示并跳过", async () => {
         const setup = createFakeApi(
             () => Promise.resolve(page("Body\n[[Category:英雄聯盟競技賽事]]\n")),
             (catNames) => Promise.resolve(new Map(
@@ -667,17 +691,26 @@ describe("createState：结果弹窗门控与分类规范化", () => {
 
         const result = await run.result;
         expect(hooks.askMoveAllDialog).not.toHaveBeenCalled();
+        expect(hooks.notify).toHaveBeenCalledTimes(1);
         expect(setup.editPage).not.toHaveBeenCalled();
         expect(result.skippedAlready).toEqual(["Page1"]);
     });
 
-    it("页面存在多个同源变体拼写时全部一并移动/移除", async () => {
+    it("页面存在多个同源变体拼写时全部一并移动/移除，且断网回读核对所有变体", async () => {
+        let fetchCount = 0;
         const setup = createFakeApi(
-            () => Promise.resolve(page("Body\n[[Category:变体一|K1]]\n[[Category:变体二|K2]]\n")),
+            () => {
+                fetchCount += 1;
+                if (fetchCount === 1) {
+                    return Promise.resolve(page("Body\n[[Category:变体一|K1]]\n[[Category:变体二|K2]]\n"));
+                }
+                return Promise.resolve(page("Body\n[[Category:目标分类|K1]]\n\n"));
+            },
             (catNames) => Promise.resolve(new Map(
                 catNames.map((name) => [name, name === "变体一" || name === "变体二" ? "原分类" : name]),
             )),
         );
+        setup.editPage.mockRejectedValueOnce(new Error("network timeout"));
         const hooks = createFakeHooks();
         const run = startBatch({
             titles: ["Page1"],
@@ -699,13 +732,42 @@ describe("createState：结果弹窗门控与分类规范化", () => {
         }));
     });
 
-    it("非特权用户单页变体查询受上限控制，且查询失败不缓存并在后续页面重试", async () => {
+    it("非特权用户单页分类超出查询预算时跳过不完整编辑并上报原因", async () => {
+        const manyCats = Array.from({ length: 25 }, (_value, idx) => `[[Category:Cat${idx}]]`).join("\n");
+        const setup = createFakeApi(
+            () => Promise.resolve(page(`Body\n${manyCats}\n[[Category:源变体]]\n`)),
+            (catNames) => Promise.resolve(new Map(
+                catNames.map((name) => [name, name === "源变体" ? "源分类" : name]),
+            )),
+        );
+        const hooks = createFakeHooks();
+        const run = startBatch({
+            titles: ["Page1"],
+            mode: "move",
+            sourceCat: "源分类",
+            targetCat: "目标分类",
+            prefs: DEFAULT_PREFS,
+            hasBotRight: false,
+            isSysopOrStaff: false,
+            api: setup.api,
+            hooks: hooks.hooks,
+        });
+
+        const result = await run.result;
+        expect(setup.editPage).not.toHaveBeenCalled();
+        expect(result.done).toBe(0);
+        expect(result.skippedNotFound).toEqual([]);
+        expect(result.skippedServer).toHaveLength(1);
+        expect(result.skippedServer[0]).toContain("Page1");
+        expect(setup.resolveCategoryVariants.mock.calls.length).toBeLessThanOrEqual(20);
+    });
+
+    it("变体查询失败时不缓存错误结果、在后续页面重试并上报失败原因", async () => {
         vi.useFakeTimers();
         try {
-            const manyCats = Array.from({ length: 30 }, (_value, idx) => `[[Category:Cat${idx}]]`).join("\n");
             let attempt = 0;
             const setup = createFakeApi(
-                () => Promise.resolve(page(`Body\n${manyCats}\n`)),
+                () => Promise.resolve(page("Body\n[[Category:CatA]]\n")),
                 (catNames) => {
                     attempt += 1;
                     if (attempt === 1) {
@@ -729,10 +791,13 @@ describe("createState：结果弹窗门控与分类规范化", () => {
 
             await vi.runAllTimersAsync();
             const result = await run.result;
-            expect(result.skippedServer).toEqual(["Page1（variant lookup failed）"]);
+            expect(result.skippedServer).toHaveLength(1);
+            expect(result.skippedServer[0]).toContain("Page1");
+            expect(result.skippedServer[0]).toContain("variant lookup failed");
             expect(result.skippedNotFound).toEqual(["Page2"]);
-            // Page1 失败 1 次 + Page2 重试 sourceCat 1 次 + 最多 20 个页面分类 = 22 次
-            expect(setup.resolveCategoryVariants).toHaveBeenCalledTimes(22);
+            // Page1 失败后未写入缓存，Page2 会重新查询 MissingSource 与 CatA
+            expect(setup.resolveCategoryVariants).toHaveBeenCalledWith(["MissingSource"], 1);
+            expect(setup.resolveCategoryVariants).toHaveBeenCalledWith(["CatA"], 1);
         } finally {
             vi.useRealTimers();
         }

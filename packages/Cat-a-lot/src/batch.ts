@@ -1,3 +1,4 @@
+import { MAX_QUERY_TITLES } from "./api.ts";
 import {
     NON_BOT_DELAY_MS,
     NON_BOT_MAX_PAGES,
@@ -152,6 +153,7 @@ const startBatch = (options: BatchOptions): BatchRun => {
 
             const MAX_VARIANT_QUERIES_PER_PAGE = 20;
             const MAX_PRIVILEGED_CATS_PER_PAGE = 200;
+            const MAX_SOURCE_VARIANTS_PER_PAGE = 20;
             const variantCache = new Map<string, string>();
             const canonicalOf = (name: string): string => {
                 const clean = normalizeCatName(name);
@@ -186,19 +188,25 @@ const startBatch = (options: BatchOptions): BatchRun => {
                 try {
                     await ensureVariantsResolved(
                         [sourceCat, cleanTarget],
-                        isSysopOrStaff || initiallyHasBotRight ? 50 : 1,
+                        isSysopOrStaff || initiallyHasBotRight ? MAX_QUERY_TITLES : 1,
                     );
                 } catch (error) {
                     if (isStopped() && isAbortError(error)) {
                         return result;
                     }
-                    // 变体解析失败时不弹出自重定向误判风险，继续按常规流程处理
+                    // 变体解析失败时不阻断常规流程，但也不在未确认等价性前弹出重定向
                 }
                 if (isStopped()) {
                     return result;
                 }
                 if (sameCategory(canonicalOf(sourceCat), canonicalOf(cleanTarget))) {
-                    result.skippedAlready.push(...titles);
+                    hooks.notify(
+                        wgULS("源分类与目标分类指向同一分类，未执行任何编辑。", "源分類與目標分類指向同一分類，未執行任何編輯。"),
+                        "info",
+                    );
+                    for (const t of titles) {
+                        result.skippedAlready.push(t);
+                    }
                     return result;
                 }
                 const normalizedSource = normalizeCatName(sourceCat);
@@ -306,40 +314,89 @@ const startBatch = (options: BatchOptions): BatchRun => {
             const hasBotRight = initiallyHasBotRight || grantedThisRun;
             const canBatchTitleQueries = isSysopOrStaff || hasBotRight;
             const delayMs = hasBotRight ? 0 : NON_BOT_DELAY_MS;
-            const findSourceVariantMatches = async (pageCats: readonly string[]): Promise<string[]> => {
+            const findVariantMatchesForPage = async (pageCats: readonly string[]): Promise<{
+                sourceMatches: string[];
+                targetMatches: string[];
+                truncated: boolean;
+            }> => {
+                const cleanSource = normalizeCatName(sourceCat);
+                const extraTargets = mode === "move" && cleanTarget !== "" ? [cleanTarget] : [];
                 if (canBatchTitleQueries) {
+                    let truncated = pageCats.length > MAX_PRIVILEGED_CATS_PER_PAGE;
                     const boundedCats = pageCats.slice(0, MAX_PRIVILEGED_CATS_PER_PAGE);
-                    await ensureVariantsResolved([...boundedCats, sourceCat], 50);
+                    await ensureVariantsResolved([...boundedCats, sourceCat, ...extraTargets], MAX_QUERY_TITLES);
                     if (isStopped()) {
-                        return [];
+                        return { sourceMatches: [], targetMatches: [], truncated: false };
                     }
                     const canonicalSource = canonicalOf(sourceCat);
-                    return boundedCats.filter((cat) => sameCategory(canonicalOf(cat), canonicalSource));
+                    const canonicalTarget = cleanTarget !== "" ? canonicalOf(cleanTarget) : "";
+                    const sourceMatches = boundedCats.filter((cat) => sameCategory(canonicalOf(cat), canonicalSource));
+                    if (sourceMatches.length > MAX_SOURCE_VARIANTS_PER_PAGE) {
+                        truncated = true;
+                    }
+                    const targetMatches = canonicalTarget
+                        ? boundedCats.filter((cat) => sameCategory(canonicalOf(cat), canonicalTarget))
+                        : [];
+                    return {
+                        sourceMatches: sourceMatches.slice(0, MAX_SOURCE_VARIANTS_PER_PAGE),
+                        targetMatches,
+                        truncated,
+                    };
                 }
-                // 非 sysop/bot/flood 每次请求仅允许查询 1 个标题，且单页最多触发 MAX_VARIANT_QUERIES_PER_PAGE 次变体查询
-                await ensureVariantsResolved([sourceCat], 1);
-                if (isStopped()) {
-                    return [];
+                // 非 sysop/bot/flood 每次请求仅允许查询 1 个标题；单页总变体查询次数严格计入 MAX_VARIANT_QUERIES_PER_PAGE
+                let remainingQueries = MAX_VARIANT_QUERIES_PER_PAGE;
+                let truncated = false;
+                if (cleanSource && !variantCache.has(cleanSource)) {
+                    if (remainingQueries <= 0) {
+                        return { sourceMatches: [], targetMatches: [], truncated: true };
+                    }
+                    remainingQueries -= 1;
+                    await ensureVariantsResolved([sourceCat], 1);
+                    if (isStopped()) {
+                        return { sourceMatches: [], targetMatches: [], truncated: false };
+                    }
+                }
+                if (mode === "move" && cleanTarget !== "" && !variantCache.has(cleanTarget)) {
+                    if (remainingQueries <= 0) {
+                        return { sourceMatches: [], targetMatches: [], truncated: true };
+                    }
+                    remainingQueries -= 1;
+                    await ensureVariantsResolved([cleanTarget], 1);
+                    if (isStopped()) {
+                        return { sourceMatches: [], targetMatches: [], truncated: false };
+                    }
                 }
                 const canonicalSource = canonicalOf(sourceCat);
-                const matched: string[] = [];
-                let remainingQueries = MAX_VARIANT_QUERIES_PER_PAGE;
+                const canonicalTarget = cleanTarget !== "" ? canonicalOf(cleanTarget) : "";
+                const sourceMatches: string[] = [];
+                const targetMatches: string[] = [];
                 for (const cat of pageCats) {
                     if (!variantCache.has(cat)) {
                         if (remainingQueries <= 0) {
-                            break;
+                            truncated = true;
+                            continue;
                         }
                         remainingQueries -= 1;
                         await ensureVariantsResolved([cat], 1);
                         if (isStopped()) {
-                            return [];
+                            return { sourceMatches: [], targetMatches: [], truncated: false };
                         }
                     }
                     if (sameCategory(canonicalOf(cat), canonicalSource)) {
-                        matched.push(cat);
+                        sourceMatches.push(cat);
+                    }
+                    if (canonicalTarget && sameCategory(canonicalOf(cat), canonicalTarget)) {
+                        targetMatches.push(cat);
                     }
                 }
-                return matched;
+                if (sourceMatches.length > MAX_SOURCE_VARIANTS_PER_PAGE) {
+                    truncated = true;
+                }
+                return {
+                    sourceMatches: sourceMatches.slice(0, MAX_SOURCE_VARIANTS_PER_PAGE),
+                    targetMatches,
+                    truncated,
+                };
             };
             running = true;
             hooks.setRunning(true);
@@ -354,6 +411,7 @@ const startBatch = (options: BatchOptions): BatchRun => {
                 hooks.setCurrentTitle(title);
                 let editSubmitted = false;
                 let effectiveSourceVariants: string[] = [];
+                let effectiveTargetVariants: string[] = [];
 
                 try {
                     const page = await api.fetchPageWikitext(title);
@@ -369,26 +427,46 @@ const startBatch = (options: BatchOptions): BatchRun => {
                             sourceCat,
                             targetCat: cleanTarget,
                         });
+                        let skipReason: string | null = null;
                         if (computed.status === "skipped-not-found" && sourceCat !== "") {
                             const pageCats = extractCategoryNames(page.content);
                             if (pageCats.length > 0) {
-                                const matchedSources = await findSourceVariantMatches(pageCats);
-                                if (isStopped()) {
-                                    break;
-                                }
-                                if (matchedSources.length > 0) {
-                                    effectiveSourceVariants = matchedSources;
-                                    computed = computeNewWikitext({
-                                        text: page.content,
-                                        mode,
-                                        sourceCat,
-                                        targetCat: cleanTarget,
-                                        sourceVariants: effectiveSourceVariants,
-                                    });
+                                try {
+                                    const variantResult = await findVariantMatchesForPage(pageCats);
+                                    if (isStopped()) {
+                                        break;
+                                    }
+                                    if (variantResult.truncated) {
+                                        skipReason = `${title}（${wgULS("页面分类过多，部分分类未做变体解析，已跳过", "頁面分類過多，部分分類未做變體解析，已跳過")}）`;
+                                    } else if (
+                                        mode === "move"
+                                        && cleanTarget !== ""
+                                        && sameCategory(canonicalOf(sourceCat), canonicalOf(cleanTarget))
+                                    ) {
+                                        computed = { status: "skipped-already", text: page.content };
+                                    } else if (variantResult.sourceMatches.length > 0) {
+                                        effectiveSourceVariants = variantResult.sourceMatches;
+                                        effectiveTargetVariants = variantResult.targetMatches;
+                                        computed = computeNewWikitext({
+                                            text: page.content,
+                                            mode,
+                                            sourceCat,
+                                            targetCat: cleanTarget,
+                                            sourceVariants: effectiveSourceVariants,
+                                            targetVariants: effectiveTargetVariants,
+                                        });
+                                    }
+                                } catch (error) {
+                                    if (isStopped() && isAbortError(error)) {
+                                        throw error;
+                                    }
+                                    skipReason = `${title}（${wgULS("分类变体解析失败：", "分類變體解析失敗：")}${errorMessage(error)}）`;
                                 }
                             }
                         }
-                        if (computed.status === "skipped-already") {
+                        if (skipReason !== null) {
+                            result.skippedServer.push(skipReason);
+                        } else if (computed.status === "skipped-already") {
                             result.skippedAlready.push(title);
                         } else if (computed.status === "skipped-not-found") {
                             result.skippedNotFound.push(title);
@@ -430,6 +508,7 @@ const startBatch = (options: BatchOptions): BatchRun => {
                                     sourceCat,
                                     targetCat: cleanTarget,
                                     sourceVariants: effectiveSourceVariants,
+                                    targetVariants: effectiveTargetVariants,
                                 })
                             ) {
                                 hooks.onPageDone(title);

@@ -335,19 +335,24 @@ describe("extractCategoryNames", () => {
         ]);
     });
 
-    it("忽略 HTML 注释与 <nowiki> 中的分类链接", () => {
+    it("忽略 HTML 注释与 <nowiki>/<pre>/<syntaxhighlight> 及冒号链接中的分类", () => {
         const text = [
             "<!-- [[Category:Commented]] -->",
             "<nowiki>[[Category:NowikiCat]]</nowiki>",
             "<NOWIKI attr='1'>[[Category:UpperNowiki]]</NOWIKI>",
+            "<pre>[[Category:InPre]]</pre>",
+            "<syntaxhighlight lang='wikitext'>[[Category:Sample]]</syntaxhighlight>",
+            "[[:Category:LinkedOnly]]",
             "[[Category:Active]]",
         ].join("\n");
         expect(extractCategoryNames(text)).toEqual(["Active"]);
     });
 
-    it("遇到大量未闭合 [[Category: 前缀时保持线性时间不卡死", () => {
-        const malformed = `${"[[Category:".repeat(5000)}long text\n[[Category:RealCat]]`;
+    it("遇到大量未闭合 [[Category: 前缀及末尾 ]] 时保持线性时间不卡死", () => {
+        const malformed = `${"[[Category:".repeat(50000)}long text\n[[Category:RealCat]]`;
+        const start = performance.now();
         expect(extractCategoryNames(malformed)).toEqual(["RealCat"]);
+        expect(performance.now() - start).toBeLessThan(200);
     });
 
     it("computeNewWikitext 忽略注释与 nowiki 中的分类并移除所有 sourceVariants", () => {
