@@ -696,6 +696,30 @@ describe("startBatch：分类变体与边界处理", () => {
         expect(result.skippedAlready).toEqual(["Page1"]);
     });
 
+    it("全选移动时前置变体查询失败则不提供分类重定向弹窗", async () => {
+        const setup = createFakeApi(
+            () => Promise.resolve(page("Body\n[[Category:英雄联盟竞技赛事]]\n")),
+            () => Promise.reject(new Error("preflight failed")),
+        );
+        const hooks = createFakeHooks();
+        const run = startBatch({
+            titles: ["Page1"],
+            mode: "move",
+            sourceCat: "英雄联盟竞技赛事",
+            targetCat: "目标分类",
+            isAllSelected: true,
+            prefs: DEFAULT_PREFS,
+            hasBotRight: true,
+            isSysopOrStaff: false,
+            api: setup.api,
+            hooks: hooks.hooks,
+        });
+
+        const result = await run.result;
+        expect(hooks.askMoveAllDialog).not.toHaveBeenCalled();
+        expect(result.done).toBe(1);
+    });
+
     it("页面存在多个同源变体拼写时全部一并移动/移除，且断网回读核对所有变体", async () => {
         let fetchCount = 0;
         const setup = createFakeApi(
@@ -730,6 +754,39 @@ describe("startBatch：分类变体与边界处理", () => {
             title: "Page1",
             text: "Body\n[[Category:目标分类|K1]]\n\n",
         }));
+    });
+
+    it("断网回读仍残留 sourceVariants 时不计为已提交", async () => {
+        let fetchCount = 0;
+        const setup = createFakeApi(
+            () => {
+                fetchCount += 1;
+                if (fetchCount === 1) {
+                    return Promise.resolve(page("Body\n[[Category:变体一|K1]]\n[[Category:变体二|K2]]\n"));
+                }
+                return Promise.resolve(page("Body\n[[Category:目标分类|K1]]\n[[Category:变体二|K2]]\n"));
+            },
+            (catNames) => Promise.resolve(new Map(
+                catNames.map((name) => [name, name === "变体一" || name === "变体二" ? "原分类" : name]),
+            )),
+        );
+        setup.editPage.mockRejectedValueOnce(new Error("network timeout"));
+        const hooks = createFakeHooks();
+        const run = startBatch({
+            titles: ["Page1"],
+            mode: "move",
+            sourceCat: "原分类",
+            targetCat: "目标分类",
+            prefs: DEFAULT_PREFS,
+            hasBotRight: true,
+            isSysopOrStaff: false,
+            api: setup.api,
+            hooks: hooks.hooks,
+        });
+
+        const result = await run.result;
+        expect(result.done).toBe(0);
+        expect(result.skippedServer).toEqual(["Page1（network timeout）"]);
     });
 
     it("非特权用户单页分类超出查询预算时跳过不完整编辑并上报原因", async () => {

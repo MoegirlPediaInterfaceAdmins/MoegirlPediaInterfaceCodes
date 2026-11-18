@@ -70,6 +70,10 @@ const resetRegex = (regex: RegExp): void => {
 
 const IGNORED_TAGS = ["nowiki", "pre", "syntaxhighlight", "source", "math", "gallery"] as const;
 
+const IGNORED_CLOSE_TAG_REGEXES = new Map<string, RegExp>(
+    IGNORED_TAGS.map((tag) => [tag, new RegExp(`</${tag}\\s*>`, "giu")]),
+);
+
 const isTagBoundary = (char: string): boolean => char === ">"
     || char === " "
     || char === "\t"
@@ -77,9 +81,8 @@ const isTagBoundary = (char: string): boolean => char === ">"
     || char === "\r"
     || char === "/";
 
-/** 线性扫描并将 HTML 注释与不解析分类语法的标签块（nowiki/pre/syntaxhighlight/source/math/gallery）替换为空格。 */
+/** 线性扫描并将 HTML 注释与不解析分类语法的标签块（nowiki/pre/syntaxhighlight/source/math/gallery）替换为空格（直接在原文下标上扫描，不受大小写字符长度变化影响）。 */
 const blankCommentsAndNowiki = (text: string): string => {
-    const lower = text.toLowerCase();
     const parts: string[] = [];
     let cursor = 0;
 
@@ -102,11 +105,11 @@ const blankCommentsAndNowiki = (text: string): string => {
         }
 
         const matchedTag = IGNORED_TAGS.find((tag) => {
-            if (!lower.startsWith(tag, ltIdx + 1)) {
+            const boundaryPos = ltIdx + 1 + tag.length;
+            if (boundaryPos >= text.length || !isTagBoundary(text.charAt(boundaryPos))) {
                 return false;
             }
-            const boundaryPos = ltIdx + 1 + tag.length;
-            return boundaryPos < text.length && isTagBoundary(text.charAt(boundaryPos));
+            return text.slice(ltIdx + 1, boundaryPos).toLowerCase() === tag;
         });
         if (!matchedTag) {
             parts.push("<");
@@ -125,9 +128,15 @@ const blankCommentsAndNowiki = (text: string): string => {
             cursor = tagClose + 1;
             continue;
         }
-        const closeTag = `</${matchedTag}>`;
-        const closeTagIdx = lower.indexOf(closeTag, tagClose + 1);
-        const stopIdx = closeTagIdx === -1 ? text.length : closeTagIdx + closeTag.length;
+        const closeRegex = IGNORED_CLOSE_TAG_REGEXES.get(matchedTag);
+        let stopIdx = text.length;
+        if (closeRegex) {
+            closeRegex.lastIndex = tagClose + 1;
+            const closeMatch = closeRegex.exec(text);
+            if (closeMatch) {
+                stopIdx = closeMatch.index + closeMatch[0].length;
+            }
+        }
         parts.push(" ".repeat(stopIdx - ltIdx));
         cursor = stopIdx;
     }

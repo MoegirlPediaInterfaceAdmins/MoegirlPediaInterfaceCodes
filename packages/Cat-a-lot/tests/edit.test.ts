@@ -466,4 +466,28 @@ describe("resolveCategoryVariants", () => {
         );
         expect(resolved.get("英雄聯盟競技賽事")).toBe("英雄联盟竞技赛事");
     });
+
+    it("支持超过 5 跳的重定向链、环路保护，并忽略跨命名空间重定向目标", async () => {
+        const api = createApi("TestUser");
+        postMock.mockReturnValue(Promise.resolve({
+            query: {
+                redirects: [
+                    { from: "Category:R1", to: "Category:R2" },
+                    { from: "Category:R2", to: "Category:R3" },
+                    { from: "Category:R3", to: "Category:R4" },
+                    { from: "Category:R4", to: "Category:R5" },
+                    { from: "Category:R5", to: "Category:R6" },
+                    { from: "Category:R6", to: "Category:R7" },
+                    { from: "Category:LoopA", to: "Category:LoopB" },
+                    { from: "Category:LoopB", to: "Category:LoopA" },
+                    { from: "Category:CrossNs", to: "MainPageTarget" },
+                ],
+            },
+        }));
+
+        const resolved = await api.resolveCategoryVariants(["R1", "LoopA", "CrossNs"]);
+        expect(resolved.get("R1")).toBe("R7");
+        expect(resolved.get("LoopA")).toBe("LoopB");
+        expect(resolved.get("CrossNs")).toBe("CrossNs");
+    });
 });

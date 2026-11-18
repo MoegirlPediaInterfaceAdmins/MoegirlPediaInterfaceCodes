@@ -348,6 +348,18 @@ describe("extractCategoryNames", () => {
         expect(extractCategoryNames(text)).toEqual(["Active"]);
     });
 
+    it("遇到 İ 等大小写长度变化字符时仍保持准确偏移，不误放行或错位遮罩", () => {
+        const text = "İİİ <nowiki>[[Category:InNowiki]]</nowiki>\n[[Category:RealCat]]";
+        expect(extractCategoryNames(text)).toEqual(["RealCat"]);
+        const removed = computeNewWikitext({
+            text,
+            mode: "remove",
+            sourceCat: "InNowiki",
+            targetCat: "",
+        });
+        expect(removed.status).toBe("skipped-not-found");
+    });
+
     it("遇到大量未闭合 [[Category: 前缀及末尾 ]] 时保持线性时间不卡死", () => {
         const malformed = `${"[[Category:".repeat(50000)}long text\n[[Category:RealCat]]`;
         const start = performance.now();

@@ -567,7 +567,7 @@ const createState = (makeReactive: ReactiveFactory): CatALotState => {
             state.resultDialog.open = open;
         },
         stopBatch: (): void => {
-            if (!state.isRunning) {
+            if (!state.isRunning && !state.batchPending) {
                 return;
             }
             state.stopRequested = true;

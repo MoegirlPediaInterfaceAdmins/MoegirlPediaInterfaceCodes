@@ -130,6 +130,8 @@ const categoryNames = (items: readonly { title?: string | undefined }[] | undefi
     .map((item) => typeof item.title === "string" ? normalizeCatName(item.title) : "")
     .filter((name) => name !== "");
 
+const CATEGORY_NAMESPACE_PREFIX_REGEX = /^(?:Category|Cat|分类|分類)\s*:/iu;
+
 const MAX_QUERY_TITLES = 50;
 
 const createApi = (userName: string): ApiClient => {
@@ -279,19 +281,25 @@ const createApi = (userName: string): ApiClient => {
             const converted = response.query?.converted ?? [];
             const redirects = response.query?.redirects ?? [];
             for (const entry of [...normalized, ...converted, ...redirects]) {
+                const rawTo = typeof entry.to === "string" ? entry.to.trim() : "";
+                if (!rawTo || !CATEGORY_NAMESPACE_PREFIX_REGEX.test(rawTo)) {
+                    continue;
+                }
                 const from = typeof entry.from === "string" ? normalizeCatName(entry.from) : "";
-                const to = typeof entry.to === "string" ? normalizeCatName(entry.to) : "";
+                const to = normalizeCatName(rawTo);
                 if (from && to && from !== to) {
                     mappings.set(from, to);
                 }
             }
             for (const name of chunk) {
                 let current = name;
-                for (let hop = 0; hop < 5; hop += 1) {
+                const visited = new Set<string>([current]);
+                for (;;) {
                     const next = mappings.get(current);
-                    if (!next || next === current) {
+                    if (!next || visited.has(next)) {
                         break;
                     }
+                    visited.add(next);
                     current = next;
                 }
                 result.set(name, current);
