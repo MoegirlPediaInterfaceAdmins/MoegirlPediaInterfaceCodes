@@ -216,6 +216,7 @@ describe("startBatch：前置校验", () => {
         expect(setup.editPage).toHaveBeenCalledWith(expect.objectContaining({
             title: "Category:Source",
             text: "#重定向 [[:Category:Target]]\n{{分类重定向|Target}}",
+            summary: "[[Help:Cat-a-lot|Cat-a-lot]]：分类重定向至[[Cat:Target]]",
         }));
         expect(setup.notify).toHaveBeenCalledWith(expect.stringContaining("Category:Source"), "success");
     });
@@ -304,6 +305,24 @@ describe("startBatch：编辑与标签", () => {
         const payload = setup.editPage.mock.calls[0][0];
         expect(payload.tags).toBe("Cat-a-lot|Bot");
         expect(payload.bot).toBe(true);
+    });
+
+    it.each<[EditMode, string, string]>([
+        ["add", "text", "[[Help:Cat-a-lot|Cat-a-lot]]：加入分类[[Cat:Target]]"],
+        ["copy", "text\n[[Category:Source]]", "[[Help:Cat-a-lot|Cat-a-lot]]：分类间复制：从[[Cat:Source]]到[[Cat:Target]]"],
+        ["move", "text\n[[Category:Source]]", "[[Help:Cat-a-lot|Cat-a-lot]]：分类间移动：从[[Cat:Source]]到[[Cat:Target]]"],
+        ["remove", "text\n[[Category:Source]]", "[[Help:Cat-a-lot|Cat-a-lot]]：从分类移除：[[Cat:Source]]"],
+    ])("%s 模式：编辑摘要固定为简体，不随界面变体转换", async (mode, wikitext, expected) => {
+        const setup = createSetup({
+            mode,
+            sourceCat: "Source",
+            targetCat: "Target",
+            hasBotRight: true,
+            page: () => Promise.resolve(page(wikitext)),
+        });
+        await startBatch(setup.options).result;
+        expect(setup.editPage).toHaveBeenCalledTimes(1);
+        expect(setup.editPage.mock.calls[0][0].summary).toBe(expected);
     });
 
     it("A13：页面时间戳缺失时不写入 edit payload", async () => {
