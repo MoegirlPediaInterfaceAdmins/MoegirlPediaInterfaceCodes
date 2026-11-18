@@ -81,7 +81,7 @@ const isTagBoundary = (char: string): boolean => char === ">"
     || char === "\r"
     || char === "/";
 
-/** 线性扫描并将 HTML 注释与不解析分类语法的标签块（nowiki/pre/syntaxhighlight/source/math/gallery）替换为空格（直接在原文下标上扫描，不受大小写字符长度变化影响）。 */
+/** 线性扫描并将 HTML 注释与不解析分类语法的标签块（nowiki/pre/syntaxhighlight/source/math/gallery）替换为等长占位符（\u0000），保持原文下标且避免把注释误拼成空格。 */
 const blankCommentsAndNowiki = (text: string): string => {
     const parts: string[] = [];
     let cursor = 0;
@@ -99,7 +99,7 @@ const blankCommentsAndNowiki = (text: string): string => {
         if (text.startsWith("<!--", ltIdx)) {
             const endIdx = text.indexOf("-->", ltIdx + 4);
             const stopIdx = endIdx === -1 ? text.length : endIdx + 3;
-            parts.push(" ".repeat(stopIdx - ltIdx));
+            parts.push("\u0000".repeat(stopIdx - ltIdx));
             cursor = stopIdx;
             continue;
         }
@@ -124,7 +124,7 @@ const blankCommentsAndNowiki = (text: string): string => {
         }
         // 自闭合标签（如 <nowiki />）仅遮罩标签本身
         if (text.charAt(tagClose - 1) === "/") {
-            parts.push(" ".repeat(tagClose + 1 - ltIdx));
+            parts.push("\u0000".repeat(tagClose + 1 - ltIdx));
             cursor = tagClose + 1;
             continue;
         }
@@ -137,10 +137,31 @@ const blankCommentsAndNowiki = (text: string): string => {
                 stopIdx = closeMatch.index + closeMatch[0].length;
             }
         }
-        parts.push(" ".repeat(stopIdx - ltIdx));
+        parts.push("\u0000".repeat(stopIdx - ltIdx));
         cursor = stopIdx;
     }
 
+    return parts.join("");
+};
+
+const stripHtmlComments = (text: string): string => {
+    const parts: string[] = [];
+    let cursor = 0;
+    while (cursor < text.length) {
+        const start = text.indexOf("<!--", cursor);
+        if (start === -1) {
+            parts.push(text.slice(cursor));
+            break;
+        }
+        if (start > cursor) {
+            parts.push(text.slice(cursor, start));
+        }
+        const end = text.indexOf("-->", start + 4);
+        if (end === -1) {
+            break;
+        }
+        cursor = end + 3;
+    }
     return parts.join("");
 };
 
@@ -168,7 +189,7 @@ const extractCategoryNames = (text: string): string[] => {
             cursor = nextOpen;
             continue;
         }
-        const inner = masked.slice(openIdx + 2, cachedCloseIdx).trimStart();
+        const inner = stripHtmlComments(text.slice(openIdx + 2, cachedCloseIdx)).trimStart();
         if (CATEGORY_NAMESPACE_PREFIX_REGEX.test(inner)) {
             const pipeIdx = inner.indexOf("|");
             const rawCat = pipeIdx === -1 ? inner : inner.slice(0, pipeIdx);

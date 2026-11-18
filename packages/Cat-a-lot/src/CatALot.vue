@@ -51,7 +51,7 @@
                 <span class="cal-hint">{{ selectedCountText }}</span>
             </div>
 
-            <div v-if="isRunning" class="cal-progress">
+            <div v-if="isBusy" class="cal-progress">
                 <div class="cal-status-row">
                     <span class="cal-hint">
                         {{ uls("正在编辑：", "正在編輯：") }}{{ currentEditingTitle }}

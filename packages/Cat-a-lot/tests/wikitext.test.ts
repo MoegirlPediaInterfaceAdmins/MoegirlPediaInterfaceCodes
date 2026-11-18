@@ -360,6 +360,18 @@ describe("extractCategoryNames", () => {
         expect(removed.status).toBe("skipped-not-found");
     });
 
+    it("分类名中间夹带 HTML 注释时不拼成空格，也不会误匹配带空格分类", () => {
+        const text = "[[Category:Foo<!-- comment -->Bar]]";
+        expect(extractCategoryNames(text)).toEqual(["FooBar"]);
+        const removed = computeNewWikitext({
+            text,
+            mode: "remove",
+            sourceCat: "Foo Bar",
+            targetCat: "",
+        });
+        expect(removed.status).toBe("skipped-not-found");
+    });
+
     it("遇到大量未闭合 [[Category: 前缀及末尾 ]] 时保持线性时间不卡死", () => {
         const malformed = `${"[[Category:".repeat(50000)}long text\n[[Category:RealCat]]`;
         const start = performance.now();

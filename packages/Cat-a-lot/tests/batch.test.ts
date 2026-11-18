@@ -822,10 +822,15 @@ describe("startBatch：分类变体与边界处理", () => {
     it("变体查询失败时不缓存错误结果、在后续页面重试并上报失败原因", async () => {
         vi.useFakeTimers();
         try {
+            const events: string[] = [];
             let attempt = 0;
             const setup = createFakeApi(
-                () => Promise.resolve(page("Body\n[[Category:CatA]]\n")),
+                (title) => {
+                    events.push(`fetch:${title}`);
+                    return Promise.resolve(page("Body\n[[Category:CatA]]\n"));
+                },
                 (catNames) => {
+                    events.push(`variant:${catNames.join(",")}`);
                     attempt += 1;
                     if (attempt === 1) {
                         return Promise.reject(new Error("variant lookup failed"));
@@ -853,8 +858,13 @@ describe("startBatch：分类变体与边界处理", () => {
             expect(result.skippedServer[0]).toContain("variant lookup failed");
             expect(result.skippedNotFound).toEqual(["Page2"]);
             // Page1 失败后未写入缓存，Page2 会重新查询 MissingSource 与 CatA
-            expect(setup.resolveCategoryVariants).toHaveBeenCalledWith(["MissingSource"], 1);
-            expect(setup.resolveCategoryVariants).toHaveBeenCalledWith(["CatA"], 1);
+            expect(events).toEqual([
+                "fetch:Page1",
+                "variant:MissingSource",
+                "fetch:Page2",
+                "variant:MissingSource",
+                "variant:CatA",
+            ]);
         } finally {
             vi.useRealTimers();
         }
