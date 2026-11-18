@@ -487,7 +487,21 @@ describe("resolveCategoryVariants", () => {
 
         const resolved = await api.resolveCategoryVariants(["R1", "LoopA", "CrossNs"]);
         expect(resolved.get("R1")).toBe("R7");
-        expect(resolved.get("LoopA")).toBe("LoopB");
+        expect(resolved.get("LoopA")).toBe("LoopA");
         expect(resolved.get("CrossNs")).toBe("CrossNs");
+    });
+
+    it("T333050 重定向与变体成环时，不同入口统一解析到确知存在的标题", async () => {
+        const api = createApi("TestUser");
+        postMock.mockReturnValue(Promise.resolve({
+            query: {
+                redirects: [{ from: "Category:网络", to: "Category:網路" }],
+                converted: [{ from: "Category:網路", to: "Category:网络" }],
+            },
+        }));
+
+        const resolved = await api.resolveCategoryVariants(["网络", "網路"]);
+        expect(resolved.get("网络")).toBe("网络");
+        expect(resolved.get("網路")).toBe("网络");
     });
 });

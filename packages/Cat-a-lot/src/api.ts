@@ -1,5 +1,5 @@
 import { API_TIMEOUT_MS } from "./constants.ts";
-import { normalizeCatName } from "./wikitext.ts";
+import { CATEGORY_NAMESPACE_PREFIX_REGEX, normalizeCatName } from "./wikitext.ts";
 import type { ApiClient, CategoryTree, EditPageParams, PageWikitext } from "./types.ts";
 
 interface ApiErrorPayload {
@@ -129,8 +129,6 @@ const createBusinessError = (code: string, info: string): Error => {
 const categoryNames = (items: readonly { title?: string | undefined }[] | undefined): string[] => (items ?? [])
     .map((item) => typeof item.title === "string" ? normalizeCatName(item.title) : "")
     .filter((name) => name !== "");
-
-const CATEGORY_NAMESPACE_PREFIX_REGEX = /^(?:Category|Cat|分类|分類)\s*:/iu;
 
 const MAX_QUERY_TITLES = 50;
 
@@ -277,9 +275,28 @@ const createApi = (userName: string): ApiClient => {
                 formatversion: 2,
             }, { timeout: API_TIMEOUT_MS }));
             const mappings = new Map<string, string>();
+            const existingTitles = new Set<string>();
             const normalized = response.query?.normalized ?? [];
             const converted = response.query?.converted ?? [];
             const redirects = response.query?.redirects ?? [];
+            for (const entry of converted) {
+                const rawTo = typeof entry.to === "string" ? entry.to.trim() : "";
+                if (rawTo && CATEGORY_NAMESPACE_PREFIX_REGEX.test(rawTo)) {
+                    const to = normalizeCatName(rawTo);
+                    if (to) {
+                        existingTitles.add(to);
+                    }
+                }
+            }
+            for (const entry of redirects) {
+                const rawFrom = typeof entry.from === "string" ? entry.from.trim() : "";
+                if (rawFrom && CATEGORY_NAMESPACE_PREFIX_REGEX.test(rawFrom)) {
+                    const from = normalizeCatName(rawFrom);
+                    if (from) {
+                        existingTitles.add(from);
+                    }
+                }
+            }
             for (const entry of [...normalized, ...converted, ...redirects]) {
                 const rawTo = typeof entry.to === "string" ? entry.to.trim() : "";
                 if (!rawTo || !CATEGORY_NAMESPACE_PREFIX_REGEX.test(rawTo)) {
@@ -293,13 +310,25 @@ const createApi = (userName: string): ApiClient => {
             }
             for (const name of chunk) {
                 let current = name;
-                const visited = new Set<string>([current]);
+                const trail: string[] = [current];
+                const visited = new Set<string>(trail);
                 for (;;) {
                     const next = mappings.get(current);
-                    if (!next || visited.has(next)) {
+                    if (!next) {
+                        break;
+                    }
+                    if (visited.has(next)) {
+                        // T333050 类环：无论从哪个入口进入，统一回退到环中确知存在的标题（或字典序最小项）
+                        const cycleStart = trail.indexOf(next);
+                        const cycleNodes = trail.slice(cycleStart);
+                        const existingInCycle = cycleNodes.filter((node) => existingTitles.has(node));
+                        const candidates = existingInCycle.length > 0 ? existingInCycle : cycleNodes;
+                        candidates.sort((a, b) => a.localeCompare(b));
+                        current = candidates[0];
                         break;
                     }
                     visited.add(next);
+                    trail.push(next);
                     current = next;
                 }
                 result.set(name, current);

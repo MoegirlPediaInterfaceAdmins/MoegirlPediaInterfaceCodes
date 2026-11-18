@@ -107,6 +107,7 @@ interface BatchResult {
     stopped: boolean;
     skippedAlready: string[];
     skippedNotFound: string[];
+    skippedVariant: string[];
     skippedServer: string[];
 }
 

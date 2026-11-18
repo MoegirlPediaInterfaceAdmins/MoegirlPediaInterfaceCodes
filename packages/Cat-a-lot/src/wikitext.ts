@@ -124,7 +124,7 @@ const blankCommentsAndNowiki = (text: string): string => {
         }
         // 自闭合标签（如 <nowiki />）仅遮罩标签本身
         if (text.charAt(tagClose - 1) === "/") {
-            parts.push("\u0000".repeat(tagClose + 1 - ltIdx));
+            parts.push("\u0001".repeat(tagClose + 1 - ltIdx));
             cursor = tagClose + 1;
             continue;
         }
@@ -137,7 +137,7 @@ const blankCommentsAndNowiki = (text: string): string => {
                 stopIdx = closeMatch.index + closeMatch[0].length;
             }
         }
-        parts.push("\u0000".repeat(stopIdx - ltIdx));
+        parts.push("\u0001".repeat(stopIdx - ltIdx));
         cursor = stopIdx;
     }
 
@@ -257,15 +257,51 @@ const buildSourceRegexes = (sourceCat: string, sourceVariants?: readonly string[
     return regexes;
 };
 
-const collectMatchSpans = (regexes: readonly RegExp[], maskedText: string): CategoryMatchSpan[] => {
+/** 剔除注释占位符 \u0000 并保留原串下标映射，使 [[Category:Foo<!--c-->]] 与 extractCategoryNames 判定一致。 */
+const compactComments = (maskedText: string): { compacted: string; toOrigIndex: number[] } => {
+    const parts: string[] = [];
+    const toOrigIndex: number[] = [];
+    let cursor = 0;
+
+    while (cursor < maskedText.length) {
+        const nulIdx = maskedText.indexOf("\u0000", cursor);
+        if (nulIdx === -1) {
+            for (let i = cursor; i < maskedText.length; i += 1) {
+                toOrigIndex.push(i);
+            }
+            parts.push(maskedText.slice(cursor));
+            break;
+        }
+        if (nulIdx > cursor) {
+            for (let i = cursor; i < nulIdx; i += 1) {
+                toOrigIndex.push(i);
+            }
+            parts.push(maskedText.slice(cursor, nulIdx));
+        }
+        let next = nulIdx + 1;
+        while (next < maskedText.length && maskedText.charAt(next) === "\u0000") {
+            next += 1;
+        }
+        cursor = next;
+    }
+
+    toOrigIndex.push(maskedText.length);
+    return { compacted: parts.join(""), toOrigIndex };
+};
+
+const collectMatchSpans = (
+    regexes: readonly RegExp[],
+    compactedText: string,
+    toOrigIndex: readonly number[],
+): CategoryMatchSpan[] => {
     const spans: CategoryMatchSpan[] = [];
     for (const regex of regexes) {
         resetRegex(regex);
         let match: RegExpExecArray | null;
-        while ((match = regex.exec(maskedText)) !== null) {
+        while ((match = regex.exec(compactedText)) !== null) {
             spans.push({
-                start: match.index,
-                end: match.index + match[0].length,
+                start: toOrigIndex[match.index],
+                end: toOrigIndex[match.index + match[0].length],
                 sortkey: typeof match[1] === "string" ? match[1] : "",
             });
         }
@@ -325,10 +361,10 @@ const computeNewWikitext = (input: ComputeWikitextInput): ComputedWikitext => {
         return { status: "skipped-already", text };
     }
 
-    const maskedText = blankCommentsAndNowiki(text);
+    const { compacted, toOrigIndex } = compactComments(blankCommentsAndNowiki(text));
     const targetRegexes = buildSourceRegexes(targetName, targetVariants);
     const sourceRegexes = buildSourceRegexes(sourceName, sourceVariants);
-    const alreadyInTarget = targetRegexes.some((regex) => matches(regex, maskedText));
+    const alreadyInTarget = targetRegexes.some((regex) => matches(regex, compacted));
 
     switch (mode) {
         case "add": {
@@ -341,7 +377,7 @@ const computeNewWikitext = (input: ComputeWikitextInput): ComputedWikitext => {
             if (alreadyInTarget) {
                 return { status: "skipped-already", text };
             }
-            const sourceSpans = collectMatchSpans(sourceRegexes, maskedText);
+            const sourceSpans = collectMatchSpans(sourceRegexes, compacted, toOrigIndex);
             if (sourceSpans.length > 0) {
                 const first = sourceSpans[0];
                 const replaced = `${text.slice(0, first.end)}\n[[Category:${targetName}]]${text.slice(first.end)}`;
@@ -350,7 +386,7 @@ const computeNewWikitext = (input: ComputeWikitextInput): ComputedWikitext => {
             return { status: "ok", text: appendCategory(text, targetName) };
         }
         case "move": {
-            const sourceSpans = collectMatchSpans(sourceRegexes, maskedText);
+            const sourceSpans = collectMatchSpans(sourceRegexes, compacted, toOrigIndex);
             if (sourceSpans.length === 0) {
                 return { status: "skipped-not-found", text };
             }
@@ -368,7 +404,7 @@ const computeNewWikitext = (input: ComputeWikitextInput): ComputedWikitext => {
             return { status: "ok", text: replaced };
         }
         case "remove": {
-            const sourceSpans = collectMatchSpans(sourceRegexes, maskedText);
+            const sourceSpans = collectMatchSpans(sourceRegexes, compacted, toOrigIndex);
             if (sourceSpans.length === 0) {
                 return { status: "skipped-not-found", text };
             }
@@ -391,11 +427,11 @@ interface VerifyCommittedInput {
 
 const verifyCommittedOnServer = (input: VerifyCommittedInput): boolean => {
     const { latestText, mode, sourceCat, targetCat, sourceVariants, targetVariants } = input;
-    const maskedLatest = blankCommentsAndNowiki(latestText);
+    const { compacted: compactedLatest } = compactComments(blankCommentsAndNowiki(latestText));
     const targetRegexes = buildSourceRegexes(targetCat, targetVariants);
     const sourceRegexes = buildSourceRegexes(sourceCat, sourceVariants);
-    const hasTarget = targetRegexes.some((regex) => matches(regex, maskedLatest));
-    const hasSource = sourceRegexes.some((regex) => matches(regex, maskedLatest));
+    const hasTarget = targetRegexes.some((regex) => matches(regex, compactedLatest));
+    const hasSource = sourceRegexes.some((regex) => matches(regex, compactedLatest));
 
     switch (mode) {
         case "add":
@@ -410,6 +446,7 @@ const verifyCommittedOnServer = (input: VerifyCommittedInput): boolean => {
 
 export type { ComputeWikitextInput, VerifyCommittedInput };
 export {
+    CATEGORY_NAMESPACE_PREFIX_REGEX,
     normalizeCatName,
     validateCategoryTitle,
     buildCategoryRegex,

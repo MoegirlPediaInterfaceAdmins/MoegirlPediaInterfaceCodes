@@ -160,6 +160,7 @@ describe("startBatch：前置校验", () => {
             stopped: false,
             skippedAlready: [],
             skippedNotFound: [],
+            skippedVariant: [],
             skippedServer: [],
         });
         expect(setup.askDialog).toHaveBeenCalledWith(expect.objectContaining({ showCancel: false }));
@@ -284,6 +285,7 @@ describe("startBatch：编辑与标签", () => {
             stopped: false,
             skippedAlready: [],
             skippedNotFound: [],
+            skippedVariant: [],
             skippedServer: [],
         });
         expect(setup.editPage).toHaveBeenCalledTimes(1);
@@ -594,17 +596,17 @@ describe("startBatch：分类变体与边界处理", () => {
             title: "Page2",
             text: "Body\n[[Category:英雄联盟赛事|Page2]]\n",
         }));
-        // 第二页复用第一页的变体缓存，不再重复查询相同分类
-        expect(setup.resolveCategoryVariants).toHaveBeenCalledTimes(1);
+        // 前置校验 [sourceCat, targetCat] 1 次 + Page1 查询变体 1 次，Page2 复用缓存
+        expect(setup.resolveCategoryVariants).toHaveBeenCalledTimes(2);
     });
 
-    it("默认不触发 converttitles，仅在未找到原分类时执行（特权用户批量、非特权用户单标题）", async () => {
+    it("直接命中原分类时不逐页触发 converttitles；仅在未找到原分类时逐页解析（非特权单标题）", async () => {
         const directSetup = createFakeApi(
             () => Promise.resolve(page("Body\n[[Category:英雄联盟竞技赛事]]\n")),
         );
         const directHooks = createFakeHooks();
         const directRun = startBatch({
-            titles: ["Page1"],
+            titles: ["Page1", "Page2"],
             mode: "move",
             sourceCat: "英雄联盟竞技赛事",
             targetCat: "英雄联盟赛事",
@@ -615,7 +617,8 @@ describe("startBatch：分类变体与边界处理", () => {
             hooks: directHooks.hooks,
         });
         await directRun.result;
-        expect(directSetup.resolveCategoryVariants).not.toHaveBeenCalled();
+        // 仅前置校验 [sourceCat, targetCat] 1 次，不随页面数重复查询
+        expect(directSetup.resolveCategoryVariants).toHaveBeenCalledTimes(1);
 
         const nonPrivSetup = createFakeApi(
             () => Promise.resolve(page("Body\n[[Category:电子竞技]]\n[[Category:英雄聯盟競技賽事]]\n[[Category:2018年]]\n")),
@@ -639,6 +642,60 @@ describe("startBatch：分类变体与边界处理", () => {
         const nonPrivResult = await nonPrivRun.result;
         expect(nonPrivResult.done).toBe(1);
         expect(nonPrivSetup.resolveCategoryVariants.mock.calls.every(([, size]) => size === 1)).toBe(true);
+    });
+
+    it("部分选中移动时，页面为规范拼写而目标为等价变体时绝不改写为红链", async () => {
+        const setup = createFakeApi(
+            () => Promise.resolve(page("Body\n[[Category:英雄联盟竞技赛事]]\n")),
+            (catNames) => Promise.resolve(new Map(
+                catNames.map((name) => [name, name === "英雄聯盟競技賽事" ? "英雄联盟竞技赛事" : name]),
+            )),
+        );
+        const hooks = createFakeHooks();
+        const run = startBatch({
+            titles: ["Page1"],
+            mode: "move",
+            sourceCat: "英雄联盟竞技赛事",
+            targetCat: "英雄聯盟競技賽事",
+            isAllSelected: false,
+            prefs: DEFAULT_PREFS,
+            hasBotRight: true,
+            isSysopOrStaff: false,
+            api: setup.api,
+            hooks: hooks.hooks,
+        });
+
+        const result = await run.result;
+        expect(setup.editPage).not.toHaveBeenCalled();
+        expect(hooks.notify).toHaveBeenCalledTimes(1);
+        expect(result.done).toBe(0);
+        expect(result.skippedAlready).toEqual(["Page1"]);
+    });
+
+    it("add 模式下目标分类为变体且页面已有规范拼写时，利用前置缓存跳过不重复追加", async () => {
+        const setup = createFakeApi(
+            () => Promise.resolve(page("Body\n[[Category:英雄联盟赛事]]\n")),
+            (catNames) => Promise.resolve(new Map(
+                catNames.map((name) => [name, name === "英雄聯盟賽事" ? "英雄联盟赛事" : name]),
+            )),
+        );
+        const hooks = createFakeHooks();
+        const run = startBatch({
+            titles: ["Page1"],
+            mode: "add",
+            sourceCat: "",
+            targetCat: "英雄聯盟賽事",
+            prefs: DEFAULT_PREFS,
+            hasBotRight: true,
+            isSysopOrStaff: false,
+            api: setup.api,
+            hooks: hooks.hooks,
+        });
+
+        const result = await run.result;
+        expect(setup.editPage).not.toHaveBeenCalled();
+        expect(result.done).toBe(0);
+        expect(result.skippedAlready).toEqual(["Page1"]);
     });
 
     it("部分选中移动时，若目标分类被解析为源分类的变体则绝不删除源分类链接", async () => {
@@ -696,7 +753,7 @@ describe("startBatch：分类变体与边界处理", () => {
         expect(result.skippedAlready).toEqual(["Page1"]);
     });
 
-    it("全选移动时前置变体查询失败则不提供分类重定向弹窗", async () => {
+    it("全选移动时前置变体查询失败则降级为普通确认弹窗（不提供分类重定向选项）", async () => {
         const setup = createFakeApi(
             () => Promise.resolve(page("Body\n[[Category:英雄联盟竞技赛事]]\n")),
             () => Promise.reject(new Error("preflight failed")),
@@ -717,6 +774,7 @@ describe("startBatch：分类变体与边界处理", () => {
 
         const result = await run.result;
         expect(hooks.askMoveAllDialog).not.toHaveBeenCalled();
+        expect(hooks.askDialog).toHaveBeenCalledTimes(1);
         expect(result.done).toBe(1);
     });
 
@@ -814,12 +872,14 @@ describe("startBatch：分类变体与边界处理", () => {
         expect(setup.editPage).not.toHaveBeenCalled();
         expect(result.done).toBe(0);
         expect(result.skippedNotFound).toEqual([]);
-        expect(result.skippedServer).toHaveLength(1);
-        expect(result.skippedServer[0]).toContain("Page1");
-        expect(setup.resolveCategoryVariants.mock.calls.length).toBeLessThanOrEqual(20);
+        expect(result.skippedServer).toEqual([]);
+        expect(result.skippedVariant).toHaveLength(1);
+        expect(result.skippedVariant[0]).toContain("Page1");
+        // 前置单标题校验 2 次 + 单页最多 20 次变体查询
+        expect(setup.resolveCategoryVariants.mock.calls.length).toBeLessThanOrEqual(22);
     });
 
-    it("变体查询失败时不缓存错误结果、在后续页面重试并上报失败原因", async () => {
+    it("变体查询失败时不缓存错误结果、在后续页面重试并记入 skippedVariant", async () => {
         vi.useFakeTimers();
         try {
             const events: string[] = [];
@@ -853,9 +913,10 @@ describe("startBatch：分类变体与边界处理", () => {
 
             await vi.runAllTimersAsync();
             const result = await run.result;
-            expect(result.skippedServer).toHaveLength(1);
-            expect(result.skippedServer[0]).toContain("Page1");
-            expect(result.skippedServer[0]).toContain("variant lookup failed");
+            expect(result.skippedServer).toEqual([]);
+            expect(result.skippedVariant).toHaveLength(1);
+            expect(result.skippedVariant[0]).toContain("Page1");
+            expect(result.skippedVariant[0]).toContain("variant lookup failed");
             expect(result.skippedNotFound).toEqual(["Page2"]);
             // Page1 失败后未写入缓存，Page2 会重新查询 MissingSource 与 CatA
             expect(events).toEqual([
@@ -868,5 +929,35 @@ describe("startBatch：分类变体与边界处理", () => {
         } finally {
             vi.useRealTimers();
         }
+    });
+
+    it("前置变体查询期间调用 state.stopBatch 可立即中止并提示", async () => {
+        const { mw } = installMw({ namespaceNumber: 14, title: "英雄联盟竞技赛事", groups: ["sysop"] });
+        let rejectPending!: (reason?: unknown) => void;
+        const abortSpy = vi.fn(() => {
+            rejectPending(new DOMException("Aborted", "AbortError"));
+        });
+        Object.assign(mw, {
+            Api: class {
+                post = vi.fn(() => {
+                    const promise = new Promise((_resolve, reject) => {
+                        rejectPending = reject;
+                    }) as Promise<unknown> & { abort: () => void };
+                    promise.abort = abortSpy;
+                    return promise;
+                });
+                postWithToken = vi.fn();
+            },
+        });
+        const state = createState((value) => value);
+        state.selectedTitles = ["Page1"];
+
+        const pending = state.executeBatch("move", "目标分类", state.activeBatchToken);
+        state.batchPending = true;
+        await Promise.resolve();
+        state.stopBatch();
+        await pending;
+
+        expect(abortSpy).toHaveBeenCalledTimes(1);
     });
 });

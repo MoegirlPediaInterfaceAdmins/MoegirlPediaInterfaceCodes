@@ -100,6 +100,6 @@ npm run package:test                          # 全包构建幂等 + 单测
 
 ## 已知限制
 
-- 分类链接匹配不解析 `<nowiki>` / 注释：若页面在注释或 nowiki 中写了同名分类，仍可能被匹配。这是当前实现与上游简化实现的共同限制。
+- 分类链接匹配会忽略 HTML 注释及 `<nowiki>` / `<pre>` / `<syntaxhighlight>` / `<source>` / `<math>` / `<gallery>` 块内的内容；若分类通过模板间接引入（页面源码中无 `[[Category:...]]`），仍无法直接修改。
 - SFC 不承载 scoped 样式；样式统一由 `index.css` 和仓库 PostCSS 链处理。
 - Codex 图标来自 Codex 图标集（GPL-2.0-or-later），线上没有 `@wikimedia/codex-icons` 模块，因此只内联本包用到的 `path`。

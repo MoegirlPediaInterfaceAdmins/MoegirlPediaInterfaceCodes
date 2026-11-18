@@ -122,6 +122,7 @@ const startBatch = (options: BatchOptions): BatchRun => {
             stopped: false,
             skippedAlready: [],
             skippedNotFound: [],
+            skippedVariant: [],
             skippedServer: [],
         };
         let grantedThisRun = false;
@@ -151,6 +152,17 @@ const startBatch = (options: BatchOptions): BatchRun => {
             }
             const cleanTarget = validatedTarget ?? "";
 
+            if (!initiallyHasBotRight && !isSysopOrStaff && titles.length > NON_BOT_MAX_PAGES) {
+                await hooks.askDialog({
+                    message: wgULS(
+                        `非机器用户单次最多批量处理 ${NON_BOT_MAX_PAGES} 个页面（当前已选 ${titles.length} 个）。请减少选择数量后再试。`,
+                        `非機器用戶單次最多批次處理 ${NON_BOT_MAX_PAGES} 個頁面（當前已選 ${titles.length} 個）。請減少選擇數量後再試。`,
+                    ),
+                    showCancel: false,
+                });
+                return result;
+            }
+
             const MAX_VARIANT_QUERIES_PER_PAGE = 20;
             const MAX_PRIVILEGED_CATS_PER_PAGE = 200;
             const MAX_SOURCE_VARIANTS_PER_PAGE = 20;
@@ -179,29 +191,38 @@ const startBatch = (options: BatchOptions): BatchRun => {
                 }
             };
 
-            if (
-                mode === "move"
-                && sourceCat !== ""
-                && options.isAllSelected === true
-                && !sameCategory(sourceCat, cleanTarget)
-            ) {
-                let variantsConfirmed = false;
+            // move 模式无论是否全选，都在运行前解析一次 [sourceCat, cleanTarget]，防止把页面改写成等价红链变体；
+            // add/copy 解析一次 [cleanTarget]，供每页用缓存的规范目标分类比对页内分类（不额外发每页请求）。
+            let moveVariantsConfirmed = false;
+            const preflightNames: string[] = [];
+            if (mode === "move" && sourceCat !== "" && !sameCategory(sourceCat, cleanTarget)) {
+                preflightNames.push(sourceCat, cleanTarget);
+            } else if ((mode === "add" || mode === "copy") && cleanTarget !== "") {
+                preflightNames.push(cleanTarget);
+            }
+            if (preflightNames.length > 0) {
+                hooks.setCurrentTitle(wgULS("正在校验分类变体…", "正在校驗分類變體…"));
+                hooks.setProgress(0, titles.length);
                 try {
                     await ensureVariantsResolved(
-                        [sourceCat, cleanTarget],
+                        preflightNames,
                         isSysopOrStaff || initiallyHasBotRight ? MAX_QUERY_TITLES : 1,
                     );
-                    variantsConfirmed = true;
+                    moveVariantsConfirmed = mode === "move";
                 } catch (error) {
                     if (isStopped() && isAbortError(error)) {
+                        hooks.setCurrentTitle("");
+                        hooks.notify(wgULS("已中止批处理。", "已中止批次處理。"), "info");
                         return result;
                     }
-                    // 变体解析失败时不提供分类重定向选项，避免把等价分类误替换为自重定向
+                    // 前置解析失败时：move 不提供分类重定向选项，add/copy 继续按原名执行
                 }
+                hooks.setCurrentTitle("");
                 if (isStopped()) {
+                    hooks.notify(wgULS("已中止批处理。", "已中止批次處理。"), "info");
                     return result;
                 }
-                if (variantsConfirmed && sameCategory(canonicalOf(sourceCat), canonicalOf(cleanTarget))) {
+                if (moveVariantsConfirmed && sameCategory(canonicalOf(sourceCat), canonicalOf(cleanTarget))) {
                     hooks.notify(
                         wgULS("源分类与目标分类指向同一分类，未执行任何编辑。", "源分類與目標分類指向同一分類，未執行任何編輯。"),
                         "info",
@@ -211,106 +232,109 @@ const startBatch = (options: BatchOptions): BatchRun => {
                     }
                     return result;
                 }
-                if (variantsConfirmed) {
-                    const normalizedSource = normalizeCatName(sourceCat);
-                    const message = wgULS(
-                        `检测到您正在迁移当前分类下的全部成员。\n如果只是需要将「${normalizedSource}」合并或迁移至「${cleanTarget}」，只需在分类页悬挂 {{分类重定向|${cleanTarget}}}，次日由机器人自动处理，无需手动批量操作。\n\n您也可以点击「悬挂分类重定向」将当前分类页替换为重定向，如果特别着急请点击「立即执行」。`,
-                        `檢測到您正在遷移當前分類下的全部成員。\n如果只是需要將「${normalizedSource}」合併或遷移至「${cleanTarget}」，只需在分類頁懸掛 {{分类重定向|${cleanTarget}}}，次日由機器人自動處理，無需手動批次操作。\n\n您也可以點擊「懸掛分類重定向」將當前分類頁替換為重定向，如果特別著急請點擊「立即執行」。`,
-                    );
-                    let choice: "primary" | "extra" | "cancel";
-                    if (hooks.askMoveAllDialog) {
-                        choice = await hooks.askMoveAllDialog({
-                            message,
-                            primaryLabel: wgULS("立即执行", "立即執行"),
-                            extraLabel: wgULS("悬挂分类重定向", "懸掛分類重定向"),
-                        });
-                    } else {
-                        const confirmed = await hooks.askDialog({ message, showCancel: true });
-                        choice = confirmed ? "primary" : "cancel";
-                    }
-                    if (choice === "cancel" || isStopped()) {
-                        return result;
-                    }
-                    if (choice === "extra") {
-                        const categoryTitle = `Category:${normalizedSource}`;
-                        const redirectText = `#重定向 [[:Category:${cleanTarget}]]\n{{分类重定向|${cleanTarget}}}`;
-                        try {
-                            const page = await api.fetchPageWikitext(categoryTitle);
-                            if (isStopped()) {
-                                return result;
-                            }
-                            const editParams: EditPageParams = {
-                                title: categoryTitle,
-                                text: redirectText,
-                                summary: wgULS(
-                                    `[[Help:Cat-a-lot|Cat-a-lot]]：分类重定向至[[Cat:${cleanTarget}]]`,
-                                    `[[Help:Cat-a-lot|Cat-a-lot]]：分類重定向至[[Cat:${cleanTarget}]]`,
-                                ),
-                                watchlist: prefs.watchlist,
-                                minor: prefs.minor,
-                                bot: initiallyHasBotRight,
-                                tags: activeChangeTags(initiallyHasBotRight),
-                            };
-                            if (typeof page.timestamp === "string" && page.timestamp !== "") {
-                                editParams.basetimestamp = page.timestamp;
-                            }
-                            if (typeof page.curtimestamp === "string" && page.curtimestamp !== "") {
-                                editParams.starttimestamp = page.curtimestamp;
-                            }
-                            await api.editPage(editParams);
-                            hooks.notify(
-                                wgULS(
-                                    `已将「${categoryTitle}」替换为分类重定向。`,
-                                    `已將「${categoryTitle}」替換為分類重定向。`,
-                                ),
-                                "success",
-                            );
-                        } catch (error) {
-                            hooks.notify(
-                                wgULS(
-                                    `替换分类重定向失败：${errorMessage(error)}`,
-                                    `替換分類重定向失敗：${errorMessage(error)}`,
-                                ),
-                                "error",
-                            );
-                        }
-                        return result;
-                    }
-                }
             }
 
-            if (!initiallyHasBotRight) {
-                if (isSysopOrStaff && titles.length > SYSOP_FLOOD_PROMPT_THRESHOLD) {
-                    const approved = await hooks.askDialog({
-                        message: wgULS(
-                            `您本次计划批量处理 ${titles.length} 个页面（已超过 10 页）。\n建议临时授权机器用户以避免近期更改刷屏并豁免速率限制。\n\n是否立即为您自授权 2 小时的机器用户？`,
-                            `您本次計劃批次處理 ${titles.length} 個頁面（已超過 10 頁）。\n建議臨時授權機器用戶以避免近期更改洗版並豁免速率限制。\n\n是否立即為您自授權 2 小時的機器用戶？`,
-                        ),
+            if (
+                mode === "move"
+                && sourceCat !== ""
+                && options.isAllSelected === true
+                && !sameCategory(sourceCat, cleanTarget)
+            ) {
+                const normalizedSource = normalizeCatName(sourceCat);
+                const message = wgULS(
+                    `检测到您正在迁移当前分类下的全部成员。\n如果只是需要将「${normalizedSource}」合并或迁移至「${cleanTarget}」，只需在分类页悬挂 {{分类重定向|${cleanTarget}}}，次日由机器人自动处理，无需手动批量操作。\n\n您也可以点击「悬挂分类重定向」将当前分类页替换为重定向，如果特别着急请点击「立即执行」。`,
+                    `檢測到您正在遷移當前分類下的全部成員。\n如果只是需要將「${normalizedSource}」合併或遷移至「${cleanTarget}」，只需在分類頁懸掛 {{分类重定向|${cleanTarget}}}，次日由機器人自動處理，無需手動批次操作。\n\n您也可以點擊「懸掛分類重定向」將當前分類頁替換為重定向，如果特別著急請點擊「立即執行」。`,
+                );
+                let choice: "primary" | "extra" | "cancel";
+                if (moveVariantsConfirmed && hooks.askMoveAllDialog) {
+                    choice = await hooks.askMoveAllDialog({
+                        message,
+                        primaryLabel: wgULS("立即执行", "立即執行"),
+                        extraLabel: wgULS("悬挂分类重定向", "懸掛分類重定向"),
+                    });
+                } else {
+                    const confirmed = await hooks.askDialog({
+                        message: moveVariantsConfirmed
+                            ? message
+                            : wgULS(
+                                `检测到您正在迁移当前分类下的全部成员。\n将「${normalizedSource}」批量移动至「${cleanTarget}」，是否继续？`,
+                                `檢測到您正在遷移當前分類下的全部成員。\n將「${normalizedSource}」批次移動至「${cleanTarget}」，是否繼續？`,
+                            ),
                         showCancel: true,
                     });
-                    if (isStopped()) {
-                        return result;
-                    }
-                    if (approved) {
-                        try {
-                            grantedThisRun = await hooks.requestSelfFlood();
-                        } catch {
-                            // 自授权失败时按普通用户继续，速率限制由 delayMs 兜底
-                            grantedThisRun = false;
-                        }
+                    choice = confirmed ? "primary" : "cancel";
+                }
+                if (choice === "cancel" || isStopped()) {
+                    return result;
+                }
+                if (choice === "extra") {
+                    const categoryTitle = `Category:${normalizedSource}`;
+                    const redirectText = `#重定向 [[:Category:${cleanTarget}]]\n{{分类重定向|${cleanTarget}}}`;
+                    try {
+                        const page = await api.fetchPageWikitext(categoryTitle);
                         if (isStopped()) {
                             return result;
                         }
+                        const editParams: EditPageParams = {
+                            title: categoryTitle,
+                            text: redirectText,
+                            summary: wgULS(
+                                `[[Help:Cat-a-lot|Cat-a-lot]]：分类重定向至[[Cat:${cleanTarget}]]`,
+                                `[[Help:Cat-a-lot|Cat-a-lot]]：分類重定向至[[Cat:${cleanTarget}]]`,
+                            ),
+                            watchlist: prefs.watchlist,
+                            minor: prefs.minor,
+                            bot: initiallyHasBotRight,
+                            tags: activeChangeTags(initiallyHasBotRight),
+                        };
+                        if (typeof page.timestamp === "string" && page.timestamp !== "") {
+                            editParams.basetimestamp = page.timestamp;
+                        }
+                        if (typeof page.curtimestamp === "string" && page.curtimestamp !== "") {
+                            editParams.starttimestamp = page.curtimestamp;
+                        }
+                        await api.editPage(editParams);
+                        hooks.notify(
+                            wgULS(
+                                `已将「${categoryTitle}」替换为分类重定向。`,
+                                `已將「${categoryTitle}」替換為分類重定向。`,
+                            ),
+                            "success",
+                        );
+                    } catch (error) {
+                        hooks.notify(
+                            wgULS(
+                                `替换分类重定向失败：${errorMessage(error)}`,
+                                `替換分類重定向失敗：${errorMessage(error)}`,
+                            ),
+                            "error",
+                        );
                     }
-                } else if (!isSysopOrStaff && titles.length > NON_BOT_MAX_PAGES) {
-                    await hooks.askDialog({
-                        message: wgULS(
-                            `非机器用户单次最多批量处理 ${NON_BOT_MAX_PAGES} 个页面（当前已选 ${titles.length} 个）。请减少选择数量后再试。`,
-                            `非機器用戶單次最多批次處理 ${NON_BOT_MAX_PAGES} 個頁面（當前已選 ${titles.length} 個）。請減少選擇數量後再試。`,
-                        ),
-                        showCancel: false,
-                    });
                     return result;
+                }
+            }
+
+            if (!initiallyHasBotRight && isSysopOrStaff && titles.length > SYSOP_FLOOD_PROMPT_THRESHOLD) {
+                const approved = await hooks.askDialog({
+                    message: wgULS(
+                        `您本次计划批量处理 ${titles.length} 个页面（已超过 10 页）。\n建议临时授权机器用户以避免近期更改刷屏并豁免速率限制。\n\n是否立即为您自授权 2 小时的机器用户？`,
+                        `您本次計劃批次處理 ${titles.length} 個頁面（已超過 10 頁）。\n建議臨時授權機器用戶以避免近期更改洗版並豁免速率限制。\n\n是否立即為您自授權 2 小時的機器用戶？`,
+                    ),
+                    showCancel: true,
+                });
+                if (isStopped()) {
+                    return result;
+                }
+                if (approved) {
+                    try {
+                        grantedThisRun = await hooks.requestSelfFlood();
+                    } catch {
+                        // 自授权失败时按普通用户继续，速率限制由 delayMs 兜底
+                        grantedThisRun = false;
+                    }
+                    if (isStopped()) {
+                        return result;
+                    }
                 }
             }
 
@@ -425,51 +449,54 @@ const startBatch = (options: BatchOptions): BatchRun => {
                     if (page.missing || page.invalid || page.content === undefined) {
                         result.skippedServer.push(`${title}（${wgULS("页面不存在或无法读取", "頁面不存在或無法讀取")}）`);
                     } else {
+                        const pageCats = extractCategoryNames(page.content);
+                        if (cleanTarget !== "" && pageCats.length > 0) {
+                            const canonicalTarget = canonicalOf(cleanTarget);
+                            effectiveTargetVariants = pageCats.filter((cat) => sameCategory(canonicalOf(cat), canonicalTarget));
+                        }
                         let computed = computeNewWikitext({
                             text: page.content,
                             mode,
                             sourceCat,
                             targetCat: cleanTarget,
+                            targetVariants: effectiveTargetVariants,
                         });
-                        let skipReason: string | null = null;
-                        if (computed.status === "skipped-not-found" && sourceCat !== "") {
-                            const pageCats = extractCategoryNames(page.content);
-                            if (pageCats.length > 0) {
-                                try {
-                                    const variantResult = await findVariantMatchesForPage(pageCats);
-                                    if (isStopped()) {
-                                        break;
-                                    }
-                                    if (variantResult.truncated) {
-                                        skipReason = `${title}（${wgULS("页面分类过多，部分分类未做变体解析，已跳过", "頁面分類過多，部分分類未做變體解析，已跳過")}）`;
-                                    } else if (
-                                        mode === "move"
-                                        && cleanTarget !== ""
-                                        && sameCategory(canonicalOf(sourceCat), canonicalOf(cleanTarget))
-                                    ) {
-                                        computed = { status: "skipped-already", text: page.content };
-                                    } else if (variantResult.sourceMatches.length > 0) {
-                                        effectiveSourceVariants = variantResult.sourceMatches;
-                                        effectiveTargetVariants = variantResult.targetMatches;
-                                        computed = computeNewWikitext({
-                                            text: page.content,
-                                            mode,
-                                            sourceCat,
-                                            targetCat: cleanTarget,
-                                            sourceVariants: effectiveSourceVariants,
-                                            targetVariants: effectiveTargetVariants,
-                                        });
-                                    }
-                                } catch (error) {
-                                    if (isStopped() && isAbortError(error)) {
-                                        throw error;
-                                    }
-                                    skipReason = `${title}（${wgULS("分类变体解析失败：", "分類變體解析失敗：")}${errorMessage(error)}）`;
+                        let variantSkipReason: string | null = null;
+                        if (computed.status === "skipped-not-found" && sourceCat !== "" && pageCats.length > 0) {
+                            try {
+                                const variantResult = await findVariantMatchesForPage(pageCats);
+                                if (isStopped()) {
+                                    break;
                                 }
+                                if (variantResult.truncated) {
+                                    variantSkipReason = `${title}（${wgULS("页面分类过多，部分分类未做变体解析，已跳过", "頁面分類過多，部分分類未做變體解析，已跳過")}）`;
+                                } else if (
+                                    mode === "move"
+                                    && cleanTarget !== ""
+                                    && sameCategory(canonicalOf(sourceCat), canonicalOf(cleanTarget))
+                                ) {
+                                    computed = { status: "skipped-already", text: page.content };
+                                } else if (variantResult.sourceMatches.length > 0) {
+                                    effectiveSourceVariants = variantResult.sourceMatches;
+                                    effectiveTargetVariants = variantResult.targetMatches;
+                                    computed = computeNewWikitext({
+                                        text: page.content,
+                                        mode,
+                                        sourceCat,
+                                        targetCat: cleanTarget,
+                                        sourceVariants: effectiveSourceVariants,
+                                        targetVariants: effectiveTargetVariants,
+                                    });
+                                }
+                            } catch (error) {
+                                if (isStopped() && isAbortError(error)) {
+                                    throw error;
+                                }
+                                variantSkipReason = `${title}（${wgULS("分类变体解析失败：", "分類變體解析失敗：")}${errorMessage(error)}）`;
                             }
                         }
-                        if (skipReason !== null) {
-                            result.skippedServer.push(skipReason);
+                        if (variantSkipReason !== null) {
+                            result.skippedVariant.push(variantSkipReason);
                         } else if (computed.status === "skipped-already") {
                             result.skippedAlready.push(title);
                         } else if (computed.status === "skipped-not-found") {

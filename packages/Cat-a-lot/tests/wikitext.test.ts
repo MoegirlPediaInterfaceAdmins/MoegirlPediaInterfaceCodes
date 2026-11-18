@@ -360,16 +360,32 @@ describe("extractCategoryNames", () => {
         expect(removed.status).toBe("skipped-not-found");
     });
 
-    it("分类名中间夹带 HTML 注释时不拼成空格，也不会误匹配带空格分类", () => {
+    it("分类名中间夹带 HTML 注释时不拼成空格，且 extract 与 compute 判定一致", () => {
         const text = "[[Category:Foo<!-- comment -->Bar]]";
         expect(extractCategoryNames(text)).toEqual(["FooBar"]);
-        const removed = computeNewWikitext({
+        expect(computeNewWikitext({
             text,
             mode: "remove",
             sourceCat: "Foo Bar",
             targetCat: "",
+        }).status).toBe("skipped-not-found");
+
+        const removed = computeNewWikitext({
+            text: "Body\n[[Category:Foo<!--c-->]]\n",
+            mode: "remove",
+            sourceCat: "Foo",
+            targetCat: "",
         });
-        expect(removed.status).toBe("skipped-not-found");
+        expect(removed.status).toBe("ok");
+        expect(removed.text).toBe("Body\n\n");
+
+        const added = computeNewWikitext({
+            text: "Body\n[[Category:Foo<!--c-->]]\n",
+            mode: "add",
+            sourceCat: "",
+            targetCat: "Foo",
+        });
+        expect(added.status).toBe("skipped-already");
     });
 
     it("遇到大量未闭合 [[Category: 前缀及末尾 ]] 时保持线性时间不卡死", () => {

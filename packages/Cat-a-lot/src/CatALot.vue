@@ -311,6 +311,12 @@
                     <li v-for="title in resultDialog.skippedNotFound" :key="title">{{ title }}</li>
                 </ul>
             </div>
+            <div v-if="resultDialog.skippedVariant.length">
+                <strong>{{ uls("跳过（变体未解析）：", "跳過（變體未解析）：") }}</strong>
+                <ul class="cal-result-list">
+                    <li v-for="title in resultDialog.skippedVariant" :key="title">{{ title }}</li>
+                </ul>
+            </div>
             <div v-if="resultDialog.skippedServer.length">
                 <strong>{{ uls("编辑失败：", "編輯失敗：") }}</strong>
                 <ul class="cal-result-list">

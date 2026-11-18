@@ -48,6 +48,7 @@ interface ResultDialogState {
     summaryText: string;
     skippedAlready: string[];
     skippedNotFound: string[];
+    skippedVariant: string[];
     skippedServer: string[];
 }
 
@@ -88,6 +89,7 @@ const emptyResultDialog = (): ResultDialogState => ({
     summaryText: "",
     skippedAlready: [],
     skippedNotFound: [],
+    skippedVariant: [],
     skippedServer: [],
 });
 
@@ -96,12 +98,13 @@ const buildResultDialog = (result: BatchResult): ResultDialogState => ({
     title: result.stopped ? uls("已终止处理", "已終止處理") : uls("全部页面已处理", "全部頁面已處理"),
     summaryText: uls(
         `成功编辑 ${result.done} 页；跳过（已在分类中）${result.skippedAlready.length} 页；`
-        + `跳过（未找到原分类）${result.skippedNotFound.length} 页；失败 ${result.skippedServer.length} 页。`,
+        + `跳过（未找到原分类）${result.skippedNotFound.length} 页；跳过（变体未解析）${result.skippedVariant.length} 页；失败 ${result.skippedServer.length} 页。`,
         `成功編輯 ${result.done} 頁；跳過（已在分類中）${result.skippedAlready.length} 頁；`
-        + `跳過（未找到原分類）${result.skippedNotFound.length} 頁；失敗 ${result.skippedServer.length} 頁。`,
+        + `跳過（未找到原分類）${result.skippedNotFound.length} 頁；跳過（變體未解析）${result.skippedVariant.length} 頁；失敗 ${result.skippedServer.length} 頁。`,
     ),
     skippedAlready: result.skippedAlready,
     skippedNotFound: result.skippedNotFound,
+    skippedVariant: result.skippedVariant,
     skippedServer: result.skippedServer,
 });
 
