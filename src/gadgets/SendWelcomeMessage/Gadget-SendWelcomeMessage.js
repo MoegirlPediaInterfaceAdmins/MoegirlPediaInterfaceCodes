@@ -170,10 +170,20 @@ $(() => {
             console.error("[Gadget-SendWelcomeMessage]", "[document#click]", e);
         }
     });
-    for (const link of getLinks()) {
-        const target = verifyLink(link);
-        if (target) {
-            target.classList.add("sendWelcomeMessageLink", "unsend");
+    /**
+     * 最近更改、监视列表的动态更新会整体替换列表 DOM，标记类随之丢失，
+     * 故订阅更新信号后重扫（忽略钩子参数，始终全页扫描）；classList.add 幂等，可重复执行。
+     */
+    const processLinks = () => {
+        for (const link of getLinks()) {
+            const target = verifyLink(link);
+            if (target) {
+                target.classList.add("sendWelcomeMessageLink", "unsend");
+            }
         }
-    }
+    };
+    processLinks();
+    mw.hook("wikipage.content").add(processLinks);
+    $(window).on("rcfilters-dynamic-updates-complete", processLinks);
+    $(document).on("mw.cx.event.vc.rcupdates", processLinks);
 });
