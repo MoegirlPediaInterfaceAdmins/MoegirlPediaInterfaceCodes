@@ -194,6 +194,13 @@
 - **用户可见性**：无——`wiki.flag.isSafari` 在 `src/` 内从未有装配赋值点（无 UA 检测），生产恒为 `false`，该分支仅测试直设可达，删除不改变任何生产行为。
 - **论据**：三重验证支持删除。其一，修补的引擎缺陷已消亡——现代浏览器（含 Safari）的 `a.href` 按 DOM 标准返回字面属性值、不做百分号解码，即使补上装配也不会以「修复真实问题」的方式触发。其二，分支无独立价值——设计场景（`%25E4%25B8%2583` 双重编码）下主路径 `decodeEscapes` + `decodeURI` 同样正确解出原文（实测一致）；正常单层编码的非 ASCII 标题（`%E4%B8%83`）走该路径反而产出乱码（`unescape` 的 Latin-1 语义逐字节变字符，实测），装配后只剩误伤能力。其三，维护负资产——`unescape` 需 eslint-disable 压制，状态声明误导阅读者以为 Safari 兼容在工作，三个测试用例中两个的断言值在两条路径下同值、掩盖真实差异。若未来需恢复旧 Safari 兼容，以本条目与 legacy 基准（commit 02c8dec）为准复原。测试覆盖见 `tests/unit/title/title.test.ts`（`A%2541` 双层解码、`%257C` 双重编码显示名截断均改由主路径用例承载）。
 
+### A15. `if(talk)` 条件极性按上游原文修正（**基准实现缺陷已修正**，2026-11-19）
+
+- **legacy 行为**：`expandConditionalNavlinkString` 的 `case "talk"` 写成 `testResult = !!article.talkPage();`（单文件 `4742` 行）。`talkPage()` 的作用是把标题换成对应的讨论页：普通条目返回 `Talk:xxx`（真值），讨论页自身返回 `null`。因此该写法把「当前不是讨论页」判为真，与 `if(talk){...}` 在 7 种结构填充器中的用法正好相反——那些用法里真分支都是「已在讨论页，给出回条目的入口」，假分支都是「在普通页，给出讨论页入口」。由此产生两个后果：普通条目缺少 `talk`/`editTalk`/`newTalk` 三个入口；悬停讨论页时反而走 else 分支的 `<<talk>>`，`getPrintFunction` 的 `case "talk"` 用 `assume(article.talkPage())` 把 `null` 当作非空值赋给 `article`，随后 `titledWikiLink` 调用 `l.article.urlString()` 抛出 `TypeError: Cannot read properties of null (reading 'urlString')`，整条导航栏渲染中断（报错从 `menusPopupTopLinks` 经 `navlinkStringToHTML`、`NavlinkTag.html`、`NavlinkTag.wikiLink` 一路向上，见浏览器控制台）。
+- **重写版行为**：`src/navlinks/navlinks.ts` 的 `case "talk"` 改为 `testResult = !article.talkPage();`，与上游原文 oldid=1322962085 同处的实现和注释（`talkPage converts _articles_ to talkPages`）一致。
+- **用户可见性**：修正后可见。修正前悬停 `Talk:`、`User_talk:` 等讨论页链接时弹窗导航栏整体渲染失败，普通条目则少了三个讨论页入口；修正后讨论页显示 `article`/`editArticle` 回退入口，普通条目显示 `talk`/`editTalk`/`newTalk`。
+- **论据**：这个极性错误来自上游同步，不是萌百定制——`5adc9438` 基准继承的 `!!` 写法与上游 oldid=1322962085 的 `!` 相反，英文维基原文还保留了说明性注释。只写 `!!` 虽然不会抛错，判断结果仍然相反，所以必须断言渲染出的分支形态才能发现（此前 `tests/unit/navlinks/navlinks.test.ts` 的条件展开用例按错误极性编写，已随本次修正反转）。上游同步时不要以「与 legacy 逐字一致」为理由改回 `!!`。测试覆盖见 `tests/unit/navlinks/navlinks.test.ts`：`expandConditionalNavlinkString` 的 `talk` 用例、`navLinksHTML` 与 `shortmenus` 填充器的分支形态断言，以及讨论页不产生 `null` 标题链接的回归用例。
+
 ## B. 明知故留的 legacy 死分支（`istanbul ignore` 清单）
 
 重写版在以下位置**保留** legacy 结构性不可达的防御分支，逐条配 `// istanbul ignore …`

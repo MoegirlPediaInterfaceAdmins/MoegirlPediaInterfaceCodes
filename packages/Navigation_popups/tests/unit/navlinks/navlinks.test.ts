@@ -202,10 +202,14 @@ describe("expandConditionalNavlinkString", () => {
         expect(f.navlinks.expandConditionalNavlinkString("Aif(user){T}else{F}B", article(f, "User:Example"), {})).toBe("ATB");
     });
 
-    it("talk：主名字空间条目有讨论页为真，讨论页自身为假", async () => {
+    // talkPage() 的语义是「换成讨论页」（条目→Talk:，讨论页自身→null），
+    // 故 if(talk) 的真值条件是「当前是讨论页」，与 talkPage() 返回真值相反。
+    // 极性依据：上游 oldid=1322962085 同处注释「talkPage converts _articles_ to talkPages」
+    // 与 testResult = !article.talkPage() 的写法
+    it("talk：讨论页自身为真，主名字空间条目为假（talkPage() 取反）", async () => {
         const f = await fresh();
-        expect(f.navlinks.expandConditionalNavlinkString("if(talk){T}else{F}", article(f, "Foo"), {})).toBe("T");
-        expect(f.navlinks.expandConditionalNavlinkString("if(talk){T}else{F}", article(f, "Talk:Foo"), {})).toBe("F");
+        expect(f.navlinks.expandConditionalNavlinkString("if(talk){T}else{F}", article(f, "Foo"), {})).toBe("F");
+        expect(f.navlinks.expandConditionalNavlinkString("if(talk){T}else{F}", article(f, "Talk:Foo"), {})).toBe("T");
     });
 
     it("admin：取 popupAdminLinks（默认非 sysop 为假；window 覆盖为真）", async () => {
@@ -411,10 +415,12 @@ describe("navLinksHTML", () => {
         expect(html).toContain('<b><span class="popup_mainlink">');
         expect(html).toContain(" &sdot; ");
         expect(html).toContain('<span class="popup_history">');
-        // 主名字空间条目 if(talk) 为真：走 article/editArticle 分支（非 talk 分支）
-        expect(html).toContain('<span class="popup_article">');
-        expect(html).toContain('<span class="popup_editArticle">');
-        expect(html).not.toContain("popup_talk");
+        // 主名字空间条目 if(talk) 为假：走 else 分支（talk/editTalk/newTalk），
+        // article/editArticle 是讨论页自己的回退入口
+        expect(html).toContain('<span class="popup_talk">');
+        expect(html).toContain('<span class="popup_editTalk">');
+        expect(html).toContain('<span class="popup_newTalk">');
+        expect(html).not.toContain('<span class="popup_article">');
         expect(html).toContain(`${TITLEBASE}Foo&amp;action=history`);
         expect(html).toContain(`${TITLEBASE}Foo`);
         // 匿名条目（当前 fixture 无 current.link）：user 段整体消失
@@ -1328,7 +1334,8 @@ describe("menus / shortmenus 填充器", () => {
         expect(html).toContain("popup_history");
         // 匿名条目无 user 段（if(user) 整段消失），email 只在 user 段内出现
         expect(html).not.toContain("popup_email");
-        expect(html).toContain("popup_article");
+        // 主名字空间条目 if(talk) 为假 → else 分支给出 talk/editTalk/newTalk
+        expect(html).toContain("popup_talk");
     });
 
     it("shortmenus：用户页与 admin 组合段（deletedContribs/unblock/blocklog）", async () => {
@@ -1338,5 +1345,21 @@ describe("menus / shortmenus 填充器", () => {
         expect(html).toContain("popup_deletedContribs");
         expect(html).toContain("popup_unblock");
         expect(html).toContain("popup_blocklog");
+    });
+
+    // 回归（if(talk) 极性反转）：讨论页走 if(talk) 真分支的 article/editArticle。
+    // 极性与 talkPage() 相反，否则 else 的 <<talk>> 会把 article 置为
+    // talkPage() 的 null，继而在 titledWikiLink 的 urlString() 处抛
+    // 「Cannot read properties of null」
+    it("shortmenus：讨论页渲染走 article/editArticle 分支且不产生 null 标题链接", async () => {
+        const f = await fresh();
+        const html = htmlOf(f.structures.getSlotFiller("shortmenus.popupTopLinks")?.(ctx(f, "Talk:Foo")));
+        expect(html).toContain("popup_article");
+        expect(html).toContain("popup_editArticle");
+        expect(html).not.toContain("popup_editTalk");
+        // 链接里是回退后的主条目（Foo），不是 null 串（"title=null" 即
+        // Title.value 为 null 时 urlString 的产物）
+        expect(html).toContain(`<a href="${TITLEBASE}Foo"`);
+        expect(html).not.toContain("title=null");
     });
 });
