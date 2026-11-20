@@ -67,8 +67,16 @@ $(() => (async () => {
         }
         for (const { details } of _details) {
             const sources = [];
-            const addedLines = Array.isArray(details.added_lines) ? details.added_lines.join("\n") : details.added_lines;
-            const body = addedLines || details.new_wikitext;
+            // added_lines 为空数组代表本次编辑没有新增内容，此时不应回落到整篇 new_wikitext，
+            // 否则未改动的正文里命中规则也会被当成新增内容命中。
+            let body;
+            if (Array.isArray(details.added_lines)) {
+                body = details.added_lines.join("\n");
+            } else if (typeof details.added_lines === "string") {
+                body = details.added_lines;
+            } else {
+                body = details.new_wikitext;
+            }
             if (typeof body === "string" && body !== "") {
                 sources.push({ label: "正文", text: body });
             }
@@ -84,10 +92,12 @@ $(() => (async () => {
                         continue;
                     }
                     const splits = text.split(sr);
+                    let splitStart = 0;
                     splits.forEach((str, i) => {
                         if (i === splits.length - 1) {
                             return;
                         }
+                        const matchStart = splitStart + str.length;
                         const next = splits[i + 1];
                         const start = Math.max(0, str.length - 20);
                         const end = Math.min(next.length, 20);
@@ -95,11 +105,13 @@ $(() => (async () => {
                             isRegex: false,
                             source,
                             rule: sr,
+                            matchStart,
                             before: str.substring(start, start + 20),
                             string: sr,
                             after: next.substring(0, end),
                             start,
                         });
+                        splitStart = matchStart + sr.length;
                     });
                 }
                 for (const rr of regexRules.values()) {
@@ -119,6 +131,7 @@ $(() => (async () => {
                                 isRegex: true,
                                 source,
                                 rule: rr,
+                                matchStart: start,
                                 before,
                                 string,
                                 after,
@@ -132,10 +145,10 @@ $(() => (async () => {
             if (result.length > 0) {
                 table.append(`<caption style="font-weight: 700;">命中滥用过滤器${filter}的内容</caption><tr><th style="text-align: right;">规则（请勿泄漏！！！）</th><th style="text-align: center;">命中位置</th><th style="text-align: left;">命中字符串上下文</th></tr>`);
                 const sourceOrder = new Map(sources.map(({ label }, i) => [label, i]));
-                result.sort((a, b) => sourceOrder.get(a.source) - sourceOrder.get(b.source) || a.start - b.start);
+                result.sort((a, b) => sourceOrder.get(a.source) - sourceOrder.get(b.source) || a.matchStart - b.matchStart);
                 const results = [];
                 result.forEach((r) => {
-                    if (results.filter(({ source: s, isRegex, start }) => s === r.source && isRegex === r.isRegex && start === r.start).length === 0) {
+                    if (results.filter(({ source: s, isRegex, rule, matchStart }) => s === r.source && isRegex === r.isRegex && rule === r.rule && matchStart === r.matchStart).length === 0) {
                         results.push(r);
                     }
                 });
