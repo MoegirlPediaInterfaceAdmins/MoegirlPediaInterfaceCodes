@@ -44,7 +44,7 @@ $(() => (async () => {
             throw "无法找到对应用户名和页面标题的滥用过滤器日志";
         }
         progress.text(1);
-        const _details = Array.from(new Map(__details.filter(({ details: { timestamp } }) => timestampVar === timestamp).map((n) => [n.new_wikitext, n])).values());
+        const _details = Array.from(new Map(__details.filter(({ details: { timestamp } }) => timestampVar === timestamp).map((n) => [JSON.stringify(n.details), n])).values());
         if (_details.length === 0) {
             console.info(__details);
             throw "无法找到对应时间戳的滥用过滤器日志";
@@ -66,16 +66,24 @@ $(() => (async () => {
             throw "无法找到符合格式的规则";
         }
         for (const { details } of _details) {
-            let addedLines = details.added_lines || details.new_wikitext;
-            if (Array.isArray(addedLines)) {
-                addedLines = addedLines.join("\n");
+            const sources = [];
+            const addedLines = Array.isArray(details.added_lines) ? details.added_lines.join("\n") : details.added_lines;
+            const body = addedLines || details.new_wikitext;
+            if (typeof body === "string" && body !== "") {
+                sources.push({ label: "正文", text: body });
+            }
+            if (typeof details.summary === "string" && details.summary !== "") {
+                sources.push({ label: "编辑摘要", text: details.summary });
             }
             const result = [];
             const table = $("<table/>").css("width", "100%").addClass("wikitable abusefiltertest").hide();
             pTable.after(table);
-            for (const sr of stringRules.values()) {
-                if (addedLines.includes(sr)) {
-                    const splits = addedLines.split(sr);
+            for (const { label: source, text } of sources) {
+                for (const sr of stringRules.values()) {
+                    if (!text.includes(sr)) {
+                        continue;
+                    }
+                    const splits = text.split(sr);
                     splits.forEach((str, i) => {
                         if (i === splits.length - 1) {
                             return;
@@ -84,7 +92,8 @@ $(() => (async () => {
                         const start = Math.max(0, str.length - 20);
                         const end = Math.min(next.length, 20);
                         result.push({
-                            isRegexp: false,
+                            isRegex: false,
+                            source,
                             rule: sr,
                             before: str.substring(start, start + 20),
                             string: sr,
@@ -93,51 +102,56 @@ $(() => (async () => {
                         });
                     });
                 }
-            }
-            for (const rr of regexRules.values()) {
-                const regex = RegExp(`.{0,20}${rr}.{0,20}`, "ig");
-                const findstring = RegExp(rr, "ig");
-                if (regex.test(addedLines)) {
-                    const splits = addedLines.match(regex);
-                    let lastFromIndex = 0;
-                    splits.forEach((str) => {
-                        const string = str.match(findstring)[0];
-                        const split = str.split(string);
-                        const before = split[0];
-                        const after = split.slice(1).join(string);
-                        const start = addedLines.indexOf(string, lastFromIndex);
-                        lastFromIndex = start + string.length;
-                        result.push({
-                            isRegex: true,
-                            rule: rr,
-                            before,
-                            string,
-                            after,
-                            start,
+                for (const rr of regexRules.values()) {
+                    const regex = RegExp(`.{0,20}${rr}.{0,20}`, "ig");
+                    const findstring = RegExp(rr, "ig");
+                    if (regex.test(text)) {
+                        const splits = text.match(regex);
+                        let lastFromIndex = 0;
+                        splits.forEach((str) => {
+                            const string = str.match(findstring)[0];
+                            const split = str.split(string);
+                            const before = split[0];
+                            const after = split.slice(1).join(string);
+                            const start = text.indexOf(string, lastFromIndex);
+                            lastFromIndex = start + string.length;
+                            result.push({
+                                isRegex: true,
+                                source,
+                                rule: rr,
+                                before,
+                                string,
+                                after,
+                                start,
+                            });
                         });
-                    });
+                    }
                 }
             }
             table.empty();
             if (result.length > 0) {
-                table.append(`<caption style="font-weight: 700;">命中滥用过滤器${filter}的内容</caption><tr><th style="text-align: right;">规则（请勿泄漏！！！）</th><th style="text-align: left;">命中字符串上下文</th></tr>`);
-                result.sort(({ start: a }, { start: b }) => a - b);
+                table.append(`<caption style="font-weight: 700;">命中滥用过滤器${filter}的内容</caption><tr><th style="text-align: right;">规则（请勿泄漏！！！）</th><th style="text-align: center;">命中位置</th><th style="text-align: left;">命中字符串上下文</th></tr>`);
+                const sourceOrder = new Map(sources.map(({ label }, i) => [label, i]));
+                result.sort((a, b) => sourceOrder.get(a.source) - sourceOrder.get(b.source) || a.start - b.start);
                 const results = [];
                 result.forEach((r) => {
-                    if (results.filter(({ isRegex, start }) => isRegex === r.isRegex && start === r.start).length === 0) {
+                    if (results.filter(({ source: s, isRegex, start }) => s === r.source && isRegex === r.isRegex && start === r.start).length === 0) {
                         results.push(r);
                     }
                 });
                 console.info(results);
-                results.forEach(({ isRegex, rule, before, string, after, start }) => {
+                results.forEach(({ isRegex, source, rule, before, string, after, start }) => {
                     const tr = $("<tr/>");
-                    const label = $("<td/>");
+                    const ruleCell = $("<td/>");
                     const ruleCode = $("<code/>");
                     ruleCode.text(rule);
-                    label.addClass("mw-label");
-                    label.text(isRegex ? "正则表达式" : "字符串");
-                    label.append(symbolEnter(ruleCode)).append("：");
-                    tr.append(label);
+                    ruleCell.addClass("mw-label");
+                    ruleCell.text(isRegex ? "正则表达式" : "字符串");
+                    ruleCell.append(symbolEnter(ruleCode)).append("：");
+                    tr.append(ruleCell);
+                    const sourceCell = $("<td/>");
+                    sourceCell.addClass("mw-label").text(source);
+                    tr.append(sourceCell);
                     const input = $("<td/>");
                     input.addClass("mw-input");
                     const beforeSpan = $("<span/>");
