@@ -6,6 +6,7 @@ $(() => (async () => {
      * 等皮肤脚本启动后才克隆进 `#app`；因此在 jQuery ready 时 `#mw-content-text`
      * 可能尚不存在，此时依赖正文的选择器会全部落空，小工具表现为静默不加载。
      * 正文就位后皮肤会触发 `wikipage.content` 钩子，已在文档中时直接返回。
+     * 若皮肤始终不触发该钩子，则在超时后放弃等待，交由后续逻辑按原有方式处理。
      * @returns {Promise<void>}
      */
     const waitForContent = async () => {
@@ -17,15 +18,26 @@ $(() => (async () => {
             return;
         }
         await new Promise((resolve) => {
+            const state = { timer: null };
+            /**
+             * 正文就位后结束等待，并清理监听与定时器。
+             * @returns {void}
+             */
             const handler = () => {
                 if (!isContentReady()) {
                     return;
                 }
                 mw.hook("wikipage.content").remove(handler);
+                clearTimeout(state.timer);
                 resolve();
             };
+            // 皮肤始终不触发钩子时，超时后放弃等待，交由后续逻辑按原有方式处理
+            state.timer = setTimeout(() => {
+                mw.hook("wikipage.content").remove(handler);
+                resolve();
+            }, 10000);
             mw.hook("wikipage.content").add(handler);
-            // 注册后立刻补查一次：若钩子恰在“检查”与“注册”之间触发，不至于永远等待
+            // 注册后立刻补查一次：若钩子恰在“检查”与“注册”之间触发，不至于白等
             handler();
         });
     };
