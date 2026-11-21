@@ -1,5 +1,34 @@
 "use strict";
 $(() => (async () => {
+    /**
+     * 等待正文就位。
+     * MoeSkin 会把正文预置在 `<template id="MOE_SKIN_TEMPLATE_BODYCONTENT">` 里，
+     * 等皮肤脚本启动后才克隆进 `#app`；因此在 jQuery ready 时 `#mw-content-text`
+     * 可能尚不存在，此时依赖正文的选择器会全部落空，小工具表现为静默不加载。
+     * 正文就位后皮肤会触发 `wikipage.content` 钩子，已在文档中时直接返回。
+     * @returns {Promise<void>}
+     */
+    const waitForContent = async () => {
+        /**
+         * @returns {Element | null}
+         */
+        const isContentReady = () => document.querySelector("#mw-content-text > fieldset > p");
+        if (isContentReady()) {
+            return;
+        }
+        await new Promise((resolve) => {
+            const handler = () => {
+                if (!isContentReady()) {
+                    return;
+                }
+                mw.hook("wikipage.content").remove(handler);
+                resolve();
+            };
+            mw.hook("wikipage.content").add(handler);
+            // 注册后立刻补查一次：若钩子恰在“检查”与“注册”之间触发，不至于永远等待
+            handler();
+        });
+    };
     const {
         wgUserGroups,
         wgCanonicalSpecialPageName,
@@ -17,6 +46,11 @@ $(() => (async () => {
     if (wgCanonicalSpecialPageName !== "AbuseLog") {
         return;
     }
+    // 日志列表页同样是 AbuseLog，但没有具体条目，也就没有该变量
+    if (wgAbuseFilterVariables === null) {
+        return;
+    }
+    await waitForContent();
     const timestampVar = wgAbuseFilterVariables.timestamp;
     const userName = wgAbuseFilterVariables.user_name;
     const pagePrefixedtitle = wgAbuseFilterVariables.page_prefixedtitle;
