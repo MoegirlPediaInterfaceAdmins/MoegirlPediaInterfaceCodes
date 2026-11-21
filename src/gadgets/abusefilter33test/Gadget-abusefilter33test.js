@@ -47,7 +47,7 @@ $(() => (async () => {
         return;
     }
     // 日志列表页同样是 AbuseLog，但没有具体条目，也就没有该变量
-    if (wgAbuseFilterVariables === null) {
+    if (!wgAbuseFilterVariables) {
         return;
     }
     await waitForContent();
