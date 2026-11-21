@@ -32,5 +32,3 @@ type pageNames = {
  * 获取当前页面的讨论页名称
  */
 declare function libGetPageNames(): pageNames;
-
-declare function wgGetEditRequestPreload(pageName?: string, basePageName?: string | false): string;

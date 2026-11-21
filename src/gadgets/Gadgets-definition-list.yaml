@@ -62,7 +62,6 @@
     - usergroup
     - queryContributions
     - userpageDelete
-    - requestDeletion
     - BatchToolkit
 
 - name: editing
@@ -133,7 +132,6 @@
     - libRequestAnimationFrame
     - libStandardMessages
     - edit
-    - editRequestWarning
     - LocalObjectStorage
     - localforage
     - jQueryLazyload
@@ -164,4 +162,5 @@
     - prism-language-perl
     - prism-language-python
     - prism-language-ruby
+    - QuickRequest
     - Watermark
