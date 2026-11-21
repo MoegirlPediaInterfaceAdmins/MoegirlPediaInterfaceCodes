@@ -3,6 +3,8 @@
  * 这里的任何JavaScript将在 MoeSkin 皮肤下加载
  */
 (async () => {
+    // 侧栏“自定义工具”标题在 site-lib 加载完成后换成对应变体，避免加载完成前调用时出错
+    let customSidenavBlockTitle = "自定义工具";
     /**
      * @returns {JQuery<HTMLDivElement>}
      */
@@ -16,7 +18,7 @@
             $block.append(
                 $("<div>", {
                     "class": "mw-parser-output",
-                }).append($("<h2>", { text: "自定义工具" }), $("<ul>", { id: "moe-custom-sidenav-block-list" })),
+                }).append($("<h2>", { text: customSidenavBlockTitle }), $("<ul>", { id: "moe-custom-sidenav-block-list" })),
             );
             $("aside#moe-global-siderail .moe-siderail-sticky").before($block);
         }
@@ -69,7 +71,8 @@
     } catch (e) {
         console.warn("[MoeSkin] addPortletLink", "Faild to bind global variables", e);
     }
-    await mw.loader.using(["mediawiki.util"]);
+    await mw.loader.using(["mediawiki.util", "ext.gadget.site-lib"]);
+    customSidenavBlockTitle = wgULS("自定义工具", "自訂工具");
     Reflect.defineProperty(mw.util, "addPortletLink", {
         value: addPortletLink,
         configurable: true,

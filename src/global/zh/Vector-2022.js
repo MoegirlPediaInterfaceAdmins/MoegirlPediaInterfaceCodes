@@ -100,7 +100,7 @@
         const menu = document.querySelector(".vector-main-menu-action-content"),
             link = menu.querySelector("a"),
             span = menu.querySelector("span"),
-            text = "切换到MoeSkin";
+            text = wgULS("切换到MoeSkin", "切換到MoeSkin");
         const url = new URL(window.location.href);
         url.searchParams.set("useskin", "moeskin");
         Object.assign(link, {
@@ -112,6 +112,7 @@
     };
     /* 函数执行体 */
     await $.ready;
+    await mw.loader.using("ext.gadget.site-lib");
     // 滚动公告
     startScroll();
     autoScroll();
