@@ -1,28 +1,10 @@
 "use strict";
 $(() => {
-    const wgPermittedGroups = ["autoconfirmed", "staff"]; // 默认只允许自动确认用户、STAFF绕过强制预览。
+    const permittedGroups = ["autoconfirmed", "staff"]; // 默认只允许自动确认用户、STAFF绕过强制预览。
     // 检测两个数组是否有重复元素
-    const intersects = (arr1, arr2) => {
-        if (!Array.isArray(arr1) || !Array.isArray(arr2)) {
-            return false;
-        }
-        for (let i1 = 0, l1 = arr1.length; i1 < l1; i1++) {
-            if (arr1.indexOf(arr1[i1]) === -1) {
-                continue;
-            } // 检测是否为空位
-            for (let i2 = 0, l2 = arr2.length; i2 < l2; i2++) {
-                if (arr2.indexOf(arr2[i2]) === -1) {
-                    continue;
-                }
-                if (arr1[i1] === arr2[i2]) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    };
+    const intersects = (arr1, arr2) => Array.isArray(arr1) && Array.isArray(arr2) && arr1.some((item) => arr2.includes(item));
     // eslint-disable-next-line @stylistic/no-extra-parens
-    if (mw.config.get("wgAction") !== "edit" || (intersects(mw.config.get("wgUserGroups"), wgPermittedGroups) && +mw.user.options.get("gadget-ForcePreviewUponUserRequest", 0) !== 1)) {
+    if (mw.config.get("wgAction") !== "edit" || (intersects(mw.config.get("wgUserGroups"), permittedGroups) && +mw.user.options.get("gadget-ForcePreviewUponUserRequest", 0) !== 1)) {
         return;
     }
     const saveButton = $("#wpSave");
