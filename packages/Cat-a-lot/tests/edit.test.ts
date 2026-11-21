@@ -402,3 +402,108 @@ describe("abortActive", () => {
         void pendingSuggest;
     });
 });
+
+describe("resolveCategoryVariants", () => {
+    it("使用 redirects=1&converttitles=1 解析繁简变体、重定向并串联 normalized/converted/redirects", async () => {
+        const api = createApi("TestUser");
+        postMock.mockReturnValue(Promise.resolve({
+            query: {
+                normalized: [
+                    { from: "Category:foo_bar", to: "Category:Foo bar" },
+                ],
+                converted: [
+                    { from: "Category:英雄聯盟競技賽事", to: "Category:英雄联盟竞技赛事" },
+                    { from: "Category:Foo bar", to: "Category:Bar" },
+                ],
+                redirects: [
+                    { from: "Category:Bar", to: "Category:Baz" },
+                ],
+            },
+        }));
+
+        const resolved = await api.resolveCategoryVariants([
+            "英雄聯盟競技賽事",
+            "foo_bar",
+            "电子竞技",
+            "bad|title",
+        ]);
+
+        expect(postMock).toHaveBeenCalledWith(
+            {
+                action: "query",
+                titles: "Category:英雄聯盟競技賽事|Category:foo bar|Category:电子竞技",
+                redirects: 1,
+                converttitles: 1,
+                formatversion: 2,
+            },
+            { timeout: API_TIMEOUT_MS },
+        );
+        expect(resolved.get("英雄聯盟競技賽事")).toBe("英雄联盟竞技赛事");
+        expect(resolved.get("foo bar")).toBe("Baz");
+        expect(resolved.get("电子竞技")).toBe("电子竞技");
+        expect(resolved.has("bad|title")).toBe(false);
+    });
+
+    it("batchSize=1 时每次只查询一个标题", async () => {
+        const api = createApi("TestUser");
+        postMock
+            .mockReturnValueOnce(Promise.resolve({ query: {} }))
+            .mockReturnValueOnce(Promise.resolve({
+                query: {
+                    converted: [{ from: "Category:英雄聯盟競技賽事", to: "Category:英雄联盟竞技赛事" }],
+                },
+            }));
+
+        const resolved = await api.resolveCategoryVariants(["电子竞技", "英雄聯盟競技賽事"], 1);
+        expect(postMock).toHaveBeenCalledTimes(2);
+        expect(postMock).toHaveBeenNthCalledWith(
+            1,
+            { action: "query", titles: "Category:电子竞技", redirects: 1, converttitles: 1, formatversion: 2 },
+            { timeout: API_TIMEOUT_MS },
+        );
+        expect(postMock).toHaveBeenNthCalledWith(
+            2,
+            { action: "query", titles: "Category:英雄聯盟競技賽事", redirects: 1, converttitles: 1, formatversion: 2 },
+            { timeout: API_TIMEOUT_MS },
+        );
+        expect(resolved.get("英雄聯盟競技賽事")).toBe("英雄联盟竞技赛事");
+    });
+
+    it("支持超过 5 跳的重定向链、环路保护，并忽略跨命名空间重定向目标", async () => {
+        const api = createApi("TestUser");
+        postMock.mockReturnValue(Promise.resolve({
+            query: {
+                redirects: [
+                    { from: "Category:R1", to: "Category:R2" },
+                    { from: "Category:R2", to: "Category:R3" },
+                    { from: "Category:R3", to: "Category:R4" },
+                    { from: "Category:R4", to: "Category:R5" },
+                    { from: "Category:R5", to: "Category:R6" },
+                    { from: "Category:R6", to: "Category:R7" },
+                    { from: "Category:LoopA", to: "Category:LoopB" },
+                    { from: "Category:LoopB", to: "Category:LoopA" },
+                    { from: "Category:CrossNs", to: "MainPageTarget" },
+                ],
+            },
+        }));
+
+        const resolved = await api.resolveCategoryVariants(["R1", "LoopA", "CrossNs"]);
+        expect(resolved.get("R1")).toBe("R7");
+        expect(resolved.get("LoopA")).toBe("LoopA");
+        expect(resolved.get("CrossNs")).toBe("CrossNs");
+    });
+
+    it("T333050 重定向与变体成环时，不同入口统一解析到确知存在的标题", async () => {
+        const api = createApi("TestUser");
+        postMock.mockReturnValue(Promise.resolve({
+            query: {
+                redirects: [{ from: "Category:网络", to: "Category:網路" }],
+                converted: [{ from: "Category:網路", to: "Category:网络" }],
+            },
+        }));
+
+        const resolved = await api.resolveCategoryVariants(["网络", "網路"]);
+        expect(resolved.get("网络")).toBe("网络");
+        expect(resolved.get("網路")).toBe("网络");
+    });
+});

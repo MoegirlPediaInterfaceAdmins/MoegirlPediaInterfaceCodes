@@ -51,7 +51,7 @@
                 <span class="cal-hint">{{ selectedCountText }}</span>
             </div>
 
-            <div v-if="isRunning" class="cal-progress">
+            <div v-if="isBusy" class="cal-progress">
                 <div class="cal-status-row">
                     <span class="cal-hint">
                         {{ uls("正在编辑：", "正在編輯：") }}{{ currentEditingTitle }}
@@ -309,6 +309,12 @@
                 <strong>{{ uls("未找到原分类：", "未找到原分類：") }}</strong>
                 <ul class="cal-result-list">
                     <li v-for="title in resultDialog.skippedNotFound" :key="title">{{ title }}</li>
+                </ul>
+            </div>
+            <div v-if="resultDialog.skippedVariant.length">
+                <strong>{{ uls("跳过（变体未解析）：", "跳過（變體未解析）：") }}</strong>
+                <ul class="cal-result-list">
+                    <li v-for="title in resultDialog.skippedVariant" :key="title">{{ title }}</li>
                 </ul>
             </div>
             <div v-if="resultDialog.skippedServer.length">
