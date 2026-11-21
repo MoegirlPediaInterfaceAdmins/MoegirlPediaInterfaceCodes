@@ -17,8 +17,8 @@ const JS_NAME = "Gadget-Watermark.js";
 /**
  * 产物头部许可声明：内嵌 watermark-js-plus（MIT），其许可要求保留版权与许可声明，
  * 产物内嵌其代码故在此携带。
- * "use strict" 由 banner 显式携带：产物以裸顶层语句形式交付，esbuild 不注入指令，
- * 而部署侧要求文件以严格模式运行。
+ * 产物是构建链中间物：严格模式指令由部署链的 tsc（alwaysStrict）在编入 dist/ 时注入，
+ * 这里不再在 banner 中携带该指令。
  */
 const BANNER = `/**
  * 内嵌 watermark-js-plus（https://github.com/zhensherlock/watermark-js-plus，MIT License）
@@ -42,7 +42,7 @@ const buildOptions = () => ({
     charset: "utf8",
     outdir: path.join(root, "dist"),
     minifySyntax: true,
-    banner: { js: `${BANNER}\n"use strict";` },
+    banner: { js: BANNER },
 });
 
 /** 产物门禁：许可声明位于文件头部、没有残留的模块语法、无 BOM/CR、以换行符结尾 */

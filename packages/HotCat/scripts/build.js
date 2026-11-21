@@ -14,7 +14,7 @@ const ENTRY = "src/index.ts";
 const JS_OUTPUT = "index.js";
 const JS_NAME = "Gadget-HotCat.js";
 
-/** esbuild 构建选项。 */
+/** esbuild 构建选项。产物是中间物：严格模式指令由部署链 tsc（alwaysStrict）注入。 */
 const buildOptions = () => ({
     entryPoints: [path.join(root, ENTRY)],
     bundle: true,
@@ -23,7 +23,6 @@ const buildOptions = () => ({
     charset: "utf8",
     outdir: path.join(root, "dist"),
     minifySyntax: true,
-    banner: { js: '"use strict";' },
 });
 
 /** 移除整行 eslint 指令。 */
@@ -34,9 +33,6 @@ const stripInlineDirectives = (text) => text
 
 /** 产物完整性检查。 */
 const assertArtifact = (name, text) => {
-    if (!text.startsWith('"use strict";')) {
-        throw new Error(`${name}: 产物未以 "use strict" 开头`);
-    }
     if (/^\s*(?:import|export)\b/m.test(text)) {
         throw new Error(`${name}: 产物中残留未打包的 import/export 语法`);
     }

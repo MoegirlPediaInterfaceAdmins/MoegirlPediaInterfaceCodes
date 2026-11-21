@@ -15,6 +15,8 @@ const JS_NAME = "Gadget-Cat-a-lot.js";
 const CSS_NAME = "Gadget-Cat-a-lot.css";
 
 // SFC 预编译为 render；Vue helper 来自 runtime.ts。CSS 单独输出给 postcss 链。
+// 产物是构建链中间物：严格模式指令由部署链的 tsc（alwaysStrict）在编入 dist/ 时注入，
+// 这里不再自带 banner。
 const buildOptions = () => ({
     entryPoints: [path.join(root, ENTRY)],
     bundle: true,
@@ -24,7 +26,6 @@ const buildOptions = () => ({
     outdir: path.join(root, "dist"),
     minifySyntax: true,
     plugins: [vueSfcPlugin],
-    banner: { js: '"use strict";' },
 });
 
 const stripInlineDirectives = (text) => text
@@ -33,9 +34,6 @@ const stripInlineDirectives = (text) => text
     .join("\n");
 
 const assertArtifact = (name, text, isCss) => {
-    if (!isCss && !text.startsWith('"use strict";')) {
-        throw new Error(`${name}: 产物未以 "use strict" 开头`);
-    }
     if (isCss ? /^\s*@import\b/mu.test(text) : /^\s*(?:import|export)\b/mu.test(text)) {
         throw new Error(`${name}: 产物中残留未打包的${isCss ? " @import" : " import/export"}语法`);
     }

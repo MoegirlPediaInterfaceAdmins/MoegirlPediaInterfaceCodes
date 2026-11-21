@@ -23,6 +23,8 @@ const JS_NAME = "Gadget-UserMessages.js";
  * 避免同一份代码被压两次。format esm 输出裸顶层语句、不带 IIFE 包裹：
  * gadget 经 mw.loader.implement 下发，其函数作用域已经隔离顶层名。
  * charset utf8：界面文案是中文，别让 esbuild 转成 \uXXXX。
+ * 产物是构建链中间物：严格模式指令由部署链的 tsc（alwaysStrict）在编入 dist/ 时注入，
+ * 这里不再自带 banner。
  */
 const buildOptions = () => ({
     entryPoints: [path.join(root, ENTRY)],
@@ -32,14 +34,10 @@ const buildOptions = () => ({
     charset: "utf8",
     outdir: path.join(root, "dist"),
     minifySyntax: true,
-    banner: { js: '"use strict";' },
 });
 
-/** 产物门禁："use strict" 位于文件头部、没有残留的模块语法、无 BOM/CR、以换行符结尾 */
+/** 产物门禁：没有残留的模块语法、无 BOM/CR、以换行符结尾 */
 const assertArtifact = (name, text) => {
-    if (!text.startsWith('"use strict";')) {
-        throw new Error(`${name}: 产物未以 "use strict" 开头`);
-    }
     if (/^\s*(?:import|export)\b/m.test(text)) {
         throw new Error(`${name}: 产物中残留未打包的 import/export 语法`);
     }

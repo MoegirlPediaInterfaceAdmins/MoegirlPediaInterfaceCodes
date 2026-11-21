@@ -17,25 +17,10 @@ export const build = async () => {
     if (generated.output.length !== 1 || generated.output[0].type !== "chunk") {
         throw new Error(`expected a single output chunk, got ${generated.output.length}`);
     }
-    const code = generated.output[0].code;
-    // esbuild injects a "use strict" prologue into every module because
-    // alwaysStrict is inherited from the base tsconfig and TS 6.0 forbids
-    // turning it off explicitly (TS5107), so the raw chunk carries one per
-    // module. The banner already provides the artifact's only global
-    // directive — strip the module-level ones from the body. The filter only
-    // drops lines that are exactly the directive, and no source string
-    // literal can produce such a line.
-    const bannerPrefix = `${output.banner}\n`;
-    if (!code.startsWith(bannerPrefix)) {
-        throw new Error("artifact does not start with the configured banner");
-    }
-    // 产物不做任何 lint，构建直接产出 esbuild 的原始输出；下面只做完整性自检
-    // （BOM、CR、残留模块语法、末尾换行），不属于 lint。
-    const artifact = bannerPrefix + code
-        .slice(bannerPrefix.length)
-        .split("\n")
-        .filter((line) => line !== '"use strict";')
-        .join("\n");
+    const artifact = generated.output[0].code;
+    // 产物不做任何 lint，构建直接产出 esbuild 的原始输出；严格模式指令由部署链的 tsc
+    // （alwaysStrict）在编入 dist/ 时注入，这里不再剥离或注入 directive。
+    // 下面只做完整性自检（BOM、CR、残留模块语法、末尾换行），不属于 lint。
     if (artifact.startsWith("﻿")) {
         throw new Error("BOM detected in artifact");
     }

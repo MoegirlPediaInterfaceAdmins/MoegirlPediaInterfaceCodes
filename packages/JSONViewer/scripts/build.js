@@ -44,6 +44,8 @@ document.head.append(style);`;
  * （做法同 Navigation_popups），生产模式只产出 esbuild 的原始输出。
  * __DEV__ 按构建形态区分：发布构建取 false，配合 minifySyntax 使入口中为 safemode
  * 调试写的 mw.loader.using 分支整段消除；dev watch 取 true 时保留该分支。
+ * 产物是构建链中间物：严格模式指令由部署链的 tsc（alwaysStrict）在编入 dist/ 时注入，
+ * 这里不再自带 banner。
  */
 const buildOptions = (dev = false) => ({
     entryPoints: [path.join(root, ENTRY)],
@@ -58,7 +60,7 @@ const buildOptions = (dev = false) => ({
     define: { __DEV__: dev ? "true" : "false" },
     ...dev
         ? { plugins: [cssInjectPlugin], sourcemap: "inline" }
-        : { banner: { js: '"use strict";' } },
+        : {},
 });
 
 /**
@@ -69,11 +71,8 @@ const buildOptions = (dev = false) => ({
 const stripInlineDirectives = (text) =>
     text.split("\n").filter((line) => !/^\s*\/\/\s*eslint-(?:disable|enable)\b/.test(line)).join("\n");
 
-/** 产物门禁："use strict" 位于文件头部、没有残留的模块语法、以换行符结尾 */
+/** 产物门禁：没有残留的模块语法、以换行符结尾 */
 const assertArtifact = (name, text, isCss) => {
-    if (!isCss && !text.startsWith('"use strict";')) {
-        throw new Error(`${name}: 产物未以 "use strict" 开头`);
-    }
     if (isCss ? /^\s*@import\b/m.test(text) : /^\s*(?:import|export)\b/m.test(text)) {
         throw new Error(`${name}: 产物中残留未打包的${isCss ? " @import" : " import/export"}语法`);
     }
