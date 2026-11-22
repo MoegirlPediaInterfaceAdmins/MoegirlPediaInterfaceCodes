@@ -13,12 +13,6 @@
 .common-box {
     padding: .2em .4em;
     border: 1px solid #ddd;
-    -moz-border-radius: 10px;
-    -webkit-border-radius: 10px;
-    -khtml-border-radius: 10px;
-    -o-border-radius: 10px;
-    -webkit-box-shadow: #666 0 2px 3px;
-    -moz-box-shadow: #666 0 2px 3px;
     border-radius: 10px;
     box-shadow: #666 0 2px 3px;
 }

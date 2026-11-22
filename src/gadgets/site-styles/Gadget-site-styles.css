@@ -42,10 +42,6 @@
 .tab .TabLabel {
     z-index: 2;
     position: relative;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    -o-user-select: none;
     user-select: none;
     display: flex;
     flex-wrap: wrap;
@@ -1276,12 +1272,6 @@ div.metadata-panel-is-closed .mw-mmv-image-links li.mw-mmv-license-li {
 .common-box {
     padding: 0.2em 0.4em;
     border: 1px solid #ddd;
-    -moz-border-radius: 10px;
-    -webkit-border-radius: 10px;
-    -khtml-border-radius: 10px;
-    -o-border-radius: 10px;
-    -webkit-box-shadow: #666 0 2px 3px;
-    -moz-box-shadow: #666 0 2px 3px;
     border-radius: 10px;
     box-shadow: #666 0 2px 3px;
 }
@@ -1842,7 +1832,6 @@ body:not(.ns--1):not(.ns--2) .navbox .mw-collapsible:not(.mw-collapsed) > tbody 
 
 /* 分类页同开头的页面的列表不分段 */
 .mw-category-group {
-    -webkit-column-break-inside: avoid;
     break-inside: avoid;
 }
 
@@ -1851,7 +1840,6 @@ body:not(.ns--1):not(.ns--2) .navbox .mw-collapsible:not(.mw-collapsed) > tbody 
 .mw-category-group:nth-child(1):nth-last-child(2),
 /* 只有两个列表时 */
 .mw-category-group:nth-child(2):nth-last-child(1) {
-    -webkit-column-break-inside: auto;
     break-inside: auto;
 }
 

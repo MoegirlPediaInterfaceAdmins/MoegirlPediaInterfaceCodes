@@ -18,13 +18,8 @@
     word-wrap: normal;
     line-height: 1.5;
 
-    -moz-tab-size: 4;
-    -o-tab-size: 4;
     tab-size: 4;
 
-    -webkit-hyphens: none;
-    -moz-hyphens: none;
-    -ms-hyphens: none;
     hyphens: none;
 }
 
@@ -62,8 +57,6 @@ div#mw-content-text pre[class*="language-"] {
 #mw-content-text :not(pre)>code[class*="language-"],
 #mw-content-text pre[class*="language-"] {
     background-color: #fdfdfd;
-    -webkit-box-sizing: border-box;
-    -moz-box-sizing: border-box;
     box-sizing: border-box;
     margin-bottom: 1em;
 }
@@ -90,20 +83,12 @@ pre[class*="language-"]:after {
     height: 20%;
     max-height: 13em;
     box-shadow: 0px 13px 8px #979797;
-    -webkit-transform: rotate(-2deg);
-    -moz-transform: rotate(-2deg);
-    -ms-transform: rotate(-2deg);
-    -o-transform: rotate(-2deg);
     transform: rotate(-2deg);
 }
 
 pre[class*="language-"]:after {
     right: 0.75em;
     left: auto;
-    -webkit-transform: rotate(2deg);
-    -moz-transform: rotate(2deg);
-    -ms-transform: rotate(2deg);
-    -o-transform: rotate(2deg);
     transform: rotate(2deg);
 }
 

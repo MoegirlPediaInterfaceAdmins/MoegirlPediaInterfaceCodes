@@ -14,13 +14,9 @@
     display: block;
     flex-shrink: 0;
     background-color: var(--theme-text-color, var(--color-base, #202122));
-    -webkit-mask-image: url("/resources/lib/ooui/themes/wikimediaui/images/icons/lock.svg");
     mask-image: url("/resources/lib/ooui/themes/wikimediaui/images/icons/lock.svg");
-    -webkit-mask-repeat: no-repeat;
     mask-repeat: no-repeat;
-    -webkit-mask-position: center;
     mask-position: center;
-    -webkit-mask-size: contain;
     mask-size: contain;
 }
 
