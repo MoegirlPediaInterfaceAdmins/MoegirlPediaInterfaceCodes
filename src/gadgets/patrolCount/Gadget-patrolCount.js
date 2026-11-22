@@ -443,10 +443,17 @@ $(() => {
     // setInterval(updateUnpatrolled, 60000);
     updateUnpatrolled();
     // 在"监视列表"右边加入"最新页面"以便巡查
+    const $icon = $("<span>", {
+        "class": "vector-icon mw-ui-icon-wikimedia-article",
+        "aria-hidden": "true",
+        css: {
+            margin: "0 4px",
+        },
+    });
     const ptPatrollLink = $("<a></a>", {
         href: "Special:最新页面?hidepatrolled=1",
         title: wgULS("最新页面", "最新頁面"),
-    }).html(`<img src="/resources/lib/ooui/themes/wikimediaui/images/icons/article-rtl.svg" style="height:20px;margin:0 4px;" alt="${wgULS("最新页面", "最新頁面")}">`);
+    }).append($icon);
     $("#pt-watchlist-2").after($("<li></li>", {
         id: "pt-patroll",
     }).append(ptPatrollLink));
