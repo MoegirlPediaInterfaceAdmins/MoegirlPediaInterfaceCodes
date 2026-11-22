@@ -4,33 +4,38 @@
     gap: .5rem;
 }
 
-.page-info-protection {
-    text-align: left;
-}
-
 .page-info-protection,
-.page-info-protection img {
+.page-info-protection .page-info-protection-icon {
     height: 18px;
     width: 18px;
 }
 
-.vector-menu-content-list .page-info-container > * {
-    padding-left: .25rem !important;
-    padding-right: .25rem !important;
+.page-info-protection-icon {
+    display: block;
+    flex-shrink: 0;
+    background-color: var(--theme-text-color, var(--color-base, #202122));
+    -webkit-mask-image: url("/resources/lib/ooui/themes/wikimediaui/images/icons/lock.svg");
+    mask-image: url("/resources/lib/ooui/themes/wikimediaui/images/icons/lock.svg");
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+    mask-position: center;
+    -webkit-mask-size: contain;
+    mask-size: contain;
 }
 
 .vector-menu-content-list .page-info-container {
     padding-right: .5rem;
+}
+
+.vector-menu-content-list .page-info-container#mgp-pageinfo > * {
     cursor: default;
+    padding-left: .25rem;
+    padding-right: .25rem;
 }
 
-.vector-menu-content-list .page-info-container,
-.vector-menu-content-list .page-info-container a {
-    cursor: default !important;
-}
-
-.vector-menu-content-list .page-info-container .annotation-content {
-    cursor: text !important;
+.vector-menu-content-list .page-info-container .annotation > span {
+    cursor: default;
 }
 
 #pagetools-desktop-container .edit-button-group,
