@@ -57,9 +57,9 @@ $(() => {
                 title += '" class="patrollListNotConfident';
             }
             strCount = `(<a id="unpatrollArticle" href="${mw.config.get("wgServer")}${mw.config.get("wgScriptPath")}/index.php?title=${link}" title="${title}">${strCount}</a>)`;
-            ptPatrollLink.attr("href", `${mw.config.get("wgServer")}${mw.config.get("wgScriptPath")}/index.php?title=Special:最新页面&hidepatrolled=1`);
+            ptPatrollLink.attr("href", "/Special:最新页面?hidepatrolled=1");
         } else {
-            ptPatrollLink.attr("href", `${mw.config.get("wgServer")}${mw.config.get("wgScriptPath")}/index.php?title=Special:最新页面&hidepatrolled=0`);
+            ptPatrollLink.attr("href", "/Special:最新页面?hidepatrolled=0");
         }
         $("span#not-patrolled-count").html(strCount);
         generateList(pages);
@@ -443,17 +443,18 @@ $(() => {
     // setInterval(updateUnpatrolled, 60000);
     updateUnpatrolled();
     // 在"监视列表"右边加入"最新页面"以便巡查
-    const $icon = $("<span>", {
-        "class": "vector-icon mw-ui-icon-wikimedia-article",
-        "aria-hidden": "true",
-        css: {
-            margin: "0 4px",
-        },
-    });
     const ptPatrollLink = $("<a></a>", {
+        "class": "cdx-button cdx-button--fake-button cdx-button--fake-button--enabled cdx-button--weight-quiet cdx-button--icon-only",
         href: "Special:最新页面?hidepatrolled=1",
         title: wgULS("最新页面", "最新頁面"),
-    }).append($icon);
+    }).append(
+        $("<span>", {
+            "class": "vector-icon mw-ui-icon-wikimedia-article",
+        }),
+        $("<span>", {
+            text: wgULS("最新页面", "最新頁面"),
+        }),
+    );
     $("#pt-watchlist-2").after($("<li></li>", {
         id: "pt-patroll",
     }).append(ptPatrollLink));
