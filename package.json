@@ -86,7 +86,7 @@
         "sass": "^1.108.2",
         "semver": "^7.8.6",
         "simple-git": "^4.1.0",
-        "terser": "^5.51.2",
+        "terser": "^5.51.4",
         "types-mediawiki": "^2.1.0",
         "typescript": "^6.0.3",
         "uglify-js": "^3.19.3",
