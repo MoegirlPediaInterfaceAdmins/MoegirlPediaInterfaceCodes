@@ -1,2 +1,7 @@
-# 已确认允许滞后的硬编码 npm CDN 引用（文件路径 -> 包@版本列表）；当前无条目
+# 已确认允许滞后的硬编码 npm CDN 引用（仓库相对的正斜杠文件路径 -> 包@版本列表）
+# 例：
+#   src/gadgets/foo/Gadget-foo.js:
+#     - codemirror@5.65.1
+#     - "@scope/pkg@1.0.0" # 作用域包同样写作 pkg@version，整条需加引号
+# 当前无条目：CI 发现过时引用后先开 issue，由维护者判断是升级还是加入白名单
 whitelist: {}
