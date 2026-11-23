@@ -102,6 +102,7 @@
         default: {
             $container = $("<li>", {
                 "class": "page-info-container vector-tab-noicon mw-list-item",
+                id: "mgp-pageinfo",
             });
             if (skin === "vector-2022") {
                 // Vector 2022 在 <640px（min-width-breakpoint-tablet）时整体隐藏 #p-views
@@ -125,14 +126,12 @@
     }
 
     const { talkPage, basePageName } = libGetPageNames();
-    const isDark = document.documentElement.classList.contains("skin-theme-clientpref-night") || document.documentElement.classList.contains("dark");
     const $protectionInfoContainer = $("<a>", {
         "class": "page-info-protection annotation",
     });
     $protectionInfoContainer.appendTo($container);
-    $("<img>", {
-        src: `/resources/lib/ooui/themes/wikimediaui/images/icons/${isDark ? "lock-invert.svg" : "lock.svg"}`,
-        alt: "",
+    $("<span>", {
+        "class": "page-info-protection-icon",
         "aria-hidden": "true",
     }).appendTo($protectionInfoContainer);
     const $protectionInfoContent = $("<div>", {
