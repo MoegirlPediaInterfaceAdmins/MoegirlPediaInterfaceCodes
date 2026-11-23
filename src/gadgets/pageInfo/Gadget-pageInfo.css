@@ -6,6 +6,7 @@
 
 .page-info-protection,
 .page-info-protection .page-info-protection-icon {
+    cursor: default;
     height: 18px;
     width: 18px;
 }
@@ -28,10 +29,6 @@
     cursor: default;
     padding-left: .25rem;
     padding-right: .25rem;
-}
-
-.vector-menu-content-list .page-info-container .annotation > span {
-    cursor: default;
 }
 
 #pagetools-desktop-container .edit-button-group,
