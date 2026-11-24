@@ -583,7 +583,8 @@ const TAG_CASES: TagCase[] = [
         },
     },
     {
-        id: "contribs", article: "User:Example",
+        id: "contribs",
+        article: "User:Example",
         check: (f, t) => {
             expect(t.print).toBe(f.links.specialLink);
             expect(t.specialpage).toBe("Contributions");
@@ -592,14 +593,16 @@ const TAG_CASES: TagCase[] = [
         },
     },
     {
-        id: "deletedContribs", article: "User:Example",
+        id: "deletedContribs",
+        article: "User:Example",
         check: (f, t) => {
             expect(t.print).toBe(f.links.specialLink);
             expect(t.specialpage).toBe("Deletedcontributions");
         },
     },
     {
-        id: "email", article: "User:Example",
+        id: "email",
+        article: "User:Example",
         check: (f, t) => {
             expect(t.print).toBe(f.links.specialLink);
             expect(t.specialpage).toBe("EmailUser");
@@ -607,7 +610,8 @@ const TAG_CASES: TagCase[] = [
         },
     },
     {
-        id: "block", article: "User:Example",
+        id: "block",
+        article: "User:Example",
         check: (_f, t) => {
             expect(t.print).toBe(_f.links.specialLink);
             expect(t.specialpage).toBe("Blockip");
@@ -615,7 +619,8 @@ const TAG_CASES: TagCase[] = [
         },
     },
     {
-        id: "unblock", article: "User:Example",
+        id: "unblock",
+        article: "User:Example",
         check: (_f, t) => {
             expect(t.print).toBe(_f.links.specialLink);
             expect(t.specialpage).toBe("Ipblocklist");
@@ -623,7 +628,8 @@ const TAG_CASES: TagCase[] = [
         },
     },
     {
-        id: "userlog", article: "User:Example",
+        id: "userlog",
+        article: "User:Example",
         check: (_f, t) => {
             expect(t.print).toBe(_f.links.specialLink);
             expect(t.specialpage).toBe("Log");
@@ -631,7 +637,8 @@ const TAG_CASES: TagCase[] = [
         },
     },
     {
-        id: "blocklog", article: "User:Example",
+        id: "blocklog",
+        article: "User:Example",
         check: (f, t) => {
             expect(t.print).toBe(f.links.specialLink);
             expect(t.specialpage).toBe("Log");
@@ -639,7 +646,8 @@ const TAG_CASES: TagCase[] = [
         },
     },
     {
-        id: "pagelog", oldid: "5",
+        id: "pagelog",
+        oldid: "5",
         check: (f, t) => {
             expect(t.print).toBe(f.links.specialLink);
             expect(t.sep).toBe("&page=");
@@ -647,7 +655,8 @@ const TAG_CASES: TagCase[] = [
         },
     },
     {
-        id: "protectlog", oldid: "5",
+        id: "protectlog",
+        oldid: "5",
         check: (f, t) => {
             expect(t.print).toBe(f.links.specialLink);
             expect(t.sep).toBe("&type=protect&page=");
@@ -655,7 +664,8 @@ const TAG_CASES: TagCase[] = [
         },
     },
     {
-        id: "deletelog", oldid: "5",
+        id: "deletelog",
+        oldid: "5",
         check: (f, t) => {
             expect(t.print).toBe(f.links.specialLink);
             expect(t.sep).toBe("&type=delete&page=");
@@ -663,7 +673,8 @@ const TAG_CASES: TagCase[] = [
         },
     },
     {
-        id: "userSpace", article: "User:Example",
+        id: "userSpace",
+        article: "User:Example",
         check: (f, t) => {
             expect(t.print).toBe(f.links.specialLink);
             expect(t.specialpage).toBe("PrefixIndex");
@@ -679,7 +690,9 @@ const TAG_CASES: TagCase[] = [
         },
     },
     {
-        id: "thank", diff: "222", oldid: "111",
+        id: "thank",
+        diff: "222",
+        oldid: "111",
         check: (_f, t) => {
             expect(t.print).toBe(_f.links.specialLink);
             expect(t.specialpage).toBe("Thanks");
@@ -687,14 +700,17 @@ const TAG_CASES: TagCase[] = [
         },
     },
     {
-        id: "thank", diff: "prev", oldid: "111",
+        id: "thank",
+        diff: "prev",
+        oldid: "111",
         check: (_f, t) => {
             expect(t.specialpage).toBe("Thanks");
             expect(t.article.value).toBe("111");
         },
     },
     {
-        id: "thank", diff: "prev",
+        id: "thank",
+        diff: "prev",
         check: (_f, t) => {
             expect(t.article.value).toBeNull();
         },
@@ -756,13 +772,16 @@ const TAG_CASES: TagCase[] = [
         },
     },
     {
-        id: "delete", article: "File:Example.png",
+        id: "delete",
+        article: "File:Example.png",
         check: (_f, t) => {
             expect(t.action).toBe("delete&image=Example.png");
         },
     },
     {
-        id: "markpatrolled", oldid: "7", rcid: "9",
+        id: "markpatrolled",
+        oldid: "7",
+        rcid: "9",
         check: (f, t) => {
             expect(t.print).toBe(f.links.wikiLink);
             expect(t.action).toBe("markpatrolled");
@@ -770,7 +789,8 @@ const TAG_CASES: TagCase[] = [
         },
     },
     {
-        id: "edit", oldid: "7",
+        id: "edit",
+        oldid: "7",
         check: (f, t) => {
             expect(t.print).toBe(f.links.wikiLink);
             expect(t.action).toBe("edit");
@@ -813,7 +833,8 @@ const TAG_CASES: TagCase[] = [
         },
     },
     {
-        id: "userPage", article: "User:Example",
+        id: "userPage",
+        article: "User:Example",
         check: (f, t) => {
             expect(t.print).toBe(f.links.wikiLink);
             expect(t.action).toBe("view");
@@ -822,7 +843,8 @@ const TAG_CASES: TagCase[] = [
         },
     },
     {
-        id: "article", article: "Talk:Foo",
+        id: "article",
+        article: "Talk:Foo",
         check: (f, t) => {
             expect(t.print).toBe(f.links.wikiLink);
             expect(t.action).toBe("view");
@@ -830,7 +852,8 @@ const TAG_CASES: TagCase[] = [
         },
     },
     {
-        id: "monobook", article: "User:Example",
+        id: "monobook",
+        article: "User:Example",
         check: (f, t) => {
             expect(t.print).toBe(f.links.wikiLink);
             expect(t.action).toBe("view");
@@ -838,7 +861,8 @@ const TAG_CASES: TagCase[] = [
         },
     },
     {
-        id: "editMonobook", article: "User:Example",
+        id: "editMonobook",
+        article: "User:Example",
         check: (f, t) => {
             expect(t.print).toBe(f.links.wikiLink);
             expect(t.action).toBe("edit");
@@ -846,7 +870,8 @@ const TAG_CASES: TagCase[] = [
         },
     },
     {
-        id: "editArticle", article: "Talk:Foo",
+        id: "editArticle",
+        article: "Talk:Foo",
         check: (f, t) => {
             expect(t.print).toBe(f.links.wikiLink);
             expect(t.action).toBe("edit");
@@ -854,7 +879,8 @@ const TAG_CASES: TagCase[] = [
         },
     },
     {
-        id: "userTalk", article: "User:Example",
+        id: "userTalk",
+        article: "User:Example",
         check: (f, t) => {
             expect(t.print).toBe(f.links.wikiLink);
             expect(t.action).toBe("view");
@@ -870,13 +896,15 @@ const TAG_CASES: TagCase[] = [
         },
     },
     {
-        id: "arin", article: "User:1.2.3.4",
+        id: "arin",
+        article: "User:1.2.3.4",
         check: (f, t) => {
             expect(t.print).toBe(f.links.arinLink);
         },
     },
     {
-        id: "count", article: "User:Example",
+        id: "count",
+        article: "User:Example",
         check: (f, t) => {
             expect(t.print).toBe(f.links.editCounterLink);
         },
@@ -910,7 +938,8 @@ const TAG_CASES: TagCase[] = [
         },
     },
     {
-        id: "oldEdit", oldid: "42",
+        id: "oldEdit",
+        oldid: "42",
         check: (f, t) => {
             expect(t.print).toBe(f.diffpreview.titledDiffLink);
             expect(t.title).toBe(`${f.strings.popupString("Show the edit made to get revision")} 42`);
@@ -947,7 +976,8 @@ const TAG_CASES: TagCase[] = [
         },
     },
     {
-        id: "diffCur", oldid: "42",
+        id: "diffCur",
+        oldid: "42",
         check: (f, t) => {
             expect(t.print).toBe(f.diffpreview.titledDiffLink);
             expect(t.from).toBe("42");
@@ -962,7 +992,8 @@ const TAG_CASES: TagCase[] = [
         },
     },
     {
-        id: "editUserTalk", article: "User:Example",
+        id: "editUserTalk",
+        article: "User:Example",
         check: (f, t) => {
             expect(t.print).toBe(f.links.wikiLink);
             expect(t.action).toBe("edit");
@@ -978,7 +1009,8 @@ const TAG_CASES: TagCase[] = [
         },
     },
     {
-        id: "newUserTalk", article: "User:Example",
+        id: "newUserTalk",
+        article: "User:Example",
         check: (f, t) => {
             expect(t.print).toBe(f.links.wikiLink);
             expect(t.action).toBe("edit&section=new");
@@ -994,13 +1026,15 @@ const TAG_CASES: TagCase[] = [
         },
     },
     {
-        id: "lastContrib", article: "User:Example",
+        id: "lastContrib",
+        article: "User:Example",
         check: (f, t) => {
             expect(t.print).toBe(f.links.magicHistoryLink);
         },
     },
     {
-        id: "sinceMe", article: "User:Example",
+        id: "sinceMe",
+        article: "User:Example",
         check: (f, t) => {
             expect(t.print).toBe(f.links.magicHistoryLink);
         },

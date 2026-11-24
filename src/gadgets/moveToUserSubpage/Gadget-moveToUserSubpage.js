@@ -19,8 +19,7 @@ $(() => {
         if (wgArticleId === 0
             || $(".will2Be2Deleted")[0]
             || !wgUserGroups.includes("patroller") && !wgUserGroups.includes("sysop")
-            || !wgIsProbablyEditable
-        ) {
+            || !wgIsProbablyEditable) {
             return;
         }
         for (const restriction of wgRestrictionMove) {

@@ -381,7 +381,8 @@
                         !$current.hasClass("rt-tooltip")
                         || !$current.data("tooltip")
                         || !$current.data("tooltip").upToTopParent(
-                            contextMatchesParameter, [te.tooltip],
+                            contextMatchesParameter,
+                            [te.tooltip],
                             true,
                         )
                     )

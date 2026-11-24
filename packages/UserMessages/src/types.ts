@@ -91,10 +91,10 @@ type PreviewSubmission = Omit<PreviewDialogData, "title" | "previewHtml"> & { te
  * 「取消」按钮没有 action 名，由 OOUI 基类 close() 关闭且不带数据，故只列出两条会带 message 的失败路径：
  * configError 来自模板配置，formError 来自表单构建 —— 分开归因，避免控件报错被说成配置读取失败。
  */
-type MainDialogResult
-    = | { action: "configError"; message: string }
-        | { action: "formError"; message: string }
-        | undefined;
+type MainDialogResult =
+    | { action: "configError"; message: string }
+    | { action: "formError"; message: string }
+    | undefined;
 
 /** 主对话框关闭时实际带出的数据：失败路径一定带 message。 */
 type MainDialogCloseResult = NonNullable<MainDialogResult>;

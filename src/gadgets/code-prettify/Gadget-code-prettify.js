@@ -989,9 +989,7 @@ $(() => {
         [PR_COMMENT, /^--(?:\[(=*)\[[\s\S]*?(?:\]\1\]|$)|[^\r\n]*)/],
         [PR_STRING, /^\[(=*)\[[\s\S]*?(?:\]\1\]|$)/],
         [PR_KEYWORD, /^(?:and|break|do|else|elseif|end|false|for|function|if|in|local|nil|not|or|repeat|return|then|true|until|while)\b/, null],
-        [PR_LITERAL,
-            /^[+-]?(?:0x[\da-f]+|(?:(?:\.\d+|\d+(?:\.\d*)?)(?:e[+-]?\d+)?))/i,
-        ],
+        [PR_LITERAL, /^[+-]?(?:0x[\da-f]+|(?:(?:\.\d+|\d+(?:\.\d*)?)(?:e[+-]?\d+)?))/i],
         [PR_PLAIN, /^[a-z_]\w*/i],
         [PR_PUNCTUATION, /^[^\w\t\n\r \xA0][^\w\t\n\r \xA0"'\-+=]*/],
     ]), ["lua"]);

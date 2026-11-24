@@ -266,8 +266,7 @@ class MainDialog extends OO.ui.ProcessDialog {
         this.customInput.setValue("");
 
         this.paramFields = (template.parameters ?? []).map((param) =>
-            createParamField(param, this.$overlay, () => { this.onFormChanged(); }),
-        );
+            createParamField(param, this.$overlay, () => { this.onFormChanged(); }));
         this.paramFieldset.clearItems();
         this.paramFieldset.addItems(this.paramFields.map(({ layout }) => layout));
 
