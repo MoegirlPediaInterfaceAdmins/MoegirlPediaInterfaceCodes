@@ -107,7 +107,8 @@ $(() => (async () => {
         async getPing() {
             this.confirmPanel.$element.empty().append([
                 `<p>${wgULS("为确保剪贴板复制成功，请不要将鼠标移动出页面或切换窗口！", "為確保剪貼簿複製成功，請不要將滑鼠移動出頁面或切換視窗！")}</p>`,
-                this.stepList]);
+                this.stepList,
+            ]);
             this.updateSize();
 
             this.addStep(wgULS("正在获取提案发起时间……", "正在取得提案發起時間……"));

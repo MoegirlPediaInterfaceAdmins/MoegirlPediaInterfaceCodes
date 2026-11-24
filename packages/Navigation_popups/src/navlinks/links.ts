@@ -303,9 +303,9 @@ export const redirLink = (redirMatch: string | Title, article: Title): string =>
                 newTarget: redirMatch as string,
                 text: popupString("target"),
                 hint: popupString("Fix this redirect, changing just the link target"),
-                summary: simplePrintf((getValueOf("popupFixRedirsSummary") as string), [article.toString(), redirMatch]),
+                summary: simplePrintf(getValueOf("popupFixRedirsSummary") as string, [article.toString(), redirMatch]),
                 oldTarget: article.toString(),
-                clickButton: (getValueOf("popupRedirAutoClick") as string),
+                clickButton: getValueOf("popupRedirAutoClick") as string,
                 minor: true,
                 watch: getValueOf("popupWatchRedirredPages") as boolean | null,
             }), "R"));
@@ -314,9 +314,9 @@ export const redirLink = (redirMatch: string | Title, article: Title): string =>
                 newTarget: redirMatch as string,
                 text: popupString("target & label"),
                 hint: popupString("Fix this redirect, changing the link target and label"),
-                summary: simplePrintf((getValueOf("popupFixRedirsSummary") as string), [article.toString(), redirMatch]),
+                summary: simplePrintf(getValueOf("popupFixRedirsSummary") as string, [article.toString(), redirMatch]),
                 oldTarget: article.toString(),
-                clickButton: (getValueOf("popupRedirAutoClick") as string),
+                clickButton: getValueOf("popupRedirAutoClick") as string,
                 minor: true,
                 watch: getValueOf("popupWatchRedirredPages") as boolean | null,
                 alsoChangeLabel: true,
@@ -409,7 +409,7 @@ export const editCounterLink = (l: LinkSpec): string | null => {
     const defaultToolUrl = `https://xtools.wmflabs.org/ec?user=$1&project=$2.$3&uselang=${mw.config.get("wgUserLanguage")}`;
     switch (tool) {
         case "custom":
-            url = simplePrintf((getValueOf("popupEditCounterUrl") as string), [encodeURIComponent(String(uN)), toolDbName()]);
+            url = simplePrintf(getValueOf("popupEditCounterUrl") as string, [encodeURIComponent(String(uN)), toolDbName()]);
             break;
         case "soxred":
         case "kate":

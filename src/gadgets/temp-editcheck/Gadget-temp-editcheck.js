@@ -173,7 +173,8 @@ $(() => {
                 (IPESubmitting > 0
                     ? IPESubmitting === 2 && lastIPE?.$optionsLabel?.find?.(".reloadPage")?.is?.(":visible:checked")
                     : true
-                ) && getAjaxParameter(option.data, "action") === "edit" && wgPageName === getAjaxParameter(option.data, "title")) {
+                ) && getAjaxParameter(option.data, "action") === "edit" && wgPageName === getAjaxParameter(option.data, "title")
+            ) {
                 const success = option.success || (() => { });
                 option.success = runOnceGenerator(success.bind(this));
                 successFunction.set(success, option.success);

@@ -243,24 +243,27 @@ $(() => (async () => {
             runDeletion = $("<button>提交</button>"),
             cancelDeletion = $("<button>取消</button>");
         $control.empty().append([
-            `${wgULS("请选择要删除的页面", "請選擇要刪除的頁面")} [`, selectedNum, "/", totalNum, "] ",
-            toggleSelection, runDeletion, cancelDeletion,
+            `${wgULS("请选择要删除的页面", "請選擇要刪除的頁面")} [`,
+            selectedNum,
+            "/",
+            totalNum,
+            "] ",
+            toggleSelection,
+            runDeletion,
+            cancelDeletion,
         ]).prependTo($root);
         $("body").addClass("batdel-body");
 
         // Add checkboxes
         $items.each((_, ele) =>
-            $(ele).prepend($("<input type='checkbox' class='batdel-select'>").prop("disabled", $(ele).find(".batdel-error")[0])),
-        ).find(".stub").toggleClass("stub _stub");
+            $(ele).prepend($("<input type='checkbox' class='batdel-select'>").prop("disabled", $(ele).find(".batdel-error")[0]))).find(".stub").toggleClass("stub _stub");
         const checkboxes = $items.find(".batdel-select:not(:disabled)");
         totalNum.text(checkboxes.length);
         checkboxes.on("change", () =>
-            selectedNum.text(checkboxes.filter(":checked").length),
-        );
+            selectedNum.text(checkboxes.filter(":checked").length));
         $root.children("div").children("p").each((_, ele) => {
             $(`<button class="batdel-controlButton">${wgULS("全选/全不选本类别页面", "全選/全不選本類別頁面")}</button>`).on("click", (e) =>
-                $(e.target).closest(".mw-category-generated > div").find(".batdel-select:not(:disabled)").each((_, ele) => $(ele).prop("checked", !ele.checked)).trigger("change"),
-            ).appendTo(ele);
+                $(e.target).closest(".mw-category-generated > div").find(".batdel-select:not(:disabled)").each((_, ele) => $(ele).prop("checked", !ele.checked)).trigger("change")).appendTo(ele);
         });
 
         // Functional code for buttons
