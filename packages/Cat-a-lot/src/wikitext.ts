@@ -349,7 +349,7 @@ const computeNewWikitext = (input: ComputeWikitextInput): ComputedWikitext => {
                 text,
                 sourceSpans,
                 (span, index) => index === 0 ? `[[Category:${targetName}${span.sortkey}]]` : "",
-            );
+            ).replace(/\n{3,}/gu, "\n\n");
             return { status: "ok", text: replaced };
         }
         case "remove": {

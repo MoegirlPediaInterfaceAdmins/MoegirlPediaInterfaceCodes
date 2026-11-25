@@ -215,13 +215,13 @@ const startBatch = (options: BatchOptions): BatchRun => {
                         hooks.notify(wgULS("已中止批处理。", "已中止批次處理。"), "info");
                         return result;
                     }
-                    // 前置解析失败时：move 不提供分类重定向选项，add/copy 提示后继续按原名执行
-                    if (mode === "add" || mode === "copy") {
-                        hooks.notify(
-                            wgULS("目标分类变体预检失败，将按原始分类名继续处理。", "目標分類變體預檢失敗，將按原始分類名繼續處理。"),
-                            "warn",
-                        );
-                    }
+                    // 前置解析失败时：move 不提供分类重定向选项并提示未完成变体校验，add/copy 提示后继续按原名执行
+                    hooks.notify(
+                        mode === "move"
+                            ? wgULS("分类变体预检失败，尚未确认源/目标是否等价，已按常规流程继续。", "分類變體預檢失敗，尚未確認源/目標是否等價，已按常規流程繼續。")
+                            : wgULS("目标分类变体预检失败，将按原始分类名继续处理。", "目標分類變體預檢失敗，將按原始分類名繼續處理。"),
+                        "warn",
+                    );
                 }
                 hooks.setCurrentTitle("");
                 if (isStopped()) {
