@@ -19,6 +19,7 @@ import type {
     BatchRun,
     CatALotIcons,
     CatALotPrefs,
+    ConfirmChoice,
     EditMode,
     ReactiveFactory,
     WatchlistOption,
@@ -36,7 +37,9 @@ interface ConfirmDialogState {
     title: string;
     message: string;
     showCancel: boolean;
-    resolver: ((value: boolean) => void) | null;
+    primaryLabel: string;
+    extraLabel: string;
+    resolver: ((value: ConfirmChoice) => void) | null;
 }
 
 interface ResultDialogState {
@@ -52,6 +55,8 @@ interface AskDialogOptions {
     message: string;
     showCancel: boolean;
     title?: string;
+    primaryLabel?: string;
+    extraLabel?: string;
 }
 
 interface DialogAction {
@@ -118,6 +123,7 @@ interface CatALotState {
     suggestRequestId: number;
 
     selectedTitles: string[];
+    selectableCount: number;
     prefs: CatALotPrefs;
     prefsDraft: CatALotPrefs;
     prefsOpen: boolean;
@@ -173,8 +179,9 @@ interface CatALotState {
     savePrefsFromDialog(): void;
     closePrefsDialog(): void;
     onPrefsDialogOpenChange(open: boolean): void;
+    askChoice(options: AskDialogOptions): Promise<ConfirmChoice>;
     askDialog(options: AskDialogOptions): Promise<boolean>;
-    resolveConfirmDialog(value: boolean): void;
+    resolveConfirmDialog(value: boolean | ConfirmChoice): void;
     onConfirmDialogOpenChange(open: boolean): void;
     onResultDialogOpenChange(open: boolean): void;
     stopBatch(): void;
@@ -214,6 +221,7 @@ const createState = (makeReactive: ReactiveFactory): CatALotState => {
         suggestRequestId: 0,
 
         selectedTitles: [],
+        selectableCount: 0,
         prefs: initialPrefs,
         prefsDraft: { ...initialPrefs },
         prefsOpen: false,
@@ -238,6 +246,8 @@ const createState = (makeReactive: ReactiveFactory): CatALotState => {
             title: "Cat-a-lot",
             message: "",
             showCancel: true,
+            primaryLabel: "",
+            extraLabel: "",
             resolver: null,
         },
         watchlistOptions: [
@@ -297,7 +307,10 @@ const createState = (makeReactive: ReactiveFactory): CatALotState => {
             return { label: uls("取消", "取消"), actionType: "default" };
         },
         get confirmPrimaryAction(): DialogAction {
-            return { label: uls("确定", "確定"), actionType: "progressive" };
+            return {
+                label: state.confirmDialog.primaryLabel || uls("确定", "確定"),
+                actionType: "progressive",
+            };
         },
         get confirmDefaultAction(): DialogAction | undefined {
             return state.confirmDialog.showCancel
@@ -315,7 +328,7 @@ const createState = (makeReactive: ReactiveFactory): CatALotState => {
             }
         },
         bindPageItems: (): void => {
-            bindDomPageItems({
+            state.selectableCount = bindDomPageItems({
                 allowNonFiles: state.prefs.editpages,
                 isBusy: () => state.isBusy,
                 onSelectionChange: () => {
@@ -507,30 +520,43 @@ const createState = (makeReactive: ReactiveFactory): CatALotState => {
         onPrefsDialogOpenChange: (open: boolean): void => {
             state.prefsOpen = open;
         },
-        askDialog: (options: AskDialogOptions): Promise<boolean> => {
+        askChoice: (options: AskDialogOptions): Promise<ConfirmChoice> => {
             const previous = state.confirmDialog.resolver;
             if (previous) {
                 state.confirmDialog = { ...state.confirmDialog, resolver: null };
-                previous(false);
+                previous("cancel");
             }
-            return new Promise<boolean>((resolve) => {
+            return new Promise<ConfirmChoice>((resolve) => {
                 state.confirmDialog = {
                     open: true,
                     title: options.title ?? "Cat-a-lot",
                     message: options.message,
                     showCancel: options.showCancel,
+                    primaryLabel: options.primaryLabel ?? "",
+                    extraLabel: options.extraLabel ?? "",
                     resolver: resolve,
                 };
             });
         },
-        resolveConfirmDialog: (value: boolean): void => {
+        askDialog: async (options: AskDialogOptions): Promise<boolean> => {
+            const choice = await state.askChoice(options);
+            return choice === "primary";
+        },
+        resolveConfirmDialog: (value: boolean | ConfirmChoice): void => {
             const resolve = state.confirmDialog.resolver;
+            let choice: ConfirmChoice;
+            if (typeof value === "boolean") {
+                choice = value ? "primary" : "cancel";
+            } else {
+                choice = value;
+            }
             state.confirmDialog = {
                 ...state.confirmDialog,
                 open: false,
+                extraLabel: "",
                 resolver: null,
             };
-            resolve?.(value);
+            resolve?.(choice);
         },
         onConfirmDialogOpenChange: (open: boolean): void => {
             if (!open) {
@@ -563,10 +589,17 @@ const createState = (makeReactive: ReactiveFactory): CatALotState => {
             let batchStarted = false;
             try {
                 const titles = [...state.selectedTitles];
+                const isAllSelected = state.selectableCount > 0 && titles.length === state.selectableCount;
                 // A14：批处理开始时快照偏好，批处理过程中改设置不影响本批次
                 const prefsSnapshot: CatALotPrefs = { ...state.prefs };
                 const hooks: BatchHooks = {
                     askDialog: (options) => state.askDialog(options),
+                    askMoveAllDialog: (options) => state.askChoice({
+                        message: options.message,
+                        showCancel: true,
+                        primaryLabel: options.primaryLabel,
+                        extraLabel: options.extraLabel,
+                    }),
                     notify: (text, type) => {
                         notifyText(text, type);
                     },
@@ -594,6 +627,7 @@ const createState = (makeReactive: ReactiveFactory): CatALotState => {
                     mode,
                     sourceCat: state.pageCategoryName,
                     targetCat,
+                    isAllSelected,
                     prefs: prefsSnapshot,
                     hasBotRight: state.hasBotRight,
                     isSysopOrStaff: state.isSysopOrStaff,

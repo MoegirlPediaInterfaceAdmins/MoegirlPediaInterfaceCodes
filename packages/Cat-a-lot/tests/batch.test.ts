@@ -8,6 +8,7 @@ import type {
     BatchHooks,
     BatchOptions,
     CatALotPrefs,
+    ConfirmChoice,
     EditMode,
     EditPageParams,
     PageWikitext,
@@ -49,6 +50,14 @@ const createFakeHooks = () => {
         void options;
         return Promise.resolve(true);
     });
+    const askMoveAllDialog = vi.fn((options: {
+        message: string;
+        primaryLabel: string;
+        extraLabel: string;
+    }): Promise<ConfirmChoice> => {
+        void options;
+        return Promise.resolve("primary");
+    });
     const notify = vi.fn();
     const setRunning = vi.fn((running: boolean) => {
         void running;
@@ -67,6 +76,7 @@ const createFakeHooks = () => {
     const releaseSelfFlood = vi.fn((): Promise<void> => Promise.resolve());
     const hooks: BatchHooks = {
         askDialog,
+        askMoveAllDialog,
         notify,
         setRunning,
         setCurrentTitle,
@@ -78,6 +88,7 @@ const createFakeHooks = () => {
     return {
         hooks,
         askDialog,
+        askMoveAllDialog,
         notify,
         setRunning,
         setCurrentTitle,
@@ -93,6 +104,7 @@ interface SetupOptions {
     mode?: EditMode;
     sourceCat?: string;
     targetCat?: string;
+    isAllSelected?: boolean;
     hasBotRight?: boolean;
     isSysopOrStaff?: boolean;
     prefs?: CatALotPrefs;
@@ -108,6 +120,7 @@ const createSetup = (options: SetupOptions = {}) => {
         mode: options.mode ?? "add",
         sourceCat: options.sourceCat ?? "Source",
         targetCat: options.targetCat ?? "Target",
+        isAllSelected: options.isAllSelected ?? false,
         prefs: options.prefs ?? { ...DEFAULT_PREFS },
         hasBotRight: options.hasBotRight ?? false,
         isSysopOrStaff: options.isSysopOrStaff ?? false,
@@ -164,6 +177,89 @@ describe("startBatch：前置校验", () => {
         expect(setup.setRunning).not.toHaveBeenCalled();
         expect(setup.fetchPageWikitext).not.toHaveBeenCalled();
     });
+
+    it("分类成员全部迁移（move + isAllSelected）：提示分类重定向，取消时不执行编辑", async () => {
+        const setup = createSetup({
+            titles: ["Page:1"],
+            mode: "move",
+            sourceCat: "Source",
+            targetCat: "Target",
+            isAllSelected: true,
+        });
+        setup.askMoveAllDialog.mockResolvedValueOnce("cancel");
+        const result = await startBatch(setup.options).result;
+        expect(result.done).toBe(0);
+        expect(setup.askMoveAllDialog).toHaveBeenCalledTimes(1);
+        const ask = setup.askMoveAllDialog.mock.calls[0][0];
+        expect(ask.message).toContain("{{分类重定向|Target}}");
+        expect(ask.message).toContain("機器人自動處理");
+        expect(ask.extraLabel).toBe("懸掛分類重定向");
+        expect(ask.primaryLabel).toBe("立即執行");
+        expect(setup.setRunning).not.toHaveBeenCalled();
+        expect(setup.fetchPageWikitext).not.toHaveBeenCalled();
+        expect(setup.editPage).not.toHaveBeenCalled();
+    });
+
+    it("分类成员全部迁移（move + isAllSelected）：选择替换为重定向时直接覆盖当前分类页", async () => {
+        const setup = createSetup({
+            titles: ["Page:1"],
+            mode: "move",
+            sourceCat: "Source",
+            targetCat: "Target",
+            isAllSelected: true,
+        });
+        setup.askMoveAllDialog.mockResolvedValueOnce("extra");
+        const result = await startBatch(setup.options).result;
+        expect(result.done).toBe(0);
+        expect(setup.fetchPageWikitext).toHaveBeenCalledWith("Category:Source");
+        expect(setup.editPage).toHaveBeenCalledTimes(1);
+        expect(setup.editPage).toHaveBeenCalledWith(expect.objectContaining({
+            title: "Category:Source",
+            text: "#重定向 [[:Category:Target]]\n{{分类重定向|Target}}",
+            summary: "[[Help:Cat-a-lot|Cat-a-lot]]：分类重定向至[[Cat:Target]]",
+        }));
+        expect(setup.notify).toHaveBeenCalledWith(expect.stringContaining("Category:Source"), "success");
+    });
+
+    it("分类成员全部迁移（move + isAllSelected）：确认执行后继续批量编辑", async () => {
+        const setup = createSetup({
+            titles: ["Page:1"],
+            mode: "move",
+            sourceCat: "Source",
+            targetCat: "Target",
+            isAllSelected: true,
+            page: () => Promise.resolve(page("[[Category:Source]]")),
+        });
+        setup.askMoveAllDialog.mockResolvedValueOnce("primary");
+        const result = await startBatch(setup.options).result;
+        expect(setup.askMoveAllDialog).toHaveBeenCalledTimes(1);
+        expect(result.done).toBe(1);
+        expect(setup.editPage).toHaveBeenCalledTimes(1);
+    });
+
+    it("非全部迁移或非 move 模式：不弹出分类重定向提示", async () => {
+        const partialMove = createSetup({
+            titles: ["Page:1"],
+            mode: "move",
+            sourceCat: "Source",
+            targetCat: "Target",
+            isAllSelected: false,
+            page: () => Promise.resolve(page("[[Category:Source]]")),
+        });
+        await startBatch(partialMove.options).result;
+        expect(partialMove.askMoveAllDialog).not.toHaveBeenCalled();
+
+        const fullCopy = createSetup({
+            titles: ["Page:1"],
+            mode: "copy",
+            sourceCat: "Source",
+            targetCat: "Target",
+            isAllSelected: true,
+            page: () => Promise.resolve(page("[[Category:Source]]")),
+        });
+        await startBatch(fullCopy.options).result;
+        expect(fullCopy.askMoveAllDialog).not.toHaveBeenCalled();
+    });
 });
 
 describe("startBatch：编辑与标签", () => {
@@ -209,6 +305,24 @@ describe("startBatch：编辑与标签", () => {
         const payload = setup.editPage.mock.calls[0][0];
         expect(payload.tags).toBe("Cat-a-lot|Bot");
         expect(payload.bot).toBe(true);
+    });
+
+    it.each<[EditMode, string, string]>([
+        ["add", "text", "[[Help:Cat-a-lot|Cat-a-lot]]：加入分类[[Cat:Target]]"],
+        ["copy", "text\n[[Category:Source]]", "[[Help:Cat-a-lot|Cat-a-lot]]：分类间复制：从[[Cat:Source]]到[[Cat:Target]]"],
+        ["move", "text\n[[Category:Source]]", "[[Help:Cat-a-lot|Cat-a-lot]]：分类间移动：从[[Cat:Source]]到[[Cat:Target]]"],
+        ["remove", "text\n[[Category:Source]]", "[[Help:Cat-a-lot|Cat-a-lot]]：从分类移除：[[Cat:Source]]"],
+    ])("%s 模式：编辑摘要固定为简体，不随界面变体转换", async (mode, wikitext, expected) => {
+        const setup = createSetup({
+            mode,
+            sourceCat: "Source",
+            targetCat: "Target",
+            hasBotRight: true,
+            page: () => Promise.resolve(page(wikitext)),
+        });
+        await startBatch(setup.options).result;
+        expect(setup.editPage).toHaveBeenCalledTimes(1);
+        expect(setup.editPage.mock.calls[0][0].summary).toBe(expected);
     });
 
     it("A13：页面时间戳缺失时不写入 edit payload", async () => {

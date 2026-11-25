@@ -17,7 +17,8 @@
 - **偏好**：监视列表行为、标记小编辑、允许非文件页面与子分类、子分类显示上限；面板高度持久化。
 - **权限与速率**：普通用户单次最多 50 页、每页间隔 20 秒；`bot` / `flood` 用户组无此限制；sysop/staff 批次超过 10 页时可自授权 2 小时临时机器用户，结束后自动撤销。
 - **标签**：普通用户使用 `Cat-a-lot`；`bot` / `flood` 用户组使用 `Cat-a-lot|Bot` 并同时提交 `bot=1`。
-- **界面**：Vue + Codex 组件，支持 Vector 2022 / MoeSkin 浅色与深色模式；设置/折叠按钮使用 Codex 图标。
+- **编辑摘要**：页面编辑摘要与临时机器用户的 `userrights` 理由固定使用简体中文，不随界面语言变体转换。
+- **界面**：Vue + Codex 组件，支持 Vector 2022 / MoeSkin 浅色与深色模式；设置/折叠按钮使用 Codex 图标；初始停靠位置可通过配置设为右下角（默认）或左下角。
 
 ## 配置
 
@@ -35,8 +36,12 @@ window.CatALotPrefs = {
     editpages: true,
     // 分类树中最多显示的子分类数（1–500）
     subcatcount: 50,
+    // 初始选项卡位置：bottom-right（默认，右下角）| bottom-left（左下角）
+    position: "bottom-right",
 };
 ```
+
+`position` 决定页面加载时选项卡的初始停靠位置，默认 `bottom-right`（右下角）；设为 `bottom-left` 时停靠在左下角。非法值回退默认值，该字段随其他偏好写入本地存储。
 
 本地存储键：
 

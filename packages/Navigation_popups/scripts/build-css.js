@@ -18,8 +18,7 @@ export const build = async () => {
     // stylelint standard preset mandates modern notation, so the
     // artifact post-processes it back. Identical color values round-trip:
     // rgba(50, 50, 50, 0.35) === rgb(50 50 50 / 35%).
-    css = css.replace(/rgba\(\s*([\d.]+)\s*,\s*([\d.]+)\s*,\s*([\d.]+)\s*,\s*([\d.]+)\s*\)/gu,
-        (_, r, g, b, a) => `rgb(${r} ${g} ${b} / ${Math.round(+a * 100)}%)`);
+    css = css.replace(/rgba\(\s*([\d.]+)\s*,\s*([\d.]+)\s*,\s*([\d.]+)\s*,\s*([\d.]+)\s*\)/gu, (_, r, g, b, a) => `rgb(${r} ${g} ${b} / ${Math.round(+a * 100)}%)`);
     // stylelint enforces an empty line before top-level at-rules;
     // sass expanded output puts consecutive @media blocks back to back.
     css = css.replace(/(^|\S)\n(@media)/gu, "$1\n\n$2");

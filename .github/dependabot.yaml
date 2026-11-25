@@ -31,3 +31,6 @@ updates:
       npm:
         patterns:
           - "*"
+        update-types:
+          - minor
+          - patch

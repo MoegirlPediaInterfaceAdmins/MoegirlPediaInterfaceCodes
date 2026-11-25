@@ -202,10 +202,14 @@ describe("expandConditionalNavlinkString", () => {
         expect(f.navlinks.expandConditionalNavlinkString("Aif(user){T}else{F}B", article(f, "User:Example"), {})).toBe("ATB");
     });
 
-    it("talk：主名字空间条目有讨论页为真，讨论页自身为假", async () => {
+    // talkPage() 的语义是「换成讨论页」（条目→Talk:，讨论页自身→null），
+    // 故 if(talk) 的真值条件是「当前是讨论页」，与 talkPage() 返回真值相反。
+    // 极性依据：上游 oldid=1322962085 同处注释「talkPage converts _articles_ to talkPages」
+    // 与 testResult = !article.talkPage() 的写法
+    it("talk：讨论页自身为真，主名字空间条目为假（talkPage() 取反）", async () => {
         const f = await fresh();
-        expect(f.navlinks.expandConditionalNavlinkString("if(talk){T}else{F}", article(f, "Foo"), {})).toBe("T");
-        expect(f.navlinks.expandConditionalNavlinkString("if(talk){T}else{F}", article(f, "Talk:Foo"), {})).toBe("F");
+        expect(f.navlinks.expandConditionalNavlinkString("if(talk){T}else{F}", article(f, "Foo"), {})).toBe("F");
+        expect(f.navlinks.expandConditionalNavlinkString("if(talk){T}else{F}", article(f, "Talk:Foo"), {})).toBe("T");
     });
 
     it("admin：取 popupAdminLinks（默认非 sysop 为假；window 覆盖为真）", async () => {
@@ -411,10 +415,12 @@ describe("navLinksHTML", () => {
         expect(html).toContain('<b><span class="popup_mainlink">');
         expect(html).toContain(" &sdot; ");
         expect(html).toContain('<span class="popup_history">');
-        // 主名字空间条目 if(talk) 为真：走 article/editArticle 分支（非 talk 分支）
-        expect(html).toContain('<span class="popup_article">');
-        expect(html).toContain('<span class="popup_editArticle">');
-        expect(html).not.toContain("popup_talk");
+        // 主名字空间条目 if(talk) 为假：走 else 分支（talk/editTalk/newTalk），
+        // article/editArticle 是讨论页自己的回退入口
+        expect(html).toContain('<span class="popup_talk">');
+        expect(html).toContain('<span class="popup_editTalk">');
+        expect(html).toContain('<span class="popup_newTalk">');
+        expect(html).not.toContain('<span class="popup_article">');
         expect(html).toContain(`${TITLEBASE}Foo&amp;action=history`);
         expect(html).toContain(`${TITLEBASE}Foo`);
         // 匿名条目（当前 fixture 无 current.link）：user 段整体消失
@@ -577,7 +583,8 @@ const TAG_CASES: TagCase[] = [
         },
     },
     {
-        id: "contribs", article: "User:Example",
+        id: "contribs",
+        article: "User:Example",
         check: (f, t) => {
             expect(t.print).toBe(f.links.specialLink);
             expect(t.specialpage).toBe("Contributions");
@@ -586,14 +593,16 @@ const TAG_CASES: TagCase[] = [
         },
     },
     {
-        id: "deletedContribs", article: "User:Example",
+        id: "deletedContribs",
+        article: "User:Example",
         check: (f, t) => {
             expect(t.print).toBe(f.links.specialLink);
             expect(t.specialpage).toBe("Deletedcontributions");
         },
     },
     {
-        id: "email", article: "User:Example",
+        id: "email",
+        article: "User:Example",
         check: (f, t) => {
             expect(t.print).toBe(f.links.specialLink);
             expect(t.specialpage).toBe("EmailUser");
@@ -601,7 +610,8 @@ const TAG_CASES: TagCase[] = [
         },
     },
     {
-        id: "block", article: "User:Example",
+        id: "block",
+        article: "User:Example",
         check: (_f, t) => {
             expect(t.print).toBe(_f.links.specialLink);
             expect(t.specialpage).toBe("Blockip");
@@ -609,7 +619,8 @@ const TAG_CASES: TagCase[] = [
         },
     },
     {
-        id: "unblock", article: "User:Example",
+        id: "unblock",
+        article: "User:Example",
         check: (_f, t) => {
             expect(t.print).toBe(_f.links.specialLink);
             expect(t.specialpage).toBe("Ipblocklist");
@@ -617,7 +628,8 @@ const TAG_CASES: TagCase[] = [
         },
     },
     {
-        id: "userlog", article: "User:Example",
+        id: "userlog",
+        article: "User:Example",
         check: (_f, t) => {
             expect(t.print).toBe(_f.links.specialLink);
             expect(t.specialpage).toBe("Log");
@@ -625,7 +637,8 @@ const TAG_CASES: TagCase[] = [
         },
     },
     {
-        id: "blocklog", article: "User:Example",
+        id: "blocklog",
+        article: "User:Example",
         check: (f, t) => {
             expect(t.print).toBe(f.links.specialLink);
             expect(t.specialpage).toBe("Log");
@@ -633,7 +646,8 @@ const TAG_CASES: TagCase[] = [
         },
     },
     {
-        id: "pagelog", oldid: "5",
+        id: "pagelog",
+        oldid: "5",
         check: (f, t) => {
             expect(t.print).toBe(f.links.specialLink);
             expect(t.sep).toBe("&page=");
@@ -641,7 +655,8 @@ const TAG_CASES: TagCase[] = [
         },
     },
     {
-        id: "protectlog", oldid: "5",
+        id: "protectlog",
+        oldid: "5",
         check: (f, t) => {
             expect(t.print).toBe(f.links.specialLink);
             expect(t.sep).toBe("&type=protect&page=");
@@ -649,7 +664,8 @@ const TAG_CASES: TagCase[] = [
         },
     },
     {
-        id: "deletelog", oldid: "5",
+        id: "deletelog",
+        oldid: "5",
         check: (f, t) => {
             expect(t.print).toBe(f.links.specialLink);
             expect(t.sep).toBe("&type=delete&page=");
@@ -657,7 +673,8 @@ const TAG_CASES: TagCase[] = [
         },
     },
     {
-        id: "userSpace", article: "User:Example",
+        id: "userSpace",
+        article: "User:Example",
         check: (f, t) => {
             expect(t.print).toBe(f.links.specialLink);
             expect(t.specialpage).toBe("PrefixIndex");
@@ -673,7 +690,9 @@ const TAG_CASES: TagCase[] = [
         },
     },
     {
-        id: "thank", diff: "222", oldid: "111",
+        id: "thank",
+        diff: "222",
+        oldid: "111",
         check: (_f, t) => {
             expect(t.print).toBe(_f.links.specialLink);
             expect(t.specialpage).toBe("Thanks");
@@ -681,14 +700,17 @@ const TAG_CASES: TagCase[] = [
         },
     },
     {
-        id: "thank", diff: "prev", oldid: "111",
+        id: "thank",
+        diff: "prev",
+        oldid: "111",
         check: (_f, t) => {
             expect(t.specialpage).toBe("Thanks");
             expect(t.article.value).toBe("111");
         },
     },
     {
-        id: "thank", diff: "prev",
+        id: "thank",
+        diff: "prev",
         check: (_f, t) => {
             expect(t.article.value).toBeNull();
         },
@@ -750,13 +772,16 @@ const TAG_CASES: TagCase[] = [
         },
     },
     {
-        id: "delete", article: "File:Example.png",
+        id: "delete",
+        article: "File:Example.png",
         check: (_f, t) => {
             expect(t.action).toBe("delete&image=Example.png");
         },
     },
     {
-        id: "markpatrolled", oldid: "7", rcid: "9",
+        id: "markpatrolled",
+        oldid: "7",
+        rcid: "9",
         check: (f, t) => {
             expect(t.print).toBe(f.links.wikiLink);
             expect(t.action).toBe("markpatrolled");
@@ -764,7 +789,8 @@ const TAG_CASES: TagCase[] = [
         },
     },
     {
-        id: "edit", oldid: "7",
+        id: "edit",
+        oldid: "7",
         check: (f, t) => {
             expect(t.print).toBe(f.links.wikiLink);
             expect(t.action).toBe("edit");
@@ -807,7 +833,8 @@ const TAG_CASES: TagCase[] = [
         },
     },
     {
-        id: "userPage", article: "User:Example",
+        id: "userPage",
+        article: "User:Example",
         check: (f, t) => {
             expect(t.print).toBe(f.links.wikiLink);
             expect(t.action).toBe("view");
@@ -816,7 +843,8 @@ const TAG_CASES: TagCase[] = [
         },
     },
     {
-        id: "article", article: "Talk:Foo",
+        id: "article",
+        article: "Talk:Foo",
         check: (f, t) => {
             expect(t.print).toBe(f.links.wikiLink);
             expect(t.action).toBe("view");
@@ -824,7 +852,8 @@ const TAG_CASES: TagCase[] = [
         },
     },
     {
-        id: "monobook", article: "User:Example",
+        id: "monobook",
+        article: "User:Example",
         check: (f, t) => {
             expect(t.print).toBe(f.links.wikiLink);
             expect(t.action).toBe("view");
@@ -832,7 +861,8 @@ const TAG_CASES: TagCase[] = [
         },
     },
     {
-        id: "editMonobook", article: "User:Example",
+        id: "editMonobook",
+        article: "User:Example",
         check: (f, t) => {
             expect(t.print).toBe(f.links.wikiLink);
             expect(t.action).toBe("edit");
@@ -840,7 +870,8 @@ const TAG_CASES: TagCase[] = [
         },
     },
     {
-        id: "editArticle", article: "Talk:Foo",
+        id: "editArticle",
+        article: "Talk:Foo",
         check: (f, t) => {
             expect(t.print).toBe(f.links.wikiLink);
             expect(t.action).toBe("edit");
@@ -848,7 +879,8 @@ const TAG_CASES: TagCase[] = [
         },
     },
     {
-        id: "userTalk", article: "User:Example",
+        id: "userTalk",
+        article: "User:Example",
         check: (f, t) => {
             expect(t.print).toBe(f.links.wikiLink);
             expect(t.action).toBe("view");
@@ -864,13 +896,15 @@ const TAG_CASES: TagCase[] = [
         },
     },
     {
-        id: "arin", article: "User:1.2.3.4",
+        id: "arin",
+        article: "User:1.2.3.4",
         check: (f, t) => {
             expect(t.print).toBe(f.links.arinLink);
         },
     },
     {
-        id: "count", article: "User:Example",
+        id: "count",
+        article: "User:Example",
         check: (f, t) => {
             expect(t.print).toBe(f.links.editCounterLink);
         },
@@ -904,7 +938,8 @@ const TAG_CASES: TagCase[] = [
         },
     },
     {
-        id: "oldEdit", oldid: "42",
+        id: "oldEdit",
+        oldid: "42",
         check: (f, t) => {
             expect(t.print).toBe(f.diffpreview.titledDiffLink);
             expect(t.title).toBe(`${f.strings.popupString("Show the edit made to get revision")} 42`);
@@ -941,7 +976,8 @@ const TAG_CASES: TagCase[] = [
         },
     },
     {
-        id: "diffCur", oldid: "42",
+        id: "diffCur",
+        oldid: "42",
         check: (f, t) => {
             expect(t.print).toBe(f.diffpreview.titledDiffLink);
             expect(t.from).toBe("42");
@@ -956,7 +992,8 @@ const TAG_CASES: TagCase[] = [
         },
     },
     {
-        id: "editUserTalk", article: "User:Example",
+        id: "editUserTalk",
+        article: "User:Example",
         check: (f, t) => {
             expect(t.print).toBe(f.links.wikiLink);
             expect(t.action).toBe("edit");
@@ -972,7 +1009,8 @@ const TAG_CASES: TagCase[] = [
         },
     },
     {
-        id: "newUserTalk", article: "User:Example",
+        id: "newUserTalk",
+        article: "User:Example",
         check: (f, t) => {
             expect(t.print).toBe(f.links.wikiLink);
             expect(t.action).toBe("edit&section=new");
@@ -988,13 +1026,15 @@ const TAG_CASES: TagCase[] = [
         },
     },
     {
-        id: "lastContrib", article: "User:Example",
+        id: "lastContrib",
+        article: "User:Example",
         check: (f, t) => {
             expect(t.print).toBe(f.links.magicHistoryLink);
         },
     },
     {
-        id: "sinceMe", article: "User:Example",
+        id: "sinceMe",
+        article: "User:Example",
         check: (f, t) => {
             expect(t.print).toBe(f.links.magicHistoryLink);
         },
@@ -1328,7 +1368,8 @@ describe("menus / shortmenus 填充器", () => {
         expect(html).toContain("popup_history");
         // 匿名条目无 user 段（if(user) 整段消失），email 只在 user 段内出现
         expect(html).not.toContain("popup_email");
-        expect(html).toContain("popup_article");
+        // 主名字空间条目 if(talk) 为假 → else 分支给出 talk/editTalk/newTalk
+        expect(html).toContain("popup_talk");
     });
 
     it("shortmenus：用户页与 admin 组合段（deletedContribs/unblock/blocklog）", async () => {
@@ -1338,5 +1379,21 @@ describe("menus / shortmenus 填充器", () => {
         expect(html).toContain("popup_deletedContribs");
         expect(html).toContain("popup_unblock");
         expect(html).toContain("popup_blocklog");
+    });
+
+    // 回归（if(talk) 极性反转）：讨论页走 if(talk) 真分支的 article/editArticle。
+    // 极性与 talkPage() 相反，否则 else 的 <<talk>> 会把 article 置为
+    // talkPage() 的 null，继而在 titledWikiLink 的 urlString() 处抛
+    // 「Cannot read properties of null」
+    it("shortmenus：讨论页渲染走 article/editArticle 分支且不产生 null 标题链接", async () => {
+        const f = await fresh();
+        const html = htmlOf(f.structures.getSlotFiller("shortmenus.popupTopLinks")?.(ctx(f, "Talk:Foo")));
+        expect(html).toContain("popup_article");
+        expect(html).toContain("popup_editArticle");
+        expect(html).not.toContain("popup_editTalk");
+        // 链接里是回退后的主条目（Foo），不是 null 串（"title=null" 即
+        // Title.value 为 null 时 urlString 的产物）
+        expect(html).toContain(`<a href="${TITLEBASE}Foo"`);
+        expect(html).not.toContain("title=null");
     });
 });

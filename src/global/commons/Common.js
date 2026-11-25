@@ -28,7 +28,7 @@
                 location.replace(`/${mw.config.get("wgPageName")}`);
             }
             $('#wikiEditor-ui-toolbar, #wpSummaryLabel, #wpSummaryWidget, [name="wpSummary"], .editCheckboxes, #wpMinoreditWidget, [name="wpMinoredit"], #wpWatchthisWidget, [name="wpWatchthis"], #editpage-copywarn, #wpSaveWidget, [name="wpSave"], #wpPreviewWidget, [name="wpPreview"], #wpDiffWidget, [name="wpDiff"], [name="wpEditToken"]').remove();
-            $(".editOptions").prepend(`<p>本站仅供上传图片用，请勿在本站创建页面，如有需要请到<a target="_blank" rel="nofollow noreferrer noopener" class="external text" href="${mw.config.get("wgServer").replace("commons.moegirl", "zh.moegirl")}${mw.config.get("wgScriptPath")}">主站</a>。</p>`);
+            $(".editOptions").prepend(`<p>${wgULS("本站仅供上传图片用，请勿在本站创建页面，如有需要请到", "本站僅供上傳圖片用，請勿在本站建立頁面，如有需要請到")}<a target="_blank" rel="nofollow noreferrer noopener" class="external text" href="${mw.config.get("wgServer").replace("commons.moegirl", "zh.moegirl")}${mw.config.get("wgScriptPath")}">主站</a>。</p>`);
             $('#editform, [name="editform"]').each((_, ele) => {
                 $(ele).removeAttr("action");
                 ele.addEventListener("submit", (e) => {
@@ -56,7 +56,7 @@
         if ($(".fileInfo")[0]) {
             $(".mw-ui-button-group.mw-mmv-filepage-buttons:first").prepend($("<a/>", {
                 "class": "mw-mmv-view-expanded mw-ui-button mw-ui-icon",
-                text: "在萌娘百科上查看文件说明页",
+                text: wgULS("在萌娘百科上查看文件说明页", "在萌娘百科上檢視檔案說明頁"),
             }).on("click", () => {
                 window.open(mw.config.get("wgServer").replace("commons.moegirl", "zh.moegirl") + mw.config.get("wgScriptPath") + location.pathname + location.search, "_blank");
             }));
@@ -64,28 +64,47 @@
     };
     // 主站用户页链接
     const zhUserPage = () => {
-        $("#mw-content-text a").each((_, ele) => {
-            try {
-                const link = new URL(ele.href, location.origin);
-                if (link.origin === `${mw.config.get("wgServer")}${mw.config.get("wgScriptPath")}/`) {
+        const scriptPath = mw.config.get("wgScriptPath");
+        const zhBase = `${mw.config.get("wgServer").replace("commons.moegirl", "zh.moegirl")}${scriptPath}`;
+        mw.hook("wikipage.content").add(($content) => {
+            $content.find("a").each((_, ele) => {
+                if (ele.dataset.zhUserPage) {
                     return;
                 }
-                if (/^\/api\.php/i.test(link.pathname)) {
+                try {
+                    const link = new URL(ele.href, location.origin);
+                    if (link.origin !== location.origin) {
+                        return;
+                    }
+                    if (/\.php$/i.test(link.pathname) && (!/\/index\.php$/i.test(link.pathname) || !link.searchParams.get("title"))) {
+                        return;
+                    }
+                    if ((link.searchParams.get("action") || link.searchParams.get("veaction")) && link.searchParams.get("redlink") !== "1" || link.searchParams.get("diff") || link.searchParams.get("oldid")) {
+                        return;
+                    }
+                    const title = link.searchParams.get("title") || decodeURI(link.pathname.slice(scriptPath.length + 1));
+                    if (/^user:[^/]+$/i.test(title)) {
+                        ele.dataset.zhUserPage = "1";
+                        $(ele).after($("<sub>").append(
+                            "[",
+                            $("<a>", {
+                                target: "_blank",
+                                title: wgULS(`主站上的用户 ${title.replace(/^user:/i, "")}`, `主站上的使用者 ${title.replace(/^user:/i, "")}`),
+                                href: `${zhBase}/${encodeURI(title)}${link.hash}`,
+                                text: "主",
+                            }),
+                            "]",
+                        ));
+                    } else if (/^user[ _]talk:[^/]+$/i.test(title)) {
+                        ele.dataset.zhUserPage = "1";
+                        ele.href = `${zhBase}/${encodeURI(title)}${link.hash}`;
+                        ele.classList.remove("new");
+                        ele.title = wgULS(`主站上的用户讨论 ${title.replace(/^user[ _]talk:/i, "")}`, `主站上的使用者討論 ${title.replace(/^user[ _]talk:/i, "")}`);
+                    }
+                } catch (_e) {
                     return;
                 }
-                if (!link.searchParams.get("title") && /\.php$/i.test(link.pathname)) {
-                    return;
-                }
-                if (link.searchParams.get("action") || link.searchParams.get("diff")) {
-                    return;
-                }
-                const href = ((link.searchParams.get("title") || decodeURI(link.pathname.substring(1))).match(/^user(?:[ _]talk)?:[^/]+/i) || [null])[0];
-                if (href) {
-                    $(ele).after(`<sub>[<a target="_blank" title="主站上的用户 ${href.replace(/user(_talk)?:/i, "")}" href="${mw.config.get("wgServer").replace("commons.moegirl", "zh.moegirl")}${mw.config.get("wgScriptPath")}/${href}">主</a>]</sub>`);
-                }
-            } catch (_e) {
-                return;
-            }
+            });
         });
     };
     // 授权协议检测
@@ -102,7 +121,7 @@
             const wpTextbox1 = $("#wpTextbox1");
             wpTextbox1.val(wpTextbox1.val().replace("{{Authorized}}", "{{Authorized\n|作者名=<!--适用于作者授权百科长期使用其作品的情形，此时直接填入作者名即可-->\n|授权证明=<!--适用于作者仅授权单张图片的情形，可以在此填写授权证明的文件链接、或是相关请求授权的讨论链接等-->\n}}"));
             setTimeout(() => {
-                alert("请在编辑框内填入相关授权信息！");
+                alert(wgULS("请在编辑框内填入相关授权信息！", "請在編輯框內填入相關授權資訊！"));
             }, 0);
         } else {
             const wgPageName = encodeURIComponent((mw.config.get("wgPageName") || "").replace(/ /g, "_"));
@@ -124,7 +143,7 @@
             }
             const editbutton = document.querySelector("#ca-edit a");
             const loginbutton = document.querySelector("#pt-login a");
-            $("#mw-imagepage-content, #mw-imagepage-content .mw-parser-output").last().append(`<table class="common-box license-info" style="margin: 0.5em 10%; width:80%; background: #FBFBFB; border-left: 10px solid Salmon;"><tbody><tr><td style="padding: 2px 0 2px 0.5em"><img alt="Red copyright.svg" src="https://storage.moegirl.org.cn/moegirl/commons/1/1d/Red_copyright.svg" width="50" height="50"></td><td style="padding: 0.25em 0.5em"><div><span style="font-weight: bold;">由于上传者未填写授权协议</span>，本作品默认仅以介绍为目的在此百科中以非盈利性方式合理使用。</div>${loginbutton || editbutton ? `<div>您知道该文件的作者是如何授权的吗？如果您知道的话欢迎<span style="font-weight: bold;">${editbutton ? `<a href="${editbutton.href}">编辑该页面</a>` : `<a href="${mw.config.get("wgServer")}${mw.config.get("wgScriptPath")}/index.php?title=Special:%E7%94%A8%E6%88%B7%E7%99%BB%E5%BD%95&returntoquery=action%3Dedit&returnto=${encodeURIComponent(mw.config.get("wgPageName"))}">登录后编辑该页面</a>`}</span>填写授权协议~~</div>` : ""}</td></tr></tbody></table>`);
+            $("#mw-imagepage-content, #mw-imagepage-content .mw-parser-output").last().append(`<table class="common-box license-info" style="margin: 0.5em 10%; width:80%; background: #FBFBFB; border-left: 10px solid Salmon;"><tbody><tr><td style="padding: 2px 0 2px 0.5em"><img alt="Red copyright.svg" src="https://storage.moegirl.org.cn/moegirl/commons/1/1d/Red_copyright.svg" width="50" height="50"></td><td style="padding: 0.25em 0.5em"><div><span style="font-weight: bold;">${wgULS("由于上传者未填写授权协议", "由於上傳者未填寫授權協議")}</span>${wgULS("，本作品默认仅以介绍为目的在此百科中以非盈利性方式合理使用。", "，本作品預設僅以介紹為目的在此百科中以非營利性方式合理使用。")}</div>${loginbutton || editbutton ? `<div>${wgULS("您知道该文件的作者是如何授权的吗？如果您知道的话欢迎", "您知道該檔案的作者是如何授權的嗎？如果您知道的話歡迎")}<span style="font-weight: bold;">${editbutton ? `<a href="${editbutton.href}">${wgULS("编辑该页面", "編輯該頁面")}</a>` : `<a href="${mw.config.get("wgServer")}${mw.config.get("wgScriptPath")}/index.php?title=Special:%E7%94%A8%E6%88%B7%E7%99%BB%E5%BD%95&returntoquery=action%3Dedit&returnto=${encodeURIComponent(mw.config.get("wgPageName"))}">${wgULS("登录后编辑该页面", "登入後編輯該頁面")}</a>`}</span>${wgULS("填写授权协议~~", "填寫授權協議~~")}</div>` : ""}</td></tr></tbody></table>`);
         }
     };
     // Summary预加载
@@ -149,6 +168,7 @@
     };
     /* 函数执行体 */
     await $.ready;
+    await mw.loader.using("ext.gadget.site-lib");
     // 禁止编辑相关
     editSet();
     // 页顶返回主站

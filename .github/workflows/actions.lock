@@ -5,7 +5,7 @@ version: 'v0.0.3'
 workflows:
     '.github/workflows/CodeQL.yaml':
         - 'actions/checkout@v7.0.1'
-        - 'github/codeql-action@v4.39.3'
+        - 'github/codeql-action@v4.39.4'
     '.github/workflows/auto_assign.yaml':
         - 'actions/checkout@v7.0.1'
         - 'actions/setup-node@v7.1.0'
@@ -60,8 +60,8 @@ dependencies:
         commit: 'sha1-04d248b84655b509d8c44dc1d6f990c879747487'
         owner_id: 1951866
         repo_id: 330203279
-    'github/codeql-action@v4.39.3':
-        ref: 'v4.39.3'
-        commit: 'sha1-33d7b85da1a04171e211befe2c739303b9a4c066'
+    'github/codeql-action@v4.39.4':
+        ref: 'v4.39.4'
+        commit: 'sha1-1bd86f2fdb4b86187fa4059f16f31a3202acc9ea'
         owner_id: 9919
         repo_id: 259445878

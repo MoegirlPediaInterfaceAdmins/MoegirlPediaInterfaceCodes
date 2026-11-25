@@ -87,7 +87,7 @@
         const crossDomain = $("<div/>");
         const anchor = $("<a/>");
         crossDomain.text("＜");
-        anchor.attr("href", `${url}`).text(`${link} 【来自 ${domain} 的跨站重定向】`);
+        anchor.attr("href", `${url}`).text(`${link} ${wgULS(`【来自 ${domain} 的跨站重定向】`, `【來自 ${domain} 的跨站重新導向】`)}`);
         crossDomain.append(anchor);
         $("#contentSub").prepend(crossDomain);
     };
@@ -101,7 +101,7 @@
         const crossDomain = $("<div/>");
         const anchor = $("<a/>");
         crossDomain.html('<span class="moe-icon"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 256 512"><path d="M31.7 239l136-136c9.4-9.4 24.6-9.4 33.9 0l22.6 22.6c9.4 9.4 9.4 24.6 0 33.9L127.9 256l96.4 96.4c9.4 9.4 9.4 24.6 0 33.9L201.7 409c-9.4 9.4-24.6 9.4-33.9 0l-136-136c-9.5-9.4-9.5-24.6-.1-34z" fill="currentColor"></path></svg></span>');
-        anchor.attr("href", `${url}`).text(`${link} 【来自 ${domain} 的跨站重定向】`);
+        anchor.attr("href", `${url}`).text(`${link} ${wgULS(`【来自 ${domain} 的跨站重定向】`, `【來自 ${domain} 的跨站重新導向】`)}`);
         crossDomain.append(anchor);
         $("#tagline").after(crossDomain);
     };
@@ -114,7 +114,7 @@
                 left: "-99999px",
                 "z-index": "-99999",
             },
-            html: `<pre></pre><br>\n阅读更多：${/%/.test(mw.util.wikiUrlencode(wgPageName)) ? `${wgPageName}（${wgServer}${wgScriptPath}/${encodeURIComponent(wgPageName)} ）` : `${wgServer}${wgScriptPath}/${wgPageName}`}<br>\n本文引自萌娘百科(${wgServer.replace(/^\/\//, "https://")} )，文字内容默认使用《知识共享 署名-非商业性使用-相同方式共享 4.0》协议。`,
+            html: `<pre></pre><br>\n${wgULS("阅读更多：", "閱讀更多：")}${/%/.test(mw.util.wikiUrlencode(wgPageName)) ? `${wgPageName}（${wgServer}${wgScriptPath}/${encodeURIComponent(wgPageName)} ）` : `${wgServer}${wgScriptPath}/${wgPageName}`}<br>\n本文引自萌娘百科(${wgServer.replace(/^\/\//, "https://")} )${wgULS("，文字内容默认使用《知识共享 署名-非商业性使用-相同方式共享 4.0》协议。", "，文字內容預設使用《知識共享 署名-非商業性使用-相同方式共享 4.0》協議。")}`,
         }).appendTo("body");
         const valueNode = div.find("pre");
         $("#mw-content-text").on("copy", () => {
@@ -197,7 +197,7 @@
             const link = $("<a>");
             link.attr({
                 href: "javascript:void(0);",
-            }).text("隐藏活动通知");
+            }).text(wgULS("隐藏活动通知", "隱藏活動通知"));
             button.append(link);
             if (!isMoeskin) {
                 button.prepend("[").append(link).append("]");
@@ -221,7 +221,7 @@
                     });
                     button.css(styles.hidden);
                     localStorage.setItem("AnnTools-notice-activity", topNoticeId);
-                    link.text("显示活动通知");
+                    link.text(wgULS("显示活动通知", "顯示活動通知"));
                 } else {
                     status = true;
                     children.show();
@@ -234,7 +234,7 @@
                     });
                     button.css(styles.visible);
                     localStorage.removeItem("AnnTools-notice-activity");
-                    link.text("隐藏活动通知");
+                    link.text(wgULS("隐藏活动通知", "隱藏活動通知"));
                 }
             });
             const localStorageValue = localStorage.getItem("AnnTools-notice-activity");
@@ -255,11 +255,11 @@
     const topNoticeScroll = async () => {
         const siteNotice = $("body.skin-vector-2022 > #content > #siteNotice, body.skin-moeskin > #app > #moe-full-container > #moe-main-container > main > #moe-global-sidenav #moe-sidenav-sitenotice");
         const noticeType = {
-            pinnedAnnouncement: "置顶公告",
-            newAnnouncement: "7日内新公告",
-            discussing: "新的讨论中提案、申请",
-            voting: "新的投票中提案、申请",
-            voted: "新的已投票结束提案、申请",
+            pinnedAnnouncement: wgULS("置顶公告", "置頂公告"),
+            newAnnouncement: wgULS("7日内新公告", "7日內新公告"),
+            discussing: wgULS("新的讨论中提案、申请", "新的討論中提案、申請"),
+            voting: wgULS("新的投票中提案、申请", "新的投票中提案、申請"),
+            voted: wgULS("新的已投票结束提案、申请", "新的已投票結束提案、申請"),
         };
         const newNotices = [];
         Object.keys(noticeType).forEach((type) => {
@@ -316,7 +316,7 @@
             await mw.loader.using(["mediawiki.notification", "mediawiki.notify"]);
             mw.notify(notification, {
                 autoHide: false,
-                title: "有新的站务通知（点击通知空白处关闭）",
+                title: wgULS("有新的站务通知（点击通知空白处关闭）", "有新的站務通知（點擊通知空白處關閉）"),
             });
         }
     };
@@ -351,6 +351,7 @@
     };
     /* 函数执行体 */
     await $.ready;
+    await mw.loader.using("ext.gadget.site-lib");
     // Extension:MultimediaViewer的半透明化修改
     multimediaViewer();
     // Add "mainpage" class to the body element

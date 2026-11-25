@@ -4,11 +4,15 @@ type WatchlistOption = "preferences" | "nochange" | "watch" | "unwatch";
 
 type NotifyType = "info" | "success" | "warn" | "error";
 
+// 选项卡初始停靠位置：右下角（默认）或左下角。
+type DockPosition = "bottom-right" | "bottom-left";
+
 interface CatALotPrefs {
     watchlist: WatchlistOption;
     minor: boolean;
     editpages: boolean;
     subcatcount: number;
+    position: DockPosition;
 }
 
 type CatALotPrefsInput = Partial<Record<keyof CatALotPrefs, unknown>>;
@@ -58,8 +62,15 @@ interface ApiClient {
     abortActive(): void;
 }
 
+type ConfirmChoice = "primary" | "extra" | "cancel";
+
 interface BatchHooks {
     askDialog(options: { message: string; showCancel: boolean }): Promise<boolean>;
+    askMoveAllDialog?(options: {
+        message: string;
+        primaryLabel: string;
+        extraLabel: string;
+    }): Promise<ConfirmChoice>;
     notify(text: string, type: NotifyType): void;
     setRunning(running: boolean): void;
     setCurrentTitle(title: string): void;
@@ -81,6 +92,7 @@ interface BatchOptions {
     mode: EditMode;
     sourceCat: string;
     targetCat: string;
+    isAllSelected?: boolean;
     prefs: CatALotPrefs;
     hasBotRight: boolean;
     isSysopOrStaff: boolean;
@@ -114,6 +126,8 @@ export type {
     EditMode,
     WatchlistOption,
     NotifyType,
+    DockPosition,
+    ConfirmChoice,
     CatALotPrefs,
     CatALotPrefsInput,
     SiteContext,

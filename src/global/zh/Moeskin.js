@@ -6,6 +6,8 @@
  */
 (async () => {
     const IS_MOEPAD_APP = location.hostname === "mobile.moegirl.org.cn";
+    // 侧栏“自定义工具”标题在 site-lib 加载完成后换成对应变体，避免加载完成前调用时出错
+    let customSidenavBlockTitle = "自定义工具";
 
     /**
      * fixWikiLove
@@ -93,7 +95,7 @@
             $block.append(
                 $("<div>", {
                     "class": "mw-parser-output",
-                }).append($("<h2>", { text: "自定义工具" }), $("<ul>", { id: "moe-custom-sidenav-block-list" })),
+                }).append($("<h2>", { text: customSidenavBlockTitle }), $("<ul>", { id: "moe-custom-sidenav-block-list" })),
             );
             $("aside#moe-global-siderail .moe-siderail-sticky").before($block);
         }
@@ -146,7 +148,8 @@
     } catch (e) {
         console.warn("[MoeSkin] addPortletLink", "Faild to bind global variables", e);
     }
-    await mw.loader.using(["mediawiki.util"]);
+    await mw.loader.using(["mediawiki.util", "ext.gadget.site-lib"]);
+    customSidenavBlockTitle = wgULS("自定义工具", "自訂工具");
     Reflect.defineProperty(mw.util, "addPortletLink", {
         value: addPortletLink,
         configurable: true,
@@ -296,7 +299,7 @@
             id: "p-noteTA-moeskin",
             role: "navigation",
             "class": "noteTA-button",
-            title: "本页使用了标题或全文手工转换",
+            title: wgULS("本页使用了标题或全文手工转换", "本頁使用了標題或全文手工轉換"),
         }).append(noteTAbutton);
         $("#p-languages-group").append(noteTAicon);
     };

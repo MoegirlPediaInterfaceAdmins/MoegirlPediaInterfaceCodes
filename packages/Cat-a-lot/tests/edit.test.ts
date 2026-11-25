@@ -349,6 +349,7 @@ describe("grantFlood / revokeFlood", () => {
             tags: "Cat-a-lot|Bot",
             formatversion: 2,
         }), { timeout: API_TIMEOUT_MS });
+        expect(postWithTokenMock.mock.calls[0][1].reason).toBe("[[Help:Cat-a-lot|Cat-a-lot]]：临时启用机器用户");
     });
 
     it("revoke 使用 userrights token 移除 flood", async () => {
@@ -362,6 +363,7 @@ describe("grantFlood / revokeFlood", () => {
             tags: "Cat-a-lot",
             formatversion: 2,
         }), { timeout: API_TIMEOUT_MS });
+        expect(postWithTokenMock.mock.calls[0][1].reason).toBe("[[Help:Cat-a-lot|Cat-a-lot]]：批量分类完成，移除临时机器用户");
     });
 });
 

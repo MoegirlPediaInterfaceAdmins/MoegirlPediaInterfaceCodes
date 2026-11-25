@@ -1,5 +1,46 @@
 "use strict";
 $(() => (async () => {
+    /**
+     * 等待正文就位。
+     * MoeSkin 会把正文预置在 `<template id="MOE_SKIN_TEMPLATE_BODYCONTENT">` 里，
+     * 等皮肤脚本启动后才克隆进 `#app`；因此在 jQuery ready 时 `#mw-content-text`
+     * 可能尚不存在，此时依赖正文的选择器会全部落空，小工具表现为静默不加载。
+     * 正文就位后皮肤会触发 `wikipage.content` 钩子，已在文档中时直接返回。
+     * 若皮肤始终不触发该钩子，则在超时后放弃等待，交由后续逻辑按原有方式处理。
+     * @returns {Promise<void>}
+     */
+    const waitForContent = async () => {
+        /**
+         * @returns {Element | null}
+         */
+        const isContentReady = () => document.querySelector("#mw-content-text > fieldset > p");
+        if (isContentReady()) {
+            return;
+        }
+        await new Promise((resolve) => {
+            const state = { timer: null };
+            /**
+             * 正文就位后结束等待，并清理监听与定时器。
+             * @returns {void}
+             */
+            const handler = () => {
+                if (!isContentReady()) {
+                    return;
+                }
+                mw.hook("wikipage.content").remove(handler);
+                clearTimeout(state.timer);
+                resolve();
+            };
+            // 皮肤始终不触发钩子时，超时后放弃等待，交由后续逻辑按原有方式处理
+            state.timer = setTimeout(() => {
+                mw.hook("wikipage.content").remove(handler);
+                resolve();
+            }, 10000);
+            mw.hook("wikipage.content").add(handler);
+            // 注册后立刻补查一次：若钩子恰在“检查”与“注册”之间触发，不至于白等
+            handler();
+        });
+    };
     const {
         wgUserGroups,
         wgCanonicalSpecialPageName,
@@ -17,6 +58,11 @@ $(() => (async () => {
     if (wgCanonicalSpecialPageName !== "AbuseLog") {
         return;
     }
+    // 日志列表页同样是 AbuseLog，但没有具体条目，也就没有该变量
+    if (!wgAbuseFilterVariables) {
+        return;
+    }
+    await waitForContent();
     const timestampVar = wgAbuseFilterVariables.timestamp;
     const userName = wgAbuseFilterVariables.user_name;
     const pagePrefixedtitle = wgAbuseFilterVariables.page_prefixedtitle;
@@ -44,7 +90,7 @@ $(() => (async () => {
             throw "无法找到对应用户名和页面标题的滥用过滤器日志";
         }
         progress.text(1);
-        const _details = Array.from(new Map(__details.filter(({ details: { timestamp } }) => timestampVar === timestamp).map((n) => [n.new_wikitext, n])).values());
+        const _details = Array.from(new Map(__details.filter(({ details: { timestamp } }) => timestampVar === timestamp).map((n) => [JSON.stringify(n.details), n])).values());
         if (_details.length === 0) {
             console.info(__details);
             throw "无法找到对应时间戳的滥用过滤器日志";
@@ -66,78 +112,105 @@ $(() => (async () => {
             throw "无法找到符合格式的规则";
         }
         for (const { details } of _details) {
-            let addedLines = details.added_lines || details.new_wikitext;
-            if (Array.isArray(addedLines)) {
-                addedLines = addedLines.join("\n");
+            const sources = [];
+            // added_lines 为空数组代表本次编辑没有新增内容，此时不应回落到整篇 new_wikitext，
+            // 否则未改动的正文里命中规则也会被当成新增内容命中。
+            let body;
+            if (Array.isArray(details.added_lines)) {
+                body = details.added_lines.join("\n");
+            } else if (typeof details.added_lines === "string") {
+                body = details.added_lines;
+            } else {
+                body = details.new_wikitext;
+            }
+            if (typeof body === "string" && body !== "") {
+                sources.push({ label: "正文", text: body });
+            }
+            if (typeof details.summary === "string" && details.summary !== "") {
+                sources.push({ label: "编辑摘要", text: details.summary });
             }
             const result = [];
             const table = $("<table/>").css("width", "100%").addClass("wikitable abusefiltertest").hide();
             pTable.after(table);
-            for (const sr of stringRules.values()) {
-                if (addedLines.includes(sr)) {
-                    const splits = addedLines.split(sr);
+            for (const { label: source, text } of sources) {
+                for (const sr of stringRules.values()) {
+                    if (!text.includes(sr)) {
+                        continue;
+                    }
+                    const splits = text.split(sr);
+                    let splitStart = 0;
                     splits.forEach((str, i) => {
                         if (i === splits.length - 1) {
                             return;
                         }
+                        const matchStart = splitStart + str.length;
                         const next = splits[i + 1];
                         const start = Math.max(0, str.length - 20);
                         const end = Math.min(next.length, 20);
                         result.push({
-                            isRegexp: false,
+                            isRegex: false,
+                            source,
                             rule: sr,
+                            matchStart,
                             before: str.substring(start, start + 20),
                             string: sr,
                             after: next.substring(0, end),
                             start,
                         });
+                        splitStart = matchStart + sr.length;
                     });
                 }
-            }
-            for (const rr of regexRules.values()) {
-                const regex = RegExp(`.{0,20}${rr}.{0,20}`, "ig");
-                const findstring = RegExp(rr, "ig");
-                if (regex.test(addedLines)) {
-                    const splits = addedLines.match(regex);
-                    let lastFromIndex = 0;
-                    splits.forEach((str) => {
-                        const string = str.match(findstring)[0];
-                        const split = str.split(string);
-                        const before = split[0];
-                        const after = split.slice(1).join(string);
-                        const start = addedLines.indexOf(string, lastFromIndex);
-                        lastFromIndex = start + string.length;
-                        result.push({
-                            isRegex: true,
-                            rule: rr,
-                            before,
-                            string,
-                            after,
-                            start,
+                for (const rr of regexRules.values()) {
+                    const regex = RegExp(`.{0,20}${rr}.{0,20}`, "ig");
+                    const findstring = RegExp(rr, "ig");
+                    if (regex.test(text)) {
+                        const splits = text.match(regex);
+                        let lastFromIndex = 0;
+                        splits.forEach((str) => {
+                            const string = str.match(findstring)[0];
+                            const split = str.split(string);
+                            const before = split[0];
+                            const after = split.slice(1).join(string);
+                            const start = text.indexOf(string, lastFromIndex);
+                            lastFromIndex = start + string.length;
+                            result.push({
+                                isRegex: true,
+                                source,
+                                rule: rr,
+                                matchStart: start,
+                                before,
+                                string,
+                                after,
+                                start,
+                            });
                         });
-                    });
+                    }
                 }
             }
             table.empty();
             if (result.length > 0) {
-                table.append(`<caption style="font-weight: 700;">命中滥用过滤器${filter}的内容</caption><tr><th style="text-align: right;">规则（请勿泄漏！！！）</th><th style="text-align: left;">命中字符串上下文</th></tr>`);
-                result.sort(({ start: a }, { start: b }) => a - b);
+                table.append(`<caption style="font-weight: 700;">命中滥用过滤器${filter}的内容</caption><tr><th style="text-align: right;">规则（请勿泄漏！！！）</th><th style="text-align: center;">命中位置</th><th style="text-align: left;">命中字符串上下文</th></tr>`);
+                const sourceOrder = new Map(sources.map(({ label }, i) => [label, i]));
+                result.sort((a, b) => sourceOrder.get(a.source) - sourceOrder.get(b.source) || a.matchStart - b.matchStart);
                 const results = [];
                 result.forEach((r) => {
-                    if (results.filter(({ isRegex, start }) => isRegex === r.isRegex && start === r.start).length === 0) {
+                    if (results.filter(({ source: s, isRegex, rule, matchStart }) => s === r.source && isRegex === r.isRegex && rule === r.rule && matchStart === r.matchStart).length === 0) {
                         results.push(r);
                     }
                 });
                 console.info(results);
-                results.forEach(({ isRegex, rule, before, string, after, start }) => {
+                results.forEach(({ isRegex, source, rule, before, string, after, start }) => {
                     const tr = $("<tr/>");
-                    const label = $("<td/>");
+                    const ruleCell = $("<td/>");
                     const ruleCode = $("<code/>");
                     ruleCode.text(rule);
-                    label.addClass("mw-label");
-                    label.text(isRegex ? "正则表达式" : "字符串");
-                    label.append(symbolEnter(ruleCode)).append("：");
-                    tr.append(label);
+                    ruleCell.addClass("mw-label");
+                    ruleCell.text(isRegex ? "正则表达式" : "字符串");
+                    ruleCell.append(symbolEnter(ruleCode)).append("：");
+                    tr.append(ruleCell);
+                    const sourceCell = $("<td/>");
+                    sourceCell.addClass("mw-label").text(source);
+                    tr.append(sourceCell);
                     const input = $("<td/>");
                     input.addClass("mw-input");
                     const beforeSpan = $("<span/>");

@@ -270,10 +270,8 @@ const createApi = (userName: string): ApiClient => {
             user: user || userName,
             add: "flood",
             expiry: "2 hours",
-            reason: wgULS(
-                "[[Help:Cat-a-lot|Cat-a-lot]]：临时启用机器用户",
-                "[[Help:Cat-a-lot|Cat-a-lot]]：臨時啟用機器用戶",
-            ),
+            // 理由写入权限日志，固定使用简体，不随界面语言变体转换。
+            reason: "[[Help:Cat-a-lot|Cat-a-lot]]：临时启用机器用户",
             tags,
             formatversion: 2,
         }, { timeout: API_TIMEOUT_MS }));
@@ -284,10 +282,7 @@ const createApi = (userName: string): ApiClient => {
             action: "userrights",
             user: user || userName,
             remove: "flood",
-            reason: wgULS(
-                "[[Help:Cat-a-lot|Cat-a-lot]]：批量分类完成，移除临时机器用户",
-                "[[Help:Cat-a-lot|Cat-a-lot]]：批次分類完成，移除臨時機器用戶",
-            ),
+            reason: "[[Help:Cat-a-lot|Cat-a-lot]]：批量分类完成，移除临时机器用户",
             tags,
             formatversion: 2,
         }, { timeout: API_TIMEOUT_MS }));

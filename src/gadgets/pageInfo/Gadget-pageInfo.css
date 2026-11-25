@@ -4,33 +4,31 @@
     gap: .5rem;
 }
 
-.page-info-protection {
-    text-align: left;
-}
-
 .page-info-protection,
-.page-info-protection img {
+.page-info-protection .page-info-protection-icon {
+    cursor: default;
     height: 18px;
     width: 18px;
 }
 
-.vector-menu-content-list .page-info-container > * {
-    padding-left: .25rem !important;
-    padding-right: .25rem !important;
+.page-info-protection-icon {
+    display: block;
+    flex-shrink: 0;
+    background-color: var(--theme-text-color, var(--color-base, #202122));
+    mask-image: url("/resources/lib/ooui/themes/wikimediaui/images/icons/lock.svg");
+    mask-repeat: no-repeat;
+    mask-position: center;
+    mask-size: contain;
 }
 
 .vector-menu-content-list .page-info-container {
     padding-right: .5rem;
+}
+
+.vector-menu-content-list .page-info-container#mgp-pageinfo > * {
     cursor: default;
-}
-
-.vector-menu-content-list .page-info-container,
-.vector-menu-content-list .page-info-container a {
-    cursor: default !important;
-}
-
-.vector-menu-content-list .page-info-container .annotation-content {
-    cursor: text !important;
+    padding-left: .25rem;
+    padding-right: .25rem;
 }
 
 #pagetools-desktop-container .edit-button-group,

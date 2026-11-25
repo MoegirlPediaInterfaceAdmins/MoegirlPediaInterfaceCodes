@@ -96,7 +96,15 @@ export const expandConditionalNavlinkString = (s: string, article: Title, z: Nav
                 testResult = !!article.userName();
                 break;
             case "talk":
-                testResult = !!article.talkPage();
+                // talkPage() 的作用是把标题换成对应的讨论页：普通条目返回
+                // Talk:xxx（真值），讨论页自身返回 null。if(talk) 要判断的是
+                // 「当前就是讨论页」，所以在这里取反。上游 oldid=1322962085
+                // 同处写作 !article.talkPage()，并注释 talkPage converts
+                // _articles_ to talkPages；legacy 基准 5adc9438 写成 !!，是
+                // 上游同步时丢掉了取反。改成 !! 会让讨论页弹窗走 else 分支的
+                // <<talk>>，把 article 置为 null，随后 titledWikiLink 调用
+                // urlString() 时抛错，整条导航栏渲染中断
+                testResult = !article.talkPage();
                 break;
             case "admin":
                 testResult = !!getValueOf("popupAdminLinks");

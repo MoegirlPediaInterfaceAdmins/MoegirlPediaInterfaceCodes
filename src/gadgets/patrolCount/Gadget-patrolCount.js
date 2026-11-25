@@ -8,35 +8,11 @@
 $(() => {
     // 在此修改监视的命名空间
     const namespaceWatched = [
-        // 将你  想监视的命名空间前面去掉 //
-        // 将你不想监视的命名空间前面加上 //
-
         "(main)",
-        // "talk",
-        // "user",
-        // "user_talk",
-        // "萌娘百科",
-        // "萌娘百科_talk",
-        // "file",
-        // "file_talk",
-        // "mediawiki",
-        // "mediawiki_talk",
         "template",
-        // "template_talk",
-        // "help",
-        // "help_talk",
-        // "category",
-        // "category_talk",
-        // "widget",
-        // "widget_talk",
-        // "timedtext",
-        // "timedtext_talk",
-        // "模块",
-        // "模块讨论",
-        // "gadget",
-        // "gadget_talk",
-        // "gadget_definition",
-        // "gadget_definition_talk": false
+        "draft",
+        "creation",
+        "document",
     ];
     const instanceRAF = new libRequestAnimationFrame.LibRequestAnimationFrame();
     const apiPrefix = `${mw.config.get("wgServer")}${mw.config.get("wgScriptPath")}/api.php`;
@@ -57,9 +33,9 @@ $(() => {
                 title += '" class="patrollListNotConfident';
             }
             strCount = `(<a id="unpatrollArticle" href="${mw.config.get("wgServer")}${mw.config.get("wgScriptPath")}/index.php?title=${link}" title="${title}">${strCount}</a>)`;
-            ptPatrollLink.attr("href", `${mw.config.get("wgServer")}${mw.config.get("wgScriptPath")}/index.php?title=Special:最新页面&hidepatrolled=1`);
+            ptPatrollLink.attr("href", "/Special:最新页面?hidepatrolled=1");
         } else {
-            ptPatrollLink.attr("href", `${mw.config.get("wgServer")}${mw.config.get("wgScriptPath")}/index.php?title=Special:最新页面&hidepatrolled=0`);
+            ptPatrollLink.attr("href", "/Special:最新页面?hidepatrolled=0");
         }
         $("span#not-patrolled-count").html(strCount);
         generateList(pages);
@@ -444,9 +420,17 @@ $(() => {
     updateUnpatrolled();
     // 在"监视列表"右边加入"最新页面"以便巡查
     const ptPatrollLink = $("<a></a>", {
-        href: "Special:最新页面?hidepatrolled=1",
+        "class": "cdx-button cdx-button--fake-button cdx-button--fake-button--enabled cdx-button--weight-quiet cdx-button--icon-only",
+        href: "/Special:最新页面?hidepatrolled=1",
         title: wgULS("最新页面", "最新頁面"),
-    }).html(`<img src="/resources/lib/ooui/themes/wikimediaui/images/icons/article-rtl.svg" style="height:20px;margin:0 4px;" alt="${wgULS("最新页面", "最新頁面")}">`);
+    }).append(
+        $("<span>", {
+            "class": "vector-icon mw-ui-icon-wikimedia-article",
+        }),
+        $("<span>", {
+            text: wgULS("最新页面", "最新頁面"),
+        }),
+    );
     $("#pt-watchlist-2").after($("<li></li>", {
         id: "pt-patroll",
     }).append(ptPatrollLink));

@@ -3,19 +3,18 @@ import { fileURLToPath } from "node:url";
 
 const root = fileURLToPath(new URL(".", import.meta.url));
 
-// The banner carries only the artifact's strict directive; upstream provenance
-// (the behavior-baseline oldid) lives in the README's 来源与授权 section.
-// "use strict" is the artifact's only strict directive — build.js strips the
-// per-module prologues esbuild injects, so this one survives alone.
+// Upstream provenance (the behavior-baseline oldid) lives in the README's 来源与授权 section.
 // The artifact ships as bare top-level statements (format "es"): the gadget
 // always reaches the wiki through mw.loader.implement, whose function scope
 // isolates top-level names (var declarations included), so no IIFE wrapper
 // is needed and the entry module has no imports/exports left to keep.
-// No eslint directives ride in the banner: the artifact is not linted
+// The artifact is an intermediate of the build chain: the strict-mode directive
+// is injected by the deploy chain's tsc (alwaysStrict) when the artifact is
+// compiled into dist/, so no banner is emitted here.
+// No eslint directives ride in the artifact: the artifact is not linted
 // anywhere — the repo lint globally ignores dist/** where the artifact is
 // generated, and the build does not lint it either; it ships exactly
 // as rollup/esbuild print it, and nothing downstream lints it.
-const banner = '"use strict";';
 
 // Modules allowed to participate in rollup-reported cycles (see onwarn).
 // Current cycle inventory (collected via a probe run against rollup's API):
@@ -88,10 +87,9 @@ export default {
     output: {
         // Bare top-level statements: mw ResourceLoader wraps the script in
         // mw.loader.implement's function scope, which already isolates the
-        // top-level names (see the banner note above). The entry module has
+        // top-level names (see the note above). The entry module has
         // no imports/exports, so "es" emits a plain flat chunk.
         format: "es",
-        banner,
         // 产物写入构建链暂存区 dist/_generated/gadgets（gitignore 覆盖，不进入仓库），
         // 目录层级与 src/ 下一致，由 tsconfig.artifacts.json 编入 dist/_compiled。
         file: fileURLToPath(new URL("../../dist/_generated/gadgets/Navigation_popups/Gadget-popups.js", import.meta.url)),

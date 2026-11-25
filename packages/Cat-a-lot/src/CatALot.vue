@@ -1,5 +1,12 @@
 <template>
-    <div class="cal-dock" :class="{ 'is-collapsed': !isOpen, 'is-busy': isBusy }">
+    <div
+        class="cal-dock"
+        :class="{
+            'is-collapsed': !isOpen,
+            'is-busy': isBusy,
+            'is-bottom-left': prefs.position === 'bottom-left',
+        }"
+    >
         <div
             v-if="isOpen"
             class="cal-resize-handle"
@@ -254,11 +261,33 @@
             :use-close-button="true"
             :primary-action="confirmPrimaryAction"
             :default-action="confirmDefaultAction"
-            @primary="resolveConfirmDialog(true)"
-            @default="resolveConfirmDialog(false)"
+            @primary="resolveConfirmDialog('primary')"
+            @default="resolveConfirmDialog('cancel')"
             @update:open="onConfirmDialogOpenChange"
         >
             <p class="cal-dialog-text">{{ confirmDialog.message }}</p>
+            <template v-if="confirmDialog.extraLabel" #footer>
+                <div class="cal-dialog-actions">
+                    <cdx-button
+                        action="progressive"
+                        weight="primary"
+                        type="button"
+                        @click="resolveConfirmDialog('extra')"
+                    >{{ confirmDialog.extraLabel }}</cdx-button>
+                    <cdx-button
+                        action="default"
+                        weight="normal"
+                        type="button"
+                        @click="resolveConfirmDialog('primary')"
+                    >{{ confirmPrimaryAction.label }}</cdx-button>
+                    <cdx-button
+                        action="default"
+                        weight="normal"
+                        type="button"
+                        @click="resolveConfirmDialog('cancel')"
+                    >{{ uls("取消", "取消") }}</cdx-button>
+                </div>
+            </template>
         </cdx-dialog>
 
         <cdx-dialog

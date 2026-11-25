@@ -66,7 +66,7 @@
     };
 
     try {
-        await mw.loader.getScript("https://fastly.jsdelivr.net/npm/diff@7.0.0/dist/diff.min.js");
+        await mw.loader.getScript("https://fastly.jsdelivr.net/npm/diff@9.0.0/dist/diff.min.js");
         applyDiff(window.Diff);
         console.log("wikidiff2 loaded.");
     } catch (error) {

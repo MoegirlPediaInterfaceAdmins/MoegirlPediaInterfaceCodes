@@ -32,6 +32,10 @@ rules:
     - ignoreFunctions:
         - alpha
   comment-empty-line-before: null
+  selector-no-deprecated:
+    - true
+    - ignoreSelectors:
+        - rb
   selector-type-no-unknown:
     - true
     - ignoreTypes:

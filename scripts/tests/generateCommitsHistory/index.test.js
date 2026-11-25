@@ -75,10 +75,11 @@ vi.mock("../../modules/createCommit.js", () => ({
     "default": vi.fn(() => Promise.resolve()),
 }));
 
+const botsState = vi.hoisted(() => ({ bots: [] }));
 vi.mock("../../modules/yamlModule.js", () => ({
     "default": {
         // bots.yaml 顶层就是数组
-        readFile: () => Promise.resolve([]),
+        readFile: () => Promise.resolve(botsState.bots),
     },
 }));
 
@@ -102,6 +103,7 @@ const selfCoAuthorCommit = {
 beforeEach(() => {
     vi.resetModules();
     gitState.commits = [structuredClone(selfCoAuthorCommit)];
+    botsState.bots = [];
 });
 
 afterEach(() => {
@@ -156,5 +158,18 @@ describe("generateCommitsHistory 归属去重", () => {
         const history = lastHistoryWrite();
         expect(history["GH:AnnAngela"]).toHaveLength(1);
         expect(history["GH:Bob"]).toHaveLength(1);
+    });
+
+    it("co-author 解析出的用户名在 bots 列表中时不计入历史", async () => {
+        botsState.bots = ["GH:Bob"];
+        gitState.commits = [{
+            ...structuredClone(selfCoAuthorCommit),
+            coAuthors: "Co-authored-by: Bob <bob@example.com>\n",
+        }];
+        const rejection = await importScript();
+        expect(rejection).toBeNull();
+        const history = lastHistoryWrite();
+        expect(history["GH:AnnAngela"]).toHaveLength(1);
+        expect(history["GH:Bob"]).toBeUndefined();
     });
 });

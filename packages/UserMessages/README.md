@@ -107,7 +107,7 @@ npm run package:test    # 构建幂等检查 + 单元测试（vitest）
 npm test                # 全仓门禁（eslint / stylelint / tsc 覆盖本包源码与测试；产物不参与 lint）
 ```
 
-- 打包器与 [JSONViewer](../JSONViewer/scripts/build.js) 同款：esbuild `bundle` + `format: "esm"` + `target: "es2020"` + `minifySyntax`，产物不压缩（压缩交给界面库部署侧的 terser）；`charset: "utf8"` 保留中文字面量，`banner` 带 `"use strict"`。
+- 打包器与 [JSONViewer](../JSONViewer/scripts/build.js) 同款：esbuild `bundle` + `format: "esm"` + `target: "es2020"` + `minifySyntax`，产物不压缩（压缩交给界面库部署侧的 terser）；`charset: "utf8"` 保留中文字面量；产物是构建链中间物，不带 banner，严格模式指令由部署链 tsc 注入。
 - 类型来自 `@types/oojs-ui`（列在 `packages/tsconfig.json` 的 `types` 里）、`types-mediawiki`，以及仓库共享的 [`src/@types/site-lib.d.ts`](../../src/@types/site-lib.d.ts)（`wgULS`）。包内 `oo.d.ts` 只声明这两个类型包没收录的 `mw.widgets.TitleInputWidget` / `UserInputWidget` 与 `OO.ui.ProcessDialog.$body`。
 - 包内不写行内 `eslint-disable`：与 jQuery Promise / OOUI 打交道的三条规则（`promise/prefer-await-to-then`、`@typescript-eslint/use-unknown-in-catch-callback-variable`、`@typescript-eslint/no-unnecessary-type-parameters`）在 `eslint.config.js` 里对 `packages/UserMessages/src` 整目录关闭。
 - 单元测试只覆盖 `src/wikitext.ts` 的纯字符串变换：模板调用拼装（空值省略）、`{{` → `{{subst:`、`<noinclude>` / `<includeonly>` 剥离、签名拼接。其余模块要完整的 OOUI / `mw.Api` 运行时，不在单测范围内；覆盖率报告写到 `.cache/coverage/UserMessages`（已 gitignore）。

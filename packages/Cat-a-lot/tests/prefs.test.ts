@@ -30,6 +30,7 @@ describe("DEFAULT_PREFS", () => {
             minor: false,
             editpages: true,
             subcatcount: 50,
+            position: "bottom-right",
         });
     });
 });
@@ -41,6 +42,7 @@ describe("sanitizePrefs", () => {
             minor: true,
             editpages: false,
             subcatcount: 120,
+            position: "bottom-left",
             unknown: "drop-me",
         });
         expect(prefs).toEqual({
@@ -48,6 +50,7 @@ describe("sanitizePrefs", () => {
             minor: true,
             editpages: false,
             subcatcount: 120,
+            position: "bottom-left",
         });
         expect(Object.hasOwn(prefs, "unknown")).toBe(false);
     });
@@ -91,6 +94,17 @@ describe("sanitizePrefs", () => {
         expect(sanitizePrefs({ subcatcount: "abc" }).subcatcount).toBe(50);
         expect(sanitizePrefs({ subcatcount: " " }).subcatcount).toBe(50);
     });
+
+    it("position 只接受两个合法值，其余回退右下角", () => {
+        expect(sanitizePrefs({ position: "bottom-right" }).position).toBe("bottom-right");
+        expect(sanitizePrefs({ position: "bottom-left" }).position).toBe("bottom-left");
+        expect(sanitizePrefs({ position: "left" }).position).toBe("bottom-right");
+        expect(sanitizePrefs({ position: "top-left" }).position).toBe("bottom-right");
+        expect(sanitizePrefs({ position: "bottom-left " }).position).toBe("bottom-right");
+        expect(sanitizePrefs({ position: "" }).position).toBe("bottom-right");
+        expect(sanitizePrefs({ position: null }).position).toBe("bottom-right");
+        expect(sanitizePrefs({ position: 42 }).position).toBe("bottom-right");
+    });
 });
 
 describe("loadPrefs", () => {
@@ -106,6 +120,7 @@ describe("loadPrefs", () => {
                     minor: true,
                     editpages: false,
                     subcatcount: 200,
+                    position: "bottom-left",
                 }),
             },
         });
@@ -114,6 +129,7 @@ describe("loadPrefs", () => {
             minor: true,
             editpages: false,
             subcatcount: 200,
+            position: "bottom-left",
         });
     });
 
@@ -127,7 +143,7 @@ describe("loadPrefs", () => {
     it("window.CatALotPrefs 覆盖 localStorage 并同样经过校验", () => {
         installMw({
             storage: {
-                [PREFS_STORAGE_KEY]: JSON.stringify({ ...DEFAULT_PREFS, subcatcount: 120 }),
+                [PREFS_STORAGE_KEY]: JSON.stringify({ ...DEFAULT_PREFS, subcatcount: 120, position: "bottom-left" }),
             },
         });
         window.CatALotPrefs = {
@@ -135,6 +151,7 @@ describe("loadPrefs", () => {
             minor: true,
             editpages: false,
             subcatcount: 999,
+            position: "left",
         };
         expect(loadPrefs()).toEqual({
             watchlist: "nochange",
@@ -142,6 +159,8 @@ describe("loadPrefs", () => {
             editpages: false,
             // 999 越界，回退默认值而不是沿用存储中的 120
             subcatcount: 50,
+            // "left" 非法，同样回退默认值而不是沿用存储中的 bottom-left
+            position: "bottom-right",
         });
     });
 
@@ -159,6 +178,7 @@ describe("savePrefs", () => {
             minor: true,
             editpages: false,
             subcatcount: 88,
+            position: "bottom-left",
         };
         savePrefs(prefs);
         const saved = storage.get(PREFS_STORAGE_KEY);

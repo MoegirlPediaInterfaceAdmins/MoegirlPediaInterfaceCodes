@@ -102,7 +102,7 @@ $(() => (async () => {
         p.find("#toChartQueryContributions").on("click", async (e) => {
             $(e.target).remove();
             p.append('<div id="contributionChart" style="width:100%;height:400px;">加载中……</div>');
-            await libCachedCode.injectCachedCode("https://testingcf.jsdelivr.net/npm/echarts@5.5.1/dist/echarts.min.js", "script");
+            await libCachedCode.injectCachedCode("https://testingcf.jsdelivr.net/npm/echarts@6.1.0/dist/echarts.min.js", "script");
             const chart = echarts.init(document.getElementById("contributionChart"));
             chart.setOption({
                 tooltip: {
