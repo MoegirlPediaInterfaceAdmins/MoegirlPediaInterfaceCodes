@@ -32,6 +32,11 @@ rules:
     - ignoreFunctions:
         - alpha
   comment-empty-line-before: null
+  # rb 已被 HTML 规范弃用，但站内 Ruby 模板仍会输出 rb 标记，样式需要继续生效
+  selector-no-deprecated:
+    - true
+    - ignoreSelectors:
+        - rb
   selector-type-no-unknown:
     - true
     - ignoreTypes:

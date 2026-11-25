@@ -7,7 +7,7 @@
     "type": "module",
     "private": true,
     "engines": {
-        "node": "^24.11"
+        "node": "^24.15"
     },
     "scripts": {
         "test": "run-p --aggregate-output -clx test:*",
@@ -101,7 +101,7 @@
         "@commitlint/config-conventional": "^21.2.2",
         "@commitlint/lint": "^21.2.2",
         "@commitlint/load": "^21.2.2",
-        "@csstools/stylelint-formatter-github": "^2.0.0",
+        "@csstools/stylelint-formatter-github": "^3.0.0",
         "@inpageedit/core": "^0.19.0",
         "@types/react": "^19.3.0",
         "@types/react-dom": "^19.3.0",
@@ -112,9 +112,9 @@
         "husky": "^9.1.7",
         "jquery": "^4.1.0",
         "jsdom": "^31.0.1",
-        "stylelint": "^17.16.0",
-        "stylelint-config-standard": "^40.0.0",
-        "stylelint-plugin-use-baseline": "^1.4.8",
+        "stylelint": "^18.1.0",
+        "stylelint-config-standard": "^41.1.0",
+        "stylelint-plugin-use-baseline": "^1.5.0",
         "types-mediawiki-response": "^1.3.0",
         "v8r": "^6.1.0",
         "vitest": "^5.0.1",
