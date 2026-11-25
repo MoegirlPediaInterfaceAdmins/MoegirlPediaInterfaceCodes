@@ -148,6 +148,7 @@
                         "hant": "封鎖資訊（自動填寫，請勿修改）"
                     },
                     "type": "multiline",
+                    "required": true,
                     "readOnly": true
                 },
                 {

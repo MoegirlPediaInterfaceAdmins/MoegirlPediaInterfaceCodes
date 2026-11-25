@@ -51,9 +51,9 @@ describe("值中的管道", () => {
 });
 
 describe("固定参数（fixedParams）", () => {
-    it("固定参数先于用户参数输出", () => {
+    it("固定参数置于用户参数之后输出，防止用户参数覆盖固定值", () => {
         expect(buildTemplateWikitext(botVariant, { 1: "Example-bot", 2: "理由" }))
-            .toBe("{{Template:权限申请/机器人申请|用户组=机器人|追加任务=false|1=Example-bot|2=理由}}");
+            .toBe("{{Template:权限申请/机器人申请|1=Example-bot|2=理由|用户组=机器人|追加任务=false}}");
     });
 
     it("用户参数全空时只输出模板与固定参数——空表单的判空基线由此得出", () => {

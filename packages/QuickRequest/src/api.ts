@@ -1,5 +1,6 @@
 import type { ApiParseResponse, ApiQueryResponse } from "types-mediawiki-response";
 import { SITE_ORIGINS } from "./constants.ts";
+import { type ApiRejectPayload, extractInfo } from "./errors.ts";
 import type { SiteId } from "./types.ts";
 
 /** 单个请求的超时上限（ms）。jQuery $.ajax 默认无超时——慢响应会让对话框无限等待，超时后按失败路径恢复界面。 */
@@ -51,16 +52,23 @@ const getApiForSite = (site: SiteId): mw.Api => {
  * @param title 页面名
  * @returns 页面内容；页面不存在时为空字符串
  */
-const fetchPageContent = async (title: string): Promise<string> => {
-    const res = await getApi().post({
+const fetchPageContent = (title: string): Promise<string> => new Promise((resolve, reject) => {
+    void getApi().post({
         action: "query",
         titles: title,
         prop: "revisions",
         rvprop: "content",
         formatversion: 2,
-    }) as Partial<ApiQueryResponse>;
-    return res.query?.pages?.[0]?.revisions?.[0]?.content ?? "";
-};
+    })
+        .then((res: unknown) => {
+            const typed = res as Partial<ApiQueryResponse>;
+            resolve(typed.query?.pages?.[0]?.revisions?.[0]?.content ?? "");
+        })
+        .catch((code: string, result?: ApiRejectPayload | null) => {
+            const info = extractInfo(result);
+            reject(new Error(info ? `${code}：${info}` : code));
+        });
+});
 
 /**
  * 用 action=parse 渲染 wikitext 为 HTML（预览用）。

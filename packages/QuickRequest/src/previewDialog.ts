@@ -85,16 +85,20 @@ class PreviewDialog extends OO.ui.ProcessDialog {
         return super.getSetupProcess(data).next(() => {
             const payload = data as unknown as PreviewDialogData;
             this.htmlPanel.$element.html(payload.previewHtml);
-            // 跨站预览（共享站发起删除请求）时渲染 HTML 来自目标站，链接是目标站的相对路径——
-            // 不处理的话点击会落到当前站的同名路径，补上目标站基址才指向正确
+            // 跨站预览（共享站发起删除请求）时渲染 HTML 来自目标站，链接与图片是目标站的相对路径——
+            // 不处理的话点击/加载会落到当前站的同名路径，补上目标站基址才指向正确
             if (payload.targetBase !== "") {
-                this.htmlPanel.$element.find("a").each((_, element) => {
-                    const href = element.getAttribute("href");
-                    // 只改写站内相对路径（"/zh/…"、"/index.php?…"）；协议相对（//…）与绝对地址保持原样
-                    if (href !== null && href.startsWith("/") && !href.startsWith("//")) {
-                        element.setAttribute("href", `${payload.targetBase}${href}`);
-                    }
-                });
+                const rewriteAttr = (selector: string, attr: string): void => {
+                    this.htmlPanel.$element.find(selector).each((_, element) => {
+                        const value = element.getAttribute(attr);
+                        // 只改写站内相对路径（"/zh/…"、"/index.php?…"）；协议相对（//…）与绝对地址保持原样
+                        if (value !== null && value.startsWith("/") && !value.startsWith("//")) {
+                            element.setAttribute(attr, `${payload.targetBase}${value}`);
+                        }
+                    });
+                };
+                rewriteAttr("a", "href");
+                rewriteAttr("img", "src");
             }
             this.wikitextInput.setValue(payload.submittedText);
             this.wikitextToggle.setValue(false);
@@ -115,6 +119,14 @@ class PreviewDialog extends OO.ui.ProcessDialog {
         return super.getReadyProcess(data).next(() => {
             mw.hook("wikipage.content").fire(this.htmlPanel.$element);
         }, this);
+    }
+
+    /**
+     * 提交中禁止按 Esc 关闭预览框，防止请求仍在发出时误关窗口导致重复提交。
+     * @returns Esc 触发的动作名；提交中返回 null
+     */
+    public override getEscapeAction(): string | null {
+        return this.sending ? null : super.getEscapeAction();
     }
 
     /**

@@ -41,7 +41,7 @@ const createParamWidget = (param: RequestParam, $overlay: JQuery): ParamWidget =
         case "multiline":
             return new OO.ui.MultilineTextInputWidget({ value, rows: 4, autosize: true, maxRows: 12, ...placeholder });
         case "dropdown":
-            return new OO.ui.DropdownInputWidget({ options: param.options ?? [], $overlay });
+            return new OO.ui.DropdownInputWidget({ options: param.options ?? [], value, $overlay });
         case "checkbox":
             return new OO.ui.CheckboxInputWidget({ selected: value === "1" });
         default:

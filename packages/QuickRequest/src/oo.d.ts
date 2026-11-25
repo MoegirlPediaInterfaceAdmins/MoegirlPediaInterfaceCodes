@@ -50,6 +50,8 @@ declare namespace OO.ui {
     interface ProcessDialog {
         /** 对话框内容区域的 jQuery 节点 */
         $body: JQuery;
+        /** 返回按 Esc 时触发的动作名；返回 null 可阻止 Esc 关闭对话框 */
+        getEscapeAction(): string | null;
     }
 }
 

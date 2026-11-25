@@ -27,6 +27,10 @@ const ERROR_MESSAGES: Record<string, string> = {
     blocked: wgULS("您当前的账号或 IP 已被封禁，无法编辑。", "您目前的帳號或 IP 已被封鎖，無法編輯。"),
     spamdetected: wgULS("内容被滥用过滤器判定为垃圾信息，已被拒绝。", "內容被防濫用過濾器判定為垃圾資訊，已被拒絕。"),
     articleexists: wgULS("目标页面已存在，无法新建。", "目標頁面已存在，無法建立。"),
+    missingtitle: wgULS("目标页面不存在，无法编辑。", "目標頁面不存在，無法編輯。"),
+    protectedpage: wgULS("目标页面已受保护，您当前无权编辑。", "目標頁面已受保護，您目前無權編輯。"),
+    cascadeprotected: wgULS("目标页面受级联保护，您当前无权编辑。", "目標頁面受連鎖保護，您目前無權編輯。"),
+    titleblacklist: wgULS("目标页面标题被标题黑名单阻止。", "目標頁面標題被標題黑名單阻止。"),
     readonly: wgULS("本站当前处于只读状态，暂时无法编辑。", "本站目前處於唯讀狀態，暫時無法編輯。"),
 };
 
@@ -61,4 +65,4 @@ const describeSendError = (code: string, result?: ApiRejectPayload | null): stri
     return wgULS(`发送失败（${code}）${info ? `：${info}` : ""}`, `傳送失敗（${code}）${info ? `：${info}` : ""}`);
 };
 
-export { type ApiRejectPayload, describeSendError, toErrorMessage };
+export { type ApiRejectPayload, describeSendError, extractInfo, toErrorMessage };

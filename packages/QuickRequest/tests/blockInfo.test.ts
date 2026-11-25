@@ -61,10 +61,11 @@ describe("formatBlockInfo", () => {
         expect(text).toContain("''未给出原因''");
     });
 
-    it("未被封禁（无封禁编号或执行人）时返回 null", () => {
+    it("未被封禁（无封禁编号、null 或执行人为空）时返回 null", () => {
         expect(formatBlockInfo({})).toBeNull();
         expect(formatBlockInfo({ blockreason: "x" })).toBeNull();
         expect(formatBlockInfo({ blockid: 3 })).toBeNull();
+        expect(formatBlockInfo({ blockid: null, blockedby: "" })).toBeNull();
     });
 });
 
@@ -85,33 +86,34 @@ describe("fetchBlockInfoText 的并行封禁合并", () => {
         blockedtimestampformatted: "2026年10月23日 (五) 21:37",
         blockexpiryformatted: "",
     };
-    /** 按入参动作分流的查询桩：users 查询回 primaryEntry，blocks 查询回给定清单（或抛错）。 */
-    const mockQueries = (blocks: unknown[] | "fail") => {
+    /** 按入参动作分流的查询桩：users 查询回 primaryEntry（可覆写），blocks 查询回给定清单（或抛错）。 */
+    const mockQueries = (blocks: unknown[] | "fail", userOverride: Record<string, unknown> = primaryEntry) => {
         const post = vi.fn((params: { list?: string }) => {
             if (params.list === "blocks") {
                 return blocks === "fail" ? Promise.reject(new Error("network")) : Promise.resolve({ query: { blocks } });
             }
-            return Promise.resolve({ query: { users: [primaryEntry] } });
+            return Promise.resolve({ query: { users: [userOverride] } });
         });
         vi.mocked(getApi).mockReturnValue({ post } as never);
         return post;
     };
 
-    it("blockinfo 之外的同账号封禁以「并行封禁」行追加，主封禁按 blockid 去重", async () => {
+    it("blockinfo 之外的同账号封禁以「并行封禁」行追加，主封禁按 id 去重", async () => {
         const post = mockQueries([
-            { blockid: 13390, by: "没有羽翼的格雷塔", reason: "主封禁", expiry: "infinite" },
-            { blockid: 13395, by: "另一位管理员", reason: "部分封禁\n跨行原因", expiry: "2026-11-05T12:00:00Z" },
+            { id: 13390, by: "没有羽翼的格雷塔", reason: "主封禁", expiry: "infinity" },
+            { id: 13395, by: "另一位管理员", reason: "部分封禁\n跨行原因", expiry: "2026-11-05T12:00:00Z" },
         ]);
         const text = await fetchBlockInfoText();
         expect(text).toContain("* 封禁编号：#13390");
         expect(text).toContain("* 并行封禁 #13395：期满 2026-11-05T12:00:00Z，原因：部分封禁跨行原因");
-        // 两条查询都发出（list=users 主查询 + list=blocks 并行封禁查询）
-        expect(post.mock.calls.some(([params]) => params.list === "users")).toBe(true);
-        expect(post.mock.calls.some(([params]) => params.list === "blocks")).toBe(true);
+        expect(text).not.toContain("并行封禁 #13390");
+        // 断言真实查询参数
+        expect(post).toHaveBeenCalledWith(expect.objectContaining({ list: "users", usprop: "blockinfo", ususers: "Tester" }));
+        expect(post).toHaveBeenCalledWith(expect.objectContaining({ list: "blocks", bkusers: "Tester", bkprop: "id|by|reason|expiry|timestamp" }));
     });
 
     it("并行封禁查询失败或无额外条目时保持主封禁文本不变", async () => {
-        mockQueries([{ blockid: 13390, by: "没有羽翼的格雷塔", reason: "主封禁", expiry: "infinite" }]);
+        mockQueries([{ id: 13390, by: "没有羽翼的格雷塔", reason: "主封禁", expiry: "infinity" }]);
         const onlyPrimary = await fetchBlockInfoText();
         expect(onlyPrimary).not.toContain("并行封禁");
 
@@ -121,12 +123,27 @@ describe("fetchBlockInfoText 的并行封禁合并", () => {
         expect(failed).not.toContain("并行封禁");
     });
 
-    it("无限期的并行封禁标注「无限期」，缺原因显示「未给出原因」", async () => {
+    it("无限期的并行封禁（infinity）标注「无限期」，缺原因显示「未给出原因」", async () => {
         mockQueries([
-            { blockid: 2, by: "A", reason: "", expiry: "infinite" },
+            { id: 2, by: "A", reason: "", expiry: "infinity" },
         ]);
         const text = await fetchBlockInfoText();
         expect(text).toContain("* 并行封禁 #2：无限期，原因：未给出原因");
+    });
+
+    it("CompositeBlock（blockid 为 null、blockedby 为空）时退回按 list=blocks 组装", async () => {
+        mockQueries(
+            [
+                { id: 2001, by: "管理员甲", reason: "复合原因1", expiry: "infinity", timestamp: "2026-11-01T00:00:00Z" },
+                { id: 2002, by: "管理员乙", reason: "复合原因2", expiry: "2026-12-01T00:00:00Z", timestamp: "2026-11-02T00:00:00Z" },
+            ],
+            { blockid: null, blockedby: "", blockreason: "", blockcomponents: [{}, {}] },
+        );
+        const text = await fetchBlockInfoText();
+        expect(text).toContain("[[U:管理员甲|管理员甲]]");
+        expect(text).toContain("* 封禁编号：#2001");
+        expect(text).toContain("* 并行封禁 #2002：期满 2026-12-01T00:00:00Z，原因：复合原因2");
+        expect(text).not.toContain("#null");
     });
 
     it("主查询失败时抛出（入口按查询失败提示，不打开对话框）", async () => {

@@ -8,23 +8,24 @@ import type { TemplateSpec } from "./types.ts";
  * 含管道的输入造成的拆参异常在预览中可见，用户可当场修正；反之若在客户端改写
  * （如把顶层 | 替换为 {{!}}），会破坏 nowiki / pre / syntaxhighlight 等环境里的合法输入，
  * 等于维护一个不完整的 wikitext 解析器——两者取舍下不改写用户输入。
- * 固定参数（fixedParams，如 用户组=机器用户）先于用户参数输出，同样原样拼接。
+ * 固定参数（fixedParams，如 用户组=机器用户）置于用户参数之后输出，避免用户输入里的
+ * 重复命名参数覆盖固定值（MediaWiki 同名参数以后置为准）。
  * @param spec 模板规格（类型条目或其变体）
  * @param values 参数名 → 值
  * @returns 拼出的 wikitext
  */
 const buildTemplateWikitext = (spec: TemplateSpec, values: Record<string, string>): string => {
-    const fixed = Object.entries(spec.fixedParams ?? {})
-        .map(([key, value]) => `|${key}=${value}`)
-        .join("");
     const params = (spec.parameters ?? [])
         .map(({ key }) => {
             const value = values[key];
             return value ? `|${key}=${value}` : "";
         })
         .join("");
+    const fixed = Object.entries(spec.fixedParams ?? {})
+        .map(([key, value]) => `|${key}=${value}`)
+        .join("");
 
-    return `{{${spec.template}${fixed}${params}}}`;
+    return `{{${spec.template}${params}${fixed}}}`;
 };
 
 /**

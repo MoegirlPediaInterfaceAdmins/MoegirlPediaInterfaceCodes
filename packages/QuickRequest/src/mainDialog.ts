@@ -69,6 +69,8 @@ class MainDialog extends OO.ui.ProcessDialog {
     private paramFields: ParamField[] = [];
     /** 隐藏字段（hidden 参数）的固定值，键 → 值；随参数区重建 */
     private hiddenValues: Record<string, string> = {};
+    /** 提交前确认项的会话级缓存，避免开框横幅与提交确认重复发查询 */
+    private warningsPromise: Promise<Warning[]> | null = null;
 
     private loadingPanel!: OO.ui.PanelLayout;
     private formPanel!: OO.ui.PanelLayout;
@@ -172,7 +174,7 @@ class MainDialog extends OO.ui.ProcessDialog {
         return new OO.ui.Process(
             (async () => {
                 const submission = await this.collectSubmission();
-                if (!submission) {
+                if (!this.isOpened() || !submission) {
                     return;
                 }
 
@@ -183,7 +185,13 @@ class MainDialog extends OO.ui.ProcessDialog {
                     // （delete 在共享站发起时经 ForeignApi 到主站解析）
                     previewHtml = await parseWikitext(submission.submittedText, submission.targetPage, this.api);
                 } catch (error) {
+                    if (!this.isOpened()) {
+                        return;
+                    }
                     void showError(wgULS("预览失败", "預覽失敗"), wgULS(`无法渲染预览：${toErrorMessage(error)}`, `無法產生預覽：${toErrorMessage(error)}`));
+                    return;
+                }
+                if (!this.isOpened()) {
                     return;
                 }
 
@@ -201,7 +209,7 @@ class MainDialog extends OO.ui.ProcessDialog {
                     targetBase: this.targetBase,
                     ...this.definition.warnings === undefined
                         ? {}
-                        : { getWarnings: (): Promise<Warning[]> => this.definition.warnings?.(this.context) ?? Promise.resolve([]) },
+                        : { getWarnings: (): Promise<Warning[]> => this.loadWarnings() },
                 };
                 this.onPreview?.(data);
             }) as unknown as OO.ui.Process.Step<this>,
@@ -230,9 +238,11 @@ class MainDialog extends OO.ui.ProcessDialog {
 
         const targetPage = this.resolveTargetPage();
         if (targetPage !== false) {
+            const displayTarget = targetPage.replace(/_/g, " ");
+            const targetValue = this.targetBase === "" ? displayTarget : `${displayTarget}（${wgULS("主站", "主站")}）`;
             fieldset.addItems([
                 // 只读输入框而非纯文本：与表单内其他控件视觉一致，长页面名横向滚动不撑破布局，且可选中复制
-                new OO.ui.FieldLayout(new OO.ui.TextInputWidget({ value: targetPage.replace(/_/g, " "), readOnly: true }), {
+                new OO.ui.FieldLayout(new OO.ui.TextInputWidget({ value: targetValue, readOnly: true }), {
                     label: wgULS("发至", "發至"),
                     align: "top",
                 }),
@@ -281,13 +291,14 @@ class MainDialog extends OO.ui.ProcessDialog {
         this.rebuildParamArea(initialSpec);
 
         // 确认项（方针修改提醒等）在表单出现时即以横幅告知，不等到提交才拦；
-        // 提交前的逐条确认仍保留（previewDialog）。横幅只展示正文，标题（如「提醒」）信息量低不重复
-        void this.definition.warnings?.(this.context)
+        // 提交前的逐条确认仍保留（previewDialog）。横幅只展示正文，标题（如「提醒」）信息量低不重复；
+        // 逆序 prepend 以保持与 warnings 数组一致的展示顺序
+        void this.loadWarnings()
             .then((warnings) => {
                 if (warnings.length === 0) {
                     return;
                 }
-                for (const warning of warnings) {
+                for (const warning of [...warnings].reverse()) {
                     this.formPanel.$element.prepend(new OO.ui.MessageWidget({ type: "warning", label: warning.message }).$element);
                 }
                 if (this.isOpened()) {
@@ -297,6 +308,12 @@ class MainDialog extends OO.ui.ProcessDialog {
             .catch((error: unknown) => {
                 console.warn("[QuickRequest] 加载提交前提醒失败", error);
             });
+    }
+
+    /** 按对话会话缓存确认项，避免开框横幅与预览提交重复请求。 */
+    private loadWarnings(): Promise<Warning[]> {
+        this.warningsPromise ??= this.definition.warnings?.(this.context) ?? Promise.resolve([]);
+        return this.warningsPromise;
     }
 
     /**
@@ -417,12 +434,19 @@ class MainDialog extends OO.ui.ProcessDialog {
         }
     }
 
-    /** enterSubmits 字段的回车回调：表单内任一 storageKey 偏好开启时，回车直达「预览」。 */
+    /** enterSubmits 字段的回车回调：表单有效、非提交中且任一 storageKey 偏好开启时，回车直达「预览」。 */
     private onEnterKey(): void {
-        const enabled = this.paramFields.some(({ param, read }) => param.storageKey !== undefined && read() === "1");
-        if (enabled) {
-            void this.executeAction("preview");
+        if (!this.activeSpec || this.isPending()) {
+            return;
         }
+        const enabled = this.paramFields.some(({ param, read }) => param.storageKey !== undefined && read() === "1");
+        if (!enabled) {
+            return;
+        }
+        if (validateFields(this.paramFields) !== null || !isGroupSatisfied(this.activeSpec, this.collectValues())) {
+            return;
+        }
+        void this.executeAction("preview");
     }
 
     /** 重算「预览」按钮的可用性，并刷新可见性、字段级校验提示与组约束提示。 */
