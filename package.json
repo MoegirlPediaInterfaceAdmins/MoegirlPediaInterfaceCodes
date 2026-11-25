@@ -7,7 +7,7 @@
     "type": "module",
     "private": true,
     "engines": {
-        "node": "^24.15"
+        "node": "^26.13"
     },
     "scripts": {
         "test": "run-p --aggregate-output -clx test:*",
