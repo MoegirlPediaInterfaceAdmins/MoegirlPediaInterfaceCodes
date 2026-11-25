@@ -129,6 +129,16 @@
         "@parcel/watcher": true
     },
     "overrides": {
-        "vue": "~3.5.42"
+        "vue": "~3.5.42",
+        "v8r": {
+            "minimatch": "^11.0.1",
+            "glob": "^14.0.2"
+        },
+        "archiver-utils": {
+            "glob": "^14.0.2"
+        },
+        "@typescript-eslint/typescript-estree": {
+            "minimatch": "^11.0.1"
+        }
     }
 }
