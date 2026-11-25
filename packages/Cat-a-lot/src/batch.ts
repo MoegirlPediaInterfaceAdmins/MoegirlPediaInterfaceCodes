@@ -1,10 +1,18 @@
 import {
+    MAX_QUERY_TITLES,
     NON_BOT_DELAY_MS,
     NON_BOT_MAX_PAGES,
     SYSOP_FLOOD_PROMPT_THRESHOLD,
     activeChangeTags,
 } from "./constants.ts";
-import { computeNewWikitext, normalizeCatName, sameCategory, validateCategoryTitle, verifyCommittedOnServer } from "./wikitext.ts";
+import {
+    computeNewWikitext,
+    extractCategoryNames,
+    normalizeCatName,
+    sameCategory,
+    validateCategoryTitle,
+    verifyCommittedOnServer,
+} from "./wikitext.ts";
 import type {
     BatchOptions,
     BatchResult,
@@ -115,6 +123,7 @@ const startBatch = (options: BatchOptions): BatchRun => {
             stopped: false,
             skippedAlready: [],
             skippedNotFound: [],
+            skippedVariant: [],
             skippedServer: [],
         };
         let grantedThisRun = false;
@@ -144,6 +153,94 @@ const startBatch = (options: BatchOptions): BatchRun => {
             }
             const cleanTarget = validatedTarget ?? "";
 
+            if (!initiallyHasBotRight && !isSysopOrStaff && titles.length > NON_BOT_MAX_PAGES) {
+                await hooks.askDialog({
+                    message: wgULS(
+                        `非机器用户单次最多批量处理 ${NON_BOT_MAX_PAGES} 个页面（当前已选 ${titles.length} 个）。请减少选择数量后再试。`,
+                        `非機器用戶單次最多批次處理 ${NON_BOT_MAX_PAGES} 個頁面（當前已選 ${titles.length} 個）。請減少選擇數量後再試。`,
+                    ),
+                    showCancel: false,
+                });
+                return result;
+            }
+
+            const MAX_VARIANT_QUERIES_PER_PAGE = 20;
+            const MAX_PRIVILEGED_CATS_PER_PAGE = 200;
+            const MAX_SOURCE_VARIANTS_PER_PAGE = 20;
+            const variantCache = new Map<string, string>();
+            const canonicalOf = (name: string): string => {
+                const clean = normalizeCatName(name);
+                return variantCache.get(clean) ?? clean;
+            };
+            const ensureVariantsResolved = async (names: readonly string[], batchSize: number): Promise<void> => {
+                const missing: string[] = [];
+                for (const raw of names) {
+                    const clean = normalizeCatName(raw);
+                    if (clean && !variantCache.has(clean)) {
+                        missing.push(clean);
+                    }
+                }
+                if (missing.length === 0) {
+                    return;
+                }
+                const resolved = await api.resolveCategoryVariants(missing, batchSize);
+                for (const name of missing) {
+                    const canonical = resolved.get(name);
+                    if (canonical !== undefined) {
+                        variantCache.set(name, canonical);
+                    }
+                }
+            };
+
+            // move 模式无论是否全选，都在运行前解析一次 [sourceCat, cleanTarget]，防止把页面改写成等价红链变体；
+            // add/copy 解析一次 [cleanTarget]，供每页用缓存的规范目标分类比对页内分类（不额外发每页请求）。
+            let moveVariantsConfirmed = false;
+            const preflightNames: string[] = [];
+            if (mode === "move" && sourceCat !== "" && !sameCategory(sourceCat, cleanTarget)) {
+                preflightNames.push(sourceCat, cleanTarget);
+            } else if ((mode === "add" || mode === "copy") && cleanTarget !== "") {
+                preflightNames.push(cleanTarget);
+            }
+            if (preflightNames.length > 0) {
+                hooks.setCurrentTitle(wgULS("正在校验分类变体…", "正在校驗分類變體…"));
+                hooks.setProgress(0, titles.length);
+                try {
+                    await ensureVariantsResolved(
+                        preflightNames,
+                        isSysopOrStaff || initiallyHasBotRight ? MAX_QUERY_TITLES : 1,
+                    );
+                    moveVariantsConfirmed = mode === "move";
+                } catch (error) {
+                    if (isStopped() && isAbortError(error)) {
+                        hooks.setCurrentTitle("");
+                        hooks.notify(wgULS("已中止批处理。", "已中止批次處理。"), "info");
+                        return result;
+                    }
+                    // 前置解析失败时：move 不提供分类重定向选项并提示未完成变体校验，add/copy 提示后继续按原名执行
+                    hooks.notify(
+                        mode === "move"
+                            ? wgULS("分类变体预检失败，尚未确认源/目标是否等价，已按常规流程继续。", "分類變體預檢失敗，尚未確認源/目標是否等價，已按常規流程繼續。")
+                            : wgULS("目标分类变体预检失败，将按原始分类名继续处理。", "目標分類變體預檢失敗，將按原始分類名繼續處理。"),
+                        "warn",
+                    );
+                }
+                hooks.setCurrentTitle("");
+                if (isStopped()) {
+                    hooks.notify(wgULS("已中止批处理。", "已中止批次處理。"), "info");
+                    return result;
+                }
+                if (moveVariantsConfirmed && sameCategory(canonicalOf(sourceCat), canonicalOf(cleanTarget))) {
+                    hooks.notify(
+                        wgULS("源分类与目标分类指向同一分类，未执行任何编辑。", "源分類與目標分類指向同一分類，未執行任何編輯。"),
+                        "info",
+                    );
+                    for (const t of titles) {
+                        result.skippedAlready.push(t);
+                    }
+                    return result;
+                }
+            }
+
             if (
                 mode === "move"
                 && sourceCat !== ""
@@ -156,14 +253,22 @@ const startBatch = (options: BatchOptions): BatchRun => {
                     `檢測到您正在遷移當前分類下的全部成員。\n如果只是需要將「${normalizedSource}」合併或遷移至「${cleanTarget}」，只需在分類頁懸掛 {{分类重定向|${cleanTarget}}}，次日由機器人自動處理，無需手動批次操作。\n\n您也可以點擊「懸掛分類重定向」將當前分類頁替換為重定向，如果特別著急請點擊「立即執行」。`,
                 );
                 let choice: "primary" | "extra" | "cancel";
-                if (hooks.askMoveAllDialog) {
+                if (moveVariantsConfirmed && hooks.askMoveAllDialog) {
                     choice = await hooks.askMoveAllDialog({
                         message,
                         primaryLabel: wgULS("立即执行", "立即執行"),
                         extraLabel: wgULS("悬挂分类重定向", "懸掛分類重定向"),
                     });
                 } else {
-                    const confirmed = await hooks.askDialog({ message, showCancel: true });
+                    const confirmed = await hooks.askDialog({
+                        message: moveVariantsConfirmed
+                            ? message
+                            : wgULS(
+                                `检测到您正在迁移当前分类下的全部成员。\n将「${normalizedSource}」批量移动至「${cleanTarget}」，是否继续？`,
+                                `檢測到您正在遷移當前分類下的全部成員。\n將「${normalizedSource}」批次移動至「${cleanTarget}」，是否繼續？`,
+                            ),
+                        showCancel: true,
+                    });
                     choice = confirmed ? "primary" : "cancel";
                 }
                 if (choice === "cancel" || isStopped()) {
@@ -213,44 +318,118 @@ const startBatch = (options: BatchOptions): BatchRun => {
                 }
             }
 
-            if (!initiallyHasBotRight) {
-                if (isSysopOrStaff && titles.length > SYSOP_FLOOD_PROMPT_THRESHOLD) {
-                    const approved = await hooks.askDialog({
-                        message: wgULS(
-                            `您本次计划批量处理 ${titles.length} 个页面（已超过 10 页）。\n建议临时授权机器用户以避免近期更改刷屏并豁免速率限制。\n\n是否立即为您自授权 2 小时的机器用户？`,
-                            `您本次計劃批次處理 ${titles.length} 個頁面（已超過 10 頁）。\n建議臨時授權機器用戶以避免近期更改洗版並豁免速率限制。\n\n是否立即為您自授權 2 小時的機器用戶？`,
-                        ),
-                        showCancel: true,
-                    });
+            if (!initiallyHasBotRight && isSysopOrStaff && titles.length > SYSOP_FLOOD_PROMPT_THRESHOLD) {
+                const approved = await hooks.askDialog({
+                    message: wgULS(
+                        `您本次计划批量处理 ${titles.length} 个页面（已超过 10 页）。\n建议临时授权机器用户以避免近期更改刷屏并豁免速率限制。\n\n是否立即为您自授权 2 小时的机器用户？`,
+                        `您本次計劃批次處理 ${titles.length} 個頁面（已超過 10 頁）。\n建議臨時授權機器用戶以避免近期更改洗版並豁免速率限制。\n\n是否立即為您自授權 2 小時的機器用戶？`,
+                    ),
+                    showCancel: true,
+                });
+                if (isStopped()) {
+                    return result;
+                }
+                if (approved) {
+                    try {
+                        grantedThisRun = await hooks.requestSelfFlood();
+                    } catch {
+                        // 自授权失败时按普通用户继续，速率限制由 delayMs 兜底
+                        grantedThisRun = false;
+                    }
                     if (isStopped()) {
                         return result;
                     }
-                    if (approved) {
-                        try {
-                            grantedThisRun = await hooks.requestSelfFlood();
-                        } catch {
-                            // 自授权失败时按普通用户继续，速率限制由 delayMs 兜底
-                            grantedThisRun = false;
-                        }
-                        if (isStopped()) {
-                            return result;
-                        }
-                    }
-                } else if (!isSysopOrStaff && titles.length > NON_BOT_MAX_PAGES) {
-                    await hooks.askDialog({
-                        message: wgULS(
-                            `非机器用户单次最多批量处理 ${NON_BOT_MAX_PAGES} 个页面（当前已选 ${titles.length} 个）。请减少选择数量后再试。`,
-                            `非機器用戶單次最多批次處理 ${NON_BOT_MAX_PAGES} 個頁面（當前已選 ${titles.length} 個）。請減少選擇數量後再試。`,
-                        ),
-                        showCancel: false,
-                    });
-                    return result;
                 }
             }
 
             // 本次运行实际拥有的 bot/flood 权限：初始权限或本次自授权成功
             const hasBotRight = initiallyHasBotRight || grantedThisRun;
+            const canBatchTitleQueries = isSysopOrStaff || hasBotRight;
             const delayMs = hasBotRight ? 0 : NON_BOT_DELAY_MS;
+            const findVariantMatchesForPage = async (pageCats: readonly string[]): Promise<{
+                sourceMatches: string[];
+                targetMatches: string[];
+                truncated: boolean;
+            }> => {
+                const cleanSource = normalizeCatName(sourceCat);
+                const extraTargets = mode === "move" && cleanTarget !== "" ? [cleanTarget] : [];
+                if (canBatchTitleQueries) {
+                    let truncated = pageCats.length > MAX_PRIVILEGED_CATS_PER_PAGE;
+                    const boundedCats = pageCats.slice(0, MAX_PRIVILEGED_CATS_PER_PAGE);
+                    await ensureVariantsResolved([...boundedCats, sourceCat, ...extraTargets], MAX_QUERY_TITLES);
+                    if (isStopped()) {
+                        return { sourceMatches: [], targetMatches: [], truncated: false };
+                    }
+                    const canonicalSource = canonicalOf(sourceCat);
+                    const canonicalTarget = cleanTarget !== "" ? canonicalOf(cleanTarget) : "";
+                    const sourceMatches = boundedCats.filter((cat) => sameCategory(canonicalOf(cat), canonicalSource));
+                    if (sourceMatches.length > MAX_SOURCE_VARIANTS_PER_PAGE) {
+                        truncated = true;
+                    }
+                    const targetMatches = canonicalTarget
+                        ? boundedCats.filter((cat) => sameCategory(canonicalOf(cat), canonicalTarget))
+                        : [];
+                    return {
+                        sourceMatches: sourceMatches.slice(0, MAX_SOURCE_VARIANTS_PER_PAGE),
+                        targetMatches,
+                        truncated,
+                    };
+                }
+                // 非 sysop/bot/flood 每次请求仅允许查询 1 个标题；单页总变体查询次数严格计入 MAX_VARIANT_QUERIES_PER_PAGE
+                let remainingQueries = MAX_VARIANT_QUERIES_PER_PAGE;
+                let truncated = false;
+                if (cleanSource && !variantCache.has(cleanSource)) {
+                    if (remainingQueries <= 0) {
+                        return { sourceMatches: [], targetMatches: [], truncated: true };
+                    }
+                    remainingQueries -= 1;
+                    await ensureVariantsResolved([sourceCat], 1);
+                    if (isStopped()) {
+                        return { sourceMatches: [], targetMatches: [], truncated: false };
+                    }
+                }
+                if (mode === "move" && cleanTarget !== "" && !variantCache.has(cleanTarget)) {
+                    if (remainingQueries <= 0) {
+                        return { sourceMatches: [], targetMatches: [], truncated: true };
+                    }
+                    remainingQueries -= 1;
+                    await ensureVariantsResolved([cleanTarget], 1);
+                    if (isStopped()) {
+                        return { sourceMatches: [], targetMatches: [], truncated: false };
+                    }
+                }
+                const canonicalSource = canonicalOf(sourceCat);
+                const canonicalTarget = cleanTarget !== "" ? canonicalOf(cleanTarget) : "";
+                const sourceMatches: string[] = [];
+                const targetMatches: string[] = [];
+                for (const cat of pageCats) {
+                    if (!variantCache.has(cat)) {
+                        if (remainingQueries <= 0) {
+                            truncated = true;
+                            continue;
+                        }
+                        remainingQueries -= 1;
+                        await ensureVariantsResolved([cat], 1);
+                        if (isStopped()) {
+                            return { sourceMatches: [], targetMatches: [], truncated: false };
+                        }
+                    }
+                    if (sameCategory(canonicalOf(cat), canonicalSource)) {
+                        sourceMatches.push(cat);
+                    }
+                    if (canonicalTarget && sameCategory(canonicalOf(cat), canonicalTarget)) {
+                        targetMatches.push(cat);
+                    }
+                }
+                if (sourceMatches.length > MAX_SOURCE_VARIANTS_PER_PAGE) {
+                    truncated = true;
+                }
+                return {
+                    sourceMatches: sourceMatches.slice(0, MAX_SOURCE_VARIANTS_PER_PAGE),
+                    targetMatches,
+                    truncated,
+                };
+            };
             running = true;
             hooks.setRunning(true);
             hooks.setProgress(0, titles.length);
@@ -263,6 +442,8 @@ const startBatch = (options: BatchOptions): BatchRun => {
                 const title = titles[i];
                 hooks.setCurrentTitle(title);
                 let editSubmitted = false;
+                let effectiveSourceVariants: string[] = [];
+                let effectiveTargetVariants: string[] = [];
 
                 try {
                     const page = await api.fetchPageWikitext(title);
@@ -272,13 +453,66 @@ const startBatch = (options: BatchOptions): BatchRun => {
                     if (page.missing || page.invalid || page.content === undefined) {
                         result.skippedServer.push(`${title}（${wgULS("页面不存在或无法读取", "頁面不存在或無法讀取")}）`);
                     } else {
-                        const computed = computeNewWikitext({
+                        const pageContent = page.content;
+                        let cachedPageCats: string[] | null = null;
+                        const getPageCats = (): string[] => {
+                            cachedPageCats ??= extractCategoryNames(pageContent);
+                            return cachedPageCats;
+                        };
+                        if (cleanTarget !== "" && mode !== "remove") {
+                            const pageCats = getPageCats();
+                            if (pageCats.length > 0) {
+                                const canonicalTarget = canonicalOf(cleanTarget);
+                                effectiveTargetVariants = pageCats.filter((cat) => sameCategory(canonicalOf(cat), canonicalTarget));
+                            }
+                        }
+                        let computed = computeNewWikitext({
                             text: page.content,
                             mode,
                             sourceCat,
                             targetCat: cleanTarget,
+                            targetVariants: effectiveTargetVariants,
                         });
-                        if (computed.status === "skipped-already") {
+                        let variantSkipReason: string | null = null;
+                        if (computed.status === "skipped-not-found" && sourceCat !== "") {
+                            const pageCats = getPageCats();
+                            if (pageCats.length > 0) {
+                                try {
+                                    const variantResult = await findVariantMatchesForPage(pageCats);
+                                    if (isStopped()) {
+                                        break;
+                                    }
+                                    if (variantResult.truncated) {
+                                        variantSkipReason = `${title}（${wgULS("页面分类过多，部分分类未做变体解析，已跳过", "頁面分類過多，部分分類未做變體解析，已跳過")}）`;
+                                    } else if (
+                                        mode === "move"
+                                        && cleanTarget !== ""
+                                        && sameCategory(canonicalOf(sourceCat), canonicalOf(cleanTarget))
+                                    ) {
+                                        computed = { status: "skipped-already", text: page.content };
+                                    } else if (variantResult.sourceMatches.length > 0) {
+                                        effectiveSourceVariants = variantResult.sourceMatches;
+                                        effectiveTargetVariants = variantResult.targetMatches;
+                                        computed = computeNewWikitext({
+                                            text: page.content,
+                                            mode,
+                                            sourceCat,
+                                            targetCat: cleanTarget,
+                                            sourceVariants: effectiveSourceVariants,
+                                            targetVariants: effectiveTargetVariants,
+                                        });
+                                    }
+                                } catch (error) {
+                                    if (isStopped() && isAbortError(error)) {
+                                        throw error;
+                                    }
+                                    variantSkipReason = `${title}（${wgULS("分类变体解析失败：", "分類變體解析失敗：")}${errorMessage(error)}）`;
+                                }
+                            }
+                        }
+                        if (variantSkipReason !== null) {
+                            result.skippedVariant.push(variantSkipReason);
+                        } else if (computed.status === "skipped-already") {
                             result.skippedAlready.push(title);
                         } else if (computed.status === "skipped-not-found") {
                             result.skippedNotFound.push(title);
@@ -307,26 +541,31 @@ const startBatch = (options: BatchOptions): BatchRun => {
                         }
                     }
                 } catch (error) {
-                    const aborted = isStopped() && isAbortError(error);
+                    let aborted = isStopped() && isAbortError(error);
                     let reconciled = false;
                     if (editSubmitted && !isApiBusinessError(error) && !isStopped()) {
                         try {
                             const latest = await api.fetchPageWikitext(title);
                             if (
-                                latest.content !== undefined
+                                !isStopped()
+                                && latest.content !== undefined
                                 && verifyCommittedOnServer({
                                     latestText: latest.content,
                                     mode,
                                     sourceCat,
                                     targetCat: cleanTarget,
+                                    sourceVariants: effectiveSourceVariants,
+                                    targetVariants: effectiveTargetVariants,
                                 })
                             ) {
                                 hooks.onPageDone(title);
                                 result.done += 1;
                                 reconciled = true;
                             }
-                        } catch {
-                            // 回读失败时按未提交处理
+                        } catch (readError) {
+                            if (isStopped() && isAbortError(readError)) {
+                                aborted = true;
+                            }
                         }
                     }
                     if (!reconciled && !aborted) {

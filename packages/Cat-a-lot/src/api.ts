@@ -1,5 +1,5 @@
-import { API_TIMEOUT_MS } from "./constants.ts";
-import { normalizeCatName } from "./wikitext.ts";
+import { API_TIMEOUT_MS, MAX_QUERY_TITLES } from "./constants.ts";
+import { isCategoryPrefixedTitle, normalizeCatName } from "./wikitext.ts";
 import type { ApiClient, CategoryTree, EditPageParams, PageWikitext } from "./types.ts";
 
 interface ApiErrorPayload {
@@ -42,6 +42,19 @@ interface RevisionsResponse {
                 slots?: { main?: { content?: string | undefined } };
             }[];
         }[];
+    };
+}
+
+interface TitleMappingEntry {
+    from?: string;
+    to?: string;
+}
+
+interface ConvertTitlesResponse {
+    query?: {
+        normalized?: readonly TitleMappingEntry[];
+        converted?: readonly TitleMappingEntry[];
+        redirects?: readonly TitleMappingEntry[];
     };
 }
 
@@ -232,6 +245,97 @@ const createApi = (userName: string): ApiClient => {
         };
     };
 
+    /**
+     * 参考 HotCat，通过 redirects=1&converttitles=1 将分类名规范化并解析到站点实际存在的变体页/重定向目标页
+     * （converttitles 转换目标为数据库中存在的变体拼写，而非用户界面语言偏好）；非特权用户应传 batchSize=1。
+     */
+    const resolveCategoryVariants = async (
+        catNames: readonly string[],
+        batchSize = MAX_QUERY_TITLES,
+    ): Promise<Map<string, string>> => {
+        const result = new Map<string, string>();
+        const unique: string[] = [];
+        for (const raw of catNames) {
+            const clean = normalizeCatName(raw);
+            if (clean && !clean.includes("|") && !result.has(clean)) {
+                result.set(clean, clean);
+                unique.push(clean);
+            }
+        }
+        const chunkSize = Math.min(Math.max(Math.trunc(batchSize) || 1, 1), MAX_QUERY_TITLES);
+        for (let offset = 0; offset < unique.length; offset += chunkSize) {
+            const chunk = unique.slice(offset, offset + chunkSize);
+            const response = await request<ConvertTitlesResponse>(getApi().post({
+                action: "query",
+                titles: chunk.map((name) => `Category:${name}`).join("|"),
+                redirects: 1,
+                converttitles: 1,
+                formatversion: 2,
+            }, { timeout: API_TIMEOUT_MS }));
+            const mappings = new Map<string, string>();
+            // 仅作环路回退与等价比较（不写回页面）：converted.to 与 redirects.from 均为服务端确认存在的页面标题
+            const existingTitles = new Set<string>();
+            const normalized = response.query?.normalized ?? [];
+            const converted = response.query?.converted ?? [];
+            const redirects = response.query?.redirects ?? [];
+            for (const entry of converted) {
+                const rawTo = typeof entry.to === "string" ? entry.to.trim() : "";
+                if (rawTo && isCategoryPrefixedTitle(rawTo)) {
+                    const to = normalizeCatName(rawTo);
+                    if (to) {
+                        existingTitles.add(to);
+                    }
+                }
+            }
+            for (const entry of redirects) {
+                const rawFrom = typeof entry.from === "string" ? entry.from.trim() : "";
+                if (rawFrom && isCategoryPrefixedTitle(rawFrom)) {
+                    const from = normalizeCatName(rawFrom);
+                    if (from) {
+                        existingTitles.add(from);
+                    }
+                }
+            }
+            for (const entry of [...normalized, ...converted, ...redirects]) {
+                const rawTo = typeof entry.to === "string" ? entry.to.trim() : "";
+                if (!rawTo || !isCategoryPrefixedTitle(rawTo)) {
+                    continue;
+                }
+                const from = typeof entry.from === "string" ? normalizeCatName(entry.from) : "";
+                const to = normalizeCatName(rawTo);
+                if (from && to && from !== to) {
+                    mappings.set(from, to);
+                }
+            }
+            for (const name of chunk) {
+                let current = name;
+                const trail: string[] = [current];
+                const visited = new Set<string>(trail);
+                for (;;) {
+                    const next = mappings.get(current);
+                    if (!next) {
+                        break;
+                    }
+                    if (visited.has(next)) {
+                        // T333050 类环：无论从哪个入口进入，统一回退到环中确知存在的标题（或码点序最小项，仅用于比较）
+                        const cycleStart = trail.indexOf(next);
+                        const cycleNodes = trail.slice(cycleStart);
+                        const existingInCycle = cycleNodes.filter((node) => existingTitles.has(node));
+                        const candidates = existingInCycle.length > 0 ? existingInCycle : cycleNodes;
+                        candidates.sort((a, b) => a < b ? -1 : a > b ? 1 : 0);
+                        current = candidates[0];
+                        break;
+                    }
+                    visited.add(next);
+                    trail.push(next);
+                    current = next;
+                }
+                result.set(name, current);
+            }
+        }
+        return result;
+    };
+
     const editPage = async (params: EditPageParams): Promise<void> => {
         const payload: Record<string, string | number | boolean> = {
             action: "edit",
@@ -300,6 +404,7 @@ const createApi = (userName: string): ApiClient => {
         fetchCategoryTree,
         fetchCategorySuggestions,
         fetchPageWikitext,
+        resolveCategoryVariants,
         editPage,
         grantFlood,
         revokeFlood,

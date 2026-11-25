@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it } from "vitest";
 import {
     buildCategoryRegex,
     computeNewWikitext,
+    extractCategoryNames,
     normalizeCatName,
     sameCategory,
     validateCategoryTitle,
@@ -316,5 +317,166 @@ describe("verifyCommittedOnServer", () => {
             sourceCat: "Source",
             targetCat: "",
         })).toBe(false);
+    });
+});
+
+describe("extractCategoryNames", () => {
+    it("提取并去重所有合法分类名（忽略 sortkey 与非分类链接）", () => {
+        const text = [
+            "[[File:Example.png|thumb]]",
+            "[[Category:英雄聯盟競技賽事|2018]]",
+            "[[分類:英雄聯盟競技賽事]]",
+            "[[cat:foo_bar|key]]",
+            "[[分类:无效#标题]]",
+        ].join("\n");
+        expect(extractCategoryNames(text)).toEqual([
+            "英雄聯盟競技賽事",
+            "foo bar",
+        ]);
+    });
+
+    it("忽略 HTML 注释与 <nowiki>/<pre>/<syntaxhighlight> 及冒号链接中的分类", () => {
+        const text = [
+            "<!-- [[Category:Commented]] -->",
+            "<nowiki>[[Category:NowikiCat]]</nowiki>",
+            "<NOWIKI attr='1'>[[Category:UpperNowiki]]</NOWIKI>",
+            "<pre>[[Category:InPre]]</pre>",
+            "<syntaxhighlight lang='wikitext'>[[Category:Sample]]</syntaxhighlight>",
+            "[[:Category:LinkedOnly]]",
+            "[[Category:Active]]",
+        ].join("\n");
+        expect(extractCategoryNames(text)).toEqual(["Active"]);
+    });
+
+    it("遇到 İ 等大小写长度变化字符时仍保持准确偏移，不误放行或错位遮罩", () => {
+        const text = "İİİ <nowiki>[[Category:InNowiki]]</nowiki>\n[[Category:RealCat]]";
+        expect(extractCategoryNames(text)).toEqual(["RealCat"]);
+        const removed = computeNewWikitext({
+            text,
+            mode: "remove",
+            sourceCat: "InNowiki",
+            targetCat: "",
+        });
+        expect(removed.status).toBe("skipped-not-found");
+    });
+
+    it("分类名中间夹带 HTML 注释时不拼成空格，且 extract 与 compute 判定一致", () => {
+        const text = "[[Category:Foo<!-- comment -->Bar]]";
+        expect(extractCategoryNames(text)).toEqual(["FooBar"]);
+        expect(computeNewWikitext({
+            text,
+            mode: "remove",
+            sourceCat: "Foo Bar",
+            targetCat: "",
+        }).status).toBe("skipped-not-found");
+
+        const removed = computeNewWikitext({
+            text: "Body\n[[Category:Foo<!--c-->]]\n",
+            mode: "remove",
+            sourceCat: "Foo",
+            targetCat: "",
+        });
+        expect(removed.status).toBe("ok");
+        expect(removed.text).toBe("Body\n\n");
+
+        const added = computeNewWikitext({
+            text: "Body\n[[Category:Foo<!--c-->]]\n",
+            mode: "add",
+            sourceCat: "",
+            targetCat: "Foo",
+        });
+        expect(added.status).toBe("skipped-already");
+    });
+
+    it("紧邻 ]] 后的注释在 move/remove 时完整保留，排序键中的 <nowiki/> 与 <pre> 不丢失且不泄出占位符", () => {
+        const movedComment = computeNewWikitext({
+            text: "[[Category:Source]]<!--keep-->",
+            mode: "move",
+            sourceCat: "Source",
+            targetCat: "Target",
+        });
+        expect(movedComment.status).toBe("ok");
+        expect(movedComment.text).toBe("[[Category:Target]]<!--keep-->");
+
+        const removedComment = computeNewWikitext({
+            text: "[[Category:Source]]<!-- 已废弃 -->\n",
+            mode: "remove",
+            sourceCat: "Source",
+            targetCat: "",
+        });
+        expect(removedComment.status).toBe("ok");
+        expect(removedComment.text).toBe("<!-- 已废弃 -->\n");
+
+        const movedSortkey = computeNewWikitext({
+            text: "[[Category:Source|k<nowiki/>x]]\n[[Category:Source|<pre>z</pre>]]",
+            mode: "move",
+            sourceCat: "Source",
+            targetCat: "Target",
+        });
+        expect(movedSortkey.status).toBe("ok");
+        expect(movedSortkey.text).toBe("[[Category:Target|k<nowiki/>x]]\n");
+        expect(movedSortkey.text).not.toContain("\u0001");
+    });
+
+    it("extract 与 compute 对注释拆分的 [[/]] 及换行分类名判定一致，且重复未闭合管道保持线性耗时", () => {
+        const splitBracket = "[<!--c-->[Category:Foo]]\n[[Category:Foo]<!--c-->]";
+        expect(extractCategoryNames(splitBracket)).toEqual([]);
+        expect(computeNewWikitext({
+            text: splitBracket,
+            mode: "remove",
+            sourceCat: "Foo",
+            targetCat: "",
+        }).status).toBe("skipped-not-found");
+
+        const newlineCat = "[[Category:A\nB]]";
+        expect(extractCategoryNames(newlineCat)).toEqual(["A B"]);
+        const removedNewline = computeNewWikitext({
+            text: newlineCat,
+            mode: "remove",
+            sourceCat: "A B",
+            targetCat: "",
+        });
+        expect(removedNewline.status).toBe("ok");
+        expect(removedNewline.text).toBe("");
+
+        const manyPipes = "[[Category:Source|".repeat(5000);
+        const start = performance.now();
+        expect(computeNewWikitext({
+            text: manyPipes,
+            mode: "remove",
+            sourceCat: "Source",
+            targetCat: "",
+        }).status).toBe("skipped-not-found");
+        expect(performance.now() - start).toBeLessThan(100);
+    });
+
+    it("遇到大量未闭合 [[Category: 前缀及末尾 ]] 时保持线性时间不卡死", () => {
+        const malformed = `${"[[Category:".repeat(50000)}long text\n[[Category:RealCat]]`;
+        const start = performance.now();
+        expect(extractCategoryNames(malformed)).toEqual(["RealCat"]);
+        expect(performance.now() - start).toBeLessThan(200);
+    });
+
+    it("computeNewWikitext 忽略注释与 nowiki 中的分类并移除所有 sourceVariants", () => {
+        const text = [
+            "<!-- [[Category:Source]] -->",
+            "<nowiki>[[Category:Source]]</nowiki>",
+            "[[Category:VariantA|K1]]",
+            "[[Category:VariantB|K2]]",
+        ].join("\n");
+        const moved = computeNewWikitext({
+            text,
+            mode: "move",
+            sourceCat: "Source",
+            targetCat: "Target",
+            sourceVariants: ["VariantA", "VariantB"],
+        });
+        expect(moved.status).toBe("ok");
+        expect(moved.text).toBe([
+            "<!-- [[Category:Source]] -->",
+            "<nowiki>[[Category:Source]]</nowiki>",
+            "[[Category:Target|K1]]",
+            "",
+        ].join("\n"));
     });
 });
