@@ -11,21 +11,37 @@ vi.mock("node:fs", () => ({
     },
 }));
 
-// readFile 返回深拷贝：脚本会对读到的 definition/list 原地修改，不能让用例间共享可变状态
 const yamlState = vi.hoisted(() => ({ files: {} }));
-vi.mock("../../modules/yamlModule.js", () => {
-    yamlState.writeFile = vi.fn();
+vi.mock("../../modules/yamlModule.js", async (importOriginal) => {
+    const { parseDocument } = await import("yaml");
+    const { syncSeq } = await importOriginal();
+    // default 与 named 两种导入形态都会被用到（artifactManifest 走 default，index 走 named），
+    // 因此两处都挂同一组实现
+    const readFile = vi.fn((filePath) => {
+        const entry = yamlState.files[filePath];
+        if (entry === undefined) {
+            return Promise.reject(new Error(`ENOENT: no such file '${filePath}'`));
+        }
+        return Promise.resolve(structuredClone(entry));
+    });
+    // definition/list 走源字符串 → parseDocument（天然每次新 doc，用例间无共享状态）
+    const readDocumentFile = vi.fn((filePath) => {
+        const entry = yamlState.files[filePath];
+        if (typeof entry !== "string") {
+            return Promise.reject(new Error(`ENOENT: no such file '${filePath}'`));
+        }
+        return Promise.resolve(parseDocument(entry));
+    });
+    yamlState.writeDocumentFile = vi.fn((filePath, doc) => {
+        yamlState.files[filePath] = doc.toString();
+        return Promise.resolve();
+    });
     return {
-        "default": {
-            readFile: vi.fn((filePath) => {
-                const entry = yamlState.files[filePath];
-                if (entry === undefined) {
-                    return Promise.reject(new Error(`ENOENT: no such file '${filePath}'`));
-                }
-                return Promise.resolve(structuredClone(entry));
-            }),
-            writeFile: yamlState.writeFile,
-        },
+        "default": { readFile, writeFile: vi.fn(), readDocumentFile, writeDocumentFile: yamlState.writeDocumentFile },
+        readFile,
+        readDocumentFile,
+        syncSeq,
+        writeDocumentFile: yamlState.writeDocumentFile,
     };
 });
 
@@ -73,17 +89,16 @@ describe("generateGadgetsDefinition", () => {
         };
         yamlState.files = {
             ...emptyManifestSources,
-            "src/gadgets/Gadgets-definition-list.yaml": [{ name: "S", gadgets: [] }],
-            "src/gadgets/A-gadget/definition.yaml": { _section: "S", _files: ["Gadget-A-gadget.js"] },
-            "src/gadgets/B-gadget/definition.yaml": { _section: "S", _files: ["Gadget-B-gadget.js"] },
+            "src/gadgets/Gadgets-definition-list.yaml": "- name: S\n  gadgets: []\n",
+            "src/gadgets/A-gadget/definition.yaml": "_section: S\n_files:\n  - Gadget-A-gadget.js\n",
+            "src/gadgets/B-gadget/definition.yaml": "_section: S\n_files:\n  - Gadget-B-gadget.js\n",
         };
         const rejection = await importScript();
         expect(rejection).toBeNull();
         const listPath = Object.keys(yamlState.files).find((key) => key.endsWith("Gadgets-definition-list.yaml"));
-        expect(yamlState.writeFile).toHaveBeenCalledWith(
-            listPath,
-            [{ name: "S", gadgets: ["A-gadget", "B-gadget"] }],
-        );
+        const listWrite = yamlState.writeDocumentFile.mock.calls.filter(([filePath]) => filePath === listPath);
+        expect(listWrite).toHaveLength(1);
+        expect(listWrite[0][1].toJS()).toEqual([{ name: "S", gadgets: ["A-gadget", "B-gadget"] }]);
         expect(createCommitMock.fn).toHaveBeenCalledOnce();
     });
 
@@ -96,15 +111,14 @@ describe("generateGadgetsDefinition", () => {
         };
         yamlState.files = {
             ...emptyManifestSources,
-            "src/gadgets/Gadgets-definition-list.yaml": [{ name: "S", gadgets: [] }],
-            "src/gadgets/A-gadget/definition.yaml": { _section: "S", _files: ["Gadget-A-gadget.js"] },
+            "src/gadgets/Gadgets-definition-list.yaml": "- name: S\n  gadgets: []\n",
+            "src/gadgets/A-gadget/definition.yaml": "_section: S\n_files:\n  - Gadget-A-gadget.js\n",
         };
         const rejection = await importScript();
         expect(rejection).toBeNull();
-        expect(yamlState.writeFile).toHaveBeenCalledWith(
-            "src/gadgets/A-gadget/definition.yaml",
-            { _section: "S", _files: ["Gadget-A-gadget.js", "main.js", "zeta.css"] },
-        );
+        const defWrite = yamlState.writeDocumentFile.mock.calls.filter(([filePath]) => filePath === "src/gadgets/A-gadget/definition.yaml");
+        expect(defWrite).toHaveLength(1);
+        expect(defWrite[0][1].toJS()).toEqual({ _section: "S", _files: ["Gadget-A-gadget.js", "main.js", "zeta.css"] });
     });
 
     it("manifest 声明的产物文件不在目录中时，_files 既有条目不判为 unexist", async () => {
@@ -118,13 +132,13 @@ describe("generateGadgetsDefinition", () => {
                 { gadget: { name: "libHashwasm", fileName: "Gadget-libHashwasm.js" } },
             ],
             "scripts/vendor/targets.yaml": [],
-            "src/gadgets/Gadgets-definition-list.yaml": [{ name: "S", gadgets: [] }],
-            "src/gadgets/libHashwasm/definition.yaml": { _section: "S", _files: ["Gadget-libHashwasm.js"] },
+            "src/gadgets/Gadgets-definition-list.yaml": "- name: S\n  gadgets: []\n",
+            "src/gadgets/libHashwasm/definition.yaml": "_section: S\n_files:\n  - Gadget-libHashwasm.js\n",
         };
         const rejection = await importScript();
         expect(rejection).toBeNull();
         // _files 与「目录 ∪ manifest」一致：definition.yaml 无变更，不触发对它的写入与提交
-        const definitionWrite = yamlState.writeFile.mock.calls.filter(([filePath]) => filePath.endsWith("definition.yaml"));
+        const definitionWrite = yamlState.writeDocumentFile.mock.calls.filter(([filePath]) => filePath.endsWith("definition.yaml"));
         expect(definitionWrite).toEqual([]);
     });
 
@@ -138,14 +152,72 @@ describe("generateGadgetsDefinition", () => {
                 { gadget: { name: "libHashwasm", fileName: "Gadget-libHashwasm.js" } },
             ],
             "scripts/vendor/targets.yaml": [],
-            "src/gadgets/Gadgets-definition-list.yaml": [{ name: "S", gadgets: [] }],
-            "src/gadgets/libHashwasm/definition.yaml": { _section: "S", _files: [] },
+            "src/gadgets/Gadgets-definition-list.yaml": "- name: S\n  gadgets: []\n",
+            "src/gadgets/libHashwasm/definition.yaml": "_section: S\n_files: []\n",
         };
         const rejection = await importScript();
         expect(rejection).toBeNull();
-        expect(yamlState.writeFile).toHaveBeenCalledWith(
-            "src/gadgets/libHashwasm/definition.yaml",
-            { _section: "S", _files: ["Gadget-libHashwasm.js"] },
-        );
+        const defWrite = yamlState.writeDocumentFile.mock.calls.filter(([filePath]) => filePath === "src/gadgets/libHashwasm/definition.yaml");
+        expect(defWrite).toHaveLength(1);
+        expect(defWrite[0][1].toJS()).toEqual({ _section: "S", _files: ["Gadget-libHashwasm.js"] });
+    });
+
+    it("definition.yaml 变更只同步 _files，其余键及其注释原样保留", async () => {
+        // _files 之外还有带注释的键：写出后 _files 更新、注释仍在
+        fsState.dirs = {
+            "src/gadgets": [{ name: "A-gadget", isDirectory: () => true }],
+            "src/gadgets/A-gadget": ["Gadget-A-gadget.js", "main.js"],
+        };
+        yamlState.files = {
+            ...emptyManifestSources,
+            "src/gadgets/Gadgets-definition-list.yaml": "- name: S\n  gadgets: []\n",
+            "src/gadgets/A-gadget/definition.yaml": [
+                "# skins 为空表示全站生效",
+                "skins: []",
+                "_section: S",
+                "_files:",
+                "  - Gadget-A-gadget.js",
+                "",
+            ].join("\n"),
+        };
+        const rejection = await importScript();
+        expect(rejection).toBeNull();
+        const defWrite = yamlState.writeDocumentFile.mock.calls.filter(([filePath]) => filePath === "src/gadgets/A-gadget/definition.yaml");
+        expect(defWrite).toHaveLength(1);
+        const written = yamlState.files["src/gadgets/A-gadget/definition.yaml"];
+        expect(written).toContain("# skins 为空表示全站生效");
+        expect(written).toContain("skins: []");
+        expect(written).toContain("- main.js");
+    });
+
+    it("Gadgets-definition-list.yaml 既有 section 内注释在追加 gadget 后保留", async () => {
+        // section 已含 B-gadget 且带注释；A-gadget 追加后注释与既有条目均不变
+        // （B-gadget 的目录必须存在，否则清理段会把它当作失效条目删除）
+        fsState.dirs = {
+            "src/gadgets": [
+                { name: "A-gadget", isDirectory: () => true },
+                { name: "B-gadget", isDirectory: () => true },
+            ],
+            "src/gadgets/A-gadget": ["Gadget-A-gadget.js"],
+            "src/gadgets/B-gadget": ["Gadget-B-gadget.js"],
+        };
+        yamlState.files = {
+            ...emptyManifestSources,
+            "src/gadgets/Gadgets-definition-list.yaml": [
+                "- name: S",
+                "  # 浏览类小工具",
+                "  gadgets:",
+                "    - B-gadget",
+                "",
+            ].join("\n"),
+            "src/gadgets/A-gadget/definition.yaml": "_section: S\n_files:\n  - Gadget-A-gadget.js\n",
+            "src/gadgets/B-gadget/definition.yaml": "_section: S\n_files:\n  - Gadget-B-gadget.js\n",
+        };
+        const rejection = await importScript();
+        expect(rejection).toBeNull();
+        const written = yamlState.files["src/gadgets/Gadgets-definition-list.yaml"];
+        expect(written).toContain("# 浏览类小工具");
+        expect(written).toContain("- B-gadget");
+        expect(written).toContain("- A-gadget");
     });
 });
