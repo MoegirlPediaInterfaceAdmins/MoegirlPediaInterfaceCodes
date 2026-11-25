@@ -116,8 +116,8 @@ interface QuickRequestConfig {
  * 请求类型 id。阶段 1 实现 edit / editConversiontable / move / create；
  * 其余 id 已在注册表接口中预留，随阶段 2-5 的里程碑补齐对应定义与配置。
  */
-type RequestTypeId
-    = | "edit"
+type RequestTypeId =
+    | "edit"
         | "editConversiontable"
         | "move"
         | "create"
@@ -279,8 +279,8 @@ type PreviewSubmission = Omit<PreviewDialogData, "title" | "previewHtml" | "getW
  * 「取消」按钮没有 action 名，由 OOUI 基类 close() 关闭且不带数据，故只列出两条会带 message 的失败路径：
  * configError 来自配置读取，formError 来自表单构建 —— 分开归因，避免控件报错被说成配置读取失败。
  */
-type MainDialogResult
-    = | { action: "configError"; message: string }
+type MainDialogResult =
+    | { action: "configError"; message: string }
         | { action: "formError"; message: string }
         | undefined;
 
