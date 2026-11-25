@@ -118,15 +118,15 @@ interface QuickRequestConfig {
  */
 type RequestTypeId =
     | "edit"
-        | "editConversiontable"
-        | "move"
-        | "create"
-        | "userGroup"
-        | "banAppeal"
-        | "delete"
-        | "vandalReport"
-        | "checkuserRecord"
-        | "editTech";
+    | "editConversiontable"
+    | "move"
+    | "create"
+    | "userGroup"
+    | "banAppeal"
+    | "delete"
+    | "vandalReport"
+    | "checkuserRecord"
+    | "editTech";
 
 /** 提交前的确认项（editRequestWarning 的方针修改提醒迁移至此）。 */
 interface Warning {
@@ -281,8 +281,8 @@ type PreviewSubmission = Omit<PreviewDialogData, "title" | "previewHtml" | "getW
  */
 type MainDialogResult =
     | { action: "configError"; message: string }
-        | { action: "formError"; message: string }
-        | undefined;
+    | { action: "formError"; message: string }
+    | undefined;
 
 /** 主对话框关闭时实际带出的数据：失败路径一定带 message。 */
 type MainDialogCloseResult = NonNullable<MainDialogResult>;
