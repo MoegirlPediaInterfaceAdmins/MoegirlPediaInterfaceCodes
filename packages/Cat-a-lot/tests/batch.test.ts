@@ -698,6 +698,80 @@ describe("startBatch：分类变体与边界处理", () => {
         expect(result.skippedAlready).toEqual(["Page1"]);
     });
 
+    it("copy 模式下目标分类为变体且页面已有规范拼写时跳过不重复追加", async () => {
+        const setup = createFakeApi(
+            () => Promise.resolve(page("Body\n[[Category:英雄联盟赛事]]\n")),
+            (catNames) => Promise.resolve(new Map(
+                catNames.map((name) => [name, name === "英雄聯盟賽事" ? "英雄联盟赛事" : name]),
+            )),
+        );
+        const hooks = createFakeHooks();
+        const run = startBatch({
+            titles: ["Page1"],
+            mode: "copy",
+            sourceCat: "原分类",
+            targetCat: "英雄聯盟賽事",
+            prefs: DEFAULT_PREFS,
+            hasBotRight: true,
+            isSysopOrStaff: false,
+            api: setup.api,
+            hooks: hooks.hooks,
+        });
+
+        const result = await run.result;
+        expect(setup.editPage).not.toHaveBeenCalled();
+        expect(result.done).toBe(0);
+        expect(result.skippedAlready).toEqual(["Page1"]);
+    });
+
+    it("非特权用户部分选中等价移动时单标题预检后安全跳过且不改写页面", async () => {
+        const setup = createFakeApi(
+            () => Promise.resolve(page("Body\n[[Category:英雄联盟竞技赛事]]\n")),
+            (catNames) => Promise.resolve(new Map(
+                catNames.map((name) => [name, name === "英雄聯盟競技賽事" ? "英雄联盟竞技赛事" : name]),
+            )),
+        );
+        const hooks = createFakeHooks();
+        const run = startBatch({
+            titles: ["Page1"],
+            mode: "move",
+            sourceCat: "英雄联盟竞技赛事",
+            targetCat: "英雄聯盟競技賽事",
+            isAllSelected: false,
+            prefs: DEFAULT_PREFS,
+            hasBotRight: false,
+            isSysopOrStaff: false,
+            api: setup.api,
+            hooks: hooks.hooks,
+        });
+
+        const result = await run.result;
+        expect(setup.editPage).not.toHaveBeenCalled();
+        expect(setup.resolveCategoryVariants).toHaveBeenCalledWith(["英雄联盟竞技赛事", "英雄聯盟競技賽事"], 1);
+        expect(result.skippedAlready).toEqual(["Page1"]);
+    });
+
+    it("非特权用户选择超过 50 页时先拒绝批处理，不触发变体预检", async () => {
+        const setup = createFakeApi(() => Promise.resolve(page("Body")));
+        const hooks = createFakeHooks();
+        const titles = Array.from({ length: 51 }, (_value, idx) => `Page${idx}`);
+        const run = startBatch({
+            titles,
+            mode: "move",
+            sourceCat: "原分类",
+            targetCat: "目标分类",
+            prefs: DEFAULT_PREFS,
+            hasBotRight: false,
+            isSysopOrStaff: false,
+            api: setup.api,
+            hooks: hooks.hooks,
+        });
+
+        const result = await run.result;
+        expect(setup.resolveCategoryVariants).not.toHaveBeenCalled();
+        expect(result.done).toBe(0);
+    });
+
     it("部分选中移动时，若目标分类被解析为源分类的变体则绝不删除源分类链接", async () => {
         const setup = createFakeApi(
             () => Promise.resolve(page("Body\n[[Category:英雄聯盟競技賽事]]\n")),
@@ -723,6 +797,80 @@ describe("startBatch：分类变体与边界处理", () => {
         expect(setup.editPage).not.toHaveBeenCalled();
         expect(result.done).toBe(0);
         expect(result.skippedAlready).toEqual(["Page1"]);
+    });
+
+    it("copy 模式下目标分类为变体且页面已有规范拼写时跳过不重复追加", async () => {
+        const setup = createFakeApi(
+            () => Promise.resolve(page("Body\n[[Category:英雄联盟赛事]]\n")),
+            (catNames) => Promise.resolve(new Map(
+                catNames.map((name) => [name, name === "英雄聯盟賽事" ? "英雄联盟赛事" : name]),
+            )),
+        );
+        const hooks = createFakeHooks();
+        const run = startBatch({
+            titles: ["Page1"],
+            mode: "copy",
+            sourceCat: "原分类",
+            targetCat: "英雄聯盟賽事",
+            prefs: DEFAULT_PREFS,
+            hasBotRight: true,
+            isSysopOrStaff: false,
+            api: setup.api,
+            hooks: hooks.hooks,
+        });
+
+        const result = await run.result;
+        expect(setup.editPage).not.toHaveBeenCalled();
+        expect(result.done).toBe(0);
+        expect(result.skippedAlready).toEqual(["Page1"]);
+    });
+
+    it("非特权用户部分选中等价移动时单标题预检后安全跳过且不改写页面", async () => {
+        const setup = createFakeApi(
+            () => Promise.resolve(page("Body\n[[Category:英雄联盟竞技赛事]]\n")),
+            (catNames) => Promise.resolve(new Map(
+                catNames.map((name) => [name, name === "英雄聯盟競技賽事" ? "英雄联盟竞技赛事" : name]),
+            )),
+        );
+        const hooks = createFakeHooks();
+        const run = startBatch({
+            titles: ["Page1"],
+            mode: "move",
+            sourceCat: "英雄联盟竞技赛事",
+            targetCat: "英雄聯盟競技賽事",
+            isAllSelected: false,
+            prefs: DEFAULT_PREFS,
+            hasBotRight: false,
+            isSysopOrStaff: false,
+            api: setup.api,
+            hooks: hooks.hooks,
+        });
+
+        const result = await run.result;
+        expect(setup.editPage).not.toHaveBeenCalled();
+        expect(setup.resolveCategoryVariants).toHaveBeenCalledWith(["英雄联盟竞技赛事", "英雄聯盟競技賽事"], 1);
+        expect(result.skippedAlready).toEqual(["Page1"]);
+    });
+
+    it("非特权用户选择超过 50 页时先拒绝批处理，不触发变体预检", async () => {
+        const setup = createFakeApi(() => Promise.resolve(page("Body")));
+        const hooks = createFakeHooks();
+        const titles = Array.from({ length: 51 }, (_value, idx) => `Page${idx}`);
+        const run = startBatch({
+            titles,
+            mode: "move",
+            sourceCat: "原分类",
+            targetCat: "目标分类",
+            prefs: DEFAULT_PREFS,
+            hasBotRight: false,
+            isSysopOrStaff: false,
+            api: setup.api,
+            hooks: hooks.hooks,
+        });
+
+        const result = await run.result;
+        expect(setup.resolveCategoryVariants).not.toHaveBeenCalled();
+        expect(result.done).toBe(0);
     });
 
     it("全选移动时源分类与目标分类解析为同一分类则不弹出重定向确认、给出提示并跳过", async () => {
@@ -959,5 +1107,6 @@ describe("startBatch：分类变体与边界处理", () => {
         await pending;
 
         expect(abortSpy).toHaveBeenCalledTimes(1);
+        expect(state.resultDialog.open).toBe(false);
     });
 });

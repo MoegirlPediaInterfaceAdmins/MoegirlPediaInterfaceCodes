@@ -388,6 +388,68 @@ describe("extractCategoryNames", () => {
         expect(added.status).toBe("skipped-already");
     });
 
+    it("紧邻 ]] 后的注释在 move/remove 时完整保留，排序键中的 <nowiki/> 与 <pre> 不丢失且不泄出占位符", () => {
+        const movedComment = computeNewWikitext({
+            text: "[[Category:Source]]<!--keep-->",
+            mode: "move",
+            sourceCat: "Source",
+            targetCat: "Target",
+        });
+        expect(movedComment.status).toBe("ok");
+        expect(movedComment.text).toBe("[[Category:Target]]<!--keep-->");
+
+        const removedComment = computeNewWikitext({
+            text: "[[Category:Source]]<!-- 已废弃 -->\n",
+            mode: "remove",
+            sourceCat: "Source",
+            targetCat: "",
+        });
+        expect(removedComment.status).toBe("ok");
+        expect(removedComment.text).toBe("<!-- 已废弃 -->\n");
+
+        const movedSortkey = computeNewWikitext({
+            text: "[[Category:Source|k<nowiki/>x]]\n[[Category:Source|<pre>z</pre>]]",
+            mode: "move",
+            sourceCat: "Source",
+            targetCat: "Target",
+        });
+        expect(movedSortkey.status).toBe("ok");
+        expect(movedSortkey.text).toBe("[[Category:Target|k<nowiki/>x]]\n");
+        expect(movedSortkey.text).not.toContain("\u0001");
+    });
+
+    it("extract 与 compute 对注释拆分的 [[/]] 及换行分类名判定一致，且重复未闭合管道保持线性耗时", () => {
+        const splitBracket = "[<!--c-->[Category:Foo]]\n[[Category:Foo]<!--c-->]";
+        expect(extractCategoryNames(splitBracket)).toEqual([]);
+        expect(computeNewWikitext({
+            text: splitBracket,
+            mode: "remove",
+            sourceCat: "Foo",
+            targetCat: "",
+        }).status).toBe("skipped-not-found");
+
+        const newlineCat = "[[Category:A\nB]]";
+        expect(extractCategoryNames(newlineCat)).toEqual(["A B"]);
+        const removedNewline = computeNewWikitext({
+            text: newlineCat,
+            mode: "remove",
+            sourceCat: "A B",
+            targetCat: "",
+        });
+        expect(removedNewline.status).toBe("ok");
+        expect(removedNewline.text).toBe("");
+
+        const manyPipes = "[[Category:Source|".repeat(5000);
+        const start = performance.now();
+        expect(computeNewWikitext({
+            text: manyPipes,
+            mode: "remove",
+            sourceCat: "Source",
+            targetCat: "",
+        }).status).toBe("skipped-not-found");
+        expect(performance.now() - start).toBeLessThan(100);
+    });
+
     it("遇到大量未闭合 [[Category: 前缀及末尾 ]] 时保持线性时间不卡死", () => {
         const malformed = `${"[[Category:".repeat(50000)}long text\n[[Category:RealCat]]`;
         const start = performance.now();

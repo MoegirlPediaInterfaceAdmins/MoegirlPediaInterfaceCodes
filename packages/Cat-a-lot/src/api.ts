@@ -1,5 +1,5 @@
-import { API_TIMEOUT_MS } from "./constants.ts";
-import { CATEGORY_NAMESPACE_PREFIX_REGEX, normalizeCatName } from "./wikitext.ts";
+import { API_TIMEOUT_MS, MAX_QUERY_TITLES } from "./constants.ts";
+import { isCategoryPrefixedTitle, normalizeCatName } from "./wikitext.ts";
 import type { ApiClient, CategoryTree, EditPageParams, PageWikitext } from "./types.ts";
 
 interface ApiErrorPayload {
@@ -130,8 +130,6 @@ const categoryNames = (items: readonly { title?: string | undefined }[] | undefi
     .map((item) => typeof item.title === "string" ? normalizeCatName(item.title) : "")
     .filter((name) => name !== "");
 
-const MAX_QUERY_TITLES = 50;
-
 const createApi = (userName: string): ApiClient => {
     let client: mw.Api | null = null;
     let active: TrackedRequest | null = null;
@@ -259,7 +257,7 @@ const createApi = (userName: string): ApiClient => {
         const unique: string[] = [];
         for (const raw of catNames) {
             const clean = normalizeCatName(raw);
-            if (clean && !/[|\r\n]/u.test(clean) && !result.has(clean)) {
+            if (clean && !clean.includes("|") && !result.has(clean)) {
                 result.set(clean, clean);
                 unique.push(clean);
             }
@@ -275,13 +273,14 @@ const createApi = (userName: string): ApiClient => {
                 formatversion: 2,
             }, { timeout: API_TIMEOUT_MS }));
             const mappings = new Map<string, string>();
+            // 仅作环路回退与等价比较（不写回页面）：converted.to 与 redirects.from 均为服务端确认存在的页面标题
             const existingTitles = new Set<string>();
             const normalized = response.query?.normalized ?? [];
             const converted = response.query?.converted ?? [];
             const redirects = response.query?.redirects ?? [];
             for (const entry of converted) {
                 const rawTo = typeof entry.to === "string" ? entry.to.trim() : "";
-                if (rawTo && CATEGORY_NAMESPACE_PREFIX_REGEX.test(rawTo)) {
+                if (rawTo && isCategoryPrefixedTitle(rawTo)) {
                     const to = normalizeCatName(rawTo);
                     if (to) {
                         existingTitles.add(to);
@@ -290,7 +289,7 @@ const createApi = (userName: string): ApiClient => {
             }
             for (const entry of redirects) {
                 const rawFrom = typeof entry.from === "string" ? entry.from.trim() : "";
-                if (rawFrom && CATEGORY_NAMESPACE_PREFIX_REGEX.test(rawFrom)) {
+                if (rawFrom && isCategoryPrefixedTitle(rawFrom)) {
                     const from = normalizeCatName(rawFrom);
                     if (from) {
                         existingTitles.add(from);
@@ -299,7 +298,7 @@ const createApi = (userName: string): ApiClient => {
             }
             for (const entry of [...normalized, ...converted, ...redirects]) {
                 const rawTo = typeof entry.to === "string" ? entry.to.trim() : "";
-                if (!rawTo || !CATEGORY_NAMESPACE_PREFIX_REGEX.test(rawTo)) {
+                if (!rawTo || !isCategoryPrefixedTitle(rawTo)) {
                     continue;
                 }
                 const from = typeof entry.from === "string" ? normalizeCatName(entry.from) : "";
@@ -318,12 +317,12 @@ const createApi = (userName: string): ApiClient => {
                         break;
                     }
                     if (visited.has(next)) {
-                        // T333050 类环：无论从哪个入口进入，统一回退到环中确知存在的标题（或字典序最小项）
+                        // T333050 类环：无论从哪个入口进入，统一回退到环中确知存在的标题（或码点序最小项，仅用于比较）
                         const cycleStart = trail.indexOf(next);
                         const cycleNodes = trail.slice(cycleStart);
                         const existingInCycle = cycleNodes.filter((node) => existingTitles.has(node));
                         const candidates = existingInCycle.length > 0 ? existingInCycle : cycleNodes;
-                        candidates.sort((a, b) => a.localeCompare(b));
+                        candidates.sort((a, b) => a < b ? -1 : a > b ? 1 : 0);
                         current = candidates[0];
                         break;
                     }
@@ -428,4 +427,4 @@ const clampSubcatLimit = (value: number): number => {
 export type {
     CatALotApiError,
 };
-export { MAX_QUERY_TITLES, createApi };
+export { createApi };

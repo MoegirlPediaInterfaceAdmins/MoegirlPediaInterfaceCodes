@@ -53,10 +53,13 @@
 
             <div v-if="isBusy" class="cal-progress">
                 <div class="cal-status-row">
-                    <span class="cal-hint">
+                    <span v-if="isRunning" class="cal-hint">
                         {{ uls("正在编辑：", "正在編輯：") }}{{ currentEditingTitle }}
                     </span>
-                    <span class="cal-hint">{{ progressDone }} / {{ progressTotal }}</span>
+                    <span v-else class="cal-hint">
+                        {{ currentEditingTitle || uls("正在准备批处理…", "正在準備批次處理…") }}
+                    </span>
+                    <span v-if="isRunning" class="cal-hint">{{ progressDone }} / {{ progressTotal }}</span>
                 </div>
                 <cdx-progress-bar aria-label="Cat-a-lot progress"></cdx-progress-bar>
                 <cdx-button size="small" action="destructive" type="button" @click="stopBatch">
