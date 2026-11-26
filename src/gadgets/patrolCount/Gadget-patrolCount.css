@@ -1,3 +1,8 @@
+/* 避免被 Vector 2022 顶栏（z-index: 3）遮挡顶部边框与锚点 */
+.patrollCount-popup {
+    z-index: 50;
+}
+
 /* 深色模式适配：Vector 2022 夜间模式（html.skin-theme-clientpref-night） */
 html.skin-theme-clientpref-night .patrollCount-popup .oo-ui-popupWidget-popup {
     color: #eaecf0;
