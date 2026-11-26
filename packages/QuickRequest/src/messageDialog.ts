@@ -1,0 +1,85 @@
+import { openWindow } from "./openWindow.ts";
+
+/** 消息对话框的内容。 */
+interface MessageSpec {
+    title: string;
+    /** 纯文本或 jQuery 节点 */
+    message: string | JQuery;
+}
+
+/**
+ * 打开一个消息对话框并等待关闭。
+ * @param spec 消息内容
+ * @param actions 底部动作
+ * @returns 关闭时按下的动作名；按 Esc 关闭（无数据）统一归一化为 'close'
+ */
+const showMessage = (spec: MessageSpec, actions: OO.ui.ActionWidget.ConfigOptions[]): Promise<string> => new Promise((resolve) => {
+    const data = { title: spec.title, message: spec.message, actions };
+    openWindow(new OO.ui.MessageDialog(), data, (result) => {
+        resolve(result?.action ?? "close");
+    });
+});
+
+/**
+ * 只带「关闭」按钮的错误提示，调用方无需等待。
+ * @param title 标题
+ * @param message 正文
+ * @returns 提示流程结束后兑现
+ */
+const showError = async (title: string, message: string): Promise<void> => {
+    try {
+        await showMessage({ title, message }, [{ action: "close", label: wgULS("关闭", "關閉"), flags: ["safe"] }]);
+    } catch (error) {
+        // openWindow 仍可能同步抛错（如 OOUI 未就绪），兜住以免留下未处理的 rejection
+        console.error("[QuickRequest] 错误提示无法显示", error);
+    }
+};
+
+/**
+ * 发送失败时的「关闭 / 重试」对话框。
+ * @param title 标题
+ * @param message 正文
+ * @returns 用户的选择
+ */
+const confirmRetry = async (title: string, message: string): Promise<"retry" | "close"> => {
+    const action = await showMessage({ title, message }, [
+        { action: "close", label: wgULS("关闭", "關閉"), flags: ["safe"] },
+        { action: "retry", label: wgULS("重试", "重試"), flags: ["primary", "progressive"] },
+    ]);
+    return action === "retry" ? "retry" : "close";
+};
+
+/**
+ * 提交前确认项（如方针修改提醒）的「返回修改 / 继续提交」对话框。
+ * @param title 标题
+ * @param message 正文
+ * @returns 用户的选择
+ */
+const confirmContinue = async (title: string, message: string | JQuery): Promise<"continue" | "close"> => {
+    const action = await showMessage({ title, message }, [
+        { action: "close", label: wgULS("返回修改", "返回修改"), flags: ["safe"] },
+        { action: "continue", label: wgULS("继续提交", "繼續提交"), flags: ["primary", "progressive"] },
+    ]);
+    return action === "continue" ? "continue" : "close";
+};
+
+/**
+ * 传输层失败（发送结果未知）时的「关闭 / 仍要重试」对话框。
+ * addtopic 非幂等，请求可能已经提交——重试可能重复发帖，故正文警示先行、
+ * 把「关闭」设为主按钮，由用户确认后再自行决定是否重试。
+ * @param title 标题
+ * @param message 正文
+ * @returns 用户的选择
+ */
+const confirmAmbiguousRetry = async (title: string, message: string): Promise<"retry" | "close"> => {
+    const action = await showMessage({
+        title,
+        message: `${message}${wgULS("网络异常，请求可能已经发出：请先到目标版面确认是否已存在你的请求，再决定是否重新提交。", "網路異常，請求可能已經發出：請先到目標版面確認是否已存在你的請求，再決定是否重新提交。")}`,
+    }, [
+        { action: "close", label: wgULS("关闭", "關閉"), flags: ["safe", "primary"] },
+        { action: "retry", label: wgULS("仍要重试", "仍要重試") },
+    ]);
+    return action === "retry" ? "retry" : "close";
+};
+
+export { confirmAmbiguousRetry, confirmContinue, confirmRetry, showError };
