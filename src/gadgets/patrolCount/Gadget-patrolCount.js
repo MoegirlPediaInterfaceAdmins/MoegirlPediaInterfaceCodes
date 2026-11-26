@@ -17,265 +17,160 @@ $(() => {
     const instanceRAF = new libRequestAnimationFrame.LibRequestAnimationFrame();
     const apiPrefix = `${mw.config.get("wgServer")}${mw.config.get("wgScriptPath")}/api.php`;
     const newPageMax = 50;
+    const indexPrefix = `${mw.config.get("wgServer")}${mw.config.get("wgScriptPath")}/index.php`;
     const writeCountNum = (pages, plus) => {
-        let strCount = "";
+        const $count = $("span#not-patrolled-count").empty();
         let page;
         if (pages.length !== 0) {
             const vNum = Math.round(Math.random() * (pages.length - 1));
             page = pages[vNum];
-            const link = `${encodeURIComponent(page.title)}&redirect=no&rcid=${page.rcid}`;
-            strCount = pages.length.toString();
+            let strCount = pages.length.toString();
             if (plus) {
                 strCount += "+";
             }
-            let { title } = page;
+            const $link = $("<a>", {
+                id: "unpatrollArticle",
+                href: `${indexPrefix}?title=${encodeURIComponent(page.title)}&redirect=no&rcid=${page.rcid}`,
+                title: page.title,
+                text: strCount,
+            });
             if (!page.confidence) {
-                title += '" class="patrollListNotConfident';
+                $link.addClass("patrollListNotConfident");
             }
-            strCount = `(<a id="unpatrollArticle" href="${mw.config.get("wgServer")}${mw.config.get("wgScriptPath")}/index.php?title=${link}" title="${title}">${strCount}</a>)`;
+            $count.append("(", $link, ")");
             ptPatrollLink.attr("href", "/Special:最新页面?hidepatrolled=1");
         } else {
             ptPatrollLink.attr("href", "/Special:最新页面?hidepatrolled=0");
         }
-        $("span#not-patrolled-count").html(strCount);
         generateList(pages);
         return page;
     };
-    let showAllUnbind = [];
     let showAll = false;
-    const prepareList = (pages, countMax) => {
-        const $list = $("#patrollTooltipList").empty();
-        const addItem = (istart, iend) => {
-            for (let idx = istart; idx < iend; ++idx) {
-                const page = pages[idx];
-                const link = `${encodeURIComponent(page.title)}&redirect=no&rcid=${page.rcid}`;
-                let shortTitle = page.title;
-                if (shortTitle.length > 8) {
-                    shortTitle = `${shortTitle.slice(0, 7)}...`;
-                }
-                const item = $("<li></li>").html(`<a href="${mw.config.get("wgServer")}${mw.config.get("wgScriptPath")}/index.php?title=${link}" title="${page.title}">${shortTitle}</a>`).appendTo($list);
-                if (!page.confidence) {
-                    item.addClass("patrollListNotConfident");
-                }
+    let currentPages = [];
+    let popup = null;
+    let $list = null;
+    let $showAll = null;
+    const listMax = 10;
+    const titleMax = 30;
+    const addItem = (istart, iend) => {
+        for (let idx = istart; idx < iend; ++idx) {
+            const page = currentPages[idx];
+            const shortTitle = page.title.length > titleMax ? `${page.title.slice(0, titleMax - 1)}...` : page.title;
+            const $item = $("<li>").append($("<a>", {
+                href: `${indexPrefix}?title=${encodeURIComponent(page.title)}&redirect=no&rcid=${page.rcid}`,
+                title: page.title,
+                text: shortTitle,
+            })).appendTo($list);
+            if (!page.confidence) {
+                $item.addClass("patrollListNotConfident");
             }
-        };
-        const { length } = pages;
-        if (length > countMax && !showAll) {
-            addItem(0, countMax);
-            let $showAll = $("#patrollListShowAll");
-            if ($showAll.length === 0) {
-                $showAll = $("<div></div>", {
-                    id: "patrollListShowAll",
-                }).css({
-                    "text-align": "right",
-                    "font-weight": "bold",
-                    "margin-bottom": "10px",
-                }).append($("<a></a>", {
-                    text: "更多……",
-                    href: "#patrollListShowAll",
-                    title: wgULS("显示所有未巡查页面", "顯示所有未巡查的頁面"),
-                }));
-                $list.after($showAll);
-            } else {
-                $showAll.show();
-            }
-            $showAll.off("click");
-            $showAll.on("click", () => {
-                addItem(countMax, length);
-                $showAll.hide();
-                for (let idx = 0; idx < showAllUnbind.length; ++idx) {
-                    showAllUnbind[idx].off("mouseover.autohide mouseout");
-                }
-                showAll = true;
-            });
-        } else {
-            addItem(0, pages.length);
         }
     };
-    const loadCvtooltip = () => {
-        $("body").append($("<div></div>", {
-            id: "patrollTooltip",
-            style: "display: none;",
-        }).css({
-            "font-size": "0.75em",
-            "margin-right": "30px",
-        }).append($("<ul></ul>", {
-            id: "patrollTooltipList",
-        })));
-        /*
-         * JQuery.cvtooltip.js
-         * http://www.chinavalue.net
-         *
-         * J.Wang
-         * http://0417.cnblogs.ocm
-         *
-         * 2010.11.17
-         */
-        (($) => {
-            $.fn.cvtooltip = function (options) {
-                const self = $(this);
-                const defaults = {
-                    panel: "body", // 该参数是加载气泡提示的容器，值不同可能会导致计算的位置不同，默认为添加至body容器
-                    selector: "", // 用于计算定位的控件
-                    width: 0, // 气泡提示宽度，完全手动设置
-                    left: 0, // 距离panel参数的左边距
-                    top: 0, // 距离panel参数的上边距
-                    delay: -1, // 延迟关闭，单位毫秒，值为0时表示立刻关闭
-                    speed: 600, // 关闭时的效果，淡出速度
-                    close: true, // 是否显示关闭按钮
-                    callback: () => {
-                        $.noop(); // 点击关闭后的事件
-                    },
-                };
-                const param = $.extend({}, defaults, options || {});
-                const controlID = self.attr("ID");
-                // 气泡样式
-                const cvToolTipCssBtm = "position: absolute; border-color: transparent transparent #A7D7F9 transparent; border-style: dashed dashed solid dashed; border-width: 7px 7px 7px 7px; width: 0; overflow: hidden; right:40px; top:-17px;";
-                const cvToolTipCssTop = "position: absolute; border-color: transparent transparent #A7D7F9 transparent; border-style: dashed dashed solid dashed; border-width: 7px 7px 7px 7px; width: 0; overflow: hidden; right:40px; top:-17px;";
-                let cvToolTipCss = `z-index:713; display:none; position: absolute; border: 3px solid #A7D7F9; background-color: #F3F3F3; line-height:14px; border-radius: 10px; right:${param.left}px; top:${param.top}px;`;
-                if (param.width !== 0) {
-                    cvToolTipCss += `width: ${param.width}px;`;
-                }
-                // 气泡显示
-                if (!document.getElementById(`${controlID}Body`)) {
-                    const cvTipsElement = $("<div>");
-                    cvTipsElement.attr({
-                        id: `${controlID}Body`,
-                        "class": "cvToolTip",
-                        style: cvToolTipCss,
-                    });
-                    const cvTipsElementBtm = $("<span>");
-                    cvTipsElementBtm.attr("style", cvToolTipCssBtm);
-                    cvTipsElement.append(cvTipsElementBtm);
-                    const cvTipsElementTop = $("<span>");
-                    cvTipsElementTop.attr("style", cvToolTipCssTop);
-                    cvTipsElement.append(cvTipsElementTop);
-                    const cvTipsElementContent = $("<span>");
-                    cvTipsElementContent.attr("id", `${controlID}Content`);
-                    cvTipsElementContent.css("float", "left");
-                    cvTipsElement.append(cvTipsElementContent);
-                    if (param.close) {
-                        const cvTipsElementClose = $("<a>");
-                        cvTipsElementClose.attr("id", `${controlID}Close`);
-                        cvTipsElementClose.css("display", "none");
-                        cvTipsElementClose.html('<span style="float:right; font-family:verdana; position: absolute; top:1px; right:5px; font-size:12px; cursor:pointer;">x</span>');
-                        cvTipsElement.append(cvTipsElementClose);
-                    }
-                    $(param.panel).append(cvTipsElement);
-                }
-                // 气泡容器、装载内容的容器
-                const cttBody = $(document.getElementById(`${controlID}Body`));
-                const cttContent = $(document.getElementById(`${controlID}Content`));
-                const cttClose = $(document.getElementById(`${controlID}Close`));
-                cttBody.show();
-                const ctt = {
-                    body: cttBody,
-                    content: () => {
-                        self.show();
-                        return self;
-                    },
-                    position: () => {
-                        const p = $(param.selector).position();
-                        cttBody.css({
-                            top: p.top + param.top,
-                            left: p.left + param.left,
-                        });
-                    },
-                    hide: () => {
-                        cttClose.hide();
-                        cttBody.off();
-                        cttContent.slideUp(param.speed, () => {
-                            ctt.content().hide().appendTo($(param.panel));
-                            cttBody.remove();
-                        });
-                        param.callback();
-                    },
-                    timer: null,
-                    show: () => {
-                        if (cttContent.html() === "") {
-                            cttContent.append(ctt.content()).css("height", `${cttContent[0].scrollHeight}px`).hide().slideDown(param.speed, () => {
-                                cttContent.css("height", "");
-                                cttBody.on({
-                                    mouseover: () => {
-                                        cttClose.show();
-                                    },
-                                    mouseout: () => {
-                                        cttClose.hide();
-                                    },
-                                });
-                            });
-                        }
-                        if (param.selector !== "") {
-                            ctt.position();
-                        }
-                        if (param.delay >= 0) {
-                            setTimeout(ctt.hide, param.delay);
-                        }
-                    },
-                };
-                ctt.show();
-                // 关闭气泡
-                cttClose.on("click", ctt.hide);
-                return ctt;
-            };
-        })(jQuery);
-    };
-    let ttListShow = false;
-    const generateList = (pages) => {
-        if (ttListShow) {
-            prepareList(pages, 10);
+    const prepareList = () => {
+        $list.empty();
+        const { length } = currentPages;
+        if (length > listMax && !showAll) {
+            addItem(0, listMax);
+            $showAll.show();
         } else {
-            let timer = null;
-            // Why, Wikipedians, why
-            // var $ptPatroll = $("#pt-patroll").off("mouseover mouseover.autohide mouseout");
-            const $ptPatroll = $("#pt-patroll").off("mouseover.autohide mouseout");
-            $ptPatroll.on("mouseover", () => {
-                if (timer) {
+            addItem(0, length);
+            $showAll.hide();
+        }
+    };
+    const ensurePopup = () => {
+        if (popup) {
+            return;
+        }
+        $list = $("<ul>", { id: "patrollTooltipList" });
+        $showAll = $("<div>", { id: "patrollListShowAll" }).css({
+            "text-align": "right",
+            "font-weight": "bold",
+        }).append($("<a>", {
+            text: "更多……",
+            href: "#patrollListShowAll",
+            title: wgULS("显示所有未巡查页面", "顯示所有未巡查的頁面"),
+        }));
+        $showAll.on("click", (e) => {
+            e.preventDefault();
+            showAll = true;
+            prepareList();
+            popup.updateDimensions();
+        });
+        popup = new OO.ui.PopupWidget({
+            $content: $("<div>").css("font-size", "0.75em").append($list, $showAll),
+            $floatableContainer: $("#pt-patroll"),
+            padded: true,
+            width: 300,
+            height: null,
+            align: "backwards",
+            autoClose: false,
+            hideWhenOutOfView: false,
+            classes: ["patrollCount-popup"],
+        });
+        $(document.body).append(popup.$element);
+    };
+    let hoverBound = false;
+    const bindHover = () => {
+        if (hoverBound) {
+            return;
+        }
+        hoverBound = true;
+        const $ptPatroll = $("#pt-patroll");
+        let openTimer = null;
+        let closeTimer = null;
+        const clearClose = () => {
+            if (closeTimer) {
+                clearTimeout(closeTimer);
+                closeTimer = null;
+            }
+        };
+        const scheduleClose = () => {
+            if (!closeTimer && popup && popup.isVisible()) {
+                closeTimer = setTimeout(() => {
+                    closeTimer = null;
+                    popup.toggle(false);
+                    showAll = false;
+                }, 1000);
+            }
+        };
+        $ptPatroll.on("mouseenter", () => {
+            clearClose();
+            if (openTimer || popup && popup.isVisible()) {
+                return;
+            }
+            openTimer = setTimeout(() => {
+                openTimer = null;
+                if (currentPages.length === 0) {
                     return;
                 }
-                timer = setTimeout(() => {
-                    timer = null;
-                    if (pages.length !== 0 && !ttListShow) {
-                        if (typeof $.fn.cvtooltip === "undefined") {
-                            loadCvtooltip();
-                        }
-                        prepareList(pages, 10);
-                        ttListShow = true;
-                        const ctt = $("#patrollTooltip").cvtooltip({
-                            left: $(window).width() - ($("#pt-patroll").offset().left + $("#pt-patroll").outerWidth() + 40),
-                            top: $("#pt-patroll").offset().top + $("#pt-patroll").outerHeight() + 10,
-                            callback: () => {
-                                ttListShow = false;
-                                showAll = false;
-                                $ptPatroll.off("mouseover.autohide mouseout");
-                            },
-                        });
-                        let tipCloseTimer;
-                        const clearHideTimer = () => {
-                            if (tipCloseTimer) {
-                                clearTimeout(tipCloseTimer);
-                                tipCloseTimer = null;
-                            }
-                        };
-                        ctt.body.on("mouseover.autohide", clearHideTimer);
-                        $ptPatroll.on("mouseover.autohide", clearHideTimer);
-                        const setHideTimer = () => {
-                            if (!tipCloseTimer) {
-                                tipCloseTimer = setTimeout(ctt.hide, 1000);
-                            }
-                        };
-                        ctt.body.on("mouseout", setHideTimer);
-                        $ptPatroll.on("mouseout", setHideTimer);
-                        showAllUnbind = [ctt.body, $ptPatroll];
-                    }
-                }, 500);
-            });
-            $ptPatroll.on("mouseout", () => {
-                if (timer) {
-                    clearTimeout(timer);
-                    timer = null;
+                const first = !popup;
+                ensurePopup();
+                if (first) {
+                    popup.$element.on("mouseenter", clearClose).on("mouseleave", scheduleClose);
                 }
-            });
+                prepareList();
+                popup.toggle(true);
+                popup.updateDimensions();
+            }, 500);
+        });
+        $ptPatroll.on("mouseleave", () => {
+            if (openTimer) {
+                clearTimeout(openTimer);
+                openTimer = null;
+            }
+            scheduleClose();
+        });
+    };
+    const generateList = (pages) => {
+        currentPages = pages;
+        bindHover();
+        if (popup && popup.isVisible()) {
+            if (pages.length === 0) {
+                popup.toggle(false);
+            } else {
+                prepareList();
+                popup.updateDimensions();
+            }
         }
     };
     const missingPage = {};
