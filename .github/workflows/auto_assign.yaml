@@ -31,8 +31,6 @@ jobs:
           cache: npm
       - name: Installing the dependencies
         uses: AnnAngela/cached_node-modules@v6.0.1
-        with:
-          command: npm run ci
       - name: add assignees and reviewers
         run: |
           node scripts/autoAssign/index.js

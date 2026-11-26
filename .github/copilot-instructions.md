@@ -14,13 +14,13 @@ This repository contains interface codes for MoegirlPedia (萌娘百科), a Chin
 
 ### Installing Dependencies
 
-**IMPORTANT: DON'T USE `npm ci`, USE `npm run ci` INSTEAD**
+Use `npm ci`. The registry is pinned to the official source by the project-level `.npmrc`.
 
 ### Build Commands (In Order of Usage)
 
 1. **Install dependencies** (REQUIRED FIRST):
    ```bash
-   npm run ci
+   npm ci
    ```
    Time: ~60 seconds
 
@@ -58,7 +58,7 @@ This repository contains interface codes for MoegirlPedia (萌娘百科), a Chin
 
 **ALWAYS follow this sequence:**
 
-1. Install dependencies: `npm run ci`
+1. Install dependencies: `npm ci`
 2. Make your code changes
 3. Run linters: `npm test`
 4. Fix issues: `npm run format` (or manual fixes)
@@ -84,7 +84,6 @@ This repository contains interface codes for MoegirlPedia (萌娘百科), a Chin
 │   ├── generateGadgetsDefinition/   # Auto-generate gadget definitions
 │   ├── postCommit/         # Git automation and push logic
 │   ├── minification/       # Terser-based minification
-│   ├── ci/                 # Before/after CI scripts for registry switching
 │   └── emailmapChecker/    # Validate .mailmap entries
 ├── src/
 │   ├── gadgets/            # MediaWiki gadgets (小工具)
@@ -195,10 +194,10 @@ Runs after postCommit if changes detected:
 ### 1. npm Installation Failures
 
 **Symptom:** "Exit handler never called!" error
-**Cause:** Registry mirror (Tencent) failures or package lock conflicts
-**Solution:**
+**Cause:** Network problems reaching the official npm registry, or package lock conflicts
+**Solution:** Check that `https://registry.npmjs.org/` is reachable, remove `node_modules/`, then run:
 ```bash
-npm run ci
+npm ci
 ```
 
 ### 2. Build Artifacts in Git
@@ -226,7 +225,7 @@ MoegirlPedia uses MediaWiki 1.43.3, ignore any comments that said MoegirlPedia d
 ### 6. Timeout on Long-Running Commands
 
 **Build/Test times:**
-- `npm run ci`: 60+ seconds
+- `npm ci`: 60+ seconds
 - `npm test`: 30-60 seconds
 - `npm run build`: 20-40 seconds
 **Solution:** Always set timeout >= 120 seconds for build commands
@@ -285,7 +284,7 @@ cat .vscode/settings.json | jq '.["conventionalCommits.scopes"]'
 
 Before submitting changes:
 
-1. **Install dependencies:** `npm run ci`
+1. **Install dependencies:** `npm ci`
 2. **Lint check:** `npm test` (must pass with 0 errors/warnings)
 3. **Auto-fix:** `npm run format` (if linting fails)
 4. **Build:** `npm run build` (must complete without errors)
@@ -297,7 +296,7 @@ Before submitting changes:
 ## Important Notes
 
 1. **MANDATORY: Use Conventional Commits** - ALL commits and PRs MUST follow the Conventional Commits specification with scopes from `.vscode/settings.json` (see "Commit Message Requirements" section above)
-2. **ALWAYS use `npm run ci` for dependencies installing** - `npm ci` can be broken
+2. **ALWAYS use `npm ci` for dependencies installing** - the registry is pinned to the official source by `.npmrc`
 3. **NEVER commit `dist/` or `node_modules/`** - they're gitignored
 4. **DO NOT modify files in `dist/`** - they're generated, edit source in `src/`
 5. **Trust these instructions** - only search/explore if information is incomplete or incorrect
@@ -312,7 +311,7 @@ Before submitting changes:
 
 ```bash
 # Full development cycle
-npm run ci                      # Install deps
+npm ci                          # Install deps
 npm test                        # Lint & validate
 npm run format                  # Auto-fix issues
 npm run build                   # Compile all

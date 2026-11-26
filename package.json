@@ -24,7 +24,6 @@
         "format:eslint": "npm run test:eslint -- --fix",
         "format:stylelint": "npm run test:stylelint -- --fix",
         "prepare": "node .husky/install.mjs",
-        "ci": "rm -rdf node_modules && node scripts/ci/selectRegistry.js && npm ci --registry=\"$(cat .cache/ci-registry)\" --replace-registry-host=always",
         "build": "npm run clean && npm run build:artifacts && run-p -l build:css build:js",
         "clean": "rm -rdf dist",
         "clean:intermediate": "rm -rdf dist/_generated dist/_compiled",

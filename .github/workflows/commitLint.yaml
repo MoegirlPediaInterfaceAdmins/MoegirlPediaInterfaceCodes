@@ -19,7 +19,7 @@ jobs:
   commitLint:
     # edited 只在改动标题时才需要检查（Sourcery 等机器人会频繁改正文，
     # 只改正文时不应为此重跑整套依赖安装）。提交信息与标题共用一个 job，
-    # 避免两套 npm run ci。
+    # 避免两套 npm ci。
     if: github.event_name != 'pull_request' || github.event.action != 'edited' || github.event.changes.title != null
     runs-on: ubuntu-latest
     permissions:
@@ -37,8 +37,6 @@ jobs:
           cache: npm
       - name: Installing the dependencies
         uses: AnnAngela/cached_node-modules@v6.0.1
-        with:
-          command: npm run ci
       - name: Check commit messages
         # 只改标题/正文不会改变提交列表，无需重查。
         if: github.event_name != 'pull_request' || github.event.action != 'edited'

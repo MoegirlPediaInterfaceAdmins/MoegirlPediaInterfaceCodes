@@ -32,9 +32,9 @@ if (shouldCheckPackageLock) {
     const currentRevision = await revParse("HEAD");
     const shouldRunCi = !!previousRevision && !!currentRevision && previousRevision !== currentRevision && await packageLockChanged(previousRevision, currentRevision);
     if (shouldRunCi) {
-        console.info(`[git hook] Detected ${packageLockFile} change after ${hookName}; running npm run ci.`);
+        console.info(`[git hook] Detected ${packageLockFile} change after ${hookName}; running npm ci.`);
         try {
-            await spawnAsync(commandForPlatform("npm"), ["run", "ci"]);
+            await spawnAsync(commandForPlatform("npm"), ["ci"]);
         } catch (error) {
             process.exitCode = error.exitCode ?? 1;
             throw error;
