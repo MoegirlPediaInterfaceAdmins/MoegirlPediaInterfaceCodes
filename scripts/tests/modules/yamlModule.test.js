@@ -275,4 +275,15 @@ describe("yamlModule.syncSeq", () => {
         expect(changed).toBe(true);
         expect(doc.toJS().gadgets).toEqual(["A-gadget", "B-gadget"]);
     });
+
+    it("当前值不是序列时抛出指明键名的 TypeError", async () => {
+        // 键值被手改成非序列（如标量）时给明确的错误，而不是让后续 items.length
+        // 访问报出无法定位的 TypeError（崩溃本身是对的，错误信息须可定位）
+        const file = path.join(tmpDir, "sync-scalar.yaml");
+        await fs.promises.writeFile(file, "ignoreFiles: dist\n", "utf-8");
+        const doc = await readDocumentFile(file);
+
+        expect(() => syncSeq(doc, "ignoreFiles", ["a.css"])).toThrow(TypeError);
+        expect(() => syncSeq(doc, "ignoreFiles", ["a.css"])).toThrow(/ignoreFiles/);
+    });
 });

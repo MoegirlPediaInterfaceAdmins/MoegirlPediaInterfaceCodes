@@ -1,7 +1,8 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 // 被测对象是入口脚本（import 即执行全部流程），mock 掉全部 I/O 依赖后按用例
-// vi.resetModules() + 重新动态 import 来驱动；雷模块的处理惯例见 createCommit.test.js
+// vi.resetModules() + 重新动态 import 来驱动；这类 import 即执行 I/O 的模块，
+// 其 mock 处理惯例见 createCommit.test.js
 const fsState = vi.hoisted(() => ({ files: {}, writes: {} }));
 vi.mock("node:fs", () => ({
     "default": {
@@ -112,9 +113,10 @@ describe("postCommit/linguist-generated", () => {
         expect(path).toBe(".stylelintrc.yaml");
         expect(doc.toJS().ignoreFiles).toEqual(["src/gadgets/Foo/x.css"]);
         const written = doc.toString();
-        // dist 旧条目被移除；rules 段的注释与键序不受 ignoreFiles 同步影响
-        expect(written).toContain("# rb 已被 HTML 规范弃用，但站内 Ruby 模板仍会输出 rb 标记");
+        // dist 旧条目被移除；rules 段的注释与键序不受 ignoreFiles 同步影响。
+        // 断言注释位置：仍在 selector-no-deprecated 键上方，而不是仅存在于文件某处
         expect(written).not.toContain("dist/**/*.css");
+        expect(written.indexOf("# rb 已被 HTML 规范弃用，但站内 Ruby 模板仍会输出 rb 标记")).toBeLessThan(written.indexOf("selector-no-deprecated: null"));
     });
 
     it("codeql-config 的 paths-ignore 只追加缺失的目录，既有条目不重复", async () => {
@@ -138,6 +140,8 @@ describe("postCommit/linguist-generated", () => {
         expect(written).toContain("# >>> managed by scripts/postCommit/linguist-generated.js >>>");
         expect(written).toContain("src/gadgets/Foo/x.css linguist-generated=true");
         expect(written).toContain("# <<< managed <<<");
+        // 断言顺序：手工内容在前、生成段围栏在后（标题声称的顺序须被真正验证）
+        expect(written.indexOf("*.js text")).toBeLessThan(written.indexOf("# >>> managed by scripts/postCommit/linguist-generated.js >>>"));
     });
 
     it("两个生成文件各自走一次写入与提交", async () => {

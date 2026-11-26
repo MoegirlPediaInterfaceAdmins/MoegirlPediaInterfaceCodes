@@ -1,7 +1,8 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 // 被测对象是入口脚本（import 即执行全部流程），mock 掉全部 I/O 依赖后按用例
-// vi.resetModules() + 重新动态 import 来驱动；雷模块的处理惯例见 createCommit.test.js
+// vi.resetModules() + 重新动态 import 来驱动；这类 import 即执行 I/O 的模块，
+// 其 mock 处理惯例见 createCommit.test.js
 const fsState = vi.hoisted(() => ({ dirs: {} }));
 vi.mock("node:fs", () => ({
     "default": {
@@ -185,8 +186,8 @@ describe("generateGadgetsDefinition", () => {
         const defWrite = yamlState.writeDocumentFile.mock.calls.filter(([filePath]) => filePath === "src/gadgets/A-gadget/definition.yaml");
         expect(defWrite).toHaveLength(1);
         const written = yamlState.files["src/gadgets/A-gadget/definition.yaml"];
-        expect(written).toContain("# skins 为空表示全站生效");
-        expect(written).toContain("skins: []");
+        // 断言注释位置：仍在所述键上方，而不是仅存在于文件某处
+        expect(written.indexOf("# skins 为空表示全站生效")).toBeLessThan(written.indexOf("skins: []"));
         expect(written).toContain("- main.js");
     });
 
@@ -216,7 +217,8 @@ describe("generateGadgetsDefinition", () => {
         const rejection = await importScript();
         expect(rejection).toBeNull();
         const written = yamlState.files["src/gadgets/Gadgets-definition-list.yaml"];
-        expect(written).toContain("# 浏览类小工具");
+        // 断言注释位置：仍在 gadgets 键上方，而不是仅存在于文件某处
+        expect(written.indexOf("# 浏览类小工具")).toBeLessThan(written.indexOf("gadgets:"));
         expect(written).toContain("- B-gadget");
         expect(written).toContain("- A-gadget");
     });

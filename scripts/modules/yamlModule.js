@@ -1,5 +1,5 @@
 import fs from "node:fs";
-import { Pair, YAMLSeq, parse, parseDocument, stringify } from "yaml";
+import { Pair, YAMLSeq, isSeq, parse, parseDocument, stringify } from "yaml";
 
 export const readFile = async (path) => parse(await fs.promises.readFile(path, { encoding: "utf-8" }));
 export const writeFile = async (path, value) => await fs.promises.writeFile(path, `${stringify(value).replace(/(?<=\n)([^ \n])/g, "\n$1").trim()}\n`, { encoding: "utf-8" });
@@ -68,6 +68,11 @@ export const syncSeq = (parent, key, want) => {
     if (!seq) {
         parent.set(key, want);
         return true;
+    }
+    // 键值被手改成非序列（如标量）时，这里抛出能定位到键的错误；
+    // 不做「替换恢复」——那会静默丢弃人工内容，宁可崩溃让人来修
+    if (!isSeq(seq)) {
+        throw new TypeError(`yamlModule.syncSeq: "${key}" 的当前值不是序列`);
     }
     // YAMLSeq 不是 Array 子类，没有 includes/push/splice，只有 add/delete/get/has/set。
     // 当前值一律经 toJSON() 读取：add() 追加的是原始字符串而非 Scalar 节点，
