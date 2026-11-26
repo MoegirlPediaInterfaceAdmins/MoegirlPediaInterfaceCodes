@@ -1,0 +1,36 @@
+/* 避免被 Vector 2022 顶栏（z-index: 3）遮挡顶部边框与锚点 */
+.patrollCount-popup {
+    z-index: 50;
+}
+
+/* 深色模式适配：Vector 2022 夜间模式（html.skin-theme-clientpref-night） */
+html.skin-theme-clientpref-night .patrollCount-popup .oo-ui-popupWidget-popup {
+    color: #eaecf0;
+    background-color: #101418;
+    border-color: #72777d;
+}
+
+html.skin-theme-clientpref-night .patrollCount-popup .oo-ui-popupWidget-anchor::before {
+    border-bottom-color: #72777d;
+}
+
+html.skin-theme-clientpref-night .patrollCount-popup .oo-ui-popupWidget-anchor::after {
+    border-bottom-color: #101418;
+}
+
+/* 深色模式适配：操作系统深色模式（html.skin-theme-clientpref-os） */
+@media screen and (prefers-color-scheme: dark) {
+    html.skin-theme-clientpref-os .patrollCount-popup .oo-ui-popupWidget-popup {
+        color: #eaecf0;
+        background-color: #101418;
+        border-color: #72777d;
+    }
+
+    html.skin-theme-clientpref-os .patrollCount-popup .oo-ui-popupWidget-anchor::before {
+        border-bottom-color: #72777d;
+    }
+
+    html.skin-theme-clientpref-os .patrollCount-popup .oo-ui-popupWidget-anchor::after {
+        border-bottom-color: #101418;
+    }
+}
