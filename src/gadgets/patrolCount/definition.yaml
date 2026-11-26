@@ -30,6 +30,7 @@ peers: []
 dependencies:
   - ext.gadget.site-lib
   - ext.gadget.libRequestAnimationFrame
+  - oojs-ui-core
 
 _sites:
   - zh
@@ -37,4 +38,5 @@ _sites:
 _section: maintenance
 
 _files:
+  - Gadget-patrolCount.css
   - Gadget-patrolCount.js

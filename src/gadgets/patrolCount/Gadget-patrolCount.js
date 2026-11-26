@@ -110,6 +110,8 @@ $(() => {
         $(document.body).append(popup.$element);
     };
     let hoverBound = false;
+    let hovering = false;
+    let scheduleOpen = null;
     const bindHover = () => {
         if (hoverBound) {
             return;
@@ -133,8 +135,7 @@ $(() => {
                 }, 1000);
             }
         };
-        $ptPatroll.on("mouseenter", () => {
-            clearClose();
+        scheduleOpen = () => {
             if (openTimer || popup && popup.isVisible()) {
                 return;
             }
@@ -152,8 +153,14 @@ $(() => {
                 popup.toggle(true);
                 popup.updateDimensions();
             }, 500);
+        };
+        $ptPatroll.on("mouseenter", () => {
+            hovering = true;
+            clearClose();
+            scheduleOpen();
         });
         $ptPatroll.on("mouseleave", () => {
+            hovering = false;
             if (openTimer) {
                 clearTimeout(openTimer);
                 openTimer = null;
@@ -163,14 +170,17 @@ $(() => {
     };
     const generateList = (pages) => {
         currentPages = pages;
-        bindHover();
         if (popup && popup.isVisible()) {
             if (pages.length === 0) {
                 popup.toggle(false);
+                showAll = false;
             } else {
                 prepareList();
                 popup.updateDimensions();
             }
+        } else if (hovering && pages.length !== 0 && scheduleOpen) {
+            // 响应返回时指针仍停留在触发器上，则直接打开
+            scheduleOpen();
         }
     };
     const missingPage = {};
@@ -277,6 +287,8 @@ $(() => {
     const namespaceList = mw.config.get("wgNamespaceIds");
     const namespaceWatchList = namespaceWatched.map((i) => namespaceList[i === "(main)" ? "" : i]);
     let lastRequest = 0;
+    let requestSeq = 0;
+    let appliedSeq = 0;
     const updateUnpatrolled = () => {
         const d = new Date();
         if (d - lastRequest < 10000) {
@@ -286,10 +298,17 @@ $(() => {
         lastRequest = d;
         const requestid = d.getTime();
         const newPages = `${apiPrefix}?action=query&format=xml&list=recentchanges&rctype=new&rcnamespace=${namespaceWatchList.join("|")}&rcshow=!redirect|!patrolled&meta=tokens&type=patrol&rcprop=title|ids|user|tags`;
+        requestSeq++;
+        const seq = requestSeq;
         $.get(newPages, {
             rclimit: newPageMax,
             requestid: requestid,
         }, (result) => {
+            // 忽略早于已处理响应的过时请求
+            if (seq < appliedSeq) {
+                return;
+            }
+            appliedSeq = seq;
             const pages = [];
             const jqResult = $(result);
             jqResult.find("rc").each(function () {
@@ -329,6 +348,7 @@ $(() => {
     $("#pt-watchlist-2").after($("<li></li>", {
         id: "pt-patroll",
     }).append(ptPatrollLink));
+    bindHover();
     $("#pt-patroll").on("mouseover", () => {
         instanceRAF.request(updateUnpatrolled);
     });
