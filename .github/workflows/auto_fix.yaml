@@ -26,8 +26,6 @@ jobs:
           cache: npm
       - name: Installing the dependencies
         uses: AnnAngela/cached_node-modules@v6.0.1
-        with:
-          command: npm run ci
       - name: Git config
         run: node scripts/postCommit/prepareGit.js
       - run: npm run format

@@ -29,7 +29,6 @@
   - [`scripts/postCommit/linguist-generated.js`](scripts/postCommit/linguist-generated.js) 用来自动生成 [`.gitattributes`](.gitattributes) 以告知 Github 如何区分代码是否自动生成；
   - [`scripts/postCommit/push.js`](scripts/postCommit/push.js) 用来推送由 Github Actions 做出的更改；
   - [`scripts/emailmapChecker/index.js`](scripts/emailmapChecker/index.js) 用来检查相关用户是否将其萌娘百科用户名和邮箱地址添加到 [`.mailmap`](.mailmap)，若当前环境为本地则检测 git 配置文件里的邮箱地址，若当前环境为 Github Actions 则检查相关 commits 的邮箱地址。
-  - [`scripts/ci/selectRegistry.js`](scripts/ci/selectRegistry.js) 用来在 `npm run ci` 里测速选出最快的 npm registry 并写入 `.cache/ci-registry`，随后 `npm ci --replace-registry-host=always` 会让 npm 在安装时把 [`package-lock.json`](package-lock.json) 里 `resolved` 对应的 registry 替换为该源（不会改动 lock 文件本身），有助于加快安装速度。
   - [`scripts/minification/terser.js`](scripts/minification/terser.js) 用来使用 [Terser](https://) 对编译后的 JavaScript 代码进行压缩和优化，生成的文件会被放置在 `dist/` 文件夹下。
 - 自动化工具的配置文件：
   - [`eslint.config.js`](eslint.config.js) 配置 eslint，由于所有 Javascript 代码都需经过编译，故其 `parserOptions.ecmaVersion` 被指定为 `latest` 以便充分利用最新标准；
@@ -37,6 +36,7 @@
   - [`tsconfig.production.json`](tsconfig.production.json) 配置 tsc，用于编译代码；
   - [`.stylelintrc.yaml`](.stylelintrc.yaml) 配置 stylelint；
   - [`.postcssrc.yaml`](.postcssrc.yaml) 配置 postcss；
+  - [`.npmrc`](.npmrc) 把 npm 的 registry 指定为官方源 `https://registry.npmjs.org/`，安装依赖时不再切换镜像源；
   - [`.browserslistrc`](.browserslistrc) 配置 [autoprefixer](https://github.com/postcss/autoprefixer) 和 [browserify](https://browserify.org/) 所使用的 [browserslist](https://github.com/browserslist/browserslist)，目前暂定锚定为 [`baseline newly available`](https://web.dev/series/baseline-newly-available?hl=zh-cn) 的基础上添加 `last 3 Firefox versions` 和 `Chrome 132`，并排除移动端以适应萌百编辑群体。
 - [`packages`](packages) 保存以 monorepo 形式管理的部分小工具源码（TypeScript / Vue SFC），构建产物不进入仓库：部署机器人执行 `npm run build` 时构建到 `dist/`，相关约定见 [CONTRIBUTING.md](CONTRIBUTING.md#packages-目录下的本地构建小工具)；
 - 代码部分：
@@ -68,7 +68,7 @@
 - `npm run lint:scripts` 用 [ESLint](https://eslint.org/) 检查 `npm run test:eslint` 未覆盖的 Node 侧代码（[`scripts`](scripts)、根目录配置文件与 [`.husky`](.husky) 下的 `.mjs`）；检查范围由 [`scripts/modules/lintTargets.js`](scripts/modules/lintTargets.js) 定义，与 [`eslint.config.js`](eslint.config.js) 共用同一份
 - `npm run lint:commit-message` / `npm run lint:pr-title` 用 [commitlint](https://commitlint.js.org/) 校验当前 CI 事件中的提交信息 / PR 标题（规则见 [`commitlint.config.mjs`](commitlint.config.mjs)），供 CI 使用；两者均需在 GitHub Actions 中运行，本地直接执行会因缺少事件载荷而直接退出。本地提交信息检查由 Husky（见下方[「提交前检查」](#提交前检查)）完成。其中 `npm run lint:commit-message` 在 PR（`pull_request`）检查中允许仅含 `type` / `type(scope)` 的空 subject 提交（因 PR 最终以标题 squash 合并），而 PR 标题（`lint:pr-title`）与 push 提交仍严格要求包含 subject
 - `npm run format` 可修正可被自动修正的错误
-- `npm run ci` 会测速选出最快的镜像源并让 npm 在安装时使用（不会改动 lock 文件），以加快 `npm ci` 速度
+- `npm ci` 按 [`package-lock.json`](package-lock.json) 安装依赖，registry 由 [`.npmrc`](.npmrc) 固定为官方源
 - `npm run build` 手动编译全部（CSS+JS）代码
   - `npm run build:css` 手动编译所有 CSS 代码
   - `npm run build:js` 手动编译所有 JS 代码
@@ -79,11 +79,11 @@
 
 ### 提交前检查
 
-本仓库使用 [Husky](https://typicode.github.io/husky/) 管理本地 Git hooks，由 `npm install` / `npm run ci` 触发的 `prepare` 脚本自动安装。提交时会**自动**执行：
+本仓库使用 [Husky](https://typicode.github.io/husky/) 管理本地 Git hooks，由 `npm install` / `npm ci` 触发的 `prepare` 脚本自动安装。提交时会**自动**执行：
 
 - `commit-msg`：用 [commitlint](https://commitlint.js.org/) 校验提交信息符合 [Conventional Commits（约定式提交）](https://www.conventionalcommits.org/)（规则见 [`commitlint.config.mjs`](commitlint.config.mjs)）；
 - `pre-commit`：检查本地 git 配置的邮箱是否已登记在 [`.mailmap`](.mailmap)；
-- `post-merge` / `post-rewrite`：当你执行 `git pull`（包括 `pull --rebase`）且拉取结果修改了 [`package-lock.json`](package-lock.json) 时，自动执行一次 `npm run ci` 以刷新依赖。
+- `post-merge` / `post-rewrite`：当你执行 `git pull`（包括 `pull --rebase`）且拉取结果修改了 [`package-lock.json`](package-lock.json) 时，自动执行一次 `npm ci` 以刷新依赖。
 
 如需跳过检查，可用 `git commit --no-verify`，或临时设置 `HUSKY=0`（影响范围更大，会跳过全部 hooks）。请仅在确有必要时使用。
 
