@@ -91,6 +91,8 @@ const collectTargetLinks = (allowNonFiles: boolean): JQuery => {
 interface PageItemBinding {
     allowNonFiles: boolean;
     isBusy(): boolean;
+    // 面板展开时才把条目点击当选择；收起时点击全部放行，文件名照常跳转。
+    isActive(): boolean;
     onSelectionChange(): void;
 }
 
@@ -106,6 +108,10 @@ const bindPageItems = (binding: PageItemBinding): number => {
 
     const $links = collectTargetLinks(binding.allowNonFiles);
     $links.on("click.catALot", (event) => {
+        // 面板收起：不接管点击，链接保持默认行为，避免整页链接点不开。
+        if (!binding.isActive()) {
+            return;
+        }
         if (binding.isBusy()) {
             event.preventDefault();
             return;

@@ -9,7 +9,7 @@
 
 ## 功能
 
-- **选择页面**：在分类页、`Special:Search`、`Special:Listfiles`、`Special:Uncategorizedfiles`、`Special:Uncategorizedpages`、`Special:Unusedfiles`、`Special:Mostlinkedcategories`、`Special:Prefixindex` 的浏览模式下，为列表/表格中的页面或文件加可点击标签；支持单击、Shift 范围选择、全选/清空。
+- **选择页面**：在分类页、`Special:Search`、`Special:Listfiles`、`Special:Uncategorizedfiles`、`Special:Uncategorizedpages`、`Special:Unusedfiles`、`Special:Mostlinkedcategories`、`Special:Prefixindex` 的浏览模式下，为列表/表格中的页面或文件加可点击标签；面板展开时单击条目即选择，支持 Shift 范围选择、全选/清空；面板收起时不接管点击，条目按原链接跳转，`Ctrl`/`⌘`+单击在任何状态下都直接打开链接。
 - **分类树**：当前分类的父分类/子分类列表；父分类、子分类可点击导航；子分类数量由偏好控制；没有 `categorymembers` 权限时给出提示，但仍可手动输入目标分类。
 - **搜索建议**：`action=opensearch`（POST）按 `namespace=14` 推荐分类，支持键盘上下选择与 Enter。
 - **批量操作**：增加、复制、移动、移除分类；移动/移除只改分类链接，保留原 sortkey；同一分类移动为 no-op。

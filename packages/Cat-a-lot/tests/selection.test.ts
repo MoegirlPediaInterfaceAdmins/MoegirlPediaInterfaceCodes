@@ -201,6 +201,7 @@ describe("bindPageItems / 选择", () => {
         bindPageItems({
             allowNonFiles: true,
             isBusy: () => false,
+            isActive: () => true,
             onSelectionChange: () => {
                 selected = syncSelectedTitles();
             },
@@ -225,6 +226,7 @@ describe("bindPageItems / 选择", () => {
         bindPageItems({
             allowNonFiles: true,
             isBusy: () => true,
+            isActive: () => true,
             onSelectionChange: () => {
                 calls += 1;
             },
@@ -236,12 +238,92 @@ describe("bindPageItems / 选择", () => {
         expect(syncSelectedTitles()).toEqual([]);
     });
 
+    it("面板收起时不接管点击，链接保持默认跳转", () => {
+        installMw({ namespaceNumber: 14 });
+        document.body.innerHTML = categoryFixture;
+        let calls = 0;
+
+        bindPageItems({
+            allowNonFiles: true,
+            isBusy: () => false,
+            isActive: () => false,
+            onSelectionChange: () => {
+                calls += 1;
+            },
+        });
+        const initialCalls = calls;
+        const link = $(".gadget-cat_a_lot-label").first();
+        const event = $.Event("click");
+
+        link.trigger(event);
+
+        expect(event.isDefaultPrevented()).toBe(false);
+        expect(calls).toBe(initialCalls);
+        expect(syncSelectedTitles()).toEqual([]);
+        expect(link.hasClass("gadget-cat_a_lot-label--selected")).toBe(false);
+    });
+
+    it("面板展开后同一绑定立即接管点击，无需重新绑定", () => {
+        installMw({ namespaceNumber: 14 });
+        document.body.innerHTML = categoryFixture;
+        let isOpen = false;
+        let selected: string[] = [];
+
+        bindPageItems({
+            allowNonFiles: true,
+            isBusy: () => false,
+            isActive: () => isOpen,
+            onSelectionChange: () => {
+                selected = syncSelectedTitles();
+            },
+        });
+        const link = $(".gadget-cat_a_lot-label").first();
+
+        const collapsedEvent = $.Event("click");
+        link.trigger(collapsedEvent);
+        expect(collapsedEvent.isDefaultPrevented()).toBe(false);
+        expect(selected).toEqual([]);
+
+        isOpen = true;
+        const expandedEvent = $.Event("click");
+        link.trigger(expandedEvent);
+        expect(expandedEvent.isDefaultPrevented()).toBe(true);
+        expect(selected).toEqual(["File:A.png"]);
+    });
+
+    it("展开状态下 Ctrl/⌘+单击不接管，交给浏览器打开链接", () => {
+        installMw({ namespaceNumber: 14 });
+        document.body.innerHTML = categoryFixture;
+        let selected: string[] = [];
+
+        bindPageItems({
+            allowNonFiles: true,
+            isBusy: () => false,
+            isActive: () => true,
+            onSelectionChange: () => {
+                selected = syncSelectedTitles();
+            },
+        });
+        const link = $(".gadget-cat_a_lot-label").first();
+
+        const ctrlEvent = $.Event("click", { ctrlKey: true });
+        link.trigger(ctrlEvent);
+        expect(ctrlEvent.isDefaultPrevented()).toBe(false);
+        expect(selected).toEqual([]);
+
+        const metaEvent = $.Event("click", { metaKey: true });
+        link.trigger(metaEvent);
+        expect(metaEvent.isDefaultPrevented()).toBe(false);
+        expect(selected).toEqual([]);
+    });
+
     it("重新绑定时清除旧的 label/selected/last/done 状态（A15）", () => {
         installMw({ namespaceNumber: 14 });
         document.body.innerHTML = categoryFixture;
         const binding = {
             allowNonFiles: true,
             isBusy: () => false,
+            isActive: () => true,
             onSelectionChange: () => {
                 // 本用例只验证重新绑定时的清理，选择集合由 syncSelectedTitles 直接读取
             },
