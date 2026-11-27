@@ -109,15 +109,22 @@ const runPackage = async (name) => {
     } catch (error) {
         // 失败的步骤同样整块输出，error 上的 stdout / stderr 是子进程在崩溃前已写出的内容
         blocks.push({ label: currentLabel, stdout: String(error?.stdout ?? ""), stderr: String(error?.stderr ?? "") });
+        // 输出已保存到 blocks；错误对象上再留一份会被链尾 AggregateError 的转义打印重复一遍
+        if (error !== null && typeof error === "object") {
+            Reflect.deleteProperty(error, "stdout");
+            Reflect.deleteProperty(error, "stderr");
+        }
         throw error;
     } finally {
+        // 包头与两类输出都走标准输出：stderr 是另一条管道，CI 合并两路时没有共享顺序，
+        // stderr 会插进别的包的日志块
         for (const { label, stdout, stderr } of blocks) {
             console.info(`[${name}] ${label} output:`);
             if (stdout !== "") {
                 console.info(stdout);
             }
             if (stderr !== "") {
-                console.error(stderr);
+                console.info(`[${name}] ${label} stderr:\n${stderr}`);
             }
         }
     }
@@ -125,10 +132,16 @@ const runPackage = async (name) => {
 
 const failures = await runPool(orderedNames, concurrency, runPackage);
 if (failures.length > 0) {
-    console.error(`以下包的步骤失败（${failures.length} 个）：`);
+    // 摘要也走标准输出，与各包日志块保持同一条流
+    console.info(`以下包的步骤失败（${failures.length} 个）：`);
     for (const { item, error } of failures) {
-        console.error(`- ${item}: ${error instanceof Error ? error.message : error}`);
+        console.info(`- ${item}: ${error instanceof Error ? error.message : error}`);
     }
+    // 输出写管道时是异步的：直接抛错会立刻结束进程，未刷新的内容被截断
+    // （实测向管道写 8 MB 后抛错，读取端只收到 128 KB），先等两路输出排空
+    await Promise.all([process.stdout, process.stderr].map((stream) => new Promise((resolve) => {
+        stream.write("", resolve);
+    })));
     throw new AggregateError(failures.map(({ error }) => error), `${failures.length} 个包的步骤失败`);
 }
 // 链尾反向对账（build 与 package:test 两种模式的公共出口）：磁盘产物必须全部已声明，
