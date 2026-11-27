@@ -90,6 +90,7 @@ const collectTargetLinks = (allowNonFiles: boolean): JQuery => {
 
 interface PageItemBinding {
     allowNonFiles: boolean;
+    isOpen(): boolean;
     isBusy(): boolean;
     onSelectionChange(): void;
 }
@@ -106,6 +107,9 @@ const bindPageItems = (binding: PageItemBinding): number => {
 
     const $links = collectTargetLinks(binding.allowNonFiles);
     $links.on("click.catALot", (event) => {
+        if (!binding.isOpen()) {
+            return;
+        }
         if (binding.isBusy()) {
             event.preventDefault();
             return;

@@ -333,6 +333,7 @@ const createState = (makeReactive: ReactiveFactory): CatALotState => {
         bindPageItems: (): void => {
             state.selectableCount = bindDomPageItems({
                 allowNonFiles: state.prefs.editpages,
+                isOpen: () => state.isOpen,
                 isBusy: () => state.isBusy,
                 onSelectionChange: () => {
                     state.syncSelectedTitles();

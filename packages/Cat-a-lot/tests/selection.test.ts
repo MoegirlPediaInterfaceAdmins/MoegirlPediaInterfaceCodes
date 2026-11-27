@@ -8,6 +8,7 @@ import {
     syncSelectedTitles,
     toggleAll,
 } from "../src/selection.ts";
+import { createState } from "../src/state.ts";
 import { installMw } from "./helpers/mw.ts";
 
 // vitest 的 unstubGlobals 会在每个 test 运行前清掉 setupFiles 里注册的全局，
@@ -200,6 +201,7 @@ describe("bindPageItems / 选择", () => {
 
         bindPageItems({
             allowNonFiles: true,
+            isOpen: () => true,
             isBusy: () => false,
             onSelectionChange: () => {
                 selected = syncSelectedTitles();
@@ -224,6 +226,7 @@ describe("bindPageItems / 选择", () => {
 
         bindPageItems({
             allowNonFiles: true,
+            isOpen: () => true,
             isBusy: () => true,
             onSelectionChange: () => {
                 calls += 1;
@@ -241,6 +244,7 @@ describe("bindPageItems / 选择", () => {
         document.body.innerHTML = categoryFixture;
         const binding = {
             allowNonFiles: true,
+            isOpen: () => true,
             isBusy: () => false,
             onSelectionChange: () => {
                 // 本用例只验证重新绑定时的清理，选择集合由 syncSelectedTitles 直接读取
@@ -263,6 +267,79 @@ describe("bindPageItems / 选择", () => {
         expect(pageLink.hasClass("gadget-cat_a_lot-label--done")).toBe(false);
         expect(pageLink.attr("data-cal-title")).toBeUndefined();
         expect(collectedTitles()).toEqual(["File:A.png", "File:B.png"]);
+    });
+
+    it("面板未开启（isOpen=false）时点击链接不选中且不阻止默认跳转", () => {
+        installMw({ namespaceNumber: 14 });
+        document.body.innerHTML = categoryFixture;
+        let open = false;
+        let calls = 0;
+
+        bindPageItems({
+            allowNonFiles: true,
+            isOpen: () => open,
+            isBusy: () => false,
+            onSelectionChange: () => {
+                calls += 1;
+            },
+        });
+        const initialCalls = calls;
+
+        const firstLink = $(".gadget-cat_a_lot-label").first();
+        const closedClick = $.Event("click");
+        firstLink.trigger(closedClick);
+
+        expect(closedClick.isDefaultPrevented()).toBe(false);
+        expect(calls).toBe(initialCalls);
+        expect(syncSelectedTitles()).toEqual([]);
+
+        open = true;
+        const openClick = $.Event("click");
+        firstLink.trigger(openClick);
+
+        expect(openClick.isDefaultPrevented()).toBe(true);
+        expect(syncSelectedTitles()).toEqual(["File:A.png"]);
+
+        open = false;
+        const secondLink = $(".gadget-cat_a_lot-label").eq(1);
+        const reclosedClick = $.Event("click");
+        secondLink.trigger(reclosedClick);
+
+        expect(reclosedClick.isDefaultPrevented()).toBe(false);
+        expect(syncSelectedTitles()).toEqual(["File:A.png"]);
+    });
+
+    it("state.init 后默认折叠不响应点击选中，toggleOpen 展开后可选中", () => {
+        installMw({ namespaceNumber: 14 });
+        document.body.innerHTML = categoryFixture;
+        const state = createState((value) => value);
+
+        state.init();
+
+        const subcatLink = $("#mw-subcategories a").first();
+        const collapsedClick = $.Event("click");
+        subcatLink.trigger(collapsedClick);
+
+        expect(state.isOpen).toBe(false);
+        expect(collapsedClick.isDefaultPrevented()).toBe(false);
+        expect(state.selectedTitles).toEqual([]);
+
+        state.toggleOpen();
+        const expandedClick = $.Event("click");
+        subcatLink.trigger(expandedClick);
+
+        expect(state.isOpen).toBe(true);
+        expect(expandedClick.isDefaultPrevented()).toBe(true);
+        expect(state.selectedTitles).toEqual(["Category:Sub"]);
+
+        state.toggleOpen();
+        const fileLink = $("#mw-category-media a").first();
+        const recollapsedClick = $.Event("click");
+        fileLink.trigger(recollapsedClick);
+
+        expect(state.isOpen).toBe(false);
+        expect(recollapsedClick.isDefaultPrevented()).toBe(false);
+        expect(state.selectedTitles).toEqual(["Category:Sub"]);
     });
 });
 
