@@ -15,16 +15,6 @@ const JS_OUTPUT = "index.js";
 const JS_NAME = "Gadget-QuickRequest.js";
 
 /**
- * 产物头部声明：只携带生成警告与仓库地址。
- * "use strict" 由 banner 显式携带：产物以裸顶层语句形式交付，esbuild 不注入指令，
- * 而部署侧要求文件以严格模式运行。
- */
-const BANNER = `/**
- * 本文件由 packages/QuickRequest 构建生成，请勿直接修改
- * 仓库地址：https://github.com/MoegirlPediaInterfaceAdmins/MoegirlPediaInterfaceCodes
- */`;
-
-/**
  * esbuild 构建选项。
  *
  * target es2020 与界面库部署侧一致（`tsconfig.production.json` 的 target 与 terser 的 ecma），
@@ -33,6 +23,8 @@ const BANNER = `/**
  * 避免同一份代码被压两次。format esm 输出裸顶层语句、不带 IIFE 包裹：
  * gadget 经 mw.loader.implement 下发，其函数作用域已经隔离顶层名。
  * charset utf8：界面文案是中文，别让 esbuild 转成 \uXXXX。
+ * 产物是构建链中间物：严格模式指令由部署链的 tsc（alwaysStrict）在编入 dist/ 时注入，
+ * 这里不再自带 banner。
  */
 const buildOptions = () => ({
     entryPoints: [path.join(root, ENTRY)],
@@ -42,14 +34,10 @@ const buildOptions = () => ({
     charset: "utf8",
     outdir: path.join(root, "dist"),
     minifySyntax: true,
-    banner: { js: `${BANNER}\n"use strict";` },
 });
 
-/** 产物门禁：banner 位于文件头部、没有残留的模块语法、无 BOM/CR、以换行符结尾 */
+/** 产物门禁：没有残留的模块语法、无 BOM/CR、以换行符结尾 */
 const assertArtifact = (name, text) => {
-    if (!text.startsWith(BANNER)) {
-        throw new Error(`${name}: banner 缺失或不位于文件头部`);
-    }
     if (/^\s*(?:import|export)\b/m.test(text)) {
         throw new Error(`${name}: 产物中残留未打包的 import/export 语法`);
     }
