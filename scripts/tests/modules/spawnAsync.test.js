@@ -58,3 +58,31 @@ describe("spawnAsync", () => {
         expect(reason.message).toBe(`${process.execPath} ${args.join(" ")} exited unexpectedly with signal SIGTERM`);
     });
 });
+
+// capture 模式供包间并行使用：多个包同时运行时，输出必须整块保存在内存里，
+// 由调用方按包打印，避免不同包的日志行交错
+describe("spawnAsync capture", () => {
+    it("capture 为 true 时 resolve 捕获的 stdout 与 stderr", async () => {
+        await expect(spawnAsync(process.execPath, ["-e", "console.log('out'); console.error('err')"], { capture: true })).resolves.toEqual({
+            stdout: "out\n",
+            stderr: "err\n",
+        });
+    });
+
+    it("capture 模式下退出码非 0 仍 reject，输出挂在 error 上，消息格式与默认模式一致", async () => {
+        const args = ["-e", "console.log('out'); console.error('err'); process.exit(7)"];
+        let reason;
+        await spawnAsync(process.execPath, args, { capture: true }).catch((rejection) => {
+            reason = rejection;
+        });
+        expect(reason).toBeInstanceOf(Error);
+        expect(reason.exitCode).toBe(7);
+        expect(reason.stdout).toBe("out\n");
+        expect(reason.stderr).toBe("err\n");
+        expect(reason.message).toBe(`${process.execPath} ${args.join(" ")} exited with code 7`);
+    });
+
+    it("不传 capture 时成功仍 resolve undefined", async () => {
+        await expect(spawnAsync(process.execPath, ["-e", ""])).resolves.toBeUndefined();
+    });
+});
