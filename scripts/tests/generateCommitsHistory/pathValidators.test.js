@@ -6,6 +6,10 @@ describe("pathValidator", () => {
         expect(pathValidator("src/gadgets/Wikiplus/Gadget-Wikiplus.js")).toBe(true);
     });
 
+    it("src/ 下的 json 页面路径通过校验", () => {
+        expect(pathValidator("src/gadgets/UserMessages/Gadget-UserMessages.json")).toBe(true);
+    });
+
     it("非 src/ 前缀的路径不通过", () => {
         expect(pathValidator("scripts/main.js")).toBe(false);
     });

@@ -10,6 +10,8 @@ on:
       - "!scripts/autoAssign/*.js"
       - src/**/*.js
       - src/**/*.css
+      - src/**/*.json
+      - "!src/global/zh/GHIAHistory.json"
       - src/**/definition.yaml
       - src/gadgets/Gadgets-definition-list.yaml
       - packages/**
@@ -35,6 +37,8 @@ on:
       - "!scripts/autoAssign/*.js"
       - src/**/*.js
       - src/**/*.css
+      - src/**/*.json
+      - "!src/global/zh/GHIAHistory.json"
       - src/**/definition.yaml
       - src/gadgets/Gadgets-definition-list.yaml
       - packages/**
