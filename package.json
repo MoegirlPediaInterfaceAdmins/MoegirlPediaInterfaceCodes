@@ -122,7 +122,6 @@
         "vue-tsc": "^3.3.14"
     },
     "allowScripts": {
-        "core-js@2.6.12": true,
         "es5-ext@0.10.63": true,
         "esbuild": true,
         "@parcel/watcher": true
@@ -138,6 +137,12 @@
         },
         "@typescript-eslint/typescript-estree": {
             "minimatch": "^11.0.1"
+        },
+        "eslint-plugin-vue": {
+            "@stylistic/eslint-plugin": "^6.0.0"
+        },
+        "babel-plugin-import-to-require": {
+            "babel-template": "npm:@babel/template@^8.1.2"
         }
     }
 }
