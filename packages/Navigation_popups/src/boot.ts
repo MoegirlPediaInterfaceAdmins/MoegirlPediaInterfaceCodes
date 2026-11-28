@@ -39,7 +39,7 @@ import { clearPages } from "./net/cache.ts";
 import { abortAllDownloads } from "./net/downloader.ts";
 import { setupLivePreview, type InstaSiteConfig } from "./preview/insta.ts";
 import { nsState, setInterwiki, setNamespaces, setRedirs } from "./title/namespaces.ts";
-import { wiki } from "./title/title.ts";
+import { utfSpace, wiki } from "./title/title.ts";
 // 槽填充器注册（模块顶层副作用，装配层显式引入即完成）
 import "./navlinks/navlinks.ts";
 
@@ -73,14 +73,16 @@ const setMisc = (): void => {
     eventsState.checkPopupPositionTimer = null;
     eventsState.idNumber = 0;
     setPopupIdNumber(eventsState.idNumber);
+    // %2C 与「_→空格」两项不经字面量：萌百 RL 服务端压缩器会损坏字符串字面量，
+    // String.fromCharCode 无字面量可损坏（证据链见 semantic-notes A17，勿改回）。
     wiki.misc.decodeExtras = [
         {
-            from: "%2C",
+            from: String.fromCharCode(37, 50, 67),
             to: ",",
         },
         {
             from: "_",
-            to: " ",
+            to: utfSpace,
         },
         {
             from: "%24",

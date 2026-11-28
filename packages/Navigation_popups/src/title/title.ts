@@ -87,6 +87,10 @@ export const wiki: TitleWikiState = {
     getOption: (name: string): unknown => titleOptionDefaults[name],
 };
 
+// 空格不经字面量 " " 构造：萌百 RL 服务端压缩器会损坏字符串字面量，
+// fromCharCode 无字面量可损坏（证据链见 semantic-notes A17，勿改回）。
+export const utfSpace = String.fromCharCode(32);
+
 // 萌百显示名链接「真实标题 | 显示别名」的截断（issue #1140）：MW 标题字符集
 // 不含 |，URL 解码产物含 | 即显示名拼接产物，截到首个 | 之前还原真实标题。
 // 仅作用于 # 之前的标题段——锚点段的 | 属章节文本，原样保留；「名␣|␣别名」
@@ -173,7 +177,7 @@ export class Title extends Stringwrapper {
             } catch {
                 // 畸形百分号序列（如不完整 UTF-8）保留替换后的原样继续拼装
             }
-            split[j] = value.split("_").join(" ");
+            split[j] = value.split("_").join(utfSpace);
         }
         return split.join("");
     }
@@ -344,11 +348,11 @@ export class Title extends Stringwrapper {
         }
         const anch = value.indexOf("#");
         if (anch < 0) {
-            this.value = value.split("_").join(" ");
+            this.value = value.split("_").join(utfSpace);
             this.anchor = "";
             return;
         }
-        this.value = value.substring(0, anch).split("_").join(" ");
+        this.value = value.substring(0, anch).split("_").join(utfSpace);
         this.anchor = value.substring(anch + 1);
         this.ns = null;
     }

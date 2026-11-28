@@ -201,6 +201,20 @@
 - **用户可见性**：修正后可见。修正前悬停 `Talk:`、`User_talk:` 等讨论页链接时弹窗导航栏整体渲染失败，普通条目则少了三个讨论页入口；修正后讨论页显示 `article`/`editArticle` 回退入口，普通条目显示 `talk`/`editTalk`/`newTalk`。
 - **论据**：这个极性错误来自上游同步，不是萌百定制——`5adc9438` 基准继承的 `!!` 写法与上游 oldid=1322962085 的 `!` 相反，英文维基原文还保留了说明性注释。只写 `!!` 虽然不会抛错，判断结果仍然相反，所以必须断言渲染出的分支形态才能发现（此前 `tests/unit/navlinks/navlinks.test.ts` 的条件展开用例按错误极性编写，已随本次修正反转）。上游同步时不要以「与 legacy 逐字一致」为理由改回 `!!`。测试覆盖见 `tests/unit/navlinks/navlinks.test.ts`：`expandConditionalNavlinkString` 的 `talk` 用例、`navLinksHTML` 与 `shortmenus` 填充器的分支形态断言，以及讨论页不产生 `null` 标题链接的回归用例。
 
+### A16. 重定向跟随目标剥离 wikitext 前导冒号（**基准实现缺陷已修正**，2026-11-28）
+
+- **legacy 行为**：`#REDIRECT [[:目标]]` 形态的 wikitext 经 `nsState.re.redirect` 捕获组 2 原样带前导冒号进 `fromWikiText`，弹窗重定向目标的标题、主链接 href、跟随 revision 查询的 `titles=` 全部混入「:」。2026-11 实测（条目《微笑みジェノサイド》悬停重定向页《俺たちに翼はない CHARACTER SONG ALBUM》，其 wikitext 为 `#REDIRECT [[:我们没有翅膀_CHARACTER_SONG_ALBUM]]`）：弹窗标题显示 `:我们没有翅膀 CHARACTER SONG ALBUM`，链接 `index.php?title=:我们没有翅膀…`，跟随查询 `titles=:我们没有翅膀…`。上游 enwiki popups（oldid=1322962085）同处同款正则与 `fromWikiText`，冒号同样被当作目标标题的一部分——与 legacy 基准一致，属继承缺陷。
+- **重写版行为**：`src/preview/pipeline.ts` 的 `loadPreviewFromRedir` 在构造目标前剥一个前导冒号（`redirMatch[2].replace(/^:/, "")`）。MediaWiki 语义下 `[[:X]]` 的前导冒号是「显式名字空间」标记（`[[:X]]` 指向主名字空间 X、`[[:Category:X]]` 指向分类），不属于标题本身——MediaWiki 自身的 `#REDIRECT` 解析同样不把它当标题字符。`[[:Category:Foo]]` 剥冒号后 `Category:Foo` 的名字空间前缀完整保留，普通 `[[X]]` 形态不受影响。
+- **用户可见性**：可见。悬停目标写作 `[[:…]]` 的重定向页时，弹窗标题从「:目标」变为「目标」，主链接与编辑/历史等派生链接的 `title=` 参数、跟随查询的 `titles=` 均不再带冒号；「修复重定向」的 autoedit 命令写入的目标也由 `[[:X|…]]` 变为规范的 `[[X|…]]`。
+- **论据**：剥冒号只发生在重定向跟随的单一入口，`fromWikiText` 其余调用方（图片页名、redirLink 绕过链接等）输入不含前导冒号，行为不变；正则本身不动，`tests/unit/title/namespaces.test.ts` 的捕获组断言原样保留。上游同步时不要以「与 legacy 一致」为由把冒号放回捕获值。测试覆盖见 `tests/unit/preview/pipeline.test.ts`（`[[:…]]` 冒号剥离与下划线转空格、`[[:Category:…]]` 只剥一个、`[[…]]` 无冒号回归）与 `tests/integration/article-preview.test.ts`（微笑屠杀实测形态端到端：`target.value` / 第二次查询 `titles=` / `popupRedirTopLinks` 主链接 href 均无冒号）。
+
+### A17. 标题空格链路改经 `String.fromCharCode` 构造，防御站点 RL 压缩器损坏字面量（**部署链防御**，2026-11-28）
+
+- **legacy 行为**：`setMisc` 的 `decodeExtras` 含 `{from:"_",to:" "}`，`setUtf`/`anchorString` 以字面量 `" "` 做下划线转空格。源码与部署到 wiki 页的产物本身均正确；但萌百 ResourceLoader **服务端再压缩**环节会损坏字符串字面量。2026-11 实测同一模块（`ext.gadget.Navigation_popups`，模块版本 `186jk`）：`load.php` 常规响应中 `decodeExtras=[{from:"%2 C",to:","},{from:"_",to:""},…]`——`to:" "` 的空格被整体吃掉（`_`→空字符串，下划线被直接删除）、`"%2C"` 被搅成 `"%2 C"`（逗号解码失效）；同一版本 `load.php?debug=true`（未压缩）中两项完好。用户实测症状（微笑屠杀弹窗目标显示 `:我们没有翅膀CHARACTERSONGALBUM`——冒号混入 + 空格全无）由两层原因叠加：冒号是 A16 修正的捕获缺陷，空格全无则纯系服务端压缩损坏。复现证据链：真站悬停（站点模块，压缩产物）→ 无空格；同一 wiki 页产物直接注入真站页面（屏蔽站点模块）→ 空格正常。
+- **重写版行为**：`src/title/title.ts` 的 `utfSpace` 常量与 `src/boot.ts` 的 `setMisc` 把标题空格链路（decodeExtras 的 `_`→空格与 `%2C`、`setUtf`、`anchorString`）改为 `String.fromCharCode` 构造，不再依赖裸空格字面量或含「数字+字母」边界的 `%2C` 字面量。仓库构建链的 terser（`scripts/minification/options.js`，`evaluate: true`）实测不折叠 `String.fromCharCode` 调用，该形态原样进入部署产物，服务端压缩器无从损坏。
+- **用户可见性**：可见（修复的是部署链引入的空格丢失；jsdom 与未压缩环境的源码行为前后不变）。
+- **论据**：这不是 legacy 继承的源码缺陷——源码与 wiki 页产物一直正确，损坏发生在萌百 RL 服务端压缩的再加工（该压缩器还会改写模板字面量内容，如 `<hr />`→`<hr/>`；同文件其余空格字面量在本次实测产物中幸存，损坏点随产物字节布局漂移）。因此防御必须落在「不产生可损坏的字面量」上：`String.fromCharCode` 对任意压缩器缺陷免疫。残余风险：文件内其余 `" "` 字面量（如 `urlString` 的 `split(" ")`）若在未来某次部署产物中同样被吃，症状会落在 URL 拼装而非标题空格，届时按本条同款 `fromCharCode` 处理该点即可；上游同步时不要以「legacy 用字面量」为由改回 `" "`。测试覆盖见 `tests/unit/boot.test.ts`（setMisc 装配后 `safeDecodeURI` 对 `_`/`%2C`/`%24`/`%26` 映射效果的回归）与 `tests/unit/title/title.test.ts`（fromWikiText 中日英混排下划线转空格）。
+
 ## B. 明知故留的 legacy 死分支（`istanbul ignore` 清单）
 
 重写版在以下位置**保留** legacy 结构性不可达的防御分支，逐条配 `// istanbul ignore …`
