@@ -322,6 +322,9 @@ describe("setupPopups 序列（legacy init.ts 15 步）", () => {
             { from: "%24", to: "$" },
             { from: "%26", to: "&" },
         ]);
+        // decodeExtras 装配后的运行时效果（RL 压缩器损坏字面量的防御回归，
+        // 见 semantic-notes A17）：_ 转空格，%2C/%24/%26 按 URL 保留字符表还原
+        expect(f.title.safeDecodeURI("A_B%2C%24%26C")).toBe("A B,$&C");
         // article 不在 legacy setMisc 的重置面（pg.current.article 从未被重置）
         expect(f.events.eventsState.current.article).toBeInstanceOf(f.title.Title);
     });

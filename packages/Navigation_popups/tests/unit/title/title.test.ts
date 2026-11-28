@@ -545,6 +545,8 @@ describe("Title.fromURL", () => {
     it("fromWikiText：经 myDecodeURI（decodeExtras）后 setUtf", () => {
         expect(Title.fromWikiText("Foo_bar").value).toBe("Foo bar");
         expect(Title.fromWikiText("A%E4%B8%83").value).toBe("A七");
+        // 中日英混排形态（微笑屠杀弹窗重定向目标的实测形态）：下划线转空格
+        expect(Title.fromWikiText("我们没有翅膀_CHARACTER_SONG_ALBUM").value).toBe("我们没有翅膀 CHARACTER SONG ALBUM");
     });
 
     it("静态工厂返回 Title 实例", () => {

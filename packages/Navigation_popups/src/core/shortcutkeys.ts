@@ -7,6 +7,7 @@
 import { killPopup, eventsState } from "./events.ts";
 import { getValueOf } from "./options.ts";
 import { popupString } from "./strings.ts";
+import { utfSpace } from "./utfspace.ts";
 
 type PopupHandleKeypress = NonNullable<GlobalEventHandlers["onkeypress"]> & { lastPopupLinkSelected?: Element | null };
 
@@ -84,7 +85,7 @@ export const addPopupShortcut = (html: string | null, _key?: string | null): str
         return html;
     }
     const ret = addLinkProperty(html, `popupkey="${String(key)}"`);
-    if (key === " ") {
+    if (key === utfSpace) {
         key = popupString("spacebar");
     }
     return ret.replace(/^(.*?)(title=")(.*?)(".*)$/i, `$1$2$3 [${String(key)}]$4`);

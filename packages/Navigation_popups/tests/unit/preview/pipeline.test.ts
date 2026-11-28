@@ -354,6 +354,40 @@ describe("loadPreviewFromRedir", () => {
         expect(loadAPIPreviewMock).toHaveBeenCalledWith("revision", target, navpop);
     });
 
+    it("重定向目标带前导冒号与下划线（[[:我们没有翅膀_CHARACTER_SONG_ALBUM]] 形态）：冒号剥离、下划线转空格", async () => {
+        const f = await fresh();
+        // 槽填充器注册：与 pipeline 同代模块注册表（fresh 的 resetModules 之后
+        // 动态 import 取到同一实例）
+        const structures = await import("../../../src/core/structures.ts");
+        structures.registerSlotFiller("original.popupTitle", (x) => x.article.toString());
+        slotDivs(1, ["popupWarnRedir", "popupTitle", "popupRedirTitle"]);
+        const navpop = ownerWith(f, "Foo");
+        f.pipeline.insertPreview(downloadWith(f, "#REDIRECT [[:我们没有翅膀_CHARACTER_SONG_ALBUM]]", navpop));
+        const target = assume(navpop.redirTarget);
+        // MediaWiki 语义：[[:X]] 的前导冒号是「显式主名字空间」标记，不属于
+        // 目标标题；下划线按 Title 惯例转空格（issue：微笑屠杀弹窗目标
+        // 显示为「:我们没有翅膀CHARACTERSONGALBUM」）
+        expect(target.value).toBe("我们没有翅膀 CHARACTER SONG ALBUM");
+        expect(navpop.article).toBe(target);
+        expect(loadAPIPreviewMock).toHaveBeenCalledWith("revision", target, navpop);
+        // 重定向标题槽按目标填充：标题即冒号剥离、空格保留后的规范形式
+        expect(document.getElementById("popupRedirTitle1")?.innerHTML).toBe("我们没有翅膀 CHARACTER SONG ALBUM");
+    });
+
+    it("[[:Category:目标]] 形态：只剥一个前导冒号，名字空间前缀完整保留", async () => {
+        const f = await fresh();
+        const navpop = ownerWith(f, "Foo");
+        f.pipeline.insertPreview(downloadWith(f, "#REDIRECT [[:Category:Foo_bar]]", navpop));
+        expect(assume(navpop.redirTarget).value).toBe("Category:Foo bar");
+    });
+
+    it("[[目标]] 无冒号形态：行为不变（回归锚点）", async () => {
+        const f = await fresh();
+        const navpop = ownerWith(f, "Foo");
+        f.pipeline.insertPreview(downloadWith(f, "#REDIRECT [[Target_page]]", navpop));
+        expect(assume(navpop.redirTarget).value).toBe("Target page");
+    });
+
     it("popupAppendRedirNavLinks 关：popupWarnRedir 写入 redirLink 的绕过重定向链接", async () => {
         const f = await fresh({ popupAppendRedirNavLinks: false });
         slotDivs(1, ["popupWarnRedir"]);

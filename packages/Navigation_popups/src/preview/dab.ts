@@ -9,6 +9,7 @@ import { setPopupHTML } from "../core/htmlout.ts";
 import { getValueOf } from "../core/options.ts";
 import { popupString, simplePrintf, tprintf } from "../core/strings.ts";
 import { assume } from "../core/tools.ts";
+import { utfSpace } from "../core/utfspace.ts";
 import { changeLinkTargetLink } from "../navlinks/links.ts";
 import { isDisambig, parenSplit, Title } from "../title/title.ts";
 import { nsState } from "../title/namespaces.ts";
@@ -21,7 +22,7 @@ const retargetDab = (newTarget: string, oldTarget: unknown, friendlyCurrentArtic
     // string（运行时值不变）——与 queries.ts 的 assume(navpop.article) 同款适配
     return assume(changeLinkTargetLink({
         newTarget: newTarget,
-        text: newTarget.split(" ").join("&nbsp;"),
+        text: newTarget.split(utfSpace).join("&nbsp;"),
         hint: tprintf("disambigHint", [newTarget]),
         summary: simplePrintf(getValueOf("popupFixDabsSummary") as string, [friendlyCurrentArticleName, newTarget]),
         clickButton: getValueOf("popupDabsAutoClick") as string,
@@ -57,7 +58,7 @@ const listLinks = (wikitext: string, oldTarget: unknown, titleToEdit: string | u
     }
     ret.push(changeLinkTargetLink({
         newTarget: null,
-        text: popupString("remove this link").split(" ").join("&nbsp;"),
+        text: popupString("remove this link").split(utfSpace).join("&nbsp;"),
         hint: popupString("remove all links to this disambig page from this article"),
         clickButton: getValueOf("popupDabsAutoClick") as string,
         oldTarget: oldTarget as string,
@@ -101,7 +102,7 @@ export const makeFixDabs = (wikiText: string, navpop: Navpopup): void => {
 // 同 retargetDab：调用面恒传非空参数，links 域的 string | null 经 assume 收窄
 export const popupRedlinkHTML = (article: unknown): string => assume(changeLinkTargetLink({
     newTarget: null,
-    text: popupString("remove this link").split(" ").join("&nbsp;"),
+    text: popupString("remove this link").split(utfSpace).join("&nbsp;"),
     hint: popupString("remove all links to this page from this article"),
     clickButton: getValueOf("popupRedlinkAutoClick") as string,
     oldTarget: String(article),

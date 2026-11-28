@@ -17,6 +17,8 @@
 //   truthy 语义见 parse_list 注释）
 // - f() 的 "??" 字面量转义分支删除（全部调用点模板都不含 "??"）
 
+import { utfSpace } from "../core/utfspace.ts";
+
 /** 站点配置：boot 在 setupPopups 时序里按站点实参注入（legacy 读 pg.*） */
 export interface InstaSiteConfig {
     /**
@@ -304,7 +306,7 @@ const convert = (wiki: string | string[]): string => {
         do {
             // pre 行内仍走 inline 解析（链接在 pre 里生效，legacy 原样）
             endl(`${parse_inline_nowiki(ll[0].substring(1))}\n`);
-        } while (ll.length && ll[0].startsWith(" "));
+        } while (ll.length && ll[0].startsWith(utfSpace));
         ps("</pre>");
     };
 
@@ -484,7 +486,7 @@ const convert = (wiki: string | string[]): string => {
         } else if (/^[*#:;]/.test(line)) {
             p = 0;
             parse_list();
-        } else if (line.startsWith(" ")) {
+        } else if (line.startsWith(utfSpace)) {
             p = 0;
             parse_pre();
         } else if (line.startsWith("{|")) {

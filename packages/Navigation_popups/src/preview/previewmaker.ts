@@ -21,6 +21,7 @@ import { log } from "../core/log.ts";
 import { getValueOf } from "../core/options.ts";
 import { popupString } from "../core/strings.ts";
 import { assume, escapeQuotesHTML, literalizeRegex } from "../core/tools.ts";
+import { utfSpace } from "../core/utfspace.ts";
 import type { Navpopup } from "../core/popup.ts";
 import { nsState } from "../title/namespaces.ts";
 import { Title, parenSplit } from "../title/title.ts";
@@ -158,7 +159,7 @@ export class Previewmaker {
     killTemplates(): void {
         // 单花括号 { } 也计入深度（MW 的 {{{参数}}} 与嵌套模板由此配平）；
         // 删除处补一个空格防止前后词粘连
-        this.kill("{{", "}}", "{", "}", " ");
+        this.kill("{{", "}}", "{", "}", utfSpace);
     }
 
     killTables(): void {
@@ -176,7 +177,7 @@ export class Previewmaker {
             if (namespaceId !== nsState.imageId && namespaceId !== nsState.categoryId) {
                 continue;
             }
-            forbiddenNamespaceAliases.push(localizedNamespaceLc.split(" ").join("[ _]"));
+            forbiddenNamespaceAliases.push(localizedNamespaceLc.split(utfSpace).join("[ _]"));
         }
         this.kill(RegExp(`[[][[]\\s*(${forbiddenNamespaceAliases.join("|")})\\s*:`, "i"), /\]\]\s*/, "[", "]");
     }
@@ -405,7 +406,7 @@ export class Previewmaker {
     stripLongTemplates(): void {
         // 开头 1000 字符内的未渲染长模板（含 2+ 相邻 p/br 标签）剥除，防止占屏
         this.html = assume(this.html).replace(/^.{0,1000}[{][{][^}]*?(<(p|br)( \/)?>\s*){2,}([^{}]*?[}][}])?/ig, "");
-        this.html = assume(this.html).split("\n").join(" ");
+        this.html = assume(this.html).split("\n").join(utfSpace);
         this.html = assume(this.html).replace(/[{][{][^}]*<pre>[^}]*[}][}]/ig, "");
     }
 

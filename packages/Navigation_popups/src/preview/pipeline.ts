@@ -63,7 +63,10 @@ const loadPreview = (article: Title, oldid: string | null, navpop: Navpopup): vo
 };
 
 const loadPreviewFromRedir = (redirMatch: RegExpExecArray, navpop: Navpopup): void => {
-    const target = new Title().fromWikiText(redirMatch[2]);
+    // 前导冒号是 wikitext「显式名字空间」标记，不属于目标标题：跟随前剥掉
+    // 一个，[[:Category:…]] 等名字空间目标不受影响。legacy 将冒号混入目标
+    // （semantic-notes A16），上游同步时勿据 legacy 改回。
+    const target = new Title().fromWikiText(redirMatch[2].replace(/^:/, ""));
     // 原锚点透传给重定向目标（legacy 同款：先构造目标再叠加，目标 wikitext
     // 自带的锚点会被原锚点覆盖）
     if (navpop.article?.anchor) {

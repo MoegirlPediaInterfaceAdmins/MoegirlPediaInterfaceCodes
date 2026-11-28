@@ -327,6 +327,43 @@ describe("端到端：条目预览（阶段 2 验收）", () => {
         expect(navpop.hookIds).toEqual({});
     });
 
+    it("重定向目标带前导冒号与下划线：目标标题剥离冒号、空格保留，跟随查询与主链接 URL 均无冒号", async () => {
+        const f = await fresh();
+        // 站点实测形态（微笑屠杀 → 俺たちに翼はない CHARACTER SONG ALBUM 重定向页）：
+        // 目标链接写作 [[:我们没有翅膀_CHARACTER_SONG_ALBUM]]（前导冒号 + 下划线）
+        const REDIRECT_COLON_WIKITEXT = "#REDIRECT [[:我们没有翅膀_CHARACTER_SONG_ALBUM]]";
+        const { sent } = installXhr((request) => ok(request.url.includes("titles=%E6%88%91%E4%BB%AC%E6%B2%A1%E6%9C%89%E7%BF%85%E8%86%80")
+            ? revisionJson("我们没有翅膀 CHARACTER SONG ALBUM", TARGET_WIKITEXT)
+            : revisionJson("俺たちに翼はない CHARACTER SONG ALBUM", REDIRECT_COLON_WIKITEXT)));
+        const { navpop, article } = popupFor(f, "俺たちに翼はない CHARACTER SONG ALBUM");
+        f.pipeline.startArticlePreview(article, null, navpop);
+        await vi.waitFor(() => {
+            expect(navpop.redir).toBe(1);
+        });
+        const target = assume(navpop.redirTarget);
+        // 冒号剥离：[[:X]] 的前导冒号是显式主名字空间标记，不进目标标题
+        expect(target.value).toBe("我们没有翅膀 CHARACTER SONG ALBUM");
+        // 弹窗当前标题（标题槽/主链接的显示源）即规范形式
+        expect(navpop.article?.toString()).toBe("我们没有翅膀 CHARACTER SONG ALBUM");
+        // 跟随后的第二次查询按规范标题发起：titles 无冒号、空格转下划线
+        expect(sent).toHaveLength(2);
+        expect(sent[0].url).toContain("titles=%E4%BF%BA%E3%81%9F%E3%81%A1%E3%81%AB%E7%BF%BC%E3%81%AF%E3%81%AA%E3%81%84_CHARACTER_SONG_ALBUM");
+        expect(sent[1].url).toContain("titles=%E6%88%91%E4%BB%AC%E6%B2%A1%E6%9C%89%E7%BF%85%E8%86%80_CHARACTER_SONG_ALBUM&prop=revisions");
+        expect(sent[1].url).not.toContain("titles=:");
+        // shortmenus 默认结构：标题渲染在 popupRedirTopLinks 槽的 <<mainlink>>，
+        // 其 href 按目标标题拼装（jsdom 的 innerText 赋值不落 DOM，文本槽断言走
+        // navpop.article.toString()；href 属性真实可断言冒号剥离）
+        const redirTopLinks = slot("popupRedirTopLinks");
+        expect(redirTopLinks).toContain('title=%E6%88%91%E4%BB%AC%E6%B2%A1%E6%9C%89%E7%BF%85%E8%86%80_CHARACTER_SONG_ALBUM"');
+        expect(redirTopLinks).not.toContain("title=:");
+        // 重定向提示槽维持默认形态
+        expect(slot("popupWarnRedir")).toBe("<hr>重定向至");
+        await vi.waitFor(() => {
+            expect(slot("popupPreview")).toContain("redirect target body");
+        });
+        expect(navpop.pending).toBe(0);
+    });
+
     it("历史预览：history 查询 JSON → editPreviewTable 表格结构落 popupPreview 槽", async () => {
         // 0|0 → formattedDate/Time 走 UTC 偏移路径，日期/时间断言与环境时区无关
         const f = await fresh({ userOptions: { timecorrection: "0|0" } });

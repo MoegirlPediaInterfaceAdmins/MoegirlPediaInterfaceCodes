@@ -137,7 +137,19 @@ try {
     if (typeof result.code !== "string" || result.code.length === 0) {
         throw new Error("terser returned empty output");
     }
-    console.log(`es2020 parse gate OK (${Buffer.byteLength(rawCode, "utf8")} bytes); tsc-es2020 + terser OK: ${Buffer.byteLength(code, "utf8")} -> ${Buffer.byteLength(result.code, "utf8")} bytes (output discarded)`);
+    // Gate 3 — whitespace-literal gate (site quirk, docs/semantic-notes.md A17): the
+    // site minifier collapses a whitespace-only literal (a lone space became "" in
+    // production), so spaces come only from src/core/utfspace.ts
+    // (String.fromCharCode(32)). This proves the construction survives tsc + terser
+    // and that no whitespace-only literal returns; terser's unsafe:true would fold it.
+    const whitespaceLiteral = result.code.match(/"[ ]+"|'[ ]+'/u);
+    if (whitespaceLiteral) {
+        throw new Error(`terser output contains a whitespace-only string literal ${whitespaceLiteral[0]}: spaces must come from String.fromCharCode (src/core/utfspace.ts), otherwise the site minifier eats them (semantic-notes A17)`);
+    }
+    if (!result.code.includes("String.fromCharCode(32)")) {
+        throw new Error("terser output lost String.fromCharCode(32): the space construction was rewritten, so the site minifier would drop the spaces again (semantic-notes A17)");
+    }
+    console.log(`es2020 parse gate OK (${Buffer.byteLength(rawCode, "utf8")} bytes); tsc-es2020 + terser OK: ${Buffer.byteLength(code, "utf8")} -> ${Buffer.byteLength(result.code, "utf8")} bytes (output discarded, whitespace-literal gate OK)`);
 } finally {
     await fs.promises.rm(gateDir, { recursive: true, force: true });
 }

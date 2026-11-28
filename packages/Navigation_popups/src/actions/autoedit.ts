@@ -17,6 +17,7 @@
 import { siteState } from "../api/siteinfo.ts";
 import { popupString, simplePrintf, tprintf } from "../core/strings.ts";
 import { anyChild, assume, escapeQuotesHTML, getJsObj } from "../core/tools.ts";
+import { utfSpace } from "../core/utfspace.ts";
 import { startDownload, type Downloader } from "../net/downloader.ts";
 
 // setupPopups 注册缝：legacy autoEdit 直调 init 域的 setupPopups(callback)，
@@ -305,7 +306,7 @@ export const getRvSummary = (template: string | null, json: string | undefined):
         if (!revision) {
             return false;
         }
-        const timestamp = revision.timestamp.split(/[A-Z]/g).join(" ").replace(/^ *| *$/g, "");
+        const timestamp = revision.timestamp.split(/[A-Z]/g).join(utfSpace).replace(/^ *| *$/g, "");
         return simplePrintf(assume<string>(template), [revision.revid, timestamp, revision.userhidden ? "(hidden)" : revision.user]);
     } catch {
         return false;
