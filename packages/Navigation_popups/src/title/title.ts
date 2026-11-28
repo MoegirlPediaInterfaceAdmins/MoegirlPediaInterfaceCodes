@@ -9,6 +9,7 @@
 // TODO(rewrite): 正则/基址的构造公式（legacy init.ts setTitleBase/setMainRegex/
 // setRegexps/setMisc）迁入 boot/api 域时改为注入真实值 → boot 域模块实现时，
 // 测试侧 fixtures（tests/unit/title/title.test.ts）同步对齐。
+import { utfSpace } from "../core/utfspace.ts";
 import { nsState } from "./namespaces.ts";
 
 export interface TitleWikiState {
@@ -86,10 +87,6 @@ export const wiki: TitleWikiState = {
     },
     getOption: (name: string): unknown => titleOptionDefaults[name],
 };
-
-// 空格不经字面量 " " 构造：萌百 RL 服务端压缩器会损坏字符串字面量，
-// fromCharCode 无字面量可损坏（证据链见 semantic-notes A17，勿改回）。
-export const utfSpace = String.fromCharCode(32);
 
 // 萌百显示名链接「真实标题 | 显示别名」的截断（issue #1140）：MW 标题字符集
 // 不含 |，URL 解码产物含 | 即显示名拼接产物，截到首个 | 之前还原真实标题。
@@ -194,7 +191,7 @@ export class Title extends Stringwrapper {
         return split.join("");
     }
     anchorFromUtf(str: string): void {
-        this.anchor = encodeURIComponent(str.split(" ").join("_")).split("%3A").join(":").split("'").join("%27").split("%").join(".");
+        this.anchor = encodeURIComponent(str.split(utfSpace).join("_")).split("%3A").join(":").split("'").join("%27").split("%").join(".");
     }
     decodeNasties(txt: string | Stringwrapper): string | Stringwrapper {
         try {
@@ -250,7 +247,7 @@ export class Title extends Stringwrapper {
                 if (localizedNamespace === "") {
                     this.value = this.stripNamespace();
                 } else {
-                    this.value = `${localizedNamespace.split(" ").join("_")}:${this.stripNamespace()}`;
+                    this.value = `${localizedNamespace.split(utfSpace).join("_")}:${this.stripNamespace()}`;
                 }
                 return this.value;
             }
@@ -269,7 +266,7 @@ export class Title extends Stringwrapper {
             if (n < 0) {
                 return 0;
             }
-            const namespaceId: number | undefined = mw.config.get("wgNamespaceIds")[assume(this.value).substring(0, n).split(" ").join("_").toLowerCase()];
+            const namespaceId: number | undefined = mw.config.get("wgNamespaceIds")[assume(this.value).substring(0, n).split(utfSpace).join("_").toLowerCase()];
             if (typeof namespaceId === "undefined") {
                 return 0;
             }
@@ -304,7 +301,7 @@ export class Title extends Stringwrapper {
                 if (localizedNamespace === "") {
                     this.value = this.stripNamespace();
                 } else {
-                    this.value = `${localizedNamespace.split(" ").join("_")}:${this.stripNamespace()}`;
+                    this.value = `${localizedNamespace.split(utfSpace).join("_")}:${this.stripNamespace()}`;
                 }
                 return this.value;
             }
@@ -373,7 +370,7 @@ export class Title extends Stringwrapper {
             v += `#${this.urlAnchor()}`;
         }
         if (!x.keepSpaces) {
-            v = v.split(" ").join("_");
+            v = v.split(utfSpace).join("_");
         }
         return encodeURI(v).split("&").join("%26").split("?").join("%3F").split("+").join("%2B");
     }
@@ -395,7 +392,7 @@ export class Title extends Stringwrapper {
         const contribs = assume(wiki.re.contribs).exec(h);
         if (contribs) {
             if (contribs[1] === "title=") {
-                contribs[3] = contribs[3].split("+").join(" ");
+                contribs[3] = contribs[3].split("+").join(utfSpace);
             }
             const u = new Title(contribs[3]);
             this.setUtf(stripDisplayAlias(this.decodeNasties(`${mw.config.get("wgFormattedNamespaces")[nsState.userId]}:${u.stripNamespace()}`)));

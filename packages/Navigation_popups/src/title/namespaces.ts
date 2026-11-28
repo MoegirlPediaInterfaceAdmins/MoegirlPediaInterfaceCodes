@@ -12,6 +12,8 @@
 // 一份 lang 状态（TODO(rewrite): siteinfo 域落地后如需 wiki.lang 快照，
 // 由该域统一持有 → core 域 siteinfo 模块实现时）。
 
+import { utfSpace } from "../core/utfspace.ts";
+
 export interface NamespaceState {
     // 七个 id 是硬编码常量（legacy pg.nsXxxId），初值即终值——setNamespaces
     // 重算覆盖同值；不以 null 表示「装配前」（消类型层 ?? 兜底的死分支）
@@ -134,7 +136,7 @@ export const nsRe = (namespaceId?: number): string => {
             continue;
         }
         const variant = upcaseFirst(localizedNamespaceLc);
-        imageNamespaceVariants.push(mw.util.escapeRegExp(variant).split(" ").join("[ _]"));
+        imageNamespaceVariants.push(mw.util.escapeRegExp(variant).split(utfSpace).join("[ _]"));
         imageNamespaceVariants.push(mw.util.escapeRegExp(encodeURI(variant)));
     }
     return `(?:${imageNamespaceVariants.join("|")})`;

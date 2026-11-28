@@ -31,6 +31,7 @@ import { popupString, tprintf } from "../core/strings.ts";
 import { nsState } from "../title/namespaces.ts";
 import { Title, wiki } from "../title/title.ts";
 import { anyChild, assume, entify, escapeQuotesHTML, getJsObj, map, zeroFill } from "../core/tools.ts";
+import { utfSpace } from "../core/utfspace.ts";
 import type { Navpopup } from "../core/popup.ts";
 // one page entry of an action=query&prop=revisions response
 interface RevisionPage {
@@ -167,7 +168,7 @@ const linkList = (list: string[]): string => {
     for (const item of list) {
         buf.push(wikiLink({
             article: new Title(item),
-            text: item.split(" ").join("&nbsp;"),
+            text: item.split(utfSpace).join("&nbsp;"),
             action: "view",
         }));
     }

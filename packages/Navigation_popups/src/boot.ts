@@ -34,12 +34,13 @@ import { log } from "./core/log.ts";
 import { setOptions } from "./core/options.ts";
 import { Navpopup } from "./core/popup.ts";
 import { cleanupLegacyNoTranslationStorage, popupNoTranslation } from "./core/strings.ts";
+import { utfSpace } from "./core/utfspace.ts";
 import { modifyWatchlist } from "./navlinks/links.ts";
 import { clearPages } from "./net/cache.ts";
 import { abortAllDownloads } from "./net/downloader.ts";
 import { setupLivePreview, type InstaSiteConfig } from "./preview/insta.ts";
 import { nsState, setInterwiki, setNamespaces, setRedirs } from "./title/namespaces.ts";
-import { utfSpace, wiki } from "./title/title.ts";
+import { wiki } from "./title/title.ts";
 // 槽填充器注册（模块顶层副作用，装配层显式引入即完成）
 import "./navlinks/navlinks.ts";
 

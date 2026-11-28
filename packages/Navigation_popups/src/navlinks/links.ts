@@ -25,6 +25,7 @@ import { getValueOf, optionStore } from "../core/options.ts";
 import { addPopupShortcut } from "../core/shortcutkeys.ts";
 import { popupString, simplePrintf, tprintf } from "../core/strings.ts";
 import { assume, getJsObj, anyChild, unescapeQuotesHTML } from "../core/tools.ts";
+import { utfSpace } from "../core/utfspace.ts";
 import { clearPages } from "../net/cache.ts";
 import { abortAllDownloads, startDownload } from "../net/downloader.ts";
 import type { Downloader } from "../net/downloader.ts";
@@ -258,7 +259,7 @@ export const changeLinkTargetLink = (x: {
     currentArticleRegexBit = currentArticleRegexBit.split(/(?:[_ ]+|%20)/g).join("(?:[_ ]+|%20)").split("\\(").join("(?:%28|\\()").split("\\)").join("(?:%29|\\))");
     currentArticleRegexBit = `\\s*(${currentArticleRegexBit}(?:#[^\\[\\|]*)?)\\s*`;
     // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing -- empty string is a meaningful value here; the || branch is deliberate upstream behavior
-    const title = x.title || mw.config.get("wgPageName").split("_").join(" ");
+    const title = x.title || mw.config.get("wgPageName").split("_").join(utfSpace);
     const lk = titledWikiLink({
         article: new Title(title),
         newWin: x.newWin,
@@ -528,7 +529,7 @@ const processDiffSinceMyEdit = (info: HistoryInfo, stuff: { page: string; newWin
         alert("Popups: something fishy happened. Please try again.");
         return;
     }
-    const friendlyName = stuff.page.split("_").join(" ");
+    const friendlyName = stuff.page.split("_").join(utfSpace);
     if (!info.myLastEdit) {
         alert(tprintf("Couldn't find an edit by %s\nin the last %s edits to\n%s", [info.userName, getValueOf("popupHistoryLimit"), friendlyName]));
         return;
